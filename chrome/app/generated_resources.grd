@@ -44,7 +44,9 @@ are declared in tools/grit/grit_rule.gni.
       <output filename="generated_resources_zu.pak" type="data_package" lang="zu" />
     </if>
     <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="generated_resources_af.pak" type="data_package" lang="af" />
       <output filename="generated_resources_is.pak" type="data_package" lang="is" />
+      <output filename="generated_resources_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="generated_resources_am.pak" type="data_package" lang="am" />
     <output filename="generated_resources_ar.pak" type="data_package" lang="ar" />

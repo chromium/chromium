@@ -126,19 +126,11 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_FALSE(is_ui);
 
-  locale = "af";  // Afrikaans
-  is_ui = ConvertToActualUILocale(&locale);
-  EXPECT_FALSE(is_ui);
-
   locale = "ga";  // Irish
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_FALSE(is_ui);
 
   locale = "ky";  // Kyrgyz
-  is_ui = ConvertToActualUILocale(&locale);
-  EXPECT_FALSE(is_ui);
-
-  locale = "zu";  // Zulu
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_FALSE(is_ui);
 #endif

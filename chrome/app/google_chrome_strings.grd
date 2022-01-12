@@ -41,7 +41,9 @@ chromium_strings.grd. -->
       <output filename="google_chrome_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="google_chrome_strings_af.pak" type="data_package" lang="af" />
       <output filename="google_chrome_strings_is.pak" type="data_package" lang="is" />
+      <output filename="google_chrome_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="google_chrome_strings_am.pak" type="data_package" lang="am" />
     <output filename="google_chrome_strings_ar.pak" type="data_package" lang="ar" />

@@ -41,7 +41,9 @@ This file contains strings for code in //services.
       <output filename="services_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="services_strings_af.pak" type="data_package" lang="af" />
       <output filename="services_strings_is.pak" type="data_package" lang="is" />
+      <output filename="services_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="services_strings_am.pak" type="data_package" lang="am" />
     <output filename="services_strings_ar.pak" type="data_package" lang="ar" />

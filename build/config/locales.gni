@@ -162,7 +162,11 @@ android_bundle_only_locales = [
 ]
 
 # New locales added to ChromeOS builds.
-chromeos_only_locales = [ "is" ]
+chromeos_only_locales = [
+  "af",
+  "is",
+  "zu",
+]
 
 if (is_android) {
   locales = all_chrome_locales

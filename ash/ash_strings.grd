@@ -10,6 +10,7 @@ This file contains the strings for ash.
     <output filename="grit/ash_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
+    <output filename="ash_strings_af.pak" type="data_package" lang="af" />
     <output filename="ash_strings_am.pak" type="data_package" lang="am" />
     <output filename="ash_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="ash_strings_bg.pak" type="data_package" lang="bg" />
@@ -66,6 +67,7 @@ This file contains the strings for ash.
     <output filename="ash_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ash_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="ash_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="ash_strings_zu.pak" type="data_package" lang="zu" />
 
     <!-- Pseudolocales -->
     <output filename="ash_strings_ar-XB.pak" type="data_package" lang="ar-XB" />

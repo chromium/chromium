@@ -6,6 +6,7 @@
     <output filename="grit/shortcut_viewer_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
+    <output filename="shortcut_viewer_strings_af.pak" type="data_package" lang="af" />
     <output filename="shortcut_viewer_strings_am.pak" type="data_package" lang="am" />
     <output filename="shortcut_viewer_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="shortcut_viewer_strings_bg.pak" type="data_package" lang="bg" />
@@ -62,6 +63,7 @@
     <output filename="shortcut_viewer_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="shortcut_viewer_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="shortcut_viewer_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="shortcut_viewer_strings_zu.pak" type="data_package" lang="zu" />
 
     <!-- Pseudolocales -->
     <output filename="shortcut_viewer_strings_ar-XB.pak" type="data_package" lang="ar-XB" />

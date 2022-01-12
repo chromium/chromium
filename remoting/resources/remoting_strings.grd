@@ -7,6 +7,9 @@
       <emit emit_type="prepend"/>
     </output>
 
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/af.pak" lang="af" type="data_package"/>
+    </if>
     <output filename="remoting/resources/am.pak" lang="am" type="data_package"/>
     <output filename="remoting/resources/ar.pak" lang="ar" type="data_package"/>
     <output filename="remoting/resources/bg.pak" lang="bg" type="data_package"/>
@@ -79,11 +82,17 @@
     <output filename="remoting/resources/vi.pak" lang="vi" type="data_package"/>
     <output filename="remoting/resources/zh-CN.pak" lang="zh-CN" type="data_package"/>
     <output filename="remoting/resources/zh-TW.pak" lang="zh-TW" type="data_package"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/zu.pak" lang="zu" type="data_package"/>
+    </if>
 
     <!-- Pseudolocales -->
     <output filename="remoting/resources/ar-XB.pak" lang="ar-XB" type="data_package"/>
     <output filename="remoting/resources/en-XA.pak" lang="en-XA" type="data_package"/>
 
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/_locales/af/messages.json" lang="af" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/am/messages.json" lang="am" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ar/messages.json" lang="ar" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bg/messages.json" lang="bg" type="chrome_messages_json"/>
@@ -157,6 +166,9 @@
     <output filename="remoting/resources/_locales/vi/messages.json" lang="vi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_CN/messages.json" lang="zh-CN" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_TW/messages.json" lang="zh-TW" type="chrome_messages_json"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/_locales/zu/messages.json" lang="zu" type="chrome_messages_json"/>
+    </if>
 
     <!-- Pseudolocales -->
     <output filename="remoting/resources/_locales/ar_XB/messages.json" lang="ar-XB" type="chrome_messages_json"/>
