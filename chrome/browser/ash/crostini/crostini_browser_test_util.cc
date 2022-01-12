@@ -69,7 +69,11 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
   // Ideally we'd call SetConnectionType in PostCreateThreads, but currently we
   // have to wait for PreProfileInit to complete, since that creatse the
   // ash::Shell that AshService needs in order to start.
-  void PostProfileInit() override {
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override {
+    // The setup below is intended to run for only the initial profile.
+    if (!is_initial_profile)
+      return;
+
     connection_change_simulator_.SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_WIFI);
   }

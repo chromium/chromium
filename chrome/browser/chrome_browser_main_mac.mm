@@ -154,10 +154,17 @@ void ChromeBrowserMainPartsMac::PreProfileInit() {
   g_browser_process->platform_part()->app_shim_listener()->Init();
 }
 
-void ChromeBrowserMainPartsMac::PostProfileInit() {
-  MacStartupProfiler::GetInstance()->Profile(
-      MacStartupProfiler::POST_PROFILE_INIT);
-  ChromeBrowserMainPartsPosix::PostProfileInit();
+void ChromeBrowserMainPartsMac::PostProfileInit(Profile* profile,
+                                                bool is_initial_profile) {
+  if (is_initial_profile) {
+    MacStartupProfiler::GetInstance()->Profile(
+        MacStartupProfiler::POST_PROFILE_INIT);
+  }
+
+  ChromeBrowserMainPartsPosix::PostProfileInit(profile, is_initial_profile);
+
+  if (!is_initial_profile)
+    return;
 
   // Activation of Keystone is not automatic but done in response to the
   // counting and reporting of profiles.

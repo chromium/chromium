@@ -636,8 +636,13 @@ void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {
                  MB_OK | MB_ICONERROR | MB_TOPMOST);
 }
 
-void ChromeBrowserMainPartsWin::PostProfileInit() {
-  ChromeBrowserMainParts::PostProfileInit();
+void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
+                                                bool is_initial_profile) {
+  ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
+
+  // The setup below is intended to run for only the initial profile.
+  if (!is_initial_profile)
+    return;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Explicitly disable the third-party modules blocking.
@@ -671,7 +676,7 @@ void ChromeBrowserMainPartsWin::PostProfileInit() {
           switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
     content::BrowserThread::PostBestEffortTask(
         FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
-        base::BindOnce(&UpdatePwaLaunchersForProfile, profile()->GetPath()));
+        base::BindOnce(&UpdatePwaLaunchersForProfile, profile->GetPath()));
   }
 }
 

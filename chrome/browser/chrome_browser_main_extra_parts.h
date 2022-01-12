@@ -17,6 +17,8 @@
 // Chrome toolkits (e.g., GTK, VIEWS, ASH, AURA, etc.; see
 // ChromeContentBrowserClient::CreateBrowserMainParts()).
 
+class Profile;
+
 class ChromeBrowserMainExtraParts {
  public:
   virtual ~ChromeBrowserMainExtraParts() {}
@@ -36,7 +38,7 @@ class ChromeBrowserMainExtraParts {
   virtual void PreCreateThreads() {}
   virtual void PostCreateThreads() {}
   virtual void PreProfileInit() {}
-  virtual void PostProfileInit() {}
+  virtual void PostProfileInit(Profile* profile, bool is_initial_profile) {}
   virtual void PreBrowserStart() {}
   virtual void PostBrowserStart() {}
   virtual void PreMainMessageLoopRun() {}

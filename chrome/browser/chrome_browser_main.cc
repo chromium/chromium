@@ -1127,15 +1127,24 @@ void ChromeBrowserMainParts::PreProfileInit() {
   media_router::ChromeMediaRouterFactory::DoPlatformInit();
 }
 
-void ChromeBrowserMainParts::PostProfileInit() {
-  TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostProfileInit");
+void ChromeBrowserMainParts::CallPostProfileInit(Profile* profile) {
+  bool is_initial_profile = !initialized_initial_profile_;
+  initialized_initial_profile_ = true;
 
-  g_browser_process->CreateDevToolsProtocolHandler();
-  if (parsed_command_line().HasSwitch(::switches::kAutoOpenDevToolsForTabs))
-    g_browser_process->CreateDevToolsAutoOpener();
+  PostProfileInit(profile, is_initial_profile);
+}
+
+void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
+                                             bool is_initial_profile) {
+  if (is_initial_profile) {
+    TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostProfileInit");
+    g_browser_process->CreateDevToolsProtocolHandler();
+    if (parsed_command_line().HasSwitch(::switches::kAutoOpenDevToolsForTabs))
+      g_browser_process->CreateDevToolsAutoOpener();
+  }
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
-    chrome_extra_part->PostProfileInit();
+    chrome_extra_part->PostProfileInit(profile, is_initial_profile);
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
@@ -1476,7 +1485,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.
   // (requires supporting early exit).
-  PostProfileInit();
+  CallPostProfileInit(profile_);
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Execute first run specific code after the PrefService has been initialized

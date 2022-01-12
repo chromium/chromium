@@ -239,7 +239,12 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 }
 
-void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
+void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
+                                                     bool is_initial_profile) {
+  // The setup below is intended to run for only the initial profile.
+  if (!is_initial_profile)
+    return;
+
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
   // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
   // before using it InitializeDeviceDisablingManager.

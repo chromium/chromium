@@ -138,7 +138,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   // Stages called from PreMainMessageLoopRun.
   void PreProfileInit() override;
-  void PostProfileInit() override;
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   void PreBrowserStart() override;
   void PostBrowserStart() override;
 

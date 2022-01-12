@@ -23,7 +23,7 @@ class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
   void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
   void PreProfileInit() override;
-  void PostProfileInit() override;
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
 
   // Perform platform-specific work that needs to be done after the main event
   // loop has ended. The embedder must be sure to call this.

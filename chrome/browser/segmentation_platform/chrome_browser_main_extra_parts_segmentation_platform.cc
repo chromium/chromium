@@ -12,7 +12,13 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-void ChromeBrowserMainExtraPartsSegmentationPlatform::PostProfileInit() {
+void ChromeBrowserMainExtraPartsSegmentationPlatform::PostProfileInit(
+    Profile* profile,
+    bool is_initial_profile) {
+  // The setup below is intended to run for only the initial profile.
+  if (!is_initial_profile)
+    return;
+
   Profile* last_used_profile =
       g_browser_process->profile_manager()->GetLastUsedProfileIfLoaded();
   if (!last_used_profile || last_used_profile->IsOffTheRecord())

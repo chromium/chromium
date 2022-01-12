@@ -86,8 +86,11 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
   // Additional stages for ChromeBrowserMainExtraParts. These stages are called
   // in order from PreMainMessageLoopRun(). See implementation for details.
+  // TODO(crbug.com/1150326): Update the comment once the feature launches.
+  // `PostProfileInit()` might not be called in order, it is planned to be
+  // called for each new profile as part of that launch. See bug for context.
   virtual void PreProfileInit();
-  virtual void PostProfileInit();
+  virtual void PostProfileInit(Profile* profile, bool is_initial_profile);
   virtual void PreBrowserStart();
   virtual void PostBrowserStart();
 
@@ -103,8 +106,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   const base::FilePath& user_data_dir() const {
     return user_data_dir_;
   }
-
-  Profile* profile() { return profile_; }
 
  private:
   friend class ChromeBrowserMainPartsTestApi;
@@ -139,6 +140,10 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
   int PreCreateThreadsImpl();
   int PreMainMessageLoopRunImpl();
+
+  // Wrapper for `PostProfileInit()` that provides to it the right
+  // `is_initial_profile` value.
+  void CallPostProfileInit(Profile* profile);
 
   // Members initialized on construction ---------------------------------------
 
@@ -208,6 +213,10 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   base::FilePath user_data_dir_;
 
   raw_ptr<StartupData> startup_data_;
+
+  // Indicates that the initial profile has been created and we started
+  // executing `PostProfileInit()` for it.
+  bool initialized_initial_profile_ = false;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_

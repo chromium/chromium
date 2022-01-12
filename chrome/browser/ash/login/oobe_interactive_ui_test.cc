@@ -470,7 +470,11 @@ class NativeWindowVisibilityBrowserMainExtraParts
   ~NativeWindowVisibilityBrowserMainExtraParts() override = default;
 
   // ChromeBrowserMainExtraParts:
-  void PostProfileInit() override {
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override {
+    // The setup below is intended to run for only the initial profile.
+    if (!is_initial_profile)
+      return;
+
     gfx::NativeWindow window =
         LoginDisplayHost::default_host()->GetNativeWindow();
     if (window)

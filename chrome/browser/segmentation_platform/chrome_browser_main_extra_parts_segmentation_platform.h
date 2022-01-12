@@ -12,7 +12,7 @@ class ChromeBrowserMainExtraPartsSegmentationPlatform
  public:
   ChromeBrowserMainExtraPartsSegmentationPlatform() = default;
 
-  void PostProfileInit() override;
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
 };
 
 #endif  // CHROME_BROWSER_SEGMENTATION_PLATFORM_CHROME_BROWSER_MAIN_EXTRA_PARTS_SEGMENTATION_PLATFORM_H_
