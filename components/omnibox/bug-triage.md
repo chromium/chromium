@@ -178,6 +178,7 @@ The subcomponents of omnibox bugs include:
 | UI>Browser>Omnibox>SecurityIndicators | Secure/insecure icons; triaged by another team. |
 | UI>Browser>Omnibox>TabToSearch | Custom search engines, omnibox extensions, etc. (including adding, triggering, ranking, etc. for them). |
 | UI>Browser>Omnibox>ZeroSuggest | Suggestions displayed on omnibox focus (both contextual and non-contextual). |
+| UI>Browser>Omnibox>NTPRealbox | Suggestions displayed in the searchbox on the New Tab Page. |
 
 If the bug is extremely low priority, set the **NextAction field** to
 **01/07/2021** and mention that we will "reassess" the bug next year.  This
@@ -238,7 +239,7 @@ The [timeline dashboard](http://go/uma-timeline) is your friend,
 especially the split by channel, split by platform, split by milestone, and
 split by version features.  Some tips on how to investigate using the timeline
 dashboard:
- 
+
 * If the regression is on Dev, see if you can spot it on Canary.  That can
   usually indicate a narrow regression range.  This can usually be done unless
   the histogram is too noisy.
