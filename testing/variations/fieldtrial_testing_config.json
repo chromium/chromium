@@ -809,6 +809,24 @@
             ]
         }
     ],
+    "ArcLogdSizeConfig": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroup512K_20211210",
+                    "params": {
+                        "size": "512"
+                    },
+                    "enable_features": [
+                        "ArcGuestLogdConfig"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmBlockSize": [
         {
             "platforms": [
