@@ -67,6 +67,18 @@ export class TabSearchItem extends TabSearchItemBase {
     return type === TabItemType.OPEN_TAB;
   }
 
+  /**
+   * @return the class name for the close button including a second class to
+   *     preallocate space for the close button even while hidden if the tab
+   *     will display a media alert.
+   */
+  private getButtonContainerStyles_(tabData: TabData): string {
+    return 'button-container' +
+        (this.isOpenTabAndHasMediaAlert_(tabData) ?
+             ' allocate-space-while-hidden' :
+             '');
+  }
+
   private onItemClose_(e: Event) {
     this.dispatchEvent(new CustomEvent('close'));
     e.stopPropagation();

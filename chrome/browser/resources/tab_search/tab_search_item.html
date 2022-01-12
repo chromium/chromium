@@ -6,6 +6,7 @@
   :host(:is(.hovered, .selected)) .button-container {
     height: auto;
     overflow: visible;
+    visibility: visible;
     width: auto;
   }
 
@@ -14,6 +15,13 @@
     margin-inline-start: 2px;
     overflow: hidden;
     width: 0;
+  }
+
+  .button-container.allocate-space-while-hidden {
+    height: auto;
+    overflow: visible;
+    visibility: hidden;
+    width: auto;
   }
 
   .button-container cr-icon-button {
@@ -95,6 +103,7 @@
 
   #mediaAlert[display = 'block'] {
     height: var(--mwb-icon-size);
+    margin-inline-end: 8px;
     width: var(--mwb-icon-size);
   }
 
@@ -136,7 +145,7 @@
 <img id="mediaAlert" display$="[[mediaAlertVisibility_(data)]]"
   class$="[[getMediaAlertImageClass_(data)]]"></img>
 <template is="dom-if" if="[[isCloseable_(data.type)]]">
-  <div class="button-container">
+  <div class$="[[getButtonContainerStyles_(data)]]">
     <cr-icon-button id="closeButton"
         aria-label="[[ariaLabelForButton_(data.tab.title)]]"
         iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
