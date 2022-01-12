@@ -66,7 +66,6 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
-#include "chrome/browser/ash/crostini/crosvm_metrics.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/dbus/chrome_features_service_provider.h"
 #include "chrome/browser/ash/dbus/component_updater_service_provider.h"
@@ -1134,9 +1133,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
   gnubby_notification_ = std::make_unique<GnubbyNotification>();
   demo_mode_resources_remover_ = DemoModeResourcesRemover::CreateIfNeeded(
       g_browser_process->local_state());
-  // Start measuring crosvm processes resource usage.
-  crosvm_metrics_ = std::make_unique<crostini::CrosvmMetrics>();
-  crosvm_metrics_->Start();
 
   login_screen_extensions_lifetime_manager_ =
       std::make_unique<LoginScreenExtensionsLifetimeManager>();
@@ -1516,10 +1512,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
-  // Destroy crosvm_metrics_ after threads are stopped so that no weak_ptr is
-  // held by any task.
-  crosvm_metrics_.reset();
-
   network_change_manager_client_.reset();
   session_termination_manager_.reset();
 

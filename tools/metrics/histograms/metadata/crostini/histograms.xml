@@ -189,6 +189,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crostini.Crosvm.CpuPercentage" units="%"
     expires_after="2022-05-15">
+  <obsolete>
+    Removed in M99, no longer useful for Crostini as it measured all crosvm
+    processes.
+  </obsolete>
   <owner>clumptini@google.com</owner>
   <owner>laurentt@google.com</owner>
   <summary>
@@ -200,6 +204,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crostini.Crosvm.Processes.Count" units="processes"
     expires_after="2022-01-06">
+  <obsolete>
+    Removed in M99, no longer useful for Crostini as it measured all crosvm
+    processes.
+  </obsolete>
   <owner>clumptini@google.com</owner>
   <owner>laurentt@google.com</owner>
   <summary>
@@ -210,6 +218,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crostini.Crosvm.RssPercentage" units="%"
     expires_after="2022-05-15">
+  <obsolete>
+    Removed in M99, no longer useful for Crostini as it measured all crosvm
+    processes.
+  </obsolete>
   <owner>clumptini@google.com</owner>
   <owner>laurentt@google.com</owner>
   <summary>

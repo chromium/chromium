@@ -86,20 +86,5 @@ TEST_F(ProcfsUtilTest, GetCpuTimeJiffiesSuccess) {
   EXPECT_EQ(expected, GetCpuTimeJiffies(slash_proc_.Append("stat")).value());
 }
 
-TEST_F(ProcfsUtilTest, GetUsedMemTotalSuccess) {
-  std::string contents =
-      "MemTotal:       65946588 kB\n"
-      "MemFree:         9385800 kB\n"
-      "MemAvailable:   44230668 kB\n"
-      "Buffers:         4646292 kB\n"
-      "Cached:         27859260 kB\n"
-      "SwapCached:          780 kB\n"
-      "Active:         40069592 kB\n"
-      "Inactive:       11098284 kB\n";
-  int64_t expected = 65946588 - 9385800;
-  WriteContentsToFile(contents, "meminfo");
-  EXPECT_EQ(expected, GetUsedMemTotalKB(slash_proc_.Append("meminfo")).value());
-}
-
 }  // namespace system
 }  // namespace ash

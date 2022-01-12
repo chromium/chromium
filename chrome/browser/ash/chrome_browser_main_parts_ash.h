@@ -48,7 +48,6 @@ class CrosapiManager;
 
 namespace crostini {
 class CrostiniUnsupportedActionNotifier;
-class CrosvmMetrics;
 }  // namespace crostini
 
 namespace lock_screen_apps {
@@ -211,7 +210,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       auto_screen_brightness_controller_;
 
   std::unique_ptr<DemoModeResourcesRemover> demo_mode_resources_remover_;
-  std::unique_ptr<crostini::CrosvmMetrics> crosvm_metrics_;
 
   std::unique_ptr<AshUsbDetector> ash_usb_detector_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
