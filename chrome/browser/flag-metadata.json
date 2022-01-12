@@ -2245,7 +2245,7 @@
   {
     "name": "enable-local-web-approvals",
     "owners": [ "agawronska@chromium.org", "courtneywong@chromium.org", "danan@chromium.org" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 104
   },
   {
     "name": "enable-lock-screen-notification",
@@ -2879,7 +2879,7 @@
   {
     "name": "enable-web-filter-interstitial-refresh",
     "owners": [ "agawronska@chromium.org", "courtneywong@chromium.org", "danan@chromium.org" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 104
   },
   {
     "name": "enable-web-payments-experimental-features",
