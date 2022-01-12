@@ -1770,6 +1770,19 @@ fuzzer_test("content_security_policy_conversion_util_fuzzer") {
   seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
 }
 
+css_properties("make_css_proto") {
+  script = "../build/scripts/core/css/parser/make_proto.py"
+  in_files = [ "css/css_value_keywords.json5" ]
+  other_inputs = [
+    "../build/scripts/core/css/parser/templates/css.proto.tmpl",
+    "../build/scripts/core/css/parser/templates/css_proto_converter_generated.h.tmpl",
+  ]
+  outputs = [
+    "$blink_core_output_dir/css/parser/css.proto",
+    "$blink_core_output_dir/css/parser/css_proto_converter_generated.h",
+  ]
+}
+
 fuzzer_test("css_parser_proto_fuzzer") {
   sources = [
     "css/parser/css_parser_proto_fuzzer.cc",
@@ -1786,7 +1799,9 @@ fuzzer_test("css_parser_proto_fuzzer") {
 }
 
 proto_library("css_proto") {
-  sources = [ "css/parser/css.proto" ]
+  sources = [ "$blink_core_output_dir/css/parser/css.proto" ]
+  proto_out_dir = "third_party/blink/renderer/core/css/parser"
+  deps = [ ":make_css_proto" ]
 }
 
 fuzzer_test("blink_html_tokenizer_fuzzer") {
