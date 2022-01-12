@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SANITIZER_API_SANITIZER_H_
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/sanitizer_config_impl.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -17,8 +16,11 @@ namespace blink {
 class ContainerNode;
 class Document;
 class DocumentFragment;
+class Element;
 class ExceptionState;
 class ExecutionContext;
+class Node;
+class LocalDOMWindow;
 class SanitizerConfig;
 class ScriptState;
 
@@ -56,16 +58,9 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  bool AttrListMatches(const HashMap<String, Vector<String>>&,
-                       const String& attr,
-                       const String& element);
-  Node* DropElement(Node*, ContainerNode*);
-  Node* BlockElement(Node*, ContainerNode*, ExceptionState&);
-  Node* KeepElement(Node*, ContainerNode*, String&, LocalDOMWindow*);
-
-  void ElementFormatter(HashSet<String>&, const Vector<String>&);
-  void AttrFormatter(HashMap<String, Vector<String>>&,
-                     const Vector<std::pair<String, Vector<String>>>&);
+  Node* DropNode(Node*, ContainerNode*);
+  Node* BlockElement(Element*, ContainerNode*, ExceptionState&);
+  Node* KeepElement(Element*, ContainerNode*, LocalDOMWindow*);
 
   DocumentFragment* PrepareFragment(LocalDOMWindow* window,
                                     ScriptState* script_state,
