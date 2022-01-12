@@ -5,6 +5,7 @@
 #include "base/allocator/partition_alloc_features.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace features {
@@ -32,7 +33,15 @@ const Feature kPartitionAllocBackupRefPtrControl{
 
 // Use a larger maximum thread cache cacheable bucket size.
 const Feature kPartitionAllocLargeThreadCacheSize{
-    "PartitionAllocLargeThreadCacheSize", FEATURE_ENABLED_BY_DEFAULT};
+  "PartitionAllocLargeThreadCacheSize",
+#if defined(OS_ANDROID) && defined(ARCH_CPU_32_BITS)
+      // Not unconditionally enabled on 32 bit Android, since it is a more
+      // memory-constrained platform.
+      FEATURE_DISABLED_BY_DEFAULT
+#else
+      FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 const BASE_EXPORT Feature kPartitionAllocLargeEmptySlotSpanRing{
     "PartitionAllocLargeEmptySlotSpanRing", FEATURE_DISABLED_BY_DEFAULT};

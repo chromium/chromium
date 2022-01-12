@@ -386,19 +386,18 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (process_type == switches::kRendererProcess &&
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
-#if BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)
-    // Don't use a higher threshold on Android 32 bits, as long as memory usage
-    // is not carefully tuned. Only control the threshold here to avoid changing
-    // the rest of the code below.
-    // As of 2021, 64 bits Android devices are not memory constrained.
-    largest_cached_size_ =
-        base::internal::ThreadCacheLimits::kDefaultSizeThreshold;
-#else
     largest_cached_size_ =
         base::internal::ThreadCacheLimits::kLargeSizeThreshold;
-    base::internal::ThreadCache::SetLargestCachedSize(
-        base::internal::ThreadCacheLimits::kLargeSizeThreshold);
+
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
+    // Devices almost always report less physical memory than what they actually
+    // have, so anything above 3GiB will catch 4GiB and above.
+    if (base::SysInfo::AmountOfPhysicalMemory() <= int64_t{3500} * 1024 * 1024)
+      largest_cached_size_ =
+          base::internal::ThreadCacheLimits::kDefaultSizeThreshold;
 #endif  // BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)
+
+    base::internal::ThreadCache::SetLargestCachedSize(largest_cached_size_);
   }
 
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
