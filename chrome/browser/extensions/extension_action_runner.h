@@ -135,6 +135,9 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 #endif  // defined(UNIT_TEST)
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,
+                           DoNotResetExtensionActionRunner);
+
   struct PendingScript {
     PendingScript(mojom::RunLocation run_location,
                   ScriptInjectionCallback permit_script);

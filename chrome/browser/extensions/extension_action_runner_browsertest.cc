@@ -609,4 +609,49 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   EXPECT_EQ(active_tab_granter->granted_extensions_.size(), 0U);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
+                       DoNotResetExtensionActionRunner) {
+  // Loadup an extension and navigate to test that a fenced frame doesn't reset
+  // ExtensionActionRunner's member variables.
+  const Extension* extension =
+      CreateExtension(ALL_HOSTS, CONTENT_SCRIPT, WITHHOLD_PERMISSIONS);
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  ExtensionActionRunner* action_runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  ASSERT_TRUE(action_runner);
+
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
+                                                       false /* won't reply */);
+  inject_success_listener.set_extension_id(extension->id());
+
+  GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ScriptingPermissionsModifier modifier(profile(), extension);
+  modifier.SetWithholdHostPermissions(false);
+  EXPECT_TRUE(RunAllPendingInRenderer(web_contents));
+
+  // Create a fenced frame and navigate the fenced frame url.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_helper_.CreateFencedFrame(web_contents->GetMainFrame(),
+                                             fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+  // Fenced frame doesn't clear pending script injection requests and the
+  // scripts.
+  EXPECT_EQ(1, action_runner->num_page_requests());
+  EXPECT_EQ(1U, action_runner->pending_scripts_.size());
+
+  // Navigate again on the primary main frame. Pending script injection requests
+  // and scripts should be cleared.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ(0, action_runner->num_page_requests());
+  EXPECT_EQ(0U, action_runner->pending_scripts_.size());
+}
+
 }  // namespace extensions
