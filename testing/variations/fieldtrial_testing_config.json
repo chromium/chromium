@@ -1171,7 +1171,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_2021-12-01",
+                    "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableSupportForMoreStructureInAddresses"
                     ]
@@ -1208,7 +1208,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_2021-12-01",
+                    "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableSupportForMoreStructureInNames"
                     ]
