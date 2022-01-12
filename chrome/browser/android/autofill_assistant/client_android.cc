@@ -656,7 +656,7 @@ void ClientAndroid::CreateController(
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
       std::move(service), std::move(tts_controller), ukm::UkmRecorder::Get(),
-      AnnotateDomModelServiceFactory::GetInstance()->GetForBrowserContext(
+      dependencies_->GetAnnotateDomModelService(
           GetWebContents()->GetBrowserContext()));
   controller_->SetStatusMessage(status_message);
   if (progress_bar_config) {

@@ -9,7 +9,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {
@@ -37,6 +39,9 @@ class Dependencies {
 
   virtual std::string GetChromeSignedInEmailAddress(
       content::WebContents* web_contents) const = 0;
+
+  virtual AnnotateDomModelService* GetAnnotateDomModelService(
+      content::BrowserContext* browser_context) const = 0;
 
  protected:
   Dependencies(JNIEnv* env,
