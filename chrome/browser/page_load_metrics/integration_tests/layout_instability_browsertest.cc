@@ -35,7 +35,7 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
   Load("/layout-instability/" + test_file);
 
   // Check web perf API.
-  base::ListValue expectations =
+  base::Value expectations =
       EvalJs(web_contents(), "cls_run_tests").ExtractList();
 
   // Check trace data.

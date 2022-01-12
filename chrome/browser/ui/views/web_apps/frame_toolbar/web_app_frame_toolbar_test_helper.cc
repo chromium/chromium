@@ -129,24 +129,23 @@ GURL WebAppFrameToolbarTestHelper::
   return url;
 }
 
-base::ListValue WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
+base::Value::ListStorage
+WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     content::WebContents* web_contents,
     std::string rect_value_list,
     std::string rect_var_name) {
   EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), rect_value_list));
-  return EvalJs(web_contents, rect_var_name).ExtractList();
+  return EvalJs(web_contents, rect_var_name).ExtractList().TakeList();
 }
 
 gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
     content::WebContents* web_contents,
     std::string rect_value_list,
     std::string rect_var_name) {
-  base::ListValue rectValues =
+  base::Value::ListStorage rect_list =
       GetXYWidthHeightListValue(web_contents, rect_value_list, rect_var_name);
-  auto rectList = rectValues.GetList();
-
-  return gfx::Rect(rectList[0].GetInt(), rectList[1].GetInt(),
-                   rectList[2].GetInt(), rectList[3].GetInt());
+  return gfx::Rect(rect_list[0].GetInt(), rect_list[1].GetInt(),
+                   rect_list[2].GetInt(), rect_list[3].GetInt());
 }
 
 void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(

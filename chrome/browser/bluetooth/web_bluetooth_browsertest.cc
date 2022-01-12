@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
       return Promise.all([readPromise, notifyPromise]);
     })())");
 
-  const base::ListValue promise_values = js_values.ExtractList();
+  const base::Value promise_values = js_values.ExtractList();
   EXPECT_EQ(2U, promise_values.GetList().size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }

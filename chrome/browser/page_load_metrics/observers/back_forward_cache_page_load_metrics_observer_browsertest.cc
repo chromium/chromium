@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    base::ListValue expectations =
+    base::Value expectations =
         EvalJs(web_contents(), "cls_run_tests").ExtractList();
     next_score = EvalJs(web_contents(),
                         R"((async() => {
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    base::ListValue expectations =
+    base::Value expectations =
         EvalJs(web_contents(), "cls_run_tests").ExtractList();
     next_score = EvalJs(web_contents(),
                         R"((async() => {

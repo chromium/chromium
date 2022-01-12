@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UserTiming) {
       content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   // Check web perf API.
-  const base::ListValue eval_result =
+  const base::Value eval_result =
       EvalJs(web_contents(), "runtest()").ExtractList();
   const double fully_loaded = eval_result.GetList()[0].GetDouble();
   EXPECT_GT(fully_loaded, 0.0);

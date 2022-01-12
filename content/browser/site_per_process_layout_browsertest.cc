@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   )");
   EvalJsResult iframe_b_result =
       EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", script);
-  base::ListValue iframe_b_offset = iframe_b_result.ExtractList();
+  base::Value iframe_b_offset = iframe_b_result.ExtractList();
   int iframe_b_offset_left = iframe_b_offset.GetList()[0].GetInt();
   int iframe_b_offset_top = iframe_b_offset.GetList()[1].GetInt();
 
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   )");
   EvalJsResult iframe_c_result = EvalJsAfterLifecycleUpdate(
       root->child_at(0)->current_frame_host(), raf_script, script);
-  base::ListValue iframe_c_offset = iframe_c_result.ExtractList();
+  base::Value iframe_c_offset = iframe_c_result.ExtractList();
   int iframe_c_offset_left = iframe_c_offset.GetList()[0].GetInt();
   int iframe_c_offset_top = iframe_c_offset.GetList()[1].GetInt();
 

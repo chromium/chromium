@@ -1544,13 +1544,13 @@ double EvalJsResult::ExtractDouble() const {
   return value.GetDouble();
 }
 
-base::ListValue EvalJsResult::ExtractList() const {
+base::Value EvalJsResult::ExtractList() const {
   CHECK(error.empty())
       << "Can't ExtractList() because the script encountered a problem: "
       << error;
   CHECK(value.is_list()) << "Can't ExtractList() because script result: "
                          << value << "is not a list.";
-  return base::ListValue(value.GetList());
+  return value.Clone();
 }
 
 void PrintTo(const EvalJsResult& bar, ::std::ostream* os) {

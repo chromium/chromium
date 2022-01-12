@@ -705,7 +705,7 @@ struct EvalJsResult {
   int ExtractInt() const WARN_UNUSED_RESULT;
   bool ExtractBool() const WARN_UNUSED_RESULT;
   double ExtractDouble() const WARN_UNUSED_RESULT;
-  base::ListValue ExtractList() const WARN_UNUSED_RESULT;
+  base::Value ExtractList() const WARN_UNUSED_RESULT;
 };
 
 // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
