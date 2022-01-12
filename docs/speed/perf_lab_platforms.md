@@ -33,6 +33,7 @@
 
  * [mac-10_12_laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-10_12_laptop_low_end-perf): MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
  * [mac-10_13_laptop_high_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-10_13_laptop_high_end-perf): MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
+ * [mac-laptop_high_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-laptop_high_end-perf): MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
  * [mac-m1_mini_2020-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1_mini_2020-perf): Mac M1 Mini 2020.
 
 ## Win

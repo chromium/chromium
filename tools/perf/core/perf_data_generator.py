@@ -95,10 +95,15 @@ class TEST_TYPES(object):
 # The perf data will be handled on a separated 'processor' VM.
 # This list will be removed or replace by an opt-out list.
 LIGHTWEIGHT_TESTERS = [
-    'android-go-perf', 'android-pixel2-perf', 'android-pixel2_webview-perf',
-    'linux-perf', 'mac-10_12_laptop_low_end-perf',
-    'mac-10_13_laptop_high_end-perf', 'win-10-perf',
-    'win-10_laptop_low_end-perf'
+    'android-go-perf',
+    'android-pixel2-perf',
+    'android-pixel2_webview-perf',
+    'linux-perf',
+    'mac-10_12_laptop_low_end-perf',
+    'mac-10_13_laptop_high_end-perf',
+    'win-10-perf',
+    'win-10_laptop_low_end-perf',
+    'mac-laptop_high_end-perf',
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.
@@ -1015,6 +1020,30 @@ BUILDERS = {
             'MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G',
         },
     },
+    'mac-laptop_high_end-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'x86-64',
+            'gpu':
+            '1002:6821-4.0.20-3.2.8',
+            'os':
+            'Mac-11.6.1',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G',
+        },
+    },
     'linux-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
@@ -1044,6 +1073,10 @@ BUILDERS = {
         'perf_processor': True,
     },
     'mac-10_13_laptop_high_end-processor-perf': {
+        'platform': 'linux',
+        'perf_processor': True,
+    },
+    'mac-laptop_high_end-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },
