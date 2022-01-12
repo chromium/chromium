@@ -2384,7 +2384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.ThreadCache.BatchFillRate{ThreadType}"
-    units="%" expires_after="M97">
+    units="%" expires_after="M102">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>
@@ -2400,7 +2400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.ThreadCache.HitRate{ThreadType}"
-    units="%" expires_after="M97">
+    units="%" expires_after="M102">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>
