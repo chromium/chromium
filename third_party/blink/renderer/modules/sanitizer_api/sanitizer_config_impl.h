@@ -12,15 +12,17 @@
 
 namespace blink {
 
-/**
- * Sanitizer configuration, in a form suitable for fast querying.
- *
- * The SanitizerConfig (defined in santizer_config.idl) defines the
- * API-visible configuration of a Sanitizer instance, as required by the spec.
- * This defines an equivalent class, which is meant to contain the same
- * information but retain it in a fashion more suitable for processing,
- * e.g. in HashSet<String> rather then Vector<String>.
- */
+// Sanitizer configuration, in a form suitable for fast querying.
+//
+// The SanitizerConfig (defined in santizer_config.idl) defines the
+// API-visible configuration of a Sanitizer instance, as required by the spec.
+// This defines an equivalent class, which is meant to contain the same
+// information but retain it in a fashion more suitable for processing,
+// e.g. in HashSet<String> rather then Vector<String>.
+//
+// Names are represented as Strings with fixed namespace prefixes, as in the
+// Sanitizer spec. (E.g. "svg:svg", but prefix-less for HTML, "span".)
+
 struct SanitizerConfigImpl {
   typedef HashSet<String> ElementList;
   typedef HashMap<String, ElementList> AttributeList;

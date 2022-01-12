@@ -12,10 +12,28 @@ namespace blink {
 
 namespace {
 
+// A String->String map for mixed-case names.
+//
+// The DEFINE_STATIC_LOCAL macro - where we will use this - cannot use type
+// names with a comma because the C++ pre-processor will consider those separate
+// arguments. Thus we have this typedef as a work-around.
+typedef HashMap<String, String> StringMap;
+
+StringMap MixedCaseNames(const char* const* names) {
+  HashMap<String, String> map;
+  for (const char* const* iter = names; *iter; ++iter) {
+    String name(*iter);
+    if (!name.IsLowerASCII()) {
+      map.insert(name.LowerASCII(), name);
+    }
+  }
+  return map;
+}
+
 SanitizerConfigImpl::ElementList ElementsFromAPI(const char* const* elements) {
   SanitizerConfigImpl::ElementList element_list;
   for (const char* const* elem = elements; *elem; ++elem) {
-    element_list.insert(ElementFromAPI(String(*elem)));
+    element_list.insert(*elem);
   }
   return element_list;
 }
@@ -26,7 +44,7 @@ SanitizerConfigImpl::AttributeList AttributesFromAPI(
   wildcard_list.insert(Wildcard());
   SanitizerConfigImpl::AttributeList attributes_list;
   for (const char* const* attr = attributes; *attr; ++attr) {
-    attributes_list.insert(String(*attr), wildcard_list);
+    attributes_list.insert(*attr, wildcard_list);
   }
   return attributes_list;
 }
@@ -60,6 +78,18 @@ const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
   DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
                       (AttributesFromAPI(kBaselineAttributes)));
   return attributes_;
+}
+
+const HashMap<String, String>& GetMixedCaseElementNames() {
+  DEFINE_STATIC_LOCAL(StringMap, element_names_,
+                      (MixedCaseNames(kBaselineElements)));
+  return element_names_;
+}
+
+const HashMap<String, String>& GetMixedCaseAttributeNames() {
+  DEFINE_STATIC_LOCAL(StringMap, attribute_names_,
+                      (MixedCaseNames(kBaselineAttributes)));
+  return attribute_names_;
 }
 
 }  // namespace blink

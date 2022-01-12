@@ -50,8 +50,14 @@ bool ConfigIsEmpty(const SanitizerConfig* config) {
           !config->hasAllowComments());
 }
 
-String FromAPI(Element* element) {
-  DCHECK(element);
+String FromAPI(Node* node) {
+  DCHECK(node);
+  DCHECK(node->IsElementNode());
+  Element* element = To<Element>(node);
+  if (element->IsSVGElement())
+    return "svg:" + element->localName();
+  if (node->IsMathMLElement())
+    return "math:" + element->localName();
   return element->localName();
 }
 
@@ -230,11 +236,6 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
           node = DropNode(element, fragment);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
-        } else if (!element->IsHTMLElement()) {
-          // Presently unspec-ed: If |element| is in a non-HTML namespace: Drop.
-          node = DropNode(element, fragment);
-          UseCounter::Count(window->GetExecutionContext(),
-                            WebFeature::kSanitizerAPIActionTaken);
         } else if (Match(name, config_.drop_elements_)) {
           // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
           node = DropNode(element, fragment);
@@ -333,10 +334,9 @@ Node* Sanitizer::KeepElement(Element* element,
     for (const auto& name : element->getAttributeNames()) {
       // Attributes in drop list or not in allow list while allow list
       // exists will be dropped.
-      String attr = AttributeFromAPI(name);
-      bool drop = !Match(attr, node_name, GetBaselineAllowAttributes()) ||
-                  Match(attr, node_name, config_.drop_attributes_) ||
-                  !Match(attr, node_name, config_.allow_attributes_);
+      bool drop = !Match(name, node_name, GetBaselineAllowAttributes()) ||
+                  Match(name, node_name, config_.drop_attributes_) ||
+                  !Match(name, node_name, config_.allow_attributes_);
       // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
       // {{HTMLAreaElement}} and |element|'s `protocol` property is
       // "javascript:", then remove the `href` attribute from |element|.

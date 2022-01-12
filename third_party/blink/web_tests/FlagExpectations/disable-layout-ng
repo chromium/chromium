@@ -1593,3 +1593,8 @@ crbug.com/1266821 virtual/gpu-rasterization/images/imagemap-focus-ring-zoom.html
 crbug.com/1123630 editing/caret/in-multicol-child.html [ Failure ]
 crbug.com/1123630 paint/caret/multicol_block_children.html [ Failure ]
 crbug.com/1123630 paint/caret/multicol_inline_children.html [ Failure ]
+
+# Some Sanitizer API tests test behaviour for MathML, which in Chromium depends
+# on LayoutNG. We accept failures of those specific tests when LayoutNG is
+# disabled.
+crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Failure Pass ]

@@ -7658,3 +7658,6 @@ crbug.com/1286448 [ Mac ] virtual/without-coep-for-shared-worker/external/wpt/ht
 
 # Sheriff 2022-01-12
 crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
+
+# Sanitizer API: Namespace-based tests will partially fail until namespace support is complete.
+crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Failure ]

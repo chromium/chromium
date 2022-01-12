@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/sanitizer_api/builtins.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/sanitizer_config_impl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
@@ -81,26 +82,76 @@ SanitizerConfigImpl::AttributeList FromAPI(
   return result;
 }
 
+bool IsValidCharacter(UChar ch) {
+  // TODO(vogelheim): Sync well-formedness with Sanitizer spec
+  //     The Sanitizer spec doesn't say much (yet. The HTML spec is a bit
+  //     obtuse, but it seems to allow all XML names. The HTML parser however
+  //     allows only ascii. Here, we settle for the simplest, most restrictive
+  //     variant. May it's too restrictive, though.
+  return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
+         (ch >= '0' && ch <= '9') || ch == ':' || ch == '-' || ch == '_';
+}
+
+bool AllValidCharacters(const String& name) {
+  return WTF::VisitCharacters(name,
+                              [&](const auto* chars, unsigned len) -> bool {
+                                for (unsigned i = 0; i < len; i++) {
+                                  if (!IsValidCharacter(chars[i])) {
+                                    return false;
+                                  }
+                                }
+                                return true;
+                              });
+}
+
+bool IsValidName(const String& name) {
+  return !name.IsEmpty() && AllValidCharacters(name);
+}
+
 String ElementFromAPI(const String& name) {
   // Check well-formed-ness.
-  // TODO(vogelheim): Sync well-formedness with Sanitizer spec
-  //     The HTML spec is a bit obtuse, but it seems names can be any allowed
-  //     XML names. The HTML parser however allows only ascii. Here, we settle
-  //     for the simplest variant and limit ourselves to an ascii check.
-  //     We should likely _also_ check for other characters (e.g. control,
-  //     whitespace, etc.)
-  if (name == "*" || name.IsEmpty() || !name.ContainsOnlyASCIIOrEmpty())
+  if (!IsValidName(name))
     return Invalid();
 
-  // Normalize mixed-case names:
-  return name.LowerASCII();
+  // Normalize element name, using the GetMixedCaseElementNames table.
+  String normalized = name.LowerASCII();
+  const auto& mixed_case_names = GetMixedCaseElementNames();
+  const auto iter = mixed_case_names.find(normalized);
+  if (iter != mixed_case_names.end())
+    normalized = iter->value;
+
+  // Handle namespace prefixes:
+  wtf_size_t pos = normalized.find(':');
+  // Two (or more) colons => invalid.
+  if (pos != WTF::kNotFound && normalized.find(':', pos + 1) != WTF::kNotFound)
+    return Invalid();
+  // No prefix, or the ones explicitly allowed by the spec: okay.
+  if (pos == WTF::kNotFound || normalized.StartsWith("svg:") ||
+      normalized.StartsWith("math:")) {
+    return normalized;
+  }
+  // All else: invalid.
+  return Invalid();
 }
 
 String AttributeFromAPI(const String& name) {
-  // See ElementFromAPI for the name check.
-  if (name.IsEmpty() || !name.ContainsOnlyASCIIOrEmpty())
+  if (!IsValidName(name))
     return Invalid();
-  return name.LowerASCII();
+
+  // Normalize attribute name, using the GetMixedCaseAttributeNames table.
+  String normalized = name.LowerASCII();
+  const auto& mixed_case_names = GetMixedCaseAttributeNames();
+  const auto iter = mixed_case_names.find(normalized);
+  if (iter != mixed_case_names.end())
+    normalized = iter->value;
+
+  // The spec allows only a specific list of prefixed attributes. Use the
+  // GetBaselineAllowAttributes() table to check for those. All other uses
+  // of colon are invalid.
+  if (normalized.find(':') == WTF::kNotFound ||
+      GetBaselineAllowAttributes().Contains(normalized))
+    return normalized;
+  return Invalid();
 }
 
 String AttributeOrWildcardFromAPI(const String& name) {
@@ -136,6 +187,7 @@ SanitizerConfig* ToAPI(const SanitizerConfigImpl& impl) {
 }
 
 String ToAPI(const String& name) {
+  DCHECK(!IsInvalid(name));
   return name;
 }
 
@@ -156,7 +208,7 @@ Vector<std::pair<String, Vector<String>>> ToAPI(
 }
 
 String Wildcard() {
-  return String("*");
+  return "*";
 }
 
 String Invalid() {
@@ -195,6 +247,7 @@ bool Match(const String& element_name,
 bool Match(const String& attribute_name,
            const String& element_name,
            const SanitizerConfigImpl::AttributeList& attributes) {
+  DCHECK(!IsInvalid(attribute_name));
   const auto iter = attributes.find(attribute_name);
   return iter != attributes.end() && Match(element_name, iter->value);
 }
