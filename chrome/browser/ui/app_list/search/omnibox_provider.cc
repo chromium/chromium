@@ -92,9 +92,11 @@ void OmniboxProvider::Start(const std::u16string& query) {
 }
 
 void OmniboxProvider::StartZeroState() {
-  // TODO(crbug.com/1258415): Remove zero-state once productivity launcher
-  // launched.
-  Start(std::u16string());
+  // Do not perform zero-state queries in the productivity launcher, because
+  // Omnibox is not shown in zero-state.
+  if (!app_list_features::IsCategoricalSearchEnabled()) {
+    Start(std::u16string());
+  }
 }
 
 ash::AppListSearchResultType OmniboxProvider::ResultType() const {
