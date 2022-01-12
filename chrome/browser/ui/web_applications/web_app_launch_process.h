@@ -67,8 +67,6 @@ class WebAppLaunchProcess {
                                    bool is_file_handling,
                                    content::WebContents* web_contents,
                                    bool is_navigating);
-  void RecordMetrics(const GURL& launch_url,
-                     content::WebContents* web_contents);
 
   Profile& profile_;
   WebAppProvider& provider_;

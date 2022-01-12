@@ -173,10 +173,11 @@ enum class AppLaunchSource {
   kSourceIntentUrl = 23,        // App launch triggered by a URL.
   kSourceRunOnOsLogin = 24,     // App launched during OS login.
   kSourceProtocolHandler = 25,  // App launch via protocol handler.
+  kSourceReparenting = 26,      // APP launch via reparenting.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kSourceProtocolHandler,
+  kMaxValue = kSourceReparenting,
 };
 
 // This enum is used for the launch type the user wants to use for an

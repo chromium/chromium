@@ -72,6 +72,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -80,6 +81,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/common/constants.h"
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1374,6 +1376,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
   web_app_info->title = u"A Shortcut App";
   const AppId app_id = InstallWebApp(std::move(web_app_info));
 
+  base::HistogramTester tester;
   NavigateToURLAndWait(browser(), app_url);
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1392,6 +1395,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
             DisplayMode::kStandalone);
   EXPECT_EQ(provider->registrar().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kMinimalUi);
+  EXPECT_FALSE(provider->registrar().GetAppLastLaunchTime(app_id).is_null());
+  tester.ExpectUniqueSample(
+      "Extensions.BookmarkAppLaunchContainer",
+      apps::mojom::LaunchContainer::kLaunchContainerWindow, 1);
+  tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchSource",
+                            extensions::AppLaunchSource::kSourceReparenting, 1);
 }
 
 // Tests that the manifest name of the current installable site is used in the

@@ -155,12 +155,14 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   mock_app_publisher.Wait();
 
-  // OnWebAppInstalled() and OnWebAppInstalledWithOsHooks() lead to updates.
-  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 4U);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->readiness,
+  // OnWebAppInstalled(), OnWebAppInstalledWithOsHooks() and
+  // OnWebAppLastLaunchTimeChanged() lead to updates.
+  const auto& app_deltas = mock_app_publisher.get_deltas();
+  EXPECT_EQ(app_deltas.size(), 5U);
+  EXPECT_EQ(app_deltas[app_deltas.size() - 2]->app_id, app_id);
+  EXPECT_EQ(app_deltas[app_deltas.size() - 2]->readiness,
             apps::mojom::Readiness::kReady);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
+  EXPECT_EQ(app_deltas[app_deltas.size() - 2]->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
 
   {

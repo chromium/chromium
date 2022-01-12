@@ -119,7 +119,9 @@ content::WebContents* WebAppLaunchProcess::Run() {
   MaybeEnqueueWebLaunchParams(launch_url, is_file_handling, web_contents,
                               navigate_result.did_navigate);
 
-  RecordMetrics(launch_url, web_contents);
+  RecordMetrics(params_.app_id, params_.container,
+                apps::GetAppLaunchSource(params_.launch_source), launch_url,
+                web_contents);
 
   return web_contents;
 }
@@ -353,33 +355,6 @@ void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
         is_file_handling ? params_.launch_files
                          : std::vector<base::FilePath>());
   }
-}
-
-void WebAppLaunchProcess::RecordMetrics(const GURL& launch_url,
-                                        content::WebContents* web_contents) {
-  // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
-  if (params_.container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType",
-                              extensions::LAUNCH_TYPE_REGULAR, 100);
-  } else if (params_.container ==
-             apps::mojom::LaunchContainer::kLaunchContainerWindow) {
-    RecordAppWindowLaunch(&profile_, params_.app_id);
-  }
-  UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",
-                            apps::GetAppLaunchSource(params_.launch_source));
-  UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchContainer",
-                            params_.container);
-
-  // Record the launch time in the site engagement service. A recent web
-  // app launch will provide an engagement boost to the origin.
-  site_engagement::SiteEngagementService::Get(&profile_)
-      ->SetLastShortcutLaunchTime(web_contents, launch_url);
-  provider_.sync_bridge().SetAppLastLaunchTime(params_.app_id,
-                                               base::Time::Now());
-  // Refresh the app banner added to homescreen event. The user may have
-  // cleared their browsing data since installing the app, which removes the
-  // event and will potentially permit a banner to be shown for the site.
-  RecordAppBanner(web_contents, launch_url);
 }
 
 }  // namespace web_app

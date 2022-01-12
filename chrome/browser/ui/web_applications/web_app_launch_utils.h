@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -73,6 +74,12 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params);
 
 void RecordAppWindowLaunch(Profile* profile, const std::string& app_id);
+
+void RecordMetrics(const AppId& app_id,
+                   apps::mojom::LaunchContainer container,
+                   extensions::AppLaunchSource launch_source,
+                   const GURL& launch_url,
+                   content::WebContents* web_contents);
 
 }  // namespace web_app
 

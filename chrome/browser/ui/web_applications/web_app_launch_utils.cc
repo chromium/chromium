@@ -32,13 +32,16 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "extensions/common/constants.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "url/gurl.h"
 
@@ -164,6 +167,11 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 
     PrunePreScopeNavigationHistory(*app_scope, contents);
   }
+
+  auto launch_url = contents->GetLastCommittedURL();
+  RecordMetrics(app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                extensions::AppLaunchSource::kSourceReparenting, launch_url,
+                contents);
 
   if (registrar.IsTabbedWindowModeEnabled(app_id)) {
     for (Browser* browser : *BrowserList::GetInstance()) {
@@ -335,6 +343,37 @@ void RecordAppWindowLaunch(Profile* profile, const std::string& app_id) {
   DCHECK_LT(DisplayMode::kUndefined, display);
   DCHECK_LE(display, DisplayMode::kMaxValue);
   UMA_HISTOGRAM_ENUMERATION("Launch.WebAppDisplayMode", display);
+}
+
+void RecordMetrics(const AppId& app_id,
+                   apps::mojom::LaunchContainer container,
+                   extensions::AppLaunchSource launch_source,
+                   const GURL& launch_url,
+                   content::WebContents* web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
+  if (container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
+    UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType",
+                              extensions::LAUNCH_TYPE_REGULAR, 100);
+  } else if (container ==
+             apps::mojom::LaunchContainer::kLaunchContainerWindow) {
+    RecordAppWindowLaunch(profile, app_id);
+  }
+  UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",
+                            launch_source);
+  UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchContainer", container);
+
+  // Record the launch time in the site engagement service. A recent web
+  // app launch will provide an engagement boost to the origin.
+  site_engagement::SiteEngagementService::Get(profile)
+      ->SetLastShortcutLaunchTime(web_contents, launch_url);
+  WebAppProvider::GetForWebApps(profile)->sync_bridge().SetAppLastLaunchTime(
+      app_id, base::Time::Now());
+  // Refresh the app banner added to homescreen event. The user may have
+  // cleared their browsing data since installing the app, which removes the
+  // event and will potentially permit a banner to be shown for the site.
+  RecordAppBanner(web_contents, launch_url);
 }
 
 }  // namespace web_app
