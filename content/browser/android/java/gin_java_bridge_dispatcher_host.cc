@@ -55,8 +55,8 @@ void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterAllRoutingIds() {
     return;
   }
 
-  // Unretained() is safe because ForEachFrame() is synchronous.
-  web_contents()->ForEachFrame(base::BindRepeating(
+  // Unretained() is safe because ForEachRenderFrameHost() is synchronous.
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       [](GinJavaBridgeDispatcherHost* host, RenderFrameHost* frame) {
         AgentSchedulingGroupHost& agent_scheduling_group =
             static_cast<RenderFrameHostImpl*>(frame)->GetAgentSchedulingGroup();
@@ -100,8 +100,8 @@ void GinJavaBridgeDispatcherHost::RenderFrameCreated(
 }
 
 void GinJavaBridgeDispatcherHost::WebContentsDestroyed() {
-  // Unretained() is safe because ForEachFrame() is synchronous.
-  web_contents()->ForEachFrame(base::BindRepeating(
+  // Unretained() is safe because ForEachRenderFrameHost() is synchronous.
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       [](GinJavaBridgeDispatcherHost* host, RenderFrameHost* frame) {
         AgentSchedulingGroupHost& agent_scheduling_group =
             static_cast<RenderFrameHostImpl*>(frame)->GetAgentSchedulingGroup();
