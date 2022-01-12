@@ -75,8 +75,6 @@ extern const base::Feature kAppManagementIntentSettings;
 
 #if !defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kAppServiceExternalProtocol;
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceLoadIconWithoutMojom;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceExtension;

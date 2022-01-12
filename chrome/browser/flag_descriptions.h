@@ -2290,9 +2290,6 @@ extern const char kAppDiscoveryForOobeDescription[];
 extern const char kAppDiscoveryRemoteUrlSearchName[];
 extern const char kAppDiscoveryRemoteUrlSearchDescription[];
 
-extern const char kAppServiceExternalProtocolName[];
-extern const char kAppServiceExternalProtocolDescription[];
-
 extern const char kArcAccountRestrictionsName[];
 extern const char kArcAccountRestrictionsDescription[];
 

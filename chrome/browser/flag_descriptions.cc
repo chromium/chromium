@@ -3990,10 +3990,6 @@ const char kAppDiscoveryRemoteUrlSearchName[] =
 const char kAppDiscoveryRemoteUrlSearchDescription[] =
     "Surface results from a URL in the app discovery service.";
 
-const char kAppServiceExternalProtocolName[] = "App Service External Protocol";
-const char kAppServiceExternalProtocolDescription[] =
-    "Use the App Service to provide data for external protocol dialog.";
-
 const char kArcAccountRestrictionsName[] = "Enable ARC account restrictions";
 const char kArcAccountRestrictionsDescription[] =
     "ARC account restrictions feature for multi-profile account consistency";

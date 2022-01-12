@@ -5588,11 +5588,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"app-service-external-protocol",
-     flag_descriptions::kAppServiceExternalProtocolName,
-     flag_descriptions::kAppServiceExternalProtocolDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAppServiceExternalProtocol)},
-
     {"arc-ghost-window", flag_descriptions::kArcGhostWindowName,
      flag_descriptions::kArcGhostWindowDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcGhostWindow)},
