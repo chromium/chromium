@@ -72,7 +72,7 @@ void BasicShapeCircle::GetPath(Path& path,
   gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
   float radius = FloatValueForRadiusInBox(bounding_box.size());
-  path.AddEllipse(center, radius, radius);
+  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius, radius);
 }
 
 bool BasicShapeEllipse::operator==(const BasicShape& o) const {
@@ -108,7 +108,7 @@ void BasicShapeEllipse::GetPath(Path& path,
       FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width());
   float radius_y =
       FloatValueForRadiusInBox(radius_y_, center.y(), bounding_box.height());
-  path.AddEllipse(center, radius_x, radius_y);
+  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius_x, radius_y);
 }
 
 void BasicShapePolygon::GetPath(Path& path,
