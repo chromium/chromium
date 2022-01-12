@@ -1067,6 +1067,9 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 
 <histogram name="Power.Mac.AppleSMCOpened" enum="BooleanSuccess"
     expires_after="2022-07-03">
+  <obsolete>
+    Stopped reporting in M98, deprecated in M99
+  </obsolete>
   <owner>lgrey@chromium.org</owner>
   <summary>
     When metrics collection started, records true if a handle to the System
