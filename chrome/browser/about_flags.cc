@@ -7742,13 +7742,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kDragAndDropAndroid)},
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_ANDROID)
-    {"use-ulp-languages-in-chrome",
-     flag_descriptions::kUseULPLanguagesInChromeName,
-     flag_descriptions::kUseULPLanguagesInChromeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(language::kUseULPLanguagesInChrome)},
-#endif
-
     {"autofill-enable-update-virtual-card-enrollment",
      flag_descriptions::kAutofillEnableUpdateVirtualCardEnrollmentName,
      flag_descriptions::kAutofillEnableUpdateVirtualCardEnrollmentDescription,
