@@ -6088,6 +6088,21 @@
             ]
         }
     ],
+    "PartitionAllocLargeThreadCacheSizeAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocLargeThreadCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocPCScanBlinkPartitions": [
         {
             "platforms": [
