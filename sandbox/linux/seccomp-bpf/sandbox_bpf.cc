@@ -58,7 +58,7 @@ bool KernelSupportsSeccompBPF() {
 // flags that are unlikely to ever be used by the kernel. A normal kernel would
 // return -EINVAL, but a buggy LG kernel would return 1.
 bool KernelHasLGBug() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // sys_set_media will see this as NULL, which should be a safe (non-crashing)
   // way to invoke it. A genuine seccomp syscall will see it as
   // SECCOMP_SET_MODE_STRICT.
@@ -73,7 +73,7 @@ bool KernelHasLGBug() {
   if (rv != -1) {
     return true;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return false;
 }

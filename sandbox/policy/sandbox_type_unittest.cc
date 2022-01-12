@@ -86,7 +86,7 @@ TEST(SandboxTypeTest, Utility) {
   EXPECT_EQ(Sandbox::kSpeechRecognition,
             SandboxTypeFromCommandLine(command_line9));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::CommandLine command_line10(command_line);
   SetCommandLineFlagsForSandboxType(&command_line10, Sandbox::kXrCompositing);
   EXPECT_EQ(Sandbox::kXrCompositing,
@@ -188,7 +188,7 @@ TEST(SandboxTypeTest, ElevatedPrivileges) {
   // specific default to no sandbox on non Windows platforms.
   Sandbox elevated_type =
       UtilitySandboxTypeFromString(switches::kNoneSandboxAndElevatedPrivileges);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges, elevated_type);
 #else
   EXPECT_EQ(Sandbox::kNoSandbox, elevated_type);

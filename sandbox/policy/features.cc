@@ -12,14 +12,14 @@ namespace sandbox {
 namespace policy {
 namespace features {
 
-#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 // Enables network service sandbox.
 // (Only causes an effect when feature kNetworkService is enabled.)
 const base::Feature kNetworkServiceSandbox{"NetworkServiceSandbox",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // !defined(OS_MAC) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Emergency "off switch" for new Windows KTM security mitigation,
 // sandbox::MITIGATION_KTM_COMPONENT.
 const base::Feature kWinSboxDisableKtmComponent{
@@ -41,12 +41,12 @@ const base::Feature kGpuLPAC{"GpuLPAC", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kRendererAppContainer{"RendererAppContainer",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Controls whether the isolated XR service is sandboxed.
 const base::Feature kXRSandbox{"XRSandbox", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Controls whether the Spectre variant 2 mitigation is enabled. We use a USE
@@ -62,7 +62,7 @@ const base::Feature kForceSpectreVariant2Mitigation{
     "ForceSpectreVariant2Mitigation", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsWinNetworkServiceSandboxSupported() {
   // Since some APIs used for LPAC are unsupported below Windows 10 RS2 (1703
   // build 15063) so place a check here in a central place.
@@ -70,19 +70,19 @@ bool IsWinNetworkServiceSandboxSupported() {
     return false;
   return true;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsNetworkSandboxEnabled() {
-#if defined(OS_MAC) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
   return true;
 #else
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!IsWinNetworkServiceSandboxSupported())
     return false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   // Check feature status.
   return base::FeatureList::IsEnabled(kNetworkServiceSandbox);
-#endif  // defined(OS_MAC) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace features

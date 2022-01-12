@@ -586,7 +586,7 @@ TEST(BrokerProcess, OpenComplexFlagsNoClientCheck) {
   // expected.
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Flaky on Linux NG bots: https://crbug.com/595199.
 #define MAYBE_RecvMsgDescriptorLeak DISABLED_RecvMsgDescriptorLeak
 #else
@@ -1752,54 +1752,53 @@ TEST(BrokerProcess, UnlinkHost) {
 TEST(BrokerProcess, IsSyscallAllowed) {
   const base::flat_map<BrokerCommand, base::flat_set<int>> kSysnosForCommand = {
       {COMMAND_ACCESS,
-       {__NR_faccessat,
-        __NR_faccessat2,
-#if defined(__NR_access) && !defined(OS_ANDROID)
+       {__NR_faccessat, __NR_faccessat2,
+#if defined(__NR_access) && !BUILDFLAG(IS_ANDROID)
         __NR_access
 #endif
        }},
       {COMMAND_MKDIR,
        {__NR_mkdirat,
-#if defined(__NR_mkdir) && !defined(OS_ANDROID)
+#if defined(__NR_mkdir) && !BUILDFLAG(IS_ANDROID)
         __NR_mkdir
 #endif
        }},
       {COMMAND_OPEN,
        {__NR_openat,
-#if defined(__NR_open) && !defined(OS_ANDROID)
+#if defined(__NR_open) && !BUILDFLAG(IS_ANDROID)
         __NR_open
 #endif
        }},
       {COMMAND_READLINK,
        {__NR_readlinkat,
-#if defined(__NR_readlink) && !defined(OS_ANDROID)
+#if defined(__NR_readlink) && !BUILDFLAG(IS_ANDROID)
         __NR_readlink
 #endif
        }},
       {COMMAND_RENAME,
        {__NR_renameat,
-#if defined(__NR_rename) && !defined(OS_ANDROID)
+#if defined(__NR_rename) && !BUILDFLAG(IS_ANDROID)
         __NR_rename
 #endif
        }},
       {COMMAND_UNLINK,
        {__NR_unlinkat,
-#if defined(__NR_unlink) && !defined(OS_ANDROID)
+#if defined(__NR_unlink) && !BUILDFLAG(IS_ANDROID)
         __NR_unlink
 #endif
        }},
       {COMMAND_RMDIR,
        {__NR_unlinkat,
-#if defined(__NR_rmdir) && !defined(OS_ANDROID)
+#if defined(__NR_rmdir) && !BUILDFLAG(IS_ANDROID)
         __NR_rmdir
 #endif
        }},
       {COMMAND_STAT,
        {
-#if defined(__NR_stat) && !defined(OS_ANDROID)
+#if defined(__NR_stat) && !BUILDFLAG(IS_ANDROID)
            __NR_stat,
 #endif
-#if defined(__NR_lstat) && !defined(OS_ANDROID)
+#if defined(__NR_lstat) && !BUILDFLAG(IS_ANDROID)
            __NR_lstat,
 #endif
 #if defined(__NR_fstatat)

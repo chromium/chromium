@@ -310,7 +310,8 @@ class IPCSyscaller : public Syscaller {
 
 // Only use syscall(...) on x64 to avoid having to reimplement a libc-like
 // layer that uses different syscalls on different architectures.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_ANDROID)) &&                        \
     defined(__x86_64__)
 #define DIRECT_SYSCALLER_ENABLED
 #endif

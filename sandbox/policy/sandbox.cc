@@ -9,37 +9,37 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/policy/linux/sandbox_linux.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/process/process_info.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace sandbox {
 namespace policy {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
                          SandboxLinux::PreSandboxHook hook,
                          const SandboxLinux::Options& options) {
   return SandboxLinux::GetInstance()->InitializeSandbox(
       sandbox_type, std::move(hook), options);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
                          SandboxInterfaceInfo* sandbox_info) {
   BrokerServices* broker_services = sandbox_info->broker_services;
@@ -65,7 +65,7 @@ bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
   return IsUnsandboxedSandboxType(sandbox_type) ||
          SandboxWin::InitTargetServices(sandbox_info->target_services);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // static
 bool Sandbox::IsProcessSandboxed() {
@@ -80,7 +80,7 @@ bool Sandbox::IsProcessSandboxed() {
     return true;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Note that this does not check the status of the Seccomp sandbox. Call
   // https://developer.android.com/reference/android/os/Process#isIsolated().
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -90,12 +90,12 @@ bool Sandbox::IsProcessSandboxed() {
       base::android::MethodID::Get<base::android::MethodID::TYPE_STATIC>(
           env, process_class.obj(), "isIsolated", "()Z");
   return env->CallStaticBooleanMethod(process_class.obj(), is_isolated);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // TODO(https://crbug.com/1071420): Figure out what to do here. Process
   // launching controls the sandbox and there are no ambient capabilities, so
   // basically everything but the browser is considered sandboxed.
   return !is_browser;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int status = SandboxLinux::GetInstance()->GetStatus();
   constexpr int kLayer1Flags = SandboxLinux::Status::kSUID |
                                SandboxLinux::Status::kPIDNS |
@@ -103,9 +103,9 @@ bool Sandbox::IsProcessSandboxed() {
   constexpr int kLayer2Flags =
       SandboxLinux::Status::kSeccompBPF | SandboxLinux::Status::kSeccompTSYNC;
   return (status & kLayer1Flags) != 0 && (status & kLayer2Flags) != 0;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return Seatbelt::IsSandboxed();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return base::GetCurrentProcessIntegrityLevel() < base::MEDIUM_INTEGRITY;
 #else
   return false;

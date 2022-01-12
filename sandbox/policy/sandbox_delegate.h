@@ -27,7 +27,7 @@ class SandboxDelegate {
   // Sandbox::kNoSandbox to run without a sandbox policy.
   virtual sandbox::mojom::Sandbox GetSandboxType() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Whether to disable the default policy specified in
   // AddPolicyForSandboxedProcess.
   virtual bool DisableDefaultPolicy() = 0;
@@ -48,7 +48,7 @@ class SandboxDelegate {
   // Whether this process will be compatible with Control-flow Enforcement
   // Technology (CET) / Hardware-enforced Stack Protection.
   virtual bool CetCompatible() = 0;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace policy

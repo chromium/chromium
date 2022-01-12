@@ -18,8 +18,6 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
-#include "base/memory/raw_ptr.h"
-
 #if defined(ANDROID)
 // Work-around for buggy headers in Android's NDK
 #define __user
@@ -28,6 +26,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -2087,7 +2086,7 @@ SANDBOX_TEST(SandboxBPF, DISABLE_ON_TSAN(SeccompRetTrace)) {
 }
 
 // Android does not expose pread64 nor pwrite64.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 bool FullPwrite64(int fd, const char* buffer, size_t count, off64_t offset) {
   while (count > 0) {
@@ -2168,7 +2167,7 @@ BPF_TEST_C(SandboxBPF, Pread64, TrapPread64Policy) {
   BPF_ASSERT(pread_64_was_forwarded);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void* TsyncApplyToTwoThreadsFunc(void* cond_ptr) {
   base::WaitableEvent* event = static_cast<base::WaitableEvent*>(cond_ptr);

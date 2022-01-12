@@ -15,14 +15,14 @@
 #define PR_SET_TIMERSLACK 29
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // https://android.googlesource.com/platform/bionic/+/lollipop-release/libc/private/bionic_prctl.h
 #if !defined(PR_SET_VMA)
 #define PR_SET_VMA 0x53564d41
 #endif
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !defined(PR_SET_PTRACER)
 #define PR_SET_PTRACER 0x59616d61

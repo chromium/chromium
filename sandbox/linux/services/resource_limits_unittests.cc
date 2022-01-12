@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "base/check_op.h"
+#include "build/build_config.h"
 #include "sandbox/linux/tests/test_utils.h"
 #include "sandbox/linux/tests/unit_tests.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,7 @@ namespace sandbox {
 namespace {
 
 // Fails on Android: crbug.com/459158
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #define MAYBE_NoFork DISABLE_ON_ASAN(NoFork)
 #else
 #define MAYBE_NoFork DISABLED_NoFork

@@ -17,21 +17,21 @@ namespace sandbox {
 namespace policy {
 namespace features {
 
-#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandbox;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableKtmComponent;
 SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableExtensionPoints;
 SANDBOX_POLICY_EXPORT extern const base::Feature kGpuAppContainer;
 SANDBOX_POLICY_EXPORT extern const base::Feature kGpuLPAC;
 SANDBOX_POLICY_EXPORT extern const base::Feature kRendererAppContainer;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 SANDBOX_POLICY_EXPORT extern const base::Feature kXRSandbox;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const base::Feature kSpectreVariant2Mitigation;
@@ -39,7 +39,7 @@ SANDBOX_POLICY_EXPORT extern const base::Feature
     kForceSpectreVariant2Mitigation;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns whether the Network Service Sandbox is supported by the current
 // Windows platform. Call this function rather than checking the
 // kNetworkServiceSandbox feature directly.

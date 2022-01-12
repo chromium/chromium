@@ -186,7 +186,7 @@ BPF_TEST_C(BaselinePolicy, CreateThread, BaselinePolicy) {
 }
 
 // Rseq should be enabled if it exists (i.e. shouldn't receive EPERM).
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 BPF_TEST_C(BaselinePolicy, RseqEnabled, BaselinePolicy) {
   errno = 0;
   int res = syscall(__NR_rseq, 0, 0, 0, 0);
@@ -196,7 +196,7 @@ BPF_TEST_C(BaselinePolicy, RseqEnabled, BaselinePolicy) {
   // EINVAL, or ENOSYS if the kernel is too old to recognize the system call.
   BPF_ASSERT(EINVAL == errno || ENOSYS == errno);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 BPF_DEATH_TEST_C(BaselinePolicy,
                  DisallowedCloneFlagCrashes,

@@ -35,8 +35,8 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !defined(__arm__) && !defined(__aarch64__) &&           \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !defined(__arm__) && !defined(__aarch64__) &&             \
     !defined(PTRACE_GET_THREAD_AREA)
 // Also include asm/ptrace-abi.h since ptrace.h in older libc (for instance
 // the one in Ubuntu 16.04 LTS) is missing PTRACE_GET_THREAD_AREA.
@@ -45,13 +45,13 @@
 #include <asm/ptrace-abi.h>
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 #if !defined(F_DUPFD_CLOEXEC)
 #define F_DUPFD_CLOEXEC (F_LINUX_SPECIFIC_BASE + 6)
 #endif
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(__arm__) && !defined(MAP_STACK)
 #define MAP_STACK 0x20000  // Daisy build environment has old headers.
@@ -87,7 +87,7 @@ inline bool IsArchitectureI386() {
 }
 
 inline bool IsAndroid() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;
@@ -172,7 +172,7 @@ ResultExpr RestrictPrctl() {
   const Arg<int> option(0);
   return Switch(option)
       .CASES((PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
               , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
               , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
 
@@ -202,7 +202,7 @@ ResultExpr RestrictPrctl() {
               , PR_SET_TIMERSLACK_PID_1
               , PR_SET_TIMERSLACK_PID_2
               , PR_SET_TIMERSLACK_PID_3
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
               ),
              Allow())
       .Default(CrashSIGSYSPrctl());
@@ -397,7 +397,7 @@ ResultExpr RestrictClockID() {
               CLOCK_THREAD_CPUTIME_ID),
              Allow())
       .Default(CrashSIGSYS()))
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Allow per-pid and per-tid clocks.
     .ElseIf((clockid & CPUCLOCK_CLOCK_MASK) != CLOCKFD, Allow())
 #endif
