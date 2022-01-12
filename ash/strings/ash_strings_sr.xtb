@@ -213,7 +213,7 @@
 <translation id="2542089167727451762">Додирните слику профила</translation>
 <translation id="255671100581129685">Google помоћник није доступан у јавној сесији.</translation>
 <translation id="256712445991462162">монтирана лупа екрана</translation>
-<translation id="2573588302192866788">Нисмо успели да повежемо <ph name="NAME" /></translation>
+<translation id="2573588302192866788">Није успело повезивање <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Онемогућено је вишеструко пријављивање</translation>
 <translation id="2582112259361606227">Рестартујте да бисте ажурирали</translation>
 <translation id="2595239820337756193">5 km у миљама</translation>
@@ -372,7 +372,7 @@
 <translation id="3744282433224562605">Да бисте откључали Chromebook, унесите лозинку</translation>
 <translation id="3771549900096082774">Режим високог контраста</translation>
 <translation id="3773700760453577392">Администратор је забранио вишеструко пријављивање за <ph name="USER_EMAIL" />. Сви корисници морају да се одјаве да бисмо наставили са сесијом.</translation>
-<translation id="3779139509281456663">Повезује се са уређајем <ph name="NAME" /></translation>
+<translation id="3779139509281456663">Повезује се <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Закључај</translation>
 <translation id="3796746699333205839">Апликација користи камеру и микрофон</translation>
@@ -591,7 +591,7 @@
 <translation id="5297423144044956168">Није пронађен ниједан мобилни уређај</translation>
 <translation id="5297704307811127955">Искључено</translation>
 <translation id="5302048478445481009">Језик</translation>
-<translation id="5308380583665731573">Повезивање</translation>
+<translation id="5308380583665731573">Повежи</translation>
 <translation id="5313326810920013265">Подешавања Bluetooth-а</translation>
 <translation id="5314219114274263156">Екран је снимљен</translation>
 <translation id="5319712128756744240">Упарите нови уређај</translation>
