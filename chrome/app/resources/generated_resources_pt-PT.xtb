@@ -3214,6 +3214,7 @@ Pretende pará-lo?</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="4279129444466079448">Pode instalar até <ph name="PROFILE_LIMIT" /> perfis do eSIM neste dispositivo. Para adicionar outro perfil, remova primeiro um perfil existente.</translation>
+<translation id="4280325816108262082">O dispositivo desassocia-se automaticamente quando é desligado ou não está a ser utilizado</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4282196459431406533">O Smart Lock está ativado</translation>
 <translation id="4284755288573763878">Desativar a segurança melhorada?</translation>
@@ -4333,6 +4334,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5490721031479690399">Desligar dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Permitir que o Linux aceda ao seu microfone</translation>
 <translation id="549211519852037402">Bege e branco</translation>
+<translation id="5492637351392383067">Encriptação no dispositivo</translation>
 <translation id="5493792505296048976">ecrã ligado</translation>
 <translation id="5494016731375030300">Separadores fechados recentemente</translation>
 <translation id="5494362494988149300">Abrir Quando Estiver Concluí&amp;do</translation>
@@ -6531,6 +6533,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7775694664330414886">Separador movido para grupo sem nome – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> poderá ver os ficheiros na pasta <ph name="FOLDERNAME" /> até fechar todos os separadores deste site.</translation>
 <translation id="7776701556330691704">Não foram encontradas vozes.</translation>
+<translation id="7777284276915203144">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google</translation>
 <translation id="7781335840981796660">Serão removidas todas as contas de utilizador e dados locais.</translation>
 <translation id="7782102568078991263">Não há mais sugestões do Google</translation>
 <translation id="7782717250816686129">Armazenar dados persistentes no ecrã de início de sessão e injetar credenciais na sessão.</translation>
@@ -6981,7 +6984,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8201717382574620700">Selecionar álbuns do <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Introduza a sua palavra-passe novamente para atualizar o perfil do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203152941016626022">Nome do dispositivo na funcionalidade Partilhar na proximidade</translation>
-<translation id="8203732864715032075">Enviar-lhe notificações e memorizar este computador para a aplicação Mensagens como predefinição. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="8203732864715032075">Enviar-lhe notificações e memorizar este computador para a app Mensagens como predefinição. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Os seus ecrãs e periféricos podem ser reiniciados brevemente. Para esta alteração entrar em vigor, desligue e volte a ligar os periféricos.</translation>
 <translation id="820568752112382238">Sites mais visitados</translation>
 <translation id="8206745257863499010">Bluesy</translation>
@@ -7183,6 +7186,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">A sessão será terminada dentro de <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
+<translation id="8431730749911729314">Encripte as palavras-passe no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google</translation>
 <translation id="8434480141477525001">Porta de depuração de NaCl</translation>
 <translation id="8435395510592618362">Validar a sua identidade com a aplicação <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">EUA</translation>
@@ -7973,6 +7977,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="947667444780368238"><ph name="ORIGIN" /> não consegue abrir os ficheiros nesta pasta porque contém ficheiros de sistema.</translation>
 <translation id="950307215746360464">Guia de configuração</translation>
 <translation id="951991426597076286">Recusar</translation>
+<translation id="952471655966876828">O dispositivo associa-se automaticamente quando é ligado ou está a ser utilizado</translation>
 <translation id="953434574221655299">É permitido saber quando está a utilizar ativamente o dispositivo</translation>
 <translation id="956500788634395331">Tem proteção contra extensões potencialmente prejudiciais.</translation>
 <translation id="957960681186851048">Este site tentou transferir vários ficheiros automaticamente</translation>

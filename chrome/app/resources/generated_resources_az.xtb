@@ -3208,6 +3208,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
 <translation id="4279129444466079448">Bu cihazda maksimum <ph name="PROFILE_LIMIT" /> eSIM profili quraşdıra bilərsiniz. Başqa bir profil əlavə etmək üçün əvvəlcə mövcud profili silin.</translation>
+<translation id="4280325816108262082">Cihaz söndürüldükdə və ya istifadə edilmədikdə avtomatik olaraq ayrılacaq</translation>
 <translation id="4281844954008187215">Xidmət Şərtləri</translation>
 <translation id="4282196459431406533">Ağıllı Kilid aktiv edildi</translation>
 <translation id="4284755288573763878">Qabaqcıl güvənlik deaktiv edilsin?</translation>
@@ -4327,6 +4328,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5490721031479690399">Bluetooth cihazını ayırın</translation>
 <translation id="5490798133083738649">Linux'a mikrofona giriş icazəsi verin</translation>
 <translation id="549211519852037402">Bej və ağ</translation>
+<translation id="5492637351392383067">Cihazda şifrələmə</translation>
 <translation id="5493792505296048976">açıq ekran</translation>
 <translation id="5494016731375030300">Son Qapadılan Tablar</translation>
 <translation id="5494362494988149300">Nə zaman və Tamam bölməsini açın</translation>
@@ -6522,6 +6524,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7775694664330414886">Tab adsız qrupa köçürüldü - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Siz bu sayt üzrə bütün tabları bağlayanadək <ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa biləcək</translation>
 <translation id="7776701556330691704">Səs tapılmadı</translation>
+<translation id="7777284276915203144">Parolunuz Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir</translation>
 <translation id="7781335840981796660">Bütün istifadəçi hesabları və lokal data silinəcək.</translation>
 <translation id="7782102568078991263">Google'dan daha təklif yoxdur</translation>
 <translation id="7782717250816686129">Daimi datanı giriş ekranında saxlayıb kredensialları sessiyaya daxil edin.</translation>
@@ -7172,6 +7175,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>
 <translation id="8431190899827883166">Vizual reaksiya</translation>
+<translation id="8431730749911729314">Google Parol Menecerində saxlanmazdan əvvəl cihazınızda parolları şifrələyin</translation>
 <translation id="8434480141477525001">NaCl Debaq Portu</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> ilə şəxsiyyətinizi doğrulayın</translation>
 <translation id="8437209419043462667">ABŞ</translation>
@@ -7959,6 +7963,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> sistem faylları ehtiva etdiyinə görə bu qovluqdakı faylları aça bilmir</translation>
 <translation id="950307215746360464">Ayarlama bələdçisi</translation>
 <translation id="951991426597076286">Kənarlaşdırın</translation>
+<translation id="952471655966876828">Cihaz işə salındıqda və istifadə edildikdə avtomatik olaraq qoşulacaq</translation>
 <translation id="953434574221655299">Cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməyə icazə verilir</translation>
 <translation id="956500788634395331">Potensial zərərli artırmalardan qorunursunuz</translation>
 <translation id="957960681186851048">Bu sayt çoxsaylı faylları avtomatik endirməyə cəhd etdi</translation>

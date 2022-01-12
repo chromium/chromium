@@ -53,6 +53,10 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1247519845643687288">Ama-app wakamuva</translation>
 <translation id="1252999807265626933">Ishaja kusuka ku-<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Sithini isimo sezulu?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> ku 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Khetha mayelana nemininingwane eminingi ku-Google Calendar.</translation>
 <translation id="1266097335951928626">Qalisa ikhamera yesithombe ozishuthe sona</translation>
 <translation id="1267032506238418139">Ukushintsha isinqamuleli</translation>
 <translation id="1269405891096105529">I-peripheral ayisekelwa Kumodi Yesivakashi</translation>
@@ -997,6 +1001,8 @@ Ukufaka okusha</translation>
 <translation id="7720410380936703141">ZAMA FUTHI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 isaziso}one{# izaziso}other{# izaziso}}</translation>
 <translation id="7724603315864178912">Sika</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Bonisa izinhlelo zokusebenza kushelufu</translation>
 <translation id="7749443890790263709">Inombolo enkulu yamadeski ifinyelelwe.</translation>
 <translation id="7749640678855296659">Imakrofoni yakho okwamanje ivaliwe</translation>

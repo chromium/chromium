@@ -500,6 +500,7 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> আপডেট করুন</translation>
 <translation id="3912508018559818924">ওয়েব থেকে সেরা ফলাফল লোড করা হচ্ছে…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> চালু করা আছে</translation>
+<translation id="3925830358619338299">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার পাসওয়ার্ড ডিভাইসে এনক্রিপ্ট করা হয়</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
 <translation id="3934366560681368531">“</translation>
@@ -774,6 +775,7 @@
 <translation id="5483197086164197190">Chrome-এ নেভিগেট করুন</translation>
 <translation id="5487521232677179737">ডেটা সাফ করুন</translation>
 <translation id="549025011754480756">আপনার ভয়েস ব্যবহার করে কীভাবে সার্চ করবেন</translation>
+<translation id="5492637351392383067">অন-ডিভাইস এনক্রিপশন</translation>
 <translation id="5514904542973294328">এই ডিভাইসের প্রশাসক অক্ষম করেছে</translation>
 <translation id="5515439363601853141">আপনার পাসওয়ার্ড দেখতে আনলক করুন</translation>
 <translation id="5517095782334947753">আপনার জন্য <ph name="FROM_ACCOUNT" /> থেকে বুকমার্কস, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস আছে।</translation>
@@ -1173,7 +1175,7 @@
 <translation id="7596558890252710462">অপারেটিং সিস্টেম</translation>
 <translation id="7605594153474022051">সিঙ্ক কাজ করছে না</translation>
 <translation id="7606077192958116810">লাইট মোড চালু আছে। সেটিংসে এটি ম্যানেজ করুন।</translation>
-<translation id="7612619742409846846">এই হিসাবে Google এ প্রবেশ করেছেন</translation>
+<translation id="7612619742409846846">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="7616551326690708776">আপনার হাইলাইটের জন্য একটি টেমপ্লেট বেছে নিন।</translation>
 <translation id="7619072057915878432">নেটওয়ার্ক কানেক্ট হয়নি বলে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="7626032353295482388">Chrome এ স্বাগতম</translation>
@@ -1323,6 +1325,7 @@
 <translation id="8427875596167638501">প্রিভিউ ট্যাব অর্ধেক খোলা আছে</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8430824733382774043">শুধুমাত্র স্ক্রিনশট শেয়ার করুন</translation>
+<translation id="8431730749911729314">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার ডিভাইসে পাসওয়ার্ড এনক্রিপ্ট করুন</translation>
 <translation id="8438566539970814960">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - ভাষা ডাউনলোড করা হয়েছে, <ph name="APP_NAME" /> রিস্টার্ট করুন।</translation>
 <translation id="8442258441309440798">কোনও খবর উপলভ্য নেই</translation>

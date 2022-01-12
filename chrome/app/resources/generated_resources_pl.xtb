@@ -3209,6 +3209,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4275830172053184480">Zrestartuj urządzenie</translation>
 <translation id="4278390842282768270">Dopuszczone</translation>
 <translation id="4279129444466079448">Na tym urządzeniu nie możesz zainstalować więcej niż <ph name="PROFILE_LIMIT" /> profili eSIM. Aby dodać kolejny profil, najpierw usuń jeden z istniejących profili.</translation>
+<translation id="4280325816108262082">Gdy urządzenie zostanie wyłączone lub nie będzie używane, automatycznie się rozłączy</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="4282196459431406533">Funkcja Smart Lock jest włączona</translation>
 <translation id="4284755288573763878">Wyłączyć silniejsze zabezpieczenia?</translation>
@@ -3671,6 +3672,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4785719467058219317">Używasz klucza bezpieczeństwa, który nie jest zarejestrowany w tej witrynie</translation>
 <translation id="478708757211772586">Aby przejść do następnego elementu na ekranie, kliknij „Dalej”</translation>
 <translation id="4788092183367008521">Sprawdź połączenie sieciowe i spróbuj jeszcze raz.</translation>
+<translation id="4789550509729954245">Pokazuj powiadomienie, gdy urządzenia udostępniają coś w pobliżu</translation>
 <translation id="4791000909649665275">Liczba zdjęć: <ph name="NUMBER" /></translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Włącz przyspieszenie TrackPointa</translation>
@@ -4032,6 +4034,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="5171343362375269016">Zamieniona pamięć</translation>
 <translation id="5172855596271336236">Jest 1 zarządzana drukarka.</translation>
 <translation id="5173668317844998239">Dodawanie i usuwanie odcisków palców zapisanych na kluczu bezpieczeństwa</translation>
+<translation id="5174169235862638850">Hasło zostało skopiowane do schowka</translation>
 <translation id="5175379009094579629">Nazwa urządzenia jest nieprawidłowa. Wpisz prawidłową nazwę, by spróbować ponownie.</translation>
 <translation id="5177479852722101802">Nadal blokuj dostęp do kamery i mikrofonu</translation>
 <translation id="5177549709747445269">Korzystasz z komórkowej transmisji danych</translation>
@@ -4325,6 +4328,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="5490721031479690399">Odłączanie urządzenia Bluetooth</translation>
 <translation id="5490798133083738649">Zezwalaj Linuksowi na dostęp do mikrofonu</translation>
 <translation id="549211519852037402">Beżowo-biały</translation>
+<translation id="5492637351392383067">Szyfrowanie na urządzeniu</translation>
 <translation id="5493792505296048976">ekran włączony</translation>
 <translation id="5494016731375030300">Ostatnio zamknięte karty</translation>
 <translation id="5494362494988149300">Otwórz po &amp;zakończeniu</translation>
@@ -6522,6 +6526,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7775694664330414886">Karta została przeniesiona do nienazwanej grupy – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Strona <ph name="ORIGIN" /> będzie mogła wyświetlać pliki z folderu <ph name="FOLDERNAME" />, dopóki nie zamkniesz wszystkich jej kart</translation>
 <translation id="7776701556330691704">Nie znaleziono głosów</translation>
+<translation id="7777284276915203144">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu</translation>
 <translation id="7781335840981796660">Wszystkie konta użytkowników i dane lokalne zostaną usunięte.</translation>
 <translation id="7782102568078991263">Nie pokazuj sugestii od Google</translation>
 <translation id="7782717250816686129">Przechowuj trwałe dane na ekranie logowania i wstawiaj do sesji dane uwierzytelniające.</translation>
@@ -7174,6 +7179,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Wylogujemy Cię za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Pokaż kliknięcia</translation>
+<translation id="8431730749911729314">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu</translation>
 <translation id="8434480141477525001">Port debugowania NaCl</translation>
 <translation id="8435395510592618362">Weryfikacja tożsamości w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">amerykański</translation>
@@ -7962,6 +7968,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="947667444780368238"><ph name="ORIGIN" /> nie może otwierać plików z tego folderu, bo zawiera on pliki systemowe</translation>
 <translation id="950307215746360464">Przewodnik po konfiguracji</translation>
 <translation id="951991426597076286">Odrzuć</translation>
+<translation id="952471655966876828">Gdy urządzenie zostanie włączone i będzie używane, automatycznie się połączy</translation>
 <translation id="953434574221655299">Mogą sprawdzać, kiedy używasz urządzenia</translation>
 <translation id="956500788634395331">Masz ochronę przed potencjalnie niebezpiecznymi rozszerzeniami</translation>
 <translation id="957960681186851048">Ta strona próbowała pobrać automatycznie wiele plików</translation>

@@ -94,6 +94,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1690731385917361335">Ingen elementer</translation>
 <translation id="1692118695553449118">Synkronisering er slått på.</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> er valgt</translation>
+<translation id="1726573592754903697">Google Passordlagring</translation>
 <translation id="1740468249224277719">Dobbelttrykk for å installere.</translation>
 <translation id="1752547299766512813">Lagre passord</translation>
 <translation id="1753905327828125965">Mest besøkt</translation>
@@ -501,6 +502,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="575902488528307720">Søk etter bilde</translation>
 <translation id="5781453543752460388">Legg til i Foto</translation>
 <translation id="5782227691023083829">Oversetter</translation>
+<translation id="5802829331520313983">Konfigurer…</translation>
 <translation id="5803566855766646066">Er du sikker på at du vil forkaste dette nye kortet?</translation>
 <translation id="5812974770859303494">Legg til i …</translation>
 <translation id="5816228676161003208">Dette gjør at du kan søke raskere ved å bruke stemmen.</translation>
@@ -560,6 +562,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6219688215832490856">Oversett aldri</translation>
 <translation id="6223816392543092032">Få bokmerkene, loggen, passordene og de andre innstillingene dine på alle enhetene du bruker.</translation>
 <translation id="6232329973559504466">Inkognitosøk</translation>
+<translation id="6232736989810857397">Dette gjør det mulig å opprette kalenderaktiviteter på en enkel måte med Google Lens.</translation>
 <translation id="6254066287920239840">Åpne linker i appen i stedet for i nettleseren.</translation>
 <translation id="6255097610484507482">Rediger kredittkort</translation>
 <translation id="6284652193729350524">Tilby å oversette <ph name="LANGUAGE" /></translation>
@@ -609,6 +612,7 @@ Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
 <translation id="6537746030088321027">eteksempel.no</translation>
 <translation id="6561262006871132942">Zoom inn</translation>
+<translation id="6583087784430677195">For å slå av funksjonen, åpne <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /> og gå til Autoutfylling av passord.</translation>
 <translation id="6585618849026997638">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="6603393121510733479">Organisasjonen din har slått av privat surfing.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>

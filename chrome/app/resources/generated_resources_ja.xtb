@@ -3206,6 +3206,7 @@
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4278390842282768270">許可</translation>
 <translation id="4279129444466079448">このデバイスにインストールできる eSIM プロファイルは <ph name="PROFILE_LIMIT" /> 個までです。さらにプロファイルを追加するには、その前にいずれかの既存のプロファイルを削除してください。</translation>
+<translation id="4280325816108262082">デバイスの電源がオフになったときや使用されていないときは接続を自動的に解除します</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4282196459431406533">Smart Lock が有効です</translation>
 <translation id="4284755288573763878">保護強化機能をオフにしますか？</translation>
@@ -4319,6 +4320,7 @@
 <translation id="5490721031479690399">Bluetooth デバイスの接続の解除</translation>
 <translation id="5490798133083738649">Linux にマイクへのアクセスを許可する</translation>
 <translation id="549211519852037402">ベージュと白</translation>
+<translation id="5492637351392383067">オンデバイスの暗号化</translation>
 <translation id="5493792505296048976">画面オン</translation>
 <translation id="5494016731375030300">最近閉じたタブ</translation>
 <translation id="5494362494988149300">ダウンロードしたら開く(&amp;D)</translation>
@@ -6507,6 +6509,7 @@
 <translation id="7775694664330414886">タブを名前のないグループに移動しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを読み取れるようになります</translation>
 <translation id="7776701556330691704">音声が見つかりません</translation>
+<translation id="7777284276915203144">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
 <translation id="7781335840981796660">すべてのユーザー アカウントとローカル データは削除されます。</translation>
 <translation id="7782102568078991263">候補は以上です</translation>
 <translation id="7782717250816686129">ログイン画面での永続データの保存とセッションへの認証情報の入力。</translation>
@@ -7158,6 +7161,7 @@
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">あと <ph name="LOGOUT_TIME_LEFT" />でログアウトします</translation>
 <translation id="8431190899827883166">タップを表示</translation>
+<translation id="8431730749911729314">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化</translation>
 <translation id="8434480141477525001">NaCl デバッグ ポート</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> で本人確認を行う</translation>
 <translation id="8437209419043462667">US</translation>
@@ -7947,6 +7951,7 @@
 <translation id="947667444780368238">システム ファイルが含まれているため、<ph name="ORIGIN" /> はこのフォルダのファイルを開くことができません</translation>
 <translation id="950307215746360464">セットアップ ガイド</translation>
 <translation id="951991426597076286">同意しない</translation>
+<translation id="952471655966876828">デバイスの電源がオンになったときや使用されているときは自動的に接続します</translation>
 <translation id="953434574221655299">このデバイスのアクティブ状態の検出を許可する</translation>
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>

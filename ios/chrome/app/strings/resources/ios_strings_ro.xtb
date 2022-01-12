@@ -60,7 +60,6 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1434356225517321998">Browserul tău este gestionat. <ph name="BEGIN_LINK" />Detalii<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Criptare pe dispozitiv</translation>
 <translation id="1449835205994625556">Ascunde parola</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elemente</translation>
 <translation id="149095475893949513">Site-ul încearcă să descarce un profil de configurare.</translation>
@@ -95,6 +94,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1690731385917361335">Niciun element</translation>
 <translation id="1692118695553449118">Sincronizarea este activată</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selectate</translation>
+<translation id="1726573592754903697">Manager de parole Google</translation>
 <translation id="1740468249224277719">Atinge de două ori pentru a instala.</translation>
 <translation id="1752547299766512813">Salvează parole</translation>
 <translation id="1753905327828125965">Cele mai vizitate</translation>
@@ -142,6 +142,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2271351792809375263">Folosește parolele salvate în Chrome în alte aplicații de pe dispozitiv.</translation>
 <translation id="2273327106802955778">Meniul Mai multe</translation>
 <translation id="2286505070150039482">Text evidențiat</translation>
+<translation id="2299218006564889602">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google.</translation>
 <translation id="2302742851632557585">Schimbă parola pentru site</translation>
 <translation id="2316709634732130529">Folosește parola sugerată</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
@@ -285,7 +286,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3529024052484145543">Nesecurizat</translation>
 <translation id="3533202363250687977">Închide toate filele incognito</translation>
 <translation id="3533436815740441613">Filă nouă</translation>
-<translation id="3536487890564466894">Criptează-ți parolele înainte de a fi salvate în Contul tău Google.</translation>
 <translation id="3551320343578183772">Închide fila</translation>
 <translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
@@ -546,6 +546,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6066301408025741299">Atinge pentru a anula.</translation>
 <translation id="60829778314739003">Accept și continui</translation>
 <translation id="6084848228346514841">Selectează file</translation>
+<translation id="6103540626693881831">Criptare pe dispozitiv</translation>
 <translation id="6108923351542677676">Configurare în curs...</translation>
 <translation id="6119050551270742952">Pagina web actuală este în modul Incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -563,6 +564,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6219688215832490856">Nu traduce niciodată</translation>
 <translation id="6223816392543092032">Accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele.</translation>
 <translation id="6232329973559504466">Căutare incognito</translation>
+<translation id="6232736989810857397">Astfel, poți crea ușor evenimente în calendar cu Google Lens.</translation>
 <translation id="6254066287920239840">Deschide linkurile în aplicație, nu în browser.</translation>
 <translation id="6255097610484507482">Editați cardul de credit</translation>
 <translation id="6284652193729350524">Oferă traducerea din <ph name="LANGUAGE" /></translation>
@@ -612,6 +614,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6524918542306337007">Modul incognito nu este disponibil</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Mărește</translation>
+<translation id="6583087784430677195">Pentru dezactivare, deschide <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" /> și accesează Completare automată parole.</translation>
 <translation id="6585618849026997638">Poți să revii la o pagină importantă adăugând un marcaj</translation>
 <translation id="6603393121510733479">Organizația ta a dezactivat navigarea privată.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -763,6 +766,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="797413074872316787">Pentru a sincroniza și a personaliza pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="7978018860671536736">3. Atinge Completează automat parolele.</translation>
 <translation id="7982789257301363584">Rețea</translation>
+<translation id="7987685713885608670">Pentru siguranță suplimentară, criptează parolele pe dispozitiv înainte să se salveze în Managerul de parole Google.</translation>
 <translation id="7993619969781047893">Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte</translation>
 <translation id="800361585186029508">Deschide adresele URL introduse în Google Chrome.</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>

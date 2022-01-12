@@ -3215,6 +3215,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4275830172053184480">Ponovo pokrenite svoj uređaj</translation>
 <translation id="4278390842282768270">Dopušteno</translation>
 <translation id="4279129444466079448">Na ovom uređaju možete instalirati najviše <ph name="PROFILE_LIMIT" /> eSIM profila. Da biste dodali još jedan profil, trebate ukloniti jedan od postojećih.</translation>
+<translation id="4280325816108262082">Veza s uređajem prekinut će se automatski kad se uređaj isključi ili ne upotrebljava</translation>
 <translation id="4281844954008187215">Uvjeti upotrebe usluge</translation>
 <translation id="4282196459431406533">Smart Lock uključen</translation>
 <translation id="4284755288573763878">Isključiti poboljšanu sigurnost?</translation>
@@ -4334,6 +4335,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5490721031479690399">Prekid veze s Bluetooth uređajem</translation>
 <translation id="5490798133083738649">Dopustite Linuxu da pristupa vašem mikrofonu</translation>
 <translation id="549211519852037402">Bež i bijela</translation>
+<translation id="5492637351392383067">Šifriranje na uređaju</translation>
 <translation id="5493792505296048976">zaslon uključen</translation>
 <translation id="5494016731375030300">Nedavno zatvorene kartice</translation>
 <translation id="5494362494988149300">Otvori nakon &amp;dovršetka</translation>
@@ -6531,6 +6533,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7775694664330414886">Kartica je premještena u grupu bez naziva – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> moći će pregledavati datoteke u mapi <ph name="FOLDERNAME" /> dok ne zatvorite sve kartice za ovu web-lokaciju</translation>
 <translation id="7776701556330691704">Nije pronađen nijedan glas</translation>
+<translation id="7777284276915203144">Vaše se zaporke šifriraju na uređaju prije spremanja na Google upravitelj zaporki</translation>
 <translation id="7781335840981796660">Uklonit će se svi korisnički računi i lokalni podaci.</translation>
 <translation id="7782102568078991263">Nema više prijedloga iz Googlea</translation>
 <translation id="7782717250816686129">Pohrani trajne podatke na zaslonu za prijavu, a vjerodajnice umetni u sesiju.</translation>
@@ -7182,6 +7185,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8428634594422941299">Shvaćam</translation>
 <translation id="84297032718407999">Odjavit ćete se za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Prikaži dodire</translation>
+<translation id="8431730749911729314">Šifrirajte zaporke na uređaju prije spremanja na Google upravitelj zaporki</translation>
 <translation id="8434480141477525001">Priključak za otklanjanje pogrešaka lokalnog klijenta</translation>
 <translation id="8435395510592618362">Potvrdite svoj identitet pomoću aplikacije <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">američka</translation>
@@ -7973,6 +7977,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne može otvoriti datoteke u ovoj mapi jer sadrži datoteke sustava</translation>
 <translation id="950307215746360464">Vodič za postavljanje</translation>
 <translation id="951991426597076286">Odbijam</translation>
+<translation id="952471655966876828">Uređaj će se povezati automatski kad se uključi i upotrebljava</translation>
 <translation id="953434574221655299">Web-lokacije kojima je dopušteno znati kad aktivno koristite uređaj</translation>
 <translation id="956500788634395331">Zaštićeni ste od potencijalno štetnih proširenja</translation>
 <translation id="957960681186851048">Ta je web-lokacija pokušala automatski preuzeti više datoteka</translation>

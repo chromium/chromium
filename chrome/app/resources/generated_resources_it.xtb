@@ -3213,6 +3213,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4278390842282768270">Consenti</translation>
 <translation id="4279129444466079448">Puoi installare fino a <ph name="PROFILE_LIMIT" /> profili eSIM su questo dispositivo. Per aggiungere un altro profilo, prima rimuovine uno esistente.</translation>
+<translation id="4280325816108262082">Il dispositivo si disconnetterà automaticamente quando verrà spento o non sarà in uso</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4282196459431406533">Funzione Smart Lock attiva</translation>
 <translation id="4284755288573763878">Vuoi disattivare la sicurezza avanzata?</translation>
@@ -4332,6 +4333,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5490721031479690399">Disconnettere dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Consenti a Linux di accedere al microfono</translation>
 <translation id="549211519852037402">Beige e bianco</translation>
+<translation id="5492637351392383067">Crittografia sul dispositivo</translation>
 <translation id="5493792505296048976">schermo attivo</translation>
 <translation id="5494016731375030300">Schede chiuse di recente</translation>
 <translation id="5494362494988149300">Apri al &amp;termine</translation>
@@ -6529,6 +6531,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7775694664330414886">Scheda spostata in un gruppo senza nome - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> potrà visualizzare i file nella cartella <ph name="FOLDERNAME" /> fino alla chiusura di tutte le schede di questo sito</translation>
 <translation id="7776701556330691704">Nessuna voce trovata</translation>
+<translation id="7777284276915203144">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google</translation>
 <translation id="7781335840981796660">Tutti gli account utente e i dati locali verranno rimossi.</translation>
 <translation id="7782102568078991263">Nessun altro suggerimento da Google</translation>
 <translation id="7782717250816686129">Archivia i dati persistenti nella schermata di accesso e inserisci le credenziali nella sessione.</translation>
@@ -7181,6 +7184,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8431190899827883166">Mostra tocchi</translation>
+<translation id="8431730749911729314">Cripta le password sul dispositivo prima che vengano salvate in Gestore delle password di Google</translation>
 <translation id="8434480141477525001">Porta di debug NaCl</translation>
 <translation id="8435395510592618362">Verifica la tua identità con <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">USA</translation>
@@ -7971,6 +7975,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="947667444780368238"><ph name="ORIGIN" /> non può aprire i file in questa cartella perché contiene file di sistema</translation>
 <translation id="950307215746360464">Guida alla configurazione</translation>
 <translation id="951991426597076286">Rifiuta</translation>
+<translation id="952471655966876828">Il dispositivo si connetterà automaticamente quando verrà acceso e sarà in uso</translation>
 <translation id="953434574221655299">Autorizzati a sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="956500788634395331">È attiva la protezione da estensioni potenzialmente dannose</translation>
 <translation id="957960681186851048">Questo sito ha tentato di scaricare automaticamente più file</translation>

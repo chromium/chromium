@@ -94,6 +94,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1690731385917361335">Cap element</translation>
 <translation id="1692118695553449118">La sincronització està activada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionades</translation>
+<translation id="1726573592754903697">Gestor de contrasenyes de Google</translation>
 <translation id="1740468249224277719">Feu doble toc per instal·lar l'aplicació.</translation>
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
 <translation id="1753905327828125965">Els més visitats</translation>
@@ -501,6 +502,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="575902488528307720">Cerca una imatge</translation>
 <translation id="5781453543752460388">Afegeix a les fotos</translation>
 <translation id="5782227691023083829">S'està traduint...</translation>
+<translation id="5802829331520313983">Configura…</translation>
 <translation id="5803566855766646066">Confirmes que vols descartar aquesta targeta nova?</translation>
 <translation id="5812974770859303494">Afegeix a...</translation>
 <translation id="5816228676161003208">Això et permet fer cerques més de pressa amb la veu.</translation>
@@ -560,6 +562,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6219688215832490856">No tradueixis mai</translation>
 <translation id="6223816392543092032">Accedeix a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
 <translation id="6232329973559504466">Cerca d'incògnit</translation>
+<translation id="6232736989810857397">Així podràs crear esdeveniments del calendari fàcilment amb Google Lens.</translation>
 <translation id="6254066287920239840">Obre els enllaços a l'aplicació en comptes del navegador.</translation>
 <translation id="6255097610484507482">Edita la targeta de crèdit</translation>
 <translation id="6284652193729350524">Proposa traduir el contingut en <ph name="LANGUAGE" /></translation>

@@ -475,6 +475,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si se inhabilita la política, las solicitudes HTTP no seguras tendrán prohibido el uso del esquema de autenticación <ph name="BASIC_AUTH" />; solo se permitirán solicitudes HTTPS.
 
       Si se habilita la política <ph name="AUTH_SCHEMES_POLICY_NAME" /> y esta no incluye <ph name="BASIC_AUTH" />, se ignorará este ajuste de la política (y se prohibirá <ph name="BASIC_AUTH" /> de forma permanente).</translation>
+<translation id="1574258262373444557">No usa <ph name="AES_KL_NAME" /> como algoritmo de cifrado para el cifrado del almacenamiento de los datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración del conector OnFileDownloaded de Chrome Enterprise Connectors</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada</translation>
 <translation id="1587042984081085960">Esta política permite que un administrador especifique si las páginas pueden enviar solicitudes XHR síncronas durante el cierre de la página.
@@ -605,6 +606,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="167514072300004091">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los dispositivos conectados por USB. Si se le asigna el valor 2, se bloqueará el acceso a los dispositivos conectados por USB.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="1678137412645922426">Controla el uso de <ph name="AES_KL_NAME" /> para el cifrado del almacenamiento de los datos del usuario, si se admite</translation>
 <translation id="1682063842123336408">Espacio disponible en disco (en GB) necesario para instalar <ph name="PLUGIN_VM_NAME" />.
 
       Si no se asigna ningún valor a esta política, la instalación de <ph name="PLUGIN_VM_NAME" /> fallará si el dispositivo tiene menos de 20 GB (valor predeterminado) de espacio disponible en disco.
@@ -3892,6 +3894,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se asigna ningún valor a esta política, la opción predeterminada no estará disponible para los usuarios gestionados por empresas, aunque sí lo estará para aquellos no gestionados por empresas.</translation>
 <translation id="5584132346604748282">Controlar los servicios de ubicación de Google de Android</translation>
+<translation id="5585384603219625331">Esta política controla si la implementación de <ph name="AES_KL_NAME" /> está habilitada para el cifrado del almacenamiento de los datos del usuario en los directorios principales de este que utilizan <ph name="DM_CRYPT" /> en Chrome OS, si se admite.
+
+       Esta política solo se aplica a los directorios principales de los usuarios que utilizan <ph name="DM_CRYPT" /> para el cifrado. Los antiguos directorios principales de los usuarios (los que no utilizan <ph name="DM_CRYPT" />) no admiten el uso de <ph name="AES_KL_NAME" /> y usarán <ph name="AES_NI_NAME" /> de forma predeterminada.
+
+       Si el valor de la política cambia, se accederá a los actuales directorios principales de los usuarios que utilizan <ph name="DM_CRYPT" /> con la implementación de cifrado configurada por la política porque las implementaciones de <ph name="AES_ALGORITHM_NAME" /> son compatibles.
+       Si esta política se inhabilita o no se establece, el cifrado del almacenamiento de los datos del usuario en los directorios principales de este que utilizan <ph name="DM_CRYPT" /> usarán <ph name="AES_NI_NAME" /> de forma predeterminada.</translation>
 <translation id="5586942249556966598">No hacer nada</translation>
 <translation id="5598417829613725146">Canvas (compatible a partir de la versión 90)</translation>
 <translation id="5599461642204007579">Configuración de administración de <ph name="MS_AD_NAME" /></translation>
@@ -6561,6 +6569,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8626826495474944836">Requerir aislamiento de sitio web para todos los sitios</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">La lista de aplicaciones para tomar notas que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8634062512783775032">Usa <ph name="AES_KL_NAME" /> como algoritmo de cifrado para el cifrado del almacenamiento de los datos del usuario, si se admite</translation>
 <translation id="8637566476051166626">Puertos de red con permiso explícito</translation>
 <translation id="8643838501942693770">Habilitar las cookies de terceros, pero permitir al usuario cambiar este ajuste</translation>
 <translation id="8648844602494595665">Esta política controla el uso del icono del candado en el omnibox.

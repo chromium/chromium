@@ -500,6 +500,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3908308510347173149">Oppdater <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Vi finner det beste fra nettet …</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> er på</translation>
+<translation id="3925830358619338299">Passordene dine krypteres på enheten før de lagres i Google Passordlagring</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombiner dataene mine</translation>
 <translation id="3934366560681368531">«</translation>
@@ -772,6 +773,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5483197086164197190">Naviger i Chrome</translation>
 <translation id="5487521232677179737">Slett data</translation>
 <translation id="549025011754480756">Slik søker du med stemmen</translation>
+<translation id="5492637351392383067">Kryptering på enheten</translation>
 <translation id="5514904542973294328">Deaktivert av administratoren for denne enheten</translation>
 <translation id="5515439363601853141">Lås opp for å se passordet ditt</translation>
 <translation id="5517095782334947753">Du har bokmerker, loggen, passord og andre innstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8427875596167638501">Fanen for forhåndsvisning er halvveis åpnet</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8430824733382774043">Del kun skjermdump</translation>
+<translation id="8431730749911729314">Krypter passord på enheten før de lagres i Google Passordlagring</translation>
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – Språket er klart. Start <ph name="APP_NAME" /> på nytt</translation>
 <translation id="8442258441309440798">Ingen nyhetssaker er tilgjengelige</translation>

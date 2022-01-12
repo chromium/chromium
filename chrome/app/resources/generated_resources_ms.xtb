@@ -3227,6 +3227,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4275830172053184480">Mulakan semula peranti anda</translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
 <translation id="4279129444466079448">Anda boleh memasang sehingga <ph name="PROFILE_LIMIT" /> profil eSIM pada peranti ini. Untuk menambah profil lain, alih keluar profil yang sedia ada dahulu.</translation>
+<translation id="4280325816108262082">Peranti akan terputus sambungan secara automatik apabila dimatikan atau tidak digunakan</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
 <translation id="4282196459431406533">Smart Lock dihidupkan</translation>
 <translation id="4284755288573763878">Matikan keselamatan dipertingkat?</translation>
@@ -3690,6 +3691,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4785719467058219317">Anda menggunakan kunci keselamatan yang tidak berdaftar dengan laman web ini</translation>
 <translation id="478708757211772586">Gunakan “Seterusnya” untuk bergerak ke hadapan pada skrin</translation>
 <translation id="4788092183367008521">Sila semak sambungan rangkaian dan cuba lagi.</translation>
+<translation id="4789550509729954245">Tunjukkan pemberitahuan apabila peranti sedang dikongsi berdekatan</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Dayakan pemecutan TrackPoint</translation>
@@ -4051,6 +4053,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5171343362375269016">Memori Ditukar</translation>
 <translation id="5172855596271336236">Terdapat 1 pencetak terurus.</translation>
 <translation id="5173668317844998239">Tambah dan padam cap jari yang disimpan pada kunci keselamatan anda</translation>
+<translation id="5174169235862638850">Kata laluan disalin ke papan keratan</translation>
 <translation id="5175379009094579629">Nama peranti tidak sah. Masukkan nama peranti yang sah untuk mencuba sekali lagi.</translation>
 <translation id="5177479852722101802">Teruskan menyekat akses kamera dan mikrofon</translation>
 <translation id="5177549709747445269">Anda menggunakan data mudah alih</translation>
@@ -4345,6 +4348,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5490721031479690399">Putuskan sambungan peranti Bluetooth</translation>
 <translation id="5490798133083738649">Benarkan Linux mengakses mikrofon anda</translation>
 <translation id="549211519852037402">Kuning air dan putih</translation>
+<translation id="5492637351392383067">Penyulitan pada peranti</translation>
 <translation id="5493792505296048976">skrin dihidupkan</translation>
 <translation id="5494016731375030300">Tab yang Ditutup Baru-baru Ini</translation>
 <translation id="5494362494988149300">Buka Apabila &amp;Selesai</translation>
@@ -6542,6 +6546,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7775694664330414886">Tab dialihkan ke kumpulan tidak bernama - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> akan dapat melihat fail dalam <ph name="FOLDERNAME" /> sehinggalah anda menutup semua tab bagi tapak ini</translation>
 <translation id="7776701556330691704">Suara tidak ditemui</translation>
+<translation id="7777284276915203144">Kata laluan anda disulitkan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google</translation>
 <translation id="7781335840981796660">Semua akaun pengguna dan data setempat akan dialih keluar.</translation>
 <translation id="7782102568078991263">Tiada lagi cadangan daripada Google</translation>
 <translation id="7782717250816686129">Simpan data berulang pada skrin log masuk dan masukkan bukti kelayakan ke dalam sesi.</translation>
@@ -7195,6 +7200,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Anda akan dilog keluar dalam masa <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Tunjukkan ketikan</translation>
+<translation id="8431730749911729314">Sulitkan kata laluan pada peranti anda sebelum kata laluan itu disimpan ke Pengurus Kata Laluan Google</translation>
 <translation id="8434480141477525001">Port Nyahpepijat NaCl</translation>
 <translation id="8435395510592618362">Sahkan identiti anda dengan <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">AS</translation>
@@ -7984,6 +7990,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> tidak dapat membuka fail dalam folder ini kerana folder ini mengandungi fail sistem</translation>
 <translation id="950307215746360464">Panduan persediaan</translation>
 <translation id="951991426597076286">Tolak</translation>
+<translation id="952471655966876828">Peranti akan menyambung secara automatik apabila dihidupkan atau digunakan</translation>
 <translation id="953434574221655299">Dibenarkan mengetahui waktu anda aktif menggunakan peranti</translation>
 <translation id="956500788634395331">Anda dilindungi daripada sambungan yang mungkin berbahaya</translation>
 <translation id="957960681186851048">Tapak ini cuba memuat turun berbilang fail secara automatik</translation>

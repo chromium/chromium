@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">Πρόσφατες εφαρμογές</translation>
 <translation id="1252999807265626933">Φόρτιση από <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Τι καιρό κάνει;</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> έως 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Επιλέξτε για περισσότερες λεπτομέρειες στο Ημερολόγιο Google.</translation>
 <translation id="1266097335951928626">Έναρξη κάμερας selfie</translation>
 <translation id="1267032506238418139">Αλλαγή συντόμευσης</translation>
 <translation id="1269405891096105529">Το περιφερειακό δεν υποστηρίζεται στη λειτουργία επισκέπτη</translation>
@@ -997,6 +1001,8 @@
 <translation id="7720410380936703141">ΔΟΚΙΜΑΣΤΕ ΞΑΝΑ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ειδοποίηση}other{# ειδοποιήσεις}}</translation>
 <translation id="7724603315864178912">Αποκοπή</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Εμφάνιση εφαρμογών στο ράφι</translation>
 <translation id="7749443890790263709">Συμπληρώθηκε ο μέγιστος αριθμός γραφείων.</translation>
 <translation id="7749640678855296659">Το μικρόφωνό σας είναι αυτήν τη στιγμή απενεργοποιημένο</translation>

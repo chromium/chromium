@@ -142,6 +142,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2271351792809375263">Usa le password salvate su Chrome in altre app sul tuo dispositivo</translation>
 <translation id="2273327106802955778">Menu Altro</translation>
 <translation id="2286505070150039482">Testo evidenziato</translation>
+<translation id="2299218006564889602">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google.</translation>
 <translation id="2302742851632557585">Cambia password sul sito web</translation>
 <translation id="2316709634732130529">Utilizza la password suggerita</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
@@ -502,6 +503,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="575902488528307720">Cerca immagine</translation>
 <translation id="5781453543752460388">Aggiungi a Foto</translation>
 <translation id="5782227691023083829">Traduzione in corso...</translation>
+<translation id="5802829331520313983">Configura…</translation>
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
 <translation id="5812974770859303494">Aggiungi a…</translation>
 <translation id="5816228676161003208">In questo modo puoi eseguire ricerche più veloci con la voce.</translation>
@@ -544,6 +546,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6066301408025741299">Tocca per annullare.</translation>
 <translation id="60829778314739003">Accetta e continua</translation>
 <translation id="6084848228346514841">Seleziona schede</translation>
+<translation id="6103540626693881831">Crittografia sul dispositivo</translation>
 <translation id="6108923351542677676">Configurazione in corso…</translation>
 <translation id="6119050551270742952">Pagina web corrente in incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -611,6 +614,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Aumenta lo zoom</translation>
+<translation id="6583087784430677195">Per disattivare la funzionalità, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Riempimento automatico password.</translation>
 <translation id="6585618849026997638">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>
 <translation id="6603393121510733479">La tua organizzazione ha disattivato la navigazione privata.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -762,6 +766,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="797413074872316787">Attiva la sincronizzazione per sincronizzare e personalizzare tutti i dispositivi.</translation>
 <translation id="7978018860671536736">3. Tocca Riempimento automatico password</translation>
 <translation id="7982789257301363584">Rete</translation>
+<translation id="7987685713885608670">Per maggiore sicurezza, cripta le password sul dispositivo prima che vengano salvate in Gestore delle password di Google.</translation>
 <translation id="7993619969781047893">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="800361585186029508">Consente di aprire gli URL inseriti in Google Chrome.</translation>
 <translation id="802154636333426148">Download non riuscito</translation>

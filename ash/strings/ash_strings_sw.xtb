@@ -53,6 +53,10 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1247519845643687288">Programu ulizotumia hivi karibuni</translation>
 <translation id="1252999807265626933">Inachaji kwenye <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hali ya hewa ikoje?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> hadi 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Chagua ili uone maelezo zaidi katika Kalenda ya Google.</translation>
 <translation id="1266097335951928626">Fungua kamera ya selfi</translation>
 <translation id="1267032506238418139">Mabadiliko kwenye njia ya mkato</translation>
 <translation id="1269405891096105529">Kifaa ulichounganisha kwenye kompyuta hakiwezi kutumika katika hali ya Wageni</translation>
@@ -998,6 +1002,8 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7720410380936703141">JARIBU TENA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Arifa 1}other{Arifa #}}</translation>
 <translation id="7724603315864178912">Kata</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Onyesha programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
 <translation id="7749640678855296659">Maikrofoni yako imezimwa</translation>

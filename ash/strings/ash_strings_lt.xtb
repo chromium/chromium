@@ -53,6 +53,10 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1247519845643687288">Naujausios programos</translation>
 <translation id="1252999807265626933">Įkraunama naudojant <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ (Koks oras?)</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />–
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Pasirinkite, jei norite peržiūrėti daugiau išsamios informacijos „Google“ kalendoriuje.</translation>
 <translation id="1266097335951928626">Įjungti asmenukės fotoaparatą</translation>
 <translation id="1267032506238418139">Spartusis klavišas pasikeitė</translation>
 <translation id="1269405891096105529">Išorinis įrenginys nepalaikomas naudojant svečio režimą</translation>
@@ -997,6 +1001,8 @@ Naujas įdiegimas</translation>
 <translation id="7720410380936703141">BANDYKITE DAR KARTĄ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pranešimas}one{# pranešimas}few{# pranešimai}many{# pranešimo}other{# pranešimų}}</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Rodyti programas lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
 <translation id="7749640678855296659">MIkrofonas šiuo metu išjungtas</translation>

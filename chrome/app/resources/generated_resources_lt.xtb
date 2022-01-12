@@ -3230,6 +3230,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4275830172053184480">Iš naujo paleisti įrenginį</translation>
 <translation id="4278390842282768270">Leidžiama</translation>
 <translation id="4279129444466079448">Galite įdiegti iki <ph name="PROFILE_LIMIT" /> „eSIM“ kortelės profilių šiame įrenginyje. Norėdami pridėti kitą profilį, pirmiausia pašalinkite esamą profilį.</translation>
+<translation id="4280325816108262082">Įrenginys bus automatiškai atjungtas, kai bus išjungtas ar nenaudojamas</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
 <translation id="4282196459431406533">„Smart Lock“ įjungta</translation>
 <translation id="4284755288573763878">Išjungti patobulintą saugą?</translation>
@@ -3693,6 +3694,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4785719467058219317">Naudojate saugos raktą, kuris nėra užregistruotas šioje svetainėje</translation>
 <translation id="478708757211772586">Eikite pirmyn ekrane naudodami jungiklį „Kitas“</translation>
 <translation id="4788092183367008521">Patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
+<translation id="4789550509729954245">Rodyti pranešimą, kai įrenginiai bendrina netoliese</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> nuotrauk.</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Įgalinti „TrackPoint“ spartinimą</translation>
@@ -4054,6 +4056,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5171343362375269016">Sukeista atmintis</translation>
 <translation id="5172855596271336236">Yra vienas tvarkomas spausdintuvas.</translation>
 <translation id="5173668317844998239">Pridedami ir ištrinami saugos rate išsaugoti kontroliniai kodai</translation>
+<translation id="5174169235862638850">Slaptažodis nukopijuotas į iškarpinę</translation>
 <translation id="5175379009094579629">Įrenginio pavadinimas netinkamas. Įveskite tinkamą įrenginio pavadinimą ir bandykite dar kartą.</translation>
 <translation id="5177479852722101802">Toliau blokuoti prieigą prie fotoaparato ir mikrofono</translation>
 <translation id="5177549709747445269">Naudojate mobiliuosius duomenis</translation>
@@ -4348,6 +4351,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5490721031479690399">„Bluetooth“ įrenginio atjungimas</translation>
 <translation id="5490798133083738649">Leidimas „Linux“ pasiekti mikrofoną</translation>
 <translation id="549211519852037402">Smėlio spalva ir balta</translation>
+<translation id="5492637351392383067">Šifruotė įrenginyje</translation>
 <translation id="5493792505296048976">ekranas įjungtas</translation>
 <translation id="5494016731375030300">Neseniai uždaryti skirtukai</translation>
 <translation id="5494362494988149300">&amp;Baigus atidaryti</translation>
@@ -6546,6 +6550,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7775694664330414886">Skirtukas perkeltas į grupę be pavadinimo – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> galės peržiūrėti failus aplanke „<ph name="FOLDERNAME" />“, kol uždarysite visus šios svetainės skirtukus</translation>
 <translation id="7776701556330691704">Balsų nerasta</translation>
+<translation id="7777284276915203144">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
 <translation id="7781335840981796660">Bus pašalintos visos naudotojo paskyros ir vietiniai duomenys.</translation>
 <translation id="7782102568078991263">Daugiau „Google“ pasiūlymų nėra</translation>
 <translation id="7782717250816686129">Išsaugoti nuolatinius duomenis prisijungimo ekrane ir įvesti prisijungimo pradedant seansą.</translation>
@@ -7198,6 +7203,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8428634594422941299">Supratau</translation>
 <translation id="84297032718407999">Būsite atjungti po <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Rodyti palietimus</translation>
+<translation id="8431730749911729314">Šifruokite slaptažodžius įrenginyje prieš išsaugodami juos „Google“ slaptažodžių tvarkytuvėje</translation>
 <translation id="8434480141477525001">„Native Client“ derinimo prievadas</translation>
 <translation id="8435395510592618362">Patvirtinkite savo tapatybę naudodami „<ph name="APP_NAME" />“</translation>
 <translation id="8437209419043462667">JAV</translation>
@@ -7990,6 +7996,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="947667444780368238"><ph name="ORIGIN" /> negali atidaryti šiame aplanke esančių failų, nes aplanke yra sistemos failų</translation>
 <translation id="950307215746360464">Sąrankos vadovas</translation>
 <translation id="951991426597076286">Atmesti</translation>
+<translation id="952471655966876828">Įrenginys bus automatiškai prijungtas, kai bus įjungtas ar naudojamas</translation>
 <translation id="953434574221655299">Leidžiama sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="956500788634395331">Esate apsaugoti nuo potencialiai žalingų plėtinių</translation>
 <translation id="957960681186851048">Ši svetainė bandė automatiškai atsisiųsti kelis failus</translation>

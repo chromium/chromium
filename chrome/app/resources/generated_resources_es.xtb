@@ -3673,6 +3673,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4785719467058219317">Estás usando una llave de seguridad que no se ha registrado en este sitio web</translation>
 <translation id="478708757211772586">Usa "Siguiente" para avanzar en la pantalla</translation>
 <translation id="4788092183367008521">Revisa tu conexión de red y vuelve a intentarlo.</translation>
+<translation id="4789550509729954245">Mostrar notificación cuando algún dispositivo cercano esté compartiendo archivos</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Habilitar aceleración del TrackPoint</translation>
@@ -4034,6 +4035,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5171343362375269016">Memoria trasladada al espacio de reserva</translation>
 <translation id="5172855596271336236">Hay 1 impresora gestionada.</translation>
 <translation id="5173668317844998239">Añade y borra las huellas dactilares guardadas en tu llave de seguridad</translation>
+<translation id="5174169235862638850">Se ha copiado la contraseña en el portapapeles</translation>
 <translation id="5175379009094579629">El nombre del dispositivo no es válido. Introduce uno válido para intentarlo de nuevo.</translation>
 <translation id="5177479852722101802">Seguir bloqueando el acceso a la cámara y al micrófono</translation>
 <translation id="5177549709747445269">Estás utilizando datos móviles</translation>

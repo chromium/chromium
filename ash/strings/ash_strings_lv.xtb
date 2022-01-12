@@ -53,6 +53,10 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1247519845643687288">Pēdējās izmantotās lietotnes</translation>
 <translation id="1252999807265626933">Uzlādes avots: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kādi ir laikapstākļi?</translation>
+<translation id="1262870540683925850">No <ph name="START_TIME" /> līdz 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Atlasiet pasākumu, lai skatītu plašāku informāciju Google kalendārā.</translation>
 <translation id="1266097335951928626">Ieslēgt pašbilžu kameru</translation>
 <translation id="1267032506238418139">Īsinājumtaustiņš mainīts</translation>
 <translation id="1269405891096105529">Perifērā ierīce netiek atbalstīta viesa režīmā.</translation>
@@ -997,6 +1001,8 @@ Jauna instalācija</translation>
 <translation id="7720410380936703141">MĒĢINĀT VĒLREIZ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 paziņojums}zero{# paziņojumu}one{# paziņojums}other{# paziņojumi}}</translation>
 <translation id="7724603315864178912">Izgriezt</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Rādīt lietotņu joslu</translation>
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
 <translation id="7749640678855296659">Jūsu mikrofons pašlaik ir izslēgts</translation>

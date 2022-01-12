@@ -3676,6 +3676,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4785719467058219317">Vous utilisez une clé de sécurité qui n'est pas enregistrée auprès de ce site Web</translation>
 <translation id="478708757211772586">Utilisez le commutateur « Suivant » pour avancer sur l'écran</translation>
 <translation id="4788092183367008521">Veuillez vérifier votre connexion réseau et réessayer.</translation>
+<translation id="4789550509729954245">Afficher une notification lorsque des appareils partagent du contenu à proximité</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Activer l'accélération du TrackPoint</translation>
@@ -4037,6 +4038,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5171343362375269016">Mémoire échangée</translation>
 <translation id="5172855596271336236">Il y a 1 imprimante gérée.</translation>
 <translation id="5173668317844998239">Ajoutez et supprimez des empreintes digitales enregistrées sur votre clé de sécurité</translation>
+<translation id="5174169235862638850">Le mot de passe a été copié dans le presse-papiers</translation>
 <translation id="5175379009094579629">Le nom de l'appareil n'est pas valide. Entrez un nom d'appareil valide pour réessayer.</translation>
 <translation id="5177479852722101802">Continuer à bloquer l'accès à la caméra et au microphone</translation>
 <translation id="5177549709747445269">Vous utilisez les données mobiles</translation>

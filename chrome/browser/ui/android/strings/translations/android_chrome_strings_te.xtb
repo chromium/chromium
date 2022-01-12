@@ -500,6 +500,7 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ని అప్‌డేట్ చేయి</translation>
 <translation id="3912508018559818924">వెబ్ నుండి ఉత్తమమైనది కనుగొంటోంది…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ఆన్‌లో ఉంది</translation>
+<translation id="3925830358619338299">మీ పాస్‌వర్డ్ Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ అవ్వడానికంటే ముందు అది మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయబడుతుంది</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">నా డేటాను కలపండి</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">Chrome గురించి తెలుసుకోండి</translation>
 <translation id="5487521232677179737">డేటాని తీసివేయి</translation>
 <translation id="549025011754480756">మీ వాయిస్‌తో సెర్చ్ చేయడం ఎలా</translation>
+<translation id="5492637351392383067">పరికరంలో ఎన్‌క్రిప్షన్</translation>
 <translation id="5514904542973294328">ఈ పరికర నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="5515439363601853141">మీ పాస్‌వర్డ్‌ను చూడడానికి అన్‌లాక్ చేయండి</translation>
 <translation id="5517095782334947753">మీరు <ph name="FROM_ACCOUNT" /> నుండి బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు మరియు ఇతర సెట్టింగ్‌లను కలిగి ఉన్నారు.</translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">ప్రివ్యూ ట్యాబ్ సగం తెరవబడింది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8430824733382774043">స్క్రీన్‌షాట్‌ను మాత్రమే షేర్ చేయండి</translation>
+<translation id="8431730749911729314">పాస్‌వర్డ్‌లు Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ అవ్వడానికంటే ముందు వాటిని మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8438566539970814960">సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - భాష సిద్ధంగా ఉంది, <ph name="APP_NAME" />ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="8442258441309440798">కథనాలు ఏవీ అందుబాటులో లేవు</translation>

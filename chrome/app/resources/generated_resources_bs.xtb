@@ -3225,6 +3225,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4275830172053184480">Ponovo pokrenite uređaj</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="4279129444466079448">Možete instalirati najviše <ph name="PROFILE_LIMIT" /> eSIM profil/a na ovom uređaju. Da dodate drugi profil, najprije uklonite postojeći profil.</translation>
+<translation id="4280325816108262082">Povezanost s uređajem se neće automatski prekinuti kada se isključi ili ne koristi</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
 <translation id="4282196459431406533">Pametno zaključavanje je uključeno</translation>
 <translation id="4284755288573763878">Isključiti poboljšanu sigurnost?</translation>
@@ -4345,6 +4346,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5490721031479690399">Prekini povezanost s Bluetooth uređajem</translation>
 <translation id="5490798133083738649">Dozvolite Linuxu da pristupi mikrofonu</translation>
 <translation id="549211519852037402">Bež i bijela</translation>
+<translation id="5492637351392383067">Šifriranje na uređaju</translation>
 <translation id="5493792505296048976">ekran je uključen</translation>
 <translation id="5494016731375030300">Nedavno zatvorene kartice</translation>
 <translation id="5494362494988149300">Otvori kada bude &amp;gotovo</translation>
@@ -6542,6 +6544,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7775694664330414886">Kartica je premještena u neimenovanu grupu – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> će moći prikazivati fajlove u folderu <ph name="FOLDERNAME" /> dok ne zatvorite sve kartice za ovu web lokaciju</translation>
 <translation id="7776701556330691704">Nije pronađen nijedan glas</translation>
+<translation id="7777284276915203144">Lozinke se šifriraju na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki</translation>
 <translation id="7781335840981796660">Uklonit će se računi svih korisnika i svi lokalni podaci.</translation>
 <translation id="7782102568078991263">Google nema više prijedloga</translation>
 <translation id="7782717250816686129">Pohrani trajne podatke na ekranu za prijavu i ubaci akreditive u sesiju.</translation>
@@ -7194,6 +7197,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8428634594422941299">Shvaćam</translation>
 <translation id="84297032718407999">Bit ćete odjavljeni za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Prikaži dodire</translation>
+<translation id="8431730749911729314">Šifrirajte lozinke na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki</translation>
 <translation id="8434480141477525001">NaCl port za otklanjanje grešaka</translation>
 <translation id="8435395510592618362">Potvrdite identitet pomoću aplikacije <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">SAD</translation>
@@ -7985,6 +7989,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne može otvoriti fajlove u ovom folderu jer on sadrži sistemske fajlove</translation>
 <translation id="950307215746360464">Vodič za postavljanje</translation>
 <translation id="951991426597076286">Odbij</translation>
+<translation id="952471655966876828">Uređaj će se automatski povezati kada se uključi i koristi</translation>
 <translation id="953434574221655299">Dozvoljeno je znati kada aktivno koristite uređaj</translation>
 <translation id="956500788634395331">Zaštićeni ste od potencijalno štetnih ekstenzija</translation>
 <translation id="957960681186851048">Ova web lokacija je pokušala automatski preuzeti više fajlova</translation>

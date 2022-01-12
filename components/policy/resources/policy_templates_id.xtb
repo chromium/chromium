@@ -130,6 +130,7 @@
             * ntlm
             Membiarkan opsi ini kosong akan memungkinkan ketiga skema digunakan.</translation>
 <translation id="1153306961094113710">Mengizinkan proses debug jarak jauh</translation>
+<translation id="115699958189272121">Laporkan peristiwa <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
 <translation id="1158844608156732189">Konfigurasi Kerberos (satu baris per item array), lihat https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Izinkan protokol QUIC</translation>
 <translation id="1160939557934457296">Menonaktifkan untuk melanjutkan dari halaman peringatan Safe Browsing</translation>
@@ -3992,6 +3993,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif, file PDF akan dibuka kecuali jika pengguna menonaktifkan plugin PDF.
 
       Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memilih apakah akan membuka PDF secara eksternal atau tidak.</translation>
+<translation id="5705828032077475554">Melaporkan sesi CRD</translation>
 <translation id="5708969689202733975">Mengonfigurasi mode buka kunci cepat yang diizinkan</translation>
 <translation id="5714563837055244378">Aktifkan berbagi Aplikasi Android ke Aplikasi Web.</translation>
 <translation id="5715617256528927547">Menyetel kebijakan akan menentukan masa berlaku cache Objek Kebijakan Grup (GPO) dalam hitungan jam. GPO dengan durasi maksimum dapat digunakan kembali sebelum didownload ulang. Daripada mendownload ulang GPO pada setiap pengambilan kebijakan, sistem akan menggunakan kembali GPO yang di-cache selama versinya tidak berubah.
@@ -4592,6 +4594,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke benar (true) atau tidak disetel, konfigurasi jaringan perangkat akan dilaporkan.</translation>
 <translation id="6401669939808766804">Paksa pengguna logout</translation>
 <translation id="640244877779556713">Mengaktifkan Saran Emoji</translation>
+<translation id="6404064917675764807">Jangan laporkan peristiwa sesi CRD</translation>
 <translation id="6407093060083181305">Mengonfigurasi daftar penginstalan ekstensi yang tidak diizinkan</translation>
 <translation id="640827304541402854">Nonaktifkan firewall traversal dari host akses jarak jauh</translation>
 <translation id="6412352702230183710">Hanya izinkan host pesan native tingkat sistem</translation>
@@ -4955,6 +4958,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika tidak ditetapkan, Mode kontras tinggi akan dinonaktifkan di layar login. Pengguna dapat mengaktifkannya kapan saja, dan statusnya di layar login tetap bertahan walaupun pengguna sudah berbeda.
 
           Catatan: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> akan mengganti kebijakan ini jika kebijakan tersebut ditentukan.</translation>
+<translation id="6833462729740272863">Mengonfigurasi daftar URL yang diizinkan tetap berada dalam mode layar penuh tanpa menampilkan notifikasi saat perangkat kembali aktif setelah layarnya dikunci.
+
+          Biasanya, mode layar penuh dinonaktifkan saat perangkat kembali aktif setelah layarnya dikunci untuk mengurangi risiko serangan phising. Kebijakan ini memungkinkan penentuan URL yang akan dianggap sebagai sumber tepercaya yang akan diizinkan untuk terus berada dalam mode layar penuh saat kunci dibuka. Kebijakan ini disetel dengan menentukan daftar pola URL yang diformat sesuai dengan format berikut ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Misalnya, tindakan untuk selalu mempertahankan mode layar penuh sekaligus menonaktifkan notifikasi dapat dilakukan dengan menentukan karakter pengganti <ph name="WILDCARD_VALUE" /> agar cocok dengan semua URL.
+
+          Jika kebijakan ini disetel ke daftar kosong atau tidak disetel, tidak ada URL yang akan diizinkan untuk terus berada dalam mode layar penuh tanpa notifikasi.</translation>
 <translation id="6833988859168635883">Halaman Awal, Halaman Beranda, dan halaman Tab Baru</translation>
 <translation id="6835883744948188639">Tampilkan permintaan berulang kepada pengguna yang menunjukkan bahwa peluncuran ulang direkomendasikan</translation>
 <translation id="683688607121170501">Setelan ini memungkinkan pengguna beralih ke Akun Google lain di dalam area konten jendela browser dan aplikasi Android setelah mereka login ke perangkat <ph name="PRODUCT_OS_NAME" />.
@@ -6168,6 +6176,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="8219813789911069300">Blokir download berbahaya. Direkomendasikan.</translation>
 <translation id="8220023426952118761">Kecepatan download yang diinginkan dalam kbit/dtk.</translation>
 <translation id="8220156281401380422">Mengonfigurasi daftar pesan native yang diizinkan</translation>
+<translation id="822055204938220476">Daftar URL yang diizinkan tetap berada dalam mode layar penuh tanpa menampilkan notifikasi</translation>
 <translation id="8229912067600517877">Aktifkan Developer Tools</translation>
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
 <translation id="8239109177194627162">Nonaktifkan Isi Otomatis untuk kartu kredit</translation>
@@ -6506,6 +6515,10 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8544465954173828789">Izinkan SMS disinkronkan dari ponsel ke Chromebook.</translation>
 <translation id="8566842294717252664">Menyembunyikan toko web dari Halaman Tab Baru dan peluncur aplikasi</translation>
 <translation id="8571314270766672278">Roll back dan reset perangkat saat downgrade saluran rilis, coba pertahankan pendaftaran</translation>
+<translation id="8571871284943706125">Melaporkan peristiwa sesi CRD pada perangkat terdaftar bagi pengguna terafiliasi.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, informasi tidak akan dilaporkan.
+      Jika kebijakan disetel ke Aktif, peristiwa CRD akan dilaporkan saat pengguna terafiliasi.</translation>
 <translation id="857369585509260201">Kebijakan ini tidak digunakan lagi. Pertimbangkan untuk menggunakan BrowserSignin.
 
       Jika kebijakan ini ditetapkan ke true, pengguna harus login ke <ph name="PRODUCT_NAME" /> dengan profilnya sebelum menggunakan browser. Nilai default BrowserGuestModeEnabled akan ditetapkan ke false. Harap diperhatikan bahwa profil yang ada dan belum ditandatangani akan dikunci dan tidak dapat diakses setelah kebijakan ini diaktifkan. Untuk informasi selengkapnya, lihat artikel pusat bantuan.

@@ -3211,6 +3211,7 @@
 <translation id="4275830172053184480">Поновно покретање уређаја</translation>
 <translation id="4278390842282768270">Дозвољено</translation>
 <translation id="4279129444466079448">На овом уређају можете да инсталирате највише <ph name="PROFILE_LIMIT" /> eSIM пpофила. Да бисте додали још један профил, уклоните постојећи.</translation>
+<translation id="4280325816108262082">Веза са уређајем ће се аутоматски искључити када се уређај искључи или се не користи</translation>
 <translation id="4281844954008187215">Услови коришћења услуге</translation>
 <translation id="4282196459431406533">Smart Lock је укључен</translation>
 <translation id="4284755288573763878">Желите ли да искључите побољшану безбедност?</translation>
@@ -4163,7 +4164,7 @@
 <translation id="5305145881844743843">Овим налогом управља <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Извор није подржан</translation>
 <translation id="5307386115243749078">Упарите Bluetooth прекидач</translation>
-<translation id="5308380583665731573">Повезивање</translation>
+<translation id="5308380583665731573">Повежи</translation>
 <translation id="5309418307557605830">Google помоћник ради и овде</translation>
 <translation id="5310281978693206542">Пошаљите линк на своје уређаје</translation>
 <translation id="5311304534597152726">Пријављујете се као</translation>
@@ -4329,6 +4330,7 @@
 <translation id="5490721031479690399">Прекините везу са Bluetooth уређајем</translation>
 <translation id="5490798133083738649">Дозволи Linux-у да приступа микрофону</translation>
 <translation id="549211519852037402">Беж и бела</translation>
+<translation id="5492637351392383067">Шифровање на уређају</translation>
 <translation id="5493792505296048976">екран је укључен</translation>
 <translation id="5494016731375030300">Недавно затворене картице</translation>
 <translation id="5494362494988149300">Отвори када буде &amp;довршено</translation>
@@ -6527,6 +6529,7 @@
 <translation id="7775694664330414886">Картица је премештена у неименовану групу – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ће моћи да прегледа датотеке у директоријуму <ph name="FOLDERNAME" /> док не затворите све картице овог сајта</translation>
 <translation id="7776701556330691704">Није пронађен ниједан глас</translation>
+<translation id="7777284276915203144">Лозинке се шифрују на уређају пре него што се сачува у Google менаџеру лозинки</translation>
 <translation id="7781335840981796660">Сви кориснички налози и локални подаци ће бити уклоњени.</translation>
 <translation id="7782102568078991263">Нема више предлога са Google-а</translation>
 <translation id="7782717250816686129">Чува податке који се понављају на екрану за пријављивање и умеће акредитиве у сесију.</translation>
@@ -7178,6 +7181,7 @@
 <translation id="8428634594422941299">Важи</translation>
 <translation id="84297032718407999">Одјавићете се за <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Приказ додира</translation>
+<translation id="8431730749911729314">Шифрујте лозинке на уређају пре него што се сачувају у Google менаџер лозинки</translation>
 <translation id="8434480141477525001">NaCl порт за отклањање грешака</translation>
 <translation id="8435395510592618362">Потврдите идентитет помоћу <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">америчка</translation>
@@ -7969,6 +7973,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> не може да отвори фајлове у овом фолдеру јер он садржи системске фајлове</translation>
 <translation id="950307215746360464">Водич за подешавање</translation>
 <translation id="951991426597076286">Одбиј</translation>
+<translation id="952471655966876828">Веза са уређајем ће се аутоматски укључити када се уређај укључи или се користи</translation>
 <translation id="953434574221655299">Имају дозволу да знају када активно користите уређај</translation>
 <translation id="956500788634395331">Штитимо вас од потенцијално штетних додатака</translation>
 <translation id="957960681186851048">Овај сајт је покушао да аутоматски преузме више датотека</translation>

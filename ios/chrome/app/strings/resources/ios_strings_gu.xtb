@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1434356225517321998">તમારું બ્રાઉઝર મેનેજ કરવામાં આવી રહ્યું છે. <ph name="BEGIN_LINK" />વિગતો<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
 <translation id="1449835205994625556">પાસવર્ડ છુપાવો</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> આઇટમ્સ</translation>
 <translation id="149095475893949513">આ વેબસાઇટ કન્ફિગ્યુરેશન પ્રોફાઇલ ડાઉનલોડ કરવાનો પ્રયાસ કરી રહી છે.</translation>
@@ -286,7 +285,6 @@
 <translation id="3529024052484145543">સુરક્ષિત નથી</translation>
 <translation id="3533202363250687977">બધાં છૂપા ટૅબ બંધ કરો</translation>
 <translation id="3533436815740441613">નવું ટૅબ</translation>
-<translation id="3536487890564466894">તમારા પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે, તે પહેલાં તેમને એન્ક્રિપ્ટ કરો.</translation>
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
@@ -614,6 +612,7 @@
 <translation id="6524918542306337007">છૂપો મોડ ઉપલબ્ધ નથી</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">મોટું કરો</translation>
+<translation id="6583087784430677195">બંધ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" /> ખોલો અને પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા પર જાઓ.</translation>
 <translation id="6585618849026997638">તમે બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
 <translation id="6603393121510733479">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

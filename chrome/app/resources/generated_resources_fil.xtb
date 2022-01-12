@@ -3228,6 +3228,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
 <translation id="4279129444466079448">Puwede kang mag-install nang hanggang <ph name="PROFILE_LIMIT" /> (na) profile ng eSIM sa device na ito. Para magdagdag ng isa pang profile, mag-alis muna ng dati nang profile.</translation>
+<translation id="4280325816108262082">Awtomatikong madidiskonekta ang device kapag na-off ito o hindi ito ginagamit</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4282196459431406533">Naka-on ang Smart Lock</translation>
 <translation id="4284755288573763878">I-off ang pinahusay na seguridad?</translation>
@@ -4348,6 +4349,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5490721031479690399">Idiskonekta ang Bluetooth device</translation>
 <translation id="5490798133083738649">Payagan ang Linux na ma-access ang iyong mikropono</translation>
 <translation id="549211519852037402">Beige at puti</translation>
+<translation id="5492637351392383067">On-device na pag-encrypt</translation>
 <translation id="5493792505296048976">naka-on ang screen</translation>
 <translation id="5494016731375030300">Mga Kamakailang Isinarang Tab</translation>
 <translation id="5494362494988149300">Buksan Kapag &amp;Tapos Na</translation>
@@ -6545,6 +6547,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7775694664330414886">Inilipat ang tab sa isang grupong walang pangalan - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Matitingnan ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /> hanggang sa isara mo ang lahat ng tab para sa site na ito</translation>
 <translation id="7776701556330691704">Walang nakitang boses</translation>
+<translation id="7777284276915203144">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager</translation>
 <translation id="7781335840981796660">Aalisin ang lahat ng user account at lokal na data.</translation>
 <translation id="7782102568078991263">Wala nang mga suhestiyon mula sa Google</translation>
 <translation id="7782717250816686129">I-store ang mga persistent data sa screen sa pag-log in at ilagay ang mga kredensyal sa session.</translation>
@@ -7197,6 +7200,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Masa-sign out ka sa loob ng <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Ipakita ang mga pag-tap</translation>
+<translation id="8431730749911729314">I-encrypt ang mga password sa iyong device bago i-save ang mga ito sa Google Password Manager</translation>
 <translation id="8434480141477525001">NaCl Debug Port</translation>
 <translation id="8435395510592618362">I-verify ang iyong pagkakakilanlan gamit ang <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">US</translation>
@@ -7989,6 +7993,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="947667444780368238">Hindi mabuksan ng <ph name="ORIGIN" /> ang mga file sa folder na ito dahil naglalaman ito ng mga file ng system</translation>
 <translation id="950307215746360464">Gabay sa pag-set up</translation>
 <translation id="951991426597076286">Tanggihan</translation>
+<translation id="952471655966876828">Awtomatikong makokonekta ang device kapag na-on at ginagamit ito</translation>
 <translation id="953434574221655299">Pinapayagang makaalam kung aktibo mong ginagamit ang iyong device</translation>
 <translation id="956500788634395331">Protektado ka mula sa mga potensyal na mapaminsalang extension</translation>
 <translation id="957960681186851048">Sinubukan ng site na ito na awtomatikong mag-download ng maraming file</translation>

@@ -500,6 +500,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3908308510347173149">Eguneratu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Sareko gauzarik onenak bilatzen…</translation>
 <translation id="3924911262913579434">"<ph name="SAFE_BROWSING_MODE" />" aktibatuta dago</translation>
+<translation id="3925830358619338299">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea atalean gorde aurretik</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Bateratu nire datuak</translation>
 <translation id="3934366560681368531">"</translation>
@@ -772,6 +773,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5483197086164197190">Chrome-n nabigatzea</translation>
 <translation id="5487521232677179737">Garbitu datuak</translation>
 <translation id="549025011754480756">Ahotsa erabilita bilatzeko argibideak</translation>
+<translation id="5492637351392383067">Gailuan bertan enkriptatzea</translation>
 <translation id="5514904542973294328">Gailu honen administratzaileak desgaitu du</translation>
 <translation id="5515439363601853141">Desblokeatu pasahitza ikusteko</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> kontuko laster-markak, historia, pasahitzak eta beste ezarpen batzuk dituzu.</translation>
@@ -1321,6 +1323,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8427875596167638501">Aurrebista-fitxa erdi irekita dago</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8430824733382774043">Partekatu pantaila-argazkia soilik</translation>
+<translation id="8431730749911729314">Enkriptatu pasahitzak gailuan Google-ren Pasahitz-kudeatzailea atalean gorde aurretik</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8439974325294139057"><ph name="LANG" />: hizkuntza-paketea prest dago; berrabiarazi <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Ez dago istorio berririk</translation>

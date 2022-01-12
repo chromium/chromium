@@ -60,7 +60,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1434356225517321998">Teie brauserit hallatakse. <ph name="BEGIN_LINK" />Üksikasjad<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Krüpteerimine seadmes</translation>
 <translation id="1449835205994625556">Peida parool</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> üksust</translation>
 <translation id="149095475893949513">See veebisait üritab alla laadida seadistusprofiili.</translation>
@@ -95,6 +94,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1690731385917361335">Üksuseid pole</translation>
 <translation id="1692118695553449118">Sünkroonimine on sisse lülitatud</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valitud</translation>
+<translation id="1726573592754903697">Google'i paroolihaldur</translation>
 <translation id="1740468249224277719">Installimiseks topeltpuudutage.</translation>
 <translation id="1752547299766512813">Paroolide salv.</translation>
 <translation id="1753905327828125965">Enim külastatud</translation>
@@ -285,7 +285,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3529024052484145543">Pole turvaline</translation>
 <translation id="3533202363250687977">Sule kõik inkognito vahelehed</translation>
 <translation id="3533436815740441613">Uus vaheleht</translation>
-<translation id="3536487890564466894">Krüpteerige oma paroolid, enne kui need teie Google'i kontole salvestatakse.</translation>
 <translation id="3551320343578183772">Sule vaheleht</translation>
 <translation id="3581564640715911333">Paku muudes keeltes olevate lehtede tõlkimist</translation>
 <translation id="3588820906588687999">Ava kujutis uuel vahelehel</translation>
@@ -563,6 +562,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6219688215832490856">Ära kunagi tõlgi:</translation>
 <translation id="6223816392543092032">Kasutage kõigis seadmetes oma järjehoidjaid, ajalugu, paroole ja muid seadeid.</translation>
 <translation id="6232329973559504466">Inkognito režiimis otsing</translation>
+<translation id="6232736989810857397">See võimaldab teil Google Lensiga hõlpsasti kalendrisündmusi luua.</translation>
 <translation id="6254066287920239840">Avage lingid brauseri asemel rakenduses.</translation>
 <translation id="6255097610484507482">Muuda krediitkaarti</translation>
 <translation id="6284652193729350524">Paku tõlkimist keelde <ph name="LANGUAGE" /></translation>

@@ -130,6 +130,7 @@
             * ntlm
             Falls diese Option leer ist, können alle drei Schemas verwendet werden.</translation>
 <translation id="1153306961094113710">Remote-Debugging zulassen</translation>
+<translation id="115699958189272121"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />-Ereignisse melden</translation>
 <translation id="1158844608156732189">Kerberos-Konfiguration (eine Zeile pro Array-Element), siehe https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">QUIC-Protokoll zulassen</translation>
 <translation id="1160939557934457296">Fortfahren von der Safe Browsing-Hinweisseite deaktivieren</translation>
@@ -473,6 +474,7 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Ist diese Richtlinie deaktiviert, dürfen nicht sichere HTTP-Anfragen das <ph name="BASIC_AUTH" />-Authentifizierungsschema nicht verwenden; nur HTTPS ist zulässig.
 
       Diese Richtlinieneinstellung wird ignoriert (und <ph name="BASIC_AUTH" /> ist immer verboten), wenn die Richtlinie <ph name="AUTH_SCHEMES_POLICY_NAME" /> konfiguriert ist und das <ph name="BASIC_AUTH" />-Schema nicht enthält.</translation>
+<translation id="1574258262373444557"><ph name="AES_KL_NAME" /> nicht als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
 <translation id="1583248206450240930">Standardmäßig <ph name="PRODUCT_FRAME_NAME" /> verwenden</translation>
 <translation id="1587042984081085960">Mit dieser Richtlinie kann ein Administrator festlegen, ob eine Seite beim Schließen eine synchrone XHR-Anfrage senden darf.
@@ -604,6 +606,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="167514072300004091">Wenn die Richtlinie auf "3" gesetzt ist, können Websites den Zugriff auf angeschlossene USB-Geräte erfragen. Wenn die Richtlinie auf "2" gesetzt ist, wird der Zugriff auf angeschlossene USB-Geräte verweigert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="1678137412645922426">Die Richtlinie legt die Verwendung von <ph name="AES_KL_NAME" /> für die Verschlüsselung des Nutzerdatenspeichers fest, wenn diese unterstützt wird</translation>
 <translation id="1682063842123336408">Für die Installation von <ph name="PLUGIN_VM_NAME" /> erforderlicher freier Speicherplatz (in GB).
 
       Wenn die Richtlinie nicht konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn weniger als 20 GB (Standardwert) freier Speicherplatz auf dem Gerät verfügbar sind.
@@ -3866,6 +3869,12 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
       Wenn diese Richtlinie nicht konfiguriert ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können die Funktion nicht verwenden, während sie für nicht verwaltete Nutzer zur Verfügung steht.</translation>
 <translation id="5584132346604748282">Standortdienste von Google unter Android konfigurieren</translation>
+<translation id="5585384603219625331">Diese Richtlinie legt fest, ob die <ph name="AES_KL_NAME" />-Implementierung für die Verschlüsselung des Nutzerdatenspeichers für das Zuhause eines Nutzers auf Chrome OS mit <ph name="DM_CRYPT" /> aktiviert ist, wenn diese unterstützt wird.
+
+       Diese Richtlinie gilt nur, wenn <ph name="DM_CRYPT" /> zur Verschlüsselung für das Zuhause verwendet wird. Ein veraltetes Zuhause – also ein Zuhause, für das <ph name="DM_CRYPT" /> nicht verwendet wird – unterstützt die Verwendung von <ph name="AES_KL_NAME" /> nicht. Stattdessen wird standardmäßig <ph name="AES_NI_NAME" /> verwendet.
+
+       Wenn sich der Wert der Richtlinie ändert, wird auf ein bestehendes Zuhause mit <ph name="DM_CRYPT" /> über die Verschlüsselungsimplementierung zugegriffen, die von der Richtlinie konfiguriert wurde, weil die <ph name="AES_ALGORITHM_NAME" />-Implementierungen kompatibel sind.
+       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird für die Verschlüsselung des Nutzerdatenspeichers für das Zuhause eines Nutzers mit <ph name="DM_CRYPT" /> standardmäßig <ph name="AES_NI_NAME" /> verwendet.</translation>
 <translation id="5586942249556966598">Nichts tun</translation>
 <translation id="5598417829613725146">Canvas (wird seit Version 90 unterstützt)</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" />-Verwaltungseinstellungen</translation>
@@ -3957,6 +3966,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
       Ist die Richtlinie auf „Disabled“ gesetzt, werden PDF-Dateien mit dem PDF-Plug-in geöffnet, sofern es nicht von den Nutzern deaktiviert wird.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn sie nicht konfiguriert ist, können Nutzer entscheiden, ob das PDF extern geöffnet werden soll.</translation>
+<translation id="5705828032077475554">CRD-Sitzungen melden</translation>
 <translation id="5708969689202733975">Zulässige Modi für das schnelle Entsperren konfigurieren</translation>
 <translation id="5714563837055244378">Freigabe zwischen Android-Apps und Webanwendungen aktivieren.</translation>
 <translation id="5715617256528927547">Wenn die Richtlinie konfiguriert ist, wird die Cachelebensdauer von Gruppenrichtlinienobjekten (Group Policy Objects, GPOs) in Stunden festgelegt. Das ist die maximale Dauer, während der GPOs wiederverwendet werden können, bevor sie nochmals heruntergeladen werden. Anstatt sie bei jedem Richtlinienabruf herunterzuladen, kann das System die im Cache gespeicherten GPOs nochmals verwenden, solange die Version dieselbe ist.
@@ -4545,6 +4555,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Ist sie auf „true“ festgelegt oder nicht konfiguriert, wird die Netzwerkkonfiguration des Geräts ausgegeben.</translation>
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
+<translation id="6404064917675764807">Ereignisse in CRD-Sitzungen nicht melden</translation>
 <translation id="6407093060083181305">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="640827304541402854">Firewallausnahme über Host für Remotezugriff deaktivieren</translation>
 <translation id="6412352702230183710">Native Nachrichtenhosts nur auf Systemebene zulassen</translation>
@@ -4908,6 +4919,11 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
       Wird sie nicht konfiguriert, ist der Modus mit hohem Kontrast auf dem Anmeldebildschirm deaktiviert. Sie kann jederzeit von Nutzern aktiviert werden und der Status auf dem Anmeldebildschirm bleibt für alle Nutzer bestehen.
 
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />" diese Richtlinie.</translation>
+<translation id="6833462729740272863">Mit dieser Richtlinie wird eine Liste mit URLs konfiguriert, die im Vollbildmodus bleiben dürfen, ohne dass eine Benachrichtigung angezeigt werden muss, wenn der Sperrbildschirm des Geräts deaktiviert wird.
+
+          Normalerweise wird der Vollbildmodus ausgeschaltet, wenn der Sperrbildschirm deaktiviert wird, um das Risiko durch Phishing-Angriffe zu reduzieren. Mit dieser Richtlinie können Sie bestimmte URLs angeben, die dann als vertrauenswürdige Quellen gelten und im Vollbildmodus bleiben dürfen, wenn der Sperrbildschirm deaktiviert wird. Wenn Sie diese Richtlinie konfigurieren möchten, müssen Sie eine Liste von URL-Mustern angeben, die folgendermaßen formatiert ist (https://www.chromium.org/administrators/url-blocklist-filter-format). Sie können beispielsweise den Vollbildmodus immer beibehalten, wenn der Sperrbildschirm deaktiviert wird, und die Benachrichtigungen durch das Platzhalterzeichen „<ph name="WILDCARD_VALUE" />“ deaktivieren, das allen URLs entspricht.
+
+          Falls diese Richtlinie nicht konfiguriert ist oder eine leere Liste festgelegt wurde, sind keine URLs von der Vollbildbenachrichtigung ausgenommen.</translation>
 <translation id="6833988859168635883">Start, Startseite und Seite "Neuer Tab"</translation>
 <translation id="6835883744948188639">Dem Nutzer eine wiederkehrende Aufforderung anzeigen, dass ein Neustart empfohlen wird</translation>
 <translation id="683688607121170501">Mit dieser Einstellung können Nutzer nach der Anmeldung auf ihrem <ph name="PRODUCT_OS_NAME" />-Gerät im Inhaltsbereich des Browserfensters und in Android-Apps zwischen Google-Konten wechseln.
@@ -6120,6 +6136,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 <translation id="8219813789911069300">Schädliche Downloads blockieren. Empfohlen.</translation>
 <translation id="8220023426952118761">Gewünschte Download-Rate in kbit/s.</translation>
 <translation id="8220156281401380422">Zulassungsliste für natives Messaging konfigurieren</translation>
+<translation id="822055204938220476">Liste mit URLs, die im Vollbildmodus bleiben dürfen, ohne dass eine Benachrichtigung angezeigt werden muss</translation>
 <translation id="8229912067600517877">Entwicklertools aktivieren</translation>
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
 <translation id="8239109177194627162">„Automatisches Ausfüllen“ für Kreditkarten deaktivieren</translation>
@@ -6472,6 +6489,10 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
+<translation id="8571871284943706125">Mit dieser Richtlinie wird festgelegt, ob Ereignisse in CRD-Sitzungen auf registrierten Geräten für verknüpfte Nutzer gemeldet werden.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
+      Wenn die Richtlinie aktiviert ist, werden CRD-Ereignisse gemeldet, falls es sich um einen verknüpften Nutzer handelt.</translation>
 <translation id="857369585509260201">Diese Richtlinie wird nicht mehr angeboten. Sie können stattdessen "BrowserSignin" verwenden.
 
 Wenn diese Richtlinie auf "true" gesetzt ist, muss sich der Nutzer mit seinem Profil in <ph name="PRODUCT_NAME" /> anmelden, um den Browser zu nutzen. Außerdem wird der Standardwert von BrowserGuestModeEnabled auf "false" gesetzt. Beachten Sie, dass vorhandene Profile ohne angemeldeten Nutzer gesperrt werden und nach Aktivieren dieser Richtlinie nicht mehr zugänglich sind. Weitere Informationen erhalten Sie im Hilfeartikel.
@@ -6524,6 +6545,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8626826495474944836">Website-Isolierung für jede Website erzwingen</translation>
 <translation id="8631434304112909927">Bis Version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Die Liste der Notizen-Apps, die auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> zulässig sind</translation>
+<translation id="8634062512783775032"><ph name="AES_KL_NAME" /> als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden, wenn diese unterstützt wird</translation>
 <translation id="8637566476051166626">Ausdrücklich erlaubte Netzwerkports</translation>
 <translation id="8643838501942693770">Drittanbieter-Cookies zulassen, aber Nutzern ermöglichen, diese Einstellung zu ändern</translation>
 <translation id="8648844602494595665">Mit dieser Richtlinie legen Sie fest, wie das Schloss-Symbol in der Omnibox gehandhabt wird.

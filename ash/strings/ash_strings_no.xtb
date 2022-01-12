@@ -53,6 +53,10 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1247519845643687288">Nylige apper</translation>
 <translation id="1252999807265626933">Lader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er været?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> til 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Velg for å se flere detaljer i Google Kalender.</translation>
 <translation id="1266097335951928626">Start selfie-kamera</translation>
 <translation id="1267032506238418139">Endring av hurtigtast</translation>
 <translation id="1269405891096105529">Den eksterne enheten støttes ikke i Gjestemodus</translation>
@@ -997,6 +1001,8 @@ Nylig installert</translation>
 <translation id="7720410380936703141">PRØV PÅ NYTT</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 varsel}other{# varsler}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Vis apper på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="7749640678855296659">Mikrofonen din er av</translation>

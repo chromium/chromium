@@ -53,6 +53,10 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1247519845643687288">Aplikacionet e fundit</translation>
 <translation id="1252999807265626933">Po karikohet nga <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Si është moti?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> deri në 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Zgjidh për më shumë detaje në "Kalendarin e Google".</translation>
 <translation id="1266097335951928626">Fillo kamerën për selfi</translation>
 <translation id="1267032506238418139">Ndryshim në shkurtore</translation>
 <translation id="1269405891096105529">Pajisja periferike nuk mbështetet në modalitetin "vizitor"</translation>
@@ -997,6 +1001,8 @@ Instalim i ri</translation>
 <translation id="7720410380936703141">PROVO SËRISH</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 njoftim}other{# njoftime}}</translation>
 <translation id="7724603315864178912">Prite</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Shfaq aplikacionet në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="7749640678855296659">Mikrofoni yt është aktualisht i fikur</translation>

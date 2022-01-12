@@ -3691,6 +3691,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4785719467058219317">Du bruger en sikkerhedsnøgle, som ikke er registreret på dette website</translation>
 <translation id="478708757211772586">Brug "Næste" til at gå fremad på skærmen</translation>
 <translation id="4788092183367008521">Tjek din netværksforbindelse, og prøv igen.</translation>
+<translation id="4789550509729954245">Vis en notifikation, når enheder i nærheden deler indhold</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> billede</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktivér TrackPoint-acceleration</translation>
@@ -4052,6 +4053,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5171343362375269016">Ombyttet hukommelse</translation>
 <translation id="5172855596271336236">Der er 1 administreret printer.</translation>
 <translation id="5173668317844998239">Tilføj eller slet de fingeraftryk, der er gemt på din sikkerhedsnøgle</translation>
+<translation id="5174169235862638850">Adgangskoden er kopieret til udklipsholderen</translation>
 <translation id="5175379009094579629">Enhedsnavnet er ugyldigt. Angiv et gyldigt enhedsnavn for at prøve igen.</translation>
 <translation id="5177479852722101802">Fortsæt blokering af adgang til kamera og mikrofon</translation>
 <translation id="5177549709747445269">Du bruger mobildata</translation>

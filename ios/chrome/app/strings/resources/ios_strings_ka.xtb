@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
 <translation id="1434356225517321998">თქვენი ბრაუზერი მართულია. <ph name="BEGIN_LINK" />დეტალურად<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">მოწყობილობაზე დაშიფვრა</translation>
 <translation id="1449835205994625556">პაროლის დამალვა</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ელემენტი</translation>
 <translation id="149095475893949513">ეს ვებსაიტი კონფიგურაციის პროფილის ჩამოტვირთვას ცდილობს.</translation>
@@ -143,6 +142,7 @@
 <translation id="2271351792809375263">გამოიყენეთ თქვენ მიერ Chrome-ში შენახული პაროლები თქვენს მოწყობილობაზე არსებულ სხვა აპებში</translation>
 <translation id="2273327106802955778">ვარიანტების მენიუ</translation>
 <translation id="2286505070150039482">გამოყოფილი ტექსტი</translation>
+<translation id="2299218006564889602">Google-ის პაროლების მმართველში შენახვამდე, თქვენი პაროლები თქვენს მოწყობილობაზე დაიშიფრება.</translation>
 <translation id="2302742851632557585">პაროლის შეცვლა ვებსაიტზე</translation>
 <translation id="2316709634732130529">შემოთავაზებული პაროლის გამოყენება</translation>
 <translation id="2320166752086256636">კლავიატურის დამალვა</translation>
@@ -286,7 +286,6 @@
 <translation id="3529024052484145543">დაუცველი</translation>
 <translation id="3533202363250687977">ყველა ინკოგნიტო ჩანართის დახურვა</translation>
 <translation id="3533436815740441613">ახალი ჩანართი</translation>
-<translation id="3536487890564466894">დაშიფრეთ თქვენი პაროლები, სანამ ისინი თქვენს Google ანგარიშში შეინახება.</translation>
 <translation id="3551320343578183772">ჩანართის დახურვა</translation>
 <translation id="3581564640715911333">სხვა ენებზე არსებული გვერდების თარგმნის შემოთავაზება</translation>
 <translation id="3588820906588687999">გამოსახულების გახსნა ახალ ჩანართზე</translation>
@@ -547,6 +546,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6066301408025741299">შეეხეთ გასაუქმებლად.</translation>
 <translation id="60829778314739003">დათანხმება და გაგრძელება</translation>
 <translation id="6084848228346514841">აირჩიეთ ჩანართები</translation>
+<translation id="6103540626693881831">მოწყობილობაზე დაშიფვრა</translation>
 <translation id="6108923351542677676">მიმდინარეობს დაყენება…</translation>
 <translation id="6119050551270742952">ამჟამად გახსნილი ვებგვერდი ინკოგნიტო რეჟიმშია</translation>
 <translation id="6122191549521593678">ონლაინ</translation>
@@ -614,6 +614,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6524918542306337007">ინკოგნიტო რეჟიმი მიუწვდომელია</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">მასშტაბის გადიდება</translation>
+<translation id="6583087784430677195">გამოსართავად გახსენით <ph name="BEGIN_LINK" />პარამეტრები<ph name="END_LINK" /> და გადადით „პაროლების ავტომატურ შევსებაზე“.</translation>
 <translation id="6585618849026997638">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
 <translation id="6603393121510733479">თქვენმა ორგანიზაციამ გამორთო კონფიდენციალური დათვალიერება.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="797413074872316787">თქვენი ყველა მოწყობილობის სინქრონიზაციისთვისა და პერსონალიზებისთვის ჩართეთ სინქრონიზაცია.</translation>
 <translation id="7978018860671536736">3. შეხებით აირჩიეთ „პაროლების ავტომატური შევსება“</translation>
 <translation id="7982789257301363584">ქსელი</translation>
+<translation id="7987685713885608670">დამატებითი უსაფრთხოებისთვის, Google-ის პაროლების მმართველში შენახვამდე, დაშიფრეთ პაროლები თქვენს მოწყობილობაზე.</translation>
 <translation id="7993619969781047893">ზოგიერთი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს</translation>
 <translation id="800361585186029508">მითითებულ URL-ებს Google Chrome-ში გახსნის.</translation>
 <translation id="802154636333426148">ჩამოტვირთვა ვერ მოხერხდა</translation>

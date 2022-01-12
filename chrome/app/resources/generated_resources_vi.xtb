@@ -3227,6 +3227,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4278390842282768270">Được cho phép</translation>
 <translation id="4279129444466079448">Bạn có thể cài đặt tối đa <ph name="PROFILE_LIMIT" /> hồ sơ eSIM trên thiết bị này. Để thêm một hồ sơ khác, trước tiên, hãy xóa một hồ sơ hiện có.</translation>
+<translation id="4280325816108262082">Thiết bị sẽ tự động ngắt kết nối khi tắt hoặc không sử dụng</translation>
 <translation id="4281844954008187215">Điều khoản dịch vụ</translation>
 <translation id="4282196459431406533">Đã bật Smart Lock</translation>
 <translation id="4284755288573763878">Tắt tính năng bảo mật nâng cao?</translation>
@@ -4347,6 +4348,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5490721031479690399">Ngắt kết nối thiết bị Bluetooth</translation>
 <translation id="5490798133083738649">Cho phép Linux sử dụng micrô của bạn</translation>
 <translation id="549211519852037402">Be và trắng</translation>
+<translation id="5492637351392383067">Mã hoá trên thiết bị</translation>
 <translation id="5493792505296048976">màn hình bật</translation>
 <translation id="5494016731375030300">Thẻ đóng gần đây</translation>
 <translation id="5494362494988149300">Mở Khi &amp;Hoàn tất</translation>
@@ -6544,6 +6546,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7775694664330414886">Đã di chuyển thẻ sang nhóm chưa có tên – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> có thể xem các tệp trong <ph name="FOLDERNAME" /> cho đến khi bạn đóng tất cả các thẻ cho trang web này</translation>
 <translation id="7776701556330691704">Không tìm thấy giọng nói nào</translation>
+<translation id="7777284276915203144">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google</translation>
 <translation id="7781335840981796660">Tất cả tài khoản người dùng và dữ liệu trên máy đều sẽ bị xóa.</translation>
 <translation id="7782102568078991263">Không có đề xuất nào khác từ Google</translation>
 <translation id="7782717250816686129">Lưu trữ dữ liệu liên tục trên màn hình đăng nhập và đưa thông tin xác thực vào phiên.</translation>
@@ -7196,6 +7199,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Bạn sẽ bị đăng xuất sau <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Hiển thị điểm khi nhấn</translation>
+<translation id="8431730749911729314">Mã hoá mật khẩu trên thiết bị của bạn trước khi lưu vào Trình quản lý mật khẩu của Google</translation>
 <translation id="8434480141477525001">Cổng gỡ lỗi NaCl</translation>
 <translation id="8435395510592618362">Xác minh danh tính của bạn bằng <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">Hoa Kỳ</translation>
@@ -7985,6 +7989,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="947667444780368238"><ph name="ORIGIN" /> không thể mở các tệp trong thư mục này vì thư mục này chứa tệp hệ thống</translation>
 <translation id="950307215746360464">Hướng dẫn thiết lập</translation>
 <translation id="951991426597076286">Từ chối</translation>
+<translation id="952471655966876828">Thiết bị sẽ tự động kết nối khi bật hoặc đang sử dụng</translation>
 <translation id="953434574221655299">Trang web biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="956500788634395331">Bạn sẽ được bảo vệ khỏi các tiện ích có thể gây hại</translation>
 <translation id="957960681186851048">Trang web này đã cố gắng tự động tải nhiều tệp xuống</translation>

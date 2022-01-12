@@ -500,6 +500,7 @@
 <translation id="3908308510347173149">อัปเดต <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">กำลังหาข้อมูลที่ดีที่สุดจากเว็บ…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> เปิดอยู่</translation>
+<translation id="3925830358619338299">ระบบจะเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">รวมข้อมูลของฉัน</translation>
 <translation id="3934366560681368531">"</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">ไปยังส่วนต่างๆ ของ Chrome</translation>
 <translation id="5487521232677179737">ล้างข้อมูล</translation>
 <translation id="549025011754480756">วิธีค้นหาด้วยเสียง</translation>
+<translation id="5492637351392383067">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="5514904542973294328">ปิดใช้โดยผู้ดูแลระบบของอุปกรณ์นี้</translation>
 <translation id="5515439363601853141">ปลดล็อกเพื่อดูรหัสผ่าน</translation>
 <translation id="5517095782334947753">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">แท็บแสดงตัวอย่างเปิดอยู่ครึ่งเดียว</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8430824733382774043">แชร์ภาพหน้าจอเท่านั้น</translation>
+<translation id="8431730749911729314">เข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
 <translation id="8438566539970814960">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - ภาษาพร้อมใช้งานแล้ว โปรดรีสตาร์ท <ph name="APP_NAME" /></translation>
 <translation id="8442258441309440798">ไม่มีเรื่องราว</translation>

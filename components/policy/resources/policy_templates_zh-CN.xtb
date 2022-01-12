@@ -472,6 +472,7 @@
       如果此政策已停用，不安全的 HTTP 请求将无法使用<ph name="BASIC_AUTH" />身份验证方案，只有安全的 HTTPS 能使用该方案。
 
       在以下情况下，系统会忽略这项政策设置（一律禁止使用“<ph name="BASIC_AUTH" />”）：<ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策已设置，且其中不包含“<ph name="BASIC_AUTH" />”。</translation>
+<translation id="1574258262373444557">不使用“<ph name="AES_KL_NAME" />”作为加密算法进行用户存储加密</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">默认情况下使用“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="1587042984081085960">借助此政策，管理员可以指定页面能否在关闭过程中发送同步 XHR 请求。
@@ -589,6 +590,7 @@
 <translation id="167514072300004091">如果此政策设为 3，系统会允许网站请求访问已连接的 USB 设备。如果此政策设为 2，系统会禁止网站访问已连接的 USB 设备。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
+<translation id="1678137412645922426">控制是否使用“<ph name="AES_KL_NAME" />”进行用户存储加密（若支持）</translation>
 <translation id="1682063842123336408">安装 <ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间 (GB)。
 
       如果此政策未设置，当设备上的可用磁盘空间少于 20 GB（默认值）时，<ph name="PLUGIN_VM_NAME" /> 安装会失败。
@@ -3843,6 +3845,12 @@
 
       如果未设置此政策，默认情况下，受企业管理的用户不能使用即时网络共享功能，不受管理的用户则能够使用即时网络共享功能。</translation>
 <translation id="5584132346604748282">控制 Android Google 位置信息服务</translation>
+<translation id="5585384603219625331">此政策旨在控制是否为 Chrome 操作系统上的 <ph name="DM_CRYPT" /> 用户主目录启用“<ph name="AES_KL_NAME" />”实现方案进行用户存储加密（若支持）。
+
+       此政策仅适用于那些使用 <ph name="DM_CRYPT" /> 进行加密的用户主目录。旧版用户主目录（不使用 <ph name="DM_CRYPT" /> 的那些）不支持使用“<ph name="AES_KL_NAME" />”，而是默认使用“<ph name="AES_NI_NAME" />”。
+
+       如果此政策的值发生更改，系统将使用由此政策配置的加密实现方案来访问现有的 <ph name="DM_CRYPT" /> 用户主目录，因为“<ph name="AES_ALGORITHM_NAME" />”实现方案是兼容的。
+       如果此政策已停用或未设置，<ph name="DM_CRYPT" /> 用户主目录将默认使用“<ph name="AES_NI_NAME" />”进行用户存储加密。</translation>
 <translation id="5586942249556966598">不执行任何操作</translation>
 <translation id="5598417829613725146">画布（在 90 版及更高版本中受支持）</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理设置</translation>
@@ -6457,6 +6465,7 @@
 <translation id="8626826495474944836">要求为所有网站启用网站隔离功能</translation>
 <translation id="8631434304112909927">到版本 <ph name="UNTIL_VERSION" /> 为止</translation>
 <translation id="8631437968147930597">可在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中显示的笔记应用的列表。</translation>
+<translation id="8634062512783775032">使用“<ph name="AES_KL_NAME" />”作为加密算法进行用户存储加密（若支持）</translation>
 <translation id="8637566476051166626">明确允许使用的网络端口</translation>
 <translation id="8643838501942693770">允许使用第三方 Cookie，但用户可以更改相关设置</translation>
 <translation id="8648844602494595665">此政策旨在控制多功能框中的锁形图标处理方式。

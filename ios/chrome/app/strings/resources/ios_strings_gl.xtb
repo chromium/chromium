@@ -94,6 +94,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1690731385917361335">Sen elementos</translation>
 <translation id="1692118695553449118">A sincronización está activada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
+<translation id="1726573592754903697">Xestor de contrasinais de Google</translation>
 <translation id="1740468249224277719">Toca dúas veces para instalar.</translation>
 <translation id="1752547299766512813">Gardar contras.</translation>
 <translation id="1753905327828125965">Máis visitados</translation>
@@ -501,6 +502,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="575902488528307720">Buscar imaxe</translation>
 <translation id="5781453543752460388">Engadir a Fotos</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
+<translation id="5802829331520313983">Configurar…</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
 <translation id="5812974770859303494">Engadir a…</translation>
 <translation id="5816228676161003208">Permite que busques de forma máis rápida usando a voz.</translation>
@@ -560,6 +562,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6219688215832490856">Non traducir nunca</translation>
 <translation id="6223816392543092032">Accede aos teus marcadores, historial, contrasinais e outras opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="6232329973559504466">Busca do modo de incógnito</translation>
+<translation id="6232736989810857397">Permíteche crear facilmente eventos do calendario con Google Lens.</translation>
 <translation id="6254066287920239840">Abre as ligazóns na aplicación en vez de no navegador.</translation>
 <translation id="6255097610484507482">Editar tarxeta</translation>
 <translation id="6284652193729350524">Ofrecer traducir contido en <ph name="LANGUAGE" /></translation>

@@ -3669,6 +3669,7 @@
 <translation id="4785719467058219317">您使用的安全密钥尚未在此网站注册</translation>
 <translation id="478708757211772586">使用“下一项”即可在屏幕上向前移动焦点</translation>
 <translation id="4788092183367008521">请检查您的网络连接，然后重试。</translation>
+<translation id="4789550509729954245">当附近的设备正在分享内容时显示通知</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 张照片</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">启用 TrackPoint 加速</translation>
@@ -4030,6 +4031,7 @@
 <translation id="5171343362375269016">已交换的内存</translation>
 <translation id="5172855596271336236">有 1 台受管理的打印机。</translation>
 <translation id="5173668317844998239">向您的安全密钥中添加指纹和删除其中保存的指纹</translation>
+<translation id="5174169235862638850">已将密码复制到剪贴板</translation>
 <translation id="5175379009094579629">设备名称无效。请输入一个有效的设备名称以重试。</translation>
 <translation id="5177479852722101802">仍然禁止访问摄像头和麦克风</translation>
 <translation id="5177549709747445269">您正在使用移动数据网络</translation>

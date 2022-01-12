@@ -500,6 +500,7 @@
 <translation id="3908308510347173149">ອັບເດດ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">ກຳລັງຊອກຫາສິ່ງທີ່ດີສຸດຈາກເວັບ...</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ເປີດຢູ່</translation>
+<translation id="3925830358619338299">ລະຫັດຜ່ານຂອງທ່ານແມ່ນຖືກເຂົ້າລະຫັດໄວ້ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ລວມຂໍ້ມູນຂອງຂ້ອຍເຂົ້າກັນ</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">ໄປຍັງສ່ວນຕ່າງໆຂອງ Chrome</translation>
 <translation id="5487521232677179737">ລຶບລ້າງຂໍ້ມູນ</translation>
 <translation id="549025011754480756">ວິທີຊອກຫາດ້ວຍສຽງຂອງທ່ານ</translation>
+<translation id="5492637351392383067">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="5514904542973294328">ປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້</translation>
 <translation id="5515439363601853141">ປົດລັອກເພື່ອເບິ່ງລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="5517095782334947753">ທ່ານມີບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຈາກ <ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">ແຖບສະແດງຕົວຢ່າງເປີດເຄິ່ງໜຶ່ງ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8430824733382774043">ແບ່ງປັນຮູບໜ້າຈໍເທົ່ານັ້ນ</translation>
+<translation id="8431730749911729314">ເຂົ້າລະຫັດລະຫັດຜ່ານຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="8438566539970814960">ເຮັດໃຫ້ການຊອກຫາ ແລະ ການທ່ອງເວັບດີຂຶ້ນ</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - ພາສາພ້ອມແລ້ວ, ຣີສະຕາດ <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">ບໍ່ມີເລື່ອງລາວ</translation>

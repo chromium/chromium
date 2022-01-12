@@ -500,6 +500,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> aktualisieren</translation>
 <translation id="3912508018559818924">Das Beste aus dem Web wird gesucht…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ist aktiv</translation>
+<translation id="3925830358619338299">Ihre Passwörter werden auf Ihrem Gerät verschlüsselt, bevor sie im Passwortmanager von Google gespeichert werden</translation>
 <translation id="3927692899758076493">Serifenlose Schrift</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="3934366560681368531">„</translation>
@@ -772,6 +773,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5483197086164197190">Chrome verwenden</translation>
 <translation id="5487521232677179737">Daten löschen</translation>
 <translation id="549025011754480756">Sprachsuche verwenden</translation>
+<translation id="5492637351392383067">Verschlüsselung auf dem Gerät</translation>
 <translation id="5514904542973294328">Vom Administrator dieses Geräts deaktiviert</translation>
 <translation id="5515439363601853141">Entsperren, um Ihr Passwort zu sehen</translation>
 <translation id="5517095782334947753">Sie haben Lesezeichen, den Verlauf, Passwörter und andere Einstellungen von <ph name="FROM_ACCOUNT" /> übernommen.</translation>
@@ -1321,6 +1323,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8427875596167638501">Vorschau-Tab ist halb geöffnet</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8430824733382774043">Nur Screenshot teilen</translation>
+<translation id="8431730749911729314">Lassen Sie Passwörter auf Ihrem Gerät verschlüsseln, bevor sie im Passwortmanager von Google gespeichert werden</translation>
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – Sprache bereit, <ph name="APP_NAME" /> neu starten.</translation>
 <translation id="8442258441309440798">Keine Artikel verfügbar</translation>

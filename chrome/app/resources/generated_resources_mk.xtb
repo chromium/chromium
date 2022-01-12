@@ -3228,6 +3228,7 @@
 <translation id="4275830172053184480">Рестартирај го уредот</translation>
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="4279129444466079448">Може да инсталирате до <ph name="PROFILE_LIMIT" /> профили на eSIM на уредов. За да додадете друг профил, прво отстранете го постојниот профил.</translation>
+<translation id="4280325816108262082">Врската со уредот автоматски ќе се прекине кога е исклучен или кога не се користи</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
 <translation id="4282196459431406533">Smart Lock е вклучен</translation>
 <translation id="4284755288573763878">Да се исклучи подобрената безбедност?</translation>
@@ -4348,6 +4349,7 @@
 <translation id="5490721031479690399">Прекинете ја врската на уредот со Bluetooth</translation>
 <translation id="5490798133083738649">Дозволете Linux да пристапува до микрофонот</translation>
 <translation id="549211519852037402">Беж и бела</translation>
+<translation id="5492637351392383067">Шифрирање на уредот</translation>
 <translation id="5493792505296048976">вклучен екран</translation>
 <translation id="5494016731375030300">Неодамна затворени картички</translation>
 <translation id="5494362494988149300">Отвори кога е &amp;готово</translation>
@@ -6545,6 +6547,7 @@
 <translation id="7775694664330414886">Картичката е преместена во неименувана група - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ќе може да прегледува датотеки во <ph name="FOLDERNAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
 <translation id="7776701556330691704">Не се најдени гласови</translation>
+<translation id="7777284276915203144">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="7781335840981796660">Сите кориснички сметки и локални податоци ќе бидат отстранети.</translation>
 <translation id="7782102568078991263">Нема повеќе предлози од Google</translation>
 <translation id="7782717250816686129">Складирајте постојани податоци на екранот за најавување и вметнувајте акредитиви во сесијата.</translation>
@@ -7199,6 +7202,7 @@
 <translation id="8428634594422941299">Сфатив</translation>
 <translation id="84297032718407999">Ќе ве одјавиме за <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Прикажувај допири</translation>
+<translation id="8431730749911729314">Шифрирајте ги лозинките на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="8434480141477525001">Порта за откривање грешки на NaCl</translation>
 <translation id="8435395510592618362">Потврдете го вашиот идентитет со <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">US</translation>
@@ -7989,6 +7993,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> не може да ги отвори датотеките во папкава бидејќи таа содржи системски датотеки</translation>
 <translation id="950307215746360464">Водич за поставување</translation>
 <translation id="951991426597076286">Одбиј</translation>
+<translation id="952471655966876828">Уредот автоматски ќе се поврзе кога е вклучен или кога се користи</translation>
 <translation id="953434574221655299">Дозволено им е да знаат кога активно го користите уредот</translation>
 <translation id="956500788634395331">Заштитени сте од потенцијално штетни екстензии</translation>
 <translation id="957960681186851048">Сајтов се обиде автоматски да преземе повеќе датотеки</translation>

@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1434356225517321998">మీ బ్రౌజర్ మేనేజ్ చేయబడుతుంది. <ph name="BEGIN_LINK" />వివరాలు<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">పరికరంలో ఎన్‌క్రిప్షన్</translation>
 <translation id="1449835205994625556">పాస్‌వర్డ్‌ను దాచండి</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> అంశాలు</translation>
 <translation id="149095475893949513">ఈ వెబ్‌సైట్, కాన్ఫిగరేషన్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయడానికి ప్రయత్నిస్తోంది.</translation>
@@ -143,6 +142,7 @@
 <translation id="2271351792809375263">మీరు మీ పరికరంలోని ఇతర యాప్‌లలో Chromeలో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
 <translation id="2273327106802955778">మరిన్ని మెనూ</translation>
 <translation id="2286505070150039482">హైలైట్ చేయబడిన టెక్స్ట్</translation>
+<translation id="2299218006564889602">మీ పాస్‌వర్డ్‌లు Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ కావడానికి ముందు, అవి మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయబడ్డాయి.</translation>
 <translation id="2302742851632557585">వెబ్‌సైట్‌లో పాస్‌వర్డ్‌ను మార్చండి</translation>
 <translation id="2316709634732130529">సూచించిన పాస్‌వర్డ్‌ని ఉపయోగించు</translation>
 <translation id="2320166752086256636">కీబోర్డ్‌ను దాచు</translation>
@@ -286,7 +286,6 @@
 <translation id="3529024052484145543">సురక్షితం కాదు</translation>
 <translation id="3533202363250687977">అజ్ఞాత ట్యాబ్‌లన్నీ మూసివేయి</translation>
 <translation id="3533436815740441613">కొత్త ట్యాబ్</translation>
-<translation id="3536487890564466894">మీ Google ఖాతాలో మీ పాస్‌వర్డ్‌లు సేవ్ కాక ముందే వాటిని ఎన్‌క్రిప్ట్ చేయండి.</translation>
 <translation id="3551320343578183772">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="3581564640715911333">ఇతర భాషలలో ఉన్న పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
 <translation id="3588820906588687999">చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
@@ -547,6 +546,7 @@
 <translation id="6066301408025741299">రద్దు చేయడానికి నొక్కండి.</translation>
 <translation id="60829778314739003">అంగీకరించి, కొనసాగించు</translation>
 <translation id="6084848228346514841">ట్యాబ్‌లను ఎంచుకోండి</translation>
+<translation id="6103540626693881831">పరికరంలో ఎన్‌క్రిప్షన్</translation>
 <translation id="6108923351542677676">సెటప్ ప్రోగ్రెస్‌లో ఉంది...</translation>
 <translation id="6119050551270742952">ప్రస్తుత వెబ్‌పేజీ అజ్ఞాత మోడ్‌లో ఉంది</translation>
 <translation id="6122191549521593678">ఆన్‌లైన్</translation>
@@ -614,6 +614,7 @@
 <translation id="6524918542306337007">అజ్ఞాత మోడ్ అందుబాటులో లేదు</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">దగ్గరగా జూమ్ చేయి</translation>
+<translation id="6583087784430677195">ఆఫ్ చేయడానికి, <ph name="BEGIN_LINK" />సెట్టింగ్‌లను<ph name="END_LINK" /> తెరిచి, 'పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయండి' అనే ఆప్షన్‌కు వెళ్లండి.</translation>
 <translation id="6585618849026997638">బుక్‌మార్క్‌ను జోడించడం ద్వారా మీకు ముఖ్యమైన పేజీకి మళ్ళీ చేరుకోవచ్చు</translation>
 <translation id="6603393121510733479">మీ సంస్థ, ప్రైవేట్ బ్రౌజింగ్‌ను ఆఫ్ చేసింది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="797413074872316787">మీ అన్ని పరికరాలలోనూ సింక్, ఇంకా వ్యక్తిగతీకరణ చేయడం కోసం, సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="7978018860671536736">3. 'పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయండి'ని ట్యాప్ చేయండి</translation>
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
+<translation id="7987685713885608670">అదనపు భద్రత కోసం, పాస్‌వర్డ్‌లు Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ కావడానికి ముందు, వాటిని మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయండి.</translation>
 <translation id="7993619969781047893">కొన్ని సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు</translation>
 <translation id="800361585186029508">ఇన్‌పుట్ చేసిన URLలను Google Chromeలో తెరుస్తుంది.</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>

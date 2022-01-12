@@ -3225,6 +3225,7 @@
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4278390842282768270">허용</translation>
 <translation id="4279129444466079448">이 기기에 최대 <ph name="PROFILE_LIMIT" />개의 eSIM 프로필을 설치할 수 있습니다. 다른 프로필을 추가하려면 먼저 기존 프로필을 삭제하세요.</translation>
+<translation id="4280325816108262082">기기가 꺼져 있거나 사용하지 않을 때 자동으로 연결 해제됩니다.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4282196459431406533">Smart Lock이 사용 설정됨</translation>
 <translation id="4284755288573763878">강력한 보안 기능을 사용 중지하시겠습니까?</translation>
@@ -3268,7 +3269,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> 제거 중...</translation>
 <translation id="4330191372652740264">얼음물</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> 번역 안함</translation>
-<translation id="4331809312908958774">크롬 OS</translation>
+<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1(RSA 암호화 사용)</translation>
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
@@ -4344,6 +4345,7 @@
 <translation id="5490721031479690399">블루투스 기기 연결 해제</translation>
 <translation id="5490798133083738649">Linux에서 마이크에 액세스하도록 허용</translation>
 <translation id="549211519852037402">베이지색 및 흰색</translation>
+<translation id="5492637351392383067">기기 내 암호화</translation>
 <translation id="5493792505296048976">화면 켜짐</translation>
 <translation id="5494016731375030300">최근에 닫은 탭</translation>
 <translation id="5494362494988149300">완료되면 열기(&amp;D)</translation>
@@ -6541,6 +6543,7 @@
 <translation id="7775694664330414886">이름이 지정되지 않은 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있게 됩니다.</translation>
 <translation id="7776701556330691704">음성을 찾을 수 없음</translation>
+<translation id="7777284276915203144">비밀번호가 Google 비밀번호 관리자에 저장되기 전에 기기에서 암호화됩니다</translation>
 <translation id="7781335840981796660">모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
 <translation id="7782102568078991263">Google의 추천 단어 없음</translation>
 <translation id="7782717250816686129">로그인 화면의 지속 데이터를 저장하고 세션에 사용자 인증 정보를 삽입합니다.</translation>
@@ -7193,6 +7196,7 @@
 <translation id="8428634594422941299">확인</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> 후 로그아웃됩니다</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
+<translation id="8431730749911729314">Google 비밀번호 관리자에 저장하기 전에 기기의 비밀번호를 암호화합니다</translation>
 <translation id="8434480141477525001">NaCl 디버그 포트</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" />(으)로 신원 확인</translation>
 <translation id="8437209419043462667">영어(미국)</translation>
@@ -7982,6 +7986,7 @@
 <translation id="947667444780368238">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 폴더의 파일을 열 수 없습니다.</translation>
 <translation id="950307215746360464">설정 가이드</translation>
 <translation id="951991426597076286">거부</translation>
+<translation id="952471655966876828">기기가 켜져 있고 사용 중일 때 자동으로 연결됩니다.</translation>
 <translation id="953434574221655299">현재 기기를 사용 중인지 알 수 있음</translation>
 <translation id="956500788634395331">잠재적으로 위험한 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="957960681186851048">이 사이트에서 여러 파일을 자동으로 다운로드하려고 함</translation>

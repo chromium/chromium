@@ -3676,6 +3676,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4785719467058219317">Jūs izmantojat drošības atslēgu, kas nav reģistrēta šajā vietnē</translation>
 <translation id="478708757211772586">Lai ekrānā pārietu uz priekšu, izmantojiet slēdzi “Nākamais”</translation>
 <translation id="4788092183367008521">Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</translation>
+<translation id="4789550509729954245">Rādīt paziņojumu, ka ierīcēs tiek veikta kopīgošana tuvumā</translation>
 <translation id="4791000909649665275">Fotoattēlu skaits: <ph name="NUMBER" /></translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Iespējot TrackPoint paātrinājumu</translation>
@@ -4037,6 +4038,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5171343362375269016">Apmainītā atmiņa</translation>
 <translation id="5172855596271336236">Viens pārvaldīts printeris</translation>
 <translation id="5173668317844998239">Pievienojiet un dzēsiet drošības atslēgā saglabātos pirkstu nospiedumus.</translation>
+<translation id="5174169235862638850">Parole ir kopēta starpliktuvē.</translation>
 <translation id="5175379009094579629">Šis ierīces nosaukums nav derīgs. Ievadiet derīgu ierīces nosaukumu, lai mēģinātu vēlreiz.</translation>
 <translation id="5177479852722101802">Turpināt piekļuves bloķēšanu kamerai un mikrofonam</translation>
 <translation id="5177549709747445269">Jūs izmantojat mobilos datus</translation>

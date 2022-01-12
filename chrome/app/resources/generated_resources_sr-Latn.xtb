@@ -3211,6 +3211,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4275830172053184480">Ponovno pokretanje uređaja</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="4279129444466079448">Na ovom uređaju možete da instalirate najviše <ph name="PROFILE_LIMIT" /> eSIM ppofila. Da biste dodali još jedan profil, uklonite postojeći.</translation>
+<translation id="4280325816108262082">Veza sa uređajem će se automatski isključiti kada se uređaj isključi ili se ne koristi</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
 <translation id="4282196459431406533">Smart Lock je uključen</translation>
 <translation id="4284755288573763878">Želite li da isključite poboljšanu bezbednost?</translation>
@@ -4163,7 +4164,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5305145881844743843">Ovim nalogom upravlja <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Izvor nije podržan</translation>
 <translation id="5307386115243749078">Uparite Bluetooth prekidač</translation>
-<translation id="5308380583665731573">Povezivanje</translation>
+<translation id="5308380583665731573">Poveži</translation>
 <translation id="5309418307557605830">Google pomoćnik radi i ovde</translation>
 <translation id="5310281978693206542">Pošaljite link na svoje uređaje</translation>
 <translation id="5311304534597152726">Prijavljujete se kao</translation>
@@ -4329,6 +4330,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5490721031479690399">Prekinite vezu sa Bluetooth uređajem</translation>
 <translation id="5490798133083738649">Dozvoli Linux-u da pristupa mikrofonu</translation>
 <translation id="549211519852037402">Bež i bela</translation>
+<translation id="5492637351392383067">Šifrovanje na uređaju</translation>
 <translation id="5493792505296048976">ekran je uključen</translation>
 <translation id="5494016731375030300">Nedavno zatvorene kartice</translation>
 <translation id="5494362494988149300">Otvori kada bude &amp;dovršeno</translation>
@@ -6527,6 +6529,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7775694664330414886">Kartica je premeštena u neimenovanu grupu – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> će moći da pregleda datoteke u direktorijumu <ph name="FOLDERNAME" /> dok ne zatvorite sve kartice ovog sajta</translation>
 <translation id="7776701556330691704">Nije pronađen nijedan glas</translation>
+<translation id="7777284276915203144">Lozinke se šifruju na uređaju pre nego što se sačuva u Google menadžeru lozinki</translation>
 <translation id="7781335840981796660">Svi korisnički nalozi i lokalni podaci će biti uklonjeni.</translation>
 <translation id="7782102568078991263">Nema više predloga sa Google-a</translation>
 <translation id="7782717250816686129">Čuva podatke koji se ponavljaju na ekranu za prijavljivanje i umeće akreditive u sesiju.</translation>
@@ -7178,6 +7181,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8428634594422941299">Važi</translation>
 <translation id="84297032718407999">Odjavićete se za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Prikaz dodira</translation>
+<translation id="8431730749911729314">Šifrujte lozinke na uređaju pre nego što se sačuvaju u Google menadžer lozinki</translation>
 <translation id="8434480141477525001">NaCl port za otklanjanje grešaka</translation>
 <translation id="8435395510592618362">Potvrdite identitet pomoću <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">američka</translation>
@@ -7969,6 +7973,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne može da otvori fajlove u ovom folderu jer on sadrži sistemske fajlove</translation>
 <translation id="950307215746360464">Vodič za podešavanje</translation>
 <translation id="951991426597076286">Odbij</translation>
+<translation id="952471655966876828">Veza sa uređajem će se automatski uključiti kada se uređaj uključi ili se koristi</translation>
 <translation id="953434574221655299">Imaju dozvolu da znaju kada aktivno koristite uređaj</translation>
 <translation id="956500788634395331">Štitimo vas od potencijalno štetnih dodataka</translation>
 <translation id="957960681186851048">Ovaj sajt je pokušao da automatski preuzme više datoteka</translation>

@@ -3219,6 +3219,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="4279129444466079448">Du kan installere opptil <ph name="PROFILE_LIMIT" /> eSIM-profiler på denne enheten. For å legge til en ny profil må du først fjerne en eksisterende profil.</translation>
+<translation id="4280325816108262082">Enheten kobles fra automatisk når den slås av eller ikke er i bruk</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4282196459431406533">Smart Lock er slått på</translation>
 <translation id="4284755288573763878">Vil du slå av økt sikkerhet?</translation>
@@ -3681,6 +3682,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4785719467058219317">Du bruker en sikkerhetsnøkkel som ikke er registrert på dette nettstedet</translation>
 <translation id="478708757211772586">Bruk «Neste» for å gå videre på skjermen</translation>
 <translation id="4788092183367008521">Sjekk nettverkstilkoblingen din, og prøv på nytt.</translation>
+<translation id="4789550509729954245">Vis et varsel når enheter deler i nærheten</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> bilde</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Slå på TrackPoint-akselerasjon</translation>
@@ -4042,6 +4044,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5171343362375269016">Virtuelt minne</translation>
 <translation id="5172855596271336236">Det er 1 administrert skriver.</translation>
 <translation id="5173668317844998239">Legg til og slett fingeravtrykk som er lagret på sikkerhetsnøkkelen</translation>
+<translation id="5174169235862638850">Passordet er kopiert til utklippstavlen</translation>
 <translation id="5175379009094579629">Dette enhetsnavnet er ugyldig. Skriv inn et nytt enhetsnavn for å prøve på nytt.</translation>
 <translation id="5177479852722101802">Fortsett blokkering av kamera- og mikrofontilgang</translation>
 <translation id="5177549709747445269">Du bruker mobildata</translation>
@@ -4335,6 +4338,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5490721031479690399">Koble fra Bluetooth-enheten</translation>
 <translation id="5490798133083738649">Gi Linux tilgang til mikrofonen din</translation>
 <translation id="549211519852037402">Beige og hvit</translation>
+<translation id="5492637351392383067">Kryptering på enheten</translation>
 <translation id="5493792505296048976">skjerm på</translation>
 <translation id="5494016731375030300">Nylig lukkede faner</translation>
 <translation id="5494362494988149300">Åpne når ne&amp;dlastingen er ferdig</translation>
@@ -6532,6 +6536,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7775694664330414886">Fanen er flyttet til en gruppe uten navn – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Da kan <ph name="ORIGIN" /> se filer i <ph name="FOLDERNAME" /> frem til du lukker alle fanene for dette nettstedet</translation>
 <translation id="7776701556330691704">Fant ingen stemmer</translation>
+<translation id="7777284276915203144">Passordene dine krypteres på enheten før de lagres i Google Passordlagring</translation>
 <translation id="7781335840981796660">Alle brukerkontoer og lokale data fjernes.</translation>
 <translation id="7782102568078991263">Google har ikke flere forslag</translation>
 <translation id="7782717250816686129">Lagre vedvarende data på påloggingsskjermen, og bruk legitimasjon i økten.</translation>
@@ -7183,6 +7188,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8428634594422941299">Greit</translation>
 <translation id="84297032718407999">Du logges av om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Vis trykk</translation>
+<translation id="8431730749911729314">Krypter passord på enheten før de lagres i Google Passordlagring</translation>
 <translation id="8434480141477525001">Feilsøkingsport for NaCl</translation>
 <translation id="8435395510592618362">Bekreft identiteten din med <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">Amerikansk</translation>
@@ -7972,6 +7978,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan ikke åpne filer i denne mappen, fordi den inneholder systemfiler</translation>
 <translation id="950307215746360464">Konfigureringsveiledning</translation>
 <translation id="951991426597076286">Avvis</translation>
+<translation id="952471655966876828">Enheten kobles til automatisk når den slås på og er i bruk</translation>
 <translation id="953434574221655299">Får vite når du bruker enheten aktivt</translation>
 <translation id="956500788634395331">Du er beskyttet mot potensielt skadelige utvidelser</translation>
 <translation id="957960681186851048">Dette nettstedet prøvde å laste ned flere filer automatisk</translation>

@@ -60,7 +60,6 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1434356225517321998">Brauzeriniz idarə edilir. <ph name="BEGIN_LINK" />Ətraflı<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Cihazda Şifrələmə</translation>
 <translation id="1449835205994625556">Parolu Gizlədin</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> element</translation>
 <translation id="149095475893949513">Bu vebsayt konfiqurasiya profilini endirməyə çalışır.</translation>
@@ -143,6 +142,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="2271351792809375263">Chrome'da saxladığınız parolları cihazınızdaki digər tətbiqlərdə istifadə edin</translation>
 <translation id="2273327106802955778">Ətraflı menyu</translation>
 <translation id="2286505070150039482">Vurğulanmış Mətn</translation>
+<translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
 <translation id="2302742851632557585">Vebsaytda parolu dəyişin</translation>
 <translation id="2316709634732130529">Təklif Edilmiş Paroldan İstifadə Edin</translation>
 <translation id="2320166752086256636">Klaviaturanı gizlədin.</translation>
@@ -286,7 +286,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3529024052484145543">Təhlükəsiz deyil</translation>
 <translation id="3533202363250687977">Bütün Gizli Tabları bağlayın</translation>
 <translation id="3533436815740441613">Yeni Tab</translation>
-<translation id="3536487890564466894">Parollarınızı Google Hesabınızda saxlamazdan əvvəl şifrələyin.</translation>
 <translation id="3551320343578183772">Paneli qapadın</translation>
 <translation id="3581564640715911333">Səhifələrin digər dillərdə tərcümə edilməsini təklif edin</translation>
 <translation id="3588820906588687999">Şəkli Yeni Paneldə Açın</translation>
@@ -547,6 +546,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6066301408025741299">Ləğv etmək üçün tıklayın.</translation>
 <translation id="60829778314739003">Qəbul edin və Davam edin</translation>
 <translation id="6084848228346514841">Tablar seçin</translation>
+<translation id="6103540626693881831">Cihazda Şifrələmə</translation>
 <translation id="6108923351542677676">Quraşdırma icra olunur...</translation>
 <translation id="6119050551270742952">Hazırkı veb səhifə anonim rejimdədir</translation>
 <translation id="6122191549521593678">Onlayn</translation>
@@ -614,6 +614,7 @@ Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="6524918542306337007">Anonim rejim əlçatan deyil</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Böyüdün</translation>
+<translation id="6583087784430677195">Deaktiv etmək üçün <ph name="BEGIN_LINK" />Ayarları<ph name="END_LINK" /> açın və Parolların Avtomatik Doldurulmasına keçin.</translation>
 <translation id="6585618849026997638">Əlfəcin əlavə etməklə vacib səhifəyə qayıda bilərsiniz</translation>
 <translation id="6603393121510733479">Təşkilatınız şəxsi baxış keçirməni deaktiv edib.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="797413074872316787">Cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün sinxronizasiyanı aktiv edin.</translation>
 <translation id="7978018860671536736">3. Parolların Avtomatik Doldurulmasına toxunun</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
+<translation id="7987685713885608670">Təhlükəsizliyi artırmaq üçün Google Parol Menecerində saxlanmazdan əvvəl cihazınızda parolları şifrələyin.</translation>
 <translation id="7993619969781047893">Bəzi saytlardakı xüsusiyyətlər işləməyə bilər</translation>
 <translation id="800361585186029508">Google Chrome'da daxil edilən keçidləri açır.</translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>

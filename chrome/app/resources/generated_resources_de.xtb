@@ -3209,6 +3209,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
 <translation id="4278390842282768270">Zugelassen</translation>
 <translation id="4279129444466079448">Sie können bis zu <ph name="PROFILE_LIMIT" /> eSIM-Profile auf diesem Gerät installieren. Damit Sie ein weiteres Profil hinzufügen können, müssen Sie zuerst ein vorhandenes Profil entfernen.</translation>
+<translation id="4280325816108262082">Gerät wird automatisch getrennt, wenn es ausgeschaltet oder nicht verwendet wird</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4282196459431406533">Smart Lock ist aktiviert</translation>
 <translation id="4284755288573763878">Erweitertes Safe Browsing deaktivieren?</translation>
@@ -3671,6 +3672,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4785719467058219317">Sie verwenden einen Sicherheitsschlüssel, der nicht auf dieser Website registriert ist</translation>
 <translation id="478708757211772586">Mit „Weiter“ bewegen Sie sich auf dem Bildschirm vorwärts</translation>
 <translation id="4788092183367008521">Bitte überprüfen Sie die Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
+<translation id="4789550509729954245">Benachrichtigung anzeigen, wenn Geräte in der Nähe etwas teilen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint-Beschleunigung aktivieren</translation>
@@ -4030,6 +4032,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5171343362375269016">Swap-Speicher</translation>
 <translation id="5172855596271336236">Es gibt 1 verwalteten Drucker.</translation>
 <translation id="5173668317844998239">Auf Ihrem Sicherheitsschlüssel gespeicherte Fingerabdrücke hinzufügen oder löschen</translation>
+<translation id="5174169235862638850">Passwort in Zwischenablage kopiert</translation>
 <translation id="5175379009094579629">Der Gerätename ist ungültig. Geben Sie einen gültigen Gerätenamen ein, um es noch einmal zu versuchen.</translation>
 <translation id="5177479852722101802">Zugriff auf Kamera und Mikrofon weiter blockieren</translation>
 <translation id="5177549709747445269">Sie nutzen mobile Daten.</translation>
@@ -4324,6 +4327,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5490721031479690399">Bluetooth-Gerät trennen</translation>
 <translation id="5490798133083738649">Linux Zugriff auf mein Mikrofon erlauben</translation>
 <translation id="549211519852037402">Beige und Weiß</translation>
+<translation id="5492637351392383067">Verschlüsselung auf dem Gerät</translation>
 <translation id="5493792505296048976">Bildschirm an</translation>
 <translation id="5494016731375030300">Kürzlich geschlossene Tabs</translation>
 <translation id="5494362494988149300">Nach &amp;Fertigstellung öffnen</translation>
@@ -6521,6 +6525,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7775694664330414886">Tab wurde in unbenannte Gruppe verschoben – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> kann dann Dateien im Ordner <ph name="FOLDERNAME" /> lesen, solange Tabs dieser Website geöffnet sind</translation>
 <translation id="7776701556330691704">Keine Stimmen gefunden</translation>
+<translation id="7777284276915203144">Ihre Passwörter werden auf Ihrem Gerät verschlüsselt, bevor sie im Passwortmanager von Google gespeichert werden</translation>
 <translation id="7781335840981796660">Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
 <translation id="7782102568078991263">Keine weiteren Vorschläge von Google</translation>
 <translation id="7782717250816686129">Vom Nutzer auf dem Anmeldebildschirm angegebene Daten speichern und mit anderen Erweiterungen in der Nutzersitzung teilen.</translation>
@@ -7172,6 +7177,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8428634594422941299">Ok</translation>
 <translation id="84297032718407999">Sie werden in <ph name="LOGOUT_TIME_LEFT" /> abgemeldet</translation>
 <translation id="8431190899827883166">Fingertipps anzeigen</translation>
+<translation id="8431730749911729314">Lassen Sie Passwörter auf Ihrem Gerät verschlüsseln, bevor sie im Passwortmanager von Google gespeichert werden</translation>
 <translation id="8434480141477525001">NaCl-Debug-Port</translation>
 <translation id="8435395510592618362">Ihre Identität mit <ph name="APP_NAME" /> bestätigen</translation>
 <translation id="8437209419043462667">USA</translation>
@@ -7961,6 +7967,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, finden Sie
 <translation id="947667444780368238"><ph name="ORIGIN" /> kann Dateien in diesem Ordner nicht öffnen, weil er Systemdateien enthält</translation>
 <translation id="950307215746360464">Einrichtungsassistent</translation>
 <translation id="951991426597076286">Ablehnen</translation>
+<translation id="952471655966876828">Gerät wird automatisch verbunden, wenn es eingeschaltet oder verwendet wird</translation>
 <translation id="953434574221655299">Darf Informationen zu Ihrer aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="956500788634395331">Sie sind vor potenziell schädlichen Erweiterungen geschützt</translation>
 <translation id="957960681186851048">Diese Website hat versucht, automatisch mehrere Dateien herunterzuladen</translation>

@@ -3210,6 +3210,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
 <translation id="4279129444466079448">Bu cihazda en fazla <ph name="PROFILE_LIMIT" /> eSIM profili yükleyebilirsiniz. Başka bir profil eklemek için mevcut profillerden birini kaldırın.</translation>
+<translation id="4280325816108262082">Cihaz kapalı olduğunda veya kullanılmadığında bağlantısı otomatik olarak kesilir</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
 <translation id="4282196459431406533">Smart Lock açık</translation>
 <translation id="4284755288573763878">Gelişmiş güvenlik kapatılsın mı?</translation>
@@ -3672,6 +3673,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4785719467058219317">Bu web sitesine kaydettirilmemiş bir anahtar kullanıyorsunuz</translation>
 <translation id="478708757211772586">Ekranda ilerlemek için "Sonraki" seçeneğini kullanın</translation>
 <translation id="4788092183367008521">Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
+<translation id="4789550509729954245">Yakındaki cihazlar paylaşımda bulunurken bildirim göster</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotoğraf</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint hızlandırmasını etkinleştir</translation>
@@ -4033,6 +4035,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5171343362375269016">Değiştirilmiş Bellek</translation>
 <translation id="5172855596271336236">1 adet yönetilen yazıcı var.</translation>
 <translation id="5173668317844998239">Güvenlik anahtarınızda kayıtlı parmak izlerini ekleme ve silme</translation>
+<translation id="5174169235862638850">Şifre panoya kopyalandı</translation>
 <translation id="5175379009094579629">Cihaz adı geçersiz. Tekrar denemek için geçerli bir cihaz adı girin.</translation>
 <translation id="5177479852722101802">Kamera ve mikrofon erişimini engellemeye devam et</translation>
 <translation id="5177549709747445269">Mobil veri kullanıyorsunuz</translation>
@@ -4327,6 +4330,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5490721031479690399">Bluetooth cihazının bağlantısını kes</translation>
 <translation id="5490798133083738649">Linux'un mikrofonunuza erişmesine izin verin</translation>
 <translation id="549211519852037402">Bej ve beyaz</translation>
+<translation id="5492637351392383067">Cihaz üzerinde şifreleme</translation>
 <translation id="5493792505296048976">ekran açık</translation>
 <translation id="5494016731375030300">Son Kapatılan Sekmeler</translation>
 <translation id="5494362494988149300">İşlem &amp;Tamamlandığında Aç</translation>
@@ -6525,6 +6529,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7775694664330414886">Sekme, adsız gruba taşındı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" />, siz bu site için tüm sekmeleri kapatana kadar <ph name="FOLDERNAME" /> klasöründeki dosyaları görüntüleyebilecek</translation>
 <translation id="7776701556330691704">Hiçbir ses bulunamadı</translation>
+<translation id="7777284276915203144">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir</translation>
 <translation id="7781335840981796660">Tüm kullanıcı hesapları ve yerel veriler kaldırılır.</translation>
 <translation id="7782102568078991263">Google'dan başka öneri yok</translation>
 <translation id="7782717250816686129">Kalıcı verileri giriş ekranında depolama ve kimlik bilgilerini oturuma ekleme.</translation>
@@ -7175,6 +7180,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8428634594422941299">Anladım!</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> içinde çıkış yapacaksınız</translation>
 <translation id="8431190899827883166">Dokunmaları göster</translation>
+<translation id="8431730749911729314">Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin</translation>
 <translation id="8434480141477525001">NaCl Hata Ayıklama Bağlantı Noktası</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> ile kimliğinizi doğrulayın</translation>
 <translation id="8437209419043462667">ABD</translation>
@@ -7964,6 +7970,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="947667444780368238">Sistem dosyaları içerdiği için <ph name="ORIGIN" /> bu klasördeki dosyaları açamaz</translation>
 <translation id="950307215746360464">Kurulum kılavuzu</translation>
 <translation id="951991426597076286">Reddet</translation>
+<translation id="952471655966876828">Cihaz açık olduğunda ve kullanıldığında otomatik olarak bağlanır</translation>
 <translation id="953434574221655299">Cihazınızı etkin olarak kullandığınızda bilmesine izin verilen siteler</translation>
 <translation id="956500788634395331">Zararlı olabilecek uzantılardan korunuyorsunuz</translation>
 <translation id="957960681186851048">Bu site birden fazla dosyayı otomatik olarak indirmeye çalıştı</translation>

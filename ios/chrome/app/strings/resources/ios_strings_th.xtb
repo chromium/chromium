@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1434356225517321998">เบราว์เซอร์ของคุณมีการจัดการ <ph name="BEGIN_LINK" />รายละเอียด<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="1449835205994625556">ซ่อนรหัสผ่าน</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> รายการ</translation>
 <translation id="149095475893949513">เว็บไซต์นี้พยายามดาวน์โหลดโปรไฟล์การกำหนดค่า</translation>
@@ -143,6 +142,7 @@
 <translation id="2271351792809375263">ใช้รหัสผ่านที่คุณบันทึกไว้ใน Chrome กับแอปอื่นๆ ในอุปกรณ์</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
 <translation id="2286505070150039482">ข้อความที่ไฮไลต์</translation>
+<translation id="2299218006564889602">ระบบจะเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
 <translation id="2302742851632557585">เปลี่ยนรหัสผ่านในเว็บไซต์</translation>
 <translation id="2316709634732130529">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
@@ -286,7 +286,6 @@
 <translation id="3529024052484145543">ไม่ปลอดภัย</translation>
 <translation id="3533202363250687977">ปิดแท็บไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="3533436815740441613">แท็บใหม่</translation>
-<translation id="3536487890564466894">เข้ารหัสให้กับรหัสผ่านก่อนบันทึกไว้ในบัญชี Google</translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
@@ -547,6 +546,7 @@
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
 <translation id="60829778314739003">ยอมรับและดำเนินการต่อ</translation>
 <translation id="6084848228346514841">เลือกแท็บ</translation>
+<translation id="6103540626693881831">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="6108923351542677676">กำลังดำเนินการตั้งค่า…</translation>
 <translation id="6119050551270742952">หน้าเว็บนี้อยู่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="6122191549521593678">ออนไลน์</translation>
@@ -614,6 +614,7 @@
 <translation id="6524918542306337007">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">ซูมเข้า</translation>
+<translation id="6583087784430677195">หากต้องการปิด ให้เปิด<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />แล้วไปที่ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
 <translation id="6585618849026997638">กลับไปที่หน้าที่สำคัญกับคุณได้โดยการเพิ่มบุ๊กมาร์ก</translation>
 <translation id="6603393121510733479">องค์กรปิดการเรียกดูแบบส่วนตัวไว้
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="797413074872316787">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="7978018860671536736">3. แตะ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
+<translation id="7987685713885608670">เข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="7993619969781047893">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="800361585186029508">เปิด URL ที่ป้อนใน Google Chrome</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>

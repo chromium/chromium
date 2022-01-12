@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1434356225517321998">कसैले तपाईंको ब्राउजर व्यवस्थापन गर्छन्। <ph name="BEGIN_LINK" />विवरण<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
 <translation id="1449835205994625556">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> वस्तुहरू</translation>
 <translation id="149095475893949513">यो वेबसाइट कुनै कन्फिगुरेसन प्रोफाइल डाउनलोड गर्न खोज्दै छ।</translation>
@@ -143,6 +142,7 @@
 <translation id="2271351792809375263">आफ्नो डिभाइसमा भएका अन्य एपमा आफूले Chrome मा सेभ गरेका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="2273327106802955778">थप मेनु</translation>
 <translation id="2286505070150039482">हाइलाइट गरिएको टेक्स्ट</translation>
+<translation id="2299218006564889602">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ।</translation>
 <translation id="2302742851632557585">वेबसाइटमा गई पासवर्ड बदल्नुहोस्</translation>
 <translation id="2316709634732130529">सुझाव दिइएको पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="2320166752086256636">किबोर्ड लुकाउनुहोस्</translation>
@@ -286,7 +286,6 @@
 <translation id="3529024052484145543">सुरक्षित छैन</translation>
 <translation id="3533202363250687977">सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="3533436815740441613">नयाँ ट्याब</translation>
-<translation id="3536487890564466894">आफ्ना पासवर्डहरू Google खातामा सेभ गर्नुअघि ती पासवर्ड इन्क्रिप्ट गर्नुहोस्।</translation>
 <translation id="3551320343578183772">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="3581564640715911333">पृष्ठहरू अन्य भाषामा अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="3588820906588687999">छविलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -547,6 +546,7 @@
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="60829778314739003">स्वीकार गर्नुहोस् र जारी राख्नुहोस्</translation>
 <translation id="6084848228346514841">ट्याबहरू चयन गर्नुहोस्</translation>
+<translation id="6103540626693881831">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
 <translation id="6119050551270742952">हालको वेबपृष्ठ इन्कोग्निटो मोडमा छ</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
@@ -766,6 +766,7 @@
 <translation id="797413074872316787">सबै डिभाइसमा सिंक गर्न र आफू अनुकूल बनाउन सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
 <translation id="7978018860671536736">३. "पासवर्ड स्वतः भरियोस्" मा ट्याप गर्नुहोस्</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
+<translation id="7987685713885608670">आफ्ना पासवर्डहरू अझ सुरक्षित राख्नका निम्ति ती पासवर्डहरू आफ्नो डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गर्नुहोस्।</translation>
 <translation id="7993619969781047893">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="800361585186029508">Google Chrome मा प्रविष्टि गरिएका URL हरू खोल्छ।</translation>
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>

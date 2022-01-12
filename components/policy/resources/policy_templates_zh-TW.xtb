@@ -471,6 +471,7 @@
       如果將這項政策設為停用，則會禁止不安全的 HTTP 要求使用 <ph name="BASIC_AUTH" /> 驗證機制，只能採用安全的 HTTPS。
 
       如果設定的 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策不含 <ph name="BASIC_AUTH" />，系統會忽略這項政策設定 (一律禁止使用 <ph name="BASIC_AUTH" />)。</translation>
+<translation id="1574258262373444557">不採用 <ph name="AES_KL_NAME" /> 做為加密使用者儲存空間的加密演算法 (如果支援)</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="1587042984081085960">這項政策可讓管理員指定頁面是否能在關閉時傳送同步 XHR 要求。
@@ -591,6 +592,7 @@
 <translation id="167514072300004091">如果將這項政策設為 3，網站即可要求存取已連結的 USB 裝置。如果將這項政策設為 2，網站將無法存取已連結的 USB 裝置。
 
       如果不設定，網站可要求存取已連結的 USB 裝置，但使用者可以變更這項設定。</translation>
+<translation id="1678137412645922426">控管是否可採用 <ph name="AES_KL_NAME" /> 加密使用者儲存空間 (如果支援)</translation>
 <translation id="1682063842123336408">安裝 <ph name="PLUGIN_VM_NAME" /> 所需的可用磁碟空間 (以 GB 為單位)。
 
       如果不設定這項政策，當裝置上的可用磁碟空間小於 20 GB (預設值) 時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。
@@ -3834,6 +3836,12 @@
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用即時網路共用功能，其他一般使用者則可使用這項功能。</translation>
 <translation id="5584132346604748282">控制 Android Google 定位服務</translation>
+<translation id="5585384603219625331">這項政策可控管是否要為 Chrome OS 上的 <ph name="DM_CRYPT" /> 使用者首頁啟用 <ph name="AES_KL_NAME" /> 實作功能，以進行使用者儲存空間加密 (如果支援)。
+
+       這項政策只適用於採用 <ph name="DM_CRYPT" /> 進行加密的使用者首頁。未採用 <ph name="DM_CRYPT" /> 的舊版使用者首頁並不支援 <ph name="AES_KL_NAME" />，系統預設會採用 <ph name="AES_NI_NAME" />。
+
+       如果政策值有所變更，由於系統支援 <ph name="AES_ALGORITHM_NAME" /> 實作程序，因此可以透過根據政策所設定的加密實作功能存取現有 <ph name="DM_CRYPT" /> 使用者首頁。
+       如果停用這項政策或未設定，系統預設會採用 <ph name="AES_NI_NAME" /> 為 <ph name="DM_CRYPT" /> 使用者首頁的使用者儲存空間進行加密。</translation>
 <translation id="5586942249556966598">不要處理</translation>
 <translation id="5598417829613725146">畫布 (自 90 版開始支援)</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>
@@ -6433,6 +6441,7 @@
 <translation id="8626826495474944836">要求針對所有網站啟用網站隔離功能</translation>
 <translation id="8631434304112909927">到第 <ph name="UNTIL_VERSION" /> 版為止</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上允許的筆記應用程式清單</translation>
+<translation id="8634062512783775032">採用 <ph name="AES_KL_NAME" /> 做為加密使用者儲存空間的加密演算法 (如果支援)</translation>
 <translation id="8637566476051166626">明確允許的網路通訊埠</translation>
 <translation id="8643838501942693770">允許第三方 Cookie，但使用者可以變更這項設定</translation>
 <translation id="8648844602494595665">這項政策可控管網址列中鎖頭圖示的處理方式。

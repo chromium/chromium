@@ -3211,6 +3211,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
 <translation id="4279129444466079448">Je kunt maximaal <ph name="PROFILE_LIMIT" /> e-simkaartprofielen installeren op dit apparaat. Als je nog een profiel wilt toevoegen, verwijder je eerst een bestaand profiel.</translation>
+<translation id="4280325816108262082">Het apparaat verbreekt de verbinding automatisch als het wordt uitgezet of niet wordt gebruikt</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="4282196459431406533">Smart Lock staat aan</translation>
 <translation id="4284755288573763878">Uitgebreide beveiliging uitzetten?</translation>
@@ -4328,6 +4329,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5490721031479690399">Bluetooth-apparaat ontkoppelen</translation>
 <translation id="5490798133083738649">Linux toegang geven tot je microfoon</translation>
 <translation id="549211519852037402">Beige/wit</translation>
+<translation id="5492637351392383067">Versleuteling op het apparaat</translation>
 <translation id="5493792505296048976">scherm aan</translation>
 <translation id="5494016731375030300">Recent gesloten tabbladen</translation>
 <translation id="5494362494988149300">Openen wanneer geree&amp;d</translation>
@@ -6525,6 +6527,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7775694664330414886">Tabblad verplaatst naar naamloze groep - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bekijken totdat je alle tabbladen voor deze site sluit</translation>
 <translation id="7776701556330691704">Geen stemmen gevonden</translation>
+<translation id="7777284276915203144">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="7781335840981796660">Alle gebruikersaccounts en lokale gegevens worden verwijderd.</translation>
 <translation id="7782102568078991263">Geen verdere suggesties van Google</translation>
 <translation id="7782717250816686129">Sla persistente gegevens op het inlogscherm op en voeg inloggegevens aan de sessie toe.</translation>
@@ -7175,6 +7178,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Je wordt uitgelogd over <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Tikken bekijken</translation>
+<translation id="8431730749911729314">Versleutel wachtwoorden op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="8434480141477525001">Foutopsporingspoort voor systeemeigen client</translation>
 <translation id="8435395510592618362">Je identiteit verifiëren met <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">Amerikaans</translation>
@@ -7965,6 +7969,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan geen bestanden openen in deze map omdat deze systeembestanden bevat</translation>
 <translation id="950307215746360464">Instelgids</translation>
 <translation id="951991426597076286">Afwijzen</translation>
+<translation id="952471655966876828">Het apparaat maakt automatisch verbinding als het wordt aangezet en wordt gebruikt</translation>
 <translation id="953434574221655299">Mogen weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="956500788634395331">Je bent beschermd tegen potentieel schadelijke extensies</translation>
 <translation id="957960681186851048">Deze site heeft geprobeerd automatisch meerdere bestanden te downloaden</translation>

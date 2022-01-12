@@ -3224,6 +3224,7 @@
 <translation id="4275830172053184480">ເລີ່ມຕົ້ນອຸປະກອນຂອງທ່ານໃໝ່</translation>
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>
 <translation id="4279129444466079448">ທ່ານສາມາດຕິດຕັ້ງໂປຣໄຟລ໌ eSIM ໄດ້ສູງສຸດ <ph name="PROFILE_LIMIT" /> ໂປຣໄຟລ໌ຢູ່ອຸປະກອນນີ້. ເພື່ອເພີ່ມໂປຣໄຟລ໌ອື່ນ, ໃຫ້ລຶບໂປຣໄຟລ໌ທີ່ມີຢູ່ກ່ອນແລ້ວອອກກ່ອນ.</translation>
+<translation id="4280325816108262082">ອຸປະກອນຈະຕັດການເຊື່ອມຕໍ່ອັດຕະໂນມັດເມື່ອມັນຖືກປິດໄວ້ ຫຼື ບໍ່ໄດ້ໃຊ້</translation>
 <translation id="4281844954008187215">ຂໍ້ກໍານົດການບໍລິການ</translation>
 <translation id="4282196459431406533">Smart Lock ເປີດຢູ່</translation>
 <translation id="4284755288573763878">ປິດຄວາມປອດໄພທີ່ປັບປຸງດີຂຶ້ນໄວ້ບໍ?</translation>
@@ -4343,6 +4344,7 @@
 <translation id="5490721031479690399">ຕັດການເຊື່ອມຕໍ່ອຸປະກອນ Bluetooth</translation>
 <translation id="5490798133083738649">ອະນຸຍາດໃຫ້ Linux ເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="549211519852037402">ສີເທົາອ່ອນ ແລະ ສີຂາວ</translation>
+<translation id="5492637351392383067">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="5493792505296048976">ໜ້າຈໍເປີດຢູ່</translation>
 <translation id="5494016731375030300">ແຖບທີ່ປິດຫຼ້າສຸດ</translation>
 <translation id="5494362494988149300">ເປີດເມື່ອສໍາເລັດ</translation>
@@ -6540,6 +6542,7 @@
 <translation id="7775694664330414886">ຍ້າຍແຖບໄປຍັງກຸ່ມທີ່ບໍ່ມີຊື່ແລ້ວ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ຈະສາມາດເບິ່ງໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ຈົນກວ່າທ່ານປິດແຖບທັງໝົດສຳລັບເວັບໄຊນີ້</translation>
 <translation id="7776701556330691704">ບໍ່ພົບເຫັນສຽງໃດ</translation>
+<translation id="7777284276915203144">ລະຫັດຜ່ານຂອງທ່ານແມ່ນຖືກເຂົ້າລະຫັດໄວ້ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="7781335840981796660">ບັນຊີຜູ້ໃຊ້ ແລະຂໍ້ມູນກັບທີ່ທັງໝົດຈະຖືກເອົາອອກໄປ.</translation>
 <translation id="7782102568078991263">ບໍ່ມີການແນະນໍາເພີ່ມເຕີມຈາກ Google</translation>
 <translation id="7782717250816686129">ບັນທຶກຂໍ້ມູນທີ່ໃຊ້ຕະຫຼອດໃນໜ້າຈໍເຂົ້າສູ່ລະບົບ ແລະ ແຊກຂໍ້ມູນເຂົ້າສູ່ລະບົບເຂົ້າໃນເຊດຊັນ.</translation>
@@ -7190,6 +7193,7 @@
 <translation id="8428634594422941299">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="84297032718407999">ທ່ານຈະຖືກນຳອອກຈາກລະບົບໃນ <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">ສະແດງການແຕະ</translation>
+<translation id="8431730749911729314">ເຂົ້າລະຫັດລະຫັດຜ່ານຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="8434480141477525001">ຜອດແກ້ໄຂບັນຫາ NaCl</translation>
 <translation id="8435395510592618362">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານດ້ວຍ <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">ສະ​ຫະ​ລັດ</translation>
@@ -7979,6 +7983,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> ບໍ່ສາມາດເປີດໄຟລ໌ໃນໂຟນເດີນີ້ໄດ້ເນື່ອງຈາກມັນມີໄຟລ໌ລະບົບ</translation>
 <translation id="950307215746360464">ຄຳແນະນຳການຕັ້ງຄ່າ</translation>
 <translation id="951991426597076286">ປະຕິເສດ</translation>
+<translation id="952471655966876828">ອຸປະກອນຈະເຊື່ອມຕໍ່ອັດຕະໂນມັດເມື່ອເປີດມັນ ແລະ ກຳລັງຖືກໃຊ້ຢູ່</translation>
 <translation id="953434574221655299">ອະນຸຍາດໃຫ້ຮູ້ເມື່ອທ່ານກຳລັງໃຊ້ອຸປະກອນຂອງທ່ານຢູ່</translation>
 <translation id="956500788634395331">ທ່ານໄດ້ຮັບການປົກປ້ອງຈາກສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ</translation>
 <translation id="957960681186851048">ເວັບໄຊນີ້ໄດ້ພະຍາຍາມດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>

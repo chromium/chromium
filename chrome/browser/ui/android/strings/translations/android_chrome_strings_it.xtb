@@ -500,6 +500,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3908308510347173149">Aggiorna <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Stiamo cercando il meglio sul Web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on</translation>
+<translation id="3925830358619338299">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Unisci i miei dati</translation>
 <translation id="3934366560681368531">"</translation>
@@ -772,6 +773,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5483197086164197190">Esplorare Chrome</translation>
 <translation id="5487521232677179737">Cancella dati</translation>
 <translation id="549025011754480756">Come eseguire ricerche tramite comandi vocali</translation>
+<translation id="5492637351392383067">Crittografia sul dispositivo</translation>
 <translation id="5514904542973294328">Opzione disattivata dall'amministratore del dispositivo</translation>
 <translation id="5515439363601853141">Sblocca per visualizzare la password</translation>
 <translation id="5517095782334947753">Sono presenti preferiti, cronologia, password e altre impostazioni di <ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8427875596167638501">La scheda di anteprima è aperta nella parte inferiore dello schermo</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8430824733382774043">Condividi solo screenshot</translation>
+<translation id="8431730749911729314">Cripta le password sul dispositivo prima che vengano salvate in Gestore delle password di Google</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8439974325294139057"><ph name="LANG" />: lingua pronta, riavvia <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nessuna notizia disponibile</translation>

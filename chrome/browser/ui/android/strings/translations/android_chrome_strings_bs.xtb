@@ -500,6 +500,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3908308510347173149">Ažuriraj aplikaciju <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Tražimo najbolje sadržaje na internetu…</translation>
 <translation id="3924911262913579434">Funkcija <ph name="SAFE_BROWSING_MODE" /> je uključena</translation>
+<translation id="3925830358619338299">Lozinke se šifriraju na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki</translation>
 <translation id="3927692899758076493">Sans-serif</translation>
 <translation id="3928666092801078803">Kombiniraj moje podatke</translation>
 <translation id="3934366560681368531">"</translation>
@@ -772,6 +773,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5483197086164197190">Navigirajte Chromeom</translation>
 <translation id="5487521232677179737">Obriši podatke</translation>
 <translation id="549025011754480756">Kako pretraživati glasom</translation>
+<translation id="5492637351392383067">Šifriranje na uređaju</translation>
 <translation id="5514904542973294328">Onemogućio administrator ovog uređaja</translation>
 <translation id="5515439363601853141">Otključajte za prikaz zaporke</translation>
 <translation id="5517095782334947753">Imate oznake, historiju, lozinke i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8427875596167638501">Kartica za pregled je napola otvorena</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8430824733382774043">Dijeli samo snimak ekrana</translation>
+<translation id="8431730749911729314">Šifrirajte lozinke na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki</translation>
 <translation id="8438566539970814960">Poboljšajte pretraživanje i pregledanje</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – Jezik je spreman. Ponovo pokrenite aplikaciju <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nijedna priča nije dostupna</translation>

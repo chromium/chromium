@@ -474,6 +474,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Politika, Devre Dışı değerine ayarlanırsa güvenli olmayan HTTP isteklerinin <ph name="BASIC_AUTH" /> kimlik doğrulama düzenini kullanmasına verilmez. Yalnızca güvenli HTTPS'ye izin verilir
 
       <ph name="AUTH_SCHEMES_POLICY_NAME" /> politikası ayarlanırsa ve <ph name="BASIC_AUTH" /> içermiyorsa bu politika ayarı yok sayılır (ve <ph name="BASIC_AUTH" /> her zaman yasaklanır).</translation>
+<translation id="1574258262373444557">Kullanıcı depolama alanı şifrelemesi için şifreleme algoritması olarak <ph name="AES_KL_NAME" /> kullanma</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Bağlayıcı için yapılandırma politikası</translation>
 <translation id="1583248206450240930">Varsayılan olarak <ph name="PRODUCT_FRAME_NAME" /> ürününü kullan</translation>
 <translation id="1587042984081085960">Bu politika, bir yöneticinin sayfa kapatma işlemi sırasında bir sayfanın eş zamanlı XHR istekleri gönderebileceğini belirtmesini sağlar.
@@ -605,6 +606,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="167514072300004091">Politikayı 3 değerine ayarlamak web sitelerinin bağlı USB cihazlarına erişim istemesini sağlar. Politikayı 2 değerine ayarlamak bağlı USB cihazlarına erişimi engeller.
 
       Politikayı ayarlamadan bırakmak web sitelerinin erişim istemesini sağlar. Kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="1678137412645922426">Destekleniyorsa kullanıcı depolama alanı şifrelemesi için <ph name="AES_KL_NAME" /> kullanımını kontrol eder</translation>
 <translation id="1682063842123336408"><ph name="PLUGIN_VM_NAME" /> eklentisini yüklemek için boş alan (GB cinsinden) gerektir.
 
       Bu politika ayarlanmadan bırakılırsa boş disk alanınız 20 GB'tan (varsayılan değer) az olduğunda <ph name="PLUGIN_VM_NAME" /> yüklemesi başarısız olur.
@@ -3873,6 +3875,12 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="5584132346604748282">Android Google konum hizmetlerini kontrol et</translation>
+<translation id="5585384603219625331">Bu politika, destekleniyorsa Chrome OS'te <ph name="DM_CRYPT" /> kullanıcı evleri için kullanıcı depolama alanı şifrelemesinde <ph name="AES_KL_NAME" /> uygulamasının etkinleştirilip etkinleştirilmeyeceğini kontrol eder.
+
+       Bu politika yalnızca şifreleme için <ph name="DM_CRYPT" /> kullanan kullanıcı evleri için geçerlidir. Eski kullanıcı evleri (<ph name="DM_CRYPT" /> kullanmayanlar) <ph name="AES_KL_NAME" /> kullanımını desteklemedikleri için varsayılan olarak <ph name="AES_NI_NAME" /> kullanır.
+
+       Politika değeri değişirse, <ph name="AES_ALGORITHM_NAME" /> uygulamaları uyumlu olduğundan politika tarafından yapılandırılan şifreleme uygulama kullanılarak mevcut <ph name="DM_CRYPT" /> kullanıcı evlerine erişim sağlanabilir.
+       Politika devre dışı bırakılır veya ayarlanmazsa <ph name="DM_CRYPT" /> kullanıcı evlerine ait kullanıcı depolama alanı şifrelemesi için varsayılan olarak <ph name="AES_NI_NAME" /> kullanılır.</translation>
 <translation id="5586942249556966598">Hiçbir şey yapma</translation>
 <translation id="5598417829613725146">Tuval (90 sürümünden itibaren desteklenir)</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> yönetim ayarları</translation>
@@ -6500,6 +6508,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8626826495474944836">Her site için Site İzolasyonunu zorunlu tut</translation>
 <translation id="8631434304112909927"><ph name="UNTIL_VERSION" /> sürümüne kadar</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" /> kilit ekranında izin verilen not alma uygulamaları listesi</translation>
+<translation id="8634062512783775032">Destekleniyorsa kullanıcı depolama alanı şifrelemesi için şifreleme algoritması olarak <ph name="AES_KL_NAME" /> kullan</translation>
 <translation id="8637566476051166626">Açıkça izin verilen ağ bağlantı noktaları</translation>
 <translation id="8643838501942693770">3. taraf çerezlere izin ver, ancak kullanıcının bu ayarı değiştirmesine olanak tanı</translation>
 <translation id="8648844602494595665">Bu politika, çok amaçlı adres çubuğundaki kilit simgesinin işlenme şeklini denetler.

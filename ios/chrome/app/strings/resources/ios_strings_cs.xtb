@@ -60,7 +60,6 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1434356225517321998">Váš prohlížeč je spravován. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Šifrování v zařízení</translation>
 <translation id="1449835205994625556">Skrýt heslo</translation>
 <translation id="145015347812617860">Počet položek: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Tento web se pokouší stáhnout profil konfigurace.</translation>
@@ -143,6 +142,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2271351792809375263">Používejte hesla, která jste si uložili v Chromu, také v jiných aplikacích v zařízení</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
 <translation id="2286505070150039482">Zvýrazněný text</translation>
+<translation id="2299218006564889602">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována.</translation>
 <translation id="2302742851632557585">Změnit heslo na webu</translation>
 <translation id="2316709634732130529">Použít navrhované heslo</translation>
 <translation id="2320166752086256636">Skrýt klávesnici</translation>
@@ -286,7 +286,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3529024052484145543">Nezabezpečeno</translation>
 <translation id="3533202363250687977">Zavřít všechny anonymní karty</translation>
 <translation id="3533436815740441613">Nová karta</translation>
-<translation id="3536487890564466894">Hesla se před uložením do účtu Google zašifrují.</translation>
 <translation id="3551320343578183772">Zavřít kartu</translation>
 <translation id="3581564640715911333">Nabízet překlad stránek v jiných jazycích</translation>
 <translation id="3588820906588687999">Otevřít obrázek na nové kartě</translation>
@@ -547,6 +546,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6066301408025741299">Stahování zrušíte klepnutím.</translation>
 <translation id="60829778314739003">Přijmout a pokračovat</translation>
 <translation id="6084848228346514841">Vybrat karty</translation>
+<translation id="6103540626693881831">Šifrování v zařízení</translation>
 <translation id="6108923351542677676">Probíhá nastavování…</translation>
 <translation id="6119050551270742952">Webová stránka je v anonymním režimu</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -765,6 +765,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="797413074872316787">Pokud chcete synchronizovat a přizpůsobit různá zařízení, zapněte synchronizaci.</translation>
 <translation id="7978018860671536736">3. Klepněte na Automatické vyplnění hesel.</translation>
 <translation id="7982789257301363584">Síť</translation>
+<translation id="7987685713885608670">Za účelem zvýšení zabezpečení zašifrovat hesla v zařízení před uložením do Správce hesel Google.</translation>
 <translation id="7993619969781047893">Některé weby mohou přestat fungovat</translation>
 <translation id="800361585186029508">Otevře zadané adresy URL v prohlížeči Google Chrome.</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>

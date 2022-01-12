@@ -500,6 +500,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3908308510347173149">Atualizar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Procurando o melhor da Web…</translation>
 <translation id="3924911262913579434">O modo <ph name="SAFE_BROWSING_MODE" /> está ativado</translation>
+<translation id="3925830358619338299">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Integrar meus dados</translation>
 <translation id="3934366560681368531">"</translation>
@@ -773,6 +774,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5483197086164197190">Navegar no Chrome</translation>
 <translation id="5487521232677179737">Limpar dados</translation>
 <translation id="549025011754480756">Como pesquisar com a voz</translation>
+<translation id="5492637351392383067">Criptografia no dispositivo</translation>
 <translation id="5514904542973294328">Opção desativada pelo administrador deste dispositivo</translation>
 <translation id="5515439363601853141">Desbloqueie para ver sua senha</translation>
 <translation id="5517095782334947753">Você tem favoritos, histórico, senhas e outras configurações da conta <ph name="FROM_ACCOUNT" />.</translation>
@@ -1322,6 +1324,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8427875596167638501">A guia "Visualizar" está parcialmente aberta</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8430824733382774043">Compartilhar apenas a captura de tela</translation>
+<translation id="8431730749911729314">Criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de senhas do Google</translation>
 <translation id="8438566539970814960">Melhorar as pesquisas e a navegação</translation>
 <translation id="8439974325294139057"><ph name="LANG" />: idioma pronto. Reinicie o <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nenhuma matéria disponível</translation>

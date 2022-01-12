@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1434356225517321998">お使いのブラウザは管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">オンデバイスの暗号化</translation>
 <translation id="1449835205994625556">パスワードを非表示にします</translation>
 <translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
 <translation id="149095475893949513">このウェブサイトが設定プロファイルをダウンロードしようとしています。</translation>
@@ -143,6 +142,7 @@
 <translation id="2271351792809375263">Chrome に保存したパスワードをデバイスの他のアプリで使用する</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
 <translation id="2286505070150039482">選択したテキスト</translation>
+<translation id="2299218006564889602">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="2302742851632557585">ウェブサイトでパスワードを変更</translation>
 <translation id="2316709634732130529">推奨されたパスワードを使用</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
@@ -286,7 +286,6 @@
 <translation id="3529024052484145543">保護されていません</translation>
 <translation id="3533202363250687977">すべてのシークレット タブを閉じる</translation>
 <translation id="3533436815740441613">新しいタブ</translation>
-<translation id="3536487890564466894">Google アカウントに保存する前にパスワードを暗号化します。</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
@@ -547,6 +546,7 @@
 <translation id="6066301408025741299">タップしてキャンセルします。</translation>
 <translation id="60829778314739003">同意して続行</translation>
 <translation id="6084848228346514841">タブを選択</translation>
+<translation id="6103540626693881831">オンデバイスの暗号化</translation>
 <translation id="6108923351542677676">設定しています...</translation>
 <translation id="6119050551270742952">現在シークレット モードです</translation>
 <translation id="6122191549521593678">オンライン</translation>
@@ -614,6 +614,7 @@
 <translation id="6524918542306337007">シークレット モードは使用できません</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">拡大</translation>
+<translation id="6583087784430677195">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードを自動入力] に移動します。</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>
 <translation id="6603393121510733479">シークレット ブラウジングは組織によって無効にされています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="797413074872316787">カスタマイズした設定を複数のデバイスで同期して使用するには、同期を有効にします。</translation>
 <translation id="7978018860671536736">3.[パスワードを自動入力] をタップする</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
+<translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="7993619969781047893">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="800361585186029508">入力された URL を Google Chrome で開きます。</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>

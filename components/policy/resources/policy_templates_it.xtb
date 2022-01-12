@@ -131,6 +131,7 @@
             * ntlm
             Se questa opzione non viene impostata, potranno essere usati tutti i tre schemi.</translation>
 <translation id="1153306961094113710">Consenti debug remoto</translation>
+<translation id="115699958189272121">Segnala eventi <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
 <translation id="1158844608156732189">La configurazione Kerberos (una riga per elemento array); visita la pagina https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Consenti protocollo QUIC</translation>
 <translation id="1160939557934457296">Disattiva procedendo dalla pagina di avviso Navigazione sicura</translation>
@@ -754,7 +755,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       Se il criterio viene disattivato o se non viene configurato, WebDriver non potrà sostituire i criteri non compatibili.</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
-<translation id="1888871729456797026">Il token di registrazione della norma relativa alla cloud su desktop</translation>
+<translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>
 <translation id="1894790493260633497">Attiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
 <translation id="1897365952389968758">Consenti l'esecuzione di JavaScript in tutti i siti</translation>
 <translation id="1902043648529789224">Controlla la posizione della barra delle app</translation>
@@ -3632,7 +3633,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       . In caso contrario, potrebbe essere impostato uno dei seguenti valori: "tls1.2" o "tls1.3". Se questa norma viene impostata, <ph name="PRODUCT_NAME" /> non utilizzerà versioni SSL/TLS successive a quella specificata. I valori non riconosciuti verranno ignorati.</translation>
 <translation id="5330684698007383292">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuti</translation>
-<translation id="5331746669335642668">La norma relativa alla cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
+<translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
@@ -3971,6 +3972,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio viene impostato su Disattivato, i file PDF vengono aperti con il plug-in di PDF, a meno che disattivato dagli utenti.
 
       Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono scegliere se aprire o meno i file PDF esternamente.</translation>
+<translation id="5705828032077475554">Segnala sessioni CRD</translation>
 <translation id="5708969689202733975">Configura le modalità di sblocco rapido consentite</translation>
 <translation id="5714563837055244378">Attiva la condivisione da Android alle app web.</translation>
 <translation id="5715617256528927547">La configurazione del criterio consente di specificare la durata in ore della cache dell'Oggetto Criteri di gruppo (GPO): tempo massimo in cui i GPO possono essere riutilizzati prima di essere scaricati nuovamente. Invece di scaricarli di nuovo a ogni recupero del criterio, il sistema riutilizza i GPO memorizzati nella cache finché la loro versione non viene modificata.
@@ -4558,6 +4560,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se impostato su Vero o non impostato, verrà segnalata la configurazione di rete del dispositivo.</translation>
 <translation id="6401669939808766804">Disconnetti l'utente</translation>
 <translation id="640244877779556713">Attiva suggerimento di emoji</translation>
+<translation id="6404064917675764807">Non segnalare eventi di sessioni CRD</translation>
 <translation id="6407093060083181305">Configura la lista bloccata di installazione delle estensioni</translation>
 <translation id="640827304541402854">Viene disattivato l'attraversamento firewall da host di accesso remoto</translation>
 <translation id="6412352702230183710">Consenti solo host di messaggi nativi a livello di sistema</translation>
@@ -4922,6 +4925,11 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio non è impostato, la modalità ad alto contrasto risulta disattivata nella schermata di accesso. Gli utenti possono attivarla in qualsiasi momento e il suo stato nella schermata di accesso persiste per tutti gli utenti.
 
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> sostituisce questo criterio.</translation>
+<translation id="6833462729740272863">Configura un elenco di URL che possono rimanere in modalità a schermo intero senza mostrare una notifica quando il dispositivo torna attivo dalla schermata di blocco.
+
+          Generalmente, la modalità a schermo intero viene disattivata dopo la riattivazione dalla schermata di blocco per ridurre il rischio di attacchi di phishing. Questo criterio consente di specificare gli URL considerati origini attendibili che possono rimanere in modalità a schermo intero al momento dello sblocco. Viene configurato tramite la specifica di un elenco di pattern URL formattati in base a questo formato (https://www.chromium.org/administrators/url-blocklist-filter-format). Ad esempio, è possibile mantenere sempre attiva la modalità a schermo intero al momento dello sblocco e disattivare tutte le notifiche contemporaneamente specificando il carattere jolly <ph name="WILDCARD_VALUE" /> che corrisponde a tutti gli URL.
+
+          Se il criterio viene impostato su un elenco vuoto o se non viene configurato, nessun URL può rimanere in modalità a schermo intero senza mostrare una notifica.</translation>
 <translation id="6833988859168635883">Avvio, pagina iniziale e pagina Nuova scheda</translation>
 <translation id="6835883744948188639">Mostra all'utente un messaggio ricorrente che indica che è consigliato eseguire un riavvio</translation>
 <translation id="683688607121170501">Questa impostazione consente agli utenti di passare da un Account Google a un altro all'interno dell'area dei contenuti della finestra del browser e nelle applicazioni Android, dopo avere eseguito l'accesso al dispositivo <ph name="PRODUCT_OS_NAME" />.
@@ -5231,7 +5239,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio viene impostato su Falso, la funzionalità viene disattivata.</translation>
 <translation id="7126716959063786004">Consenti di terminare i processi in Task Manager</translation>
 <translation id="7126928806195745404">Impostazioni JavaScript</translation>
-<translation id="7127892035367404455">Rollback alla versione target</translation>
+<translation id="7127892035367404455">Esegui il rollback alla versione di destinazione</translation>
 <translation id="7127980134843952133">Cronologia download</translation>
 <translation id="712963038874313213">Fornisce un playbook Ansible che deve essere eseguito nel contenitore Crostini predefinito.
 
@@ -6137,6 +6145,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8219813789911069300">Blocca download dannosi (opzione consigliata).</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
+<translation id="822055204938220476">Elenco di URL che possono rimanere in modalità a schermo intero senza mostrare una notifica</translation>
 <translation id="8229912067600517877">Attiva Strumenti per sviluppatori</translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
@@ -6469,6 +6478,10 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8544465954173828789">Consente la sincronizzazione di messaggi SMS dal telefono al Chromebook</translation>
 <translation id="8566842294717252664">Nascondi il Web Store nella pagina Nuova scheda e in Avvio applicazioni</translation>
 <translation id="8571314270766672278">Esegui il rollback e il ripristino del dispositivo con un downgrade del canale, prova a mantenere la registrazione</translation>
+<translation id="8571871284943706125">Segnala eventi di sessioni CRD su dispositivi registrati per utenti affiliati.
+
+      Se il criterio viene disattivato o se non viene configurato, le informazioni non vengono segnalate.
+      Se viene attivato, gli eventi CRD vengono segnalati, se l'utente è affiliato.</translation>
 <translation id="857369585509260201">Questa norma è stata ritirata; usa la norma BrowserSignin.
 
       Se questa norma viene impostata su true, l'utente deve accedere a <ph name="PRODUCT_NAME" /> con il proprio profilo per poter usare il browser e il valore predefinito di BrowserGuestModeEnabled viene impostato su false. Tieni presente che i profili esistenti a cui non è stato eseguito l'accesso saranno bloccati e inaccessibili dopo l'attivazione di questa norma. Per ulteriori informazioni, leggi l'articolo del Centro assistenza.
@@ -6638,7 +6651,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Le stampanti locali sono note anche come destinazioni di stampa native e includono le destinazioni disponibili per le stampanti di computer locali e le stampanti di rete condivise.</translation>
 <translation id="8753264624162178499">L'opzione Stampa come immagine è a disposizione degli utenti per consentire la rasterizzazione del file PDF prima di inviare il processo di stampa alla destinazione.</translation>
 <translation id="8757552286070680084">Configurazione di DTC wilco</translation>
-<translation id="8758831693895931466">Attiva la registrazione alla gestione della cloud obbligatoria</translation>
+<translation id="8758831693895931466">Attiva la registrazione alla gestione del cloud obbligatoria</translation>
 <translation id="8759829385824155666">Tipi di crittografia Kerberos consentiti</translation>
 <translation id="8767743923206070405">Se il criterio viene impostato su Attivato, nella barra degli strumenti di <ph name="PRODUCT_NAME" /> viene mostrato il pulsante Pagina iniziale. Se viene impostato su Disattivato, il pulsante Pagina iniziale non viene mostrato.
 

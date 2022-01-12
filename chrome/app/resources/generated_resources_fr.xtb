@@ -3213,6 +3213,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4278390842282768270">Autorisé</translation>
 <translation id="4279129444466079448">Vous pouvez installer jusqu'à <ph name="PROFILE_LIMIT" /> profils eSIM sur cet appareil. Pour en ajouter un autre, supprimez-en d'abord un.</translation>
+<translation id="4280325816108262082">L'appareil se déconnecte automatiquement lorsqu'il est éteint ou inutilisé</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4282196459431406533">Smart Lock est activé</translation>
 <translation id="4284755288573763878">Désactiver la sécurité renforcée ?</translation>
@@ -3675,6 +3676,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4785719467058219317">La clé de sécurité n'est pas enregistrée auprès de ce site Web</translation>
 <translation id="478708757211772586">Appuyez sur "Suivant" pour aller au prochain élément affiché</translation>
 <translation id="4788092183367008521">Veuillez vérifier votre connexion réseau, puis réessayer.</translation>
+<translation id="4789550509729954245">Afficher la notification en cas de partage entre appareils à proximité</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Activer l'accélération de TrackPoint</translation>
@@ -4036,6 +4038,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5171343362375269016">Espace mémoire d'échange</translation>
 <translation id="5172855596271336236">Il y a 1 imprimante gérée.</translation>
 <translation id="5173668317844998239">Ajouter et supprimer les empreintes enregistrées sur votre clé de sécurité</translation>
+<translation id="5174169235862638850">Mot de passe copié dans le presse-papiers</translation>
 <translation id="5175379009094579629">Le nom de l'appareil n'est pas valide. Saisissez-en un qui le soit.</translation>
 <translation id="5177479852722101802">Continuer à bloquer l'accès à la caméra et au micro</translation>
 <translation id="5177549709747445269">Vous utilisez des données mobiles</translation>
@@ -4330,6 +4333,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5490721031479690399">Déconnecter l'appareil Bluetooth</translation>
 <translation id="5490798133083738649">Autoriser Linux à accéder au micro</translation>
 <translation id="549211519852037402">Beige et blanc</translation>
+<translation id="5492637351392383067">Chiffrement sur l'appareil</translation>
 <translation id="5493792505296048976">écran activé</translation>
 <translation id="5494016731375030300">Onglets récemment fermés</translation>
 <translation id="5494362494988149300">Ouvrir une fois le téléchargement &amp;terminé</translation>
@@ -6528,6 +6532,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7775694664330414886">Onglet déplacé vers un groupe sans nom : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> pourra consulter les fichiers du dossier <ph name="FOLDERNAME" /> jusqu'à ce que vous fermiez tous les onglets de ce site</translation>
 <translation id="7776701556330691704">Aucune voix trouvée</translation>
+<translation id="7777284276915203144">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
 <translation id="7781335840981796660">Tous les comptes utilisateur et toutes les données locales seront supprimés.</translation>
 <translation id="7782102568078991263">Aucune autre suggestion de Google</translation>
 <translation id="7782717250816686129">Enregistrer les données persistantes dans l'écran de connexion et injecter les identifiants dans la session.</translation>
@@ -7180,6 +7185,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Vous allez être déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Afficher les éléments sélectionnés</translation>
+<translation id="8431730749911729314">Chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe Google</translation>
 <translation id="8434480141477525001">Port de débogage de Native Client</translation>
 <translation id="8435395510592618362">Valider votre identité avec <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">Américain</translation>
@@ -7970,6 +7976,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne peut pas ouvrir les fichiers de ce dossier, car il contient des fichiers système</translation>
 <translation id="950307215746360464">Guide de configuration</translation>
 <translation id="951991426597076286">Refuser</translation>
+<translation id="952471655966876828">L'appareil se connecte automatiquement lorsqu'il est allumé ou utilisé</translation>
 <translation id="953434574221655299">Autorisés à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement dangereuses</translation>
 <translation id="957960681186851048">Une tentative de téléchargement automatique de plusieurs fichiers a été initiée via ce site</translation>

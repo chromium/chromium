@@ -53,6 +53,10 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1247519845643687288">Son uygulamalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> güç kaynağından şarj ediliyor</translation>
 <translation id="1255033239764210633">Hava nasıl?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> - 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Google Takvim'de ayrıntılarını görmek için etkinliği seçin.</translation>
 <translation id="1266097335951928626">Selfie kamerasını başlat</translation>
 <translation id="1267032506238418139">Kısayol değişikliği</translation>
 <translation id="1269405891096105529">Çevre birimi, Misafir modunda desteklenmiyor</translation>
@@ -997,6 +1001,8 @@ Yeni yüklenmiş</translation>
 <translation id="7720410380936703141">TEKRAR DENE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildirim}other{# bildirim}}</translation>
 <translation id="7724603315864178912">Kes</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Raftaki uygulamaları göster</translation>
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="7749640678855296659">Mikrofonunuz şu anda kapalı</translation>

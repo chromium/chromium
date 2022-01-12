@@ -3227,6 +3227,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
 <translation id="4279129444466079448">Anda dapat menginstal hingga <ph name="PROFILE_LIMIT" /> profil eSIM di perangkat ini. Untuk menambahkan profil lain, hapus profil yang sudah ada terlebih dahulu.</translation>
+<translation id="4280325816108262082">Perangkat akan otomatis terputus koneksinya saat dinonaktifkan atau sedang tidak digunakan</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
 <translation id="4282196459431406533">Smart Lock diaktifkan</translation>
 <translation id="4284755288573763878">Nonaktifkan keamanan yang ditingkatkan?</translation>
@@ -4347,6 +4348,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5490721031479690399">Putuskan hubungan perangkat Bluetooth</translation>
 <translation id="5490798133083738649">Izinkan Linux mengakses mikrofon Anda</translation>
 <translation id="549211519852037402">Beige dan putih</translation>
+<translation id="5492637351392383067">Enkripsi di perangkat</translation>
 <translation id="5493792505296048976">layar aktif</translation>
 <translation id="5494016731375030300">Tab yang Baru Ditutup</translation>
 <translation id="5494362494988149300">Buka Setelah &amp;Selesai</translation>
@@ -6544,6 +6546,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7775694664330414886">Tab dipindahkan ke grup tanpa nama - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> akan dapat melihat file di <ph name="FOLDERNAME" /> hingga Anda menutup semua tab untuk situs ini</translation>
 <translation id="7776701556330691704">Suara tidak ditemukan</translation>
+<translation id="7777284276915203144">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google</translation>
 <translation id="7781335840981796660">Semua akun dan data lokal pengguna akan dihapus.</translation>
 <translation id="7782102568078991263">Tidak ada lagi saran dari Google</translation>
 <translation id="7782717250816686129">Simpan data persisten di layar login dan masukkan kredensial ke sesi.</translation>
@@ -7196,6 +7199,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8428634594422941299">Mengerti</translation>
 <translation id="84297032718407999">Anda akan logout dalam <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Show taps</translation>
+<translation id="8431730749911729314">Enkripsi sandi di perangkat Anda sebelum disimpan ke Pengelola Sandi Google</translation>
 <translation id="8434480141477525001">Port Debug NaCl</translation>
 <translation id="8435395510592618362">Verifikasi identitas Anda dengan <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">AS</translation>
@@ -7985,6 +7989,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="947667444780368238"><ph name="ORIGIN" /> tidak dapat membuka file dalam folder ini karena berisi file sistem</translation>
 <translation id="950307215746360464">Panduan penyiapan</translation>
 <translation id="951991426597076286">Tolak</translation>
+<translation id="952471655966876828">Perangkat akan otomatis terhubung saat diaktifkan dan sedang digunakan</translation>
 <translation id="953434574221655299">Diizinkan mengetahui saat Anda aktif menggunakan perangkat</translation>
 <translation id="956500788634395331">Anda dilindungi dari ekstensi yang berpotensi berbahaya</translation>
 <translation id="957960681186851048">Situs ini berupaya mendownload beberapa file secara otomatis</translation>

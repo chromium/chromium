@@ -3211,6 +3211,7 @@
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4278390842282768270">اجازت یافتہ</translation>
 <translation id="4279129444466079448">‏آپ اس آلے پر <ph name="PROFILE_LIMIT" /> eSIM پروفائلز انسٹال کر سکتے ہیں۔ دوسری پروفائل شامل کرنے کے لیے، پہلے موجودہ پروفائل ہٹائیں۔</translation>
+<translation id="4280325816108262082">جب آلہ آف ہو یا استعمال نہ ہو رہا ہو تو آلہ خودکار طور پر منقطع ہو جائے گا</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
 <translation id="4282196459431406533">‏Smart Lock آن ہے</translation>
 <translation id="4284755288573763878">بہتر کردہ سیکیورٹی کو آف کریں؟</translation>
@@ -4329,6 +4330,7 @@
 <translation id="5490721031479690399">بلوٹوتھ آلہ غیر منسلک کریں</translation>
 <translation id="5490798133083738649">‏Linux کو اپنے مائکروفون تک رسائی کی اجازت دیں</translation>
 <translation id="549211519852037402">ہلکا بادامی اور سفید</translation>
+<translation id="5492637351392383067">آلے پر مرموزکاری</translation>
 <translation id="5493792505296048976">اسکرین آن ہے</translation>
 <translation id="5494016731375030300">حال ہی میں بند کئے گئے ٹیبز</translation>
 <translation id="5494362494988149300">&amp;مکمل ہو جانے پر کھولیں</translation>
@@ -6526,6 +6528,7 @@
 <translation id="7775694664330414886">ٹیب کو بغیر نام والے گروپ میں منتقل کر دیا گیا - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">اس سائٹ کے لیے آپ کے سبھی ٹیبز کو بند کرنے تک <ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز دیکھ سکے گا</translation>
 <translation id="7776701556330691704">کوئی آواز نہیں ملی</translation>
+<translation id="7777284276915203144">‏آپ کا پاس ورڈ Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو جاتا ہے</translation>
 <translation id="7781335840981796660">سبھی صارف اکاؤنٹس اور مقامی ڈیٹا کو ہٹا دیا جائے گا۔</translation>
 <translation id="7782102568078991263">‏Google کی جانب سے مزید کوئی مشورے نہیں ہیں</translation>
 <translation id="7782717250816686129">لاگ ان اسکرین پر مستقل ڈیٹا اسٹور کریں اور سیشن میں اسناد داخل کریں۔</translation>
@@ -7177,6 +7180,7 @@
 <translation id="8428634594422941299">سمجھ آ گئی</translation>
 <translation id="84297032718407999">آپ <ph name="LOGOUT_TIME_LEFT" /> میں سائن آؤٹ ہو جائیں گے</translation>
 <translation id="8431190899827883166">تھپتھپاہٹیں دکھائیں</translation>
+<translation id="8431730749911729314">‏Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے اپنے آلے پر پاس ورڈز کو مرموز کریں</translation>
 <translation id="8434480141477525001">‏NaCl ڈیبگ پورٹ</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> کے ساتھ اپنی شناخت کی توثیق کریں</translation>
 <translation id="8437209419043462667">US</translation>
@@ -7966,6 +7970,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> اس فولڈر میں فائلیں نہیں کھول سکتا کیونکہ اس میں سسٹم کی فائلیں ہیں</translation>
 <translation id="950307215746360464">سیٹ اپ کی گائیڈ</translation>
 <translation id="951991426597076286">مسترد کریں</translation>
+<translation id="952471655966876828">آلہ کے آن ہونے اور استعمال ہونے پر یہ خودکار طور پر منسلک ہو جائے گا</translation>
 <translation id="953434574221655299">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کی اجازت ہے</translation>
 <translation id="956500788634395331">آپ ممکنہ طور پر نقصان دہ ایکسٹینشنز سے محفوظ ہیں</translation>
 <translation id="957960681186851048">اس سائٹ نے متعدد فائلز کو خودکار طور پر ڈاؤن لوڈ کرنے کی کوشش کی ہے</translation>

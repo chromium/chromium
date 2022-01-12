@@ -53,6 +53,10 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1247519845643687288">Applications récentes</translation>
 <translation id="1252999807265626933">Recharge à partir de <ph name="POWER_SOURCE" /> en cours</translation>
 <translation id="1255033239764210633">Quel temps fait-il?</translation>
+<translation id="1262870540683925850">De <ph name="START_TIME" /> à 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" /> : 
+        <ph name="EVENT_SUMMARY" />. Sélectionnez cet événement pour voir davantage d'information dans Google Agenda.</translation>
 <translation id="1266097335951928626">Démarrer l'appareil photo pour égoportrait</translation>
 <translation id="1267032506238418139">Modification du raccourci</translation>
 <translation id="1269405891096105529">Le mode Invité ne prend pas en charge votre périphérique</translation>
@@ -997,6 +1001,8 @@ Nouvelle installation</translation>
 <translation id="7720410380936703141">RÉESSAYER</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Couper</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Afficher les applications sur l'étagère</translation>
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="7749640678855296659">Votre microphone est présentement désactivé</translation>

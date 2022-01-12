@@ -500,6 +500,7 @@
 <translation id="3908308510347173149">تحديث <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">جارٍ العثور على الأفضل من الويب...</translation>
 <translation id="3924911262913579434">وضع <ph name="SAFE_BROWSING_MODE" /> مفعّل.</translation>
+<translation id="3925830358619338299">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">جمع البيانات التابعة لي</translation>
 <translation id="3934366560681368531">"</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">‏التنقُّل في Chrome</translation>
 <translation id="5487521232677179737">محو البيانات</translation>
 <translation id="549025011754480756">كيفية البحث باستخدام صوتك</translation>
+<translation id="5492637351392383067">التشفير على الجهاز فقط</translation>
 <translation id="5514904542973294328">تم الإيقاف من قبل مشرف هذا الجهاز</translation>
 <translation id="5515439363601853141">فتح القفل لعرض كلمة المرور</translation>
 <translation id="5517095782334947753">تتوفر لديك الإشارات المرجعية، والسجل، وكلمات المرور، والإعدادات الأخرى من <ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">علامة تبويب المعاينة مفتوحة جزئيًا</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8430824733382774043">مشاركة لقطة الشاشة فقط</translation>
+<translation id="8431730749911729314">‏يمكنك تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google</translation>
 <translation id="8438566539970814960">تحسين عمليات البحث والتصفُّح</translation>
 <translation id="8439974325294139057">تم تنزيل حزمة اللغة <ph name="LANG" />. يُرجى إعادة تشغيل <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">لا تتوفّر أي قصص</translation>

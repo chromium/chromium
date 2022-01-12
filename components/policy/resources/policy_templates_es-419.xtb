@@ -475,6 +475,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si inhabilitas la política, se prohíbe que las solicitudes HTTP no seguras usen el esquema de autenticación <ph name="BASIC_AUTH" />; solo se permitirán las solicitudes HTTPS seguras.
 
       Si se establece la política de <ph name="AUTH_SCHEMES_POLICY_NAME" /> y no incluye <ph name="BASIC_AUTH" />, se ignora esta política y se prohíbe siempre <ph name="BASIC_AUTH" />.</translation>
+<translation id="1574258262373444557">No usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración para el Conector de Chrome Enterprise OnFileDownloaded</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de manera predeterminada</translation>
 <translation id="1587042984081085960">Esta política permite que un administrador especifique si una página puede enviar solicitudes XHR síncronas cuando el usuario la abandona (la cierra o pasa a otra página).
@@ -606,6 +607,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="167514072300004091">Si estableces la política en 3, los sitios web podrán solicitar acceso a dispositivos USB conectados. Si la estableces en 2, se negará el acceso a dispositivos USB conectados.
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>
+<translation id="1678137412645922426">Controlar el uso de <ph name="AES_KL_NAME" /> para la encriptación del almacenamiento de datos del usuario (en caso de ser compatible)</translation>
 <translation id="1682063842123336408">Indica el espacio libre en disco (expresado en GB) que se necesita para instalar <ph name="PLUGIN_VM_NAME" />.
 
       Si no estableces esta política, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior a 20 GB (valor predeterminado).
@@ -3882,6 +3884,12 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si no se configura esta política, la acción predeterminada no se permite para los usuarios administrados por empresas y sí se permite para los usuarios no administrados.</translation>
 <translation id="5584132346604748282">Controla los servicios de ubicación de Google para Android</translation>
+<translation id="5585384603219625331">Esta política controla si la implementación de <ph name="AES_KL_NAME" /> está habilitada en Chrome OS para la encriptación del almacenamiento de datos del usuario para las casas de usuarios de <ph name="DM_CRYPT" /> (en caso de ser compatible).
+
+       Esta política solo se aplica a las casas de usuarios que usen <ph name="DM_CRYPT" /> para la encriptación. Las casas heredadas de usuarios (las que no usan <ph name="DM_CRYPT" />) no son compatibles con <ph name="AES_KL_NAME" /> y utilizarán <ph name="AES_NI_NAME" /> de forma predeterminada.
+
+       Si cambia el valor de la política, se accederá a las casas de usuarios de <ph name="DM_CRYPT" /> existentes con la implementación de encriptación configurada según la política, ya que las implementaciones de <ph name="AES_ALGORITHM_NAME" /> son compatibles.
+       Si inhabilitas la política o no la estableces, la encriptación del almacenamiento del usuario para las casas de usuarios de <ph name="DM_CRYPT" /> utilizarán <ph name="AES_NI_NAME" /> de forma predeterminada.</translation>
 <translation id="5586942249556966598">No hacer nada</translation>
 <translation id="5598417829613725146">Canvas (compatible a partir de la versión 90)</translation>
 <translation id="5599461642204007579">Configuración de la administración de <ph name="MS_AD_NAME" /></translation>
@@ -6557,6 +6565,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8626826495474944836">Solicitar el aislamiento de sitios para todos los sitios</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Lista de apps para tomar notas permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8634062512783775032">Usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario (en caso de ser compatible)</translation>
 <translation id="8637566476051166626">Puertos de red habilitados de forma explícita</translation>
 <translation id="8643838501942693770">Permite las cookies de terceros, pero también que el usuario cambie esta configuración</translation>
 <translation id="8648844602494595665">Esta política controla el tratamiento para el ícono de bloqueo en el cuadro multifunción.

@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">ເປີດ​ທັງ​ຫມົດ</translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1434356225517321998">ມີການຈັດການໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK" />ລາຍລະອຽດ<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="1449835205994625556">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ລາຍ​ການ</translation>
 <translation id="149095475893949513">ເວັບໄຊນີ້ກຳລັງພະຍາຍາມດາວໂຫຼດໂປຣໄຟລ໌ການຕັ້ງຄ່າຢູ່.</translation>
@@ -143,6 +142,7 @@
 <translation id="2271351792809375263">ໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ Chrome ໃນແອັບອື່ນຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="2273327106802955778">ເມນູເພີ່ມເຕີມ</translation>
 <translation id="2286505070150039482">ຂໍ້ຄວາມທີ່ໄຮໄລ້ໄວ້</translation>
+<translation id="2299218006564889602">ລະຫັດຜ່ານຂອງທ່ານແມ່ນຖືກເຂົ້າລະຫັດໄວ້ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
 <translation id="2302742851632557585">ປ່ຽນລະຫັດຜ່ານໃນເວັບໄຊ</translation>
 <translation id="2316709634732130529">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
 <translation id="2320166752086256636">ເຊື່ອງ​ແປ້ນ​ພິມ</translation>
@@ -286,7 +286,6 @@
 <translation id="3529024052484145543">ບໍ່ປອດໄພ</translation>
 <translation id="3533202363250687977">ປິດແຖບທີ່ບໍ່ເຜີຍຕົວຕົນທັງໝົດ</translation>
 <translation id="3533436815740441613">ແຖບໃໝ່</translation>
-<translation id="3536487890564466894">ເຂົ້າລະຫັດລະຫັດຜ່ານຂອງທ່ານກ່ອນທີ່ຈະບັນທຶກພວກມັນໄປໃສ່ບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="3551320343578183772">ປິດແຖບ</translation>
 <translation id="3581564640715911333">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>
 <translation id="3588820906588687999">ຮູບເປີດຢູ່ໃນແຖບໃໝ່</translation>
@@ -547,6 +546,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6066301408025741299">ແຕະ​ເພື່ອ​ຍົກ​ເລີກ.</translation>
 <translation id="60829778314739003">ຍອມຮັບ ແລະ ສືບຕໍ່</translation>
 <translation id="6084848228346514841">ເລືອກແຖບ</translation>
+<translation id="6103540626693881831">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="6108923351542677676">ກຳລັງດຳເນີນການຕັ້ງຄ່າ...</translation>
 <translation id="6119050551270742952">ໜ້າເວັບປັດຈຸບັນຢູ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6122191549521593678">ອອນ​ລາຍ</translation>
@@ -614,6 +614,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6524918542306337007">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">ຊຸມເຂົ້າ</translation>
+<translation id="6583087784430677195">ເພື່ອປິດໄວ້, ໃຫ້ເປີດ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" /> ແລ້ວໄປຫາການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດ.</translation>
 <translation id="6585618849026997638">ທ່ານສາມາດກັບໄປຫາໜ້າທີ່ສຳຄັນຕໍ່ກັບທ່ານໂດຍການເພີ່ມບຸກມາກໄດ້</translation>
 <translation id="6603393121510733479">ອົງການຂອງທ່ານໄດ້ປິດການທ່ອງເວັບແບບສ່ວນຕົວແລ້ວ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="797413074872316787">ເພື່ອຊິ້ງຂໍ້ມູນ ແລະ ປັບແຕ່ງເປັນແບບສ່ວນຕົວຢູ່ອຸປະກອນຕ່າງໆ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="7978018860671536736">3. ແຕະໃສ່ການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດ</translation>
 <translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
+<translation id="7987685713885608670">ເພື່ອຄວາມປອດໄພເພີ່ມເຕີມ, ໃຫ້ເຂົ້າລະຫັດລະຫັດຜ່ານຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
 <translation id="7993619969781047893">ຄຸນສົມບັດໃນບາງເວັບໄຊອາດຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="800361585186029508">ເປີດ URL ທີ່ປ້ອນໃນ Google Chrome.</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>

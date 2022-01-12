@@ -3219,6 +3219,7 @@
 <translation id="4275830172053184480">መሣሪያዎን ዳግም ያስጀምሩ</translation>
 <translation id="4278390842282768270">ተፈቅዷል</translation>
 <translation id="4279129444466079448">በዚህ መሣሪያ ላይ እስከ <ph name="PROFILE_LIMIT" /> ኢሲም መገለጫዎች ድረስ መጫን ይችላሉ። ሌላ መገለጫ ለማከል በመጀመሪያ አሁን ያለውን መገለጫ ያስወግዱ።</translation>
+<translation id="4280325816108262082">መሣሪያው ሲጠፋ ወይም ስራ ላይ በማይውልበት ጊዜ በራስ-ሰር ግንኙነቱ ይቋረጣል</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
 <translation id="4282196459431406533">Smart Lock በርቷል</translation>
 <translation id="4284755288573763878">የተሻሻለ ደህንነት ይጥፋ?</translation>
@@ -3681,6 +3682,7 @@
 <translation id="4785719467058219317">በዚህ ድር ጣቢያ ያልተመዘገበ የደህንነት ቁልፍ እየተጠቀሙ ነው</translation>
 <translation id="478708757211772586">በማያ ገጹ ላይ ወደፊት ለመሄድ «ቀጣይ»ን ይጠቀሙ</translation>
 <translation id="4788092183367008521">እባክዎ የአውታረ መረብ ግንኙነትዎን ይፈትሹትና እንደገና ይሞክሩ።</translation>
+<translation id="4789550509729954245">መሣሪያዎች በአቅራቢያ ሲያጋሩ ማሳወቂያን አሳይ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ፎቶ</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">የTrackPoint ማፋጠኛን አንቃ</translation>
@@ -4042,6 +4044,7 @@
 <translation id="5171343362375269016">የተተካ ማህደረ ትውስታ</translation>
 <translation id="5172855596271336236">1 የሚተዳደር ማተሚያ አለ</translation>
 <translation id="5173668317844998239">በደህንነት ቁልፍዎ ላይ የጣት አሻራዎችን ያክሉ እና የተቀመጡትን ይሰርዙ</translation>
+<translation id="5174169235862638850">የይለፍ ቃል ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="5175379009094579629">የመሣሪያ ስሙ ልክ ያልሆነ ነው። እንደገና ለመሞከር የሚሰራ የመሣሪያ ስም ያስገቡ።</translation>
 <translation id="5177479852722101802">የካሜራ እና ማይክሮፎን መዳረሻ ማገዱን ቀጥል</translation>
 <translation id="5177549709747445269">ሞባይል ውሂብ በመጠቀም ላይ ነዎት</translation>
@@ -4336,6 +4339,7 @@
 <translation id="5490721031479690399">የብሉቱዝ መሣሪያን ግንኙነት አቋርጥ</translation>
 <translation id="5490798133083738649">Linux የእርስዎን ማይክሮፎን እንዲደርስ ይፍቀዱለት</translation>
 <translation id="549211519852037402">ቤዥ እና ነጭ</translation>
+<translation id="5492637351392383067">የመሣሪያ ላይ ምስጠራ</translation>
 <translation id="5493792505296048976">ማያ ገጽ አብራ</translation>
 <translation id="5494016731375030300">በቅርቡ የተዘጉ ትሮች</translation>
 <translation id="5494362494988149300">&amp;ሲጠናቀቅ ክፈት</translation>
@@ -6533,6 +6537,7 @@
 <translation id="7775694664330414886">ትር ወደ ያልተሰየመ ቡድን ተወስዷል - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">ሁሉንም የዚህ ጣቢያ ትሮችን እስኪዘጉ ድረስ <ph name="ORIGIN" /> በ<ph name="FOLDERNAME" /> ውስጥ ያሉ ፋይሎችን መመልከት ይችላሉ</translation>
 <translation id="7776701556330691704">ምንም ድምጾች አልተገኙም</translation>
+<translation id="7777284276915203144">የይለፍ ቃልዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጡ በፊት በመሣሪያዎ ላይ ይመሠጠራል</translation>
 <translation id="7781335840981796660">ሁሉም የተጠቃሚ መለያዎች እና አካባቢያዊ ውሂብ ይወገዳሉ።</translation>
 <translation id="7782102568078991263">ከGoogle ተጨማሪ የጥቆማ አስተያየቶች የሉም</translation>
 <translation id="7782717250816686129">በመለያ መግቢያ ማያ ገጽ ላይ ቀጣይነት ያለው ውሂብን ያከማቹ እና ምስክረነቶችን ወደ ክፍለ ጊዜው ያስገቡ።</translation>
@@ -7190,6 +7195,7 @@ nil</translation>
 <translation id="8428634594422941299">ገባኝ</translation>
 <translation id="84297032718407999">በ<ph name="LOGOUT_TIME_LEFT" /> ውስጥ ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="8431190899827883166">መታ ማድረጎችን አሳይ</translation>
+<translation id="8431730749911729314">በመሣሪያዎ ላይ ያሉ የይለፍ ቃላትን ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት ያመስጥሩ</translation>
 <translation id="8434480141477525001">NaCl ስህተት ማረሚያ ወደብ</translation>
 <translation id="8435395510592618362">የእርስዎን ማንነት በ<ph name="APP_NAME" /> ያረጋግጡ</translation>
 <translation id="8437209419043462667">አሜሪካ</translation>
@@ -7980,6 +7986,7 @@ nil</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> የስርዓት ፋይሎችን ስለያዘ ፋይሎችን በዚህ አቃፊ ውስጥ መክፈት አይችልም</translation>
 <translation id="950307215746360464">የማዋቀሪያ መመሪያ</translation>
 <translation id="951991426597076286">አትቀበል</translation>
+<translation id="952471655966876828">መሣሪያው ሲበራ እና ስራ ላይ ሲውል በራስ-ሰር ይገናኛል</translation>
 <translation id="953434574221655299">የእርስዎን መሣሪያ በንቃት በሚጠቀሙበት ጊዜ ለማወቅ ይፈቀዳል</translation>
 <translation id="956500788634395331">እርስዎ ጎጂ ሊሆኑ ከሚችሉ ቅጥያዎች ተጠብቀዋል</translation>
 <translation id="957960681186851048">ይህ ጣቢያ በርካታ ፋይሎችን በራስ-ሰር ለማውረድ ሞክሯል</translation>

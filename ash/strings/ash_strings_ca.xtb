@@ -53,6 +53,10 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1247519845643687288">Aplicacions recents</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
+<translation id="1262870540683925850">De <ph name="START_TIME" /> a 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Selecciona-ho per obtenir més informació a Google Calendar.</translation>
 <translation id="1266097335951928626">Inicia la càmera per a selfies</translation>
 <translation id="1267032506238418139">Canvi de drecera</translation>
 <translation id="1269405891096105529">Aquest perifèric no s'admet en mode de convidat</translation>
@@ -997,6 +1001,8 @@ Instal·lació nova</translation>
 <translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
 <translation id="7724603315864178912">Retalla</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostra les aplicacions del prestatge</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="7749640678855296659">El micròfon està desactivat</translation>

@@ -60,7 +60,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1434356225517321998">O seu navegador é gerido. <ph name="BEGIN_LINK" />Detalhes<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Encriptação no dispositivo</translation>
 <translation id="1449835205994625556">Ocultar a palavra-passe</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> itens</translation>
 <translation id="149095475893949513">Este Website está a tentar transferir um perfil de configuração.</translation>
@@ -143,6 +142,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2271351792809375263">Utilize as palavras-passe guardadas no Chrome noutras apps no seu dispositivo</translation>
 <translation id="2273327106802955778">Menu Mais</translation>
 <translation id="2286505070150039482">Texto realçado</translation>
+<translation id="2299218006564889602">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
 <translation id="2302742851632557585">Alterar palavra-passe no Website</translation>
 <translation id="2316709634732130529">Utilizar palavra-passe sugerida</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -286,7 +286,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3529024052484145543">Inseguro</translation>
 <translation id="3533202363250687977">Fechar todos os separadores de navegação anónima</translation>
 <translation id="3533436815740441613">Novo separador</translation>
-<translation id="3536487890564466894">Encripte as suas palavras-passe antes de serem guardadas na sua Conta Google.</translation>
 <translation id="3551320343578183772">Fechar Separador</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
@@ -547,6 +546,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6066301408025741299">Toque para cancelar.</translation>
 <translation id="60829778314739003">Aceitar e continuar</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
+<translation id="6103540626693881831">Encriptação no dispositivo</translation>
 <translation id="6108923351542677676">Configuração em curso…</translation>
 <translation id="6119050551270742952">Página Web atual – Nav. anónima</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -614,6 +614,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6524918542306337007">O Modo de navegação anónima está indisponível</translation>
 <translation id="6537746030088321027">exemplo.pt</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
+<translation id="6583087784430677195">Para desativar, abra as <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /> e aceda a Preenchimento automático de palavras-passe.</translation>
 <translation id="6585618849026997638">Pode regressar a uma página importante para si ao adicionar um marcador.</translation>
 <translation id="6603393121510733479">A sua entidade desativou a navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="797413074872316787">Para sincronizar e personalizar dados entre dispositivos, ative a sincronização.</translation>
 <translation id="7978018860671536736">3. Toque em Preenchimento automático de palavras-passe</translation>
 <translation id="7982789257301363584">Rede</translation>
+<translation id="7987685713885608670">Para maior segurança, encripte as palavras-passe no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
 <translation id="7993619969781047893">As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="800361585186029508">Abre os URLs introduzidos no Google Chrome.</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>

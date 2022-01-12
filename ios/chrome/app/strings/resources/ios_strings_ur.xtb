@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1434356225517321998">آپ کا براؤزر نظم کردہ ہے۔ <ph name="BEGIN_LINK" />تفصیلات<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">آلے پر مرموزکاری</translation>
 <translation id="1449835205994625556">پاس ورڈ چھپائیں</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> آئٹمز</translation>
 <translation id="149095475893949513">یہ ویب سائٹ کنفیگریشن پروفائل کو ڈاؤن لوڈ کرنے کی کوشش کر رہی ہے۔</translation>
@@ -286,7 +285,6 @@
 <translation id="3529024052484145543">محفوظ نہیں</translation>
 <translation id="3533202363250687977">سبھی پوشیدگی ٹیبز بند کریں</translation>
 <translation id="3533436815740441613">نیا ٹیب</translation>
-<translation id="3536487890564466894">‏اپنے پاس ورڈز کو اپنے Google اکاؤنٹ میں محفوظ کرنے سے پہلے مرموز کریں۔</translation>
 <translation id="3551320343578183772">ٹیب بند کریں</translation>
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
@@ -614,6 +612,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6524918542306337007">پوشیدگی وضع دستیاب نہیں ہے</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">زوم ان کریں</translation>
+<translation id="6583087784430677195">آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> کھولیں اور آٹو فل پاس ورڈز پر جائیں۔</translation>
 <translation id="6585618849026997638">بُک مارک شامل کر کے آپ کسی ایسے صفحے پر واپس جا سکتے ہیں جو آپ کیلئے اہم ہے</translation>
 <translation id="6603393121510733479">آپ کی تنظیم نے نجی براؤزنگ کو آف کر دیا ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>

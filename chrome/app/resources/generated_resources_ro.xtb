@@ -3213,6 +3213,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4275830172053184480">Reporniți gadgetul</translation>
 <translation id="4278390842282768270">Se permite</translation>
 <translation id="4279129444466079448">Poți instala până la <ph name="PROFILE_LIMIT" /> profiluri eSIM pe acest dispozitiv. Pentru a adăuga alt profil, mai întâi elimină un profil existent.</translation>
+<translation id="4280325816108262082">Dispozitivul se va deconecta automat când este închis sau când nu este folosit</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4282196459431406533">Smart Lock este activat</translation>
 <translation id="4284755288573763878">Dezactivezi securitatea îmbunătățită?</translation>
@@ -3675,6 +3676,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4785719467058219317">Folosești o cheie de securitate care nu este înregistrată pe acest site</translation>
 <translation id="478708757211772586">Folosește Înainte pentru a naviga înainte pe ecran</translation>
 <translation id="4788092183367008521">Verifică conexiunea la rețea și încearcă din nou.</translation>
+<translation id="4789550509729954245">Afișează notificarea când există dispozitive în apropiere care trimit fișiere</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografie</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Activează accelerarea TrackPoint</translation>
@@ -4036,6 +4038,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5171343362375269016">Dimensiunea memoriei de swap</translation>
 <translation id="5172855596271336236">Este disponibilă o imprimantă gestionată.</translation>
 <translation id="5173668317844998239">Adaugă și șterge amprentele salvate pe cheia de securitate</translation>
+<translation id="5174169235862638850">Parola a fost copiată în clipboard</translation>
 <translation id="5175379009094579629">Numele dispozitivului este nevalid. Introdu un nume de dispozitiv valid pentru a încerca din nou.</translation>
 <translation id="5177479852722101802">Blocați în continuare accesul la cameră și microfon</translation>
 <translation id="5177549709747445269">Folosești date mobile</translation>
@@ -4330,6 +4333,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5490721031479690399">Deconectează dispozitivul Bluetooth</translation>
 <translation id="5490798133083738649">Permite accesul Linux la microfon</translation>
 <translation id="549211519852037402">Bej și alb</translation>
+<translation id="5492637351392383067">Criptarea pe dispozitiv</translation>
 <translation id="5493792505296048976">ecran activat</translation>
 <translation id="5494016731375030300">File închise recent</translation>
 <translation id="5494362494988149300">Deschide când s-a &amp;descărcat</translation>
@@ -6527,6 +6531,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7775694664330414886">Fila a fost mutată într-un grup nedenumit – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> va putea vedea fișierele din <ph name="FOLDERNAME" /> până când închizi toate filele pentru acest site</translation>
 <translation id="7776701556330691704">Nu s-a găsit nicio voce</translation>
+<translation id="7777284276915203144">Parolele tale se criptează pe dispozitiv înainte să se salveze în Managerul de parole Google</translation>
 <translation id="7781335840981796660">Toate conturile de utilizator și datele locale vor fi eliminate.</translation>
 <translation id="7782102568078991263">Nu mai există sugestii de la Google</translation>
 <translation id="7782717250816686129">Stochează datele persistente pe ecranul de conectare și introdu datele de conectare în sesiune.</translation>
@@ -7178,6 +7183,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8428634594422941299">Am înțeles</translation>
 <translation id="84297032718407999">Vei fi deconectat(ă) peste <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Afișează atingerile</translation>
+<translation id="8431730749911729314">Criptează parolele pe dispozitiv înainte să se salveze în Managerul de parole Google</translation>
 <translation id="8434480141477525001">Port remediere NaCl</translation>
 <translation id="8435395510592618362">Confirmă-ți identitatea cu <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">S.U.A.</translation>
@@ -7968,6 +7974,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="947667444780368238"><ph name="ORIGIN" /> nu poate deschide fișiere din acest dosar, deoarece conține fișiere de sistem</translation>
 <translation id="950307215746360464">Ghid de configurare</translation>
 <translation id="951991426597076286">Refuză</translation>
+<translation id="952471655966876828">Dispozitivul se va conecta automat când este deschis și este folosit</translation>
 <translation id="953434574221655299">Au permisiunea de a afla când folosești activ dispozitivul</translation>
 <translation id="956500788634395331">Beneficiezi de protecție împotriva extensiilor potențial dăunătoare</translation>
 <translation id="957960681186851048">Acest site a încercat să descarce automat mai multe fișiere</translation>

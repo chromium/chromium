@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1434356225517321998">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />详细信息<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">设备上加密</translation>
 <translation id="1449835205994625556">隐藏密码</translation>
 <translation id="145015347812617860">有<ph name="COUNT" />个书签</translation>
 <translation id="149095475893949513">此网站正要尝试下载一个配置文件。</translation>
@@ -95,6 +94,7 @@
 <translation id="1690731385917361335">没有书签</translation>
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
+<translation id="1726573592754903697">Google 密码管理器</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1752547299766512813">保存密码</translation>
 <translation id="1753905327828125965">常去网站</translation>
@@ -285,7 +285,6 @@
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3533202363250687977">关闭所有无痕式标签页</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
-<translation id="3536487890564466894">先对您的密码进行加密，然后再将其保存到您的 Google 帐号中。</translation>
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
@@ -563,6 +562,7 @@
 <translation id="6219688215832490856">一律不翻译</translation>
 <translation id="6223816392543092032">获取您在自己的所有设备上保存的书签、历史记录、密码和其他设置。</translation>
 <translation id="6232329973559504466">无痕搜索</translation>
+<translation id="6232736989810857397">这样您就可以使用 Google 智能镜头轻松创建日历活动。</translation>
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>

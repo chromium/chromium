@@ -3211,6 +3211,7 @@
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>
 <translation id="4279129444466079448">คุณติดตั้งโปรไฟล์ eSIM ในอุปกรณนี้ได้สูงสุด <ph name="PROFILE_LIMIT" /> โปรไฟล์ หากต้องการเพิ่มโปรไฟล์ ให้นำโปรไฟล์ที่มีอยู่ออกก่อน</translation>
+<translation id="4280325816108262082">อุปกรณ์จะยกเลิกการเชื่อมต่อโดยอัตโนมัติเมื่อปิดหรือไม่ได้ใช้งานอุปกรณ์</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
 <translation id="4282196459431406533">Smart Lock เปิดอยู่</translation>
 <translation id="4284755288573763878">ปิดความปลอดภัยที่ปรับปรุงแล้วใช่ไหม</translation>
@@ -4330,6 +4331,7 @@
 <translation id="5490721031479690399">ยกเลิกการเชื่อมต่ออุปกรณ์บลูทูธ</translation>
 <translation id="5490798133083738649">อนุญาตให้ Linux เข้าถึงไมโครโฟน</translation>
 <translation id="549211519852037402">สีเบจและสีขาว</translation>
+<translation id="5492637351392383067">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="5493792505296048976">เปิดหน้าจอ</translation>
 <translation id="5494016731375030300">แท็บที่เพิ่งปิด</translation>
 <translation id="5494362494988149300">เปิดเมื่อเ&amp;สร็จ</translation>
@@ -6526,6 +6528,7 @@
 <translation id="7775694664330414886">แท็บถูกย้ายไปยังกลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> จะยังดูไฟล์ใน <ph name="FOLDERNAME" /> ได้อยู่จนกว่าคุณจะปิดทุกแท็บของเว็บไซต์นี้</translation>
 <translation id="7776701556330691704">ไม่พบเสียง</translation>
+<translation id="7777284276915203144">ระบบจะเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
 <translation id="7781335840981796660">บัญชีผู้ใช้ทั้งหมดและข้อมูลในเครื่องจะถูกลบ</translation>
 <translation id="7782102568078991263">ไม่มีคำแนะนำเพิ่มเติมจาก Google</translation>
 <translation id="7782717250816686129">บันทึกข้อมูลที่ใช้ตลอดในหน้าจอการเข้าสู่ระบบ และแทรกข้อมูลเข้าสู่ระบบลงในเซสชัน</translation>
@@ -7177,6 +7180,7 @@
 <translation id="8428634594422941299">รับทราบ</translation>
 <translation id="84297032718407999">คุณจะออกจากระบบใน <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">แสดงการแตะ</translation>
+<translation id="8431730749911729314">เข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
 <translation id="8434480141477525001">พอร์ตแก้ปัญหา NaCl</translation>
 <translation id="8435395510592618362">ยืนยันตัวตนของคุณกับ <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">สหรัฐอเมริกา</translation>
@@ -7966,6 +7970,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> เปิดไฟล์ในโฟลเดอร์นี้ไม่ได้เนื่องจากมีไฟล์ระบบอยู่</translation>
 <translation id="950307215746360464">คำแนะนำในการตั้งค่า</translation>
 <translation id="951991426597076286">ปฏิเสธ</translation>
+<translation id="952471655966876828">อุปกรณ์จะเชื่อมต่อโดยอัตโนมัติเมื่อเปิดและใช้งานอุปกรณ์</translation>
 <translation id="953434574221655299">อนุญาตให้ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="956500788634395331">คุณได้รับการปกป้องจากส่วนขยายที่อาจเป็นอันตราย</translation>
 <translation id="957960681186851048">เว็บไซต์นี้พยายามดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>

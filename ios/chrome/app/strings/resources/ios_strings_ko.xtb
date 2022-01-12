@@ -502,6 +502,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="575902488528307720">이미지 검색</translation>
 <translation id="5781453543752460388">포토에 추가</translation>
 <translation id="5782227691023083829">번역 중...</translation>
+<translation id="5802829331520313983">설정…</translation>
 <translation id="5803566855766646066">새 카드를 삭제하시겠습니까?</translation>
 <translation id="5812974770859303494">추가할 위치…</translation>
 <translation id="5816228676161003208">액세스를 허용하면 음성으로 더 빨리 검색할 수 있습니다.</translation>
@@ -611,6 +612,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6524918542306337007">시크릿 모드를 사용할 수 없음</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">확대</translation>
+<translation id="6583087784430677195">사용 중지하려면 <ph name="BEGIN_LINK" />Settings(설정)<ph name="END_LINK" />를 열고 AutoFill Passwords(비밀번호 자동 완성)로 이동합니다.</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
 <translation id="6603393121510733479">조직에서 시크릿 브라우징을 사용 중지했습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

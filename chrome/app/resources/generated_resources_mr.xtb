@@ -3224,6 +3224,7 @@
 <translation id="4275830172053184480">तुमचा डिव्हाइस रीस्टार्ट करा</translation>
 <translation id="4278390842282768270">अनुमत</translation>
 <translation id="4279129444466079448">तुम्ही या डिव्हाइसवर कमाल <ph name="PROFILE_LIMIT" /> eSIM प्रोफाइल इंस्टॉल करू शकता. दुसरी प्रोफाइल जोडण्यासाठी, सद्य प्रोफाइल काढून टाका.</translation>
+<translation id="4280325816108262082">डिव्हाइस हे बंद केले जाईल किंवा वापरले जात नसेल, तेव्हा आपोआप डिस्कनेक्ट होईल</translation>
 <translation id="4281844954008187215">सेवा अटी</translation>
 <translation id="4282196459431406533">Smart Lock सुरू आहे</translation>
 <translation id="4284755288573763878">वर्धित सुरक्षा बंद करायची का?</translation>
@@ -4344,6 +4345,7 @@
 <translation id="5490721031479690399">ब्लूटूथ डिव्हाइस डिस्‍कनेक्‍ट करा</translation>
 <translation id="5490798133083738649">Linux ला तुमचा मायक्रोफोन अ‍ॅक्सेस करण्याची परवानगी द्या</translation>
 <translation id="549211519852037402">फिकट तपकिरी आणि पांढरा</translation>
+<translation id="5492637351392383067">डिव्हाइसवरील एंक्रिप्शन</translation>
 <translation id="5493792505296048976">स्क्रीन सुरू</translation>
 <translation id="5494016731375030300">अलीकडे बंद केलेले टॅब</translation>
 <translation id="5494362494988149300">&amp;पूर्ण झाल्यानंतर उघडा</translation>
@@ -6542,6 +6544,7 @@
 <translation id="7775694664330414886">टॅब अनामित गटामध्ये हलवला आहे - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल पाहता येतील</translation>
 <translation id="7776701556330691704">कोणतेही व्हॉइस सापडले नाहीत</translation>
+<translation id="7777284276915203144">तुमचे पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट केले जातात</translation>
 <translation id="7781335840981796660">सर्व वापरकर्ता खाती आणि स्थानिक डेटा काढला जाईल.</translation>
 <translation id="7782102568078991263">Google कडून कोणत्याही आणखी सूचना नाहीत</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीनवर सतत वापरात असलेला डेटा स्टोअर करा आणि सेशनमध्ये क्रेडेंशियल घाला.</translation>
@@ -7192,6 +7195,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8428634594422941299">समजले</translation>
 <translation id="84297032718407999">तुम्हाला <ph name="LOGOUT_TIME_LEFT" /> मध्ये साइन आउट केले जाईल</translation>
 <translation id="8431190899827883166">टॅप दाखवा</translation>
+<translation id="8431730749911729314">पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट करा</translation>
 <translation id="8434480141477525001">NaCl डीबग पोर्ट</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> सह तुमची ओळख पडताळा</translation>
 <translation id="8437209419043462667">यूएस</translation>
@@ -7982,6 +7986,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="947667444780368238">या फोल्डरमध्ये सिस्टम फाइलचा समावेश असल्यामुळे <ph name="ORIGIN" /> त्यामधील फाइल उघडू शकत नाही</translation>
 <translation id="950307215746360464">सेटअप मार्गदर्शक</translation>
 <translation id="951991426597076286">नकार द्या</translation>
+<translation id="952471655966876828">डिव्हाइस हे सुरू केले जाईल किंवा वापरले जात असेल, तेव्हा आपोआप कनेक्ट होईल</translation>
 <translation id="953434574221655299">तुम्ही तुमचे डिव्हाइस सक्रियपणे वापरता तेव्हा जाणून घेण्याची अनुमती आहे</translation>
 <translation id="956500788634395331">हानीकारक असू शकणार्‍या एक्स्टेंशनपासून तुम्ही संरक्षित आहात</translation>
 <translation id="957960681186851048">या साइटने एकाहून अधिक फाइल आपोआप डाउनलोड करण्याचा प्रयत्न केला</translation>

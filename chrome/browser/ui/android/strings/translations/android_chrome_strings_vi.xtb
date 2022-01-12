@@ -500,6 +500,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3908308510347173149">Cập nhật <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Đang tìm dữ liệu thích hợp nhất từ web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> đang bật</translation>
+<translation id="3925830358619338299">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kết hợp dữ liệu của tôi</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5483197086164197190">Thao tác trong Chrome</translation>
 <translation id="5487521232677179737">Xóa dữ liệu</translation>
 <translation id="549025011754480756">Cách tìm kiếm bằng giọng nói</translation>
+<translation id="5492637351392383067">Mã hoá trên thiết bị</translation>
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
 <translation id="5515439363601853141">Mở khóa để xem mật khẩu của bạn</translation>
 <translation id="5517095782334947753">Bạn có dấu trang, lịch sử, mật khẩu và các cài đặt khác từ <ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8427875596167638501">Thẻ xem trước đang mở trên nửa màn hình</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8430824733382774043">Chỉ chia sẻ ảnh chụp màn hình</translation>
+<translation id="8431730749911729314">Mã hoá mật khẩu trên thiết bị của bạn trước khi lưu vào Trình quản lý mật khẩu của Google</translation>
 <translation id="8438566539970814960">Cải thiện tính năng tìm kiếm và duyệt web</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Ngôn ngữ đã sẵn sàng, hãy khởi động lại <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Không có tin bài nào</translation>

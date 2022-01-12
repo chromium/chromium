@@ -60,7 +60,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1434356225517321998">Je browser wordt beheerd. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Versleuteling op het apparaat</translation>
 <translation id="1449835205994625556">Wachtwoord verbergen</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="149095475893949513">Deze website probeert een configuratieprofiel te downloaden.</translation>
@@ -143,6 +142,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2271351792809375263">Wachtwoorden die je in Chrome hebt opgeslagen, gebruiken in andere apps op je apparaat</translation>
 <translation id="2273327106802955778">Menu Meer</translation>
 <translation id="2286505070150039482">Gemarkeerde tekst</translation>
+<translation id="2299218006564889602">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2302742851632557585">Wachtwoord wijzigen op website</translation>
 <translation id="2316709634732130529">Voorgesteld wachtwoord gebruiken</translation>
 <translation id="2320166752086256636">Toetsenbord verbergen</translation>
@@ -286,7 +286,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3529024052484145543">Niet beveiligd</translation>
 <translation id="3533202363250687977">Alle incognitotabbladen sluiten</translation>
 <translation id="3533436815740441613">Nieuw tabblad</translation>
-<translation id="3536487890564466894">Versleutel je wachtwoorden voordat ze worden opgeslagen in je Google-account.</translation>
 <translation id="3551320343578183772">Tabblad sluiten</translation>
 <translation id="3581564640715911333">Aanbieden pagina's in andere talen te vertalen</translation>
 <translation id="3588820906588687999">Afbeelding openen op nieuw tabblad</translation>
@@ -547,6 +546,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6066301408025741299">Tik om te annuleren.</translation>
 <translation id="60829778314739003">Accepteren en verder</translation>
 <translation id="6084848228346514841">Tabbladen selecteren</translation>
+<translation id="6103540626693881831">Versleuteling op het apparaat</translation>
 <translation id="6108923351542677676">Instellen wordt uitgevoerd...</translation>
 <translation id="6119050551270742952">De huidige webpagina is in de incognitomodus</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -614,6 +614,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6524918542306337007">Incognitomodus is niet beschikbaar</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Inzoomen</translation>
+<translation id="6583087784430677195">Open <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> en ga naar Wachtwoorden automatisch invullen om dit uit te zetten.</translation>
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
 <translation id="6603393121510733479">Je organisatie heeft privé browsen uitgezet.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="797413074872316787">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren.</translation>
 <translation id="7978018860671536736">3. Tik op Wachtwoorden automatisch invullen</translation>
 <translation id="7982789257301363584">Netwerk</translation>
+<translation id="7987685713885608670">Voor extra beveiliging versleutel je je wachtwoorden op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager.</translation>
 <translation id="7993619969781047893">Functies op bepaalde sites werken mogelijk niet meer</translation>
 <translation id="800361585186029508">Hiermee worden de ingevoerde URL's geopend in Google Chrome.</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>

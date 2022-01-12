@@ -1273,7 +1273,7 @@
 <translation id="2274840746523584236">Зарядите Chromebook</translation>
 <translation id="2276503375879033601">Добавить приложения</translation>
 <translation id="2276910256003242519">Удаление данных…</translation>
-<translation id="2277255602909579701">Все файлы cookie и данные сайта</translation>
+<translation id="2277255602909579701">Все файлы cookie и данные сайтов</translation>
 <translation id="2278562042389100163">Открыть окно браузера</translation>
 <translation id="2278668501808246459">Запуск менеджера контейнеров</translation>
 <translation id="2280486287150724112">Правое поле</translation>
@@ -2233,7 +2233,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="326999365752735949">Утилита diff скачивается</translation>
 <translation id="3270965368676314374">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение и удаление</translation>
-<translation id="327147043223061465">Все файлы cookie и данные сайта</translation>
+<translation id="327147043223061465">Все файлы cookie и данные сайтов</translation>
 <translation id="3274763671541996799">Вы перешли в полноэкранный режим.</translation>
 <translation id="3275778809241512831">Внутренний электронный ключ ненадежен. Удалите его из всех сервисов. Чтобы устранить проблему, сбросьте настройки электронного ключа.</translation>
 <translation id="3275778913554317645">Открыть в отдельном окне</translation>
@@ -3213,6 +3213,7 @@
 <translation id="4275830172053184480">Перезапуск устройства</translation>
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="4279129444466079448">Максимально допустимое число профилей eSIM на этом устройстве: <ph name="PROFILE_LIMIT" />. Чтобы добавить новый профиль, удалите один из существующих.</translation>
+<translation id="4280325816108262082">Устройство отключится автоматически, если его выключат или не будут использовать.</translation>
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4282196459431406533">Функция Smart Lock включена</translation>
 <translation id="4284755288573763878">Отключить улучшенную безопасность?</translation>
@@ -3436,7 +3437,7 @@
 <translation id="4519935350946509010">Ошибка подключения.</translation>
 <translation id="4520385623207007473">Использование файлов cookie</translation>
 <translation id="452039078290142656">неизвестные устройства от <ph name="VENDOR_NAME" /></translation>
-<translation id="4522570452068850558">Детали</translation>
+<translation id="4522570452068850558">Сведения</translation>
 <translation id="4522600456902129422">Оставить этому сайту доступ к буферу обмена</translation>
 <translation id="4522890784888918985">Дочерние аккаунты не поддерживаются.</translation>
 <translation id="4524832533047962394">Режим регистрации устройства не поддерживается этой версией операционной системы. Убедитесь, что вы используете последнюю версию, и повторите попытку.</translation>
@@ -4332,6 +4333,7 @@
 <translation id="5490721031479690399">Отключение устройства Bluetooth</translation>
 <translation id="5490798133083738649">Разрешить Linux доступ к микрофону</translation>
 <translation id="549211519852037402">Бежевый с белым</translation>
+<translation id="5492637351392383067">Шифрование на устройстве</translation>
 <translation id="5493792505296048976">экран включен</translation>
 <translation id="5494016731375030300">Недавно закрытые вкладки</translation>
 <translation id="5494362494988149300">Открыть по завершении</translation>
@@ -6529,6 +6531,7 @@
 <translation id="7775694664330414886">Вкладка перемещена в группу без названия – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Сайт <ph name="ORIGIN" /> сможет просматривать файлы в папке "<ph name="FOLDERNAME" />", пока вы не закроете все вкладки этого сайта.</translation>
 <translation id="7776701556330691704">Образцы не найдены.</translation>
+<translation id="7777284276915203144">Ваши пароли шифруются на устройстве и только потом сохраняются в Диспетчере паролей Google.</translation>
 <translation id="7781335840981796660">Все пользовательские аккаунты и локальные данные будут удалены.</translation>
 <translation id="7782102568078991263">Подсказок от Google больше нет</translation>
 <translation id="7782717250816686129">Хранить неизменные данные на экране входа и вводить учетные данные в начале сеанса.</translation>
@@ -7180,6 +7183,7 @@
 <translation id="8428634594422941299">ОК</translation>
 <translation id="84297032718407999">Выход из системы произойдет через <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Визуальный отклик</translation>
+<translation id="8431730749911729314">Шифруйте пароли на устройстве, прежде чем они будут сохраняться в Диспетчере паролей Google.</translation>
 <translation id="8434480141477525001">Порт отладки NaCl</translation>
 <translation id="8435395510592618362">Подтверждение личности для приложения "<ph name="APP_NAME" />"</translation>
 <translation id="8437209419043462667">США</translation>
@@ -7972,6 +7976,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> не может открыть файлы в этой папке, поскольку она содержит системные файлы.</translation>
 <translation id="950307215746360464">Мастер настройки</translation>
 <translation id="951991426597076286">Отклонить</translation>
+<translation id="952471655966876828">Устройство подключится автоматически, если его включат и будут использовать.</translation>
 <translation id="953434574221655299">Сайты, которым разрешен доступ к информации об использовании устройства</translation>
 <translation id="956500788634395331">Включена защита от потенциально опасных расширений.</translation>
 <translation id="957960681186851048">Этот сайт попытался автоматически скачать несколько файлов</translation>

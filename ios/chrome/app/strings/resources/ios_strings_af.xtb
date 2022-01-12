@@ -60,7 +60,6 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1434356225517321998">Jou blaaier word bestuur. <ph name="BEGIN_LINK" />Besonderhede<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Enkripsie op toestel</translation>
 <translation id="1449835205994625556">Versteek wagwoord</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="149095475893949513">Hierdie webwerf probeer tans om 'n opstellingprofiel af te laai.</translation>
@@ -143,6 +142,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2271351792809375263">Gebruik die wagwoorde wat jy in Chrome gestoor het in ander programme op jou toestel</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
 <translation id="2286505070150039482">Gemerkte teks</translation>
+<translation id="2299218006564889602">Jou wagwoorde word op jou toestel geënkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="2302742851632557585">Verander wagwoord op webwerf</translation>
 <translation id="2316709634732130529">Gebruik voorgestelde wagwoord</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
@@ -286,7 +286,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3529024052484145543">Nie veilig nie</translation>
 <translation id="3533202363250687977">Maak alle incognito-oortjies toe</translation>
 <translation id="3533436815740441613">Nuwe oortjie</translation>
-<translation id="3536487890564466894">Enkripteer jou wagwoorde voordat hulle in jou Google-rekening gestoor word.</translation>
 <translation id="3551320343578183772">Maak oortjie toe</translation>
 <translation id="3581564640715911333">Aanbieding om bladsye in ander tale te vertaal</translation>
 <translation id="3588820906588687999">Maak prent in nuwe oortjie oop</translation>
@@ -547,6 +546,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6066301408025741299">Tik om te kanselleer.</translation>
 <translation id="60829778314739003">Aanvaar en gaan voort</translation>
 <translation id="6084848228346514841">Kies oortjies</translation>
+<translation id="6103540626693881831">Enkripsie op toestel</translation>
 <translation id="6108923351542677676">Opstelling is besig …</translation>
 <translation id="6119050551270742952">Huidige webbladsy is op incognito</translation>
 <translation id="6122191549521593678">Aanlyn</translation>
@@ -614,6 +614,7 @@ Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="6524918542306337007">Incognitomodus is onbeskikbaar</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zoem in</translation>
+<translation id="6583087784430677195">Maak <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> oop en gaan na Outovul Wagwoorde toe om dit af te skakel.</translation>
 <translation id="6585618849026997638">Jy kan 'n boekmerk byvoeg om weer uit te kom by 'n bladsy wat vir jou belangrik is</translation>
 <translation id="6603393121510733479">Jou organisasie het private blaai afgeskakel.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="797413074872316787">Skakel sinkronisering aan om oor toestelle heen te sinkroniseer en te personaliseer.</translation>
 <translation id="7978018860671536736">3. Tik op AutoFill Passwords</translation>
 <translation id="7982789257301363584">Netwerk</translation>
+<translation id="7987685713885608670">Jy kan vir bykomende veiligheid wagwoorde op jou toestel enkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="7993619969781047893">Kenmerke op sommige werwe kan breek</translation>
 <translation id="800361585186029508">Maak die URL'e wat ingevoer is in Google Chrome oop.</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>

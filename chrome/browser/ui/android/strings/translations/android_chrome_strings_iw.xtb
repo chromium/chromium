@@ -500,6 +500,7 @@
 <translation id="3908308510347173149">יש לעדכן את <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">כל הטוב שבאינטרנט…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> פעילה</translation>
+<translation id="3925830358619338299">‏הסיסמאות שלך מוצפנות במכשיר לפי שהן נשמרות במנהל הסיסמאות של Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">שילוב הנתונים שלי</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">‏ניווט ב-Chrome</translation>
 <translation id="5487521232677179737">ניקוי נתונים</translation>
 <translation id="549025011754480756">איך לחפש באמצעות הקול</translation>
+<translation id="5492637351392383067">הצפנה במכשיר</translation>
 <translation id="5514904542973294328">האפשרות הזו הושבתה על-ידי מנהל המערכת של המכשיר</translation>
 <translation id="5515439363601853141">ביטול הנעילה יציג את הסיסמה</translation>
 <translation id="5517095782334947753">יש לך סימניות, היסטוריה, סיסמאות והגדרות נוספות מ-<ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">כרטיסיית התצוגה המקדימה פתוחה בחצי גובה המסך</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8430824733382774043">שיתוף צילום המסך בלבד</translation>
+<translation id="8431730749911729314">‏הצפנת סיסמאות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - השפה מוכנה, צריך להפעיל מחדש את <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">אין סיפורים זמינים</translation>

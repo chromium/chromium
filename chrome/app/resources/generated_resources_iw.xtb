@@ -3227,6 +3227,7 @@
 <translation id="4275830172053184480">הפעלת המכשיר מחדש</translation>
 <translation id="4278390842282768270">מותר</translation>
 <translation id="4279129444466079448">‏ניתן להתקין עד <ph name="PROFILE_LIMIT" /> פרופילים של eSIM במכשיר הזה. כדי להוסיף פרופיל נוסף, קודם צריך להסיר פרופיל קיים.</translation>
+<translation id="4280325816108262082">אם המכשיר מושבת או שאינו בשימוש, הוא ינותק באופן אוטומטי</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4282196459431406533">‏Smart Lock מופעל</translation>
 <translation id="4284755288573763878">להשבית את האבטחה המשופרת?</translation>
@@ -3690,6 +3691,7 @@
 <translation id="4785719467058219317">בחרת להשתמש במפתח אבטחה שלא רשום עבור האתר הזה</translation>
 <translation id="478708757211772586">שימוש במתג "הבא" כדי להתקדם במסך</translation>
 <translation id="4788092183367008521">כדאי לבדוק את החיבור לרשת ולנסות שוב.</translation>
+<translation id="4789550509729954245">הצגת התראות כשמתבצע שיתוף על ידי מכשירים בקרבת מקום</translation>
 <translation id="4791000909649665275">מספר התמונות: <ph name="NUMBER" /></translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">‏הפעלת האצה של TrackPoint</translation>
@@ -4051,6 +4053,7 @@
 <translation id="5171343362375269016">זיכרון מוחלף</translation>
 <translation id="5172855596271336236">קיימת מדפסת מנוהלת אחת.</translation>
 <translation id="5173668317844998239">הוספה ומחיקה של טביעות אצבע שנשמרו במפתח האבטחה</translation>
+<translation id="5174169235862638850">הסיסמה הועתקה ללוח</translation>
 <translation id="5175379009094579629">שם המכשיר לא חוקי. יש להזין שם מכשיר חוקי כדי לנסות שוב.</translation>
 <translation id="5177479852722101802">להמשיך לחסום גישה אל המצלמה והמיקרופון</translation>
 <translation id="5177549709747445269">כרגע נעשה שימוש בחבילת הגלישה</translation>
@@ -4345,6 +4348,7 @@
 <translation id="5490721031479690399">‏ניתוק התקן Bluetooth</translation>
 <translation id="5490798133083738649">‏מתן הרשאה למערכת Linux לגשת למיקרופון שלך</translation>
 <translation id="549211519852037402">בז' ולבן</translation>
+<translation id="5492637351392383067">הצפנה במכשיר</translation>
 <translation id="5493792505296048976">מסך מופעל</translation>
 <translation id="5494016731375030300">כרטיסיות שנסגרו לאחרונה</translation>
 <translation id="5494362494988149300">פתיחה &amp;בסיום</translation>
@@ -6542,6 +6546,7 @@
 <translation id="7775694664330414886">הכרטיסייה הועברה לקבוצה ללא שם – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">לאתר <ph name="ORIGIN" /> תהיה הרשאה לראות את הקבצים בתיקייה <ph name="FOLDERNAME" /> עד שכל הכרטיסיות של האתר הזה ייסגרו</translation>
 <translation id="7776701556330691704">לא נמצאו קולות</translation>
+<translation id="7777284276915203144">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
 <translation id="7781335840981796660">תתבצע הסרה של כל חשבונות המשתמש והנתונים השמורים במכשיר.</translation>
 <translation id="7782102568078991263">‏אין יותר הצעות מ-Google</translation>
 <translation id="7782717250816686129">אחסון נתונים קבועים במסך ההתחברות והזנה אוטומטית של פרטי הכניסה בסשן.</translation>
@@ -7195,6 +7200,7 @@
 <translation id="8428634594422941299">הבנתי</translation>
 <translation id="84297032718407999">בעוד <ph name="LOGOUT_TIME_LEFT" /> תבוצע יציאה מהחשבון</translation>
 <translation id="8431190899827883166">הצגת הקשות</translation>
+<translation id="8431730749911729314">‏הצפנת סיסמאות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
 <translation id="8434480141477525001">יציאת ניפוי באגים של לקוח מקומי</translation>
 <translation id="8435395510592618362">אימות הזהות שלך באמצעות <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">ארה"ב</translation>
@@ -7986,6 +7992,7 @@
 <translation id="947667444780368238">ל-<ph name="ORIGIN" /> אין הרשאה לפתוח קבצים בתיקייה הזו כי היא מכילה קובצי מערכת</translation>
 <translation id="950307215746360464">מדריך ההגדרה</translation>
 <translation id="951991426597076286">דחייה</translation>
+<translation id="952471655966876828">כשהמכשיר מופעל ובשימוש, הוא יחובר באופן אוטומטי</translation>
 <translation id="953434574221655299">יש הרשאה לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="956500788634395331">המערכת מגינה עליך מפני תוספים שעשויים להיות מזיקים</translation>
 <translation id="957960681186851048">האתר הזה ניסה להוריד קבצים מרובים באופן אוטומטי</translation>

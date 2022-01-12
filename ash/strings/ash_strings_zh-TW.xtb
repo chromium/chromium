@@ -53,6 +53,7 @@
 <translation id="1247519845643687288">最近使用的應用程式</translation>
 <translation id="1252999807265626933">正在使用「<ph name="POWER_SOURCE" />」充電</translation>
 <translation id="1255033239764210633">天氣如何？</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> 至<ph name="END_TIME" /> (<ph name="TIME_ZONE" />)，<ph name="EVENT_SUMMARY" />。選取活動即可在 Google 日曆中查看詳情。</translation>
 <translation id="1266097335951928626">啟用自拍鏡頭</translation>
 <translation id="1267032506238418139">快速鍵異動</translation>
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
@@ -996,6 +997,7 @@
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">顯示檔案櫃中的應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749640678855296659">你的麥克風目前已關閉</translation>

@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1434356225517321998">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />التفاصيل<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">التشفير على الجهاز فقط</translation>
 <translation id="1449835205994625556">إخفاء كلمة المرور</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> من العناصر</translation>
 <translation id="149095475893949513">يحاول هذا الموقع الإلكتروني تنزيل ملف شخصي يتضمّن إعدادات.</translation>
@@ -287,7 +286,6 @@
 <translation id="3529024052484145543">غير آمن</translation>
 <translation id="3533202363250687977">إغلاق جميع علامات تبويب التصفُّح المتخفي</translation>
 <translation id="3533436815740441613">علامة تبويب جديدة</translation>
-<translation id="3536487890564466894">‏يمكنك تشفير كلمات المرور قبل حفظها في حسابك على Google.</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
@@ -615,6 +613,7 @@
 <translation id="6524918542306337007">"وضع التصفُّح المتخفي" غير متاح</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">تكبير</translation>
+<translation id="6583087784430677195">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings (الإعدادات)<ph name="END_LINK" /> ثم انتقِل إلى Passwords (كلمات المرور).</translation>
 <translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
 <translation id="6603393121510733479">أوقفت مؤسستك وضع "التصفّح بخصوصيّة تامّة".
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

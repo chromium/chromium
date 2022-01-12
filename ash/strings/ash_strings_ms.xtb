@@ -53,6 +53,10 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1247519845643687288">Apl terbaharu</translation>
 <translation id="1252999807265626933">Mengecas daripada <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Bagaimanakah keadaan cuaca?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> hingga 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Pilih untuk mendapatkan butiran lanjut dalam Google Calendar.</translation>
 <translation id="1266097335951928626">Mulakan kamera swafoto</translation>
 <translation id="1267032506238418139">Perubahan pintasan</translation>
 <translation id="1269405891096105529">Peranti persisian tidak disokong dalam mod Tetamu</translation>
@@ -998,6 +1002,8 @@ Pemasangan baharu</translation>
 <translation id="7720410380936703141">CUBA LAGI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan}other{# pemberitahuan}}</translation>
 <translation id="7724603315864178912">Potong</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Tunjukkan apl dalam rak</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="7749640678855296659">Mikrofon anda dimatikan pada masa ini</translation>

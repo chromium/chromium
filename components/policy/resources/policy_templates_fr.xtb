@@ -475,6 +475,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est désactivée, l'authentification <ph name="BASIC_AUTH" /> ne sera pas autorisée sur les connexions HTTP non sécurisées (elle le sera uniquement sur les connexions HTTPS sécurisées).
 
       Cette règle est ignorée (et l'authentification <ph name="BASIC_AUTH" /> est toujours interdite) si la règle <ph name="AUTH_SCHEMES_POLICY_NAME" /> est définie et n'inclut pas l'authentification <ph name="BASIC_AUTH" />.</translation>
+<translation id="1574258262373444557">Ne pas utiliser <ph name="AES_KL_NAME" /> comme algorithme de chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1575015449587326319">Règle de configuration du connecteur Chrome Enterprise OnFileDownloaded</translation>
 <translation id="1583248206450240930">Utiliser <ph name="PRODUCT_FRAME_NAME" /> par défaut</translation>
 <translation id="1587042984081085960">Cette règle permet à un administrateur de spécifier qu'une page peut envoyer des requêtes XHR synchrones pendant sa fermeture.
@@ -596,6 +597,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="167514072300004091">Si cette règle est définie sur "3", les sites Web peuvent demander à accéder aux appareils USB connectés. Si cette règle est définie sur "2", l'accès à ces appareils est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="1678137412645922426">Contrôle l'utilisation de <ph name="AES_KL_NAME" /> pour le chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1682063842123336408">Permet de spécifier l'espace disque libre requis (en Go) pour installer <ph name="PLUGIN_VM_NAME" />.
 
       Si cette règle n'est pas configurée et que l'espace disque libre sur l'appareil est inférieur à 20 Go (valeur par défaut), le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas être installé.
@@ -3870,6 +3872,12 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle n'est pas définie, par défaut, ce mode de partage ne sera pas autorisé pour les utilisateurs gérés par une entreprise et sera autorisé pour les utilisateurs non gérés.</translation>
 <translation id="5584132346604748282">Gérer les services de localisation Android</translation>
+<translation id="5585384603219625331">Cette règle détermine si l'implémentation de <ph name="AES_KL_NAME" /> est activée pour le chiffrement du stockage de l'utilisateur sur les écrans d'accueil des utilisateurs <ph name="DM_CRYPT" /> sur Chrome OS si celui-ci est compatible.
+
+       Cette règle ne s'applique qu'aux écrans d'accueil d'utilisateurs qui utilisent <ph name="DM_CRYPT" /> pour le chiffrement. Les anciens écrans d'accueil d'utilisateurs (qui n'utilisent pas <ph name="DM_CRYPT" />) ne sont pas compatibles avec <ph name="AES_KL_NAME" /> et auront par défaut recours à <ph name="AES_NI_NAME" />.
+
+       Si la valeur de la règle change, l'accès aux écrans d'accueil d'utilisateurs <ph name="DM_CRYPT" /> existants s'effectuera à l'aide de l'implémentation de chiffrement configurée par la règle, car les implémentations <ph name="AES_ALGORITHM_NAME" /> sont compatibles.
+       Si la règle est désactivée ou qu'elle n'est pas configurée, le chiffrement du stockage de l'utilisateur pour les écrans d'accueil <ph name="DM_CRYPT" /> aura par défaut recours à <ph name="AES_NI_NAME" />.</translation>
 <translation id="5586942249556966598">Ne rien faire</translation>
 <translation id="5598417829613725146">Dessin (disponible depuis la version 90)</translation>
 <translation id="5599461642204007579">Paramètres de gestion de <ph name="MS_AD_NAME" /></translation>
@@ -6527,6 +6535,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8626826495474944836">Exiger l'isolation de chaque site</translation>
 <translation id="8631434304112909927">jusqu'à la version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Liste des applications de prise de notes autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8634062512783775032">Utiliser <ph name="AES_KL_NAME" /> comme algorithme de chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="8637566476051166626">Ports réseau explicitement autorisés</translation>
 <translation id="8643838501942693770">Autoriser les cookies tiers, mais permettre aux utilisateurs de modifier ce paramètre</translation>
 <translation id="8648844602494595665">Cette règle contrôle l'utilisation de l'icône en forme de cadenas dans l'omnibox.

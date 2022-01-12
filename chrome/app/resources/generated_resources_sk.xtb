@@ -3214,6 +3214,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4275830172053184480">Reštart zariadenia</translation>
 <translation id="4278390842282768270">Povolené</translation>
 <translation id="4279129444466079448">V tomto zariadení môžete nainštalovať maximálne tento počet profilov eSIM: <ph name="PROFILE_LIMIT" />. Ak chcete pridať ďalší profil, najprv odstráňte existujúci.</translation>
+<translation id="4280325816108262082">Zariadenie sa automaticky odpojí, keď ho vypnete alebo nepoužívate</translation>
 <translation id="4281844954008187215">Zmluvné podmienky</translation>
 <translation id="4282196459431406533">Smart Lock je zapnutý</translation>
 <translation id="4284755288573763878">Chcete vypnúť zlepšené zabezpečenie?</translation>
@@ -4333,6 +4334,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5490721031479690399">Odpojiť zariadenie Bluetooth</translation>
 <translation id="5490798133083738649">Povoliť systému Linux prístup k mikrofónu</translation>
 <translation id="549211519852037402">Béžová a biela</translation>
+<translation id="5492637351392383067">Šifrovanie v zariadení</translation>
 <translation id="5493792505296048976">obrazovka je zapnutá</translation>
 <translation id="5494016731375030300">Nedávno zavreté karty</translation>
 <translation id="5494362494988149300">Po &amp;stiahnutí otvoriť</translation>
@@ -6530,6 +6532,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7775694664330414886">Karta bola presunutá do skupiny bez názvu – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> si bude môcť zobraziť súbory v priečinku <ph name="FOLDERNAME" />, dokým nezavriete všetky karty tohto webu</translation>
 <translation id="7776701556330691704">Nenašli sa žiadne hlasy</translation>
+<translation id="7777284276915203144">Heslá sú šifrované v zariadení ešte pred ich uložením do správcu hesiel Google</translation>
 <translation id="7781335840981796660">Všetky používateľské účty a miestne údaje budú odstránené.</translation>
 <translation id="7782102568078991263">Žiadne ďalšie návrhy od spoločnosti Google</translation>
 <translation id="7782717250816686129">Uchovávať trvalé údaje na prihlasovacej obrazovke a vkladať prihlasovacie údaje do relácie.</translation>
@@ -7181,6 +7184,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8428634594422941299">Dobre</translation>
 <translation id="84297032718407999">Odhlásenie prebehne o <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Zobrazovanie klepnutí</translation>
+<translation id="8431730749911729314">Zašifrujte si heslá v zariadení ešte pred ich uložením do správcu hesiel Google</translation>
 <translation id="8434480141477525001">Port ladenia klienta NaCl</translation>
 <translation id="8435395510592618362">Overenie totožnosti pomocou aplikácie <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">Americká klávesnica</translation>
@@ -7972,6 +7976,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="947667444780368238">Web <ph name="ORIGIN" /> nemôže otvoriť súbory v tomto priečinku, pretože obsahuje súbory systému</translation>
 <translation id="950307215746360464">Sprievodca nastavením</translation>
 <translation id="951991426597076286">Odmietnuť</translation>
+<translation id="952471655966876828">Zariadenie sa automaticky pripojí, keď ho zapnete alebo použijete</translation>
 <translation id="953434574221655299">Weby, ktoré majú povolené zisťovať, kedy aktívne používate zariadenie</translation>
 <translation id="956500788634395331">Je aktivovaná ochrana pred potenciálne škodlivými rozšíreniami</translation>
 <translation id="957960681186851048">Tento web sa pokúsil automaticky stiahnuť viacero súborov</translation>

@@ -3226,6 +3226,7 @@
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4278390842282768270">已允許</translation>
 <translation id="4279129444466079448">您在此裝置上最多可安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
+<translation id="4280325816108262082">裝置關閉或處於閒置狀態時，會自動中斷連線</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4282196459431406533">Smart Lock 已啟用</translation>
 <translation id="4284755288573763878">要關閉「強化安全瀏覽」功能嗎？</translation>
@@ -4347,6 +4348,7 @@
 <translation id="5490721031479690399">解除連結藍牙裝置</translation>
 <translation id="5490798133083738649">允許 Linux 存取您的麥克風</translation>
 <translation id="549211519852037402">米色和白色</translation>
+<translation id="5492637351392383067">裝置端加密</translation>
 <translation id="5493792505296048976">螢幕已開啟</translation>
 <translation id="5494016731375030300">最近關閉的分頁</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
@@ -6544,6 +6546,7 @@
 <translation id="7775694664330414886">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅未命名群組</translation>
 <translation id="7776156998370251340">在您關閉此網站的所有分頁前，<ph name="ORIGIN" /> 都能查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="7776701556330691704">找不到語音</translation>
+<translation id="7777284276915203144">你的密碼在儲存至 Google 密碼管理員之前，已在裝置上加密</translation>
 <translation id="7781335840981796660">系統將移除所有使用者帳戶和本機數據。</translation>
 <translation id="7782102568078991263">沒有來自 Google 的建議</translation>
 <translation id="7782717250816686129">儲存登入畫面中的永久資料，並在工作階段中插入憑證。</translation>
@@ -7196,6 +7199,7 @@
 <translation id="8428634594422941299">知道了</translation>
 <translation id="84297032718407999">您將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示輕按選項</translation>
+<translation id="8431730749911729314">系統會先在裝置上將你的密碼加密，再儲存至 Google 密碼管理員</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8435395510592618362">透過 <ph name="APP_NAME" /> 驗證身分</translation>
 <translation id="8437209419043462667">美式鍵盤</translation>
@@ -7985,6 +7989,7 @@
 <translation id="947667444780368238">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾中的檔案</translation>
 <translation id="950307215746360464">設定指南</translation>
 <translation id="951991426597076286">拒絕</translation>
+<translation id="952471655966876828">裝置開啟或處於使用狀態時，會自動連線</translation>
 <translation id="953434574221655299">允許偵測您使用裝置的時間</translation>
 <translation id="956500788634395331">保護您免受可能有害的擴充程式影響</translation>
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>

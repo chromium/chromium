@@ -53,6 +53,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1247519845643687288">Zuletzt verwendete Apps</translation>
 <translation id="1252999807265626933">Wird über ein <ph name="POWER_SOURCE" /> aufgeladen</translation>
 <translation id="1255033239764210633">Wie ist das Wetter?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> bis <ph name="END_TIME" />, <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" />. Für weitere Details Termin in Google Kalender auswählen.</translation>
 <translation id="1266097335951928626">Selfiekamera öffnen</translation>
 <translation id="1267032506238418139">Änderung der Tastenkombination</translation>
 <translation id="1269405891096105529">Peripheriegerät wird im Gastmodus nicht unterstützt</translation>
@@ -997,6 +998,7 @@ Neuinstallation</translation>
 <translation id="7720410380936703141">WIEDERHOLEN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 Benachrichtigung}other{# Benachrichtigungen}}</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Apps in Ablage anzeigen</translation>
 <translation id="7749443890790263709">Maximale Anzahl von Arbeitsbereichen erreicht.</translation>
 <translation id="7749640678855296659">Ihr Mikrofon ist derzeit ausgeschaltet</translation>

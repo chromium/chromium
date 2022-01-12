@@ -60,7 +60,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1434356225517321998">Your browser is managed. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">On-device encryption</translation>
 <translation id="1449835205994625556">Hide password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="149095475893949513">This website is trying to download a configuration profile.</translation>
@@ -143,6 +142,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2271351792809375263">Use the passwords that you saved to Chrome in other apps on your device</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2286505070150039482">Highlighted text</translation>
+<translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
 <translation id="2302742851632557585">Change password on website</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
@@ -286,7 +286,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3529024052484145543">Not secure</translation>
 <translation id="3533202363250687977">Close all incognito tabs</translation>
 <translation id="3533436815740441613">New Tab</translation>
-<translation id="3536487890564466894">Encrypt your passwords before they’re saved to your Google Account.</translation>
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
@@ -547,6 +546,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6066301408025741299">Tap to cancel.</translation>
 <translation id="60829778314739003">Accept and continue</translation>
 <translation id="6084848228346514841">Select tabs</translation>
+<translation id="6103540626693881831">On-device encryption</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6119050551270742952">Current web page is on Incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -614,6 +614,7 @@ Try to use a unique password for every site.</translation>
 <translation id="6524918542306337007">Incognito mode is unavailable</translation>
 <translation id="6537746030088321027">sample.co.uk</translation>
 <translation id="6561262006871132942">Zoom in</translation>
+<translation id="6583087784430677195">To turn off, open <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> and go to Auto-fill passwords.</translation>
 <translation id="6585618849026997638">You can get back to a page that's important to you by adding a bookmark</translation>
 <translation id="6603393121510733479">Your organisation turned off private browsing.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="797413074872316787">To sync and personalise across devices, turn on sync.</translation>
 <translation id="7978018860671536736">3. Tap auto-fill passwords</translation>
 <translation id="7982789257301363584">Network</translation>
+<translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
 <translation id="802154636333426148">Download failed</translation>

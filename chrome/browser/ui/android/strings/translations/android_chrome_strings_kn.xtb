@@ -500,6 +500,7 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="3912508018559818924">ವೆಬ್‌ನಿಂದ ಅತ್ಯುತ್ತಮ ವಿಷಯಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ಆನ್ ಆಗಿದೆ</translation>
+<translation id="3925830358619338299">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ನನ್ನ ಡೇಟಾ ಒಂದುಗೂಡಿಸಿ</translation>
 <translation id="3934366560681368531">“</translation>
@@ -771,6 +772,7 @@
 <translation id="5483197086164197190">Chrome ಅನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="5487521232677179737">ಡೇಟಾ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="549025011754480756">ನಿಮ್ಮ ಧ್ವನಿ ಮೂಲಕ ಹುಡುಕಾಟ ಮಾಡುವುದು ಹೇಗೆ</translation>
+<translation id="5492637351392383067">ಸಾಧನದಲ್ಲಿನ ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="5514904542973294328">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರಿಂದ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5515439363601853141">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಅನ್‌ಲಾಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5517095782334947753">ನೀವು <ph name="FROM_ACCOUNT" /> ರಿಂದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
@@ -1320,6 +1322,7 @@
 <translation id="8427875596167638501">ಪೂರ್ವವೀಕ್ಷಣೆ ಟ್ಯಾಬ್ ಅರ್ಧ ತೆರೆದಿದೆ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8430824733382774043">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮಾತ್ರ ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="8431730749911729314">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ಅವುಗಳನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8438566539970814960">ಹುಡುಕಾಟಗಳನ್ನು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸುವಂತೆ ಮಾಡಿ</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - ಭಾಷೆ ಸಿದ್ಧವಾಗಿದೆ, <ph name="APP_NAME" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="8442258441309440798">ಯಾವುದೇ ಸುದ್ದಿಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>

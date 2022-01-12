@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">אפליקציות אחרונות</translation>
 <translation id="1252999807265626933">טעינה מ-<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">מה מזג האוויר?</translation>
+<translation id="1262870540683925850">‏<ph name="START_TIME" /> עד 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. צריך לבחור אירוע כדי לראות פרטים נוספים ביומן Google.</translation>
 <translation id="1266097335951928626">פתיחת המצלמה לתמונת סלפי</translation>
 <translation id="1267032506238418139">שינוי מקש קיצור</translation>
 <translation id="1269405891096105529">אין תמיכה בציוד היקפי במצב אורח</translation>
@@ -999,6 +1003,8 @@
 <translation id="7720410380936703141">ניסיון חוזר</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}two{2 הודעות}many{# הודעות}other{# הודעות}}</translation>
 <translation id="7724603315864178912">חיתוך</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">הצגת האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
 <translation id="7749640678855296659">המיקרופון כבוי כרגע</translation>

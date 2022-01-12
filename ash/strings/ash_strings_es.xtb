@@ -53,6 +53,10 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1247519845643687288">Aplicaciones recientes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Qué tiempo hace?</translation>
+<translation id="1262870540683925850">De <ph name="START_TIME" /> a 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Selecciónalo para ver más detalles en Google Calendar.</translation>
 <translation id="1266097335951928626">Iniciar cámara frontal</translation>
 <translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
 <translation id="1269405891096105529">No se puede usar el periférico en el modo invitados</translation>
@@ -998,6 +1002,8 @@ Nueva instalación</translation>
 <translation id="7720410380936703141">REINTENTAR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostrar aplicaciones de la estantería</translation>
 <translation id="7749443890790263709">Has alcanzado el número máximo de escritorios.</translation>
 <translation id="7749640678855296659">Tu micrófono está apagado en este momento</translation>

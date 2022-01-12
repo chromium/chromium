@@ -3223,6 +3223,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
 <translation id="4278390842282768270">Sallittu</translation>
 <translation id="4279129444466079448">Voit asentaa tälle laitteelle enintään <ph name="PROFILE_LIMIT" /> eSIM-profiilia. Poista ensin jokin profiileista, niin voit lisätä uuden.</translation>
+<translation id="4280325816108262082">Laitteen yhteys katkeaa automaattisesti, kun laite sammutetaan tai sitä ei käytetä</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="4282196459431406533">Smart Lock on käytössä.</translation>
 <translation id="4284755288573763878">Laitetaanko parannettu suojaus pois päältä?</translation>
@@ -3686,6 +3687,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4785719467058219317">Käytät suojausavainta, jota ei ole rekisteröity tällä sivustolla.</translation>
 <translation id="478708757211772586">Siirry näytöllä eteenpäin valitsemalla Seuraava</translation>
 <translation id="4788092183367008521">Tarkista verkkoyhteys ja yritä uudelleen.</translation>
+<translation id="4789550509729954245">Näytä ilmoitus, kun lähistöllä olevat laitteet jakavat sisältöä</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> kuva</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Ota TrackPoint-nopeuttaminen käyttöön</translation>
@@ -4047,6 +4049,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5171343362375269016">Vaihdettu muisti</translation>
 <translation id="5172855596271336236">Hallinnoituja tulostimia on 1.</translation>
 <translation id="5173668317844998239">Lisää ja poista suojausavaimelle tallennettuja sormenjälkiä</translation>
+<translation id="5174169235862638850">Salasana kopioitu leikepöydälle</translation>
 <translation id="5175379009094579629">Laitteen nimi on virheellinen. Syötä kelvollinen nimi ja yritä uudelleen.</translation>
 <translation id="5177479852722101802">Estä kameran ja mikrofonin käyttö edelleen</translation>
 <translation id="5177549709747445269">Käytät mobiilitiedonsiirtoa</translation>
@@ -4341,6 +4344,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5490721031479690399">Katkaise Bluetooth-laitteen yhteys</translation>
 <translation id="5490798133083738649">Anna Linuxin käyttää mikrofoniasi</translation>
 <translation id="549211519852037402">Beige ja valkoinen</translation>
+<translation id="5492637351392383067">Laitteen salaus</translation>
 <translation id="5493792505296048976">näyttö päällä</translation>
 <translation id="5494016731375030300">Viimeksi suljetut välilehdet</translation>
 <translation id="5494362494988149300">Avaa, kun val&amp;mis</translation>
@@ -6538,6 +6542,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7775694664330414886">Välilehti siirretty nimettömään ryhmään – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> voi nähdä kansion <ph name="FOLDERNAME" /> tiedostoja, kunnes suljet sivuston kaikki välilehdet</translation>
 <translation id="7776701556330691704">Ääniä ei löydy</translation>
+<translation id="7777284276915203144">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon</translation>
 <translation id="7781335840981796660">Kaikki käyttäjätilit ja paikalliset tiedot poistetaan.</translation>
 <translation id="7782102568078991263">Ei enää ehdotuksia Googlelta</translation>
 <translation id="7782717250816686129">Tallenna kirjautumisnäytölle pysyvää dataa ja lisää kirjautumistiedot käyttökertaan.</translation>
@@ -7189,6 +7194,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8428634594422941299">Selvä</translation>
 <translation id="84297032718407999">Sinut kirjataan ulos <ph name="LOGOUT_TIME_LEFT" /> päästä</translation>
 <translation id="8431190899827883166">Näytä kosketus</translation>
+<translation id="8431730749911729314">Salaa salasanat laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon</translation>
 <translation id="8434480141477525001">NaCl-vianetsintäportti</translation>
 <translation id="8435395510592618362">Henkilöllisyyden vahvistaminen: <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">USA</translation>
@@ -7978,6 +7984,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="947667444780368238"><ph name="ORIGIN" /> ei saa avata tämän kansion tiedostoja, koska se sisältää järjestelmätiedostoja</translation>
 <translation id="950307215746360464">Käyttöönotto-opas</translation>
 <translation id="951991426597076286">Hylkää</translation>
+<translation id="952471655966876828">Laitteen yhteys muodostetaan automaattisesti, kun laite käynnistetään tai sitä käytetään</translation>
 <translation id="953434574221655299">Laitteesi aktiivisen käytön havaitseminen sallittu</translation>
 <translation id="956500788634395331">Sinut on suojattu mahdollisesti haitallisilta laajennuksilta</translation>
 <translation id="957960681186851048">Tämä sivusto yrittää ladata useita tiedostoja automaattisesti</translation>

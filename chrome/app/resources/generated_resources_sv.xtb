@@ -3227,6 +3227,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4275830172053184480">Starta om enheten</translation>
 <translation id="4278390842282768270">Tillåts</translation>
 <translation id="4279129444466079448">Du kan installera högst <ph name="PROFILE_LIMIT" /> eSIM-profiler på den här enheten. Om du vill lägga till en ny profil måste du först ta bort en av de gamla.</translation>
+<translation id="4280325816108262082">Enheten kopplas från automatiskt när den är inaktiverad eller inte används</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4282196459431406533">Smart Lock är aktiverat</translation>
 <translation id="4284755288573763878">Vill du inaktivera förbättrad säkerhet?</translation>
@@ -3690,6 +3691,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4785719467058219317">Säkerhetsnyckeln som du använder är inte registrerad på den här webbplatsen</translation>
 <translation id="478708757211772586">Använd Nästa för att flytta framåt på skärmen</translation>
 <translation id="4788092183367008521">Kontrollera nätverksanslutningen och försök igen.</translation>
+<translation id="4789550509729954245">Visa en avisering när enheter i närheten delar filer</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktivera TrackPoint-acceleration</translation>
@@ -4051,6 +4053,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5171343362375269016">Bytt minne</translation>
 <translation id="5172855596271336236">Det finns 1 hanterad skrivare.</translation>
 <translation id="5173668317844998239">Lägg till och radera fingeravtryck som sparats på säkerhetsnyckeln</translation>
+<translation id="5174169235862638850">Lösenordet har kopierats till urklipp</translation>
 <translation id="5175379009094579629">Enhetens namn är ogiltigt. Ange ett giltigt enhetsnamn och försök igen.</translation>
 <translation id="5177479852722101802">Fortsätt blockera tillgång till kamera och mikrofon</translation>
 <translation id="5177549709747445269">Du använder mobildata</translation>
@@ -4345,6 +4348,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5490721031479690399">Koppla från Bluetooth-enhet</translation>
 <translation id="5490798133083738649">Ge Linux åtkomst till mikrofonen</translation>
 <translation id="549211519852037402">Beige och vit</translation>
+<translation id="5492637351392383067">Kryptering på enheten</translation>
 <translation id="5493792505296048976">skärm på</translation>
 <translation id="5494016731375030300">Nyligen stängda flikar</translation>
 <translation id="5494362494988149300">Öppna när nedladdning är &amp;klar</translation>
@@ -6542,6 +6546,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7775694664330414886">Fliken flyttades till en namnlös grupp – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> har läsbehörighet till filer i <ph name="FOLDERNAME" /> tills du stänger alla flikar för den här webbplatsen</translation>
 <translation id="7776701556330691704">Inga röster hittades</translation>
+<translation id="7777284276915203144">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering</translation>
 <translation id="7781335840981796660">Alla användarkonton och all lokal data tas bort.</translation>
 <translation id="7782102568078991263">Inga fler förslag från Google</translation>
 <translation id="7782717250816686129">Spara beständig data på inloggningsskärmen och injicera användaruppgifterna i sessionen.</translation>
@@ -7194,6 +7199,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8428634594422941299">Jag förstår</translation>
 <translation id="84297032718407999">Du loggas ut om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Visa tryck</translation>
+<translation id="8431730749911729314">Kryptera lösenord på enheten innan de sparas i Google Lösenordshantering</translation>
 <translation id="8434480141477525001">Felsökningsport för Native Client</translation>
 <translation id="8435395510592618362">Verifiera din identitet med <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">USA</translation>
@@ -7983,6 +7989,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan inte öppna filer i den här mappen eftersom den innehåller systemfiler</translation>
 <translation id="950307215746360464">Konfigureringsguide</translation>
 <translation id="951991426597076286">Godkänn inte</translation>
+<translation id="952471655966876828">Enheten ansluts automatiskt när den är aktiverad eller används</translation>
 <translation id="953434574221655299">Har tillåtelse att veta om du använder enheten aktivt</translation>
 <translation id="956500788634395331">Du är skyddad från tillägg som kan vara skadliga</translation>
 <translation id="957960681186851048">Den här webbplatsen försökte ladda ned flera filer automatiskt</translation>

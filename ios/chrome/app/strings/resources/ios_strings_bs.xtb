@@ -60,7 +60,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1434356225517321998">Vašim preglednikom se upravlja. <ph name="BEGIN_LINK" />Detalji<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Šifriranje na uređaju</translation>
 <translation id="1449835205994625556">Sakrijte lozinku</translation>
 <translation id="145015347812617860">Broj stavki: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Ova web lokacija pokušava preuzeti profil konfiguracije.</translation>
@@ -143,6 +142,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2271351792809375263">Koristite lozinke sačuvane u Chromeu za druge aplikacije na vašem uređaju</translation>
 <translation id="2273327106802955778">Meni Više</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
+<translation id="2299218006564889602">Lozinke se šifriraju na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki.</translation>
 <translation id="2302742851632557585">Promijenite lozinku na web lokaciji</translation>
 <translation id="2316709634732130529">Koristi predloženu lozinku</translation>
 <translation id="2320166752086256636">Sakrij tastaturu</translation>
@@ -286,7 +286,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3529024052484145543">Nije sigurno</translation>
 <translation id="3533202363250687977">Zatvori sve anonimne kartice</translation>
 <translation id="3533436815740441613">Nova kartica</translation>
-<translation id="3536487890564466894">Šifrirajte lozinke prije nego što ih sačuvate na Google račun.</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
 <translation id="3581564640715911333">Ponudi prevođenje stranica na drugim jezicima</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
@@ -547,6 +546,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6066301408025741299">Dodirnite da otkažete.</translation>
 <translation id="60829778314739003">Prihvati i nastavi</translation>
 <translation id="6084848228346514841">Odaberite kartice</translation>
+<translation id="6103540626693881831">Šifriranje na uređaju</translation>
 <translation id="6108923351542677676">U toku je postavljanje…</translation>
 <translation id="6119050551270742952">Trenutna web stranica je u Anonimnom načinu</translation>
 <translation id="6122191549521593678">Na mreži</translation>
@@ -614,6 +614,7 @@ Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="6524918542306337007">Anonimni način rada je nedostupan</translation>
 <translation id="6537746030088321027">primjeri.hr</translation>
 <translation id="6561262006871132942">Uvećaj</translation>
+<translation id="6583087784430677195">Da isključite, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" /> i idite u Automatsko popunjavanje lozinki.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="6603393121510733479">Vaša organizacija je isključila privatno pregledavanje.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="797413074872316787">Uključite sinhronizaciju da vršite sinhronizaciju i personalizaciju na svim uređajima.</translation>
 <translation id="7978018860671536736">3. Dodirnite Automatsko popunjavanje lozinki</translation>
 <translation id="7982789257301363584">Mreža</translation>
+<translation id="7987685713885608670">Da imate dodatnu sigurnost, šifrirajte lozinke na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki.</translation>
 <translation id="7993619969781047893">Moguće je da će funkcije na nekim web lokacijama prestati s radom</translation>
 <translation id="800361585186029508">Otvara unesene URL-ove u Google Chromeu.</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>

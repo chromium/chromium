@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
 <translation id="1434356225517321998">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ. <ph name="BEGIN_LINK" />ವಿವರಗಳು<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">ಸಾಧನದಲ್ಲಿನ ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="1449835205994625556">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ಐಟಂಗಳು</translation>
 <translation id="149095475893949513">ಈ ವೆಬ್‌ಸೈಟ್ ಕಾನ್ಫಿಗರೇಶನ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
@@ -286,7 +285,6 @@
 <translation id="3529024052484145543">ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="3533202363250687977">ಎಲ್ಲಾ ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="3533436815740441613">ಹೊಸ ಟ್ಯಾಬ್</translation>
-<translation id="3536487890564466894">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ಅವುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ.</translation>
 <translation id="3551320343578183772">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="3581564640715911333">ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಅನುವಾದಿಸಲು ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="3588820906588687999">ಚಿತ್ರವನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -614,6 +612,7 @@
 <translation id="6524918542306337007">ಅಜ್ಞಾತ ಮೋಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">ಝೂಮ್ ಇನ್</translation>
+<translation id="6583087784430677195">ಆಫ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="END_LINK" /> ತೆರೆಯಿರಿ ಹಾಗೂ ಸ್ವಯಂ ಭರ್ತಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="6585618849026997638">ಬುಕ್‌ಮಾರ್ಕ್ ಒಂದನ್ನು ಸೇರಿಸುವ ಮೂಲಕ ನಿಮಗೆ ಮುಖ್ಯವಾದ ಪುಟಕ್ಕೆ ನೀವು ಹಿಂತಿರುಗಬಹುದಾಗಿದೆ</translation>
 <translation id="6603393121510733479">ನಿಮ್ಮ ಸಂಸ್ಥೆ ಖಾಸಗಿ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದೆ.
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>

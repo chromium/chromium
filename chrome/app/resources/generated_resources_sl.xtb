@@ -3230,6 +3230,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
 <translation id="4279129444466079448">V tej napravi je mogoče namestiti največ toliko profilov eSIM: <ph name="PROFILE_LIMIT" />. Če želite dodati drug profil, najprej odstranite obstoječega.</translation>
+<translation id="4280325816108262082">Naprava samodejno prekine povezavo, ko je izklopljena ali ni v uporabi.</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
 <translation id="4282196459431406533">Smart Lock je vklopljen</translation>
 <translation id="4284755288573763878">Želite izklopiti izboljšano varnost?</translation>
@@ -3693,6 +3694,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4785719467058219317">Varnostni ključ, ki ga uporabljate, ni registriran na tem spletnem mestu</translation>
 <translation id="478708757211772586">Uporabite stikalo »Naprej«, če se želite pomakniti naprej na zaslonu.</translation>
 <translation id="4788092183367008521">Preverite omrežno povezavo in poskusite znova.</translation>
+<translation id="4789550509729954245">Prikaz obvestila, ko naprave delijo v bližini</translation>
 <translation id="4791000909649665275">Fotografije (<ph name="NUMBER" />)</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Omogočanje pospeševanja sledilne palčke</translation>
@@ -4054,6 +4056,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5171343362375269016">Zamenjan pomnilnik</translation>
 <translation id="5172855596271336236">Na voljo je 1 upravljan tiskalnik.</translation>
 <translation id="5173668317844998239">Dodajanje in brisanje prstnih odtisov, shranjenih v varnostnem ključu</translation>
+<translation id="5174169235862638850">Geslo je kopirano v odložišče.</translation>
 <translation id="5175379009094579629">Ime naprave je neveljavno. Vnesite veljavno ime naprave, če želite poskusiti znova.</translation>
 <translation id="5177479852722101802">Še naprej blokiraj dostop do kamere in mikrofona</translation>
 <translation id="5177549709747445269">Uporabljate prenos podatkov v mobilnem omrežju</translation>
@@ -4348,6 +4351,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5490721031479690399">Prekinitev povezave z napravo Bluetooth</translation>
 <translation id="5490798133083738649">Omogočanje Linuxu dostop do mikrofona</translation>
 <translation id="549211519852037402">Bež in bela</translation>
+<translation id="5492637351392383067">Šifriranje v napravi</translation>
 <translation id="5493792505296048976">zaslon je vklopljen</translation>
 <translation id="5494016731375030300">Nedavno zaprti zavihki</translation>
 <translation id="5494362494988149300">Odpri, ko je &amp;končano</translation>
@@ -6547,6 +6551,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7775694664330414886">Zavihek je premaknjen v neimenovano skupino – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="7776156998370251340">Spletno mesto <ph name="ORIGIN" /> si bo lahko ogledovalo datoteke v mapi <ph name="FOLDERNAME" />, dokler ne zaprete vseh zavihkov tega spletnega mesta</translation>
 <translation id="7776701556330691704">Najden ni bil noben glas</translation>
+<translation id="7777284276915203144">Gesla so šifrirana v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
 <translation id="7781335840981796660">Odstranjeni bodo vsi uporabniški računi in lokalni podatki.</translation>
 <translation id="7782102568078991263">Nič več Googlovih predlogov</translation>
 <translation id="7782717250816686129">Shrani trajne podatke na zaslonu za prijavo in vstavi poverilnice v sejo.</translation>
@@ -7199,6 +7204,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8428634594422941299">Razumem</translation>
 <translation id="84297032718407999">Odjavljeni boste čez <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Prikaz dotikov</translation>
+<translation id="8431730749911729314">Šifrirajte gesla v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
 <translation id="8434480141477525001">Vrata za odpravljanje napak NaCl</translation>
 <translation id="8435395510592618362">Preverjanje identitete z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">Združene države</translation>
@@ -7991,6 +7997,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="947667444780368238">Spletno mesto <ph name="ORIGIN" /> ne more odpreti datotek v tej mapi, ker so v njej sistemske datoteke.</translation>
 <translation id="950307215746360464">Vodnik za nastavitev</translation>
 <translation id="951991426597076286">Zavrni</translation>
+<translation id="952471655966876828">Naprava samodejno vzpostavi povezavo, ko je vklopljena in je v uporabi.</translation>
 <translation id="953434574221655299">Dovoljeno vedeti, kdaj aktivno uporabljate napravo</translation>
 <translation id="956500788634395331">Zaščiteni ste pred morebiti škodljivimi razširitvami</translation>
 <translation id="957960681186851048">Spletno mesto je poskušalo samodejno prenesti več datotek</translation>

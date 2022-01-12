@@ -60,7 +60,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1434356225517321998">Váš prehliadač je spravovaný. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Šifrovanie v zariadení</translation>
 <translation id="1449835205994625556">Skryť heslo</translation>
 <translation id="145015347812617860">Počet položiek: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Tento web sa pokúša stiahnuť profil konfigurácie.</translation>
@@ -286,7 +285,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3529024052484145543">Nezabezpečené</translation>
 <translation id="3533202363250687977">Zavrieť všetky karty inkognito</translation>
 <translation id="3533436815740441613">Nová karta</translation>
-<translation id="3536487890564466894">Šifrujte svoje heslá pred ich uložením do účtu Google.</translation>
 <translation id="3551320343578183772">Zatvoriť kartu</translation>
 <translation id="3581564640715911333">Ponúkať preklad stránok v ďalších jazykoch</translation>
 <translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
@@ -614,6 +612,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
 <translation id="6537746030088321027">priklad.sk</translation>
 <translation id="6561262006871132942">Priblížiť</translation>
+<translation id="6583087784430677195">Túto funkciu môžete vypnete v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /> v sekcii Automatické dopĺňanie hesiel.</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
 <translation id="6603393121510733479">Vaša organizácia vypla anonymné prehliadanie.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -668,7 +667,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6973630695168034713">Priečinky</translation>
 <translation id="6979158407327259162">Disk Google</translation>
-<translation id="6988572888918530647">Správa účtu</translation>
+<translation id="6988572888918530647">Spravovať účet Google</translation>
 <translation id="6989674195860388998">Prepnúť v Nastaveniach…</translation>
 <translation id="6995899638241819463">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="6998989275928107238">Komu</translation>

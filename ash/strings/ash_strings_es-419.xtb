@@ -53,6 +53,10 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1247519845643687288">Apps recientes</translation>
 <translation id="1252999807265626933">Cargando desde <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Cómo está el clima?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> a 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Selecciona un evento para ver más detalles en el Calendario de Google.</translation>
 <translation id="1266097335951928626">Activar la cámara de selfies</translation>
 <translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
 <translation id="1269405891096105529">El dispositivo periférico no es compatible en el Modo de invitado.</translation>
@@ -998,6 +1002,8 @@ Nueva instalación</translation>
 <translation id="7720410380936703141">VOLVER A INTENTAR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostrar apps en la barra</translation>
 <translation id="7749443890790263709">Se alcanzó la cantidad máxima de escritorios.</translation>
 <translation id="7749640678855296659">Tu micrófono está apagado.</translation>

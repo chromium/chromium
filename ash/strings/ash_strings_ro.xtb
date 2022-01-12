@@ -53,6 +53,10 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1247519845643687288">Aplicații recente</translation>
 <translation id="1252999807265626933">Se încarcă de la <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Cum este vremea?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> – 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Selectează pentru mai multe detalii în Google Calendar.</translation>
 <translation id="1266097335951928626">Pornește camera foto pentru selfie</translation>
 <translation id="1267032506238418139">Modificarea comenzii rapide</translation>
 <translation id="1269405891096105529">Dispozitivul periferic nu este acceptat în modul pentru invitați</translation>
@@ -967,6 +971,7 @@ Instalare nouă</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7526573455193969409">Este posibil ca rețeaua să fie monitorizată</translation>
 <translation id="7536035074519304529">Adresă IP: <ph name="ADDRESS" /></translation>
+<translation id="7544300628205093162">Retroiluminarea tastaturii este activată</translation>
 <translation id="7548434653388805669">Este timpul pentru culcare</translation>
 <translation id="7551643184018910560">Fixați în raft</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
@@ -997,6 +1002,8 @@ Instalare nouă</translation>
 <translation id="7720410380936703141">ÎNCEARCĂ DIN NOU</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{O notificare}few{# notificări}other{# de notificări}}</translation>
 <translation id="7724603315864178912">Decupează</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Afișează aplicațiile în raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
 <translation id="7749640678855296659">Microfonul este dezactivat</translation>
@@ -1049,6 +1056,7 @@ Instalare nouă</translation>
 <translation id="8036504271468642248">Propoziția anterioară</translation>
 <translation id="8042893070933512245">Deschide meniul cu setări de accesibilitate</translation>
 <translation id="8042925093898452104">Închide informațiile detaliate</translation>
+<translation id="8044457332620420407">Retroiluminarea tastaturii este dezactivată</translation>
 <translation id="8048123526339889627">Setări Bluetooth</translation>
 <translation id="8051716679295756675">Șablonul numit <ph name="DESK_TEMPLATE_NAME" /> există deja</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>

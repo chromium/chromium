@@ -65,6 +65,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1782199038061388045">번역</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
+<translation id="1807246157184219062">밝게</translation>
 <translation id="1851218745569890714">화상 회의</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
@@ -103,6 +104,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">의견 보고서 보내기</translation>
 <translation id="2407209115954268704">SIM 잠금 상태</translation>
+<translation id="2414886740292270097">어둡게</translation>
 <translation id="2418150275289244458">설정에서 열기</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />페이지 중 <ph name="CURRENT_PAGE" />에 있는 이미지</translation>
 <translation id="2446553403094072641">부동 소수점 정확성</translation>
@@ -374,6 +376,7 @@
 <translation id="6223752125779001553">사용 가능한 스캐너 없음</translation>
 <translation id="6232017090690406397">배터리</translation>
 <translation id="6243280677745499710">현재 설정</translation>
+<translation id="6278428485366576908">테마</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="6325525973963619867">실패</translation>

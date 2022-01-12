@@ -60,7 +60,6 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1434356225517321998">A böngésző felügyelet alatt áll. <ph name="BEGIN_LINK" />Részletek<ph name="END_LINK" />.</translation>
-<translation id="1442838519825026149">Eszközalapú titkosítás</translation>
 <translation id="1449835205994625556">Jelszó elrejtése</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
 <translation id="149095475893949513">Ez a webhely konfigurációs profilt próbál letölteni.</translation>
@@ -143,6 +142,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="2271351792809375263">Használja a Chrome-ba mentett jelszavait az eszközén lévő többi alkalmazásban.</translation>
 <translation id="2273327106802955778">Továbbiak menü</translation>
 <translation id="2286505070150039482">Kiemelt szöveg</translation>
+<translation id="2299218006564889602">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="2302742851632557585">Jelszómódosítás a webhelyen</translation>
 <translation id="2316709634732130529">Javasolt jelszó használata</translation>
 <translation id="2320166752086256636">Billentyűzet elrejtése</translation>
@@ -286,7 +286,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3529024052484145543">Nem biztonságos</translation>
 <translation id="3533202363250687977">Összes inkognitó lap bezárása</translation>
 <translation id="3533436815740441613">Új lap</translation>
-<translation id="3536487890564466894">Titkosíthatja a jelszavait, mielőtt mentésre kerülnek a Google-fiókjába.</translation>
 <translation id="3551320343578183772">Lap bezárása</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
 <translation id="3588820906588687999">Kép megnyitása új lapon</translation>
@@ -547,6 +546,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6066301408025741299">Érintse meg a visszavonáshoz</translation>
 <translation id="60829778314739003">Elfogadás és folytatás</translation>
 <translation id="6084848228346514841">Lapok kiválasztása</translation>
+<translation id="6103540626693881831">Eszközalapú titkosítás</translation>
 <translation id="6108923351542677676">A telepítés folyamatban...</translation>
 <translation id="6119050551270742952">Ez a weboldal inkognitó módban van megnyitva</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -765,6 +765,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="797413074872316787">Az eszközök közötti szinkronizáláshoz és személyre szabáshoz kapcsolja be a szinkronizálást.</translation>
 <translation id="7978018860671536736">3. Koppintson az AutoFill Passwords (Jelszavak automatikus kitöltése) lehetőségre</translation>
 <translation id="7982789257301363584">Hálózat</translation>
+<translation id="7987685713885608670">A fokozott biztonság érdekében titkosíthatja jelszavait eszközén, mielőtt a rendszer elmenti őket a Google Jelszókezelőbe.</translation>
 <translation id="7993619969781047893">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek megfelelően</translation>
 <translation id="800361585186029508">A megadott URL-eket a Google Chrome-ban nyitja meg.</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>

@@ -3211,6 +3211,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4275830172053184480">Berrabiarazi gailua</translation>
 <translation id="4278390842282768270">Baimenduta</translation>
 <translation id="4279129444466079448">Gehienez eSIMaren <ph name="PROFILE_LIMIT" /> profil instala ditzakezu gailuan. Beste profil bat gehitzeko, kendu lehendik zegoen profil bat.</translation>
+<translation id="4280325816108262082">Gailua automatikoki deskonektatuko da itzaliz gero edo inork erabiltzen ez badu</translation>
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
 <translation id="4282196459431406533">Aktibatuta dago Smart Lock</translation>
 <translation id="4284755288573763878">Segurtasun hobetua desaktibatu nahi duzu?</translation>
@@ -4330,6 +4331,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5490721031479690399">Deskonektatu Bluetooth bidezko gailua</translation>
 <translation id="5490798133083738649">Eman Linux-i mikrofonoa atzitzeko baimena</translation>
 <translation id="549211519852037402">Beixa eta zuria</translation>
+<translation id="5492637351392383067">Gailuan bertan enkriptatzea</translation>
 <translation id="5493792505296048976">pantaila piztuta dago</translation>
 <translation id="5494016731375030300">Duela gutxi itxitako fitxak</translation>
 <translation id="5494362494988149300">Ireki deskargatzen &amp;amaitutakoan</translation>
@@ -6527,6 +6529,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7775694664330414886">Talde izengabe batera eraman da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> webguneak <ph name="FOLDERNAME" /> karpetako fitxategiak ikusteko baimena izango du webguneko fitxa guztiak ixten dituzun arte</translation>
 <translation id="7776701556330691704">Ez da aurkitu ahotsik</translation>
+<translation id="7777284276915203144">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea atalean gorde aurretik</translation>
 <translation id="7781335840981796660">Erabiltzaile-kontu guztiak eta gailuko datuak kendu egingo dira.</translation>
 <translation id="7782102568078991263">Google-k ez du iradokizun gehiagorik</translation>
 <translation id="7782717250816686129">Gorde datu iraunkorrak saio-hasierako pantailan eta idatzi kredentzialak saioa hasteko.</translation>
@@ -7177,6 +7180,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8428634594422941299">Ados</translation>
 <translation id="84297032718407999">Saioa amaituko egingo da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan</translation>
 <translation id="8431190899827883166">Erakutsi sakatutakoa</translation>
+<translation id="8431730749911729314">Enkriptatu pasahitzak gailuan Google-ren Pasahitz-kudeatzailea atalean gorde aurretik</translation>
 <translation id="8434480141477525001">NaCl arazketa-ataka</translation>
 <translation id="8435395510592618362">Egiaztatu identitatea <ph name="APP_NAME" /> aplikazioa erabilita</translation>
 <translation id="8437209419043462667">US</translation>
@@ -7966,6 +7970,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="947667444780368238"><ph name="ORIGIN" /> webguneak ezin ditu ireki karpeta honetako fitxategiak, sistemaren fitxategiak daudelako bertan</translation>
 <translation id="950307215746360464">Konfigurazio-gida</translation>
 <translation id="951991426597076286">Baztertu</translation>
+<translation id="952471655966876828">Gailua automatikoki konektatuko da piztuz gero edo norbaitek erabiltzen badu</translation>
 <translation id="953434574221655299">Gailua noiz erabiltzen ari zaren jakin dezakete</translation>
 <translation id="956500788634395331">Luzapen kaltegarrien aurka babestuta zaude</translation>
 <translation id="957960681186851048">Hainbat fitxategi automatikoki deskargatzen saiatu da webgunea</translation>

@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">Άνοιγμα όλων</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1434356225517321998">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Λεπτομέρειες<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Κρυπτογράφηση στη συσκευή</translation>
 <translation id="1449835205994625556">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> στοιχεία</translation>
 <translation id="149095475893949513">Αυτός ο ιστότοπος προσπαθεί να κατεβάσει ένα προφίλ διαμόρφωσης.</translation>
@@ -95,6 +94,7 @@
 <translation id="1690731385917361335">Κανένα στοιχείο</translation>
 <translation id="1692118695553449118">Ο συγχρονισμός είναι ενεργοποιημένος</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία επιλεγμένα</translation>
+<translation id="1726573592754903697">Διαχειριστής κωδικών πρόσβασης Google</translation>
 <translation id="1740468249224277719">Πατήστε δύο φορές για εγκατάσταση.</translation>
 <translation id="1752547299766512813">Απ. κωδ. πρόσβ.</translation>
 <translation id="1753905327828125965">Πιο Δημοφιλή</translation>
@@ -285,7 +285,6 @@
 <translation id="3529024052484145543">Μη ασφαλής</translation>
 <translation id="3533202363250687977">Κλείσιμο όλων των καρτελών ανώνυμης περιήγησης</translation>
 <translation id="3533436815740441613">Νέα καρτέλα</translation>
-<translation id="3536487890564466894">Κρυπτογραφήστε τους κωδικούς πρόσβασης προτού αποθηκευτούν στον Λογαριασμό σας Google.</translation>
 <translation id="3551320343578183772">Κλείσιμο Καρτέλας</translation>
 <translation id="3581564640715911333">Προσφορά για μετάφραση σελίδων σε άλλες γλώσσες</translation>
 <translation id="3588820906588687999">Άνοιγμα εικόνας σε νέα καρτέλα</translation>
@@ -563,6 +562,7 @@
 <translation id="6219688215832490856">Να μην γίνεται ποτέ μετάφραση</translation>
 <translation id="6223816392543092032">Μεταφέρετε όλους τους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και άλλες ρυθμίσεις σας σε όλες τις συσκευές σας.</translation>
 <translation id="6232329973559504466">Ανώνυμη αναζήτηση</translation>
+<translation id="6232736989810857397">Με αυτόν τον τρόπο, θα μπορείτε να δημιουργείτε με ευκολία συμβάντα ημερολογίου χρησιμοποιώντας το Google Lens.</translation>
 <translation id="6254066287920239840">Άνοιγμα συνδέσμων στην εφαρμογή αντί για το πρόγραμμα περιήγησης.</translation>
 <translation id="6255097610484507482">Επεξεργασία πιστωτικής κάρτας</translation>
 <translation id="6284652193729350524">Πρόταση για μετάφραση <ph name="LANGUAGE" /></translation>
@@ -613,6 +613,7 @@
 <translation id="6524918542306337007">Η κατάσταση ανώνυμης περιήγησης δεν είναι διαθέσιμη</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Μεγέθυνση</translation>
+<translation id="6583087784430677195">Για απενεργοποίηση, ανοίξτε τις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /> και μεταβείτε στην επιλογή Αυτόματη συμπλήρωση κωδικών πρόσβασης.</translation>
 <translation id="6585618849026997638">Μπορείτε να επιστρέψετε σε μια σελίδα που είναι σημαντική για εσάς προσθέτοντας έναν σελιδοδείκτη.</translation>
 <translation id="6603393121510733479">Ο οργανισμός σας απενεργοποίησε την απόρρητη περιήγηση.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>

@@ -500,6 +500,7 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="3912508018559818924">ဝဘ်မှ အကောင်းဆုံးကို ရှာနေသည်…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ကို ဖွင့်ထားသည်</translation>
+<translation id="3925830358619338299">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပြီးပါပြီ</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ကျွန်ုပ်၏ ဒေတာများကို ပေါင်းပါ</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">ဒေတာများကို ရှင်းလင်းပါ</translation>
 <translation id="549025011754480756">သင့်အသံသုံး၍ ရှာဖွေနည်း</translation>
+<translation id="5492637351392383067">စက်တွင်ပါသော အသွင်ဝှက်စနစ်</translation>
 <translation id="5514904542973294328">ဤစက်ပစ္စည်း၏ စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="5515439363601853141">သင့်စကားဝှက်ကိုကြည့်ရန် ဖွင့်ပါ</translation>
 <translation id="5517095782334947753">သင့်ထံတွင် <ph name="FROM_ACCOUNT" /> မှ စာညှပ်များ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များ ရှိပါသည်။</translation>
@@ -1320,6 +1322,7 @@
 <translation id="8427875596167638501">အစမ်းကြည့်ရှုမှုတဘ်ကို တစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8430824733382774043">ဖန်သားပြင်ဓာတ်ပုံသီးသန့် မျှဝေပါ</translation>
+<translation id="8431730749911729314">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပါ</translation>
 <translation id="8438566539970814960">ရှာဖွေမှုနှင့် ဖွင့်ကြည့်မှု ပိုမိုကောင်းမွန်လာအောင် လုပ်ခြင်း</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - ဘာသာစကား အသင့်ဖြစ်ပြီ၊ <ph name="APP_NAME" /> ပြန်စပါ။</translation>
 <translation id="8442258441309440798">သတင်းဆောင်းပါးများ မရနိုင်ပါ</translation>

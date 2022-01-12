@@ -94,6 +94,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1690731385917361335">Aucun élément</translation>
 <translation id="1692118695553449118">Synchronisation activée</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> favoris sélectionnés.</translation>
+<translation id="1726573592754903697">Gestionnaire de mots de passe Google</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour installer.</translation>
 <translation id="1752547299766512813">Enreg. mots de passe</translation>
 <translation id="1753905327828125965">Les + visités</translation>
@@ -141,6 +142,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2271351792809375263">Utilisez les mots de passe enregistrés dans Chrome dans d'autres applis sur votre appareil</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2286505070150039482">Texte en surbrillance</translation>
+<translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google.</translation>
 <translation id="2302742851632557585">Changer de mot de passe sur le site Web</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
 <translation id="2320166752086256636">Masquer le clavier</translation>
@@ -501,6 +503,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="575902488528307720">Rechercher une image</translation>
 <translation id="5781453543752460388">Ajouter à Photos</translation>
 <translation id="5782227691023083829">Traduction en cours...</translation>
+<translation id="5802829331520313983">Configurer…</translation>
 <translation id="5803566855766646066">Voulez-vous vraiment supprimer cette nouvelle carte ?</translation>
 <translation id="5812974770859303494">Ajouter à…</translation>
 <translation id="5816228676161003208">Cela vous permet d'effectuer des recherches plus rapidement en utilisant la recherche vocale.</translation>
@@ -543,6 +546,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6066301408025741299">Appuyez sur l'écran pour annuler.</translation>
 <translation id="60829778314739003">Accepter et continuer</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
+<translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="6108923351542677676">Configuration en cours…</translation>
 <translation id="6119050551270742952">La page Web actuelle est en mode navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
@@ -560,6 +564,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6219688215832490856">Ne jamais traduire</translation>
 <translation id="6223816392543092032">Accédez à vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils.</translation>
 <translation id="6232329973559504466">Recherche en navigation privée</translation>
+<translation id="6232736989810857397">Cela vous permet de créer facilement des événements d'agenda avec Google Lens.</translation>
 <translation id="6254066287920239840">Ouvrir les liens dans l'application et non dans le navigateur.</translation>
 <translation id="6255097610484507482">Modifier la carte de paiement</translation>
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
@@ -609,6 +614,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
+<translation id="6583087784430677195">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Saisir automatiquement les mots de passe".</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -761,6 +767,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="797413074872316787">Activez la synchronisation pour accéder à vos données et les personnaliser sur tous vos appareils.</translation>
 <translation id="7978018860671536736">3. Appuyez sur "Saisir automatiquement les mots de passe"</translation>
 <translation id="7982789257301363584">Réseau</translation>
+<translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe Google.</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="800361585186029508">Ouvre les URL saisies dans Google Chrome.</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>

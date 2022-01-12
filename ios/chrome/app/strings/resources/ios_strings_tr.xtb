@@ -94,6 +94,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1690731385917361335">Öğe yok</translation>
 <translation id="1692118695553449118">Senkronizasyon açık.</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> yer işareti seçildi</translation>
+<translation id="1726573592754903697">Google Şifre Yöneticisi</translation>
 <translation id="1740468249224277719">Yüklemek için iki kez dokunun.</translation>
 <translation id="1752547299766512813">Şifreleri Kaydet</translation>
 <translation id="1753905327828125965">En Çok Ziyaret Edilenler</translation>
@@ -501,6 +502,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="575902488528307720">Görselleri Arayın</translation>
 <translation id="5781453543752460388">Fotoğraflara Ekle</translation>
 <translation id="5782227691023083829">Çevriliyor...</translation>
+<translation id="5802829331520313983">Kur…</translation>
 <translation id="5803566855766646066">Bu yeni kartı silmek istediğinizden emin misiniz?</translation>
 <translation id="5812974770859303494">Ekle…</translation>
 <translation id="5816228676161003208">Böylece, sesinizi kullanarak daha hızlı arama yapabilirsiniz.</translation>
@@ -560,6 +562,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6219688215832490856">Asla Çevirme</translation>
 <translation id="6223816392543092032">Yer işaretlerinizi, geçmişinizi, şifrelerinizi ve diğer ayarlarınızı tüm cihazlarınızda kullanın.</translation>
 <translation id="6232329973559504466">Gizli Arama</translation>
+<translation id="6232736989810857397">Bu izin, Google Lens'i kullanarak kolayca takvim etkinliği oluşturmanızı sağlar.</translation>
 <translation id="6254066287920239840">Bağlantıları tarayıcı yerine uygulamada açın.</translation>
 <translation id="6255097610484507482">Kredi Kartını Düzenle</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> diline çevirmeyi öner</translation>
@@ -609,6 +612,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6524918542306337007">Gizli Mod Kullanılamıyor</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Yakınlaştır</translation>
+<translation id="6583087784430677195">Özelliği kapatmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'ı açıp Parolaları Otomatik Doldur'a gidin.</translation>
 <translation id="6585618849026997638">Önemli gördüğünüz sayfalara yer işareti koyarak geri dönebilirsiniz.</translation>
 <translation id="6603393121510733479">Kuruluşunuz gizli taramayı kapattı.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

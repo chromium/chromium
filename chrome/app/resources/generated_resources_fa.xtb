@@ -3224,6 +3224,7 @@
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
 <translation id="4278390842282768270">مجاز است</translation>
 <translation id="4279129444466079448">می‌توانید تا <ph name="PROFILE_LIMIT" /> نمایه سیم‌کارت داخلی را در این دستگاه نصب کنید. برای افزودن نمایه‌ای دیگر، ابتدا یکی از نمایه‌ها موجود را بردارید.</translation>
+<translation id="4280325816108262082">وقتی دستگاه خاموش شود یا از آن استفاده نشود، به‌طور خودکار قطع می‌شود</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
 <translation id="4282196459431406533">‏Smart Lock روشن شده است</translation>
 <translation id="4284755288573763878">امنیت پیشرفته خاموش شود؟</translation>
@@ -4344,6 +4345,7 @@
 <translation id="5490721031479690399">قطع اتصال دستگاه بلوتوث</translation>
 <translation id="5490798133083738649">‏اجازه دادن به Linux برای دسترسی به میکروفون</translation>
 <translation id="549211519852037402">بژ و سفید</translation>
+<translation id="5492637351392383067">رمزگذاری درون‌دستگاهی</translation>
 <translation id="5493792505296048976">صفحه روشن است</translation>
 <translation id="5494016731375030300">برگه‌هایی که اخیراً بسته شده‌اند</translation>
 <translation id="5494362494988149300">پس از &amp;تکمیل باز شود</translation>
@@ -6541,6 +6543,7 @@
 <translation id="7775694664330414886">برگه به گروه بی‌نام منتقل شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">تا زمانی‌که همه برگه‌های <ph name="ORIGIN" /> را نبندید، این سایت می‌تواند فایل‌های موجود در <ph name="FOLDERNAME" /> را مشاهده کند</translation>
 <translation id="7776701556330691704">صدایی پیدا نشد</translation>
+<translation id="7777284276915203144">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شوند</translation>
 <translation id="7781335840981796660">همه حساب‌های کاربر و داده‌های محلی حذف می‌شوند.</translation>
 <translation id="7782102568078991263">‏پیشنهاد دیگری از Google وجود ندارد</translation>
 <translation id="7782717250816686129">داده‌های دائمی در صفحه ورود به سیستم ذخیره شود و اطلاعات کاربری در جلسه تزریق شود.</translation>
@@ -7193,6 +7196,7 @@
 <translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> دیگر از سیستم خارج می‌شوید</translation>
 <translation id="8431190899827883166">نمایش ضربه‌ها</translation>
+<translation id="8431730749911729314">‏گذرواژه‌ها را قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌کند</translation>
 <translation id="8434480141477525001">‏درگاه اشکال‌زدایی NaCl</translation>
 <translation id="8435395510592618362">هویتتان را با <ph name="APP_NAME" /> تأیید کنید</translation>
 <translation id="8437209419043462667">آمریکایی</translation>
@@ -7983,6 +7987,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> نمی‌تواند فایل‌های این پوشه را باز کند زیرا فایل‌های سیستم در آن وجود دارد</translation>
 <translation id="950307215746360464">راهنمای راه‌اندازی</translation>
 <translation id="951991426597076286">رد کردن</translation>
+<translation id="952471655966876828">وقتی دستگاه روشن شود و از آن استفاده شود، به‌طور خودکار وصل می‌شود</translation>
 <translation id="953434574221655299">اجازه دارد وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شود</translation>
 <translation id="956500788634395331">در برابر افزونه‌های بالقوه مضر محافظت می‌شوید</translation>
 <translation id="957960681186851048">این سایت تلاش کرده است چند فایل را به‌طور خودکار بارگیری کند</translation>

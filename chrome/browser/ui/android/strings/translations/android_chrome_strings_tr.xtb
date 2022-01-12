@@ -500,6 +500,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> cihazı güncelle</translation>
 <translation id="3912508018559818924">Web'in en iyilerini buluyoruz…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> açık</translation>
+<translation id="3925830358619338299">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Verilerimi birleştir</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5483197086164197190">Chrome'da gezinme</translation>
 <translation id="5487521232677179737">Verileri temizle</translation>
 <translation id="549025011754480756">Sesinizle arama yapma</translation>
+<translation id="5492637351392383067">Cihaz üzerinde şifreleme</translation>
 <translation id="5514904542973294328">Bu cihazın yöneticisi tarafından devre dışı bırakıldı</translation>
 <translation id="5515439363601853141">Şifrenizi görüntülemek için kilidi açın</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> hesabından yer işaretleri, geçmiş, şifreler ve diğer ayarlarınız var.</translation>
@@ -1321,6 +1323,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8427875596167638501">Önizleme sekmesi yarım açık</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8430824733382774043">Yalnızca ekran görüntüsü paylaşılıyor</translation>
+<translation id="8431730749911729314">Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin</translation>
 <translation id="8438566539970814960">Aramaları ve göz atmayı daha iyi yap</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Dil hazır, <ph name="APP_NAME" /> uygulamasını yeniden başlatın.</translation>
 <translation id="8442258441309440798">Kullanılabilir hikaye yok</translation>

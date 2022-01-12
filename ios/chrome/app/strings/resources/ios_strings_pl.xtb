@@ -94,6 +94,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1690731385917361335">Brak elementów</translation>
 <translation id="1692118695553449118">Synchronizacja jest włączona</translation>
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1726573592754903697">Menedżer haseł Google</translation>
 <translation id="1740468249224277719">Kliknij dwukrotnie, by zainstalować.</translation>
 <translation id="1752547299766512813">Zapisuj hasła</translation>
 <translation id="1753905327828125965">Najczęstsze</translation>
@@ -141,6 +142,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2271351792809375263">Korzystaj z haseł zapisanych w Chrome w innych aplikacjach na urządzeniu</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
 <translation id="2286505070150039482">Zaznaczony tekst</translation>
+<translation id="2299218006564889602">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu.</translation>
 <translation id="2302742851632557585">Zmień hasło na stronie</translation>
 <translation id="2316709634732130529">Użyj proponowanego hasła</translation>
 <translation id="2320166752086256636">Ukryj klawiaturę</translation>
@@ -499,6 +501,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="575902488528307720">Wyszukaj grafikę</translation>
 <translation id="5781453543752460388">Dodaj do zdjęć</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
+<translation id="5802829331520313983">Skonfiguruj…</translation>
 <translation id="5803566855766646066">Czy na pewno chcesz zamknąć tę nową kartę?</translation>
 <translation id="5812974770859303494">Dodaj do...</translation>
 <translation id="5816228676161003208">Umożliwia szybsze wyszukiwanie głosowe.</translation>
@@ -541,6 +544,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6066301408025741299">Kliknij, by anulować.</translation>
 <translation id="60829778314739003">Zaakceptuj i kontynuuj</translation>
 <translation id="6084848228346514841">Wybierz karty</translation>
+<translation id="6103540626693881831">Szyfrowanie na urządzeniu</translation>
 <translation id="6108923351542677676">Trwa konfigurowanie…</translation>
 <translation id="6119050551270742952">Bieżąca strona jest w trybie incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -558,6 +562,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6219688215832490856">Nigdy nie tłumacz</translation>
 <translation id="6223816392543092032">Korzystaj z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
 <translation id="6232329973559504466">Wyszukiwanie incognito</translation>
+<translation id="6232736989810857397">Dzięki temu możesz łatwo tworzyć wydarzenia w kalendarzu za pomocą Obiektywu Google.</translation>
 <translation id="6254066287920239840">Otwieraj linki w aplikacji, a nie w przeglądarce.</translation>
 <translation id="6255097610484507482">Edytuj kartę kredytową</translation>
 <translation id="6284652193729350524">Proponuj tłumaczenie z języka: <ph name="LANGUAGE" /></translation>
@@ -607,6 +612,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6524918542306337007">Tryb incognito jest niedostępny</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Powiększ</translation>
+<translation id="6583087784430677195">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i przejdź do sekcji Automatyczne wypełnianie haseł.</translation>
 <translation id="6585618849026997638">Utwórz zakładkę, jeśli chcesz wrócić do interesującej Cię strony</translation>
 <translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -758,6 +764,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="797413074872316787">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="7978018860671536736">3. Kliknij Automatyczne wypełnianie haseł.</translation>
 <translation id="7982789257301363584">Sieć</translation>
+<translation id="7987685713885608670">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo.</translation>
 <translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>

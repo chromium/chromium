@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1434356225517321998">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Шифрование на устройстве</translation>
 <translation id="1449835205994625556">Скрыть пароль</translation>
 <translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Этот сайт пытается скачать профиль конфигурации.</translation>
@@ -286,7 +285,6 @@
 <translation id="3529024052484145543">Автозаполнение не используется</translation>
 <translation id="3533202363250687977">Закрыть все вкладки инкогнито</translation>
 <translation id="3533436815740441613">Новая вкладка</translation>
-<translation id="3536487890564466894">Зашифруйте свои пароли, прежде чем они будут сохранены в аккаунте Google.</translation>
 <translation id="3551320343578183772">Закрыть вкладку</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
@@ -614,6 +612,7 @@
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Увеличить</translation>
+<translation id="6583087784430677195">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Автозаполнение паролей".</translation>
 <translation id="6585618849026997638">Добавьте страницу с важными сведениями в закладки, и вы всегда сможете вернуться к ней.</translation>
 <translation id="6603393121510733479">В вашей организации режим инкогнито отключен.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>

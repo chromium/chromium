@@ -53,6 +53,10 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1247519845643687288">Aplicacións recentes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Que tempo fai?</translation>
+<translation id="1262870540683925850">De <ph name="START_TIME" /> a 
+<ph name="END_TIME" />, 
+<ph name="TIME_ZONE" />, 
+<ph name="EVENT_SUMMARY" />. Seleccionar para ver máis detalles en Google Calendar.</translation>
 <translation id="1266097335951928626">Iniciar cámara de autofotos</translation>
 <translation id="1267032506238418139">Cambio de atallos</translation>
 <translation id="1269405891096105529">O periférico non está dispoñible no modo de convidado</translation>
@@ -998,6 +1002,8 @@ Nova instalación</translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificacións}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+<ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostrar as aplicacións do estante</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="7749640678855296659">Tes o micrófono desactivado</translation>

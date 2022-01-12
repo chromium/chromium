@@ -500,6 +500,7 @@
 <translation id="3908308510347173149">Ажурирај го уредот <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Го наоѓаме најдоброто на интернет…</translation>
 <translation id="3924911262913579434">Режимот „<ph name="SAFE_BROWSING_MODE" />“ е вклучен</translation>
+<translation id="3925830358619338299">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
 <translation id="3934366560681368531">„</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">Навигација во Chrome</translation>
 <translation id="5487521232677179737">Избриши податоци</translation>
 <translation id="549025011754480756">Како да пребарувате со гласот</translation>
+<translation id="5492637351392383067">Шифрирање на уредот</translation>
 <translation id="5514904542973294328">Оневозможено од администраторот на уредов</translation>
 <translation id="5515439363601853141">Отклучете за да ја прикажете лозинката</translation>
 <translation id="5517095782334947753">Имате обележувачи, историја, лозинки и други поставки од <ph name="FROM_ACCOUNT" />.</translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">Картичката за преглед е отворена на половина екран</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8430824733382774043">Сподели само слика од екранот</translation>
+<translation id="8431730749911729314">Шифрирајте ги лозинките на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="8438566539970814960">Подобрете ги пребарувањата и прелистувањето</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Јазикот е подготвен, рестартирајте ја <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Нема достапни статии</translation>

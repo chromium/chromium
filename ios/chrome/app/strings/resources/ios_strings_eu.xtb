@@ -142,6 +142,7 @@
 <translation id="2271351792809375263">Erabili Chrome-n gordetako pasahitzak gailuko beste aplikazio batzuetan</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
 <translation id="2286505070150039482">Nabarmendutako testua</translation>
+<translation id="2299218006564889602">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea atalean gorde aurretik.</translation>
 <translation id="2302742851632557585">Aldatu pasahitza webgunean</translation>
 <translation id="2316709634732130529">Erabili iradokitako pasahitza</translation>
 <translation id="2320166752086256636">Ezkutatu teklatua</translation>
@@ -502,6 +503,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="575902488528307720">Bilatu irudia</translation>
 <translation id="5781453543752460388">Gehitu Photos-en (argazkien aplikazioan)</translation>
 <translation id="5782227691023083829">Itzultzen…</translation>
+<translation id="5802829331520313983">Konfiguratu…</translation>
 <translation id="5803566855766646066">Ziur txartel berri hau baztertu nahi duzula?</translation>
 <translation id="5812974770859303494">Gehitu…</translation>
 <translation id="5816228676161003208">Honi esker, bizkorrago bilatu ahal izango dituzu gauzak ahotsaren bidez.</translation>
@@ -544,6 +546,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6066301408025741299">Sakatu bertan behera uzteko</translation>
 <translation id="60829778314739003">Onartu eta egin aurrera</translation>
 <translation id="6084848228346514841">Hautatu fitxak</translation>
+<translation id="6103540626693881831">Gailuan bertan enkriptatzea</translation>
 <translation id="6108923351542677676">Konfigurazioa abian da…</translation>
 <translation id="6119050551270742952">Web-orri hau ezkutuko moduan dago</translation>
 <translation id="6122191549521593678">Konektatu</translation>
@@ -611,6 +614,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="6524918542306337007">Ez dago erabilgarri ezkutuko modua</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Handitu</translation>
+<translation id="6583087784430677195">Aukera hori desaktibatzeko, ireki <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (ezarpenak) eta joan AutoFill Passwords (bete pasahitzak automatikoki) atalera.</translation>
 <translation id="6585618849026997638">Garrantzitsuak iruditzen zaizkizun orriak bizkor atzitu ahal izateko, gehi iezazkiezu laster-markak</translation>
 <translation id="6603393121510733479">Zure erakundeak arakatze pribatua desaktibatu du.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -762,6 +766,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="797413074872316787">Gailu guztiak sinkronizatu eta pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
 <translation id="7978018860671536736">3. Sakatu AutoFill Passwords (pasahitzak automatikoki betetzeko aukera).</translation>
 <translation id="7982789257301363584">Sarea</translation>
+<translation id="7987685713885608670">Seguruagoa izan dadin, enkriptatu pasahitzak gailuan bertan Google-ren Pasahitz-kudeatzailea atalean gorde aurretik.</translation>
 <translation id="7993619969781047893">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="800361585186029508">Idatzitako URLak Google Chrome-n irekitzen ditu.</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>

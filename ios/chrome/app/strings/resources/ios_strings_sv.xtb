@@ -60,7 +60,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1434356225517321998">Din webbläsare hanteras. <ph name="BEGIN_LINK" />Detaljer<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Kryptering på enheten</translation>
 <translation id="1449835205994625556">Dölj lösenord</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> objekt</translation>
 <translation id="149095475893949513">Den här webbplatsen försöker ladda ned en konfigurationsprofil.</translation>
@@ -95,6 +94,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1690731385917361335">Det finns inga objekt</translation>
 <translation id="1692118695553449118">Synkronisering är på</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
+<translation id="1726573592754903697">Google Lösenordshantering</translation>
 <translation id="1740468249224277719">Tryck snabbt två gånger här om du vill installera.</translation>
 <translation id="1752547299766512813">Spara lösenord</translation>
 <translation id="1753905327828125965">Mest besökta</translation>
@@ -142,6 +142,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2271351792809375263">Använd lösenorden du har sparat i Chrome i andra appar på enheten</translation>
 <translation id="2273327106802955778">Mer-menyn</translation>
 <translation id="2286505070150039482">Markerad text</translation>
+<translation id="2299218006564889602">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering.</translation>
 <translation id="2302742851632557585">Ändra lösenordet på webbplatsen</translation>
 <translation id="2316709634732130529">Använd det föreslagna lösenordet</translation>
 <translation id="2320166752086256636">Dölj tangentbordet</translation>
@@ -285,7 +286,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3529024052484145543">Inte säkert</translation>
 <translation id="3533202363250687977">Stäng alla inkognitoflikar</translation>
 <translation id="3533436815740441613">Ny flik</translation>
-<translation id="3536487890564466894">Kryptera dina lösenord innan de sparas i Google-kontot.</translation>
 <translation id="3551320343578183772">Stäng flik</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
@@ -546,6 +546,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
 <translation id="60829778314739003">Godkänn och fortsätt</translation>
 <translation id="6084848228346514841">Välj flikar</translation>
+<translation id="6103540626693881831">Kryptering på enheten</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6119050551270742952">Webbsidan är i inkognitoläge</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -563,6 +564,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6219688215832490856">Översätt aldrig</translation>
 <translation id="6223816392543092032">Använd bokmärken, historik och andra inställningar på alla dina enheter.</translation>
 <translation id="6232329973559504466">Inkognitosökning</translation>
+<translation id="6232736989810857397">Detta gör att du enkelt kan skapa kalenderhändelser med Google Lens.</translation>
 <translation id="6254066287920239840">Öppna länkar i appen i stället för i webbläsaren.</translation>
 <translation id="6255097610484507482">Redigera kreditkort</translation>
 <translation id="6284652193729350524">Erbjud översättning från <ph name="LANGUAGE" /></translation>
@@ -612,6 +614,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zooma in</translation>
+<translation id="6583087784430677195">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Autofyll lösenord.</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -763,6 +766,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="797413074872316787">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter.</translation>
 <translation id="7978018860671536736">3. Tryck på Autofyll lösenord</translation>
 <translation id="7982789257301363584">Nätverk</translation>
+<translation id="7987685713885608670">Öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering</translation>
 <translation id="7993619969781047893">Funktioner kan sluta att fungera på vissa webbplatser</translation>
 <translation id="800361585186029508">Öppnar de angivna webbadresserna i Google Chrome.</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>

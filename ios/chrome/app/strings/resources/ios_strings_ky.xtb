@@ -60,7 +60,6 @@
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1434356225517321998">Серепчиңиз башкарылып жатат. <ph name="BEGIN_LINK" />Чоо-жайы<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Түзмөктө шифрлөө</translation>
 <translation id="1449835205994625556">Сырсөздү жашыруу</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> нерсе</translation>
 <translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
@@ -143,6 +142,7 @@
 <translation id="2271351792809375263">Chrome'го сактаган сырсөздөрдү түзмөгүңүздөгү башка колдонмолордо пайдаланыңыз</translation>
 <translation id="2273327106802955778">"Дагы" менюсу</translation>
 <translation id="2286505070150039482">Бөлүнүп көрсөтүлгөн текст</translation>
+<translation id="2299218006564889602">Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрүңүз түзмөгүңүздө шифрленет.</translation>
 <translation id="2302742851632557585">Вебсайттагы сырсөзүңүздү өзгөртүңүз</translation>
 <translation id="2316709634732130529">Сунушталган сырсөздү колдонуу</translation>
 <translation id="2320166752086256636">Баскычтопту жашыруу</translation>
@@ -286,7 +286,6 @@
 <translation id="3529024052484145543">Кооптуу</translation>
 <translation id="3533202363250687977">Бардык жашыруун өтмөктөрдү жабуу</translation>
 <translation id="3533436815740441613">Жаңы өтмөк</translation>
-<translation id="3536487890564466894">Google аккаунтуңузга сактаардан мурда сырсөздөрүңүздү шифрлеңиз.</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
@@ -547,6 +546,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6066301408025741299">Жокко чыгаруу үчүн таптаңыз.</translation>
 <translation id="60829778314739003">Кабыл алуу жана улантуу</translation>
 <translation id="6084848228346514841">Өтмөктөрдү тандоо</translation>
+<translation id="6103540626693881831">Түзмөктө шифрлөө</translation>
 <translation id="6108923351542677676">Орнотулуп жатат…</translation>
 <translation id="6119050551270742952">Учурдагы веб-баракча Жашыруун режимде</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -614,6 +614,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6524918542306337007">Жашыруун режим жеткиликсиз</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Чоңойтуу</translation>
+<translation id="6583087784430677195">Өчүрүү үчүн <ph name="BEGIN_LINK" />Жөндөөлөрдү<ph name="END_LINK" /> ачып, Сырсөздөрдү автотолтурууга өтүңүз.</translation>
 <translation id="6585618849026997638">Маанилүү барактарга кайра кайтып келүү үчүн кыстармаларды кошуп коюңуз</translation>
 <translation id="6603393121510733479">Уюмуңуз жекече серептөөнү өчүрүп койду.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="797413074872316787">Бардык түзмөктөрүңүздө шайкештирүү жана жекечелештирүү үчүн шайкештирүүнү иштетиңиз.</translation>
 <translation id="7978018860671536736">3. Сырсөздөрдү автотолтурууну таптап коюңуз</translation>
 <translation id="7982789257301363584">Тармак</translation>
+<translation id="7987685713885608670">Кошумча коопсуздук үчүн Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрдү түзмөгүңүздө шифрлеңиз.</translation>
 <translation id="7993619969781047893">Функциялар айрым сайттарда туура иштебеши мүмкүн</translation>
 <translation id="800361585186029508">URL'дерди Google Chrome'до ачат.</translation>
 <translation id="802154636333426148">Жүктөлүп алынбай калды</translation>

@@ -65,6 +65,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1782199038061388045">translation</translation>
 <translation id="1792647875738159689">Cancelling scanning</translation>
+<translation id="1807246157184219062">Light</translation>
 <translation id="1851218745569890714">Video conferencing</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
@@ -103,6 +104,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send feedback report</translation>
 <translation id="2407209115954268704">SIM lock status</translation>
+<translation id="2414886740292270097">Dark</translation>
 <translation id="2418150275289244458">Open in settings</translation>
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
@@ -374,6 +376,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6223752125779001553">No scanners available</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6243280677745499710">Currently set</translation>
+<translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="6325525973963619867">Failed</translation>

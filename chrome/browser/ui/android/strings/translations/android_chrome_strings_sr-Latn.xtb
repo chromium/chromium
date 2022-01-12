@@ -500,6 +500,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3908308510347173149">Ažurirajte <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Traže se najbolji podaci sa veba…</translation>
 <translation id="3924911262913579434">Režim <ph name="SAFE_BROWSING_MODE" /> je uključen</translation>
+<translation id="3925830358619338299">Lozinka se šifruje na uređaju pre nego što se sačuva u Google menadžeru lozinki</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombinuj podatke</translation>
 <translation id="3934366560681368531">„</translation>
@@ -741,7 +742,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5271967389191913893">Uređaj ne može da otvori sadržaj za preuzimanje.</translation>
 <translation id="5292796745632149097">Pošaljite na</translation>
 <translation id="5304593522240415983">Ovo polje ne sme da bude prazno</translation>
-<translation id="5308380583665731573">Povezivanje</translation>
+<translation id="5308380583665731573">Poveži</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
 <translation id="5324858694974489420">Roditeljska podešavanja</translation>
@@ -772,6 +773,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5483197086164197190">Krećite se po Chrome-u</translation>
 <translation id="5487521232677179737">Obriši podatke</translation>
 <translation id="549025011754480756">Kako da pretražite pomoću glasa</translation>
+<translation id="5492637351392383067">Šifrovanje na uređaju</translation>
 <translation id="5514904542973294328">Onemogućio je administrator ovog uređaja</translation>
 <translation id="5515439363601853141">Otključajte da biste pregledali lozinku</translation>
 <translation id="5517095782334947753">Imate obeleživače, lozinke i ostala podešavanja iz <ph name="FROM_ACCOUNT" /> naloga.</translation>
@@ -1321,6 +1323,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8427875596167638501">Kartica za pregled je poluotvorena</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8430824733382774043">Delite samo snimak ekrana</translation>
+<translation id="8431730749911729314">Šifrujte lozinke na uređaju pre nego što se sačuvaju u Google menadžer lozinki</translation>
 <translation id="8438566539970814960">Poboljšaj pretrage i pregledanje</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – Jezik je spreman, restartujte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="8442258441309440798">Nije dostupna nijedna vest</translation>

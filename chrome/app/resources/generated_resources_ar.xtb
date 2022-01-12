@@ -3215,6 +3215,7 @@
 <translation id="4275830172053184480">إعادة تشغيل جهازك</translation>
 <translation id="4278390842282768270">منح الإذن</translation>
 <translation id="4279129444466079448">‏يمكنك تثبيت <ph name="PROFILE_LIMIT" /> ملف شخصي لبطاقة eSIM كحد أقصى على هذا الجهاز. لإضافة ملف شخصي آخر، عليك أولاً إزالة أحد الملفات الشخصية الحالية.</translation>
+<translation id="4280325816108262082">سيتم قطع اتصال الجهاز بالبلوتوث تلقائيًا عند إيقاف تشغيله أو عدم استخدامه.</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4282196459431406533">‏Smart Lock قيد التفعيل</translation>
 <translation id="4284755288573763878">هل تريد إيقاف ميزة الأمان المُحسّن؟</translation>
@@ -4334,6 +4335,7 @@
 <translation id="5490721031479690399">قطع الاتصال بجهاز عبر بلوتوث</translation>
 <translation id="5490798133083738649">‏السماح لنظام التشغيل Linux بالوصول إلى الميكروفون</translation>
 <translation id="549211519852037402">أبيض وبيج</translation>
+<translation id="5492637351392383067">التشفير على الجهاز فقط</translation>
 <translation id="5493792505296048976">الشاشة قيد التفعيل</translation>
 <translation id="5494016731375030300">علامات التبويب المغلقة مؤخرًا</translation>
 <translation id="5494362494988149300">فتح عند &amp;اكتمال التنزيل</translation>
@@ -6532,6 +6534,7 @@
 <translation id="7775694664330414886">تم نقل علامة التبويب إلى مجموعة لم تتم تسميتها وتحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="7776156998370251340">سيتمكّن <ph name="ORIGIN" /> من الاطّلاع على الملفات في <ph name="FOLDERNAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
 <translation id="7776701556330691704">لم يتم العثور على الإعدادات الصوتية في ميزة "تحويل النص إلى كلام"</translation>
+<translation id="7777284276915203144">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google</translation>
 <translation id="7781335840981796660">ستتم إزالة جميع حسابات المستخدمين والبيانات المحلية.</translation>
 <translation id="7782102568078991263">‏ليس هناك المزيد من الاقتراحات من Google</translation>
 <translation id="7782717250816686129">يمكنك تخزين البيانات الثابتة في شاشة تسجيل الدخول وإدخال بيانات الاعتماد في الجلسة.</translation>
@@ -7185,6 +7188,7 @@
 <translation id="8428634594422941299">حسنًا</translation>
 <translation id="84297032718407999">سيتم تسجيل خروجك خلال <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8431190899827883166">عرض النقرات</translation>
+<translation id="8431730749911729314">‏يمكنك تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google</translation>
 <translation id="8434480141477525001">‏منفذ تصحيح أخطاء NaCl</translation>
 <translation id="8435395510592618362">إثبات هويتك من خلال <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">الأمريكية</translation>
@@ -7978,6 +7982,7 @@
 <translation id="947667444780368238">يتعذّر على <ph name="ORIGIN" /> فتح الملفات في هذا المجلّد لأنّه يحتوي على ملفات النظام.</translation>
 <translation id="950307215746360464">دليل عملية الإعداد</translation>
 <translation id="951991426597076286">رفض</translation>
+<translation id="952471655966876828">سيتصل الجهاز بالبلوتوث تلقائيًا عند تشغيله أو استخدامه.</translation>
 <translation id="953434574221655299">المواقع الإلكترونية التي يُسمح لها بمعرفة متى تستخدم جهازك بشكل نشط</translation>
 <translation id="956500788634395331">تمت حمايتك من إضافات يُحتمل أن تكون ضارة.</translation>
 <translation id="957960681186851048">حاول هذا الموقع تنزيل عدة ملفات تلقائيًا</translation>

@@ -60,7 +60,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1434356225517321998">Penyemak imbas anda diurus. <ph name="BEGIN_LINK" />Butiran<ph name="END_LINK" /></translation>
-<translation id="1442838519825026149">Penyulitan pada Peranti</translation>
 <translation id="1449835205994625556">Sembunyikan Kata Laluan</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> item</translation>
 <translation id="149095475893949513">Laman web ini cuba memuat turun profil konfigurasi.</translation>
@@ -95,6 +94,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1690731385917361335">Tiada item</translation>
 <translation id="1692118695553449118">Penyegerakan dihidupkan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
+<translation id="1726573592754903697">Pengurus Kata Laluan Google</translation>
 <translation id="1740468249224277719">Ketik dua kali untuk memasang.</translation>
 <translation id="1752547299766512813">Simpan K/Laluan</translation>
 <translation id="1753905327828125965">Paling Kerap Dilawati</translation>
@@ -285,7 +285,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3529024052484145543">Tidak selamat</translation>
 <translation id="3533202363250687977">Tutup Semua Tab Inkognito</translation>
 <translation id="3533436815740441613">Tab Baharu</translation>
-<translation id="3536487890564466894">Sulitkan kata laluan anda sebelum kata laluan itu disimpan ke Google Account anda.</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
 <translation id="3581564640715911333">Tawaran untuk menterjemah halaman dalam bahasa lain</translation>
 <translation id="3588820906588687999">Buka Imej dalam Tab Baharu</translation>
@@ -563,6 +562,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6219688215832490856">Jangan Sekali-kali Terjemah</translation>
 <translation id="6223816392543092032">Dapatkan penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada semua peranti anda.</translation>
 <translation id="6232329973559504466">Carian Inkognito</translation>
+<translation id="6232736989810857397">Kebenaran ini membolehkan anda membuat acara kalendar dengan mudah menggunakan Google Lens.</translation>
 <translation id="6254066287920239840">Buka pautan dalam Apl dan bukannya penyemak imbas.</translation>
 <translation id="6255097610484507482">Edit Kad Kredit</translation>
 <translation id="6284652193729350524">Tawarkan untuk menterjemah <ph name="LANGUAGE" /></translation>
@@ -612,6 +612,7 @@ Cuba gunakan kata laluan yang unik untuk setiap laman.</translation>
 <translation id="6524918542306337007">Mod Inkognito Tidak Tersedia</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zum Masuk</translation>
+<translation id="6583087784430677195">Untuk mematikan, buka <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /> dan pergi ke Kata Laluan AutoLengkap.</translation>
 <translation id="6585618849026997638">Anda boleh kembali ke halaman yang penting bagi anda dengan menambah penanda halaman</translation>
 <translation id="6603393121510733479">Organisasi anda telah mematikan penyemakan imbas peribadi.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>

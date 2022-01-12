@@ -500,6 +500,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3908308510347173149">Päivitä <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Haetaan verkon parasta sisältöä…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on päällä</translation>
+<translation id="3925830358619338299">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Yhdistä tiedot</translation>
 <translation id="3934366560681368531">"</translation>
@@ -772,6 +773,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5483197086164197190">Chromessa siirtyminen</translation>
 <translation id="5487521232677179737">Poista tiedot</translation>
 <translation id="549025011754480756">Miten puhehakua käytetään</translation>
+<translation id="5492637351392383067">Laitteen salaus</translation>
 <translation id="5514904542973294328">Laitteen järjestelmänvalvojan estämä</translation>
 <translation id="5515439363601853141">Avaa lukitus nähdäksesi salasanan</translation>
 <translation id="5517095782334947753">Tililläsi <ph name="FROM_ACCOUNT" /> on kirjanmerkkejä, salasanoja ja muita asetuksia.</translation>
@@ -1321,6 +1323,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8427875596167638501">Esikatseluvälilehti on puoliksi auki</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8430824733382774043">Jaa vain kuvakaappaus</translation>
+<translation id="8431730749911729314">Salaa salasanat laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon</translation>
 <translation id="8438566539970814960">Paranna hakuja ja selausta</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – Kieli valmis, käynnistä <ph name="APP_NAME" /> uudelleen.</translation>
 <translation id="8442258441309440798">Ei tarinoita saatavilla</translation>

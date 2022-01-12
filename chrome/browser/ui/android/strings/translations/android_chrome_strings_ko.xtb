@@ -500,6 +500,7 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> 업데이트</translation>
 <translation id="3912508018559818924">웹에서 최상의 결과를 찾는 중…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> 사용 중</translation>
+<translation id="3925830358619338299">비밀번호가 Google 비밀번호 관리자에 저장되기 전에 기기에서 암호화됩니다</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">내 데이터 결합하기</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">Chrome 탐색하기</translation>
 <translation id="5487521232677179737">인터넷 사용 기록 삭제</translation>
 <translation id="549025011754480756">음성으로 검색하는 방법</translation>
+<translation id="5492637351392383067">기기 내 암호화</translation>
 <translation id="5514904542973294328">기기 관리자가 사용 중지함</translation>
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">미리보기 탭이 절반 높이로 열림</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8430824733382774043">스크린샷만 공유</translation>
+<translation id="8431730749911729314">Google 비밀번호 관리자에 저장하기 전에 기기의 비밀번호를 암호화합니다</translation>
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
 <translation id="8439974325294139057"><ph name="LANG" />: 언어가 준비되었습니다. <ph name="APP_NAME" /> 앱을 다시 시작하세요.</translation>
 <translation id="8442258441309440798">사용할 수 있는 스토리 없음</translation>

@@ -3210,6 +3210,7 @@
 <translation id="4275830172053184480">તમારું ઉપકરણ પુનઃપ્રારંભ કરો</translation>
 <translation id="4278390842282768270">મંજૂર</translation>
 <translation id="4279129444466079448">તમે આ ડિવાઇસ પર વધુમાં વધુ <ph name="PROFILE_LIMIT" /> ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરી શકો છો. અન્ય કોઈ પ્રોફાઇલ ઉમેરવા માટે, પહેલાં હાલની પ્રોફાઇલ કાઢી નાખો.</translation>
+<translation id="4280325816108262082">ડિવાઇસ જ્યારે બંધ કરવામાં આવે અથવા ઉપયોગમાં ન હોય, ત્યારે તે ઑટોમૅટિક રીતે ડિસ્કનેક્ટ થઈ જશે</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
 <translation id="4282196459431406533">Smart Lock ચાલુ કરેલું છે</translation>
 <translation id="4284755288573763878">શું વધારેલી સુરક્ષાની સુવિધા બંધ કરીએ?</translation>
@@ -4329,6 +4330,7 @@
 <translation id="5490721031479690399">બ્લૂટૂથ ડિવાઇસ ડિસકનેક્ટ કરો</translation>
 <translation id="5490798133083738649">Linuxને તમારા માઇક્રોફોનનો ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="549211519852037402">બેઝ રંગ અને સફેદ</translation>
+<translation id="5492637351392383067">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
 <translation id="5493792505296048976">સ્ક્રીન ચાલુ છે</translation>
 <translation id="5494016731375030300">તાજેતરમાં બંધ કરેલી ટૅબ</translation>
 <translation id="5494362494988149300">&amp;પૂર્ણ થાય ત્યારે ખોલો</translation>
@@ -6528,6 +6530,7 @@ USB ડિવાઇસ</translation>
 <translation id="7775694664330414886">નામ વિનાના ગ્રૂપ - <ph name="GROUP_CONTENTS" />માં ટૅબને ખસેડવામાં આવી</translation>
 <translation id="7776156998370251340">આ સાઇટ માટે, જ્યાં સુધી તમે બધી ટૅબ બંધ નહીં કરો ત્યાં સુધી <ph name="ORIGIN" />, <ph name="FOLDERNAME" />માંની બધી ફાઇલો જોઈ શકશે</translation>
 <translation id="7776701556330691704">કોઈ વૉઇસ મળ્યાં નથી</translation>
+<translation id="7777284276915203144">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજર પર સાચવવામાં આવે તે પહેલાં તેમને તમારા ડિવાઇસ પર એન્ક્રિપ્ટ કરવામાં આવે છે</translation>
 <translation id="7781335840981796660">બધા વપરાશકર્તા એકાઉન્ટ્સ અને સ્થાનિક ડેટા દૂર કરવામાં આવશે.</translation>
 <translation id="7782102568078991263">Google દ્વારા કોઈ વધુ સૂચનો</translation>
 <translation id="7782717250816686129">નિરંતર ડેટાને લૉગ ઇન સ્ક્રીન પર સ્ટોર કરો અને સત્રમાં લૉગ ઇન વિગતો ભરો.</translation>
@@ -7174,6 +7177,7 @@ USB ડિવાઇસ</translation>
 <translation id="8428634594422941299">સમજાઈ ગયું</translation>
 <translation id="84297032718407999">તમે <ph name="LOGOUT_TIME_LEFT" />માં સાઇન આઉટ થઈ જશો</translation>
 <translation id="8431190899827883166">ટૅપ બતાવો</translation>
+<translation id="8431730749911729314">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજર પર સાચવવામાં આવે તે પહેલાં તેમને તમારા ડિવાઇસ પર એન્ક્રિપ્ટ કરો</translation>
 <translation id="8434480141477525001">NaCl ડિબગ પોર્ટ</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" />ને તમારી ઓળખની ચકાસણી કરાવો</translation>
 <translation id="8437209419043462667">અમેરિકા</translation>
@@ -7964,6 +7968,7 @@ USB ડિવાઇસ</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> આ ફોલ્ડરમાં ફાઇલો ખોલી શકતું નથી, કારણ કે તેમાં સિસ્ટમ ફાઇલો શામેલ છે</translation>
 <translation id="950307215746360464">સેટઅપની માર્ગદર્શિકા</translation>
 <translation id="951991426597076286">નકારો</translation>
+<translation id="952471655966876828">ડિવાઇસ જ્યારે ચાલુ કરવામાં આવે અથવા ઉપયોગમાં હોય, ત્યારે તે ઑટોમૅટિક રીતે કનેક્ટ થઈ જશે</translation>
 <translation id="953434574221655299">તમે સક્રિય રૂપે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણવાની મંજૂરી છે</translation>
 <translation id="956500788634395331">તમને નુકસાન પહોંચાડવાની સંભાવના હોય એવા એક્સ્ટેંશનથી સુરક્ષિત કર્યા છે</translation>
 <translation id="957960681186851048">આ સાઇટે એકથી વધુ ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનો પ્રયાસ કર્યો</translation>

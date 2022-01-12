@@ -53,6 +53,7 @@
 <translation id="1247519845643687288">最近用过的应用</translation>
 <translation id="1252999807265626933">正在通过“<ph name="POWER_SOURCE" />”充电</translation>
 <translation id="1255033239764210633">天气怎么样？</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> 至<ph name="END_TIME" />，<ph name="TIME_ZONE" />，<ph name="EVENT_SUMMARY" />。选择相应条目即可在 Google 日历中了解详情。</translation>
 <translation id="1266097335951928626">启用自拍摄像头</translation>
 <translation id="1267032506238418139">该快捷键发生了变化</translation>
 <translation id="1269405891096105529">在访客模式下，无法使用外围设备</translation>
@@ -997,6 +998,7 @@
 <translation id="7720410380936703141">重试</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 条通知}other{# 条通知}}</translation>
 <translation id="7724603315864178912">剪切</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">显示任务栏中的应用</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749640678855296659">您的麦克风目前处于关闭状态</translation>
