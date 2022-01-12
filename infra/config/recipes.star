@@ -152,6 +152,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_3pp",
+    use_python3 = True,
 )
 
 build_recipe(
