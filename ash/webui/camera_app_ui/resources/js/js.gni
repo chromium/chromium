@@ -68,7 +68,7 @@ compile_js_files = [
   "untrusted_script_loader.ts",
   "untrusted_video_processor_helper.ts",
   "util.ts",
-  "views/camera_intent.js",
+  "views/camera_intent.ts",
   "views/camera.ts",
   "views/camera/layout.ts",
   "views/camera/mode/index.ts",
