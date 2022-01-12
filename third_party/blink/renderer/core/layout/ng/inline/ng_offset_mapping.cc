@@ -276,11 +276,11 @@ NGOffsetMapping::NGOffsetMapping(UnitVector&& units,
         << unit.TextContentEnd() << "<=" << text.length();
     unit.AssertValid();
   }
-  for (const auto& pair : ranges) {
+  for (const auto& pair : ranges_) {
     SECURITY_DCHECK(pair.value.first < units_.size())
         << pair.value.first << "<" << units_.size();
-    SECURITY_DCHECK(pair.value.second < units_.size())
-        << pair.value.second << "<" << units_.size();
+    SECURITY_DCHECK(pair.value.second <= units_.size())
+        << pair.value.second << "<=" << units_.size();
   }
 #endif
 }
