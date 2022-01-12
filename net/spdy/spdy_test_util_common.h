@@ -152,7 +152,11 @@ struct SpdySessionDependencies {
   explicit SpdySessionDependencies(
       std::unique_ptr<ProxyResolutionService> proxy_resolution_service);
 
+  SpdySessionDependencies(SpdySessionDependencies&&);
+
   ~SpdySessionDependencies();
+
+  SpdySessionDependencies& operator=(SpdySessionDependencies&&);
 
   HostResolver* GetHostResolver() {
     return alternate_host_resolver ? alternate_host_resolver.get()

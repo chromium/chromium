@@ -328,7 +328,13 @@ SpdySessionDependencies::SpdySessionDependencies(
       kDefaultInitialWindowSize;
 }
 
+SpdySessionDependencies::SpdySessionDependencies(SpdySessionDependencies&&) =
+    default;
+
 SpdySessionDependencies::~SpdySessionDependencies() = default;
+
+SpdySessionDependencies& SpdySessionDependencies::operator=(
+    SpdySessionDependencies&&) = default;
 
 // static
 std::unique_ptr<HttpNetworkSession> SpdySessionDependencies::SpdyCreateSession(
