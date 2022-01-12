@@ -817,7 +817,8 @@ DEFINE_TEST_CLIENT(SendIsolatedInvitationClient) {
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
 }
 
-TEST_F(InvitationTest, SendMultipleIsolatedInvitations) {
+// Temporary removed support for reinvitation for isolated connections.
+TEST_F(InvitationTest, DISABLED_SendMultipleIsolatedInvitations) {
   // We send a secondary transport to the client process so we can send a second
   // isolated invitation.
   base::CommandLine command_line =

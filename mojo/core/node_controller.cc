@@ -573,8 +573,7 @@ scoped_refptr<NodeChannel> NodeController::GetBrokerChannel() {
 
 void NodeController::AddPeer(const ports::NodeName& name,
                              scoped_refptr<NodeChannel> channel,
-                             bool start_channel,
-                             bool allow_name_reuse) {
+                             bool start_channel) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   DCHECK(name != ports::kInvalidNodeName);
@@ -593,7 +592,7 @@ void NodeController::AddPeer(const ports::NodeName& name,
       return;
     }
 
-    if (dropped_peers_.Contains(name) && !allow_name_reuse) {
+    if (dropped_peers_.Contains(name)) {
       LOG(ERROR) << "Trying to re-add dropped peer " << name;
       return;
     }
@@ -1322,11 +1321,16 @@ void NodeController::OnAcceptPeer(const ports::NodeName& from_node,
   if (name_ != peer_name) {
     // It's possible (e.g. in tests) that we may "connect" to ourself, in which
     // case we skip this |AddPeer()| call and go straight to merging ports.
-    // Note that we explicitly drop any prior connection to the same peer so
-    // that new isolated connections can replace old ones.
-    DropPeer(peer_name, nullptr);
-    AddPeer(peer_name, channel, false /* start_channel */,
-            true /* allow_name_reuse */);
+    {
+      base::AutoLock lock(peers_lock_);
+      if (peers_.find(peer_name) != peers_.end()) {
+        LOG(ERROR) << "Duplicate isolated connection " << peer_name;
+        DropPeer(from_node, nullptr);
+        return;
+      }
+    }
+
+    AddPeer(peer_name, channel, false /* start_channel */);
     DVLOG(1) << "Node " << name_ << " accepted peer " << peer_name;
   }
 

@@ -203,8 +203,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   void AddPeer(const ports::NodeName& name,
                scoped_refptr<NodeChannel> channel,
-               bool start_channel,
-               bool allow_name_reuse = false);
+               bool start_channel);
   void DropPeer(const ports::NodeName& name, NodeChannel* channel);
   void SendPeerEvent(const ports::NodeName& name, ports::ScopedEvent event);
   void DropAllPeers();

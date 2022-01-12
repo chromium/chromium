@@ -478,7 +478,11 @@ base::CommandLine CloudPrintProxyPolicyStartupTest::MakeCmdLine(
   return cl;
 }
 
-TEST_F(CloudPrintProxyPolicyStartupTest, StartAndShutdown) {
+// Disabling this test since it creates multiple isolated mojo connections
+// which is temporarily removed feature.
+// The production code should not be doing this and the whole code is scheduled
+// for removal. (See crbug.com/1162164)
+TEST_F(CloudPrintProxyPolicyStartupTest, DISABLED_StartAndShutdown) {
   mojo::core::Init();
   mojo::core::ScopedIPCSupport ipc_support(
       content::GetIOThreadTaskRunner({}),
