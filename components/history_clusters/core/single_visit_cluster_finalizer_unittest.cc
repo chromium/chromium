@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +56,7 @@ TEST_F(SingleVisitClusterFinalizerTest,
 }
 
 TEST_F(SingleVisitClusterFinalizerTest, MultipleVisits) {
+  base::HistogramTester histogram_tester;
   history::ClusterVisit visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/")));
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
@@ -64,10 +66,13 @@ TEST_F(SingleVisitClusterFinalizerTest, MultipleVisits) {
   cluster.visits = {visit, visit2};
   FinalizeCluster(cluster);
   EXPECT_TRUE(cluster.should_show_on_prominent_ui_surfaces);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.WasClusterFiltered.SingleVisit", false, 1);
 }
 
 TEST_F(SingleVisitClusterFinalizerTest,
        MultipleVisitsButDuplicatesOfCanonical) {
+  base::HistogramTester histogram_tester;
   history::ClusterVisit visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/")));
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
@@ -78,6 +83,8 @@ TEST_F(SingleVisitClusterFinalizerTest,
   cluster.visits = {visit, visit2};
   FinalizeCluster(cluster);
   EXPECT_FALSE(cluster.should_show_on_prominent_ui_surfaces);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.WasClusterFiltered.SingleVisit", true, 1);
 }
 
 }  // namespace

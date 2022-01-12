@@ -9757,6 +9757,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Expired"/>
 </enum>
 
+<enum name="BooleanFiltered">
+  <int value="0" label="Not Filtered"/>
+  <int value="1" label="Filtered"/>
+</enum>
+
 <enum name="BooleanFocused">
   <int value="0" label="Unfocused"/>
   <int value="1" label="Focused"/>
