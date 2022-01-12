@@ -24,7 +24,7 @@
 #include <windows.h>
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#if defined(OS_POSIX) && !defined(OS_NACL)
 #include "base/message_loop/message_pump_libevent.h"
 #endif
 
@@ -79,7 +79,7 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
 
   void AddPostDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
-#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#if defined(OS_POSIX) && !defined(OS_NACL)
     if ((GetParam() == MessagePumpType::UI &&
          std::is_same<MessagePumpForUI, MessagePumpLibevent>::value) ||
         (GetParam() == MessagePumpType::IO &&
@@ -89,7 +89,7 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
       EXPECT_CALL(delegate, OnBeginWorkItem);
       EXPECT_CALL(delegate, OnEndWorkItem);
     }
-#endif  // defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#endif  // defined(OS_POSIX) && !defined(OS_NACL)
   }
 
   std::unique_ptr<MessagePump> message_pump_;

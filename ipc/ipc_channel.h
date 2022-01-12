@@ -231,7 +231,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // deleted once the contents of the Message have been sent.
   bool Send(Message* message) override = 0;
 
-#if !defined(OS_NACL_SFI)
+#if !defined(OS_NACL)
   // Generates a channel ID that's non-predictable and unique.
   static std::string GenerateUniqueRandomChannelID();
 #endif

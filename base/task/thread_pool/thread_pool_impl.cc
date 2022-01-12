@@ -168,7 +168,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   // FileDescriptorWatcher in the scope in which tasks run.
   ServiceThread::Options service_thread_options;
   service_thread_options.message_pump_type =
-#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#if defined(OS_POSIX) && !defined(OS_NACL)
       MessagePumpType::IO;
 #else
       MessagePumpType::DEFAULT;
@@ -178,11 +178,11 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   if (g_synchronous_thread_start_for_testing)
     service_thread_.WaitUntilThreadStarted();
 
-#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#if defined(OS_POSIX) && !defined(OS_NACL)
   // Needs to happen after starting the service thread to get its
   // task_runner().
   task_tracker_->set_io_thread_task_runner(service_thread_.task_runner());
-#endif  // defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#endif  // defined(OS_POSIX) && !defined(OS_NACL)
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
   UpdateCanRunPolicy();

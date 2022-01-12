@@ -358,7 +358,7 @@ RunContentProcess(ContentMainParams params,
     // Note #2: some platforms can directly allocated shared memory in a
     // sandboxed process. The defines below must be in sync with the
     // implementation of mojo::NodeController::CreateSharedBuffer().
-#if !defined(OS_MAC) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !defined(OS_MAC) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
     if (sandbox::policy::IsUnsandboxedSandboxType(
             sandbox::policy::SandboxTypeFromCommandLine(
                 *base::CommandLine::ForCurrentProcess()))) {
@@ -375,7 +375,7 @@ RunContentProcess(ContentMainParams params,
       // allocate shared memory.
       mojo::SharedMemoryUtils::InstallBaseHooks();
     }
-#endif  // !defined(OS_MAC) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#endif  // !defined(OS_MAC) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
 
 #if defined(OS_WIN)
     // Route stdio to parent console (if any) or create one.

@@ -266,7 +266,7 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
 
   CurrentIOThread* operator->() { return this; }
 
-#if !defined(OS_NACL_SFI)
+#if !defined(OS_NACL)
 
 #if defined(OS_WIN)
   // Please see MessagePumpWin for definitions of these methods.
@@ -298,7 +298,7 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
                      MessagePumpForIO::ZxHandleWatcher* delegate);
 #endif  // defined(OS_FUCHSIA)
 
-#endif  // !defined(OS_NACL_SFI)
+#endif  // !defined(OS_NACL)
 
  private:
   explicit CurrentIOThread(

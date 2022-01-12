@@ -251,7 +251,7 @@ scoped_refptr<NodeChannel> NodeChannel::Create(
     Channel::HandlePolicy channel_handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     const ProcessErrorCallback& process_error_callback) {
-#if defined(OS_NACL_SFI)
+#if defined(OS_NACL)
   LOG(FATAL) << "Multi-process not yet supported on NaCl-SFI";
   return nullptr;
 #else
@@ -540,7 +540,7 @@ NodeChannel::NodeChannel(
     : base::RefCountedDeleteOnSequence<NodeChannel>(io_task_runner),
       delegate_(delegate),
       process_error_callback_(process_error_callback)
-#if !defined(OS_NACL_SFI)
+#if !defined(OS_NACL)
       ,
       channel_(Channel::Create(this,
                                std::move(connection_params),

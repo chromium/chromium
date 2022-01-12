@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ipc/ipc_channel_factory.h"
+
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 
@@ -26,7 +28,7 @@ class PlatformChannelFactory : public ChannelFactory {
   PlatformChannelFactory& operator=(const PlatformChannelFactory&) = delete;
 
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
-#if defined(OS_NACL_SFI)
+#if defined(OS_NACL)
     return Channel::Create(handle_, mode_, listener);
 #else
     DCHECK(handle_.is_mojo_channel_handle());

@@ -204,7 +204,7 @@ MessagePumpForIO* CurrentIOThread::GetMessagePumpForIO() const {
   return static_cast<MessagePumpForIO*>(current_->GetMessagePump());
 }
 
-#if !defined(OS_NACL_SFI)
+#if !defined(OS_NACL)
 
 #if defined(OS_WIN)
 HRESULT CurrentIOThread::RegisterIOHandler(
@@ -244,7 +244,7 @@ bool CurrentIOThread::WatchMachReceivePort(
 }
 #endif
 
-#endif  // !defined(OS_NACL_SFI)
+#endif  // !defined(OS_NACL)
 
 #if defined(OS_FUCHSIA)
 // Additional watch API for native platform resources.

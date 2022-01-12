@@ -232,7 +232,7 @@ void NodeController::AcceptBrokerClientInvitation(
     ConnectionParams connection_params) {
   absl::optional<PlatformHandle> broker_host_handle;
   DCHECK(!GetConfiguration().is_broker_process);
-#if !defined(OS_APPLE) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
   if (!connection_params.is_async()) {
     // Use the bootstrap channel for the broker and receive the node's channel
     // synchronously as the first message from the broker.
@@ -342,7 +342,7 @@ int NodeController::MergeLocalPorts(const ports::PortRef& port0,
 
 base::WritableSharedMemoryRegion NodeController::CreateSharedBuffer(
     size_t num_bytes) {
-#if !defined(OS_APPLE) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
   // Shared buffer creation failure is fatal, so always use the broker when we
   // have one; unless of course the embedder forces us not to.
   if (!GetConfiguration().force_direct_shared_memory_allocation && broker_)

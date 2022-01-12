@@ -44,9 +44,9 @@
 #include "base/mac/scoped_mach_port.h"
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#if defined(OS_POSIX) && !defined(OS_NACL)
 #include <sys/socket.h>
-#elif defined(OS_NACL_SFI)
+#elif defined(OS_NACL)
 #include "native_client/src/public/imc_syscalls.h"
 #endif
 
@@ -143,7 +143,7 @@ bool IsTargetDescriptorUsed(const base::FileHandleMappingVector& mapping,
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
   int fds[2];
-#if defined(OS_NACL_SFI)
+#if defined(OS_NACL)
   PCHECK(imc_socketpair(fds) == 0);
 #else
   PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
@@ -162,7 +162,7 @@ void CreateChannel(PlatformHandle* local_endpoint,
   PCHECK(setsockopt(fds[1], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
                     sizeof(no_sigpipe)) == 0);
 #endif  // defined(OS_APPLE)
-#endif  // defined(OS_NACL_SFI)
+#endif  // defined(OS_NACL)
 
   *local_endpoint = PlatformHandle(base::ScopedFD(fds[0]));
   *remote_endpoint = PlatformHandle(base::ScopedFD(fds[1]));

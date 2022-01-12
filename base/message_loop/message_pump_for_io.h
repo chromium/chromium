@@ -16,7 +16,7 @@
 #include "base/message_loop/message_pump_io_ios.h"
 #elif defined(OS_MAC)
 #include "base/message_loop/message_pump_kqueue.h"
-#elif defined(OS_NACL_SFI)
+#elif defined(OS_NACL)
 #include "base/message_loop/message_pump_default.h"
 #elif defined(OS_FUCHSIA)
 #include "base/message_loop/message_pump_fuchsia.h"
@@ -33,7 +33,7 @@ using MessagePumpForIO = MessagePumpForIO;
 using MessagePumpForIO = MessagePumpIOSForIO;
 #elif defined(OS_MAC)
 using MessagePumpForIO = MessagePumpKqueue;
-#elif defined(OS_NACL_SFI)
+#elif defined(OS_NACL)
 using MessagePumpForIO = MessagePumpDefault;
 #elif defined(OS_FUCHSIA)
 using MessagePumpForIO = MessagePumpFuchsia;

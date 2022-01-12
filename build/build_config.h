@@ -52,7 +52,6 @@
 #if defined(__native_client__)
 // __native_client__ must be first, so that other OS_ defines are not set.
 #define OS_NACL 1
-#define OS_NACL_SFI
 #elif defined(ANDROID)
 #define OS_ANDROID 1
 #elif defined(__APPLE__)
