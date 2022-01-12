@@ -465,5 +465,5 @@ TEST_F(SafeBrowsingServiceInitializationTest, GetURLLoaderFactory) {
   EXPECT_TRUE(safe_browsing_service->GetURLLoaderFactory());
 
   safe_browsing_service->ShutDown();
-  base::RunLoop().RunUntilIdle();
+  task_environment.RunUntilIdle();
 }
