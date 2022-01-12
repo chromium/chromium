@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -40,68 +39,6 @@
 
 namespace ash {
 namespace {
-// The base names of files and directories directly under the original profile
-// data directory that does not need to be copied nor need to remain in ash e.g.
-// cache data.
-constexpr const char* const kNoCopyPathsDeprecated[] = {kTmpDir, "Cache"};
-constexpr const char* const kNoCopyPaths[] = {
-    kTmpDir,
-    "Cache",
-    "Code Cache",
-    "crash",
-    "blob_storage",
-    "GCache",
-    "data_reduction_proxy_leveldb",
-    "previews_opt_out.db",
-    "Download Service",
-    "Network Persistent State",
-    "Reporting and NEL",
-    "TransportSecurity",
-    "optimization_guide_hint_cache_store",
-    "Site Characteristics Database",
-    "Network Action Predictor"};
-// The base names of files and directories that should remain in ash data
-// directory.
-constexpr const char* const kAshDataPathsDeprecated[]{"Downloads", "MyFiles"};
-constexpr const char* const kAshDataPaths[] = {"FullRestoreData",
-                                               "Downloads",
-                                               "MyFiles",
-                                               "arc.apps",
-                                               "crostini.icons",
-                                               "PreferredApps",
-                                               "autobrightness",
-                                               "extension_install_log",
-                                               "google-assistant-library",
-                                               "login-times",
-                                               "logout-times",
-                                               "structured_metrics",
-                                               "PrintJobDatabase",
-                                               "PPDCache",
-                                               "BudgetDatabase",
-                                               "RLZ Data",
-                                               "app_ranker.pb",
-                                               "zero_state_group_ranker.pb",
-                                               "zero_state_local_files.pb"};
-// The base names of files/dirs that are needed only by the browser part of
-// chrome i.e. data that should be moved to lacros.
-constexpr const char* const kLacrosDataPathsDeprecated[]{"Bookmarks"};
-constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
-                                               "Bookmarks",
-                                               "Cookies",
-                                               "Extension Cookies",
-                                               "Extension Rules",
-                                               "Extension State",
-                                               "Extensions",
-                                               "Local App Settings",
-                                               "Local Extension Settings",
-                                               "Managed Extension Settings",
-                                               "Sync App Settings",
-                                               "DNR Extension Rules",
-                                               "Favicons",
-                                               "History",
-                                               "Top Sites",
-                                               "Shortcuts",
-                                               "Sessions"};
 // Flag values for `switches::kForceBrowserDataMigrationForTesting`.
 const char kBrowserDataMigrationForceSkip[] = "force-skip";
 const char kBrowserDataMigrationForceMigration[] = "force-migration";
@@ -113,82 +50,14 @@ const int64_t kBuffer = (int64_t)1024 * 1024 * 1024;
 // vector<TargetItem> in TargetInfo.
 constexpr char kLacrosCategory[] = "lacros";
 constexpr char kCommonCategory[] = "common";
-
-// Enable these to fallback to an older version of paths lists.
-const base::Feature kLacrosProfileMigrationUseDeprecatedNoCopyPaths{
-    "LacrosProfileMigrationUseDeprecatedNoCopyPaths",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kLacrosProfileMigrationUseDeprecatedAshDataPaths{
-    "LacrosProfileMigrationUseDeprecatedAshDataPaths",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kLacrosProfileMigrationUseDeprecatedLacrosDataPaths{
-    "LacrosProfileMigrationUseDeprecatedLacrosDataPaths",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Ensures that each path in UDD appears in one of `kNoCopyPaths`,
-// `kAshDataPaths` or `kLacrosDataPaths`.
-constexpr bool HasNoOverlapBetweenPathsSets() {
-  for (const char* no_copy_path : kNoCopyPaths) {
-    for (const char* ash_data_path : kAshDataPaths) {
-      if (base::StringPiece(no_copy_path) == base::StringPiece(ash_data_path))
-        return false;
-    }
-  }
-
-  for (const char* ash_data_path : kAshDataPaths) {
-    for (const char* lacros_data_path : kLacrosDataPaths) {
-      if (base::StringPiece(ash_data_path) ==
-          base::StringPiece(lacros_data_path))
-        return false;
-    }
-  }
-
-  for (const char* lacros_data_path : kLacrosDataPaths) {
-    for (const char* no_copy_path : kNoCopyPaths) {
-      if (base::StringPiece(lacros_data_path) ==
-          base::StringPiece(no_copy_path))
-        return false;
-    }
-  }
-
-  return true;
-}
-
-static_assert(HasNoOverlapBetweenPathsSets(),
-              "There must be no overlap between kNoCopyPaths, kAshDataPaths "
-              "and kLacrosDataPaths");
-
-base::span<const char* const> GetNoCopyDataPaths() {
-  if (base::FeatureList::IsEnabled(
-          kLacrosProfileMigrationUseDeprecatedNoCopyPaths)) {
-    return base::make_span(kNoCopyPathsDeprecated);
-  }
-  return base::make_span(kNoCopyPaths);
-}
-
-base::span<const char* const> GetAshDataPaths() {
-  if (base::FeatureList::IsEnabled(
-          kLacrosProfileMigrationUseDeprecatedAshDataPaths)) {
-    return base::make_span(kAshDataPathsDeprecated);
-  }
-  return base::make_span(kAshDataPaths);
-}
-
-base::span<const char* const> GetLacrosDataPaths() {
-  if (base::FeatureList::IsEnabled(
-          kLacrosProfileMigrationUseDeprecatedLacrosDataPaths)) {
-    return base::make_span(kLacrosDataPathsDeprecated);
-  }
-  return base::make_span(kLacrosDataPaths);
-}
 }  // namespace
 
 CancelFlag::CancelFlag() : cancelled_(false) {}
 CancelFlag::~CancelFlag() = default;
 
 BrowserDataMigratorImpl::TargetInfo::TargetInfo()
-    : ash_data_size(0),
-      no_copy_data_size(0),
+    : remain_in_ash_data_size(0),
+      deletable_data_size(0),
       lacros_data_size(0),
       common_data_size(0) {}
 BrowserDataMigratorImpl::TargetInfo::TargetInfo(TargetInfo&&) = default;
@@ -210,7 +79,7 @@ int64_t BrowserDataMigratorImpl::TargetInfo::TotalCopySize() const {
 }
 
 int64_t BrowserDataMigratorImpl::TargetInfo::TotalDirSize() const {
-  return no_copy_data_size + ash_data_size + lacros_data_size +
+  return deletable_data_size + remain_in_ash_data_size + lacros_data_size +
          common_data_size;
 }
 
@@ -435,7 +304,8 @@ void BrowserDataMigratorImpl::RecordStatus(const FinalStatus& final_status,
                               target_info->TotalCopySize() / 1024 / 1024, 1,
                               10000, 100);
   UMA_HISTOGRAM_CUSTOM_COUNTS(
-      kAshDataSize, target_info->ash_data_size / 1024 / 1024, 1, 10000, 100);
+      kAshDataSize, target_info->remain_in_ash_data_size / 1024 / 1024, 1,
+      10000, 100);
   UMA_HISTOGRAM_CUSTOM_COUNTS(kLacrosDataSize,
                               target_info->lacros_data_size / 1024 / 1024, 1,
                               10000, 100);
@@ -443,7 +313,7 @@ void BrowserDataMigratorImpl::RecordStatus(const FinalStatus& final_status,
                               target_info->common_data_size / 1024 / 1024, 1,
                               10000, 100);
   UMA_HISTOGRAM_CUSTOM_COUNTS(kNoCopyDataSize,
-                              target_info->no_copy_data_size / 1024 / 1024, 1,
+                              target_info->deletable_data_size / 1024 / 1024, 1,
                               10000, 100);
 
   if (!timer || final_status != FinalStatus::kSuccess)
@@ -594,9 +464,6 @@ bool BrowserDataMigratorImpl::CopyTargetItem(
 BrowserDataMigratorImpl::TargetInfo BrowserDataMigratorImpl::GetTargetInfo(
     const base::FilePath& original_user_dir) {
   TargetInfo target_info;
-  const base::span<const char* const> no_copy_data_paths = GetNoCopyDataPaths();
-  const base::span<const char* const> ash_data_paths = GetAshDataPaths();
-  const base::span<const char* const> lacros_data_paths = GetLacrosDataPaths();
 
   base::FileEnumerator enumerator(original_user_dir, false /* recursive */,
                                   base::FileEnumerator::FILES |
@@ -619,22 +486,22 @@ BrowserDataMigratorImpl::TargetInfo BrowserDataMigratorImpl::GetTargetInfo(
       continue;
     }
 
-    if (base::Contains(ash_data_paths, entry.BaseName().value())) {
-      target_info.ash_data_items.emplace_back(
+    if (base::Contains(kRemainInAshDataPaths, entry.BaseName().value())) {
+      target_info.remain_in_ash_items.emplace_back(
           TargetItem{entry, size, item_type});
-      target_info.ash_data_size += size;
-    } else if (base::Contains(no_copy_data_paths, entry.BaseName().value())) {
-      target_info.no_copy_data_items.emplace_back(
+      target_info.remain_in_ash_data_size += size;
+    } else if (base::Contains(kDeletablePaths, entry.BaseName().value())) {
+      target_info.deletable_items.emplace_back(
           TargetItem{entry, size, item_type});
-      target_info.no_copy_data_size += size;
-    } else if (base::Contains(lacros_data_paths, entry.BaseName().value())) {
+      target_info.deletable_data_size += size;
+    } else if (base::Contains(kLacrosDataPaths, entry.BaseName().value())) {
       // Items that should be moved to lacros.
       target_info.lacros_data_items.emplace_back(
           TargetItem{entry, size, item_type});
       target_info.lacros_data_size += size;
-    } else {
-      // Items that are not explicitly ash, no_copy or lacros are put into
-      // common category.
+    } else if (base::Contains(kCommonDataPaths, entry.BaseName().value())) {
+      // Items that are not explicitly ash, deletable_data or lacros are put
+      // into common category.
       target_info.common_data_items.emplace_back(
           TargetItem{entry, size, item_type});
       target_info.common_data_size += size;
@@ -659,11 +526,11 @@ bool BrowserDataMigratorImpl::HasEnoughDiskSpace(
       break;
     case Mode::kDeleteAndCopy:
       required_space =
-          target_info.TotalCopySize() - target_info.no_copy_data_size;
+          target_info.TotalCopySize() - target_info.deletable_data_size;
       break;
     case Mode::kDeleteAndMove:
       required_space =
-          target_info.common_data_size - target_info.no_copy_data_size;
+          target_info.common_data_size - target_info.deletable_data_size;
       break;
     case Mode::kCopy:
     default:
@@ -862,11 +729,11 @@ void BrowserDataMigratorImpl::DryRunToCollectUMA(
   TargetInfo target_info = GetTargetInfo(profile_data_dir);
 
   base::UmaHistogramCustomCounts(kDryRunNoCopyDataSize,
-                                 target_info.no_copy_data_size / 1024 / 1024, 1,
-                                 10000, 100);
-  base::UmaHistogramCustomCounts(kDryRunAshDataSize,
-                                 target_info.ash_data_size / 1024 / 1024, 1,
-                                 10000, 100);
+                                 target_info.deletable_data_size / 1024 / 1024,
+                                 1, 10000, 100);
+  base::UmaHistogramCustomCounts(
+      kDryRunAshDataSize, target_info.remain_in_ash_data_size / 1024 / 1024, 1,
+      10000, 100);
   base::UmaHistogramCustomCounts(kDryRunLacrosDataSize,
                                  target_info.lacros_data_size / 1024 / 1024, 1,
                                  10000, 100);
@@ -876,8 +743,8 @@ void BrowserDataMigratorImpl::DryRunToCollectUMA(
 
   browser_data_migrator_util::RecordTotalSize(target_info.TotalDirSize());
 
-  RecordTargetItemSizes(target_info.no_copy_data_items);
-  RecordTargetItemSizes(target_info.ash_data_items);
+  RecordTargetItemSizes(target_info.deletable_items);
+  RecordTargetItemSizes(target_info.remain_in_ash_items);
   RecordTargetItemSizes(target_info.lacros_data_items);
   RecordTargetItemSizes(target_info.common_data_items);
 

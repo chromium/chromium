@@ -71,6 +71,101 @@ constexpr char kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace[] =
 constexpr char kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace[] =
     "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.DeleteAndMove";
 
+// The base names of files/dirs directly under the original profile
+// data directory that can be deleted if needed because they are temporary
+// storages.
+constexpr const char* const kDeletablePaths[] = {
+    kTmpDir,
+    "blob_storage",
+    "Cache",
+    "Code Cache",
+    "crash",
+    "data_reduction_proxy_leveldb",
+    "Download Service",
+    "GCache",
+    "heavy_ad_intervention_opt_out.db",
+    "Network Action Predictor",
+    "Network Persistent State",
+    "optimization_guide_hint_cache_store",
+    "previews_opt_out.db",
+    "Reporting and NEL",
+    "Site Characteristics Database",
+    "TransportSecurity"};
+
+// The base names of files/dirs that should remain in ash data
+// directory.
+constexpr const char* const kRemainInAshDataPaths[] = {
+    "AccountManagerTokens.bin",
+    "Accounts",
+    "app_ranker.pb",
+    "arc.apps",
+    "autobrightness",
+    "BudgetDatabase",
+    "crostini.icons",
+    "Downloads",
+    "extension_install_log",
+    "FullRestoreData",
+    "GCM Store",
+    "google-assistant-library",
+    "GPUCache",
+    "login-times",
+    "logout-times",
+    "MyFiles",
+    "NearbySharePublicCertificateDatabase",
+    "PPDCache",
+    "PreferredApps",
+    "PreferredApps",
+    "PrintJobDatabase",
+    "README",
+    "RLZ Data",
+    "smartcharging",
+    "structured_metrics",
+    "Translate Ranker Model",
+    "Trusted Vault",
+    "WebRTC Logs",
+    "webrtc_event_logs",
+    "zero_state_group_ranker.pb",
+    "zero_state_local_files.pb"};
+
+// The base names of files/dirs that are required for browsing and should be
+// moved to lacros data dir.
+constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
+                                               "Bookmarks",
+                                               "Cookies",
+                                               "databases",
+                                               "DNR Extension Rules",
+                                               "Extension Cookies",
+                                               "Extension Rules",
+                                               "Extension State",
+                                               "Extensions",
+                                               "Favicons",
+                                               "File System",
+                                               "History",
+                                               "IndexedDB",
+                                               "Local App Settings",
+                                               "Local Extension Settings",
+                                               "Managed Extension Settings",
+                                               "QuotaManager",
+                                               "Service Worker",
+                                               "Session Storage",
+                                               "Sessions",
+                                               "Shortcuts",
+                                               "Sync App Settings",
+                                               "Top Sites",
+                                               "Visited Links",
+                                               "Web Applications",
+                                               "Web Data"};
+
+// The base names of files/dirs that are required by both ash and lacros and
+// thus should be copied to lacros while keeping the original files/dirs in ash
+// data dir.
+constexpr const char* const kCommonDataPaths[]{"Affiliation Database",
+                                               "Login Data",
+                                               "Platform Notifications",
+                                               "Policy",
+                                               "Preferences",
+                                               "shared_proto_db"};
+
 // Local state pref name, which is used to keep track of what step migration is
 // at. This ensures that ash does not get repeatedly for migration.
 // 1. The user logs in and restarts ash if necessary to apply flags.
@@ -142,17 +237,17 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
     TargetInfo(TargetInfo&&);
 
     // Items that should stay in ash data dir.
-    std::vector<TargetItem> ash_data_items;
+    std::vector<TargetItem> remain_in_ash_items;
     // Items that should be moved to lacros data dir.
     std::vector<TargetItem> lacros_data_items;
     // Items that will be duplicated in both ash and lacros data dir.
     std::vector<TargetItem> common_data_items;
     // Items that can be deleted from both ash and lacros data dir.
-    std::vector<TargetItem> no_copy_data_items;
-    // The total size of `ash_data_items`.
-    int64_t ash_data_size;
+    std::vector<TargetItem> deletable_items;
+    // The total size of `remain_in_ash_items`.
+    int64_t remain_in_ash_data_size;
     // The total size of items that can be deleted during the migration.
-    int64_t no_copy_data_size;
+    int64_t deletable_data_size;
     // The total size of `lacros_data_items`.
     int64_t lacros_data_size;
     // The total size of `common_data_items`.
@@ -254,16 +349,16 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static void DryRunToCollectUMA(const base::FilePath& profile_data_dir);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
                            ManipulateMigrationAttemptCount);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CopyDirectory);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, SetupTmpDir);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CancelSetupTmpDir);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, MigrateInternal);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, MigrateCancelled);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, GetTargetInfo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, CopyDirectory);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, SetupTmpDir);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, CancelSetupTmpDir);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, RecordStatus);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateInternal);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
 
   // Sets the value of `kMigrationStep` in Local State.
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);
