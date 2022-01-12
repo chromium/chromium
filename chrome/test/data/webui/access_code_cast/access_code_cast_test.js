@@ -47,6 +47,10 @@ export function createTestProxy(addResult, castResult, castCallback) {
     callbackRouterRemote: callbackRouter.$.bindNewPipeAndPassRemote(),
     handler: new TestAccessCodeCastBrowserProxy(
       addResult, castResult, castCallback),
+    async isQrScanningAvailable() {
+      return Promise.resolve(true);
+    },
+    closeDialog() {}
   };
 }
 

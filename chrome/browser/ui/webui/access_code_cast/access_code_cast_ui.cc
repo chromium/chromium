@@ -140,6 +140,7 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
   };
 
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean("qrScannerEnabled", false);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();

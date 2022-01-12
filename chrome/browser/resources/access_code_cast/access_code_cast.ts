@@ -56,6 +56,7 @@ class AccessCodeCastElement extends PolymerElement {
   private static readonly ACCESS_CODE_LENGTH = 6;
   private accessCode: string;
   private state: PageState;
+  private qrScannerEnabled: boolean;
 
   constructor() {
     super();
@@ -63,6 +64,9 @@ class AccessCodeCastElement extends PolymerElement {
     this.router = BrowserProxy.getInstance().callbackRouter;
 
     this.accessCode = '';
+    BrowserProxy.getInstance().isQrScanningAvailable().then((available) => {
+      this.qrScannerEnabled = available;
+    });
 
     window.onblur = () => {
       this.close();
@@ -89,7 +93,7 @@ class AccessCodeCastElement extends PolymerElement {
   }
 
   close() {
-    chrome.send('dialogClose');
+    BrowserProxy.getInstance().closeDialog();
   }
 
   switchToCodeInput() {

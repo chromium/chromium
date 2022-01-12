@@ -33,10 +33,12 @@
   <div slot="body">
     <div id="codeInputView">
       <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
-      <cr-button on-click="switchToQrInput" class="center text-button">
-        <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
-        $i18n{useCamera}
-      </cr-button>
+      <template is="dom-if" if="[[qrScannerEnabled]]">
+        <cr-button on-click="switchToQrInput" class="center text-button">
+          <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
+          $i18n{useCamera}
+        </cr-button>
+      </template>
     </div>
     <div id="qrInputView">
       <div>Camera input view</div>

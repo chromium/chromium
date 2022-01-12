@@ -45,6 +45,18 @@ TEST_F('AccessCodeCastAppTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var AccessCodeCastBrowserProxyTest = class extends AccessCodeCastBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/browser_proxy_test.js';
+  }
+};
+
+TEST_F('AccessCodeCastBrowserProxyTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var AccessCodeCastCodeInputElementTest = class extends AccessCodeCastBrowserTest {
   /** @override */
   get browsePreload() {
@@ -52,10 +64,6 @@ var AccessCodeCastCodeInputElementTest = class extends AccessCodeCastBrowserTest
   }
 };
 
-/**
- * This browsertest acts as a thin wrapper to run the unit tests found
- * at code_input_test.js
- */
 TEST_F('AccessCodeCastCodeInputElementTest', 'All', function() {
   mocha.run();
 });
@@ -68,10 +76,6 @@ var AccessCodeCastErrorMessageElementTest = class extends AccessCodeCastBrowserT
   }
 };
 
-/**
- * This browsertest acts as a thin wrapper to run the unit tests found
- * at code_input_test.js
- */
 TEST_F('AccessCodeCastErrorMessageElementTest', 'All', function() {
   mocha.run();
 });
