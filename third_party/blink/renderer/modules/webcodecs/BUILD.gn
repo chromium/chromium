@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "decoder_selector_test.cc",
     "decoder_template_test.cc",
     "encoded_video_chunk_test.cc",
+    "image_decoder_core_test.cc",
     "image_decoder_external_test.cc",
     "reclaimable_codec_test.cc",
     "video_decoder_broker_test.cc",

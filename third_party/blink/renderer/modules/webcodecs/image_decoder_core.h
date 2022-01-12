@@ -96,6 +96,8 @@ class MODULES_EXPORT ImageDecoderCore {
   // Recreates the underlying ImageDecode with the provided |animation_option|.
   void Reinitialize(ImageDecoder::AnimationOption animation_option);
 
+  bool FrameIsDecodedAtIndexForTesting(uint32_t frame_index) const;
+
  private:
   void MaybeDecodeToYuv();
 
@@ -133,6 +135,12 @@ class MODULES_EXPORT ImageDecoderCore {
           DefaultHash<uint32_t>::Hash,
           WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       incomplete_frames_;
+
+  // By default, assume in order decoding and purge all decoded frames except
+  // the last. If out of order decoding is detected then purging is limited to
+  // only when platform memory limits are exceeded.
+  bool is_decoding_in_order_ = true;
+  uint32_t last_decoded_frame_ = 0u;
 };
 
 }  // namespace blink
