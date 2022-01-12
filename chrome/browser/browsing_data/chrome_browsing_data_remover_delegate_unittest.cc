@@ -2971,11 +2971,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
                                        some_value.Clone());
 
     // Check that the exception was created.
-    std::unique_ptr<base::Value> value =
-        map->GetWebsiteSetting(url, url, info->type(), nullptr);
-    EXPECT_TRUE(value) << "Not created: " << info->name();
-    if (value)
-      EXPECT_EQ(some_value, *value) << "Not created: " << info->name();
+    base::Value value = map->GetWebsiteSetting(url, url, info->type(), nullptr);
+    EXPECT_FALSE(value.is_none()) << "Not created: " << info->name();
+    EXPECT_EQ(some_value, value) << "Not created: " << info->name();
   }
 
   // Delete all data types that trigger website setting deletions.
@@ -2989,15 +2987,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
   for (const content_settings::WebsiteSettingsInfo* info : *registry) {
     if (base::Contains(non_deletable_types, info->type()))
       continue;
-    std::unique_ptr<base::Value> value =
-        map->GetWebsiteSetting(url, url, info->type(), nullptr);
+    base::Value value = map->GetWebsiteSetting(url, url, info->type(), nullptr);
 
-    if (value && value->is_int()) {
-      EXPECT_EQ(CONTENT_SETTING_BLOCK, value->GetInt())
-          << "Not deleted: " << info->name() << " value: " << *value;
+    if (value.is_int()) {
+      EXPECT_EQ(CONTENT_SETTING_BLOCK, value.GetInt())
+          << "Not deleted: " << info->name() << " value: " << value;
     } else {
-      EXPECT_FALSE(value) << "Not deleted: " << info->name()
-                          << " value: " << *value;
+      EXPECT_TRUE(value.is_none())
+          << "Not deleted: " << info->name() << " value: " << value;
     }
   }
 }

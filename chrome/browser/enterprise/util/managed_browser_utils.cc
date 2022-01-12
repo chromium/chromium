@@ -64,16 +64,15 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
     const GURL& requesting_url) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  std::unique_ptr<base::Value> setting =
-      host_content_settings_map->GetWebsiteSetting(
-          requesting_url, requesting_url,
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+  base::Value setting = host_content_settings_map->GetWebsiteSetting(
+      requesting_url, requesting_url,
+      ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
 
-  if (!setting || !setting->is_dict())
+  if (!setting.is_dict())
     return {};
 
   base::Value* filters =
-      setting->FindKeyOfType("filters", base::Value::Type::LIST);
+      setting.FindKeyOfType("filters", base::Value::Type::LIST);
   if (!filters) {
     // |setting_dict| has the wrong format (e.g. single filter instead of a
     // list of filters). This content setting is only provided by

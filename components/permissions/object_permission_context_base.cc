@@ -238,12 +238,11 @@ void ObjectPermissionContextBase::NotifyPermissionRevoked(
 base::Value ObjectPermissionContextBase::GetWebsiteSetting(
     const url::Origin& origin,
     content_settings::SettingInfo* info) {
-  std::unique_ptr<base::Value> value =
-      host_content_settings_map_->GetWebsiteSetting(
-          origin.GetURL(), GURL(), data_content_settings_type_, info);
-  if (value)
-    return base::Value::FromUniquePtrValue(std::move(value));
-  return base::Value(base::Value::Type::DICTIONARY);
+  base::Value value = host_content_settings_map_->GetWebsiteSetting(
+      origin.GetURL(), GURL(), data_content_settings_type_, info);
+  if (value.is_none())
+    return base::Value(base::Value::Type::DICTIONARY);
+  return value;
 }
 
 void ObjectPermissionContextBase::SaveWebsiteSetting(

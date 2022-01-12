@@ -56,13 +56,13 @@ int g_ignore_embargo_days = kDefaultEmbargoDays;
 std::unique_ptr<base::Value> GetOriginAutoBlockerData(
     HostContentSettingsMap* settings,
     const GURL& origin_url) {
-  std::unique_ptr<base::Value> website_setting = settings->GetWebsiteSetting(
+  base::Value website_setting = settings->GetWebsiteSetting(
       origin_url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       nullptr);
-  if (!website_setting || !website_setting->is_dict())
+  if (!website_setting.is_dict())
     return std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 
-  return website_setting;
+  return base::Value::ToUniquePtrValue(std::move(website_setting));
 }
 
 base::Value* GetOrCreatePermissionDict(base::Value* origin_dict,

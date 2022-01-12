@@ -14,6 +14,8 @@
 #include "base/strings/string_split.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -281,8 +283,9 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithPathMatching(
 
   GURL hostname = GetHostNameWithHTTPScheme(url);
   std::unique_ptr<base::DictionaryValue> cache_dictionary =
-      base::DictionaryValue::From(content_settings->GetWebsiteSetting(
-          hostname, GURL(), contents_setting_type, nullptr));
+      base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+          content_settings->GetWebsiteSetting(hostname, GURL(),
+                                              contents_setting_type, nullptr)));
 
   if (!cache_dictionary || cache_dictionary->DictEmpty())
     return T::VERDICT_TYPE_UNSPECIFIED;
@@ -417,8 +420,10 @@ void VerdictCacheManager::CachePhishGuardVerdict(
   GURL hostname = GetHostNameFromCacheExpression(GetCacheExpression(verdict));
 
   std::unique_ptr<base::DictionaryValue> cache_dictionary =
-      base::DictionaryValue::From(content_settings_->GetWebsiteSetting(
-          hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION, nullptr));
+      base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+          content_settings_->GetWebsiteSetting(
+              hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
+              nullptr)));
 
   if (!cache_dictionary)
     cache_dictionary = std::make_unique<base::DictionaryValue>();
@@ -544,9 +549,10 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
 
     GURL hostname = GetHostNameFromCacheExpression(cache_expression);
     std::unique_ptr<base::DictionaryValue> cache_dictionary =
-        base::DictionaryValue::From(content_settings_->GetWebsiteSetting(
-            hostname, GURL(), ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-            nullptr));
+        base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+            content_settings_->GetWebsiteSetting(
+                hostname, GURL(),
+                ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, nullptr)));
 
     if (!cache_dictionary)
       cache_dictionary = std::make_unique<base::DictionaryValue>();
@@ -847,8 +853,9 @@ size_t VerdictCacheManager::GetPhishGuardVerdictCountForURL(
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
   std::unique_ptr<base::DictionaryValue> cache_dictionary =
-      base::DictionaryValue::From(content_settings_->GetWebsiteSetting(
-          url, GURL(), ContentSettingsType::PASSWORD_PROTECTION, nullptr));
+      base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+          content_settings_->GetWebsiteSetting(
+              url, GURL(), ContentSettingsType::PASSWORD_PROTECTION, nullptr)));
   if (!cache_dictionary || cache_dictionary->DictEmpty())
     return 0;
 
@@ -872,9 +879,10 @@ size_t VerdictCacheManager::GetPhishGuardVerdictCountForURL(
 size_t VerdictCacheManager::GetRealTimeUrlCheckVerdictCountForURL(
     const GURL& url) {
   std::unique_ptr<base::DictionaryValue> cache_dictionary =
-      base::DictionaryValue::From(content_settings_->GetWebsiteSetting(
-          url, GURL(), ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-          nullptr));
+      base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+          content_settings_->GetWebsiteSetting(
+              url, GURL(), ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
+              nullptr)));
   if (!cache_dictionary || cache_dictionary->DictEmpty())
     return 0;
   base::Value* verdict_dictionary =

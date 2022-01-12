@@ -175,9 +175,8 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
 
   // First get any host-specific settings.
   SettingInfo info;
-  std::unique_ptr<base::Value> value =
-      host_content_settings_map_->GetWebsiteSetting(
-          url, first_party_url, ContentSettingsType::COOKIES, &info);
+  const base::Value value = host_content_settings_map_->GetWebsiteSetting(
+      url, first_party_url, ContentSettingsType::COOKIES, &info);
   if (source)
     *source = info.source;
 
@@ -189,8 +188,8 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
                      !first_party_url.SchemeIs(extension_scheme_);
 
   // We should always have a value, at least from the default provider.
-  DCHECK(value);
-  ContentSetting setting = ValueToContentSetting(value.get());
+  DCHECK(value.is_int());
+  ContentSetting setting = ValueToContentSetting(value);
   bool block = block_third && is_third_party_request;
 
   if (!block) {

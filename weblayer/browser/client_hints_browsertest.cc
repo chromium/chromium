@@ -132,13 +132,13 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
       static_cast<TabImpl*>(shell()->tab())
           ->web_contents()
           ->GetBrowserContext());
-  std::unique_ptr<base::Value> setting = settings_map->GetWebsiteSetting(
+  base::Value setting = settings_map->GetWebsiteSetting(
       embedded_test_server()->base_url(), GURL(),
       ContentSettingsType::CLIENT_HINTS, nullptr);
-  ASSERT_TRUE(setting);
+  ASSERT_FALSE(setting.is_none());
   settings_map->SetWebsiteSettingDefaultScope(other_server.base_url(), GURL(),
                                               ContentSettingsType::CLIENT_HINTS,
-                                              setting->Clone());
+                                              setting.Clone());
 
   // Settings take affect after navigation only, so the header shouldn't be
   // there yet.

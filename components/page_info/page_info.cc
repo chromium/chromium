@@ -172,11 +172,11 @@ bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
 
   // Hide camera if camera PTZ is granted or blocked.
   if (info.type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-    std::unique_ptr<base::Value> value = content_settings->GetWebsiteSetting(
+    const base::Value value = content_settings->GetWebsiteSetting(
         site_url, site_url, ContentSettingsType::CAMERA_PAN_TILT_ZOOM, nullptr);
-    DCHECK(value.get());
+    DCHECK(value.is_int());
     ContentSetting camera_ptz_setting =
-        content_settings::ValueToContentSetting(value.get());
+        content_settings::ValueToContentSetting(value);
     if (camera_ptz_setting == CONTENT_SETTING_ALLOW ||
         camera_ptz_setting == CONTENT_SETTING_BLOCK) {
       return false;
@@ -920,12 +920,10 @@ void PageInfo::PresentSitePermissions() {
 
     // TODO(crbug.com/1030245) Investigate why the value is queried from the low
     // level routine GetWebsiteSettings.
-    std::unique_ptr<base::Value> value = content_settings->GetWebsiteSetting(
+    const base::Value value = content_settings->GetWebsiteSetting(
         site_url_, site_url_, permission_info.type, &info);
-    DCHECK(value.get());
-    if (value->type() == base::Value::Type::INTEGER) {
-      permission_info.setting =
-          content_settings::ValueToContentSetting(value.get());
+    if (value.is_int()) {
+      permission_info.setting = content_settings::ValueToContentSetting(value);
     } else {
       NOTREACHED();
     }

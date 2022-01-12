@@ -26,6 +26,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
@@ -464,9 +465,10 @@ class PasswordProtectionServiceBaseTest
   void CacheInvalidVerdict(ReusedPasswordAccountType password_type) {
     GURL invalid_hostname("http://invalid.com");
     std::unique_ptr<base::DictionaryValue> verdict_dictionary =
-        base::DictionaryValue::From(content_setting_map_->GetWebsiteSetting(
-            invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
-            nullptr));
+        base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+            content_setting_map_->GetWebsiteSetting(
+                invalid_hostname, GURL(),
+                ContentSettingsType::PASSWORD_PROTECTION, nullptr)));
 
     if (!verdict_dictionary)
       verdict_dictionary = std::make_unique<base::DictionaryValue>();

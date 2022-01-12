@@ -141,8 +141,9 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
 std::unique_ptr<base::DictionaryValue>
 SubresourceFilterContentSettingsManager::GetSiteMetadata(
     const GURL& url) const {
-  return base::DictionaryValue::From(settings_map_->GetWebsiteSetting(
-      url, GURL(), ContentSettingsType::ADS_DATA, nullptr));
+  return base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+      settings_map_->GetWebsiteSetting(
+          url, GURL(), ContentSettingsType::ADS_DATA, nullptr)));
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadataForTesting(

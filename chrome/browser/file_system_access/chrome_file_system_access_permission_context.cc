@@ -41,6 +41,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1218,9 +1219,12 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const std::string& id,
     const base::FilePath& path,
     const PathType type) {
-  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
+  std::unique_ptr<base::Value> value =
+      content_settings::ToNullableUniquePtrValue(
+          content_settings()->GetWebsiteSetting(
+              origin.GetURL(), origin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+              /*info=*/nullptr));
   if (!value)
     value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 
@@ -1244,9 +1248,12 @@ ChromeFileSystemAccessPermissionContext::PathInfo
 ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id) {
-  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
+  std::unique_ptr<base::Value> value =
+      content_settings::ToNullableUniquePtrValue(
+          content_settings()->GetWebsiteSetting(
+              origin.GetURL(), origin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+              /*info=*/nullptr));
 
   PathInfo path_info;
   if (!value)

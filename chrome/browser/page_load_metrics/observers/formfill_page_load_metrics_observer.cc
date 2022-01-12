@@ -37,14 +37,13 @@ FormfillPageLoadMetricsObserver::OnCommit(
   const url::Origin& origin =
       navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
 
-  std::unique_ptr<base::Value> formfill_metadata =
-      settings_map->GetWebsiteSetting(origin.GetURL(), origin.GetURL(),
-                                      ContentSettingsType::FORMFILL_METADATA,
-                                      nullptr);
+  base::Value formfill_metadata = settings_map->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(), ContentSettingsType::FORMFILL_METADATA,
+      nullptr);
 
   // User data field was detected on this site before.
-  if (formfill_metadata && formfill_metadata->is_dict() &&
-      formfill_metadata->FindBoolKey(kUserDataFieldFilledKey)) {
+  if (formfill_metadata.is_dict() &&
+      formfill_metadata.FindBoolKey(kUserDataFieldFilledKey)) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
         navigation_handle->GetRenderFrameHost(),
         blink::mojom::WebFeature::kUserDataFieldFilledPreviously);
@@ -82,22 +81,19 @@ void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
   DCHECK(settings_map);
 
   const url::Origin& origin = rfh->GetLastCommittedOrigin();
-  std::unique_ptr<base::Value> formfill_metadata =
-      settings_map->GetWebsiteSetting(origin.GetURL(), origin.GetURL(),
-                                      ContentSettingsType::FORMFILL_METADATA,
-                                      nullptr);
+  base::Value formfill_metadata = settings_map->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(), ContentSettingsType::FORMFILL_METADATA,
+      nullptr);
 
-  if (!formfill_metadata || !formfill_metadata->is_dict()) {
-    formfill_metadata =
-        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  if (!formfill_metadata.is_dict()) {
+    formfill_metadata = base::Value(base::Value::Type::DICTIONARY);
   }
 
-  if (!formfill_metadata->FindBoolKey(kUserDataFieldFilledKey)) {
-    formfill_metadata->SetBoolKey(kUserDataFieldFilledKey, true);
+  if (!formfill_metadata.FindBoolKey(kUserDataFieldFilledKey)) {
+    formfill_metadata.SetBoolKey(kUserDataFieldFilledKey, true);
 
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), origin.GetURL(),
-        ContentSettingsType::FORMFILL_METADATA,
-        base::Value::FromUniquePtrValue(std::move(formfill_metadata)));
+        ContentSettingsType::FORMFILL_METADATA, std::move(formfill_metadata));
   }
 }

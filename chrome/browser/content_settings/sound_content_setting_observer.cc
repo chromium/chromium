@@ -60,12 +60,11 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
                        ->GetLastCommittedURL();
 
   content_settings::SettingInfo setting_info;
-  std::unique_ptr<base::Value> setting =
-      host_content_settings_map_->GetWebsiteSetting(
-          url, navigation_handle->GetURL(), ContentSettingsType::SOUND,
-          &setting_info);
+  const base::Value setting = host_content_settings_map_->GetWebsiteSetting(
+      url, navigation_handle->GetURL(), ContentSettingsType::SOUND,
+      &setting_info);
 
-  if (content_settings::ValueToContentSetting(setting.get()) !=
+  if (content_settings::ValueToContentSetting(setting) !=
       CONTENT_SETTING_ALLOW) {
     return;
   }

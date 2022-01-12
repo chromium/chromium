@@ -23,9 +23,9 @@ content::AllowServiceWorkerResult AllowServiceWorker(
   GURL first_party_url = top_frame_origin ? top_frame_origin->GetURL() : GURL();
   // Check if JavaScript is allowed.
   content_settings::SettingInfo info;
-  std::unique_ptr<base::Value> value = settings_map->GetWebsiteSetting(
+  const base::Value value = settings_map->GetWebsiteSetting(
       first_party_url, first_party_url, ContentSettingsType::JAVASCRIPT, &info);
-  ContentSetting setting = content_settings::ValueToContentSetting(value.get());
+  ContentSetting setting = content_settings::ValueToContentSetting(value);
   bool allow_javascript = setting == CONTENT_SETTING_ALLOW;
 
   // Check if cookies are allowed.

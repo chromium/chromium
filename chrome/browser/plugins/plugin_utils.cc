@@ -35,13 +35,12 @@ void PluginUtils::GetPluginContentSetting(
     bool* is_default,
     bool* is_managed) {
   GURL main_frame_url = main_frame_origin.GetURL();
-  std::unique_ptr<base::Value> value;
   content_settings::SettingInfo info;
   bool uses_plugin_specific_setting = false;
-  value = host_content_settings_map->GetWebsiteSetting(
+  const base::Value value = host_content_settings_map->GetWebsiteSetting(
       main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT, &info);
 
-  *setting = content_settings::ValueToContentSetting(value.get());
+  *setting = content_settings::ValueToContentSetting(value);
 
   bool uses_default_content_setting =
       !uses_plugin_specific_setting &&

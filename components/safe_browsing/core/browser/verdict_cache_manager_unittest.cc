@@ -475,7 +475,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
                     ->GetWebsiteSetting(
                         GURL("http://www.google.com/"), GURL(),
                         ContentSettingsType::PASSWORD_PROTECTION, nullptr)
-                    ->FindDictKey("1")
+                    .FindDictKey("1")
                     ->DictSize());
 
   cache_manager_->CleanUpExpiredVerdicts();
@@ -485,7 +485,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
                     ->GetWebsiteSetting(
                         GURL("http://www.google.com/"), GURL(),
                         ContentSettingsType::PASSWORD_PROTECTION, nullptr)
-                    ->FindDictKey("1")
+                    .FindDictKey("1")
                     ->DictSize());
 }
 

@@ -27,9 +27,10 @@ std::unique_ptr<base::DictionaryValue> GetAutoDisplayDictForSettings(
   if (!settings)
     return std::make_unique<base::DictionaryValue>();
 
-  std::unique_ptr<base::DictionaryValue> value =
-      base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin, origin, ContentSettingsType::INTENT_PICKER_DISPLAY, nullptr));
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
+      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
+          origin, origin, ContentSettingsType::INTENT_PICKER_DISPLAY,
+          nullptr)));
 
   if (value.get())
     return value;

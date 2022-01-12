@@ -76,9 +76,9 @@ std::unique_ptr<base::DictionaryValue> GetOriginAppBannerData(
   if (!settings)
     return std::make_unique<base::DictionaryValue>();
 
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin_url, origin_url, ContentSettingsType::APP_BANNER, NULL));
+  std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
+      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
+          origin_url, origin_url, ContentSettingsType::APP_BANNER, nullptr)));
   if (!dict)
     return std::make_unique<base::DictionaryValue>();
 

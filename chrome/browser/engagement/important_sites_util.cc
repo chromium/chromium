@@ -25,6 +25,7 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -535,10 +536,10 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   if (!excluded_sites.empty()) {
     for (const std::string& ignored_site : ignored_sites) {
       GURL origin("http://" + ignored_site);
-      std::unique_ptr<base::DictionaryValue> dict =
-          base::DictionaryValue::From(map->GetWebsiteSetting(
+      std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
+          content_settings::ToNullableUniquePtrValue(map->GetWebsiteSetting(
               origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
-              nullptr));
+              nullptr)));
 
       if (!dict)
         dict = std::make_unique<base::DictionaryValue>();

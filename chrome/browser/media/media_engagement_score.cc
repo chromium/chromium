@@ -38,10 +38,10 @@ std::unique_ptr<base::DictionaryValue> GetMediaEngagementScoreDictForSettings(
   if (!settings)
     return std::make_unique<base::DictionaryValue>();
 
-  std::unique_ptr<base::DictionaryValue> value =
-      base::DictionaryValue::From(settings->GetWebsiteSetting(
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
+      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
           origin.GetURL(), origin.GetURL(),
-          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr));
+          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)));
 
   if (value.get())
     return value;

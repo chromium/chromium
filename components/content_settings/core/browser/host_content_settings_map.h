@@ -137,15 +137,14 @@ class HostContentSettingsMap : public content_settings::Observer,
   // allowlisted. For allowlisted schemes the |source| field of |info| is set
   // the |SETTING_SOURCE_ALLOWLIST| and the |primary_pattern| and
   // |secondary_pattern| are set to a wildcard pattern.  If there is no content
-  // setting, NULL is returned and the |source| field of |info| is set to
-  // |SETTING_SOURCE_NONE|. The pattern fields of |info| are set to empty
+  // setting, a NONE-type value is returned and the |source| field of |info| is
+  // set to |SETTING_SOURCE_NONE|. The pattern fields of |info| are set to empty
   // patterns.
   // May be called on any thread.
-  std::unique_ptr<base::Value> GetWebsiteSetting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      content_settings::SettingInfo* info) const;
+  base::Value GetWebsiteSetting(const GURL& primary_url,
+                                const GURL& secondary_url,
+                                ContentSettingsType content_type,
+                                content_settings::SettingInfo* info) const;
 
   // For a given content type, returns all patterns with a non-default setting,
   // mapped to their actual settings, in the precedence order of the rules.

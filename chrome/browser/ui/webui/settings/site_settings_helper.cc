@@ -757,7 +757,7 @@ ContentSetting GetContentSettingForOrigin(
   // content settings, not just the permissions, plus all the possible sources,
   // and the calls to HostContentSettingsMap should be removed.
   content_settings::SettingInfo info;
-  std::unique_ptr<base::Value> value =
+  const base::Value value =
       map->GetWebsiteSetting(origin, origin, content_type, &info);
 
   // Retrieve the content setting.
@@ -769,10 +769,8 @@ ContentSetting GetContentSettingForOrigin(
         PermissionManagerFactory::GetForProfile(profile)->GetPermissionStatus(
             content_type, origin, origin);
   } else {
-    DCHECK(value.get());
-    DCHECK_EQ(base::Value::Type::INTEGER, value->type());
-    result.content_setting =
-        content_settings::ValueToContentSetting(value.get());
+    DCHECK_EQ(base::Value::Type::INTEGER, value.type());
+    result.content_setting = content_settings::ValueToContentSetting(value);
   }
 
   // Retrieve the source of the content setting.

@@ -132,9 +132,8 @@ bool GetSettingManagedByUser(const GURL& url,
         url, url, &source);
   } else {
     SettingInfo info;
-    std::unique_ptr<base::Value> value =
-        map->GetWebsiteSetting(url, url, type, &info);
-    setting = content_settings::ValueToContentSetting(value.get());
+    const base::Value value = map->GetWebsiteSetting(url, url, type, &info);
+    setting = content_settings::ValueToContentSetting(value);
     source = info.source;
   }
 
