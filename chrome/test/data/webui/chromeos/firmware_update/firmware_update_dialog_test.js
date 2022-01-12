@@ -2,25 +2,74 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
 import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
-import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update_types.js';
+import {FirmwareUpdate, UpdateState} from 'chrome://accessory-update/firmware_update_types.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {isVisible} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function firmwareUpdateDialogTest() {
   /** @type {?FirmwareUpdateDialogElement} */
-  let updateDialog = null;
+  let updateDialogElement = null;
 
   setup(() => {
-    updateDialog = /** @type {!FirmwareUpdateDialogElement} */ (
+    updateDialogElement = /** @type {!FirmwareUpdateDialogElement} */ (
         document.createElement('firmware-update-dialog'));
-    document.body.appendChild(updateDialog);
+    updateDialogElement.update = fakeFirmwareUpdate;
+    updateDialogElement.installationProgress = {
+      percentage: 0,
+      state: UpdateState.kIdle
+    };
+    document.body.appendChild(updateDialogElement);
   });
 
   teardown(() => {
-    updateDialog.remove();
-    updateDialog = null;
+    updateDialogElement.remove();
+    updateDialogElement = null;
+  });
+
+  /**
+   * @param {number} percentage
+   * @param {!UpdateState} state
+   * @return {!Promise}
+   */
+  function setInstallationProgress(percentage, state) {
+    updateDialogElement.installationProgress = {percentage, state};
+    return flushTasks();
+  }
+
+  /** @return {!Promise} */
+  function clickDoneButton() {
+    updateDialogElement.shadowRoot.querySelector('#updateDoneButton').click();
+    return flushTasks();
+  }
+
+  test('DialogStateUpdatesCorrectly', async () => {
+    // Start update.
+    await setInstallationProgress(1, UpdateState.kUpdating);
+    assertTrue(
+        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+
+    // |UpdateState.KIdle| handled correctly while an update is still
+    // in-progress.
+    await setInstallationProgress(20, UpdateState.kIdle);
+    assertTrue(
+        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+
+    // Dialog remains open while the device is restarting.
+    await setInstallationProgress(70, UpdateState.kRestarting);
+    assertTrue(
+        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+
+    // Dialog remains open when the update is completed.
+    await setInstallationProgress(100, UpdateState.kSuccess);
+    assertTrue(
+        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+
+    // Dialog closes when the "Done" button is clicked.
+    await clickDoneButton();
+    assertFalse(
+        !!updateDialogElement.shadowRoot.querySelector('#updateDialog'));
   });
 }

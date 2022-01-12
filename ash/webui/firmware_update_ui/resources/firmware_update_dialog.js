@@ -140,7 +140,8 @@ export class FirmwareUpdateDialogElement extends
       UpdateState.kFailed,
       UpdateState.kSuccess,
     ];
-    return activeDialogStates.includes(this.installationProgress.state);
+    return activeDialogStates.includes(this.installationProgress.state) ||
+        this.installationProgress.percentage > 0;
   }
 
   /**
@@ -159,6 +160,12 @@ export class FirmwareUpdateDialogElement extends
    * @return {boolean}
    */
   isUpdateInProgress_() {
+    /** @type {!Array<!UpdateState>} */
+    const inactiveDialogStates = [UpdateState.kUnknown, UpdateState.kIdle];
+    if (inactiveDialogStates.includes(this.installationProgress.state)) {
+      return this.installationProgress.percentage > 0;
+    }
+
     return this.installationProgress.state === UpdateState.kUpdating;
   }
 
