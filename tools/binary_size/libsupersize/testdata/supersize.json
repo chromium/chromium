@@ -8,11 +8,6 @@
     "on_demand": {
       "default_component": "DEFAULT"
     }
-  },
-  "native_files": {
-    "smalltest.so": {
-      "component": "SMALL"
-    }
   }
 }
 
