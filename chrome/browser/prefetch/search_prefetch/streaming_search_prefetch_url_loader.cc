@@ -26,15 +26,18 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "streaming_search_prefetch_url_loader.h"
 #include "url/gurl.h"
 
 StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     StreamingSearchPrefetchRequest* streaming_prefetch_request,
     Profile* profile,
     std::unique_ptr<network::ResourceRequest> resource_request,
-    const net::NetworkTrafficAnnotationTag& network_traffic_annotation)
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    base::OnceClosure stop_prefetch_closure)
     : resource_request_(std::move(resource_request)),
-      streaming_prefetch_request_(streaming_prefetch_request) {
+      streaming_prefetch_request_(streaming_prefetch_request),
+      stop_prefetch_closure_(std::move(stop_prefetch_closure)) {
   DCHECK(streaming_prefetch_request_);
   auto url_loader_factory = profile->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
@@ -126,7 +129,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(
   if (streaming_prefetch_request_) {
     streaming_prefetch_request_->ErrorEncountered();
   } else {
-    delete this;
+    PostTaskToStopPrefetchAndDeleteSelf();
   }
 }
 
@@ -209,7 +212,7 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
       mojo::CreateDataPipe(&options, producer_handle_, consumer_handle);
 
   if (rv != MOJO_RESULT_OK) {
-    delete this;
+    PostTaskToStopPrefetchAndDeleteSelf();
     return;
   }
 
@@ -231,7 +234,7 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
   if (result != MOJO_RESULT_OK) {
-    delete this;
+    PostTaskToStopPrefetchAndDeleteSelf();
     return;
   }
   PushData();
@@ -257,7 +260,7 @@ void StreamingSearchPrefetchURLLoader::PushData() {
     }
 
     if (result != MOJO_RESULT_OK) {
-      delete this;
+      PostTaskToStopPrefetchAndDeleteSelf();
       return;
     }
 
@@ -344,16 +347,24 @@ void StreamingSearchPrefetchURLLoader::OnURLLoaderMojoDisconnect() {
     DCHECK(streaming_prefetch_request_);
     streaming_prefetch_request_->ErrorEncountered();
   } else {
-    delete this;
+    PostTaskToStopPrefetchAndDeleteSelf();
   }
 }
 
 void StreamingSearchPrefetchURLLoader::OnURLLoaderClientMojoDisconnect() {
   DCHECK(forwarding_client_);
   DCHECK(!streaming_prefetch_request_);
-  delete this;
+  PostTaskToStopPrefetchAndDeleteSelf();
 }
 
 void StreamingSearchPrefetchURLLoader::ClearOwnerPointer() {
   streaming_prefetch_request_ = nullptr;
+}
+
+void StreamingSearchPrefetchURLLoader::PostTaskToStopPrefetchAndDeleteSelf() {
+  // To avoid UAF bugs, post a separate task to delete this object.
+  if (stop_prefetch_closure_) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(stop_prefetch_closure_));
+  }
 }
