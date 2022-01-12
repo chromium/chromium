@@ -239,11 +239,6 @@ export async function selectWallpaper(
   store.endBatchUpdate();
 }
 
-/**
- * @param {!WallpaperLayout} layout
- * @param {!WallpaperProviderInterface} provider
- * @param {!PersonalizationStore} store
- */
 export async function setCustomWallpaperLayout(
     layout: WallpaperLayout, provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {

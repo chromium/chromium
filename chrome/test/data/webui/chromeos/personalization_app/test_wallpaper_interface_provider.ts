@@ -8,12 +8,9 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/**
- * @implements {WallpaperProviderInterface}
- * @extends {TestBrowserProxy}
- */
-export class TestWallpaperProvider extends TestBrowserProxy implements
-    WallpaperProviderInterface {
+export class TestWallpaperProvider extends
+    TestBrowserProxy<WallpaperProviderInterface> implements
+        WallpaperProviderInterface {
   constructor() {
     super([
       'makeTransparent',

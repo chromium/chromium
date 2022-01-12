@@ -5,12 +5,8 @@
 import {ThemeObserverInterface, ThemeObserverRemote, ThemeProviderInterface} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/**
- * @implements {ThemeProviderInterface}
- * @extends {TestBrowserProxy}
- */
-export class TestThemeProvider extends TestBrowserProxy implements
-    ThemeProviderInterface {
+export class TestThemeProvider extends
+    TestBrowserProxy<ThemeProviderInterface> implements ThemeProviderInterface {
   constructor() {
     super([
       'setThemeObserver',

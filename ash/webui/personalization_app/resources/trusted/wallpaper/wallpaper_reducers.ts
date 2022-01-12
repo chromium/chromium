@@ -278,7 +278,7 @@ function pendingSelectedReducer(
       }
       return state;
     case WallpaperActionName.SET_FULLSCREEN_ENABLED:
-      if (!(/** @type {{enabled: boolean}} */ (action)).enabled) {
+      if (!action.enabled) {
         // Clear the pending selected state after full screen is dismissed.
         return null;
       }

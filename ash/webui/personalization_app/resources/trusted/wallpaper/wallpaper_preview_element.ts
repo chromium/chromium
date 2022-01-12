@@ -22,10 +22,6 @@ import {hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
-/**
- * @polymer
- * @implements WallpaperObserverInterface
- */
 export class WallpaperPreview extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-preview';
@@ -57,11 +53,9 @@ export class WallpaperPreview extends WithPersonalizationStore {
 
   constructor() {
     super();
-    /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.watch('image_', state => state.wallpaper.currentSelected);
@@ -76,7 +70,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
   /**
    * Reload at the wallpaper collections page.
    */
-  onClickWallpaper_() {
+  private onClickWallpaper_() {
     PersonalizationRouter.reloadAtWallpaper();
   }
 
@@ -84,7 +78,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
    * Return a chrome://image or data:// url to load the image safely. Returns
    * empty string in case |image| is null or invalid.
    */
-  getImageSrc_(image: CurrentWallpaper|null): string {
+  private getImageSrc_(image: CurrentWallpaper|null): string {
     if (image && image.url) {
       if (hasHttpScheme(image.url.url)) {
         return `chrome://image?${removeHighResolutionSuffix(image.url.url)}`;
@@ -94,7 +88,8 @@ export class WallpaperPreview extends WithPersonalizationStore {
     return '';
   }
 
-  computeShowImage_(image: CurrentWallpaper|null, loading: boolean): boolean {
+  private computeShowImage_(image: CurrentWallpaper|null, loading: boolean):
+      boolean {
     // Specifically check === false to avoid undefined case while component is
     // initializing.
     return loading === false && !!image;

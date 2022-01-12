@@ -15,10 +15,6 @@ import {WallpaperProvider, WallpaperProviderInterface} from '../personalization_
 
 let wallpaperProvider: WallpaperProviderInterface|null = null;
 
-/**
- * @param {!WallpaperProviderInterface}
- *     testProvider
- */
 export function setWallpaperProviderForTesting(
     testProvider: WallpaperProviderInterface): void {
   wallpaperProvider = testProvider;
