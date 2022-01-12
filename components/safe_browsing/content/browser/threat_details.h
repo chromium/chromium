@@ -24,6 +24,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -172,7 +173,7 @@ class ThreatDetails : public content::WebContentsObserver {
 
   void OnReceivedThreatDOMDetails(
       mojo::Remote<mojom::ThreatReporter> threat_reporter,
-      content::RenderFrameHost* sender,
+      content::GlobalRenderFrameHostId sender_id,
       std::vector<mojom::ThreatDOMDetailsNodePtr> params);
 
   void AddRedirectUrlList(const std::vector<GURL>& urls);
