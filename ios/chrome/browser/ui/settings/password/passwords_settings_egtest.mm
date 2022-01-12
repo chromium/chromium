@@ -64,11 +64,12 @@ NSString* GetTextFieldForID(int category_id) {
 
 // Returns the GREYElementInteraction* for the item on the password list with
 // the given |matcher|. It scrolls in |direction| if necessary to ensure that
-// the matched item is interactable.
+// the matched item is sufficiently visible, thus interactable.
 GREYElementInteraction* GetInteractionForListItem(id<GREYMatcher> matcher,
                                                   GREYDirection direction) {
   return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(matcher, grey_interactable(), nil)]
+      selectElementWithMatcher:grey_allOf(matcher, grey_sufficientlyVisible(),
+                                          nil)]
          usingSearchAction:grey_scrollInDirection(direction, kScrollAmount)
       onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
 }
@@ -1237,9 +1238,12 @@ void CopyPasswordDetailWithID(int detail_id) {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  [[EarlGrey
+  [[[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_EXPORT_PASSWORDS)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
       performAction:grey_tap()];
 
   [GetInteractionForPasswordsExportConfirmAlert(
