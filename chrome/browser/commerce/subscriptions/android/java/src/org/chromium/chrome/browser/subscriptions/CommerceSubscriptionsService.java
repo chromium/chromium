@@ -22,7 +22,8 @@ public class CommerceSubscriptionsService {
     /** Performs any deferred startup tasks required by {@link Subscriptions}. */
     public void initDeferredStartupForActivity(TabModelSelector tabModelSelector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        if (mImplicitPriceDropSubscriptionsManager == null) {
+        if (CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()
+                && mImplicitPriceDropSubscriptionsManager == null) {
             mImplicitPriceDropSubscriptionsManager = new ImplicitPriceDropSubscriptionsManager(
                     tabModelSelector, activityLifecycleDispatcher, mSubscriptionManager);
         }
