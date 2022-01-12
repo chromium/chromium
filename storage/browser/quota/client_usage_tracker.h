@@ -70,7 +70,6 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   int64_t GetCachedUsage() const;
   std::map<std::string, int64_t> GetCachedHostsUsage() const;
   std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
-  std::set<blink::StorageKey> GetCachedStorageKeys() const;
   bool IsUsageCacheEnabledForStorageKey(
       const blink::StorageKey& storage_key) const;
   void SetUsageCacheEnabled(const blink::StorageKey& storage_key, bool enabled);

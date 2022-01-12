@@ -68,7 +68,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   int64_t GetCachedUsage() const;
   std::map<std::string, int64_t> GetCachedHostsUsage() const;
   std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
-  std::set<blink::StorageKey> GetCachedStorageKeys() const;
   bool IsWorking() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return !global_usage_callbacks_.empty() || !host_usage_callbacks_.empty();

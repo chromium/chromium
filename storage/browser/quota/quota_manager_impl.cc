@@ -1784,13 +1784,6 @@ UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {
   return nullptr;
 }
 
-std::set<StorageKey> QuotaManagerImpl::GetCachedStorageKeys(StorageType type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureDatabaseOpened();
-  DCHECK(GetUsageTracker(type));
-  return GetUsageTracker(type)->GetCachedStorageKeys();
-}
-
 void QuotaManagerImpl::NotifyStorageAccessed(const StorageKey& storage_key,
                                              StorageType type,
                                              base::Time access_time) {

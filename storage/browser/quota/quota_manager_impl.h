@@ -514,11 +514,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 
-  // Extract cached storage keys list from the usage tracker.
-  // (Might return empty list if no storage key is tracked by the tracker.)
-  std::set<blink::StorageKey> GetCachedStorageKeys(
-      blink::mojom::StorageType type);
-
   void DumpQuotaTable(DumpQuotaTableCallback callback);
   void DumpBucketTable(DumpBucketTableCallback callback);
 

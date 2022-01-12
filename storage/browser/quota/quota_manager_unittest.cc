@@ -434,10 +434,6 @@ class QuotaManagerImplTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
-  std::set<StorageKey> GetCachedStorageKeys(StorageType type) {
-    return quota_manager_impl_->GetCachedStorageKeys(type);
-  }
-
   void NotifyStorageAccessed(const StorageKey& storage_key, StorageType type) {
     quota_manager_impl_->NotifyStorageAccessed(storage_key, type,
                                                IncrementMockTime());
@@ -2612,45 +2608,6 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(0, usage());
-}
-
-TEST_F(QuotaManagerImplTest, GetCachedStorageKeys) {
-  static const MockStorageKeyData kData[] = {
-      {"http://a.com/", kTemp, 1},
-      {"http://a.com:1/", kTemp, 20},
-      {"http://b.com/", kPerm, 300},
-      {"http://c.com/", kTemp, 4000},
-  };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-
-  // TODO(kinuko): Be careful when we add cache pruner.
-
-  std::set<StorageKey> storage_keys = GetCachedStorageKeys(kTemp);
-  EXPECT_TRUE(storage_keys.empty());
-
-  GetHostUsageWithBreakdown("a.com", kTemp);
-  storage_keys = GetCachedStorageKeys(kTemp);
-  EXPECT_EQ(2U, storage_keys.size());
-
-  GetHostUsageWithBreakdown("b.com", kTemp);
-  storage_keys = GetCachedStorageKeys(kTemp);
-  EXPECT_EQ(2U, storage_keys.size());
-
-  GetHostUsageWithBreakdown("c.com", kTemp);
-  storage_keys = GetCachedStorageKeys(kTemp);
-  EXPECT_EQ(3U, storage_keys.size());
-
-  storage_keys = GetCachedStorageKeys(kPerm);
-  EXPECT_TRUE(storage_keys.empty());
-
-  GetGlobalUsage(kTemp);
-  storage_keys = GetCachedStorageKeys(kTemp);
-  EXPECT_THAT(storage_keys,
-              testing::UnorderedElementsAre(ToStorageKey("http://a.com"),
-                                            ToStorageKey("http://c.com"),
-                                            ToStorageKey("http://a.com:1")));
 }
 
 TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {

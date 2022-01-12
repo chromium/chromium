@@ -181,16 +181,6 @@ ClientUsageTracker::GetCachedStorageKeysUsage() const {
   return storage_key_usage;
 }
 
-std::set<blink::StorageKey> ClientUsageTracker::GetCachedStorageKeys() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::set<blink::StorageKey> storage_keys;
-  for (const auto& host_and_usage_map : cached_usage_by_host_) {
-    for (const auto& storage_key_and_usage : host_and_usage_map.second)
-      storage_keys.insert(storage_key_and_usage.first);
-  }
-  return storage_keys;
-}
-
 void ClientUsageTracker::SetUsageCacheEnabled(
     const blink::StorageKey& storage_key,
     bool enabled) {

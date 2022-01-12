@@ -154,20 +154,6 @@ std::map<blink::StorageKey, int64_t> UsageTracker::GetCachedStorageKeysUsage()
   return storage_key_usage;
 }
 
-std::set<blink::StorageKey> UsageTracker::GetCachedStorageKeys() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::set<blink::StorageKey> storage_keys;
-  for (const auto& client_type_and_trackers : client_tracker_map_) {
-    for (const auto& client_tracker : client_type_and_trackers.second) {
-      std::set<blink::StorageKey> client_storage_keys =
-          client_tracker->GetCachedStorageKeys();
-      for (const auto& client_storage_key : client_storage_keys)
-        storage_keys.insert(client_storage_key);
-    }
-  }
-  return storage_keys;
-}
-
 void UsageTracker::SetUsageCacheEnabled(QuotaClientType client_type,
                                         const blink::StorageKey& storage_key,
                                         bool enabled) {
