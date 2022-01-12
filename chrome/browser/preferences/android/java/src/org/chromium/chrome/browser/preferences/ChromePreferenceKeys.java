@@ -541,9 +541,16 @@ public final class ChromePreferenceKeys {
             "Chrome.CrashReporting.LastSessionApplicationState";
 
     public static final String LOCALE_MANAGER_AUTO_SWITCH = "LocaleManager_PREF_AUTO_SWITCH";
+    public static final String LOCALE_MANAGER_PARTNER_PROMO_KEYWORD_SELECTED =
+            "LocaleManager_PARTNER_PROMO_SELECTED_KEYWORD";
     public static final String LOCALE_MANAGER_PROMO_SHOWN = "LocaleManager_PREF_PROMO_SHOWN";
     public static final String LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE =
             "com.android.chrome.SEARCH_ENGINE_PROMO_SHOWN";
+    public static final String LOCALE_MANAGER_SEARCH_WIDGET_PRESENT_FIRST_START =
+            "LocaleManager_SEARCH_WIDGET_PRESENT_FIRST_START";
+    public static final String LOCALE_MANAGER_SHOULD_REPING_RLZ_FOR_SEARCH_PROMO =
+            "LocaleManager_SHOULD_REPING_RLZ_FOR_SEARCH_PROMO_KEYWORD";
+    public static final String LOCALE_MANAGER_USER_TYPE = "LocaleManager_USR_TYPE";
     public static final String LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE =
             "LocaleManager_WAS_IN_SPECIAL_LOCALE";
 
