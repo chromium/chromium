@@ -309,9 +309,6 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
     aura::Window* window) {
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
-  if (IgnoreWindow(window)) {
-    return;
-  }
 
   if (arc_tracker_)
     arc_tracker_->RemoveCandidateWindow(window);
