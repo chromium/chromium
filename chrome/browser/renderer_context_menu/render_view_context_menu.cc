@@ -1319,10 +1319,8 @@ void RenderViewContextMenu::AppendLinkItems() {
     AppendOpenInWebAppLinkItems();
     AppendOpenWithLinkItems();
 
-    // While ChromeOS supports multiple profiles, only one can be open at a
-    // time.
-    // TODO(jochen): Consider adding support for ChromeOS with similar
-    // semantics as the profile switcher in the system tray.
+    // ChromeOS ASH supports multiple profiles, but only one can be open at a
+    // time. With LaCrOS, profile switching is enabled.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // g_browser_process->profile_manager() is null during unit tests.
     if (g_browser_process->profile_manager() &&
