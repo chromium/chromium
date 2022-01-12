@@ -259,6 +259,7 @@ crbug.com/1093466 virtual/portals/wpt_internal/portals/* [ Pass ]
 crbug.com/1123606 wpt_internal/fenced_frame/* [ Skip ]
 crbug.com/1123606 fenced_frame/* [ Skip ]
 crbug.com/1123606 virtual/fenced-frame-shadow-dom/* [ Pass ]
+crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
 
 # These tests require the experimental prerender feature.
 # See https://crbug.com/1126305.
@@ -7650,3 +7651,6 @@ crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriv
 
 # Sanitizer API: Namespace-based tests will partially fail until namespace support is complete.
 crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Failure ]
+
+# Changes to fork() on Mac causing test to crash
+crbug.com/1284401 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/create-credential.https.html [ Crash Failure ]
