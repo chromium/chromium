@@ -96,6 +96,20 @@ SHIM_CPP_SYMBOLS_EXPORT void operator delete[](void* p) __THROW {
   ShimCppDelete(p);
 }
 
+
+#if defined(OS_FUCHSIA)
+// On Fuchsia, new() is different from all other platform allocator functions
+// in its use of noexcept.
+SHIM_CPP_SYMBOLS_EXPORT void* operator new(size_t size,
+                                      const std::nothrow_t&) noexcept {
+  return ShimCppNewNoThrow(size);
+}
+
+SHIM_CPP_SYMBOLS_EXPORT void* operator new[](size_t size,
+                                        const std::nothrow_t&) noexcept {
+  return ShimCppNewNoThrow(size);
+}
+#else
 SHIM_CPP_SYMBOLS_EXPORT void* operator new(size_t size,
                                            const std::nothrow_t&) __THROW {
   return ShimCppNewNoThrow(size);
@@ -105,6 +119,7 @@ SHIM_CPP_SYMBOLS_EXPORT void* operator new[](size_t size,
                                              const std::nothrow_t&) __THROW {
   return ShimCppNewNoThrow(size);
 }
+#endif  // defined(OS_FUCHSIA)
 
 SHIM_CPP_SYMBOLS_EXPORT void operator delete(void* p,
                                              const std::nothrow_t&) __THROW {
