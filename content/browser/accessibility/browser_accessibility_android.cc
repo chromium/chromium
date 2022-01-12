@@ -1060,10 +1060,6 @@ std::string BrowserAccessibilityAndroid::GetRoleString() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
-  // If an element has an aria-roledescription set, use that value by default.
-  if (HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription))
-    return GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription);
-
   content::ContentClient* content_client = content::GetContentClient();
 
   // As a special case, if we have a heading level return a string like
