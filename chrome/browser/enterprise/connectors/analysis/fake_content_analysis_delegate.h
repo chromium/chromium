@@ -106,6 +106,9 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
+  void UploadPageForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override;
 
   static safe_browsing::BinaryUploadService::Result result_;
   base::RepeatingClosure delete_closure_;

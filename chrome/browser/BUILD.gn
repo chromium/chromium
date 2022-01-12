@@ -3761,6 +3761,8 @@ static_library("browser") {
       "enterprise/connectors/analysis/content_analysis_dialog.h",
       "enterprise/connectors/analysis/content_analysis_downloads_delegate.cc",
       "enterprise/connectors/analysis/content_analysis_downloads_delegate.h",
+      "enterprise/connectors/analysis/page_print_analysis_request.cc",
+      "enterprise/connectors/analysis/page_print_analysis_request.h",
       "enterprise/connectors/common.cc",
       "enterprise/connectors/common.h",
       "enterprise/connectors/connectors_manager.cc",

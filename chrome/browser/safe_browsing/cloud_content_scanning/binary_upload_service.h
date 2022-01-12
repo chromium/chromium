@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -96,8 +97,8 @@ class BinaryUploadService : public KeyedService {
 
   // A class to encapsulate the a request for upload. This class will provide
   // all the functionality needed to generate a ContentAnalysisRequest, and
-  // subclasses will provide different sources of data to upload (e.g. file or
-  // string).
+  // subclasses will provide different sources of data to upload (e.g. file,
+  // page or string).
   class Request {
    public:
     // `callback` will run on the UI thread.
@@ -133,6 +134,9 @@ class BinaryUploadService : public KeyedService {
 
       // The mime type of the data. Only populated for file requests.
       std::string mime_type;
+
+      // The page's content. Only populated for page requests.
+      base::ReadOnlySharedMemoryRegion page;
     };
 
     // Aynchronously returns the data required to make a MultipartUploadRequest.

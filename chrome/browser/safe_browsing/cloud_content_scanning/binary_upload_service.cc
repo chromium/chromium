@@ -395,11 +395,19 @@ void BinaryUploadService::OnGetRequestData(Request* request,
     upload_request = MultipartUploadRequest::CreateStringRequest(
         url_loader_factory_, std::move(url), metadata, data.contents,
         std::move(traffic_annotation), std::move(callback));
-  } else {
-    DCHECK(!data.path.empty());
+  } else if (!data.path.empty()) {
     upload_request = MultipartUploadRequest::CreateFileRequest(
         url_loader_factory_, std::move(url), metadata, data.path,
         std::move(traffic_annotation), std::move(callback));
+  } else if (data.page.IsValid()) {
+    upload_request = MultipartUploadRequest::CreatePageRequest(
+        url_loader_factory_, std::move(url), metadata, std::move(data.page),
+        std::move(traffic_annotation), std::move(callback));
+  } else {
+    NOTREACHED();
+    FinishRequest(request, Result::UNKNOWN,
+                  enterprise_connectors::ContentAnalysisResponse());
+    return;
   }
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
