@@ -22,6 +22,13 @@ const base::Feature kAccountIdMigration{"AccountIdMigration",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+// If enabled, child accounts (i.e. Unicorn accounts) on Android do not have the
+// Sync feature forced on.
+const base::Feature kAllowSyncOffForChildAccounts{
+    "AllowSyncOffForChildAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_ANDROID) || defined(OS_IOS)
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

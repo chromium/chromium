@@ -26,6 +26,8 @@ extern const base::Feature kAccountIdMigration;
 #endif
 
 #if defined(OS_ANDROID)
+extern const base::Feature kAllowSyncOffForChildAccounts;
+
 // This feature flag is used to wipe device data on child account signin.
 extern const base::Feature kWipeDataOnChildAccountSignin;
 #endif  // defined(OS_ANDROID)
