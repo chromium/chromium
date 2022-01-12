@@ -219,7 +219,7 @@ ASSERT_SIZE(RuleData, SameSizeAsRuleData);
 // ElementRuleCollector::CollectMatchingRules.
 class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
  public:
-  RuleSet() : rule_count_(0) {}
+  RuleSet() = default;
   RuleSet(const RuleSet&) = delete;
   RuleSet& operator=(const RuleSet&) = delete;
 
@@ -242,6 +242,13 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     DCHECK(!pending_rules_);
     auto it = class_rules_.find(key);
     return it != class_rules_.end() ? it->value : nullptr;
+  }
+  bool HasAnyAttrRules() const { return !attr_rules_.IsEmpty(); }
+  const HeapVector<Member<const RuleData>>* AttrRules(
+      const AtomicString& key) const {
+    DCHECK(!pending_rules_);
+    auto it = attr_rules_.find(key);
+    return it != attr_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* TagRules(
       const AtomicString& key) const {
@@ -336,6 +343,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return !slotted_pseudo_element_rules_.IsEmpty();
   }
 
+  bool HasBucketForStyleAttribute() const { return has_bucket_for_style_attr_; }
+
   bool NeedsFullRecalcForRuleSetInvalidation() const {
     return features_.NeedsFullRecalcForRuleSetInvalidation();
   }
@@ -411,6 +420,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
     PendingRuleMap id_rules;
     PendingRuleMap class_rules;
+    PendingRuleMap attr_rules;
     PendingRuleMap tag_rules;
     PendingRuleMap ua_shadow_pseudo_element_rules;
 
@@ -442,6 +452,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   CompactRuleMap id_rules_;
   CompactRuleMap class_rules_;
+  CompactRuleMap attr_rules_;
   CompactRuleMap tag_rules_;
   CompactRuleMap ua_shadow_pseudo_element_rules_;
   HeapVector<Member<const RuleData>> link_pseudo_class_rules_;
@@ -463,7 +474,13 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules_;
   Vector<MediaQuerySetResult> media_query_set_results_;
 
-  unsigned rule_count_;
+  // Whether there is a ruleset bucket for rules with a selector on
+  // the style attribute (which is rare, but allowed). If so, the caller
+  // may need to take extra steps to synchronize the style attribute on
+  // an element before looking for appropriate buckets.
+  bool has_bucket_for_style_attr_ = false;
+
+  unsigned rule_count_ = 0;
   Member<PendingRuleMaps> pending_rules_;
 
   // nullptr if the stylesheet doesn't explicitly declare any layer.

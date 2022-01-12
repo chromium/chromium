@@ -541,6 +541,9 @@ static bool AnyAttributeMatches(Element& element,
       // are lower-cased for selectors in html documents. Compare the selector
       // and the attribute local name insensitively to e.g. allow matching SVG
       // attributes like viewBox.
+      //
+      // NOTE: If changing this behavior, be sure to also update the bucketing
+      // in ElementRuleCollector::CollectMatchingRules() accordingly.
       if (!attribute_item.MatchesCaseInsensitive(selector_attr))
         continue;
     }

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -331,6 +333,22 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_matched, matched);
 }
 
+namespace {
+
+base::span<const Attribute> GetAttributes(const Element& element,
+                                          bool need_style_synchronized) {
+  if (need_style_synchronized) {
+    const AttributeCollection collection = element.Attributes();
+    return {collection.data(), collection.size()};
+  } else {
+    const AttributeCollection collection =
+        element.AttributesWithoutStyleUpdate();
+    return {collection.data(), collection.size()};
+  }
+}
+
+}  // namespace
+
 DISABLE_CFI_PERF
 void ElementRuleCollector::CollectMatchingRules(
     const MatchRequest& match_request) {
@@ -374,6 +392,61 @@ void ElementRuleCollector::CollectMatchingRules(
       CollectMatchingRulesForList(
           match_request.rule_set->ClassRules(element.ClassNames()[i]),
           match_request, checker);
+    }
+  }
+
+  // Collect rules from attribute selector buckets, if we have any.
+  if (match_request.rule_set->HasAnyAttrRules()) {
+    // HTML documents have case-insensitive attribute matching
+    // (so we need to lowercase), non-HTML documents have
+    // case-sensitive attribute matching (so we should _not_ lowercase).
+    // However, HTML elements already have lowercased their attributes
+    // during parsing, so we do not need to do it again.
+    const bool lower_attrs_in_default_ns =
+        !element.IsHTMLElement() && IsA<HTMLDocument>(element.GetDocument());
+
+    // Due to lazy attributes, this can be a bit tricky. First of all,
+    // we need to make sure that if there's a dirty style attribute
+    // and there's a ruleset bucket for [style] selectors (which is extremely
+    // unusual, but allowed), we check the rules in that bucket.
+    // We do this by means of synchronizing the style attribute before
+    // iterating, but only if there's actually such a bucket, as it's fairly
+    // expensive to do so. (We have a similar issue with SVG attributes,
+    // but it is tricky enough to identify if there are any such buckets
+    // that we simply always synchronize them if there are any attribute
+    // ruleset buckets at all. We can always revisit this if there are any
+    // slowdowns from SVG attribute synchronization.)
+    //
+    // Second, CollectMatchingRulesForList() may call member functions
+    // that synchronize the element, adding new attributes to the list
+    // while we iterate. These are not relevant for correctness (we
+    // would never find any rule buckets matching them anyway),
+    // but they may cause reallocation of the vector. For this reason,
+    // we cannot use range-based iterators over the attributes here
+    // if we don't synchronize before the loop; we need to use
+    // simple indexes and then refresh the span after every call.
+    bool need_style_synchronized =
+        match_request.rule_set->HasBucketForStyleAttribute();
+    base::span<const Attribute> attributes =
+        GetAttributes(element, need_style_synchronized);
+
+    for (unsigned attr_idx = 0; attr_idx < attributes.size(); ++attr_idx) {
+      const AtomicString& attribute_name = attributes[attr_idx].LocalName();
+      // NOTE: Attributes in non-default namespaces are case-sensitive.
+      // There is a bug where you can set mixed-cased attributes (in non-default
+      // namespaces) with setAttributeNS(), but they never match anything.
+      // (The relevant code is in AnyAttributeMatches(), in
+      // selector_checker.cc.) What we're doing here doesn't influence that bug.
+      const AtomicString& lower_name =
+          (lower_attrs_in_default_ns &&
+           attributes[attr_idx].NamespaceURI() == g_null_atom)
+              ? attribute_name.LowerASCII()
+              : attribute_name;
+      CollectMatchingRulesForList(match_request.rule_set->AttrRules(lower_name),
+                                  match_request, checker);
+
+      const AttributeCollection collection = element.AttributesWithoutUpdate();
+      attributes = {collection.data(), collection.size()};
     }
   }
 

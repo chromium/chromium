@@ -1083,6 +1083,12 @@ void Element::SynchronizeAllAttributes() const {
     DCHECK(IsStyledElement());
     SynchronizeStyleAttributeInternal();
   }
+  SynchronizeAllAttributesExceptStyle();
+}
+
+void Element::SynchronizeAllAttributesExceptStyle() const {
+  if (!GetElementData())
+    return;
   if (GetElementData()->svg_attributes_are_dirty())
     To<SVGElement>(this)->SynchronizeSVGAttribute(AnyQName());
 }

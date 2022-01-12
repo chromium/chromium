@@ -319,6 +319,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // This variant will not update the potentially invalid attributes. To be used
   // when not interested in style attribute or one of the SVG attributes.
   AttributeCollection AttributesWithoutUpdate() const;
+  // Similar to AttributesWithoutUpdate(), but with only the style attribute
+  // exempt (ie., SVG attributes are always synchronized, for simplicity).
+  // The style attribute is special because it is so frequently updated from
+  // JavaScript and also easily identifiable (it is a single attribute).
+  AttributeCollection AttributesWithoutStyleUpdate() const;
 
   void scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg);
   void scrollIntoView(bool align_to_top = true);
@@ -1281,6 +1286,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void SynchronizeAllAttributes() const;
   void SynchronizeAttribute(const QualifiedName&) const;
+  void SynchronizeAllAttributesExceptStyle() const;
 
   void UpdateId(const AtomicString& old_id, const AtomicString& new_id);
   void UpdateId(TreeScope&,
@@ -1462,7 +1468,6 @@ struct DowncastTraits<Element> {
   static bool AllowFrom(const Node& node) { return node.IsElementNode(); }
 };
 
-
 inline bool IsDisabledFormControl(const Node* node) {
   auto* element = DynamicTo<Element>(node);
   return element && element->IsDisabledFormControl();
@@ -1504,6 +1509,13 @@ inline AttributeCollection Element::Attributes() const {
 inline AttributeCollection Element::AttributesWithoutUpdate() const {
   if (!GetElementData())
     return AttributeCollection();
+  return GetElementData()->Attributes();
+}
+
+inline AttributeCollection Element::AttributesWithoutStyleUpdate() const {
+  if (!GetElementData())
+    return AttributeCollection();
+  SynchronizeAllAttributesExceptStyle();
   return GetElementData()->Attributes();
 }
 
