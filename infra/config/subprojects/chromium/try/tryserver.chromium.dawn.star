@@ -128,7 +128,7 @@ try_.builder(
     name = "dawn-try-mac-intel-exp",
     builderless = True,
     os = os.MAC_ANY,
-    pool = "luci.chromium.gpu.mac.mini.intel.uhd630.try",
+    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 try_.builder(

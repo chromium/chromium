@@ -44,5 +44,5 @@ def angle_ios_builder(*, name, **kwargs):
 
 angle_ios_builder(
     name = "ios-angle-try-intel",
-    pool = "luci.chromium.gpu.mac.mini.intel.uhd630.try",
+    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
