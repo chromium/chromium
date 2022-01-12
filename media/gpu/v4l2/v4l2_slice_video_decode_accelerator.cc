@@ -601,7 +601,7 @@ bool V4L2SliceVideoDecodeAccelerator::CreateImageProcessor() {
 
   image_processor_ = v4l2_vda_helpers::CreateImageProcessor(
       *output_format_fourcc_, *gl_image_format_fourcc_, coded_size_,
-      gl_image_size_, GetRectSizeFromOrigin(decoder_->GetVisibleRect()),
+      gl_image_size_, decoder_->GetVisibleRect(),
       VideoFrame::StorageType::STORAGE_DMABUFS, output_buffer_map_.size(),
       image_processor_device_, image_processor_output_mode,
       // Unretained(this) is safe for ErrorCB because |decoder_thread_| is owned

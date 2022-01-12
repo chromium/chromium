@@ -40,7 +40,7 @@ absl::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device);
 // the input coded size for the IP).
 // |ip_output_coded_size| is the coded size of the output buffers that the IP
 // must produce.
-// |visible_size| is the visible size of both the input and output buffers.
+// |visible_rect| is the visible area of both the input and output buffers.
 // |output_storage_type| indicates what type of VideoFrame is used for output.
 // |nb_buffers| is the exact number of output buffers that the IP must create.
 // |image_processor_output_mode| specifies whether the IP must allocate its
@@ -53,7 +53,7 @@ std::unique_ptr<ImageProcessor> CreateImageProcessor(
     const Fourcc ip_output_format,
     const gfx::Size& vda_output_coded_size,
     const gfx::Size& ip_output_coded_size,
-    const gfx::Size& visible_size,
+    const gfx::Rect& visible_rect,
     VideoFrame::StorageType output_storage_type,
     size_t nb_buffers,
     scoped_refptr<V4L2Device> image_processor_device,
