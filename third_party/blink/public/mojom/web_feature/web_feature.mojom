@@ -3413,7 +3413,6 @@ enum WebFeature {
   kV8UDPSocket_Close_Method = 4104,
   kHTMLInputElementSimulatedClick = 4105,
   kRTCLocalSdpModificationIceUfragPwd = 4106,
-  kV8Navigator_DeprecatedURNToURL_Method = 4107,
 
 
   // Add new features immediately above this line. Don't change assigned
