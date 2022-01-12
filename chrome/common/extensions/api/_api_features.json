@@ -737,6 +737,11 @@
     "dependencies": ["permission:scripting"],
     "contexts": ["blessed_extension"]
   },
+  "scripting.globalParams": {
+    "channel": "trunk",
+    "dependencies": ["permission:scripting"],
+    "contexts": ["content_script"]
+  },
   "search": {
     "dependencies": ["permission:search"],
     "contexts": ["blessed_extension"]

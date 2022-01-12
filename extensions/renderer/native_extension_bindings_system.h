@@ -142,6 +142,10 @@ class NativeExtensionBindingsSystem {
   // bindings availability has changed (such as after a permissions change).
   void InvalidateFeatureCache(const ExtensionId& extension_id);
 
+  // Creates the parameters objects inside chrome.scripting, if |context| is for
+  // content scripts running in an isolated world.
+  void SetScriptingParams(ScriptContext* context);
+
   std::unique_ptr<IPCMessageSender> ipc_message_sender_;
 
   // The APIBindingsSystem associated with this class.

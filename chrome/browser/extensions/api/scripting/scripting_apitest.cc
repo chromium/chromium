@@ -104,6 +104,13 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScripts) {
   ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptParameters) {
+  // Dynamic content script parameters are currently limited to trunk.
+  ScopedCurrentChannel scoped_channel(version_info::Channel::UNKNOWN);
+  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_script_parameters"))
+      << message_;
+}
+
 // Test that if an extension with persistent scripts is quickly unloaded while
 // these scripts are being fetched, requests that wait on that extension's
 // script load will be unblocked. Regression for crbug.com/1250575

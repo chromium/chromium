@@ -49,6 +49,7 @@
 #include "extensions/renderer/web_request_hooks.h"
 #include "extensions/renderer/worker_thread_util.h"
 #include "gin/converter.h"
+#include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -468,6 +469,12 @@ void NativeExtensionBindingsSystem::DidCreateScriptContext(
                           weak_factory_.GetWeakPtr()));
 
   UpdateBindingsForContext(context);
+
+  // Set the scripting params object for if we are running in a content script
+  // context. This effectively checks that we are running in an isolated world
+  // since main world script contexts have a different Feature::Context type.
+  if (context->context_type() == Feature::CONTENT_SCRIPT_CONTEXT)
+    SetScriptingParams(context);
 }
 
 void NativeExtensionBindingsSystem::WillReleaseScriptContext(
@@ -931,6 +938,25 @@ void NativeExtensionBindingsSystem::UpdateContentCapabilities(
 void NativeExtensionBindingsSystem::InvalidateFeatureCache(
     const ExtensionId& extension_id) {
   feature_cache_.InvalidateExtension(extension_id);
+}
+
+void NativeExtensionBindingsSystem::SetScriptingParams(ScriptContext* context) {
+  if (!IsAPIFeatureAvailable(context->v8_context(), "scripting.globalParams"))
+    return;
+
+  v8::Local<v8::Object> scripting_object =
+      GetAPIHelper(context->v8_context(),
+                   gin::StringToSymbol(context->isolate(), "scripting"));
+  if (scripting_object.IsEmpty())
+    return;
+
+  // Set the globalParams property on the chrome.scripting object if available.
+  scripting_object
+      ->CreateDataProperty(
+          context->v8_context(),
+          gin::StringToSymbol(context->isolate(), "globalParams"),
+          gin::DataObjectBuilder(context->isolate()).Build())
+      .Check();
 }
 
 }  // namespace extensions
