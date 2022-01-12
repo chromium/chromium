@@ -8,8 +8,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/resources/media/grit/media_internals_resources.h"
-#include "content/browser/resources/media/grit/media_internals_resources_map.h"
 #include "content/grit/content_resources.h"
 #include "content/grit/content_resources_map.h"
 #include "content/public/common/url_constants.h"
@@ -113,8 +111,6 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
 
   AddResources(GetContentResourceIds(), kContentResources,
                kContentResourcesSize, source);
-  source->AddResourcePaths(
-      base::make_span(kMediaInternalsResources, kMediaInternalsResourcesSize));
   source->AddResourcePaths(
       base::make_span(kWebuiResources, kWebuiResourcesSize));
   source->AddResourcePaths(
