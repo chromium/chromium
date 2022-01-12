@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -1321,6 +1322,8 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   }
 
   UpdateManagedWifiNetworkAvailable();
+  if (features::IsESimPolicyEnabled())
+    UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular());
 
   if (type != ManagedState::ManagedType::MANAGED_TYPE_NETWORK)
     return;
@@ -1575,6 +1578,10 @@ void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
 
     if (device->type() == shill::kTypeWifi && !device->scanning())
       UpdateManagedWifiNetworkAvailable();
+    if (device->type() == shill::kTypeCellular && !device->scanning() &&
+        features::IsESimPolicyEnabled()) {
+      UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular());
+    }
   }
   if (key == shill::kEapAuthenticationCompletedProperty) {
     // Notify a change for each Ethernet service using this device.
@@ -1661,6 +1668,8 @@ void NetworkStateHandler::ManagedStateListChanged(
       UpdateNetworkStats();
       NotifyIfActiveNetworksChanged();
       NotifyNetworkListChanged();
+      if (features::IsESimPolicyEnabled())
+        UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular());
       UpdateManagedWifiNetworkAvailable();
       // ManagedStateListChanged only gets executed if all pending updates have
       // completed. Profile networks are loaded if a user is logged in and all

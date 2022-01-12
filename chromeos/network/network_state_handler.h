@@ -545,6 +545,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, SyncStubCellularNetworks);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
                            GetNetworkListAfterUpdateManagedList);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
+                           UpdateBlockedCellularNetworkAfterUpdateManagedList);
 
   // Implementation for GetNetworkListByType and GetActiveNetworkListByType.
   void GetNetworkListByTypeImpl(const NetworkTypePattern& type,

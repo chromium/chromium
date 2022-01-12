@@ -12,12 +12,14 @@
 #include <set>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -2422,6 +2424,49 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
 
   network_state_handler_->UpdateBlockedCellularNetworks(true);
 
+  EXPECT_TRUE(cellular1->blocked_by_policy());
+  EXPECT_TRUE(cellular2->blocked_by_policy());
+
+  // Emulate 'cellular1' being a managed network.
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  base::Value properties(base::Value::Type::DICTIONARY);
+  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
+  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  SetProperties(cellular1, properties);
+
+  EXPECT_TRUE(cellular1->IsManagedByPolicy());
+  EXPECT_FALSE(cellular1->blocked_by_policy());
+  EXPECT_FALSE(cellular2->IsManagedByPolicy());
+  EXPECT_TRUE(cellular2->blocked_by_policy());
+}
+
+TEST_F(NetworkStateHandlerTest,
+       UpdateBlockedCellularNetworkAfterUpdateManagedList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
+  const char kTestCellularServicePath2[] = "test_cellular_service_path2";
+  const char kTestCellularServiceGuid2[] = "test_cellular_guid2";
+  const char kTestCellularServiceName2[] = "test_cellular2";
+  AddService(kTestCellularServicePath2, kTestCellularServiceGuid2,
+             kTestCellularServiceName2, shill::kTypeCellular,
+             shill::kStateIdle);
+  base::RunLoop().RunUntilIdle();
+
+  NetworkState* cellular1 = network_state_handler_->GetModifiableNetworkState(
+      kShillManagerClientStubCellular);
+  NetworkState* cellular2 = network_state_handler_->GetModifiableNetworkState(
+      kTestCellularServicePath2);
+  EXPECT_FALSE(cellular1->IsManagedByPolicy());
+  EXPECT_FALSE(cellular1->blocked_by_policy());
+  EXPECT_FALSE(cellular2->IsManagedByPolicy());
+  EXPECT_FALSE(cellular2->blocked_by_policy());
+
+  network_state_handler_->allow_only_policy_cellular_networks_to_connect_ =
+      true;
+  network_state_handler_->UpdateManagedList(
+      ManagedState::ManagedType::MANAGED_TYPE_NETWORK,
+      manager_test_->GetEnabledServiceList());
   EXPECT_TRUE(cellular1->blocked_by_policy());
   EXPECT_TRUE(cellular2->blocked_by_policy());
 
