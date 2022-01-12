@@ -288,6 +288,7 @@ android_library("junit") {
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/TestWebFeedFaviconFetcher.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogMediatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFaviconFetcherTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroControllerTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroViewTest.java",
