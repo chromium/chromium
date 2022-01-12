@@ -118,7 +118,6 @@
         "java.util.StringJoiner": "j$.util.StringJoiner",
         "java.util.Tripwire": "j$.util.Tripwire",
         "java.util.concurrent.DesugarUnsafe": "j$.util.concurrent.DesugarUnsafe",
-        "java.util.concurrent.ThreadLocalRandom": "j$.util.concurrent.ThreadLocalRandom",
         "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic"
       },
       "retarget_lib_member": {
@@ -188,7 +187,6 @@
         "java.util.PrimitiveIterator": "j$.util.PrimitiveIterator",
         "java.util.Spliterator": "j$.util.Spliterator",
         "java.util.StringJoiner": "j$.util.StringJoiner",
-        "java.util.concurrent.ThreadLocalRandom": "j$.util.concurrent.ThreadLocalRandom",
         "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic"
       },
       "retarget_lib_member": {
