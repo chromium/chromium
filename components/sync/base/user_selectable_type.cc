@@ -109,7 +109,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     }
   }
   NOTREACHED();
-  return {nullptr, UNSPECIFIED};
+  return {nullptr, UNSPECIFIED, {}};
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

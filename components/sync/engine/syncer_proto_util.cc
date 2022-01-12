@@ -314,7 +314,6 @@ void SyncerProtoUtil::SetProtocolVersion(ClientToServerMessage* msg) {
 
 // static
 bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
-                                            SyncCycle* cycle,
                                             const ClientToServerMessage& msg,
                                             ClientToServerResponse* response) {
   DCHECK(msg.has_protocol_version());
@@ -420,7 +419,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
   DCHECK(msg.has_invalidator_client_id());
 
   LogClientToServerMessage(msg);
-  if (!PostAndProcessHeaders(cycle->context()->connection_manager(), cycle, msg,
+  if (!PostAndProcessHeaders(cycle->context()->connection_manager(), msg,
                              response)) {
     // There was an error establishing communication with the server.
     // We can not proceed beyond this point.

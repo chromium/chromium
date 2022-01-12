@@ -97,7 +97,8 @@ void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
 
 EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
   EngineComponentsFactory::Switches factory_switches = {
-      EngineComponentsFactory::BACKOFF_NORMAL};
+      EngineComponentsFactory::BACKOFF_NORMAL,
+      /*force_short_nudge_delay_for_test=*/false};
 
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (cl->HasSwitch(switches::kSyncShortInitialRetryOverride)) {

@@ -46,8 +46,8 @@ void InMemoryMetadataChangeList::UpdateModelTypeState(
 }
 
 void InMemoryMetadataChangeList::ClearModelTypeState() {
-  state_change_ =
-      std::make_unique<ModelTypeStateChange>(ModelTypeStateChange{CLEAR});
+  state_change_ = std::make_unique<ModelTypeStateChange>(
+      ModelTypeStateChange{CLEAR, sync_pb::ModelTypeState()});
 }
 
 void InMemoryMetadataChangeList::UpdateMetadata(

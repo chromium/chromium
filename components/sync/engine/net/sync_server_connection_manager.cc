@@ -42,8 +42,6 @@ class Connection : public CancelationSignal::Observer {
   void OnCancelationSignalReceived() override;
 
  private:
-  int ReadResponse(std::string* out_buffer, int length) const;
-
   // Pointer to the factory we use for creating HttpPostProviders. We do not
   // own |factory_|.
   const raw_ptr<HttpPostProviderFactory> factory_;
@@ -125,20 +123,15 @@ bool Connection::ReadBufferResponse(std::string* buffer_out,
   if (response->content_length <= 0)
     return false;
 
-  const int64_t bytes_read =
-      ReadResponse(buffer_out, static_cast<int>(response->content_length));
+  const int64_t bytes_read = buffer_.length();
+  CHECK_LE(response->content_length, bytes_read);
+  buffer_out->assign(buffer_);
+
   if (bytes_read != response->content_length) {
     response->server_status = HttpResponse::IO_ERROR;
     return false;
   }
   return true;
-}
-
-int Connection::ReadResponse(std::string* out_buffer, int length) const {
-  int bytes_read = buffer_.length();
-  CHECK_LE(length, bytes_read);
-  out_buffer->assign(buffer_);
-  return bytes_read;
 }
 
 void Connection::OnCancelationSignalReceived() {

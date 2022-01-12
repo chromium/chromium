@@ -93,7 +93,6 @@ class SyncerProtoUtil {
   // Post the message using the scm, and do some processing on the returned
   // headers. Decode the server response.
   static bool PostAndProcessHeaders(ServerConnectionManager* scm,
-                                    SyncCycle* cycle,
                                     const sync_pb::ClientToServerMessage& msg,
                                     sync_pb::ClientToServerResponse* response);
 

@@ -93,7 +93,6 @@ struct CustomOnTaskRunnerDeleter {
   ~CustomOnTaskRunnerDeleter() = default;
 
   CustomOnTaskRunnerDeleter(CustomOnTaskRunnerDeleter&&) = default;
-  CustomOnTaskRunnerDeleter& operator=(CustomOnTaskRunnerDeleter&&) = default;
 
   // For compatibility with std:: deleters.
   template <typename T>
