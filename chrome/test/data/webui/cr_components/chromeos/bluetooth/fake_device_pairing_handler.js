@@ -46,6 +46,12 @@ export class FakeDevicePairingHandler {
 
     /** @private {?chromeos.bluetoothConfig.mojom.KeyEnteredHandlerRemote} */
     this.lastKeyEnteredHandlerRemote_ = null;
+
+    /** @private {?function()} */
+    this.waitForPairDeviceCallback_ = null;
+
+    /** @private {?function()} */
+    this.finishRequestConfirmPasskeyCallback_ = null;
   }
 
   /** @override */
@@ -56,7 +62,23 @@ export class FakeDevicePairingHandler {
       this.pairDeviceCallback_ = resolve;
       this.pairDeviceRejectCallback_ = reject;
     });
+
+    if (this.waitForPairDeviceCallback_) {
+      this.waitForPairDeviceCallback_();
+    }
+
     return promise;
+  }
+
+  /**
+   * Returns a promise that will be resolved the next time
+   * pairDevice() is called.
+   * @return {Promise}
+   */
+  waitForPairDevice() {
+    return new Promise((resolve) => {
+      this.waitForPairDeviceCallback_ = resolve;
+    });
   }
 
   /**
@@ -68,6 +90,7 @@ export class FakeDevicePairingHandler {
    * passkey/PIN authentication.
    */
   requireAuthentication(authType, opt_pairingCode) {
+    assert(this.devicePairingDelegate_, 'devicePairingDelegate_ was not set.');
     switch (authType) {
       case PairingAuthType.REQUEST_PIN_CODE:
         this.devicePairingDelegate_.requestPinCode()
@@ -106,6 +129,17 @@ export class FakeDevicePairingHandler {
   }
 
   /**
+   * Returns a promise that will be resolved the next time
+   * finishRequestConfirmPasskey_() is called.
+   * @return {Promise}
+   */
+  waitForFinishRequestConfirmPasskey_() {
+    return new Promise((resolve) => {
+      this.finishRequestConfirmPasskeyCallback_ = resolve;
+    });
+  }
+
+  /**
    * @return {!chromeos.bluetoothConfig.mojom.KeyEnteredHandlerPendingReceiver}
    * @private
    */
@@ -136,6 +170,10 @@ export class FakeDevicePairingHandler {
    */
   finishRequestConfirmPasskey_(confirmed) {
     this.confirmPasskeyResult_ = confirmed;
+
+    if (this.finishRequestConfirmPasskeyCallback_) {
+      this.finishRequestConfirmPasskeyCallback_();
+    }
   }
 
   /**
