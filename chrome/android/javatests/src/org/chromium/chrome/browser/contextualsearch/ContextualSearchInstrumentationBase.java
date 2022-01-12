@@ -13,6 +13,7 @@ import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
@@ -30,6 +31,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -49,7 +51,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -220,10 +221,7 @@ public class ContextualSearchInstrumentationBase {
 
         sActivityTestRule.loadUrl(mTestServer.getURL(mTestPage));
 
-        mManager = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return ContextualSearchManagerSupplier.getValueOrNullFrom(
-                    sActivityTestRule.getActivity().getWindowAndroid());
-        });
+        mManager = sActivityTestRule.getActivity().getContextualSearchManager();
         mTestHost = new ContextualSearchInstrumentationTestHost();
 
         Assert.assertNotNull(mManager);
@@ -1030,10 +1028,14 @@ public class ContextualSearchInstrumentationBase {
      */
     private void resetCounters() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+            // TODO(donnd): Use SharedPreferencesManager instead to access SharedPreferences.
+            SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
             boolean freStatus =
-                    prefs.readBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
-            prefs.writeBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, freStatus);
+                    prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
+            prefs.edit()
+                    .clear()
+                    .putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, freStatus)
+                    .apply();
         });
     }
 

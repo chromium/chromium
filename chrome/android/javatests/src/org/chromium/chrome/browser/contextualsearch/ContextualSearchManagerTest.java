@@ -283,10 +283,7 @@ public class ContextualSearchManagerTest {
 
         sActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
-        mManager = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return ContextualSearchManagerSupplier.getValueOrNullFrom(
-                    sActivityTestRule.getActivity().getWindowAndroid());
-        });
+        mManager = sActivityTestRule.getActivity().getContextualSearchManager();
         mTestHost = new ContextualSearchManagerTestHost();
 
         Assert.assertNotNull(mManager);
@@ -3743,10 +3740,9 @@ public class ContextualSearchManagerTest {
         // Trigger on a word and wait for the selection to be established.
         triggerNode(activity2.getActivityTab(), "search");
         CriteriaHelper.pollUiThread(() -> {
-            String selection =
-                    ContextualSearchManagerSupplier.getValueOrNullFrom(activity2.getWindowAndroid())
-                            .getSelectionController()
-                            .getSelectedText();
+            String selection = activity2.getContextualSearchManager()
+                                       .getSelectionController()
+                                       .getSelectedText();
             Criteria.checkThat(selection, Matchers.is("Search"));
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> activity2.getCurrentTabModel().closeAllTabs());

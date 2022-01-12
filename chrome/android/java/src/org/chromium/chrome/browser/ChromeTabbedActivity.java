@@ -1608,7 +1608,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected RootUiCoordinator createRootUiCoordinator() {
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
-                mBookmarkBridgeSupplier, mContextualSearchManagerSupplier,
+                mBookmarkBridgeSupplier, this::getContextualSearchManager,
                 getTabModelSelectorSupplier(), mStartSurfaceSupplier,
                 mIntentMetadataOneshotSupplier, mLayoutStateProviderOneshotSupplier,
                 mStartSurfaceParentTabSupplier, getBrowserControlsManager(), getWindowAndroid(),
@@ -2620,7 +2620,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
         mTabModalHandler = new TabModalLifetimeHandler(this, getLifecycleDispatcher(), manager,
                 this::getAppBrowserControlsVisibilityDelegate, this::getTabObscuringHandler,
-                this::getToolbarManager, mContextualSearchManagerSupplier,
+                this::getToolbarManager, this::getContextualSearchManager,
                 getTabModelSelectorSupplier(), this::getBrowserControlsManager,
                 this::getFullscreenManager);
         return manager;
