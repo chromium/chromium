@@ -4249,6 +4249,7 @@ interface HTMLSelectElement : HTMLElement
     setter value
 interface HTMLSelectMenuElement : HTMLElement
     attribute @@toStringTag
+    getter disabled
     getter form
     getter labels
     getter name
@@ -4264,6 +4265,7 @@ interface HTMLSelectMenuElement : HTMLElement
     method constructor
     method reportValidity
     method setCustomValidity
+    setter disabled
     setter name
     setter required
     setter value
