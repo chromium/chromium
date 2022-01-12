@@ -41,6 +41,7 @@ NSString* const kTabGridEditAddToButtonIdentifier =
     @"kTabGridEditAddToButtonIdentifier";
 NSString* const kTabGridEditShareButtonIdentifier =
     @"kTabGridEditShareButtonIdentifier";
+NSString* const kTabGridSearchBarIdentifier = @"kTabGridSearchBarIdentifier";
 
 // The color of the text buttons in the toolbars.
 const int kTabGridToolbarTextButtonColor = 0xFFFFFF;

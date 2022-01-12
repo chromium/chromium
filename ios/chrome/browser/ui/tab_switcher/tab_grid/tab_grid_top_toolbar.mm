@@ -21,7 +21,7 @@ namespace {
 // approximately 33 pts between the plus button and the done button.
 const int kIconButtonAdditionalSpace = 20;
 const int kSelectionModeButtonSize = 17;
-const int kSearchBarTrailingSpace = 20;
+const int kSearchBarTrailingSpace = 40;
 }
 
 @interface TabGridTopToolbar () <UIToolbarDelegate>
@@ -227,7 +227,8 @@ const int kSearchBarTrailingSpace = 20;
   if (![self shouldUseCompactLayout:traitCollection])
     widthModifier = kTabGridSearchBarNonCompactWidthRatioModifier;
 
-  CGFloat cancelWidth = [_selectAllButton.title sizeWithAttributes:nil].width;
+  CGFloat cancelWidth =
+      [_cancelSearchButton.title sizeWithAttributes:nil].width;
   CGFloat barWidth =
       (self.bounds.size.width - kSearchBarTrailingSpace - cancelWidth) *
       kTabGridSearchBarWidthRatio * widthModifier;
@@ -391,6 +392,7 @@ const int kSearchBarTrailingSpace = 20;
     _searchBar = [[UISearchBar alloc] init];
     _searchBar.placeholder =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_SEARCHBAR_PLACEHOLDER);
+    _searchBar.accessibilityIdentifier = kTabGridSearchBarIdentifier;
     // Cancel Button for the searchbar doesn't appear in ipadOS. Disable it and
     // create a custom cancel button.
     _searchBar.showsCancelButton = NO;
