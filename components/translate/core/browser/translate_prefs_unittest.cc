@@ -1138,10 +1138,12 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
   EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
       &translate_accept_languages, "en"));
 
-  // Blocked languages that are not in accept languages are not blocked.
-  translate_prefs_->BlockLanguage("de");
-  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "de"));
+  if (!TranslatePrefs::IsDetailedLanguageSettingsEnabled()) {
+    // Blocked languages that are not in accept languages are not blocked.
+    translate_prefs_->BlockLanguage("de");
+    EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
+        &translate_accept_languages, "de"));
+  }
 
 // When the detailed language settings are enabled blocked languages not in
 // accept languages can be translated.
