@@ -1228,23 +1228,6 @@ template <typename T>
 struct AssertBindArgIsNotBasePassed<PassedWrapper<T>> : public std::false_type {
 };
 
-// Used below in BindImpl to determine whether to use Invoker::Run or
-// Invoker::RunOnce.
-// Note: Simply using `kIsOnce ? &Invoker::RunOnce : &Invoker::Run` does not
-// work, since the compiler needs to check whether both expressions are
-// well-formed. Using `Invoker::Run` with a OnceCallback triggers a
-// static_assert, which is why the ternary expression does not compile.
-// TODO(crbug.com/752720): Remove this indirection once we have `if constexpr`.
-template <typename Invoker>
-constexpr auto GetInvokeFunc(std::true_type) {
-  return Invoker::RunOnce;
-}
-
-template <typename Invoker>
-constexpr auto GetInvokeFunc(std::false_type) {
-  return Invoker::Run;
-}
-
 template <template <typename> class CallbackT,
           typename Functor,
           typename... Args>
@@ -1274,8 +1257,12 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
   // InvokeFuncStorage, so that we can ensure its type matches to
   // PolymorphicInvoke, to which CallbackType will cast back.
   using PolymorphicInvoke = typename CallbackType::PolymorphicInvoke;
-  PolymorphicInvoke invoke_func =
-      GetInvokeFunc<Invoker>(bool_constant<kIsOnce>());
+  PolymorphicInvoke invoke_func;
+  if constexpr (kIsOnce) {
+    invoke_func = Invoker::RunOnce;
+  } else {
+    invoke_func = Invoker::Run;
+  }
 
   using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
   return CallbackType(BindState::Create(
