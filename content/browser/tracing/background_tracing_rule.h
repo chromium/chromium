@@ -55,8 +55,8 @@ class BackgroundTracingRule {
   static std::unique_ptr<BackgroundTracingRule> CreateRuleFromDict(
       const base::Value& dict);
 
-  void SetArgs(const base::Value& args) { args_ = args.CreateDeepCopy(); }
-  const base::Value* args() const { return args_.get(); }
+  void SetArgs(const base::Value& args) { args_ = args.Clone(); }
+  const base::Value* args() const { return &args_; }
 
   const std::string& rule_id() const { return rule_id_; }
 
@@ -73,7 +73,7 @@ class BackgroundTracingRule {
   BackgroundTracingConfigImpl::CategoryPreset category_preset_ =
       BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET;
   bool is_crash_ = false;
-  std::unique_ptr<base::Value> args_;
+  base::Value args_;
 };
 
 }  // namespace content
