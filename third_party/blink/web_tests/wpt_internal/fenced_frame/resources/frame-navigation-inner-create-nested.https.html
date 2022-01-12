@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="utils.js"></script>
+<title>Test nested fenced frame navigation (by a parent frame setting its src).</title>
+
+<body>
+  <script>
+    async function init() { // Needed in order to use top-level await.
+      // This file is meant to run in a <fencedframe>. It communicates with
+      // the embedder to confirm that nested fenced frames can be navigated.
+
+      const navigation_key = KEYS["frame_navigation"];
+      const navigation_ack_key = KEYS["frame_navigation ACK"];
+
+      // Create URL prefixes to simulate different origins.
+      // (www1 and www2 are different origins)
+      const url_prefix = location.href + "/../";
+      const origin1_prefix = url_prefix.replace("://", "://www1.");
+      const origin2_prefix = url_prefix.replace("://", "://www2.");
+
+      const simple_url = "frame-navigation-inner-simple.https.html";
+
+      // Tell the embedder that this frame has loaded.
+      writeValueToServer(navigation_key, "create-nested");
+      await nextValueFromServer(navigation_ack_key);
+
+      // Create an inner frame.
+      inner_frame = attachFencedFrame(origin1_prefix + simple_url);
+      // Wait for our parent to tell us they're done communicating.
+      await nextValueFromServer(navigation_ack_key);
+
+      // Navigate (cross-origin) and wait.
+      inner_frame.src = origin2_prefix + simple_url;
+      await nextValueFromServer(navigation_ack_key);
+
+      // Navigate (same-origin) and wait.
+      inner_frame.src = origin2_prefix + simple_url;
+      await nextValueFromServer(navigation_ack_key);
+    }
+
+    init();
+  </script>
+</body>
