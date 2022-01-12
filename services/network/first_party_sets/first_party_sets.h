@@ -75,9 +75,14 @@ class FirstPartySets {
     return sets_.size();
   }
 
-  // Returns a mapping from owner to set members. For convenience of iteration,
+  // Computes a mapping from owner to set members. For convenience of iteration,
   // the members of the set includes the owner.
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> Sets() const;
+  //
+  // `callback` may be called synchronously or asynchronously.
+  void Sets(
+      base::OnceCallback<void(
+          base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
+          callback) const;
 
   // Sets the `raw_persisted_sets_`, which is a JSON-encoded
   // string representation of a map of site -> site.

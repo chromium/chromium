@@ -9,7 +9,9 @@
 #include <set>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
@@ -44,8 +46,10 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const std::set<net::SchemefulSite>& party_context) const override;
   absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
       const net::SchemefulSite& site) const override;
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-  RetrieveFirstPartySets() const override;
+  void RetrieveFirstPartySets(
+      base::OnceCallback<void(
+          base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
+          callback) const override;
 
   // Sets the expected return value for any cookie whose Domain
   // matches |cookie_domain|. Pass the value of |cookie.Domain()| and any

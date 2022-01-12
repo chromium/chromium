@@ -4,7 +4,11 @@
 
 #include "net/cookies/test_cookie_access_delegate.h"
 
+#include <set>
+
+#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -53,9 +57,11 @@ TestCookieAccessDelegate::FindFirstPartySetOwner(
   return absl::nullopt;
 }
 
-base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-TestCookieAccessDelegate::RetrieveFirstPartySets() const {
-  return first_party_sets_;
+void TestCookieAccessDelegate::RetrieveFirstPartySets(
+    base::OnceCallback<
+        void(base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
+        callback) const {
+  std::move(callback).Run(first_party_sets_);
 }
 
 void TestCookieAccessDelegate::SetExpectationForCookieDomain(

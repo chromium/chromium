@@ -18,6 +18,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +26,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
@@ -656,6 +658,15 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Records the aforementioned stats if we have already finished loading all
   // cookies. Returns whether stats were recorded.
   bool DoRecordPeriodicStats();
+
+  // Records periodic stats related to First-Party Sets usage. Note that since
+  // First-Party Sets presents a potentially asynchronous interface, these stats
+  // may be collected asynchronously w.r.t. the rest of the stats collected by
+  // `RecordPeriodicStats`.
+  // TODO(https://crbug.com/1266014): don't assume that the sets can all fit in
+  // memory at once.
+  void RecordPeriodicFirstPartySetsStats(
+      base::flat_map<SchemefulSite, std::set<SchemefulSite>> sets) const;
 
   // Defers the callback until the full coookie database has been loaded. If
   // it's already been loaded, runs the callback synchronously.

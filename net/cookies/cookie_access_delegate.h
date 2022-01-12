@@ -7,8 +7,10 @@
 
 #include <set>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
@@ -78,9 +80,13 @@ class NET_EXPORT CookieAccessDelegate {
       const CookieAccessDelegate* delegate,
       const CookiePartitionKey& cookie_partition_key);
 
-  // Returns the First-Party Sets.
-  virtual base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-  RetrieveFirstPartySets() const = 0;
+  // Computes the First-Party Sets.
+  //
+  // May invoke `callback` either synchronously or asynchronously.
+  virtual void RetrieveFirstPartySets(
+      base::OnceCallback<void(
+          base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
+          callback) const = 0;
 };
 
 }  // namespace net

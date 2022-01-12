@@ -4,6 +4,11 @@
 
 #include "services/network/cookie_access_delegate_impl.h"
 
+#include <set>
+
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/first_party_set_metadata.h"
@@ -73,11 +78,15 @@ CookieAccessDelegateImpl::FindFirstPartySetOwner(
   return first_party_sets_->FindOwner(site);
 }
 
-base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-CookieAccessDelegateImpl::RetrieveFirstPartySets() const {
-  if (!first_party_sets_)
-    return {};
-  return first_party_sets_->Sets();
+void CookieAccessDelegateImpl::RetrieveFirstPartySets(
+    base::OnceCallback<
+        void(base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
+        callback) const {
+  if (!first_party_sets_) {
+    std::move(callback).Run({});
+    return;
+  }
+  return first_party_sets_->Sets(std::move(callback));
 }
 
 }  // namespace network

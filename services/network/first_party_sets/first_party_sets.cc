@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -254,8 +255,10 @@ const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
   return FindOwner(site, /*infer_singleton_sets=*/false);
 }
 
-base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-FirstPartySets::Sets() const {
+void FirstPartySets::Sets(
+    base::OnceCallback<
+        void(base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
+        callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> sets;
 
@@ -270,7 +273,7 @@ FirstPartySets::Sets() const {
     }
   }
 
-  return sets;
+  std::move(callback).Run(sets);
 }
 
 void FirstPartySets::ApplyManuallySpecifiedSet() {

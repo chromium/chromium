@@ -51,6 +51,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -67,6 +68,7 @@
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
@@ -2239,17 +2241,9 @@ bool CookieMonster::DoRecordPeriodicStats() {
   base::UmaHistogramCounts100000("Cookie.Count2", cookies_.size());
 
   if (cookie_access_delegate()) {
-    for (const auto& set : cookie_access_delegate()->RetrieveFirstPartySets()) {
-      int sample = std::accumulate(
-          set.second.begin(), set.second.end(), 0,
-          [this](int acc, const net::SchemefulSite& site) -> int {
-            if (!site.has_registrable_domain_or_host())
-              return acc;
-            return acc + cookies_.count(site.registrable_domain_or_host());
-          });
-      base::UmaHistogramCustomCounts("Cookie.PerFirstPartySetCount", sample, 0,
-                                     4000, 50);
-    }
+    cookie_access_delegate()->RetrieveFirstPartySets(
+        base::BindOnce(&CookieMonster::RecordPeriodicFirstPartySetsStats,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Can be up to kMaxDomainPurgedKeys.
@@ -2267,6 +2261,21 @@ bool CookieMonster::DoRecordPeriodicStats() {
   }
 
   return true;
+}
+
+void CookieMonster::RecordPeriodicFirstPartySetsStats(
+    base::flat_map<SchemefulSite, std::set<SchemefulSite>> sets) const {
+  for (const auto& set : sets) {
+    int sample = std::accumulate(
+        set.second.begin(), set.second.end(), 0,
+        [this](int acc, const net::SchemefulSite& site) -> int {
+          if (!site.has_registrable_domain_or_host())
+            return acc;
+          return acc + cookies_.count(site.registrable_domain_or_host());
+        });
+    base::UmaHistogramCustomCounts("Cookie.PerFirstPartySetCount", sample, 0,
+                                   4000, 50);
+  }
 }
 
 void CookieMonster::DoCookieCallback(base::OnceClosure callback) {
