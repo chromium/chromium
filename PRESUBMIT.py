@@ -684,6 +684,15 @@ _BANNED_CPP_FUNCTIONS = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     (
+      r'\b(absl|std)::any\b',
+      (
+        'absl::any / std::any are not safe to use in a component build.'
+      ),
+      True,
+      # Not an error in third party folders, though it probably should be :)
+      [_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    (
       r'/\bstd::bind\b',
       (
         'std::bind is banned because of lifetime risks.',
