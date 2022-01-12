@@ -73,7 +73,7 @@ class EntriesBuilder {
         MaybeRemapPath(&entry_path);
     entries_.push_back(entry_factory_->CreateFileEntryFromPath(
         context_, path_type, entry_path,
-        content::FileSystemAccessEntryFactory::UserAction::kOpen));
+        content::FileSystemAccessEntryFactory::UserAction::kSave));
   }
 
   void AddDirectoryEntry(const base::FilePath& path) {

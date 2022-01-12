@@ -240,6 +240,15 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
       EXPECT_EQ(expected_file_path.BaseName().AsUTF8Unsafe(),
                 content::EvalJs(web_contents_.get(),
                                 "window.launchParams.files[0].name"));
+      std::string check_permissions_js(
+          // clang-format off
+        "(async () => {"
+        "  return await window.launchParams.files[0].queryPermission("
+        "             {mode: 'readwrite'}) === 'granted';"
+        "})()");
+      // clang-format on
+      EXPECT_TRUE(content::EvalJs(web_contents_.get(), check_permissions_js)
+                      .ExtractBool());
     }
   }
 
