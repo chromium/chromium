@@ -1,9 +1,9 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {PARENT_PAGE_ORIGIN, parentPage} from '/untrusted_page_interface.js';
+import {PARENT_PAGE_ORIGIN, parentPage} from './untrusted_page_interface.js';
 
-const header = document.querySelector('#untrusted-title');
+const header = document.querySelector<HTMLTitleElement>('#untrusted-title')!;
 header.textContent = 'Untrusted Sample System Web App';
 
 // For testing purposes: notify the parent window the iframe has been embedded
@@ -30,5 +30,6 @@ window.addEventListener('message', async event => {
 
 // Ask the parent page to do something, and retrieve the result.
 parentPage.doSomethingForChild('Say hello').then(result => {
-  document.querySelector('#parent-resp').innerText = result.resp;
+  document.querySelector<HTMLParagraphElement>('#parent-resp')!.innerText =
+      result.resp;
 });
