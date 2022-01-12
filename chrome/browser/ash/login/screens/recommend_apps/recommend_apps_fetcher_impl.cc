@@ -16,7 +16,9 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/common/api/system_display.h"
 #include "gpu/config/gpu_info.h"
@@ -39,6 +41,9 @@ namespace {
 
 constexpr const char kGetAppListUrl[] =
     "https://android.clients.google.com/fdfe/chrome/getfastreinstallappslist";
+
+constexpr const char kGetRevisedAppListUrl[] =
+    "https://android.clients.google.com/fdfe/chrome/getSetupAppRecommendations";
 
 constexpr int kResponseErrorNotEnoughApps = 5;
 
@@ -430,7 +435,11 @@ void RecommendAppsFetcherImpl::StartDownload() {
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kGetAppListUrl);
+  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
+    resource_request->url = GURL(kGetRevisedAppListUrl);
+  } else {
+    resource_request->url = GURL(kGetAppListUrl);
+  }
   resource_request->method = "GET";
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
@@ -500,13 +509,23 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   base::StringPiece response_body_json(*response_body);
   if (base::StartsWith(response_body_json, json_xss_prevention_prefix))
     response_body_json.remove_prefix(json_xss_prevention_prefix.length());
-  absl::optional<base::Value> output = ParseResponse(response_body_json);
-  if (!output.has_value()) {
-    RecordUmaResponseAppCount(0);
-    delegate_->OnParseResponseError();
-    return;
-  }
 
+  absl::optional<base::Value> output;
+  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
+    output =
+        base::JSONReader::ReadAndReturnValueWithError(response_body_json).value;
+    if (!output.has_value()) {
+      delegate_->OnParseResponseError();
+      return;
+    }
+  } else {
+    output = ParseResponse(response_body_json);
+    if (!output.has_value()) {
+      RecordUmaResponseAppCount(0);
+      delegate_->OnParseResponseError();
+      return;
+    }
+  }
   delegate_->OnLoadSuccess(std::move(output.value()));
 }
 

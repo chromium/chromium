@@ -22,7 +22,8 @@ class PlayExtras : public SourceExtras {
                       const GURL& content_rating_icon_url,
                       const bool in_app_purchases,
                       const bool previously_installed,
-                      const bool contains_ads);
+                      const bool contains_ads,
+                      const bool optimized_for_chrome);
   PlayExtras(const PlayExtras&) = delete;
   PlayExtras& operator=(const PlayExtras&) = delete;
   ~PlayExtras() override;
@@ -38,6 +39,7 @@ class PlayExtras : public SourceExtras {
   // that this user owns.
   bool GetWasPreviouslyInstalled() const;
   bool GetContainsAds() const;
+  bool GetOptimizedForChrome() const;
 
   // Result::SourceExtras:
   PlayExtras* AsPlayExtras() override;
@@ -52,6 +54,7 @@ class PlayExtras : public SourceExtras {
   bool has_in_app_purchases_;
   bool was_previously_installed_;
   bool contains_ads_;
+  bool optimized_for_chrome_;
 };
 
 }  // namespace apps

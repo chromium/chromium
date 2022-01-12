@@ -13,11 +13,13 @@
 namespace apps {
 
 enum class ResultType {
+  kTestType,
   kRecommendedArcApps,
   kRemoteUrlSearch,
 };
 
 enum class AppSource {
+  kTestSource,
   kPlay,
 };
 
