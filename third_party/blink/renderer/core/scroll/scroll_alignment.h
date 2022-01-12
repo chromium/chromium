@@ -50,7 +50,9 @@
 
 namespace blink {
 
+class ComputedStyle;
 struct PhysicalRect;
+class ScrollIntoViewOptions;
 
 class CORE_EXPORT ScrollAlignment {
  public:
@@ -87,7 +89,12 @@ class CORE_EXPORT ScrollAlignment {
       mojom::blink::ScrollBehavior scroll_behavior =
           mojom::blink::ScrollBehavior::kAuto,
       bool is_for_scroll_sequence = false,
-      bool zoom_into_rect = false);
+      bool zoom_into_rect = false,
+      bool cross_origin_boundaries = true);
+
+  static mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
+      const ScrollIntoViewOptions& options,
+      const ComputedStyle& computed_style);
 };
 
 }  // namespace blink
