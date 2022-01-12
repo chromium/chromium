@@ -137,6 +137,7 @@ public class UrlBarIntegrationTest {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
+    @FlakyTest(message = "crbug.com/1274918")
     public void testCutHuge() throws Throwable {
         mActivityTestRule.startMainActivityWithURL(HUGE_URL);
         OmniboxTestUtils.toggleUrlBarFocus(getUrlBar(), true);
