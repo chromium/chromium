@@ -15,18 +15,6 @@ Native symbols are those with a `section` of:
  * `.bss` (symbols that are zero-initialized. These consume no space in the
     binary, and so are generally ignored despite still being collected.
 
-Symbol aliases:
- * Aliases have the same address and size, but report their `.pss` as
-    `.size / .num_aliases`.
- * Type 1: Different names. Caused by identical code folding.
- * Type 2: Same names, different paths. Caused by inline functions defined in
-   `.h` files.
-   * Represented as one alias per path, but are collapsed into a single symbol
-     with a path of `{common_prefix}/$SYMBOL_COUNT` when the number of aliases
-     is large.
- * Type 3: String literals that are de-duped at link-time.
-   * These are found as part of the string literal extraction process.
-
 There are 3 modes that SuperSize can use to break an ELF down into symbols:
 
  * `linker_map` - Uses linker map + build directory to create symbols.
@@ -120,3 +108,20 @@ This mode uses `readelf -s` to create one symbol for each ELF section. It is
 used for native files where no debug information or linker map file is
 available, and for native files whose ABI do not match the `--abi-filter`.
 
+## Data Normalization
+
+Some manipulation happens in order to make names and paths more human-readable.
+
+ * `(anonymous::)` is removed from names (and stored as a symbol flag).
+ * `[clone]` suffix removed (and stored as a symbol flag).
+ * `vtable for FOO` -> `Foo [vtable]`
+ * Mangling done by linkers is undone (e.g. prefixing with "unlikely.")
+ * Names are processed into:
+   * `name`: Name without template and argument parameters.
+   * `template_name`: Name without argument parameters.
+   * `full_name`: Name with all parameters.
+ * LLVM function outlining creates many `OUTLINED_FUNCTION_*` symbols. These are
+   renamed to `** outlined functions` or `** outlined functions * (count)`,
+   and are de-duped so an address can have at most one such symbol.
+   * Update: Outlining was ARM64-only, and has been disabled in our build due
+     to performance regressions.
