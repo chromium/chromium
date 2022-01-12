@@ -404,7 +404,7 @@ struct FunctorTraits;
 template <typename Functor>
 struct FunctorTraits<Functor,
                      std::enable_if_t<IsCallableObject<Functor>::value &&
-                                      std::is_empty<Functor>::value>> {
+                                      std::is_empty_v<Functor>>> {
   using RunType = ExtractCallableRunType<Functor>;
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = false;
@@ -706,7 +706,7 @@ struct InvokeHelper<true, ReturnType> {
   // WeakCalls are only supported for functions with a void return type.
   // Otherwise, the function result would be undefined if the WeakPtr<>
   // is invalidated.
-  static_assert(std::is_void<ReturnType>::value,
+  static_assert(std::is_void_v<ReturnType>,
                 "weak_ptrs can only bind to methods without return values");
 
   template <typename Functor, typename BoundWeakPtr, typename... RunArgs>
@@ -737,7 +737,7 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
     // InvokeHelper<>::MakeItSo() call below.
     StorageType* storage = static_cast<StorageType*>(base);
     static constexpr size_t num_bound_args =
-        std::tuple_size<decltype(storage->bound_args_)>::value;
+        std::tuple_size_v<decltype(storage->bound_args_)>;
     return RunImpl(std::move(storage->functor_),
                    std::move(storage->bound_args_),
                    std::make_index_sequence<num_bound_args>(),
@@ -750,7 +750,7 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
     // InvokeHelper<>::MakeItSo() call below.
     const StorageType* storage = static_cast<StorageType*>(base);
     static constexpr size_t num_bound_args =
-        std::tuple_size<decltype(storage->bound_args_)>::value;
+        std::tuple_size_v<decltype(storage->bound_args_)>;
     return RunImpl(storage->functor_, storage->bound_args_,
                    std::make_index_sequence<num_bound_args>(),
                    std::forward<UnboundArgs>(unbound_args)...);
@@ -842,7 +842,7 @@ bool QueryCancellationTraits(const BindStateBase* base,
                              BindStateBase::CancellationQueryMode mode) {
   const BindStateType* storage = static_cast<const BindStateType*>(base);
   static constexpr size_t num_bound_args =
-      std::tuple_size<decltype(storage->bound_args_)>::value;
+      std::tuple_size_v<decltype(storage->bound_args_)>;
   return QueryCancellationTraitsImpl(
       mode, storage->functor_, storage->bound_args_,
       std::make_index_sequence<num_bound_args>());
@@ -852,7 +852,7 @@ bool QueryCancellationTraits(const BindStateBase* base,
 template <typename Functor, typename Receiver, typename... Unused>
 std::enable_if_t<
     !(MakeFunctorTraits<Functor>::is_method &&
-      std::is_pointer<std::decay_t<Receiver>>::value &&
+      std::is_pointer_v<std::decay_t<Receiver>> &&
       IsRefCountedType<std::remove_pointer_t<std::decay_t<Receiver>>>::value)>
 BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {}
 
@@ -863,7 +863,7 @@ void BanUnconstructedRefCountedReceiver() {}
 template <typename Functor, typename Receiver, typename... Unused>
 std::enable_if_t<
     MakeFunctorTraits<Functor>::is_method &&
-    std::is_pointer<std::decay_t<Receiver>>::value &&
+    std::is_pointer_v<std::decay_t<Receiver>> &&
     IsRefCountedType<std::remove_pointer_t<std::decay_t<Receiver>>>::value>
 BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
   DCHECK(receiver);
@@ -996,10 +996,10 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
  private:
   using DecayedReceiver = std::decay_t<Receiver>;
 
-  static_assert(!std::is_array<std::remove_reference_t<Receiver>>::value,
+  static_assert(!std::is_array_v<std::remove_reference_t<Receiver>>,
                 "First bound argument to a method cannot be an array.");
   static_assert(
-      !std::is_pointer<DecayedReceiver>::value ||
+      !std::is_pointer_v<DecayedReceiver> ||
           IsRefCountedType<std::remove_pointer_t<DecayedReceiver>>::value,
       "Receivers may not be raw pointers. If using a raw pointer here is safe"
       " and has no lifetime concerns, use base::Unretained() and document why"
@@ -1010,7 +1010,7 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
  public:
   using Type = BindState<
       std::decay_t<Functor>,
-      std::conditional_t<std::is_pointer<DecayedReceiver>::value,
+      std::conditional_t<std::is_pointer_v<DecayedReceiver>,
                          scoped_refptr<std::remove_pointer_t<DecayedReceiver>>,
                          DecayedReceiver>,
       MakeStorageType<BoundArgs>...>;
@@ -1098,25 +1098,25 @@ struct BindArgument {
     template <typename FunctorParamType>
     struct ToParamWithType {
       static constexpr bool kCanBeForwardedToBoundFunctor =
-          std::is_constructible<FunctorParamType, ForwardingType>::value;
+          std::is_constructible_v<FunctorParamType, ForwardingType>;
 
       // If the bound type can't be forwarded then test if `FunctorParamType` is
       // a non-const lvalue reference and a reference to the unwrapped type
       // *could* have been successfully forwarded.
       static constexpr bool kNonConstRefParamMustBeWrapped =
           kCanBeForwardedToBoundFunctor ||
-          !(std::is_lvalue_reference<FunctorParamType>::value &&
-            !std::is_const<std::remove_reference_t<FunctorParamType>>::value &&
-            std::is_convertible<std::decay_t<ForwardingType>&,
-                                FunctorParamType>::value);
+          !(std::is_lvalue_reference_v<FunctorParamType> &&
+            !std::is_const_v<std::remove_reference_t<FunctorParamType>> &&
+            std::is_convertible_v<std::decay_t<ForwardingType>&,
+                                  FunctorParamType>);
 
       // Note that this intentionally drops the const qualifier from
       // `ForwardingType`, to test if it *could* have been successfully
       // forwarded if `Passed()` had been used.
       static constexpr bool kMoveOnlyTypeMustUseBasePassed =
           kCanBeForwardedToBoundFunctor ||
-          !std::is_constructible<FunctorParamType,
-                                 std::decay_t<ForwardingType>&&>::value;
+          !std::is_constructible_v<FunctorParamType,
+                                   std::decay_t<ForwardingType>&&>;
     };
   };
 
@@ -1125,14 +1125,13 @@ struct BindArgument {
     template <typename StorageType>
     struct StoredAs {
       static constexpr bool kBindArgumentCanBeCaptured =
-          std::is_constructible<StorageType, BoundAsType>::value;
+          std::is_constructible_v<StorageType, BoundAsType>;
       // Note that this intentionally drops the const qualifier from
       // `BoundAsType`, to test if it *could* have been successfully bound if
       // `std::move()` had been used.
       static constexpr bool kMoveOnlyTypeMustUseStdMove =
           kBindArgumentCanBeCaptured ||
-          !std::is_constructible<StorageType,
-                                 std::decay_t<BoundAsType>&&>::value;
+          !std::is_constructible_v<StorageType, std::decay_t<BoundAsType>&&>;
     };
   };
 };
@@ -1276,9 +1275,8 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
 // crashes.
 template <template <typename> class CallbackT,
           typename Signature,
-          std::enable_if_t<std::is_same<CallbackT<Signature>,
-                                        OnceCallback<Signature>>::value>* =
-              nullptr>
+          std::enable_if_t<std::is_same_v<CallbackT<Signature>,
+                                          OnceCallback<Signature>>>* = nullptr>
 OnceCallback<Signature> BindImpl(OnceCallback<Signature> callback) {
   CHECK(callback);
   return callback;
@@ -1286,9 +1284,8 @@ OnceCallback<Signature> BindImpl(OnceCallback<Signature> callback) {
 
 template <template <typename> class CallbackT,
           typename Signature,
-          std::enable_if_t<std::is_same<CallbackT<Signature>,
-                                        OnceCallback<Signature>>::value>* =
-              nullptr>
+          std::enable_if_t<std::is_same_v<CallbackT<Signature>,
+                                          OnceCallback<Signature>>>* = nullptr>
 OnceCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
   CHECK(callback);
   return callback;
@@ -1296,8 +1293,8 @@ OnceCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
 
 template <template <typename> class CallbackT,
           typename Signature,
-          std::enable_if_t<std::is_same<CallbackT<Signature>,
-                                        RepeatingCallback<Signature>>::value>* =
+          std::enable_if_t<std::is_same_v<CallbackT<Signature>,
+                                          RepeatingCallback<Signature>>>* =
               nullptr>
 RepeatingCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
   CHECK(callback);

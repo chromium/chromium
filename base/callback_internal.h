@@ -38,7 +38,7 @@ struct BindStateBaseRefCountTraits {
 };
 
 template <typename T>
-using PassingType = std::conditional_t<std::is_scalar<T>::value, T, T&&>;
+using PassingType = std::conditional_t<std::is_scalar_v<T>, T, T&&>;
 
 // BindStateBase is used to provide an opaque handle that the Callback
 // class can use to represent a function object with bound arguments.  It
@@ -231,7 +231,7 @@ struct ThenHelper<OriginalCallback<OriginalR(OriginalArgs...)>,
                 "has a non-void return type.");
   // TODO(dcheng): This should probably check is_convertible as well (same with
   // `AssertBindArgsValidity`).
-  static_assert(std::is_constructible<ThenArgs..., OriginalR&&>::value,
+  static_assert(std::is_constructible_v<ThenArgs..., OriginalR&&>,
                 "|then| callback's parameter must be constructible from "
                 "return type of |this|.");
 

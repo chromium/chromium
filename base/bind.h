@@ -273,7 +273,7 @@ internal::OwnedRefWrapper<std::decay_t<T>> OwnedRef(T&& t) {
 // Both versions of Passed() prevent T from being an lvalue reference. The first
 // via use of enable_if, and the second takes a T* which will not bind to T&.
 template <typename T,
-          std::enable_if_t<!std::is_lvalue_reference<T>::value>* = nullptr>
+          std::enable_if_t<!std::is_lvalue_reference_v<T>>* = nullptr>
 inline internal::PassedWrapper<T> Passed(T&& scoper) {
   return internal::PassedWrapper<T>(std::move(scoper));
 }
