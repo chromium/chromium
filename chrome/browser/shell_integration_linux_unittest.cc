@@ -496,6 +496,8 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
                                       GURL("https://example.com/action3")),
            web_app::DesktopActionInfo("action4", "Action 4",
                                       GURL("https://example.com/action4")),
+           web_app::DesktopActionInfo("action5", "Action 5",
+                                      GURL("https://example.com/action%205")),
        },
 
        "#!/usr/bin/env xdg-open\n"
@@ -507,7 +509,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
        "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId\n"
        "Icon=IconName\n"
        "StartupWMClass=example.app\n"
-       "Actions=action1;action2;action3;action4\n\n"
+       "Actions=action1;action2;action3;action4;action5\n\n"
        "[Desktop Action action1]\n"
        "Name=Action 1\n"
        "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
@@ -527,7 +529,12 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
        "Name=Action 4\n"
        "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
        "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
-       "action4\n"},
+       "action4\n\n"
+       "[Desktop Action action5]\n"
+       "Name=Action 5\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action%%205\n"},
   };
 
   for (size_t i = 0; i < base::size(test_cases); i++) {
