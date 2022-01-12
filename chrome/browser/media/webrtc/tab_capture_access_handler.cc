@@ -191,13 +191,14 @@ void TabCaptureAccessHandler::HandleRequest(
     // destroyed when the browser process terminates.
     policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
         media_id, application_title,
-        base::BindOnce(&TabCaptureAccessHandler::OnDlpRestrictionChecked,
-                       base::Unretained(this), web_contents->GetWeakPtr(),
-                       std::make_unique<PendingAccessRequest>(
-                           /*picker=*/nullptr, request, std::move(callback),
-                           application_title,
-                           /*display_notification=*/false),
-                       is_allowlisted_extension, std::move(media_ui)));
+        base::BindOnce(
+            &TabCaptureAccessHandler::OnDlpRestrictionChecked,
+            base::Unretained(this), web_contents->GetWeakPtr(),
+            std::make_unique<PendingAccessRequest>(
+                /*picker=*/nullptr, request, std::move(callback),
+                application_title,
+                /*display_notification=*/false, is_allowlisted_extension),
+            std::move(media_ui)));
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -229,7 +230,6 @@ void TabCaptureAccessHandler::AcceptRequest(
 void TabCaptureAccessHandler::OnDlpRestrictionChecked(
     base::WeakPtr<content::WebContents> web_contents,
     std::unique_ptr<PendingAccessRequest> pending_request,
-    bool is_allowlisted_extension,
     std::unique_ptr<MediaStreamUI> media_ui,
     bool is_dlp_allowed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -241,7 +241,8 @@ void TabCaptureAccessHandler::OnDlpRestrictionChecked(
   if (is_dlp_allowed) {
     AcceptRequest(web_contents.get(), pending_request->request,
                   std::move(pending_request->callback),
-                  is_allowlisted_extension, std::move(media_ui));
+                  pending_request->is_allowlisted_extension,
+                  std::move(media_ui));
   } else {
     std::move(pending_request->callback)
         .Run(blink::MediaStreamDevices(),

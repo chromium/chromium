@@ -202,7 +202,8 @@ void DisplayMediaAccessHandler::HandleRequest(
 
   queue.push_back(std::make_unique<PendingAccessRequest>(
       std::move(picker), request, std::move(callback),
-      GetApplicationTitle(web_contents), display_notification_));
+      GetApplicationTitle(web_contents), display_notification_,
+      /*is_allowlisted_extension=*/false));
   // If this is the only request then pop picker UI.
   if (queue.size() == 1)
     ProcessQueuedAccessRequest(queue, web_contents);
@@ -220,7 +221,8 @@ void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
   RequestsQueue& queue = pending_requests_[web_contents];
   queue.push_back(std::make_unique<PendingAccessRequest>(
       /*picker=*/nullptr, request, std::move(callback),
-      GetApplicationTitle(web_contents), display_notification_));
+      GetApplicationTitle(web_contents), display_notification_,
+      /*is_allowlisted_extension=*/false));
   // If this is the only request then pop it. Otherwise, there is already a task
   // scheduled to pop the next request.
   if (queue.size() == 1)

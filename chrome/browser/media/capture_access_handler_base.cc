@@ -89,12 +89,14 @@ CaptureAccessHandlerBase::PendingAccessRequest::PendingAccessRequest(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
     std::u16string application_title,
-    bool should_display_notification)
+    bool should_display_notification,
+    bool is_allowlisted_extension)
     : picker(std::move(picker)),
       request(request),
       callback(std::move(callback)),
       application_title(std::move(application_title)),
-      should_display_notification(should_display_notification) {}
+      should_display_notification(should_display_notification),
+      is_allowlisted_extension(is_allowlisted_extension) {}
 
 CaptureAccessHandlerBase::PendingAccessRequest::~PendingAccessRequest() =
     default;

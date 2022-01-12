@@ -48,7 +48,6 @@ class TabCaptureAccessHandler : public CaptureAccessHandlerBase {
   void OnDlpRestrictionChecked(
       base::WeakPtr<content::WebContents> web_contents,
       std::unique_ptr<PendingAccessRequest> pending_request,
-      bool is_allowlisted_extension,
       std::unique_ptr<MediaStreamUI> media_ui,
       bool is_dlp_allowed);
 
