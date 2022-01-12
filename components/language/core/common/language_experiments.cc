@@ -27,8 +27,8 @@ const base::Feature kUseFluentLanguageModel{"UseFluentLanguageModel",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kNotifySyncOnLanguageDetermined{
     "NotifySyncOnLanguageDetermined", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kDetailedLanguageSettings{
-    "DetailedLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDetailedLanguageSettings{"DetailedLanguageSettings",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDesktopRestructuredLanguageSettings{
     "DesktopRestructuredLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kDesktopDetailedLanguageSettings{
