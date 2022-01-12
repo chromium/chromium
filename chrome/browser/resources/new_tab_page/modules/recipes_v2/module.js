@@ -7,6 +7,7 @@ import '../module_header.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
+import {TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 import {TaskModuleHandlerProxy} from '../task_module/task_module_handler_proxy.js';
 
@@ -26,7 +27,7 @@ class RecipeModuleElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {!Array<!taskModule.mojom.TaskItem>} */
+      /** @type {!Array<!TaskItem>} */
       recipes: Array,
     };
   }
@@ -37,7 +38,7 @@ customElements.define(RecipeModuleElement.is, RecipeModuleElement);
 /** @return {!Promise<!HTMLElement>} */
 async function createModule() {
   const {task} = await TaskModuleHandlerProxy.getHandler().getPrimaryTask(
-      taskModule.mojom.TaskModuleType.kRecipe);
+      TaskModuleType.kRecipe);
   const element = new RecipeModuleElement();
   element.recipes = (task && task.taskItems) || [];
   return element;

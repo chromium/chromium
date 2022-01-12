@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {$$, shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {TaskModuleHandlerRemote, TaskModuleType} from 'chrome://new-tab-page/task_module.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
@@ -16,9 +17,8 @@ suite('NewTabPageModulesTaskModuleTest', () => {
   setup(() => {
     document.body.innerHTML = '';
 
-    handler = installMock(
-        taskModule.mojom.TaskModuleHandlerRemote,
-        TaskModuleHandlerProxy.setHandler);
+    handler =
+        installMock(TaskModuleHandlerRemote, TaskModuleHandlerProxy.setHandler);
   });
 
   test('creates no module if no task', async () => {
@@ -194,7 +194,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     // Assert.
     assertEquals('Hello world hidden', toastMessage);
     assertDeepEquals(
-        [taskModule.mojom.TaskModuleType.kShopping, 'Hello world'],
+        [TaskModuleType.kShopping, 'Hello world'],
         await handler.whenCalled('dismissTask'));
 
     // Act.
@@ -202,7 +202,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
     // Assert.
     assertDeepEquals(
-        [taskModule.mojom.TaskModuleType.kShopping, 'Hello world'],
+        [TaskModuleType.kShopping, 'Hello world'],
         await handler.whenCalled('restoreTask'));
   });
 

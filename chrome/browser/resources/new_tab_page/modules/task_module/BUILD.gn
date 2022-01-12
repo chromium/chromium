@@ -11,6 +11,7 @@ js_library("module") {
     "..:info_dialog",
     "..:module_descriptor",
     "../..:i18n_setup",
+    "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_auto_img",
     "//ui/webui/resources/cr_elements/cr_grid",
@@ -19,7 +20,9 @@ js_library("module") {
 }
 
 js_library("task_module_handler_proxy") {
-  deps = [ "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js_library_for_compile" ]
+  deps = [
+    "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_webui_js",
+  ]
 }
 
 html_to_js("web_components") {

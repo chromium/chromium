@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
+import {Task, TaskModuleType} from '../../task_module.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -34,13 +35,13 @@ class TaskModuleElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {!taskModule.mojom.TaskModuleType} */
+      /** @type {!TaskModuleType} */
       taskModuleType: {
         type: Number,
         observer: 'onTaskModuleTypeChange_',
       },
 
-      /** @type {!taskModule.mojom.Task} */
+      /** @type {!Task} */
       task: Object,
 
       /** @private {string} */
@@ -75,9 +76,9 @@ class TaskModuleElement extends mixinBehaviors
    */
   computeTitle_() {
     switch (this.taskModuleType) {
-      case taskModule.mojom.TaskModuleType.kRecipe:
+      case TaskModuleType.kRecipe:
         return loadTimeData.getString('modulesRecipeTasksSentence');
-      case taskModule.mojom.TaskModuleType.kShopping:
+      case TaskModuleType.kShopping:
         return this.task.title;
       default:
         return '';
@@ -90,9 +91,9 @@ class TaskModuleElement extends mixinBehaviors
    */
   computeDismissName_() {
     switch (this.taskModuleType) {
-      case taskModule.mojom.TaskModuleType.kRecipe:
+      case TaskModuleType.kRecipe:
         return loadTimeData.getString('modulesRecipeTasksLowerThese');
-      case taskModule.mojom.TaskModuleType.kShopping:
+      case TaskModuleType.kShopping:
         return this.task.name;
       default:
         return '';
@@ -105,9 +106,9 @@ class TaskModuleElement extends mixinBehaviors
    */
   computeDisableName_() {
     switch (this.taskModuleType) {
-      case taskModule.mojom.TaskModuleType.kRecipe:
+      case TaskModuleType.kRecipe:
         return loadTimeData.getString('modulesRecipeTasksLower');
-      case taskModule.mojom.TaskModuleType.kShopping:
+      case TaskModuleType.kShopping:
         return loadTimeData.getString('modulesShoppingTasksLower');
       default:
         return '';
@@ -119,7 +120,7 @@ class TaskModuleElement extends mixinBehaviors
    * @private
    */
   isRecipe_() {
-    return this.taskModuleType === taskModule.mojom.TaskModuleType.kRecipe;
+    return this.taskModuleType === TaskModuleType.kRecipe;
   }
 
   /**
@@ -127,16 +128,16 @@ class TaskModuleElement extends mixinBehaviors
    * @private
    */
   isShopping_() {
-    return this.taskModuleType === taskModule.mojom.TaskModuleType.kShopping;
+    return this.taskModuleType === TaskModuleType.kShopping;
   }
 
   /** @private */
   onTaskModuleTypeChange_() {
     switch (this.taskModuleType) {
-      case taskModule.mojom.TaskModuleType.kRecipe:
+      case TaskModuleType.kRecipe:
         this.toggleAttribute('recipe');
         break;
-      case taskModule.mojom.TaskModuleType.kShopping:
+      case TaskModuleType.kShopping:
         this.toggleAttribute('shopping');
         break;
     }
@@ -176,10 +177,10 @@ class TaskModuleElement extends mixinBehaviors
         this.taskModuleType, this.task.name);
     let taskName = '';
     switch (this.taskModuleType) {
-      case taskModule.mojom.TaskModuleType.kRecipe:
+      case TaskModuleType.kRecipe:
         taskName = loadTimeData.getString('modulesRecipeTasksSentence');
         break;
-      case taskModule.mojom.TaskModuleType.kShopping:
+      case TaskModuleType.kShopping:
         taskName = this.task.name;
         break;
     }
@@ -248,10 +249,10 @@ async function createModule(taskModuleType) {
 export const recipeTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
     /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
-    createModule.bind(null, taskModule.mojom.TaskModuleType.kRecipe));
+    createModule.bind(null, TaskModuleType.kRecipe));
 
 /** @type {!ModuleDescriptor} */
 export const shoppingTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'shopping_tasks',
     /*name=*/ loadTimeData.getString('modulesShoppingTasksSentence'),
-    createModule.bind(null, taskModule.mojom.TaskModuleType.kShopping));
+    createModule.bind(null, TaskModuleType.kShopping));

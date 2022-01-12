@@ -26,6 +26,9 @@ js_type_check("closure_compile") {
                     "js_module_root=" + rebase_path(
                             "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive",
                             root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/task_module",
+                            root_build_dir),
                   ]
   deps = [
     ":metrics_utils_test",
