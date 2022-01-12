@@ -75,11 +75,20 @@
       #saml-notice-container,
       #saml-footer-container {
         align-items: center;
-        background: var(--google-grey-100);
+        background: white;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
         display: flex;
-        height: 44px;
         min-height: 0;
+      }
+
+      #saml-notice-container {
+        border-bottom: 1px solid var(--google-grey-200);
+        height: 44px;
+      }
+
+      #saml-footer-container {
+        border-top: 1px solid var(--google-grey-200);
+        height: 58px;
       }
 
       #saml-notice-recording-indicator {
@@ -92,8 +101,6 @@
       }
 
       #signin-frame {
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
         display: flex;
         overflow: hidden;
         /* Position relative is needed for proper size calculation of
@@ -120,6 +127,11 @@
       #sshWarning {
         color: var(--google-red-600);
         text-align: center;
+      }
+
+      #change-account {
+        padding-inline-end: 8px;
+        padding-inline-start: 8px;
       }
     </style>
     <link rel="stylesheet" href="oobe_popup_overlay.css">
