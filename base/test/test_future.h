@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future_internal.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -38,12 +37,6 @@ namespace test {
 // If for any reason you can't use TestFuture::GetCallback(), you can use
 // TestFuture::SetValue() to directly set the value. This method must be called
 // from the main sequence.
-//
-// A |base::test::ScopedRunLoopTimeout| can be used to control how long
-// TestFuture::Get() and TestFuture::Wait() block before timing out.
-// In case of a timeout:
-//     - TestFuture::Wait() will return 'false'.
-//     - TestFuture::Get() will DCHECK.
 //
 // Finally, TestFuture::Take() is similar to TestFuture::Get() but it will
 // move the result out, which can be helpful when testing a move-only class.
@@ -79,12 +72,10 @@ namespace test {
 //
 //     object_under_test.DoSomethingAsync(future.GetCallback());
 //
-//     bool success = future.Wait();
-//
-//     // Optional. If a timeout happened, the test will already be in a failed
-//     // state, but an explicit check can be useful if you want to add extra
-//     // information.
-//     ASSERT_TRUE(success) << "Detailed error message";
+//     // Optional. The Get() call below will also wait until the value
+//     // arrives, but this explicit call to Wait() can be useful if you want to
+//     // add extra information.
+//     ASSERT_TRUE(future.Wait()) << "Detailed error message";
 //
 //     const ResultType& actual_result = future.Get();
 //   }
@@ -104,15 +95,15 @@ class TestFuture {
 
   // Wait for the value to arrive.
   //
-  // Returns true if the value arrives, or false if a timeout happens.
-  // A timeout can only happen if |base::test::ScopedRunLoopTimeout| is used in
-  // the calling context. In case of a timeout, the test will be failed
-  // automatically by |base::test::ScopedRunLoopTimeout|, however if you want to
-  // provide a better error message you can always add an explicit check:
+  // Returns true if the value arrived, or false if a timeout happens.
   //
-  //   ASSERT_TRUE(future.Wait()) << "Detailed error message";
+  // Directly calling Wait() is not required as Get()/Take() will also wait for
+  // the value to arrive, however you can use a direct call to Wait() to
+  // improve the error reported:
   //
-  bool Wait() {
+  //   ASSERT_TRUE(queue.Wait()) << "Detailed error message";
+  //
+  bool WARN_UNUSED_RESULT Wait() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (values_)
@@ -235,14 +226,14 @@ class TestFuture {
     SetValue(std::forward<CallbackArgumentsTypes>(values)...);
   }
 
-  const std::tuple<Types...>& GetTuple() WARN_UNUSED_RESULT {
+  const std::tuple<Types...>& WARN_UNUSED_RESULT GetTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
     return values_.value();
   }
 
-  std::tuple<Types...> TakeTuple() WARN_UNUSED_RESULT {
+  std::tuple<Types...> WARN_UNUSED_RESULT TakeTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
@@ -255,11 +246,6 @@ class TestFuture {
 
   absl::optional<std::tuple<Types...>> values_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Task runner this class is tied to.
-  // All methods must be called from this same sequence.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_ =
-      base::SequencedTaskRunnerHandle::Get();
 
   base::WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };

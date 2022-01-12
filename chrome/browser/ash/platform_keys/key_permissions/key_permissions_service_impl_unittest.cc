@@ -98,7 +98,7 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     IsCorporateKeyExecutionWaiter is_corporate_key_waiter;
     key_permissions_service_->IsCorporateKey(
         public_key, is_corporate_key_waiter.GetCallback());
-    is_corporate_key_waiter.Wait();
+    EXPECT_TRUE(is_corporate_key_waiter.Wait());
     EXPECT_EQ(is_corporate_key_waiter.status(), Status::kSuccess);
     return is_corporate_key_waiter.corporate();
   }
@@ -115,7 +115,7 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     test_util::StatusWaiter set_corporate_key_waiter;
     key_permissions_service_->SetCorporateKey(
         public_key, set_corporate_key_waiter.GetCallback());
-    set_corporate_key_waiter.Wait();
+    EXPECT_TRUE(set_corporate_key_waiter.Wait());
   }
 
   content::BrowserTaskEnvironment task_environment_;

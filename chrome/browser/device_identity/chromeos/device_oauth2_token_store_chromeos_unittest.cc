@@ -93,7 +93,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
     chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
 
     // Wait for init to complete before continuing with the test.
-    init_waiter.Wait();
+    EXPECT_TRUE(init_waiter.Wait());
   }
 
   void SetRobotAccountId(const std::string& account_id) {
@@ -140,7 +140,7 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, InitSuccessful) {
   chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
       chromeos::FakeCryptohomeMiscClient::GetStubSystemSalt());
   chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
-  init_waiter.Wait();
+  ASSERT_TRUE(init_waiter.Wait());
 
   EXPECT_TRUE(init_waiter.HasInitBeenCalled());
   EXPECT_TRUE(init_waiter.GetInitResult());

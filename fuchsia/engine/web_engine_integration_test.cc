@@ -265,7 +265,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
       port_receiver;
   context_->GetRemoteDebuggingPort(
       cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
-  port_receiver.Wait();
+  ASSERT_TRUE(port_receiver.Wait());
 
   ASSERT_TRUE(port_receiver.Get().is_response());
   uint16_t remote_debugging_port = port_receiver.Get().response().port;

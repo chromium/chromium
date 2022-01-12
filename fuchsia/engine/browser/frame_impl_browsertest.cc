@@ -1224,7 +1224,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, InvalidHeader) {
     controller->LoadUrl(
         "http://site.ext/", std::move(load_url_params),
         cr_fuchsia::CallbackToFitFunction(result.GetCallback()));
-    result.Wait();
+    ASSERT_TRUE(result.Wait());
 
     ASSERT_TRUE(result.Get().is_err());
     EXPECT_EQ(result.Get().err(),

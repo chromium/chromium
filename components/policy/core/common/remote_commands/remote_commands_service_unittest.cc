@@ -630,7 +630,7 @@ TEST_P(RemoteCommandsServiceTest, AckedCallback) {
   job.Finish();
 
   // Wait for the result to be uploaded to the server.
-  response_future.Wait();
+  ASSERT_TRUE(response_future.Wait());
 
   // Only now we should expect the ack callback to be called.
   EXPECT_CALL(ack_callback, Run());
