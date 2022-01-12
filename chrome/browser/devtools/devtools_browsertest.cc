@@ -529,8 +529,10 @@ class DevToolsExtensionTest : public DevToolsTest {
         .Set("manifest_version", 2)
         // simple_test_page.html is currently the only page referenced outside
         // of its own extension in the tests
-        .Set("web_accessible_resources",
-             extensions::ListBuilder().Append("simple_test_page.html").Build());
+        .Set("web_accessible_resources", extensions::ListBuilder()
+                                             .Append("simple_test_page.html")
+                                             .Append("source.map")
+                                             .Build());
 
     // If |devtools_page| isn't empty, make it a devtools extension in the
     // manifest.
@@ -566,6 +568,9 @@ class DevToolsExtensionTest : public DevToolsTest {
                    "        'console.log(\"PASS\")');\n"
                    "    }\n"
                    ");\n");
+
+    dir->WriteFile(FILE_PATH_LITERAL("source.map"),
+                   R"({"version":3,"sources":["foo.js"],"mappings":"AAyCAA"})");
 
     dir->WriteFile(FILE_PATH_LITERAL("sidebarpane_devtools_page.html"),
                    "<html><head><script src='sidebarpane_devtools_page.js'>"
@@ -2717,6 +2722,30 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
   DispatchOnTestSuite(window_, "testExtensionWebSocketUserAgentOverride",
                       std::to_string(websocket_port).c_str());
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, SourceMapsFromExtension) {
+  const Extension* extension =
+      LoadExtensionForTest("Non-DevTools Extension", "" /* devtools_page */,
+                           "" /* panel_iframe_src */);
+  ASSERT_TRUE(extension);
+  OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
+  DispatchOnTestSuite(window_, "testSourceMapsFromExtension",
+                      extension->id().c_str());
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTest, SourceMapsFromDevtools) {
+  OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
+  DispatchOnTestSuite(window_, "testSourceMapsFromDevtools");
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       DoesNotCrashOnSourceMapsFromUnknownScheme) {
+  OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
+  DispatchOnTestSuite(window_, "testDoesNotCrashOnSourceMapsFromUnknownScheme");
   CloseDevToolsWindow();
 }
 
