@@ -66,4 +66,13 @@ export class FilesAlertDialog extends AlertDialog {
     this.frame.classList.toggle('no-title', !title);
     super.showHtml(title, message, ...args);
   }
+
+  /**
+   * Async version of show().
+   * @param {string} title
+   * @returns {!Promise<void>} Resolves when dismissed.
+   */
+  showAsync(title) {
+    return new Promise(resolve => this.show(title, resolve));
+  }
 }

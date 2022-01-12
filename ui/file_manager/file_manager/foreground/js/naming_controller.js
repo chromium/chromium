@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+import {ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 import {getFile} from '../../common/js/api.js';
 
 import {strf, util} from '../../common/js/util.js';
@@ -11,8 +11,9 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
-import {getRenameErrorMessage, renameEntry, validateExternalDriveName, validateFileName} from './file_rename.js';
+import {renameEntry, validateEntryName, validateFileName} from './file_rename.js';
 import {FileSelectionHandler} from './file_selection.js';
+import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 import {ListContainer} from './ui/list_container.js';
 
 /**
@@ -21,7 +22,7 @@ import {ListContainer} from './ui/list_container.js';
 export class NamingController {
   /**
    * @param {!ListContainer} listContainer
-   * @param {!AlertDialog} alertDialog
+   * @param {!FilesAlertDialog} alertDialog
    * @param {!ConfirmDialog} confirmDialog
    * @param {!DirectoryModel} directoryModel
    * @param {!FileFilter} fileFilter
@@ -33,7 +34,7 @@ export class NamingController {
     /** @private @const {!ListContainer} */
     this.listContainer_ = listContainer;
 
-    /** @private @const {!AlertDialog} */
+    /** @private @const {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
 
     /** @private @const {!ConfirmDialog} */
@@ -80,13 +81,11 @@ export class NamingController {
     try {
       await validateFileName(
           parentEntry, name, this.fileFilter_.isHiddenFilesVisible());
+      return true;
     } catch (error) {
-      await new Promise(
-          (resolve) => this.alertDialog_.show(
-              /** @type {string} */ (error), resolve));
+      await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
       return false;
     }
-    return true;
   }
 
   /**
@@ -282,40 +281,23 @@ export class NamingController {
 
     const volumeInfo = this.volumeInfo_;
     const isRemovableRoot = this.isRemovableRoot_;
-    let isValid = false;
-    input.validation_ = true;
 
-    if (isRemovableRoot) {
-      try {
-        const diskFileSystemType =
-            assert(volumeInfo && volumeInfo.diskFileSystemType);
-        validateExternalDriveName(newName, diskFileSystemType);
-        isValid = true;
-      } catch (error) {
-        isValid = false;
-        await new Promise(
-            (resolve) => this.alertDialog_.show(
-                /** @type {string} */ (error.message), resolve));
-      }
-    } else {
-      // TODO(mtomasz): this.getCurrentDirectoryEntry() might not return the
-      // actual parent if the directory content is a search result. Fix it to do
-      // proper validation.
-      isValid = await this.validateFileName(
-          /** @type {!DirectoryEntry} */ (
-              this.directoryModel_.getCurrentDirEntry()),
-          newName);
-    }
+    try {
+      input.validation_ = true;
+      await validateEntryName(
+          entry, newName, false, volumeInfo, isRemovableRoot);
+    } catch (error) {
+      await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
 
-    input.validation_ = false;
-
-    if (!isValid) {
       // Cancel rename if it fails to restore focus from alert dialog.
       // Otherwise, just cancel the commitment and continue to rename.
       if (document.activeElement != input) {
         this.cancelRename_();
       }
+
       return;
+    } finally {
+      input.validation_ = false;
     }
 
     // Validation succeeded. Do renaming.
@@ -330,12 +312,11 @@ export class NamingController {
     nameNode.textContent = newName;
 
     try {
-      let newEntry;
-      if (isRemovableRoot) {
-        newEntry = entry;
-        chrome.fileManagerPrivate.renameVolume(volumeInfo.volumeId, newName);
-      } else {
-        newEntry = await renameEntry(entry, newName);
+      const newEntry =
+          await renameEntry(entry, newName, volumeInfo, isRemovableRoot);
+
+      // RemovableRoot doesn't have a callback to report renaming is done.
+      if (!isRemovableRoot) {
         await this.directoryModel_.onRenameEntry(entry, assert(newEntry));
       }
 
@@ -357,8 +338,7 @@ export class NamingController {
       this.listContainer_.endBatchUpdates();
 
       // Show error dialog.
-      const message = getRenameErrorMessage(error, entry, newName);
-      this.alertDialog_.show(message);
+      this.alertDialog_.show(error.message);
     }
   }
 

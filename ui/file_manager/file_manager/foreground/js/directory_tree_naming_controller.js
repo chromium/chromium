@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-import {getParentEntry} from '../../common/js/api.js';
 
 import {util} from '../../common/js/util.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {DirectoryModel} from './directory_model.js';
-import {getRenameErrorMessage, renameEntry, validateExternalDriveName, validateFileName} from './file_rename.js';
+import {renameEntry, validateEntryName} from './file_rename.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
+import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 
 /**
  * Naming controller for directory tree.
@@ -20,7 +19,7 @@ export class DirectoryTreeNamingController {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!DirectoryTree} directoryTree
-   * @param {!AlertDialog} alertDialog
+   * @param {!FilesAlertDialog} alertDialog
    */
   constructor(directoryModel, directoryTree, alertDialog) {
     /** @private @const {!DirectoryModel} */
@@ -29,7 +28,7 @@ export class DirectoryTreeNamingController {
     /** @private @const {!DirectoryTree} */
     this.directoryTree_ = directoryTree;
 
-    /** @private @const {!AlertDialog} */
+    /** @private @const {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
 
     /** @private {?DirectoryItem} */
@@ -141,21 +140,14 @@ export class DirectoryTreeNamingController {
     }
 
     try {
-      if (this.isRemovableRoot_) {
-        validateExternalDriveName(
-            newName,
-            assert(this.volumeInfo_ && this.volumeInfo_.diskFileSystemType));
-        this.performExternalDriveRename_(entry, newName);
-        return;
-      }
-      const parentEntry = await getParentEntry(entry);
-      await validateFileName(
-          parentEntry, newName,
-          this.directoryModel_.getFileFilter().isHiddenFilesVisible());
+      await validateEntryName(
+          entry, newName,
+          this.directoryModel_.getFileFilter().isHiddenFilesVisible(),
+          this.volumeInfo_, this.isRemovableRoot_);
       await this.performRename_(entry, newName);
     } catch (error) {
-      this.alertDialog_.show(
-          /** @type {string} */ (error.message), this.detach_.bind(this));
+      await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
+      this.editing_ = true;
     }
   }
 
@@ -176,11 +168,19 @@ export class DirectoryTreeNamingController {
     // TODO(yawano): Rename might take time on some volumes. Optimistically show
     // new name in the UI before actual rename is completed.
     try {
-      const newEntry = await renameEntry(entry, newName);
+      const newEntry = await renameEntry(
+          entry, newName, this.volumeInfo_, this.isRemovableRoot_);
 
       // Put the new name in the .label element before detaching the
       // <input> to prevent showing the old name.
       this.getLabelElement_().textContent = newName;
+
+      // We currently don't have promises/callbacks for when removableRoots are
+      // successfully renamed, so we can't update their subdirectories or
+      // update the current directory to them at this point.
+      if (this.isRemovableRoot_) {
+        return;
+      }
 
       this.currentDirectoryItem_.entry = newEntry;
       this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
@@ -196,27 +196,10 @@ export class DirectoryTreeNamingController {
       this.directoryModel_.setIgnoringCurrentDirectoryDeletion(
           /* ignore= */ false);
 
-      this.alertDialog_.show(getRenameErrorMessage(
-          /** @type {DOMError} */ (error), entry, newName));
+      this.alertDialog_.show(/** @type {string} */ (error.message));
+    } finally {
+      this.detach_();
     }
-
-    this.detach_();
-  }
-
-  /**
-   * Performs external drive rename operation.
-   * @param {!DirectoryEntry} entry
-   * @param {string} newName Validated name.
-   * @private
-   */
-  performExternalDriveRename_(entry, newName) {
-    // Invoke external drive rename
-    chrome.fileManagerPrivate.renameVolume(this.volumeInfo_.volumeId, newName);
-
-    // Put the new name in the .label element before detaching the <input> to
-    // prevent showing the old name.
-    this.getLabelElement_().textContent = newName;
-    this.detach_();
   }
 
   /**
