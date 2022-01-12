@@ -70,12 +70,10 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
-  // New scores will be assigned for sorting purposes so use the default
-  // SortField. The SortDirection does nothing in this case.
   drive_service_->SearchDriveByFileName(
       base::UTF16ToUTF8(query), kMaxResults,
-      drivefs::mojom::QueryParameters::SortField::kNone,
-      drivefs::mojom::QueryParameters::SortDirection::kAscending,
+      drivefs::mojom::QueryParameters::SortField::kLastModified,
+      drivefs::mojom::QueryParameters::SortDirection::kDescending,
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
       base::BindOnce(&DriveSearchProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
@@ -92,15 +90,20 @@ void DriveSearchProvider::SetSearchResults(
   }
 
   SearchProvider::Results results;
-  for (const auto& item : items) {
+  for (size_t i = 0; i < items.size(); ++i) {
+    const auto& item = items[i];
+    // Results are returned in descending order of modification time. Set the
+    // relevance in (0,1] based on that.
+    double relevance = 1.0 - static_cast<double>(i) / items.size();
     if (item->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
       const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      results.emplace_back(MakeResult(item->path, type));
+      results.emplace_back(MakeResult(item->path, relevance, type));
     } else {
-      results.emplace_back(MakeResult(item->path, FileResult::Type::kFile));
+      results.emplace_back(
+          MakeResult(item->path, relevance, FileResult::Type::kFile));
     }
   }
 
@@ -112,6 +115,7 @@ void DriveSearchProvider::SetSearchResults(
 
 std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
     const base::FilePath& path,
+    double relevance,
     FileResult::Type type) {
   // Strip leading separators so that the path can be reparented.
   // TODO(crbug.com/1154513): Remove this step once the drive backend returns
@@ -127,8 +131,6 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
   const base::FilePath& reparented_path =
       drive_service_->GetMountPointPath().Append(relative_path.value());
 
-  const double relevance =
-      FileResult::CalculateRelevance(last_tokenized_query_, reparented_path);
   return std::make_unique<FileResult>(
       kDriveSearchSchema, reparented_path,
       ash::AppListSearchResultType::kDriveSearch,

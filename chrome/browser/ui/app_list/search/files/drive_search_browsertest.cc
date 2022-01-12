@@ -85,4 +85,30 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveFolderTest) {
   EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "my_folder");
 }
 
+// Test that files are ordered based on modification time.
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveFileResultOrdering) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(GetProfile());
+  ASSERT_TRUE(drive_service->IsMounted());
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+
+  base::FilePath older = mount_path.Append("ranking_older.gdoc");
+  base::FilePath newer = mount_path.Append("ranking_newer.gdoc");
+  base::Time now = base::Time::Now();
+  base::Time then = now - base::Seconds(1);
+  ASSERT_TRUE(base::WriteFile(older, "content"));
+  ASSERT_TRUE(base::WriteFile(newer, "content"));
+  ASSERT_TRUE(base::TouchFile(older, then, then));
+  ASSERT_TRUE(base::TouchFile(newer, now, now));
+
+  SearchAndWaitForProviders("ranking", {ResultType::kDriveSearch});
+
+  const auto results = PublishedResultsForProvider(ResultType::kDriveSearch);
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "ranking_newer");
+  EXPECT_EQ(base::UTF16ToASCII(results[1]->title()), "ranking_older");
+}
+
 }  // namespace app_list
