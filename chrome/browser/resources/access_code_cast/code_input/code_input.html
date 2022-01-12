@@ -1,14 +1,14 @@
 <style>
   cr-input {
-    font-size: 50px;
-    margin: auto;
-    width: 300px;
+    display: inline-block;
+    font-size: 20px;
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
+    text-align: center;
+    width: 40px;
   }
 </style>
-<cr-input 
-  type="text" 
-  minlength="[[length]]" 
-  maxlength="[[length]]" 
-  id="accessCodeInput" 
-  value="{{value}}">
-</cr-input>
+<template is="dom-repeat" items="[[inputs]]" as="inputIndex">
+  <cr-input type="text" minlength="1" maxlength="1" id="input-[[index]]">
+  </cr-input>
+</template>

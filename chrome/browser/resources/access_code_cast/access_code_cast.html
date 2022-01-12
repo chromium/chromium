@@ -27,12 +27,18 @@
   cr-dialog [slot=body] {
     height: 480px;
   }
+
+  #input-container {
+    text-align: center;
+  }
 </style>
 <cr-dialog id="dialog">
   <div slot="title">$i18n{dialogTitle}</div>
   <div slot="body">
     <div id="codeInputView">
-      <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
+      <div id="input-container">
+        <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
+      </div>
       <template is="dom-if" if="[[qrScannerEnabled]]">
         <cr-button on-click="switchToQrInput" class="center text-button">
           <iron-icon class="button-image" icon="cr:videocam"></iron-icon>

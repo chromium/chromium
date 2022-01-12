@@ -7,6 +7,7 @@ import 'chrome://access-code-cast/access_code_cast.js';
 import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
 import {BrowserProxy} from 'chrome://access-code-cast/browser_proxy.js';
 import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
+import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
@@ -58,11 +59,13 @@ suite('AccessCodeCastAppTest', () => {
   /** @type {!AccessCodeCastElement} */
   let app;
 
-  setup(() => {
+  setup(async () => {
     PolymerTest.clearBody();
 
     app = document.createElement('access-code-cast-app');
     document.body.appendChild(app);
+
+    await waitAfterNextRender();
   });
 
   test('codeInputView is shown and qrInputView is hidded by default', () => {

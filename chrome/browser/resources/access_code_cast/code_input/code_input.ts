@@ -5,13 +5,7 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-export interface CodeInputElement {
-  $: {
-    accessCodeInput: CrInputElement;
-  }
-}
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class CodeInputElement extends PolymerElement {
   static get is() {
@@ -32,31 +26,115 @@ export class CodeInputElement extends PolymerElement {
     };
   }
 
-  get crInput() {
-    return this.$.accessCodeInput;
-  }
-
+  length: number;
   value: string;
+  private inputs: string[];
+  private inputElementsLoaded: boolean;
 
-  ready() {
-    super.ready();
-    this.$.accessCodeInput.addEventListener('input', () => {
-      this.handleInput();
+  constructor() {
+    super();
+    this.inputElementsLoaded = false;
+
+    afterNextRender(this, () => {
+      this.inputElementsLoaded = true;
+
+      for(let i = 0; i < this.length; i++) {
+        const index = i;
+        this.getInput(i).addEventListener('input', (e: Event) => {
+          const input = e.target as CrInputElement;
+          this.handleInput(input.value, index);
+        });
+      }
     });
   }
 
+  ready() {
+    super.ready();
+    this.inputs = Array(this.length).fill('');
+  }
+
   clearInput() {
-    this.$.accessCodeInput.value = '';
+    const clear = () => {
+      for (let i = 0; i < this.length; i++) {
+        this.getInput(i).value = '';
+      }
+    };
+
+    this.afterInputsLoaded(clear);
   }
 
   focusInput() {
-    this.$.accessCodeInput.focusInput();
+    const focus = () => {
+      for (let i = 0; i < this.length; i++) {
+        if (this.getInput(i).value === '') {
+          this.getInput(i).focusInput();
+          return;
+        }
+      }
+      this.getInput(this.length - 1).focusInput();
+    };
+    
+    this.afterInputsLoaded(focus);
   }
 
-  private handleInput() {
-    this.$.accessCodeInput.value = this.$.accessCodeInput.value.toUpperCase();
+  getFocusedIndex() {
+    for (let i = 0; i < this.length; i++) {
+      if (this.getInput(i) === this.shadowRoot!.activeElement) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  getInput(index: number): CrInputElement {
+    const el = this.shadowRoot!.querySelector('#input-' + index);
+    return el as CrInputElement;
+  }
+
+  setValue(value: string) {
+    if (value.length > this.length) {
+      return;
+    }
+
+    this.clearInput();
+
+    for (let i = 0 ; i < value.length; i++) {
+      this.getInput(i).value = value[i];
+    }
+
+    this.updateValue();
+  }
+
+  private afterInputsLoaded(callback: Function) {
+    if (this.inputElementsLoaded) {
+      callback();
+    } else {
+      afterNextRender(this, () => {
+        callback();
+      });
+    }
+  }
+
+  private focusNext(index: number) {
+    if (index + 1 < this.length) {
+      this.getInput(index + 1).focusInput();
+    }
+  }
+
+  private handleInput(value: string, index: number) {
+    this.focusNext(index);
+    this.getInput(index).value = value.trim().toUpperCase()[0];
+    this.updateValue();
+  }
+
+  private updateValue() {
+    for (let i = 0; i < this.length; i++) {
+      this.inputs[i] = this.getInput(i).value;
+    }
+    this.value = ''.concat(...this.inputs);
     this.dispatchEvent(new CustomEvent('access-code-input', {
-      detail: {value: this.$.accessCodeInput.value}
+      detail: {value: this.value}
     }));
   }
 }
