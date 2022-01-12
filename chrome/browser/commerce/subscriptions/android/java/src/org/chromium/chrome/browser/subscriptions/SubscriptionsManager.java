@@ -26,6 +26,23 @@ public interface SubscriptionsManager {
         int INVALID_ARGUMENT = 4;
     }
 
+    /** An observer for notification about a product be tracked or untracked. */
+    interface SubscriptionObserver {
+        /**
+         * A notification that a user has subscribed to product updated.
+         *
+         * @param subscriptions The list of subscriptions being added.
+         */
+        void onSubscribe(List<CommerceSubscription> subscriptions);
+
+        /**
+         * A notification that a user has unsubscribed to product updated.
+         *
+         * @param subscriptions The list of subscriptions being removed.
+         */
+        void onUnsubscribe(List<CommerceSubscription> subscriptions);
+    }
+
     /**
      * Creates a new subscription on the server if needed.
      * @param subscription The {@link CommerceSubscription} to add.
@@ -75,4 +92,18 @@ public interface SubscriptionsManager {
                     callback.onResult(false);
                 });
     }
+
+    /**
+     * Add an observer of subscribe and unsubscribe events.
+     *
+     * @param observer The observer to add.
+     */
+    void addObserver(SubscriptionObserver observer);
+
+    /**
+     * Remove an observer of subscribe and unsubscribe events.
+     *
+     * @param observer The observer to remove.
+     */
+    void removeObserver(SubscriptionObserver observer);
 }
