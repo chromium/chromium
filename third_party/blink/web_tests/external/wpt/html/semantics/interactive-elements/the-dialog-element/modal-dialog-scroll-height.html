@@ -27,6 +27,6 @@ dialog {
 <script>
 test(() => {
   document.querySelector('dialog').showModal();
-  assert_equals(document.scrollingElement.scrollHeight, 600);
+  assert_equals(document.scrollingElement.scrollHeight, window.innerHeight);
 }, 'dialogs should be centered before computing overflow.');
 </script>
