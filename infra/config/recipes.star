@@ -208,22 +208,9 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:findit/chromium/compile",
-)
-
-build_recipe(
-    name = "recipe:findit/chromium/export_bot_db",
-    use_python3 = True,
-)
-
-build_recipe(
     name = "recipe:findit/chromium/single_revision",
     bootstrappable = PROPERTIES_OPTIONAL,
     use_python3 = True,
-)
-
-build_recipe(
-    name = "recipe:findit/chromium/update_components",
 )
 
 build_recipe(
