@@ -54,7 +54,7 @@ public interface AssistantDependencies extends AssistantStaticDependencies {
      * Observes tab changes.
      * @return The destroyer that must be called to unregister the internal observer.
      */
-    Destroyable observeTabChanges(AssistantTabObserver tabObserver);
+    Destroyable observeTabChanges(AssistantTabChangeObserver tabChangeObserver);
 
     // Only called by native to guarantee future type safety.
     @CalledByNative

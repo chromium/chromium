@@ -14,24 +14,45 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Adapter hiding Chrome's ActivityTabTabObserver.
  */
-public class AssistantTabObserverChrome implements Destroyable {
+public class AssistantTabChangeObserverChrome implements Destroyable {
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
 
-    public AssistantTabObserverChrome(
-            ActivityTabProvider activityTabProvider, AssistantTabObserver tabObserver) {
+    public AssistantTabChangeObserverChrome(
+            ActivityTabProvider activityTabProvider, AssistantTabChangeObserver tabChangeObserver) {
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
                 activityTabProvider, /* shouldTrigger = */ true) {
             @Override
             public void onObservingDifferentTab(Tab tab, boolean hint) {
-                tabObserver.onObservingDifferentTab(
+                tabChangeObserver.onObservingDifferentTab(
                         tab == null, tab != null ? tab.getWebContents() : null, hint);
             }
 
             @Override
             public void onActivityAttachmentChanged(
                     Tab tab, @Nullable WindowAndroid windowAndroid) {
-                tabObserver.onActivityAttachmentChanged(
+                tabChangeObserver.onActivityAttachmentChanged(
                         tab != null ? tab.getWebContents() : null, windowAndroid);
+            }
+
+            @Override
+            public void onContentChanged(Tab tab) {
+                tabChangeObserver.onContentChanged(tab.getWebContents());
+            }
+
+            @Override
+            public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+                tabChangeObserver.onWebContentsSwapped(
+                        tab.getWebContents(), didStartLoad, didFinishLoad);
+            }
+
+            @Override
+            public void onDestroyed(Tab tab) {
+                tabChangeObserver.onDestroyed(tab.getWebContents());
+            }
+
+            @Override
+            public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                tabChangeObserver.onInteractabilityChanged(tab.getWebContents(), isInteractable);
             }
         };
     }

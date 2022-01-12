@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.chrome.browser.tab.Tab;
-
+import org.chromium.chrome.browser.tab.TabUtils;
 /**
  * Instantiates a tab helper for autofill-assistant.
  */
@@ -18,10 +18,12 @@ public class AutofillAssistantTabHelper {
      * requests from either side.
      */
     public static void createForTab(Tab tab) {
-        Starter starter = new Starter(tab, AssistantDependencyUtilsChrome::isGsa,
+        Starter starter = new Starter(()
+                                              -> TabUtils.getActivity(tab),
+                tab.getWebContents(), AssistantDependencyUtilsChrome::isGsa,
                 AssistantDependencyUtilsChrome::isMakeSearchesAndBrowsingBetterSettingEnabled,
                 new AssistantModuleInstallUiProviderChrome(tab));
-        tab.addObserver(starter);
+        AssistantDependencyUtilsChrome.attachTabObserver(tab, starter);
         tab.getUserDataHost().setUserData(USER_DATA_KEY, starter);
     }
 

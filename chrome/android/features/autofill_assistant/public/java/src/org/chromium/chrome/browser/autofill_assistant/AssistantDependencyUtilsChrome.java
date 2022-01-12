@@ -15,6 +15,9 @@ import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Chrome specific dependency methods used by the Autofill Assistant outside of it's module.
@@ -38,6 +41,37 @@ public class AssistantDependencyUtilsChrome {
         // TODO(crbug.com/1139479): Once determineExternalIntentSource() is moved to //components
         // remove the injection.
         return IntentHandler.determineExternalIntentSource(intent) == ExternalAppId.GSA;
+    }
+
+    public static void attachTabObserver(Tab tab, AssistantTabObserver tabObserver) {
+        tab.addObserver(new EmptyTabObserver() {
+            @Override
+            public void onActivityAttachmentChanged(
+                    Tab tab, @Nullable WindowAndroid windowAndroid) {
+                tabObserver.onActivityAttachmentChanged(
+                        tab != null ? tab.getWebContents() : null, windowAndroid);
+            }
+
+            @Override
+            public void onContentChanged(Tab tab) {
+                tabObserver.onContentChanged(tab.getWebContents());
+            }
+
+            @Override
+            public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+                tabObserver.onWebContentsSwapped(tab.getWebContents(), didStartLoad, didFinishLoad);
+            }
+
+            @Override
+            public void onDestroyed(Tab tab) {
+                tabObserver.onDestroyed(tab.getWebContents());
+            }
+
+            @Override
+            public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                tabObserver.onInteractabilityChanged(tab.getWebContents(), isInteractable);
+            }
+        });
     }
 
     /**

@@ -15,9 +15,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -29,7 +26,7 @@ import java.util.Map;
  * dependencies to start autofill-assistant flows.
  */
 @JNINamespace("autofill_assistant")
-public class Starter extends EmptyTabObserver implements UserData {
+public class Starter implements AssistantTabObserver, UserData {
     /** A supplier for the activity of the tab that this starter tracks. */
     private final Supplier<Activity> mActivitySupplier;
 
@@ -67,15 +64,18 @@ public class Starter extends EmptyTabObserver implements UserData {
      * Constructs a java-side starter.
      *
      * This will wait for dependencies to become available and then create the native-side starter.
+     * NOTE: The caller must register the Starter as a {@link AssistantTabObserver} so it can keep
+     * track of changes.
      */
-    public Starter(Tab tab, AssistantIsGsaFunction isGsaFunction,
+    public Starter(Supplier<Activity> activitySupplier, @Nullable WebContents webContents,
+            AssistantIsGsaFunction isGsaFunction,
             AssistantIsMsbbEnabledFunction isMsbbEnabledFunction,
             AssistantModuleInstallUi.Provider moduleInstallUiProvider) {
-        mActivitySupplier = () -> TabUtils.getActivity(tab);
+        mActivitySupplier = activitySupplier;
         mIsGsaFunction = isGsaFunction;
         mIsMsbbEnabledFunction = isMsbbEnabledFunction;
         mModuleInstallUiProvider = moduleInstallUiProvider;
-        detectWebContentsChange(tab);
+        detectWebContentsChange(webContents);
     }
 
     @Override
@@ -108,10 +108,9 @@ public class Starter extends EmptyTabObserver implements UserData {
      * Should be called whenever the Tab's WebContents may have changed. Disconnects from the
      * existing WebContents, if necessary, and then connects to the new WebContents.
      */
-    private void detectWebContentsChange(Tab tab) {
-        WebContents currentWebContents = tab.getWebContents();
-        if (mWebContents != currentWebContents) {
-            mWebContents = currentWebContents;
+    private void detectWebContentsChange(@Nullable WebContents webContents) {
+        if (mWebContents != webContents) {
+            mWebContents = webContents;
             safeNativeDetach();
             if (mWebContents != null) {
                 // Some dependencies are tied to the web-contents and need to be fetched again.
@@ -131,28 +130,31 @@ public class Starter extends EmptyTabObserver implements UserData {
     }
 
     @Override
-    public void onContentChanged(Tab tab) {
-        detectWebContentsChange(tab);
+    public void onContentChanged(@Nullable WebContents webContents) {
+        detectWebContentsChange(webContents);
     }
 
     @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-        detectWebContentsChange(tab);
+    public void onWebContentsSwapped(
+            @Nullable WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
+        detectWebContentsChange(webContents);
     }
 
     @Override
-    public void onDestroyed(Tab tab) {
+    public void onDestroyed(@Nullable WebContents webContents) {
         safeNativeDetach();
     }
 
     @Override
-    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-        detectWebContentsChange(tab);
+    public void onActivityAttachmentChanged(
+            @Nullable WebContents webContents, @Nullable WindowAndroid window) {
+        detectWebContentsChange(webContents);
         safeNativeOnActivityAttachmentChanged();
     }
 
     @Override
-    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+    public void onInteractabilityChanged(
+            @Nullable WebContents webContents, boolean isInteractable) {
         safeNativeOnInteractabilityChanged(isInteractable);
     }
 

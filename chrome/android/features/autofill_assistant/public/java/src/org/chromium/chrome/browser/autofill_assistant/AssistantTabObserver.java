@@ -13,9 +13,16 @@ import org.chromium.ui.base.WindowAndroid;
  * Observer for different tab events.
  */
 public interface AssistantTabObserver {
-    void onObservingDifferentTab(
-            boolean isTabNull, @Nullable WebContents webContents, boolean isHint);
+    default void onContentChanged(@Nullable WebContents webContents) {}
 
-    void onActivityAttachmentChanged(
-            @Nullable WebContents webContents, @Nullable WindowAndroid windowAndroid);
+    default void onWebContentsSwapped(
+            @Nullable WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {}
+
+    default void onDestroyed(@Nullable WebContents webContents) {}
+
+    default void onActivityAttachmentChanged(
+            @Nullable WebContents webContents, @Nullable WindowAndroid window) {}
+
+    default void onInteractabilityChanged(
+            @Nullable WebContents webContents, boolean isInteractable) {}
 }

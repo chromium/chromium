@@ -111,7 +111,7 @@ public class AssistantDependenciesChrome
     }
 
     @Override
-    public Destroyable observeTabChanges(AssistantTabObserver tabObserver) {
-        return new AssistantTabObserverChrome(mActivityTabProvider, tabObserver);
+    public Destroyable observeTabChanges(AssistantTabChangeObserver tabChangeObserver) {
+        return new AssistantTabChangeObserverChrome(mActivityTabProvider, tabChangeObserver);
     }
 }
