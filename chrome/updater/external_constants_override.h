@@ -19,6 +19,10 @@ namespace base {
 class Value;
 }
 
+namespace crx_file {
+enum class VerifierFormat;
+}
+
 namespace updater {
 
 class ExternalConstantsOverrider : public ExternalConstants {
@@ -40,6 +44,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   bool UseCUP() const override;
   double InitialDelay() const override;
   int ServerKeepAliveSeconds() const override;
+  crx_file::VerifierFormat CrxVerifierFormat() const override;
 
  private:
   const base::flat_map<std::string, base::Value> override_values_;

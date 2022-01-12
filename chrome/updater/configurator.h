@@ -20,6 +20,10 @@ namespace base {
 class Version;
 }  // namespace base
 
+namespace crx_file {
+enum class VerifierFormat;
+}
+
 namespace update_client {
 class ActivityDataService;
 class NetworkFetcherFactory;
@@ -71,6 +75,8 @@ class Configurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   int ServerKeepAliveSeconds() const;
   scoped_refptr<PolicyService> GetPolicyService() const;
+
+  crx_file::VerifierFormat GetCrxVerifierFormat() const;
 
  private:
   friend class base::RefCountedThreadSafe<Configurator>;

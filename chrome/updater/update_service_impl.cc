@@ -188,7 +188,8 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
                       (!foreground && policy == kPolicyManualUpdatesOnly) ||
                       (foreground && policy == kPolicyAutomaticUpdatesOnly));
             }(),
-            policy_same_version_update, persisted_data)
+            policy_same_version_update, persisted_data,
+            config->GetCrxVerifierFormat())
             ->MakeCrxComponent());
   }
   return components;

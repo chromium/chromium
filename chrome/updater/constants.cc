@@ -59,6 +59,7 @@ const char kDevOverrideKeyUrl[] = "url";
 const char kDevOverrideKeyUseCUP[] = "use_cup";
 const char kDevOverrideKeyInitialDelay[] = "initial_delay";
 const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";
+const char kDevOverrideKeyCrxVerifierFormat[] = "crx_verifier_format";
 
 // Developer override file name, relative to app data directory.
 const char kDevOverrideFileName[] = "overrides.json";

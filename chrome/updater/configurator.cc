@@ -16,6 +16,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patch/in_process_patcher.h"
@@ -184,6 +185,10 @@ Configurator::GetProtocolHandlerFactory() const {
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
   return policy_service_;
+}
+
+crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
+  return external_constants_->CrxVerifierFormat();
 }
 
 }  // namespace updater

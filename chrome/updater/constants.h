@@ -142,6 +142,7 @@ extern const char kDevOverrideKeyUrl[];
 extern const char kDevOverrideKeyUseCUP[];
 extern const char kDevOverrideKeyInitialDelay[];
 extern const char kDevOverrideKeyServerKeepAliveSeconds[];
+extern const char kDevOverrideKeyCrxVerifierFormat[];
 
 // File name of developer overrides file.
 extern const char kDevOverrideFileName[];

@@ -10,6 +10,10 @@
 
 #include "base/values.h"
 
+namespace crx_file {
+enum class VerifierFormat;
+}
+
 namespace updater {
 
 // ExternalConstantsBuilder uses the Builder design pattern to write a set of
@@ -41,6 +45,10 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetServerKeepAliveSeconds(
       int server_keep_alive_seconds);
   ExternalConstantsBuilder& ClearServerKeepAliveSeconds();
+
+  ExternalConstantsBuilder& SetCrxVerifierFormat(
+      crx_file::VerifierFormat crx_verifier_format);
+  ExternalConstantsBuilder& ClearCrxVerifierFormat();
 
   // Write the external constants overrides file in the default location
   // with the values that have been previously set, replacing any file

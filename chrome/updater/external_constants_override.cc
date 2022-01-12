@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
@@ -24,6 +25,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
+#include "components/crx_file/crx_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -114,6 +116,20 @@ int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
       << "]: "
       << base::Value::GetTypeName(server_keep_alive_seconds_value.type());
   return server_keep_alive_seconds_value.GetInt();
+}
+
+crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
+  if (!override_values_.contains(kDevOverrideKeyCrxVerifierFormat)) {
+    return next_provider_->CrxVerifierFormat();
+  }
+
+  const base::Value& crx_format_verifier_value =
+      override_values_.at(kDevOverrideKeyCrxVerifierFormat);
+  CHECK(crx_format_verifier_value.is_int())
+      << "Unexpected type of override[" << kDevOverrideKeyCrxVerifierFormat
+      << "]: " << base::Value::GetTypeName(crx_format_verifier_value.type());
+  return static_cast<crx_file::VerifierFormat>(
+      crx_format_verifier_value.GetInt());
 }
 
 // static
