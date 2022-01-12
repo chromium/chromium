@@ -273,118 +273,118 @@ void AutomationPosition::MoveToPreviousLeafTextPosition(
 void AutomationPosition::MoveToNextCharacterPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreateNextCharacterPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousCharacterPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousCharacterPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextWordStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreateNextWordStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousWordStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousWordStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextWordEndPosition(gin::Arguments* arguments) {
   position_ = position_->CreateNextWordEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousWordEndPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousWordEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextLineStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreateNextLineStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousLineStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousLineStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextLineEndPosition(gin::Arguments* arguments) {
   position_ = position_->CreateNextLineEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousLineEndPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousLineEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousFormatStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousFormatStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextFormatEndPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreateNextFormatEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextParagraphStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreateNextParagraphStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousParagraphStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousParagraphStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextParagraphEndPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreateNextParagraphEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousParagraphEndPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousParagraphEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextPageStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreateNextPageStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousPageStartPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousPageStartPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextPageEndPosition(gin::Arguments* arguments) {
   position_ = position_->CreateNextPageEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToPreviousPageEndPosition(
     gin::Arguments* arguments) {
   position_ = position_->CreatePreviousPageEndPosition(
-      ui::AXBoundaryBehavior::kCrossBoundary);
+      ui::AXBoundaryBehavior::CrossBoundary);
 }
 
 void AutomationPosition::MoveToNextAnchorPosition(gin::Arguments* arguments) {

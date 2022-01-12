@@ -1774,7 +1774,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> input_text;
   SetUpScrollableInputField(&input_text);
 
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   constexpr LONG visible_characters_start = 21;
   LONG n_characters;
   ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
@@ -1969,7 +1969,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> input_text;
   SetUpScrollableInputTypeSearchField(&input_text);
 
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   constexpr LONG visible_characters_start = 21;
   LONG n_characters;
   ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
@@ -2618,7 +2618,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetSelection) {
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   start_offset = 0;
   end_offset = contents_string_length;
   EXPECT_HRESULT_FAILED(input_text->setSelection(1, start_offset, end_offset));
@@ -2654,7 +2654,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetSelectionRanges) {
   LONG n_ranges = 1;
   IA2Range* ranges =
       reinterpret_cast<IA2Range*>(CoTaskMemAlloc(sizeof(IA2Range)));
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   ranges[0].anchor = ax_input.Get();
   ranges[0].anchorOffset = -1;
   ranges[0].active = ax_input.Get();
@@ -2859,7 +2859,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestMultiLineSetSelection) {
   // There is no selection, just a caret.
   EXPECT_EQ(E_INVALIDARG, hr);
 
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
@@ -2896,7 +2896,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessible2_4> ax_textarea;
   ASSERT_HRESULT_SUCCEEDED(textarea_text.As(&ax_textarea));
 
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   LONG n_ranges = 1;
   IA2Range* ranges =
       reinterpret_cast<IA2Range*>(CoTaskMemAlloc(sizeof(IA2Range)));
@@ -3471,7 +3471,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_EQ(nullptr, text.Get());
   hr = input_text->get_textAtOffset(invalid_offset, IA2_TEXT_BOUNDARY_SENTENCE,
                                     &start_offset, &end_offset, text.Receive());
-  EXPECT_EQ(E_INVALIDARG, hr);
+  EXPECT_EQ(S_FALSE, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(0, end_offset);
   EXPECT_EQ(nullptr, text.Get());
@@ -3508,7 +3508,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   hr = input_text->get_textAtOffset(IA2_TEXT_OFFSET_LENGTH,
                                     IA2_TEXT_BOUNDARY_SENTENCE, &start_offset,
                                     &end_offset, text.Receive());
-  EXPECT_EQ(E_INVALIDARG, hr);
+  EXPECT_EQ(S_FALSE, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(0, end_offset);
   EXPECT_EQ(nullptr, text.Get());
@@ -3578,7 +3578,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   hr = textarea_text->get_textAtOffset(
       invalid_offset, IA2_TEXT_BOUNDARY_SENTENCE, &start_offset, &end_offset,
       text.Receive());
-  EXPECT_EQ(E_INVALIDARG, hr);
+  EXPECT_EQ(S_FALSE, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(0, end_offset);
   EXPECT_EQ(nullptr, text.Get());
@@ -3617,7 +3617,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   hr = textarea_text->get_textAtOffset(
       IA2_TEXT_OFFSET_LENGTH, IA2_TEXT_BOUNDARY_SENTENCE, &start_offset,
       &end_offset, text.Receive());
-  EXPECT_EQ(E_INVALIDARG, hr);
+  EXPECT_EQ(S_FALSE, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(0, end_offset);
   EXPECT_EQ(nullptr, text.Get());
@@ -3643,7 +3643,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> input_text;
   SetUpInputField(&input_text);
 
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   for (LONG offset = 0; offset < contents_string_length; ++offset) {
     std::wstring expected_text(1, InputContentsString()[offset]);
     LONG expected_start_offset = offset;
@@ -3671,7 +3671,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> textarea_text;
   SetUpTextareaField(&textarea_text);
 
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = InputContentsString().size();
   for (LONG offset = 0; offset < contents_string_length; ++offset) {
     std::wstring expected_text(1, TextAreaContentsString()[offset]);
     LONG expected_start_offset = offset;
@@ -3859,7 +3859,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   CheckTextAtOffset(input_text, 39, IA2_TEXT_BOUNDARY_WORD, 38, 40, L", ");
 
   // Trailing final punctuation should not be part of the last word.
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   CheckTextAtOffset(input_text, 40, IA2_TEXT_BOUNDARY_WORD, 40, 44, L"like");
   CheckTextAtOffset(input_text, 41, IA2_TEXT_BOUNDARY_WORD, 40, 44, L"like");
   CheckTextAtOffset(input_text, 44, IA2_TEXT_BOUNDARY_WORD, 44,
@@ -3924,7 +3924,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   CheckTextAtOffset(textarea_text, 39, IA2_TEXT_BOUNDARY_WORD, 38, 40, L", ");
 
   // Trailing final punctuation should not be part of the last word.
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   CheckTextAtOffset(textarea_text, 40, IA2_TEXT_BOUNDARY_WORD, 40, 44, L"like");
   CheckTextAtOffset(textarea_text, 41, IA2_TEXT_BOUNDARY_WORD, 40, 44, L"like");
   CheckTextAtOffset(textarea_text, 44, IA2_TEXT_BOUNDARY_WORD, 44,
@@ -3967,78 +3967,33 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
-                       DISABLED_TestTextAtOffsetWithBoundarySentence) {
+                       TestTextAtOffsetWithBoundarySentence) {
   Microsoft::WRL::ComPtr<IAccessibleText> input_text;
   SetUpInputField(&input_text);
 
-  const LONG contents_string_length =
-      static_cast<LONG>(InputContentsString().size());
-  const std::wstring expected_text = base::SysUTF8ToWide(InputContentsString());
-  for (LONG offset = 0; offset < contents_string_length; ++offset) {
-    CheckTextAtOffset(input_text, offset, IA2_TEXT_BOUNDARY_SENTENCE, 0,
-                      contents_string_length, expected_text);
-  }
-
-  // Test special offsets.
-  CheckTextAtOffset(input_text, IA2_TEXT_OFFSET_CARET,
-                    IA2_TEXT_BOUNDARY_SENTENCE, 0, contents_string_length,
-                    expected_text);
-  {
-    LONG start_offset = 0;
-    LONG end_offset = 0;
-    base::win::ScopedBstr text;
-    HRESULT hr = input_text->get_textAtOffset(
-        IA2_TEXT_OFFSET_LENGTH, IA2_TEXT_BOUNDARY_SENTENCE, &start_offset,
-        &end_offset, text.Receive());
-    EXPECT_EQ(E_INVALIDARG, hr);
-    EXPECT_EQ(0, start_offset);
-    EXPECT_EQ(0, end_offset);
-    EXPECT_EQ(nullptr, text.Get());
-  }
+  // Sentence navigation is not currently implemented.
+  LONG start_offset = 0;
+  LONG end_offset = 0;
+  base::win::ScopedBstr text;
+  HRESULT hr =
+      input_text->get_textAtOffset(5, IA2_TEXT_BOUNDARY_SENTENCE, &start_offset,
+                                   &end_offset, text.Receive());
+  EXPECT_EQ(S_FALSE, hr);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
-                       DISABLED_TestMultiLineTextAtOffsetWithBoundarySentence) {
+                       TestMultiLineTextAtOffsetWithBoundarySentence) {
   Microsoft::WRL::ComPtr<IAccessibleText> textarea_text;
   SetUpTextareaField(&textarea_text);
 
-  const LONG contents_string_length =
-      static_cast<LONG>(TextAreaContentsString().size());
-  const std::vector<LONG> sentence_starts{0, 23, 24, 31, 32};
-  const std::vector<LONG> sentence_ends{23, 24, 31, 32, contents_string_length};
-  size_t sentence_index = 0;
-  for (LONG offset = 0; offset < contents_string_length &&
-                        sentence_index < sentence_starts.size();
-       ++offset) {
-    if (offset == sentence_starts[sentence_index + 1])
-      ++sentence_index;
-    LONG expected_start_offset = sentence_starts[sentence_index];
-    LONG expected_end_offset = sentence_ends[sentence_index];
-    const std::wstring expected_text =
-        base::SysUTF8ToWide(TextAreaContentsString().substr(
-            sentence_starts[sentence_index],
-            (sentence_ends[sentence_index] - sentence_starts[sentence_index])));
-    CheckTextAtOffset(textarea_text, offset, IA2_TEXT_BOUNDARY_SENTENCE,
-                      expected_start_offset, expected_end_offset,
-                      expected_text);
-  }
-
-  // Test special offsets.
-  CheckTextAtOffset(textarea_text, IA2_TEXT_OFFSET_CARET,
-                    IA2_TEXT_BOUNDARY_SENTENCE, 32, contents_string_length,
-                    base::SysUTF8ToWide(TextAreaContentsString().substr(32)));
-  {
-    LONG start_offset = 0;
-    LONG end_offset = 0;
-    base::win::ScopedBstr text;
-    HRESULT hr = textarea_text->get_textAtOffset(
-        IA2_TEXT_OFFSET_LENGTH, IA2_TEXT_BOUNDARY_SENTENCE, &start_offset,
-        &end_offset, text.Receive());
-    EXPECT_EQ(E_INVALIDARG, hr);
-    EXPECT_EQ(0, start_offset);
-    EXPECT_EQ(0, end_offset);
-    EXPECT_EQ(nullptr, text.Get());
-  }
+  // Sentence navigation is not currently implemented.
+  LONG start_offset = 0;
+  LONG end_offset = 0;
+  base::win::ScopedBstr text;
+  HRESULT hr = textarea_text->get_textAtOffset(25, IA2_TEXT_BOUNDARY_SENTENCE,
+                                               &start_offset, &end_offset,
+                                               text.Receive());
+  EXPECT_EQ(S_FALSE, hr);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
@@ -4047,7 +4002,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   SetUpInputField(&input_text);
 
   // Single line text fields should return the whole text.
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   CheckTextAtOffset(input_text, 0, IA2_TEXT_BOUNDARY_LINE, 0,
                     contents_string_length,
                     base::SysUTF8ToWide(InputContentsString()));
@@ -4074,7 +4029,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                     L"WebKit \n");
 
   // Last line does not have a trailing newline.
-  LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   CheckTextAtOffset(textarea_text, 32, IA2_TEXT_BOUNDARY_LINE, 32,
                     contents_string_length, L"\"KHTML, like\".");
 
@@ -4112,8 +4067,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Blink represents the blank line with a newline character, so in total there
   // should be two more newlines. The second newline is not part of the HTML
   // value attribute however.
-  LONG contents_string_length =
-      static_cast<LONG>(InputContentsString().size()) + 1;
+  int contents_string_length =
+      static_cast<int>(InputContentsString().size()) + 1;
   CheckTextAtOffset(textarea_text, 32, IA2_TEXT_BOUNDARY_LINE, 32,
                     contents_string_length, L"\"KHTML, like\".\n");
   CheckTextAtOffset(textarea_text, 46, IA2_TEXT_BOUNDARY_LINE, 32,

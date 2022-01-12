@@ -3606,6 +3606,12 @@ HRESULT AXPlatformNodeWin::IAccessibleTextGetTextForOffsetType(
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                                        AXMode::kInlineTextBoxes);
 
+  // https://accessibility.linuxfoundation.org/a11yspecs/ia2/docs/html/_accessible_text_8idl.html
+  // IA2_TEXT_BOUNDARY_SENTENCE is optional and we can let the screenreader
+  // handle it, the rest of the boundary types must be supported.
+  if (boundary_type == IA2_TEXT_BOUNDARY_SENTENCE)
+    return S_FALSE;
+
   HandleSpecialTextOffset(&offset);
   if (offset < 0)
     return E_INVALIDARG;
@@ -3628,6 +3634,7 @@ HRESULT AXPlatformNodeWin::IAccessibleTextGetTextForOffsetType(
   }
 
   LONG start, end;
+
   switch (text_offset_type) {
     case TextOffsetType::kAtOffset: {
       end = FindBoundary(boundary_type, offset,

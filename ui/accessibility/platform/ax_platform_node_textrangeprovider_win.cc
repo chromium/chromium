@@ -219,14 +219,14 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
       // boundary, thus we only need to move the end position.
       AXPositionInstance end_backup = end()->Clone();
       SetEnd(start()->CreateNextCharacterPosition(
-          AXBoundaryBehavior::kCrossBoundary));
+          AXBoundaryBehavior::CrossBoundary));
 
       if (end()->IsNullPosition()) {
         // The previous could fail if the start is at the end of the last anchor
         // of the tree, try expanding to the previous character instead.
         AXPositionInstance start_backup = start()->Clone();
         SetStart(start()->CreatePreviousCharacterPosition(
-            AXBoundaryBehavior::kCrossBoundary));
+            AXBoundaryBehavior::CrossBoundary));
 
         if (start()->IsNullPosition()) {
           // Text representation is empty, undo everything and exit.
@@ -235,7 +235,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
           return S_OK;
         }
         SetEnd(start()->CreateNextCharacterPosition(
-            AXBoundaryBehavior::kCrossBoundary));
+            AXBoundaryBehavior::CrossBoundary));
         DCHECK(!end()->IsNullPosition());
       }
 
@@ -248,31 +248,39 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     }
     case TextUnit_Format:
       SetStart(start()->CreatePreviousFormatStartPosition(
-          AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary));
+          AXBoundaryBehavior::StopIfAlreadyAtBoundary));
       SetEnd(start()->CreateNextFormatEndPosition(
-          AXBoundaryBehavior::kStopAtLastAnchorBoundary));
+          AXBoundaryBehavior::StopIfAlreadyAtBoundary));
       break;
     case TextUnit_Word: {
       AXPositionInstance start_backup = start()->Clone();
       SetStart(start()->CreatePreviousWordStartPosition(
-          AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary));
+          AXBoundaryBehavior::StopIfAlreadyAtBoundary));
+      // Since we use AXBoundaryBehavior::StopIfAlreadyAtBoundary, the only case
+      // possible where CreatePreviousWordStartPosition can return a
+      // NullPosition is when it's called on a node before the first word
+      // boundary. This can happen when the document starts with nodes that have
+      // no word boundaries, like whitespaces and punctuation. When it happens,
+      // move the position back to the start of the document.
+      if (start()->IsNullPosition())
+        SetStart(start_backup->CreatePositionAtStartOfContent());
 
       // Since start_ is already located at a word boundary, we need to cross it
       // in order to move to the next one. Because Windows ATs behave
       // undesirably when the start and end endpoints are not in the same anchor
       // (for character and word navigation), stop at anchor boundary.
       SetEnd(start()->CreateNextWordStartPosition(
-          AXBoundaryBehavior::kStopAtAnchorBoundary));
+          AXBoundaryBehavior::StopAtAnchorBoundary));
       break;
     }
     case TextUnit_Line:
       SetStart(start()->CreateBoundaryStartPosition(
-          AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary,
+          AXBoundaryBehavior::StopIfAlreadyAtBoundary,
           ax::mojom::MoveDirection::kBackward,
           base::BindRepeating(&AtStartOfLinePredicate),
           base::BindRepeating(&AtEndOfLinePredicate)));
       SetEnd(start()->CreateBoundaryEndPosition(
-          AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary,
+          AXBoundaryBehavior::StopIfAlreadyAtBoundary,
           ax::mojom::MoveDirection::kForward,
           base::BindRepeating(&AtStartOfLinePredicate),
           base::BindRepeating(&AtEndOfLinePredicate)));
@@ -280,9 +288,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     case TextUnit_Paragraph:
       SetStart(
           start()->CreatePreviousParagraphStartPositionSkippingEmptyParagraphs(
-              AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary));
+              AXBoundaryBehavior::StopIfAlreadyAtBoundary));
       SetEnd(start()->CreateNextParagraphStartPositionSkippingEmptyParagraphs(
-          AXBoundaryBehavior::kStopAtLastAnchorBoundary));
+          AXBoundaryBehavior::StopAtLastAnchorBoundary));
       break;
     case TextUnit_Page: {
       // Per UIA spec, if the document containing the current range doesn't
@@ -290,10 +298,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
       const AXNode* common_anchor = start()->LowestCommonAnchor(*end());
       if (common_anchor->tree()->HasPaginationSupport()) {
         SetStart(start()->CreatePreviousPageStartPosition(
-            AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary));
+            ui::AXBoundaryBehavior::StopIfAlreadyAtBoundary));
         SetEnd(start()->CreateNextPageEndPosition(
-            ui::AXBoundaryBehavior::
-                kStopAtAnchorBoundaryOrIfAlreadyAtBoundary));
+            ui::AXBoundaryBehavior::StopIfAlreadyAtBoundary));
         break;
       }
     }
@@ -1231,14 +1238,13 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitHelper(
     do {
       AXPositionInstance next_endpoint = GetNextTextBoundaryPosition(
           current_endpoint, boundary_type,
-          AXBoundaryBehavior::kStopAtLastAnchorBoundary, boundary_direction);
+          AXBoundaryBehavior::StopAtLastAnchorBoundary, boundary_direction);
       DCHECK(next_endpoint->IsLeafTextPosition());
 
-      // Since AXBoundaryBehavior::kStopAtLastAnchorBoundary forces the next
-      // text boundary position to be different than the input position, the
-      // only case where these are equal is when they're already located at the
-      // last anchor boundary. In such case, there is no next position to move
-      // to.
+      // Since AXBoundaryBehavior::StopAtLastAnchorBoundary forces the next text
+      // boundary position to be different than the input position, the only
+      // case where these are equal is when they're already located at the last
+      // anchor boundary. In such case, there is no next position to move to.
       if (next_endpoint->GetAnchor() == current_endpoint->GetAnchor() &&
           *next_endpoint == *current_endpoint) {
         *units_moved = (count > 0) ? iteration : -iteration;

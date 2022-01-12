@@ -106,6 +106,26 @@ BrowserAccessibility* GetTextFieldInnerEditorElement(
   return nullptr;
 }
 
+int GetBoundaryTextOffsetInsideBaseAnchor(
+    ax::mojom::MoveDirection direction,
+    const BrowserAccessibility::AXPosition& base,
+    const BrowserAccessibility::AXPosition& position) {
+  if (base->GetAnchor() == position->GetAnchor())
+    return position->text_offset();
+
+  // If the position is outside the anchor of the base position, then return
+  // the first or last position in the same direction.
+  switch (direction) {
+    case ax::mojom::MoveDirection::kNone:
+      NOTREACHED();
+      return position->text_offset();
+    case ax::mojom::MoveDirection::kBackward:
+      return base->CreatePositionAtStartOfAnchor()->text_offset();
+    case ax::mojom::MoveDirection::kForward:
+      return base->CreatePositionAtEndOfAnchor()->text_offset();
+  }
+}
+
 }  // namespace
 
 bool BrowserAccessibility::IsValid() const {
@@ -1136,6 +1156,29 @@ std::string BrowserAccessibility::SubtreeToStringHelper(size_t level) {
   }
 
   return result;
+}
+
+absl::optional<int> BrowserAccessibility::FindTextBoundary(
+    ax::mojom::TextBoundary boundary,
+    int offset,
+    ax::mojom::MoveDirection direction,
+    ax::mojom::TextAffinity affinity) const {
+  const AXPosition position = CreateTextPositionAt(offset, affinity);
+
+  // On Windows and Linux ATK, searching for a text boundary should always stop
+  // at the boundary of the current object.
+  auto boundary_behavior = ui::AXBoundaryBehavior::StopAtAnchorBoundary;
+  // On Windows and Linux ATK, it is standard text navigation behavior to stop
+  // if we are searching in the backwards direction and the current position is
+  // already at the required text boundary.
+  DCHECK_NE(direction, ax::mojom::MoveDirection::kNone);
+  if (direction == ax::mojom::MoveDirection::kBackward)
+    boundary_behavior = ui::AXBoundaryBehavior::StopIfAlreadyAtBoundary;
+
+  return GetBoundaryTextOffsetInsideBaseAnchor(
+      direction, position,
+      position->CreatePositionAtTextBoundary(boundary, direction,
+                                             boundary_behavior));
 }
 
 const std::vector<gfx::NativeViewAccessible>

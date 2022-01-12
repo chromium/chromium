@@ -280,13 +280,9 @@ void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
 
   sentence_starts_ = std::vector<int32_t>();
   sentence_ends_ = std::vector<int32_t>();
-  if (owner_->IsLineBreak())
-    return;
   const std::u16string& text_content = GetOrComputeTextContentUTF16();
-  if (text_content.empty() ||
-      base::ContainsOnlyChars(text_content, base::kWhitespaceUTF16)) {
+  if (text_content.empty())
     return;
-  }
 
   // Unlike in ICU, a sentence boundary is not valid in Blink if it falls within
   // some whitespace that is used to separate sentences. We therefore need to

@@ -498,6 +498,12 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   int GetIndexInParent() override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
 
+  absl::optional<int> FindTextBoundary(
+      ax::mojom::TextBoundary boundary,
+      int offset,
+      ax::mojom::MoveDirection direction,
+      ax::mojom::TextAffinity affinity) const override;
+
   const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
       ui::AXPlatformNodeDelegate* start,
       ui::AXPlatformNodeDelegate* end) override;

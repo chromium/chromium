@@ -2758,7 +2758,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_count*/ -1);
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0\n");
 
   // Case 2: test on range that includes the whitespace and the following word.
   GetTextRangeProviderFromTextNode(*node, &text_range_provider);
@@ -2771,7 +2771,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                                    /*expected_count*/ 1);
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0\n");
 
   // Case 3: test on degenerate range after whitespace.
   node = FindNode(ax::mojom::Role::kStaticText, "3.14");

@@ -480,6 +480,21 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   virtual const AXUniqueId& GetUniqueId() const = 0;
 
+  // Finds the previous or next offset from the provided offset, that matches
+  // the provided boundary type.
+  //
+  // This method finds text boundaries in the text used for platform text APIs.
+  // Implementations may use side-channel data such as line or word indices to
+  // produce appropriate results. It may optionally return no value, indicating
+  // that the delegate does not have all the information required to calculate
+  // this value and it is the responsibility of the AXPlatformNode itself to
+  // to calculate it.
+  virtual absl::optional<int> FindTextBoundary(
+      ax::mojom::TextBoundary boundary,
+      int offset,
+      ax::mojom::MoveDirection direction,
+      ax::mojom::TextAffinity affinity) const = 0;
+
   // Return a vector of all the descendants of this delegate's node. This method
   // is only meaningful for Windows UIA.
   virtual const std::vector<gfx::NativeViewAccessible>
