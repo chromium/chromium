@@ -344,8 +344,7 @@ template <typename T>
 base::Value FormatDetailedPermissionSet(const T& permissions) {
   base::Value value_list(base::Value::Type::LIST);
   for (const auto& permission : permissions) {
-    std::unique_ptr<base::Value> detail(permission->ToValue());
-    if (detail) {
+    if (auto detail = permission->ToValue()) {
       base::Value tmp(base::Value::Type::DICTIONARY);
       tmp.SetKey(permission->name(),
                  base::Value::FromUniquePtrValue(std::move(detail)));

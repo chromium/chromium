@@ -182,12 +182,11 @@ class CredentialProviderWebUIMessageHandler
 
     // Build a result for the credential provider that includes only the abort
     // exit code.
-    std::unique_ptr<base::Value> result(
-        new base::Value(base::Value::Type::DICTIONARY));
-    result->SetKey(credential_provider::kKeyExitCode,
-                   base::Value(credential_provider::kUiecAbort));
+    base::Value result(base::Value::Type::DICTIONARY);
+    result.SetKey(credential_provider::kKeyExitCode,
+                  base::Value(credential_provider::kUiecAbort));
     base::ListValue args;
-    args.Append(std::move(result));
+    args.Append(base::Value::ToUniquePtrValue(std::move(result)));
     OnSigninComplete(&args);
   }
 

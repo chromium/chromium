@@ -78,8 +78,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, javascript,
                                                      &unmanaged_json));
 
-  std::unique_ptr<base::Value> unmanaged_value_ptr =
-      base::JSONReader::ReadDeprecated(unmanaged_json);
+  absl::optional<base::Value> unmanaged_value_ptr =
+      base::JSONReader::Read(unmanaged_json);
   std::map<std::string, std::u16string> expected_unmanaged_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION)},
   };
 
-  VerifyTexts(unmanaged_value_ptr.get(), expected_unmanaged_values);
+  VerifyTexts(&*unmanaged_value_ptr, expected_unmanaged_values);
 
   // The browser is managed.
   profile_policy_connector()->OverrideIsManagedForTesting(true);
@@ -111,8 +111,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, javascript,
                                                      &managed_json));
 
-  std::unique_ptr<base::Value> managed_value_ptr =
-      base::JSONReader::ReadDeprecated(managed_json);
+  absl::optional<base::Value> managed_value_ptr =
+      base::JSONReader::Read(managed_json);
   std::map<std::string, std::u16string> expected_managed_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
@@ -124,6 +124,6 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
       {"managedWebsitesSubtitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION)}};
 
-  VerifyTexts(managed_value_ptr.get(), expected_managed_values);
+  VerifyTexts(&*managed_value_ptr, expected_managed_values);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

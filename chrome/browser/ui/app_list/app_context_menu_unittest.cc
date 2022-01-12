@@ -247,13 +247,12 @@ class AppContextMenuTest : public AppListTestBase {
                        : path.AppendASCII("hosted_app_absolute_options.json");
 
     JSONFileValueDeserializer deserializer(manifest_path);
-    std::unique_ptr<base::Value> manifest =
-        deserializer.Deserialize(nullptr, nullptr);
+    base::Value manifest = base::Value::FromUniquePtrValue(
+        deserializer.Deserialize(nullptr, nullptr));
 
-    base::Value value = base::Value(std::move(*manifest));
-    DCHECK(value.is_dict());
+    DCHECK(manifest.is_dict());
     const base::DictionaryValue* dictionary_manifest = nullptr;
-    value.GetAsDictionary(&dictionary_manifest);
+    manifest.GetAsDictionary(&dictionary_manifest);
     std::string error;
     return extensions::Extension::Create(
         path.DirName(), extensions::mojom::ManifestLocation::kInternal,

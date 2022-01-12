@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ON_STARTUP_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ON_STARTUP_HANDLER_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -47,7 +45,7 @@ class OnStartupHandler : public SettingsPageUIHandler,
                            HandleValidateStartupPage_Invalid);
 
   // Info for extension controlling the NTP or empty value.
-  std::unique_ptr<base::Value> GetNtpExtension();
+  base::Value GetNtpExtension();
 
   // Handler for the "getNtpExtension" message. No arguments.
   void HandleGetNtpExtension(const base::ListValue* /*args*/);

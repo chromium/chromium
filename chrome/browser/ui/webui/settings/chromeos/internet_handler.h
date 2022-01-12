@@ -61,7 +61,7 @@ class InternetHandler
       chromeos::tether::GmsCoreNotificationsStateTracker*
           gms_core_notifications_state_tracker);
 
-  std::vector<std::unique_ptr<base::Value>> device_names_without_notifications_;
+  std::vector<base::Value> device_names_without_notifications_;
 
   Profile* const profile_;
 

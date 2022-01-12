@@ -19,13 +19,13 @@
 
 namespace {
 
-std::unique_ptr<base::Value> GetDominantColorCssString(
+base::Value GetDominantColorCssString(
     scoped_refptr<base::RefCountedMemory> png) {
   color_utils::GridSampler sampler;
   SkColor color = color_utils::CalculateKMeanColorOfPNG(png);
-  return std::make_unique<base::Value>(
-      base::StringPrintf("rgb(%d, %d, %d)", SkColorGetR(color),
-                         SkColorGetG(color), SkColorGetB(color)));
+  return base::Value(base::StringPrintf("rgb(%d, %d, %d)", SkColorGetR(color),
+                                        SkColorGetG(color),
+                                        SkColorGetB(color)));
 }
 
 }  // namespace
@@ -65,9 +65,8 @@ void AppIconWebUIHandler::OnImageLoaded(const std::string& extension_id) {
     return;
   scoped_refptr<base::RefCountedStaticMemory> bits_mem(
       new base::RefCountedStaticMemory(&bits.front(), bits.size()));
-  std::unique_ptr<base::Value> color_value =
-      GetDominantColorCssString(bits_mem);
+  base::Value color_value = GetDominantColorCssString(bits_mem);
   base::Value id(extension_id);
   web_ui()->CallJavascriptFunctionUnsafe("ntp.setFaviconDominantColor", id,
-                                         *color_value);
+                                         color_value);
 }

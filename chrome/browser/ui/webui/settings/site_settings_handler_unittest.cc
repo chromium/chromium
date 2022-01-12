@@ -1943,10 +1943,10 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   content_settings::SettingInfo info;
-  std::unique_ptr<base::Value> value = map->GetWebsiteSetting(
+  base::Value value = base::Value::FromUniquePtrValue(map->GetWebsiteSetting(
       kWebUIOrigins[0].GetURL(), kWebUIOrigins[0].GetURL(),
-      content_settings_type, &info);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, value->GetInt());
+      content_settings_type, &info));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, value.GetInt());
   EXPECT_EQ(content_settings::SETTING_SOURCE_ALLOWLIST, info.source);
 
   // Register an ordinary website permission.

@@ -78,41 +78,35 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
 
     JSONFileValueDeserializer deserializer(file);
     std::string error_msg;
-    std::unique_ptr<base::Value> app_info =
-        deserializer.Deserialize(nullptr, &error_msg);
-    if (!app_info) {
+    auto app_info_ptr = deserializer.Deserialize(nullptr, &error_msg);
+    if (!app_info_ptr) {
       VLOG(2) << "Unable to deserialize json data: " << error_msg << " in file "
               << file.value() << ".";
       continue;
     }
+    base::Value app_info =
+        base::Value::FromUniquePtrValue(std::move(app_info_ptr));
 
-    std::unique_ptr<base::DictionaryValue> app_info_dictionary =
-        base::DictionaryValue::From(std::move(app_info));
-    CHECK(app_info_dictionary);
+    CHECK(app_info.is_dict());
 
-    std::string name;
-    std::string package_name;
-    std::string activity;
-    std::string app_path;
+    auto* name = app_info.FindStringKey(kName);
+    auto* package_name = app_info.FindStringKey(kPackageName);
+    auto* activity = app_info.FindStringKey(kActivity);
+    auto* app_path = app_info.FindStringKey(kAppPath);
+    bool oem = app_info.FindBoolPath(kOem).value_or(false);
 
-    app_info_dictionary->GetString(kName, &name);
-    app_info_dictionary->GetString(kPackageName, &package_name);
-    app_info_dictionary->GetString(kActivity, &activity);
-    app_info_dictionary->GetString(kAppPath, &app_path);
-    bool oem = app_info_dictionary->FindBoolPath(kOem).value_or(false);
-
-    if (name.empty() || package_name.empty() || activity.empty() ||
-        app_path.empty()) {
+    if (!name || !package_name || !activity || !app_path || name->empty() ||
+        package_name->empty() || activity->empty() || app_path->empty()) {
       VLOG(2) << "ARC app declaration is incomplete in file " << file.value()
               << ".";
       continue;
     }
 
     const std::string app_id =
-        ArcAppListPrefs::GetAppId(package_name, activity);
+        ArcAppListPrefs::GetAppId(*package_name, *activity);
     std::unique_ptr<ArcDefaultAppList::AppInfo> app =
         std::make_unique<ArcDefaultAppList::AppInfo>(
-            name, package_name, activity, oem, root_dir.Append(app_path));
+            *name, *package_name, *activity, oem, root_dir.Append(*app_path));
     apps.get()->insert(
         std::pair<std::string, std::unique_ptr<ArcDefaultAppList::AppInfo>>(
             app_id, std::move(app)));

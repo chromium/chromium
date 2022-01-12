@@ -37,18 +37,18 @@ GlobalStorageInfo::GlobalStorageInfo(blink::mojom::StorageType type)
 
 GlobalStorageInfo::~GlobalStorageInfo() {}
 
-std::unique_ptr<base::Value> GlobalStorageInfo::NewValue() const {
+base::Value GlobalStorageInfo::NewValue() const {
   // TODO(tzik): Add CreateLongIntegerValue to base/values.h and remove
   // all static_cast<double> in this file.
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetString("type", StorageTypeToString(type_));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("type", StorageTypeToString(type_));
   if (usage_ >= 0)
-    dict->SetDoubleKey("usage", static_cast<double>(usage_));
+    dict.SetDoubleKey("usage", static_cast<double>(usage_));
   if (unlimited_usage_ >= 0)
-    dict->SetDoubleKey("unlimitedUsage", static_cast<double>(unlimited_usage_));
+    dict.SetDoubleKey("unlimitedUsage", static_cast<double>(unlimited_usage_));
   if (quota_ >= 0)
-    dict->SetDoubleKey("quota", static_cast<double>(quota_));
-  return std::move(dict);
+    dict.SetDoubleKey("quota", static_cast<double>(quota_));
+  return dict;
 }
 
 PerHostStorageInfo::PerHostStorageInfo(const std::string& host,
@@ -57,16 +57,16 @@ PerHostStorageInfo::PerHostStorageInfo(const std::string& host,
 
 PerHostStorageInfo::~PerHostStorageInfo() {}
 
-std::unique_ptr<base::Value> PerHostStorageInfo::NewValue() const {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
+base::Value PerHostStorageInfo::NewValue() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
   DCHECK(!host_.empty());
-  dict->SetString("host", host_);
-  dict->SetString("type", StorageTypeToString(type_));
+  dict.SetStringKey("host", host_);
+  dict.SetStringKey("type", StorageTypeToString(type_));
   if (usage_ >= 0)
-    dict->SetDoubleKey("usage", static_cast<double>(usage_));
+    dict.SetDoubleKey("usage", static_cast<double>(usage_));
   if (quota_ >= 0)
-    dict->SetDoubleKey("quota", static_cast<double>(quota_));
-  return std::move(dict);
+    dict.SetDoubleKey("quota", static_cast<double>(quota_));
+  return dict;
 }
 
 PerOriginStorageInfo::PerOriginStorageInfo(const GURL& origin,
@@ -81,23 +81,22 @@ PerOriginStorageInfo::PerOriginStorageInfo(const PerOriginStorageInfo& other) =
 
 PerOriginStorageInfo::~PerOriginStorageInfo() {}
 
-std::unique_ptr<base::Value> PerOriginStorageInfo::NewValue() const {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
+base::Value PerOriginStorageInfo::NewValue() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
   DCHECK(!origin_.is_empty());
   DCHECK(!host_.empty());
-  dict->SetString("origin", origin_.spec());
-  dict->SetString("type", StorageTypeToString(type_));
-  dict->SetString("host", host_);
+  dict.SetStringKey("origin", origin_.spec());
+  dict.SetStringKey("type", StorageTypeToString(type_));
+  dict.SetStringKey("host", host_);
   if (used_count_ >= 0)
-    dict->SetInteger("usedCount", used_count_);
+    dict.SetIntKey("usedCount", used_count_);
   if (!last_access_time_.is_null())
-    dict->SetDoubleKey("lastAccessTime",
-                       last_access_time_.ToDoubleT() * 1000.0);
+    dict.SetDoubleKey("lastAccessTime", last_access_time_.ToDoubleT() * 1000.0);
   if (!last_modified_time_.is_null()) {
-    dict->SetDoubleKey("lastModifiedTime",
-                       last_modified_time_.ToDoubleT() * 1000.0);
+    dict.SetDoubleKey("lastModifiedTime",
+                      last_modified_time_.ToDoubleT() * 1000.0);
   }
-  return std::move(dict);
+  return dict;
 }
 
 }  // namespace quota_internals

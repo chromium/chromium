@@ -36,7 +36,7 @@ class GlobalStorageInfo {
   void set_quota(int64_t quota) { quota_ = quota; }
 
   // Create new Value for passing to WebUI page.
-  std::unique_ptr<base::Value> NewValue() const;
+  base::Value NewValue() const;
 
  private:
   blink::mojom::StorageType type_;
@@ -57,7 +57,7 @@ class PerHostStorageInfo {
   void set_quota(int64_t quota) { quota_ = quota; }
 
   // Create new Value for passing to WebUI page.
-  std::unique_ptr<base::Value> NewValue() const;
+  base::Value NewValue() const;
 
  private:
   std::string host_;
@@ -87,7 +87,7 @@ class PerOriginStorageInfo {
   }
 
   // Create new Value for passing to WebUI page.
-  std::unique_ptr<base::Value> NewValue() const;
+  base::Value NewValue() const;
 
  private:
   GURL origin_;

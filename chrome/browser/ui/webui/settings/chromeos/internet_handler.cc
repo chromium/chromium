@@ -237,8 +237,7 @@ void InternetHandler::SetGmsCoreNotificationsDisabledDeviceNames() {
       gms_core_notifications_state_tracker_
           ->GetGmsCoreNotificationsDisabledDeviceNames();
   for (const auto& device_name : device_names) {
-    device_names_without_notifications_.emplace_back(
-        std::make_unique<base::Value>(device_name));
+    device_names_without_notifications_.emplace_back(base::Value(device_name));
   }
   SendGmsCoreNotificationsDisabledDeviceNames();
 }
@@ -249,7 +248,7 @@ void InternetHandler::SendGmsCoreNotificationsDisabledDeviceNames() {
 
   base::ListValue device_names_value;
   for (const auto& device_name : device_names_without_notifications_)
-    device_names_value.Append(device_name->Clone());
+    device_names_value.Append(device_name.Clone());
 
   FireWebUIListener(kSendGmsCoreNotificationsDisabledDeviceNames,
                     device_names_value);

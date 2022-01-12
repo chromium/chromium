@@ -56,8 +56,8 @@ void QuotaInternalsHandler::ReportAvailableSpace(int64_t available_space) {
 }
 
 void QuotaInternalsHandler::ReportGlobalInfo(const GlobalStorageInfo& data) {
-  std::unique_ptr<base::Value> value(data.NewValue());
-  FireWebUIListener("GlobalInfoUpdated", *value);
+  base::Value value(data.NewValue());
+  FireWebUIListener("GlobalInfoUpdated", value);
 }
 
 void QuotaInternalsHandler::ReportPerHostInfo(

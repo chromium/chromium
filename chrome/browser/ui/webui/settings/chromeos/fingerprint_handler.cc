@@ -41,8 +41,7 @@ std::unique_ptr<base::DictionaryValue> GetFingerprintsInfo(
   DCHECK_LE(static_cast<int>(fingerprints_list.size()),
             kMaxAllowedFingerprints);
   for (auto& fingerprint_name: fingerprints_list) {
-    std::unique_ptr<base::Value> str =
-        std::make_unique<base::Value>(fingerprint_name);
+    base::Value str(fingerprint_name);
     fingerprints.Append(std::move(str));
   }
 

@@ -107,8 +107,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
       const std::string& message_json,
       AutofillClient::SaveCreditCardOptions options =
           AutofillClient::SaveCreditCardOptions().with_show_prompt()) {
-    std::unique_ptr<base::Value> value(
-        base::JSONReader::ReadDeprecated(message_json));
+    absl::optional<base::Value> value(base::JSONReader::Read(message_json));
     ASSERT_TRUE(value);
     base::DictionaryValue* dictionary;
     ASSERT_TRUE(value->GetAsDictionary(&dictionary));
