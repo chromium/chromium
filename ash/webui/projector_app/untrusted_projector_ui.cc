@@ -51,7 +51,7 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
   // "wasm-eval" is added to allow wasm.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src 'self' 'wasm-eval';");
+      "script-src 'self' 'wasm-eval' 'chrome-untrusted://resources/';");
   // Need to explicitly set |worker-src| because CSP falls back to |child-src|
   // which is none.
   source->OverrideContentSecurityPolicy(
