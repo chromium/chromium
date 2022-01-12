@@ -189,22 +189,25 @@ export function reimagingDeviceInformationPageTest() {
 
     const serialNumberInput =
         component.shadowRoot.querySelector('#serialNumber');
-    const serialNumberButton =
-        component.shadowRoot.querySelector('#resetSerialNumber');
     const regionSelect = component.shadowRoot.querySelector('#regionSelect');
-    const regionButton = component.shadowRoot.querySelector('#resetRegion');
     const skuSelect = component.shadowRoot.querySelector('#skuSelect');
-    const skuButton = component.shadowRoot.querySelector('#resetSku');
+    const dramSelect = component.shadowRoot.querySelector('#dramPartNumber');
+    const whiteLabelSelect =
+        component.shadowRoot.querySelector('#whiteLabelSelect');
 
     component.allButtonsDisabled = false;
     assertFalse(serialNumberInput.disabled);
     assertFalse(regionSelect.disabled);
     assertFalse(skuSelect.disabled);
+    assertFalse(dramSelect.disabled);
+    assertFalse(whiteLabelSelect.disabled);
 
     component.allButtonsDisabled = true;
     assertTrue(serialNumberInput.disabled);
     assertTrue(regionSelect.disabled);
     assertTrue(skuSelect.disabled);
+    assertTrue(dramSelect.disabled);
+    assertTrue(whiteLabelSelect.disabled);
   });
 
   test(
@@ -212,6 +215,7 @@ export function reimagingDeviceInformationPageTest() {
       async () => {
         await initializeReimagingDeviceInformationPage();
 
+        component.allButtonsDisabled = false;
         let dramPartNumber = fakeDramPartNumber + 'new part number';
         const dramPartNumberComponent =
             component.shadowRoot.querySelector('#dramPartNumber');

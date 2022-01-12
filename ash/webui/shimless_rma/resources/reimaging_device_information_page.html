@@ -65,7 +65,8 @@
             placeholder=
                 "[[i18n('confirmDeviceInfoDramPartNumberPlaceholderLabel')]]"
             value="{{dramPartNumber_}}"
-            aria-labelledby="dramPartNumberLabel">
+            aria-labelledby="dramPartNumberLabel"
+            disabled="[[allButtonsDisabled]]">
         </cr-input>
         <cr-button id="resetDramPartNumber"
             on-click="onResetDramPartNumberButtonClicked_"
@@ -99,8 +100,9 @@
         [[i18n('confirmDeviceInfoWhiteLabelLabel')]]
       </label>
       <div class="input-holder">
-        <select id="whiteLabelSelect" class="md-select"
-            on-change="onSelectedWhiteLabelChange_" aria-labelledby="whiteLabelLabel">
+        <select id="whiteLabelSelect" class="md-select" 
+            on-change="onSelectedWhiteLabelChange_"
+            aria-labelledby="whiteLabelLabel" disabled="[[allButtonsDisabled]]">
           <template is="dom-repeat" items="[[whiteLabels_]]" as="whiteLabel">
             <option value="[[whiteLabel]]">
               [[whiteLabel]]
