@@ -104,7 +104,8 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& trigger,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
-    const enterprise_connectors::ContentAnalysisResponse& response);
+    const enterprise_connectors::ContentAnalysisResponse& response,
+    absl::optional<std::u16string> user_justification = absl::nullopt);
 
 // Helper functions to record DeepScanning UMA metrics for the duration of the
 // request split by its result and bytes/sec for successful requests.

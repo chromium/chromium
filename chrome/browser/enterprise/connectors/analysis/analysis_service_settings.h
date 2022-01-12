@@ -110,6 +110,7 @@ class AnalysisServiceSettings {
   // A map from tag (dlp, malware, etc) to the custom message and "learn more"
   // link associated with it.
   std::map<std::string, CustomMessageData> custom_message_data_;
+  std::set<std::string> tags_requiring_justification_;
   std::string service_provider_name_;
 };
 

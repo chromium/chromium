@@ -11888,6 +11888,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_DISCARD_FILE_BUTTON" desc="Text of the button used for discarding a dangerous file from the Content Analysis Dialog.">
       Discard file
     </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL" desc="Text displayed in the label above the bypass justification text area, explaining to the user that they have to enter a justification for uploading the file/pasted data even though there was a data loss prevention warning.">
+      Please enter a reason for uploading this data:
+    </message>
 
 
     <!-- Deep scanning open now dialog strings -->

@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/test/ax_event_counter.h"
 
@@ -729,7 +730,8 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
   class MockDelegate : public ContentAnalysisDelegateBase {
    public:
     ~MockDelegate() override = default;
-    void BypassWarnings() override {}
+    void BypassWarnings(
+        absl::optional<std::u16string> user_justification) override {}
     void Cancel(bool warning) override {}
 
     absl::optional<std::u16string> GetCustomMessage() const override {
@@ -740,9 +742,24 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
       return absl::nullopt;
     }
 
+    bool BypassRequiresJustification() const override {
+      return bypass_requires_justification_;
+    }
+
+    std::u16string GetBypassJustificationLabel() const override {
+      return u"MOCK_BYPASS_JUSTIFICATION_LABEL";
+    }
+
     absl::optional<std::u16string> OverrideCancelButtonText() const override {
       return absl::nullopt;
     }
+
+    void SetBypassRequiresJustification(bool value) {
+      bypass_requires_justification_ = value;
+    }
+
+   private:
+    bool bypass_requires_justification_ = false;
   };
 
   class MockCustomMessageDelegate : public ContentAnalysisDelegateBase {
@@ -752,7 +769,8 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 
     ~MockCustomMessageDelegate() override = default;
 
-    void BypassWarnings() override {}
+    void BypassWarnings(
+        absl::optional<std::u16string> user_justification) override {}
     void Cancel(bool warning) override {}
 
     absl::optional<std::u16string> GetCustomMessage() const override {
@@ -761,6 +779,11 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 
     absl::optional<GURL> GetCustomLearnMoreUrl() const override {
       return learn_more_url_;
+    }
+
+    bool BypassRequiresJustification() const override { return false; }
+    std::u16string GetBypassJustificationLabel() const override {
+      return u"MOCK_BYPASS_JUSTIFICATION_LABEL";
     }
 
     absl::optional<std::u16string> OverrideCancelButtonText() const override {
@@ -807,7 +830,25 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
       std::move(delegate), ContentAnalysisDelegateBase::FinalResult::SUCCESS);
   dialog->ShowResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
 
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(), u"Test");
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       TestBypassJustification) {
+  enterprise_connectors::ContentAnalysisDialog::
+      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
+
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  delegate->SetBypassRequiresJustification(true);
+  ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::move(delegate), ContentAnalysisDelegateBase::FinalResult::SUCCESS);
+  dialog->ShowResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
+
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  dialog->GetBypassJustificationTextareaForTesting()->InsertOrReplaceText(
+      u"test");
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,

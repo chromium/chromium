@@ -92,6 +92,7 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyPasswordBreachIdentities[];
   static const char kKeyPasswordBreachIdentitiesUrl[];
   static const char kKeyPasswordBreachIdentitiesUsername[];
+  static const char kKeyUserJustification[];
 
   static const char kKeyPasswordReuseEvent[];
   static const char kKeyPasswordChangedEvent[];
@@ -171,7 +172,8 @@ class SafeBrowsingPrivateEventRouter
       const std::string& scan_id,
       safe_browsing::DeepScanAccessPoint access_point,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
-      const int64_t content_size);
+      const int64_t content_size,
+      absl::optional<std::u16string> user_justification = absl::nullopt);
 
   // Notifies listeners that deep scanning failed, for the given |reason|.
   void OnUnscannedFileEvent(const GURL& url,

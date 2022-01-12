@@ -196,7 +196,8 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& trigger,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
-    const enterprise_connectors::ContentAnalysisResponse& response) {
+    const enterprise_connectors::ContentAnalysisResponse& response,
+    absl::optional<std::u16string> user_justification) {
   DCHECK(std::all_of(download_digest_sha256.begin(),
                      download_digest_sha256.end(), [](const char& c) {
                        return (c >= '0' && c <= '9') ||
@@ -214,7 +215,8 @@ void ReportAnalysisConnectorWarningBypass(
 
     router->OnAnalysisConnectorWarningBypassed(
         url, file_name, download_digest_sha256, mime_type, trigger,
-        response.request_token(), access_point, result, content_size);
+        response.request_token(), access_point, result, content_size,
+        user_justification);
   }
 }
 

@@ -164,7 +164,8 @@ ContentAnalysisDelegate::FileContents::operator=(
 
 ContentAnalysisDelegate::~ContentAnalysisDelegate() = default;
 
-void ContentAnalysisDelegate::BypassWarnings() {
+void ContentAnalysisDelegate::BypassWarnings(
+    absl::optional<std::u16string> user_justification) {
   if (callback_.is_null())
     return;
 
@@ -235,6 +236,16 @@ absl::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
   }
 
   return absl::nullopt;
+}
+
+bool ContentAnalysisDelegate::BypassRequiresJustification() const {
+  return data_.settings.tags_requiring_justification.count(final_result_tag_) >
+         0;
+}
+
+std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
+  return l10n_util::GetStringUTF16(
+      IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL);
 }
 
 absl::optional<std::u16string>

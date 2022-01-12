@@ -192,6 +192,8 @@ const char SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUrl[] =
 const char
     SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUsername[] =
         "username";
+const char SafeBrowsingPrivateEventRouter::kKeyUserJustification[] =
+    "userJustification";
 
 // All new event names should be added to the kAllEvents array below!
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
@@ -597,7 +599,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const std::string& scan_id,
     safe_browsing::DeepScanAccessPoint access_point,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
-    const int64_t content_size) {
+    const int64_t content_size,
+    absl::optional<std::u16string> user_justification) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
       GetReportingSettings();
   if (!settings.has_value() ||
@@ -625,6 +628,9 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
                        result.evidence_locker_filepath());
   }
   event.SetStringKey(kKeyScanId, scan_id);
+  if (user_justification) {
+    event.SetStringKey(kKeyUserJustification, *user_justification);
+  }
 
   AddAnalysisConnectorVerdictToEvent(result, &event);
 

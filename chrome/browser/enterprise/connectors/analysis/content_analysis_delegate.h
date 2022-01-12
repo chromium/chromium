@@ -158,7 +158,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Called when the user decides to bypass the verdict they obtained from DLP.
   // This will allow the upload of files marked as DLP warnings.
-  void BypassWarnings() override;
+  void BypassWarnings(
+      absl::optional<std::u16string> user_justification) override;
 
   // Called when the user decides to cancel the file upload. This will stop the
   // upload to Chrome since the scan wasn't allowed to complete. If |warning| is
@@ -169,6 +170,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   absl::optional<std::u16string> GetCustomMessage() const override;
 
   absl::optional<GURL> GetCustomLearnMoreUrl() const override;
+
+  bool BypassRequiresJustification() const override;
+
+  std::u16string GetBypassJustificationLabel() const override;
 
   absl::optional<std::u16string> OverrideCancelButtonText() const override;
 

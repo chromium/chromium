@@ -26,12 +26,12 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestOpenFile) {
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
                      base::Unretained(this)));
 
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(absl::nullopt);
   EXPECT_EQ(1, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
 
   // Attempting any action after one has been performed is a no-op.
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(absl::nullopt);
   EXPECT_EQ(1, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
 
@@ -65,7 +65,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileWarning) {
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(absl::nullopt);
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 }
@@ -91,7 +91,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileBlock) {
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(absl::nullopt);
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 }

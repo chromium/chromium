@@ -26,7 +26,8 @@ class ContentAnalysisDownloadsDelegate : public ContentAnalysisDelegateBase {
   // Called when the user opts to keep the download and open it. Should not be
   // called if the result was a "block" since the option shouldn't be available
   // in that case.
-  void BypassWarnings() override;
+  void BypassWarnings(
+      absl::optional<std::u16string> user_justification) override;
 
   // Called when the user opts to delete the downloaded file and not open it.
   void Cancel(bool warning) override;
@@ -34,6 +35,9 @@ class ContentAnalysisDownloadsDelegate : public ContentAnalysisDelegateBase {
   absl::optional<std::u16string> GetCustomMessage() const override;
 
   absl::optional<GURL> GetCustomLearnMoreUrl() const override;
+
+  bool BypassRequiresJustification() const override;
+  std::u16string GetBypassJustificationLabel() const override;
 
   absl::optional<std::u16string> OverrideCancelButtonText() const override;
 

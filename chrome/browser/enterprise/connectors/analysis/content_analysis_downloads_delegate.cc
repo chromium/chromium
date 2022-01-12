@@ -25,7 +25,8 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
 
 ContentAnalysisDownloadsDelegate::~ContentAnalysisDownloadsDelegate() = default;
 
-void ContentAnalysisDownloadsDelegate::BypassWarnings() {
+void ContentAnalysisDownloadsDelegate::BypassWarnings(
+    absl::optional<std::u16string> user_justification) {
   if (open_file_callback_)
     std::move(open_file_callback_).Run();
   ResetCallbacks();
@@ -56,6 +57,19 @@ absl::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
   if (custom_learn_more_url_.is_empty())
     return absl::nullopt;
   return custom_learn_more_url_;
+}
+
+bool ContentAnalysisDownloadsDelegate::BypassRequiresJustification() const {
+  return false;
+}
+
+std::u16string ContentAnalysisDownloadsDelegate::GetBypassJustificationLabel()
+    const {
+  // TODO(crbug.com/1278000): Change this to a downloads-specific string when
+  // this feature is supported for downloads. Returning a non-empty string is
+  // required to avoid a DCHECK in the a11y code that looks for an a11y label.
+  return l10n_util::GetStringUTF16(
+      IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL);
 }
 
 absl::optional<std::u16string>

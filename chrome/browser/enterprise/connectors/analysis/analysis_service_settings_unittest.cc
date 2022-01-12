@@ -114,6 +114,25 @@ constexpr char kNormalSettingsWithCustomMessage[] = R"({
   ],
 })";
 
+constexpr char kNormalSettingsDlpRequiresBypassJustification[] = R"({
+  "service_provider": "google",
+  "enable": [
+    {"url_list": ["*"], "tags": ["dlp", "malware"]},
+  ],
+  "disable": [
+    {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
+    {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
+         "tags": ["malware"]},
+    {"url_list": ["scan2.com"], "tags": ["dlp", "malware"]},
+  ],
+  "block_until_verdict": 1,
+  "block_password_protected": true,
+  "block_large_files": true,
+  "block_unsupported_file_types": true,
+  "minimum_data_size": 123,
+  "require_justification_tags": ["dlp"],
+})";
+
 constexpr char kScan1DotCom[] = "https://scan1.com";
 constexpr char kScan2DotCom[] = "https://scan2.com";
 constexpr char kNoDlpDotCom[] = "https://no.dlp.com";
@@ -170,6 +189,15 @@ AnalysisSettings* NormalSettingsWithCustomMessage() {
     AnalysisSettings settings = NormalSettingsWithTags({"dlp", "malware"});
     settings.custom_message_data["dlp"].message = u"dlpabcèéç";
     settings.custom_message_data["malware"].message = u"malwareabcèéç";
+    return settings;
+  }());
+  return settings.get();
+}
+
+AnalysisSettings* NormalSettingsDlpRequiresBypassJustification() {
+  static base::NoDestructor<AnalysisSettings> settings([]() {
+    AnalysisSettings settings = NormalSettingsWithTags({"dlp", "malware"});
+    settings.tags_requiring_justification = {"dlp"};
     return settings;
   }());
   return settings.get();
@@ -237,6 +265,9 @@ TEST_P(AnalysisServiceSettingsTest, Test) {
       ASSERT_EQ(kExpectedLearnMoreUrlSpecs.at(entry.first),
                 service_settings.GetLearnMoreUrl(entry.first).value().spec());
     }
+
+    ASSERT_EQ(analysis_settings.value().tags_requiring_justification,
+              expected_settings()->tags_requiring_justification);
   }
 }
 
@@ -281,6 +312,9 @@ INSTANTIATE_TEST_CASE_P(
                   NoSettings()),
         TestParam(kScan1DotCom,
                   kNormalSettingsWithCustomMessage,
-                  NormalSettingsWithCustomMessage())));
+                  NormalSettingsWithCustomMessage()),
+        TestParam(kScan1DotCom,
+                  kNormalSettingsDlpRequiresBypassJustification,
+                  NormalSettingsDlpRequiresBypassJustification())));
 
 }  // namespace enterprise_connectors

@@ -37,7 +37,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
-#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -62,6 +62,7 @@ constexpr gfx::Insets kSideImageInsets = gfx::Insets(8, 8, 8, 8);
 constexpr int kMessageAndIconRowLeadingPadding = 32;
 constexpr int kMessageAndIconRowTrailingPadding = 48;
 constexpr int kSideIconBetweenChildSpacing = 16;
+constexpr int kPaddingBeforeBypassJustification = 16;
 
 // These time values are non-const in order to be overridden in test so they
 // complete faster.
@@ -232,7 +233,10 @@ std::u16string ContentAnalysisDialog::GetWindowTitle() const {
 void ContentAnalysisDialog::AcceptButtonCallback() {
   DCHECK(delegate_);
   DCHECK(is_warning());
-  delegate_->BypassWarnings();
+  absl::optional<std::u16string> justification = absl::nullopt;
+  if (delegate_->BypassRequiresJustification())
+    justification = bypass_justification_->GetText();
+  delegate_->BypassWarnings(justification);
 }
 
 void ContentAnalysisDialog::CancelButtonCallback() {
@@ -261,6 +265,15 @@ void ContentAnalysisDialog::SuccessCallback() {
     web_contents_->Focus();
   }
 #endif
+}
+
+void ContentAnalysisDialog::ContentsChanged(
+    views::Textfield* sender,
+    const std::u16string& new_contents) {
+  if (new_contents.size() == 0)
+    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  else
+    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
 }
 
 bool ContentAnalysisDialog::ShouldShowCloseButton() const {
@@ -297,7 +310,7 @@ views::View* ContentAnalysisDialog::GetContentsView() {
                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
         .AddPaddingColumn(views::TableLayout::kFixedSize,
                           kMessageAndIconRowTrailingPadding)
-        .AddRows(2, views::TableLayout::kFixedSize);
+        .AddRows(4, views::TableLayout::kFixedSize);
 
     // Add the side icon.
     message_container->AddChildView(CreateSideIcon());
@@ -323,6 +336,28 @@ views::View* ContentAnalysisDialog::GetContentsView() {
         &ContentAnalysisDialog::LearnMoreLinkClickedCallback,
         base::Unretained(this)));
     learn_more_link_->SetVisible(false);
+
+    message_container->AddChildView(
+        std::make_unique<views::View>());  // Skip a column
+    justification_text_label_ =
+        message_container->AddChildView(std::make_unique<views::Label>());
+    justification_text_label_->SetText(
+        delegate_->GetBypassJustificationLabel());
+    justification_text_label_->SetBorder(
+        views::CreateEmptyBorder(kPaddingBeforeBypassJustification, 0, 0, 0));
+    justification_text_label_->SetLineHeight(kLineHeight);
+    justification_text_label_->SetMultiLine(true);
+    justification_text_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+    justification_text_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    justification_text_label_->SetVisible(false);
+
+    message_container->AddChildView(
+        std::make_unique<views::View>());  // Skip a column
+    bypass_justification_ =
+        message_container->AddChildView(std::make_unique<views::Textarea>());
+    bypass_justification_->SetAssociatedLabel(justification_text_label_);
+    bypass_justification_->SetController(this);
+    bypass_justification_->SetVisible(false);
 
     // If the dialog was started in a state other than pending, setup the views
     // accordingly.
@@ -422,6 +457,10 @@ void ContentAnalysisDialog::UpdateViews() {
   // display.
   learn_more_link_->SetVisible((is_failure() || is_warning()) &&
                                has_learn_more_url());
+  justification_text_label_->SetVisible(is_warning() &&
+                                        bypass_requires_justification());
+  bypass_justification_->SetVisible(is_warning() &&
+                                    bypass_requires_justification());
 }
 
 void ContentAnalysisDialog::UpdateDialog() {
@@ -519,6 +558,9 @@ void ContentAnalysisDialog::SetupButtons() {
     DialogDelegate::SetAcceptCallback(
         base::BindOnce(&ContentAnalysisDialog::AcceptButtonCallback,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    if (delegate_->BypassRequiresJustification())
+      DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
   } else if (is_failure() || is_pending()) {
     // Include the Cancel button when the scan is pending or failing.
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL);
@@ -752,6 +794,16 @@ views::Throbber* ContentAnalysisDialog::GetSideIconSpinnerForTesting() const {
 
 views::Label* ContentAnalysisDialog::GetMessageForTesting() const {
   return message_;
+}
+
+views::Label* ContentAnalysisDialog::GetBypassJustificationLabelForTesting()
+    const {
+  return justification_text_label_;
+}
+
+views::Textarea*
+ContentAnalysisDialog::GetBypassJustificationTextareaForTesting() const {
+  return bypass_justification_;
 }
 
 }  // namespace enterprise_connectors
