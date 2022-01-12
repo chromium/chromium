@@ -8,6 +8,7 @@ load("//lib/branches.star", "branches")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "branch_type")
+load("../fallback-cq.star", "fallback_cq")
 
 try_.defaults.set(
     cores = 8,
@@ -117,9 +118,10 @@ presubmit_builder(
     tryjob = try_.job(),
 )
 
-# TODO(crbug.com/1279594) Switch to presubmit_builder, add to fallback CQ
-try_.builder(
+presubmit_builder(
     name = "requires-testing-checker",
+    cq_group = fallback_cq.GROUP,
     description_html = "prevents CLs that requires testing from landing on branches with no CQ",
     executable = "recipe:requires_testing_checker",
+    tryjob = try_.job(),
 )
