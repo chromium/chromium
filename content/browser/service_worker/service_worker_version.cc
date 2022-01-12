@@ -1730,8 +1730,15 @@ void ServiceWorkerVersion::OnSimpleEventFinished(
 void ServiceWorkerVersion::CountFeature(blink::mojom::WebFeature feature) {
   if (!used_features_.insert(feature).second)
     return;
-  for (auto container_host_by_uuid : controllee_map_)
-    container_host_by_uuid.second->CountFeature(feature);
+  for (auto container_host_by_uuid : controllee_map_) {
+    const base::WeakPtr<ServiceWorkerContainerHost>& container_host =
+        container_host_by_uuid.second;
+    // TODO(crbug.com/1253581 crbug.com/1021718): controllee_map_ should be only
+    // containing live container hosts. The below "if" check is a workaround for
+    // unmatched AddControllee / RemoveControllee calls.
+    if (container_host)
+      container_host->CountFeature(feature);
+  }
 }
 
 void ServiceWorkerVersion::set_cross_origin_embedder_policy(
