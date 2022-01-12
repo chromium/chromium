@@ -278,8 +278,8 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
 
   StopSpeechRecognition();
 
-  // At this point, the screencast might not synced to Drive yet.  Open
-  // Projector App which showing the Gallery view by default.
+  // At this point, the screencast might not synced to Drive yet. Open
+  // Projector App which shows the Gallery view by default.
   client_->OpenProjectorApp();
 }
 
@@ -296,6 +296,8 @@ void ProjectorControllerImpl::OnRecordingStartAborted() {
   }
 
   projector_session_->Stop();
+
+  client_->OpenProjectorApp();
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {
