@@ -28,8 +28,8 @@
 
 #include <cstddef>
 
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
