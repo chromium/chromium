@@ -311,10 +311,10 @@ class Storage {
   // Storage Constructors and Destructor
   // ---------------------------------------------------------------------------
 
-  Storage() : metadata_(A(), /* size and is_allocated */ 0) {}
+  Storage() : metadata_(A(), /* size and is_allocated */ 0u) {}
 
   explicit Storage(const A& allocator)
-      : metadata_(allocator, /* size and is_allocated */ 0) {}
+      : metadata_(allocator, /* size and is_allocated */ 0u) {}
 
   ~Storage() {
     if (GetSizeAndIsAllocated() == 0) {

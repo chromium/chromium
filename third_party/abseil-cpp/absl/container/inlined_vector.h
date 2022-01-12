@@ -151,7 +151,7 @@ class InlinedVector {
                 const allocator_type& allocator = allocator_type())
       : storage_(allocator) {
     storage_.Initialize(IteratorValueAdapter<A, ForwardIterator>(first),
-                        std::distance(first, last));
+                        static_cast<size_t>(std::distance(first, last)));
   }
 
   // Creates an inlined vector with elements constructed from the provided input
@@ -522,7 +522,7 @@ class InlinedVector {
             EnableIfAtLeastForwardIterator<ForwardIterator> = 0>
   void assign(ForwardIterator first, ForwardIterator last) {
     storage_.Assign(IteratorValueAdapter<A, ForwardIterator>(first),
-                    std::distance(first, last));
+                    static_cast<size_t>(std::distance(first, last)));
   }
 
   // Overload of `InlinedVector::assign(...)` to replace the contents of the

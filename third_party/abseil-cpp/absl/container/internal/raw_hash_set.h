@@ -1953,7 +1953,7 @@ class raw_hash_set {
   absl::container_internal::CompressedTuple<size_t /* growth_left */,
                                             HashtablezInfoHandle, hasher,
                                             key_equal, allocator_type>
-      settings_{0, HashtablezInfoHandle{}, hasher{}, key_equal{},
+      settings_{0u, HashtablezInfoHandle{}, hasher{}, key_equal{},
                 allocator_type{}};
 };
 

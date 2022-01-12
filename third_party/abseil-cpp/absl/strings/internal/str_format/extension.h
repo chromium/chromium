@@ -70,7 +70,7 @@ class FormatSinkImpl {
   ~FormatSinkImpl() { Flush(); }
 
   void Flush() {
-    raw_.Write(string_view(buf_, pos_ - buf_));
+    raw_.Write(string_view(buf_, static_cast<size_t>(pos_ - buf_)));
     pos_ = buf_;
   }
 
@@ -120,7 +120,9 @@ class FormatSinkImpl {
   }
 
  private:
-  size_t Avail() const { return buf_ + sizeof(buf_) - pos_; }
+  size_t Avail() const {
+    return static_cast<size_t>(buf_ + sizeof(buf_) - pos_);
+  }
 
   FormatRawSinkImpl raw_;
   size_t size_ = 0;

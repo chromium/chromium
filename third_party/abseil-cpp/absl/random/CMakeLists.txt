@@ -121,6 +121,7 @@ absl_cc_library(
     absl::variant
     GTest::gmock
     GTest::gtest
+  PUBLIC
   TESTONLY
 )
 

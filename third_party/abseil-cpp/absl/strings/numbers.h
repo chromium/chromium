@@ -265,7 +265,7 @@ inline size_t FastHexToBufferZeroPad16(uint64_t val, char* out) {
   }
 #endif
   // | 0x1 so that even 0 has 1 digit.
-  return 16 - countl_zero(val | 0x1) / 4;
+  return 16 - static_cast<size_t>(countl_zero(val | 0x1) / 4);
 }
 
 }  // namespace numbers_internal

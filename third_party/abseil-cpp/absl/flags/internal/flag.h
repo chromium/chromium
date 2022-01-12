@@ -303,7 +303,9 @@ constexpr FlagDefaultArg DefaultArg(char) {
 ///////////////////////////////////////////////////////////////////////////////
 // Flag current value auxiliary structs.
 
-constexpr int64_t UninitializedFlagValue() { return 0xababababababababll; }
+constexpr int64_t UninitializedFlagValue() {
+  return static_cast<int64_t>(0xababababababababll);
+}
 
 template <typename T>
 using FlagUseValueAndInitBitStorage = std::integral_constant<
@@ -755,8 +757,8 @@ void* FlagOps(FlagOp op, const void* v1, void* v2, void* v3) {
     case FlagOp::kValueOffset: {
       // Round sizeof(FlagImp) to a multiple of alignof(FlagValue<T>) to get the
       // offset of the data.
-      ptrdiff_t round_to = alignof(FlagValue<T>);
-      ptrdiff_t offset =
+      size_t round_to = alignof(FlagValue<T>);
+      size_t offset =
           (sizeof(FlagImpl) + round_to - 1) / round_to * round_to;
       return reinterpret_cast<void*>(offset);
     }
