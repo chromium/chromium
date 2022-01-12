@@ -1097,8 +1097,9 @@ void AttributionStorageSql::ClearData(
     return;
 
   SCOPED_UMA_HISTOGRAM_TIMER("Conversions.ClearDataTime");
-  if (filter.is_null()) {
-    ClearAllDataInRange(delete_begin, delete_end);
+  if (filter.is_null() && (delete_begin.is_null() || delete_begin.is_min()) &&
+      delete_end.is_max()) {
+    ClearAllDataAllTime();
     return;
   }
 
@@ -1125,7 +1126,8 @@ void AttributionStorageSql::ClearData(
   std::vector<StorableSource::Id> source_ids_to_delete;
   std::vector<AttributionReport::Id> conversion_ids_to_delete;
   while (statement.Step()) {
-    if (filter.Run(DeserializeOrigin(statement.ColumnString(0))) ||
+    if (filter.is_null() ||
+        filter.Run(DeserializeOrigin(statement.ColumnString(0))) ||
         filter.Run(DeserializeOrigin(statement.ColumnString(1))) ||
         filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
@@ -1191,76 +1193,6 @@ void AttributionStorageSql::ClearData(
                                                     delete_end, filter)) {
     return;
   }
-
-  if (!transaction.Commit())
-    return;
-
-  RecordSourcesDeleted(static_cast<int>(source_ids_to_delete.size()));
-  RecordReportsDeleted(num_reports_deleted);
-}
-
-void AttributionStorageSql::ClearAllDataInRange(base::Time delete_begin,
-                                                base::Time delete_end) {
-  // Browsing data remover will call this with null |delete_begin|, but also
-  // perform the ClearAllDataAllTime optimization if |delete_begin| is
-  // base::Time::Min().
-  if ((delete_begin.is_null() || delete_begin.is_min()) &&
-      delete_end.is_max()) {
-    ClearAllDataAllTime();
-    return;
-  }
-
-  sql::Transaction transaction(db_.get());
-  if (!transaction.Begin())
-    return;
-
-  // Select all sources and reports in the given time range.
-  // Note: This should follow the same basic logic in ClearData, with the
-  // assumption that all origins match the filter. We cannot use a DELETE
-  // statement, because we need the list of |impression_id|s to delete from the
-  // |rate_limits| table.
-  //
-  // Optimizing these queries are also tough, see this comment for an idea:
-  // http://crrev.com/c/2150071/12/content/browser/conversions/conversion_storage_sql.cc#468
-  static constexpr char kSelectSourceRangeSql[] =
-      "SELECT impression_id FROM impressions WHERE(impression_time BETWEEN ?1 "
-      "AND ?2)OR "
-      "impression_id IN(SELECT impression_id FROM conversions "
-      "WHERE conversion_time BETWEEN ?1 AND ?2)";
-  sql::Statement select_sources_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSelectSourceRangeSql));
-  select_sources_statement.BindTime(0, delete_begin);
-  select_sources_statement.BindTime(1, delete_end);
-
-  std::vector<StorableSource::Id> source_ids_to_delete;
-  while (select_sources_statement.Step()) {
-    StorableSource::Id source_id(select_sources_statement.ColumnInt64(0));
-    source_ids_to_delete.push_back(source_id);
-  }
-  if (!select_sources_statement.Succeeded())
-    return;
-
-  if (!DeleteSources(source_ids_to_delete))
-    return;
-
-  static constexpr char kDeleteReportRangeSql[] =
-      "DELETE FROM conversions WHERE(conversion_time BETWEEN ? AND ?)"
-      "OR impression_id NOT IN(SELECT impression_id FROM impressions)";
-  sql::Statement delete_reports_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteReportRangeSql));
-  delete_reports_statement.BindTime(0, delete_begin);
-  delete_reports_statement.BindTime(1, delete_end);
-  if (!delete_reports_statement.Run())
-    return;
-
-  int num_reports_deleted = db_->GetLastChangeCount();
-
-  if (!rate_limit_table_.ClearDataForSourceIds(db_.get(), source_ids_to_delete))
-    return;
-
-  if (!rate_limit_table_.ClearAllDataInRange(db_.get(), delete_begin,
-                                             delete_end))
-    return;
 
   if (!transaction.Commit())
     return;

@@ -240,7 +240,6 @@ int64_t RateLimitTable::GetCapacity(
 bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
                                          base::Time delete_begin,
                                          base::Time delete_end) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!((delete_begin.is_null() || delete_begin.is_min()) &&
            delete_end.is_max()));
 
@@ -282,7 +281,8 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!filter.is_null());
+  if (filter.is_null())
+    return ClearAllDataInRange(db, delete_begin, delete_end);
 
   std::vector<int64_t> rate_limit_ids_to_delete;
   {

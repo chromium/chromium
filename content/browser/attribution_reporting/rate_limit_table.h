@@ -82,9 +82,6 @@ class CONTENT_EXPORT RateLimitTable {
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.
-  bool ClearAllDataInRange(sql::Database* db,
-                           base::Time delete_begin,
-                           base::Time delete_end) WARN_UNUSED_RESULT;
   // Returns false on failure.
   bool ClearAllDataAllTime(sql::Database* db) WARN_UNUSED_RESULT;
   // Returns false on failure.
@@ -119,6 +116,11 @@ class CONTENT_EXPORT RateLimitTable {
               base::Time time,
               const std::string& bucket,
               uint32_t value)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+
+  bool ClearAllDataInRange(sql::Database* db,
+                           base::Time delete_begin,
+                           base::Time delete_end)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Deletes data in the table older than the window determined by

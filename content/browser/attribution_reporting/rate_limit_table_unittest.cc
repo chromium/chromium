@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -387,8 +388,9 @@ TEST_F(RateLimitTableTest, ClearAllDataInRange) {
 
   // Delete the first row: attribution should now be allowed for the site,
   // but the other rows should not be deleted.
-  EXPECT_TRUE(table()->ClearAllDataInRange(&db, now - base::Days(7),
-                                           now - base::Days(6)));
+  EXPECT_TRUE(table()->ClearDataForOriginsInRange(
+      &db, now - base::Days(7), now - base::Days(6),
+      /*filter=*/base::NullCallback()));
   EXPECT_EQ(3u, GetRateLimitRows(&db));
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AttributionAllowed(

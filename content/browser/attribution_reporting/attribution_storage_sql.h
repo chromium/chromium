@@ -101,9 +101,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter) override;
 
-  // Variants of `ClearData()` that assume all origins match the filter.
-  void ClearAllDataInRange(base::Time delete_begin, base::Time delete_end)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deactivates active, converted sources with the given conversion destination
