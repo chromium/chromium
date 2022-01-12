@@ -290,9 +290,8 @@ void ParsePreferredRelatedApplicationIdentifiers(
 
     const base::DictionaryValue& related_application =
         base::Value::AsDictionaryValue(related_application_value);
-    std::string platform;
-    if (!related_application.GetString(kPlatform, &platform) ||
-        platform != kPlay) {
+    const std::string* platform = related_application.FindStringKey(kPlatform);
+    if (!platform || *platform != kPlay) {
       continue;
     }
 
@@ -304,22 +303,22 @@ void ParsePreferredRelatedApplicationIdentifiers(
       break;
     }
 
-    std::string id;
-    if (!related_application.GetString(kId, &id)) {
+    const std::string* id = related_application.FindStringKey(kId);
+    if (!id) {
       log.Warn(base::StringPrintf(
           "Elements in \"%s\" with \"%s\":\"%s\" should have \"%s\" field.",
           kRelatedApplications, kPlatform, kPlay, kId));
       continue;
     }
 
-    if (id.empty() || !base::IsStringASCII(id)) {
+    if (id->empty() || !base::IsStringASCII(*id)) {
       log.Warn(base::StringPrintf(
           "\"%s\".\"%s\" should be a non-empty ASCII string.",
           kRelatedApplications, kId));
       continue;
     }
 
-    ids->emplace_back(id);
+    ids->emplace_back(*id);
   }
 }
 
@@ -427,9 +426,8 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     const base::DictionaryValue& related_application =
         base::Value::AsDictionaryValue(related_application_value);
 
-    std::string platform;
-    if (!related_application.GetString(kPlatform, &platform) ||
-        platform != kPlay) {
+    const std::string* platform = related_application.FindStringKey(kPlatform);
+    if (!platform || *platform != kPlay) {
       continue;
     }
 
@@ -455,18 +453,21 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     WebAppManifestSection section;
     section.min_version = 0;
 
-    if (!related_application.GetString(kId, &section.id) ||
-        section.id.empty() || !base::IsStringASCII(section.id)) {
+    const std::string* section_id = related_application.FindStringKey(kId);
+    if (!section_id || section_id->empty() ||
+        !base::IsStringASCII(*section_id)) {
       log.Error(
           base::StringPrintf("\"%s\" must be a non-empty ASCII string.", kId));
       output->clear();
       return false;
     }
+    section.id = *section_id;
 
-    std::string min_version;
-    if (!related_application.GetString(kMinVersion, &min_version) ||
-        min_version.empty() || !base::IsStringASCII(min_version) ||
-        !base::StringToInt64(min_version, &section.min_version)) {
+    const std::string* min_version =
+        related_application.FindStringKey(kMinVersion);
+    if (!min_version || min_version->empty() ||
+        !base::IsStringASCII(*min_version) ||
+        !base::StringToInt64(*min_version, &section.min_version)) {
       log.Error(base::StringPrintf(
           "\"%s\" must be a string convertible into a number.", kMinVersion));
       output->clear();
@@ -491,14 +492,14 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
         fingerprint_dict =
             &base::Value::AsDictionaryValue(fingerprint_dict_value);
       }
-      std::string fingerprint_type;
-      std::string fingerprint_value;
-      if (!fingerprint_dict ||
-          !fingerprint_dict->GetString("type", &fingerprint_type) ||
-          fingerprint_type != "sha256_cert" ||
-          !fingerprint_dict->GetString("value", &fingerprint_value) ||
-          fingerprint_value.empty() ||
-          !base::IsStringASCII(fingerprint_value)) {
+      const std::string* fingerprint_type =
+          fingerprint_dict->FindStringKey("type");
+      const std::string* fingerprint_value =
+          fingerprint_dict->FindStringKey("value");
+      if (!fingerprint_dict || !fingerprint_type ||
+          *fingerprint_type != "sha256_cert" || !fingerprint_value ||
+          fingerprint_value->empty() ||
+          !base::IsStringASCII(*fingerprint_value)) {
         log.Error(base::StringPrintf(
             "Each entry in \"%s\" must be a dictionary with \"type\": "
             "\"sha256_cert\" and a non-empty ASCII string \"value\".",
@@ -508,7 +509,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
       }
 
       std::vector<uint8_t> hash =
-          FingerprintStringToByteArray(fingerprint_value, log);
+          FingerprintStringToByteArray(*fingerprint_value, log);
       if (hash.empty()) {
         output->clear();
         return false;
@@ -548,18 +549,21 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
       return false;
     }
 
-    if (!service_worker_dict->GetString(kServiceWorkerSrc,
-                                        &installation_info->sw_js_url) ||
-        installation_info->sw_js_url.empty() ||
-        !base::IsStringUTF8(installation_info->sw_js_url)) {
+    const std::string* sw_js_url =
+        service_worker_dict->FindStringKey(kServiceWorkerSrc);
+    if (!sw_js_url || sw_js_url->empty() || !base::IsStringUTF8(*sw_js_url)) {
       log.Error(
           base::StringPrintf("\"%s\".\"%s\" must be a non-empty UTF8 string.",
                              kServiceWorker, kServiceWorkerSrc));
       return false;
     }
+    installation_info->sw_js_url = *sw_js_url;
 
-    service_worker_dict->GetString(kServiceWorkerScope,
-                                   &installation_info->sw_scope);
+    const std::string* sw_scope =
+        service_worker_dict->FindStringKey(kServiceWorkerScope);
+    if (sw_scope) {
+      installation_info->sw_scope = *sw_scope;
+    }
 
     absl::optional<bool> use_cache =
         service_worker_dict->FindBoolKey(kServiceWorkerUseCache);
@@ -568,7 +572,10 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
     }
   }
 
-  dict->GetString(kWebAppName, &installation_info->name);
+  const std::string* name = dict->FindStringKey(kWebAppName);
+  if (name) {
+    installation_info->name = *name;
+  }
   if (installation_info->name.empty()) {
     log.Warn(
         base::StringPrintf("No \"%s\" string in the manifest.", kWebAppName));
