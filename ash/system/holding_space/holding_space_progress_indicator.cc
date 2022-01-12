@@ -482,7 +482,18 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
   if (progress_ == kProgressComplete)
     return;
 
+  // Look up the associated `icon_animation` (if one exists).
+  HoldingSpaceProgressIconAnimation* icon_animation =
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->GetProgressIconAnimationForKey(animation_key_);
+
   float inner_ring_stroke_width = GetInnerRingStrokeWidth(layer());
+
+  if (icon_animation) {
+    inner_ring_stroke_width *=
+        icon_animation->inner_ring_stroke_width_scale_factor();
+  }
+
   bounds.Inset(
       gfx::InsetsF((outer_ring_stroke_width + inner_ring_stroke_width) / 2.f));
   path = CreateRoundedRectPath(
@@ -498,6 +509,13 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
     gfx::Rect inner_icon_bounds(layer()->size());
     inner_icon_bounds.ClampToCenteredSize(
         gfx::Size(inner_icon_size, inner_icon_size));
+
+    if (icon_animation) {
+      inner_icon_bounds.Offset(
+          /*horizontal=*/0,
+          /*vertical=*/icon_animation->inner_icon_translate_y_scale_factor() *
+              inner_icon_size);
+    }
 
     // Inner icon.
     canvas->Translate(

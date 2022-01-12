@@ -4,21 +4,29 @@
 
 #include "ash/system/holding_space/holding_space_progress_icon_animation.h"
 
+#include "ui/gfx/animation/tween.h"
+
 namespace ash {
 
-// Animation.
-constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
-
 HoldingSpaceProgressIconAnimation::HoldingSpaceProgressIconAnimation()
-    : HoldingSpaceProgressIndicatorAnimation(kAnimationDuration,
-                                             /*is_cyclic=*/true) {}
+    : HoldingSpaceProgressIndicatorAnimation(
+          /*duration=*/base::Milliseconds(400),
+          /*is_cyclic=*/false) {}
 
 HoldingSpaceProgressIconAnimation::~HoldingSpaceProgressIconAnimation() =
     default;
 
 void HoldingSpaceProgressIconAnimation::UpdateAnimatableProperties(
     double fraction) {
-  // TODO(dmblack): Implement.
+  // Tween.
+  fraction = gfx::Tween::CalculateValue(gfx::Tween::Type::ACCEL_20_DECEL_100,
+                                        fraction);
+
+  // Animatable properties.
+  inner_icon_translate_y_scale_factor_ =
+      gfx::Tween::FloatValueBetween(fraction, /*start=*/-0.5f, /*target=*/0.f);
+  inner_ring_stroke_width_scale_factor_ =
+      gfx::Tween::FloatValueBetween(fraction, /*start=*/0.f, /*target=*/1.f);
 }
 
 }  // namespace ash

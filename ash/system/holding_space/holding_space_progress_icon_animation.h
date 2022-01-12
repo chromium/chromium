@@ -20,9 +20,21 @@ class HoldingSpaceProgressIconAnimation
       const HoldingSpaceProgressIconAnimation&) = delete;
   ~HoldingSpaceProgressIconAnimation() override;
 
+  // Animatable properties.
+  float inner_icon_translate_y_scale_factor() const {
+    return inner_icon_translate_y_scale_factor_;
+  }
+  float inner_ring_stroke_width_scale_factor() const {
+    return inner_ring_stroke_width_scale_factor_;
+  }
+
  private:
   // HoldingSpaceProgressIndicatorAnimation:
   void UpdateAnimatableProperties(double fraction) override;
+
+  // Animatable properties.
+  float inner_icon_translate_y_scale_factor_ = 0.f;
+  float inner_ring_stroke_width_scale_factor_ = 1.f;
 };
 
 }  // namespace ash
