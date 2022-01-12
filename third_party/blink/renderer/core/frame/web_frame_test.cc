@@ -999,7 +999,7 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
       "window.frames[0].postMessage('0', {targetOrigin: '*'});");
   String post_message_w_payment_request(
       "window.frames[0].postMessage("
-      "'1', {targetOrigin: '*', delegate: 'payment'});");
+      "'1', {targetOrigin: '*', delegate: 'paymentrequest'});");
 
   // The delegation info is not passed through a postMessage that is sent
   // without either user activation or the delegation option.
