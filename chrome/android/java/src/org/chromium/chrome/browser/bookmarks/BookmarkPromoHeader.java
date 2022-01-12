@@ -158,7 +158,7 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
      * @return Whether the personalized signin promo should be shown to user.
      */
     private boolean shouldShowBookmarkSigninPromo() {
-        return mSignInManager.isSignInAllowed()
+        return mSignInManager.isSyncOptInAllowed()
                 && SigninPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER);
     }
 

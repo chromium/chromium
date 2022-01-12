@@ -61,7 +61,7 @@ public abstract class SignInPromo {
         Context context = ContextUtils.getApplicationContext();
 
         // TODO(bsazonov): Signin manager should check for native status in isSignInAllowed
-        mCanSignIn = signinManager.isSignInAllowed()
+        mCanSignIn = signinManager.isSyncOptInAllowed()
                 && !signinManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC);
         updateVisibility();
 
@@ -205,7 +205,7 @@ public abstract class SignInPromo {
             // Listening to onSignInAllowedChanged is important for the FRE. Sign in is not allowed
             // until it is completed, but the NTP is initialised before the FRE is even shown. By
             // implementing this we can show the promo if the user did not sign in during the FRE.
-            mCanSignIn = mSigninManager.isSignInAllowed();
+            mCanSignIn = mSigninManager.isSyncOptInAllowed();
             updateVisibility();
             // Update the promo state between sign-in promo and sync promo if required.
             notifyDataChanged();
@@ -222,7 +222,7 @@ public abstract class SignInPromo {
 
         @Override
         public void onSignedOut() {
-            mCanSignIn = mSigninManager.isSignInAllowed();
+            mCanSignIn = mSigninManager.isSyncOptInAllowed();
             updateVisibility();
             // Update the promo state between sign-in promo and sync promo if required.
             notifyDataChanged();

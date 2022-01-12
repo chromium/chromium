@@ -152,7 +152,7 @@ public class SigninChecker
         if (ChildAccountStatus.isChild(status)) {
             assert childAccount != null;
             mSigninManager.onFirstRunCheckDone();
-            if (mSigninManager.isSignInAllowed()) {
+            if (mSigninManager.isSyncOptInAllowed()) {
                 Log.d(TAG, "The child account sign-in starts.");
                 final SignInCallback signInCallback = new SignInCallback() {
                     @Override

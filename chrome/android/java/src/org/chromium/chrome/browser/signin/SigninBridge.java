@@ -79,7 +79,7 @@ final class SigninBridge {
         ThreadUtils.assertOnUiThread();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        if (!signinManager.isSignInAllowed()) {
+        if (!signinManager.isSyncOptInAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
             return;

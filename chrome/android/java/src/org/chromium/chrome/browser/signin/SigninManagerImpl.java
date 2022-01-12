@@ -167,16 +167,16 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     public void onFirstRunCheckDone() {
         mFirstRunCheckIsPending = false;
 
-        if (isSignInAllowed()) {
+        if (isSyncOptInAllowed()) {
             notifySignInAllowedChanged();
         }
     }
 
     /**
-     * Returns true if signin can be started now.
+     * Returns true if sync opt in can be started now.
      */
     @Override
-    public boolean isSignInAllowed() {
+    public boolean isSyncOptInAllowed() {
         return !mFirstRunCheckIsPending && mSignInState == null && mSigninAllowedByPolicy
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null
                 && isSigninSupported();
@@ -275,7 +275,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     private void signinInternal(SignInState signinState) {
-        assert isSignInAllowed() : "Sign-in isn't allowed!";
+        assert isSyncOptInAllowed() : "Sign-in isn't allowed!";
         assert signinState != null : "SigninState shouldn't be null!";
 
         if (mSignInState != null) {

@@ -94,9 +94,9 @@ public interface SigninManager {
     void onFirstRunCheckDone();
 
     /**
-     * Returns true if signin can be started now.
+     * Returns true if sync opt in can be started now.
      */
-    boolean isSignInAllowed();
+    boolean isSyncOptInAllowed();
 
     /**
      * Returns true if signin is disabled by policy.

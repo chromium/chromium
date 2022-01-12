@@ -90,7 +90,7 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
     public boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint) {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        if (signinManager.isSignInAllowed()) {
+        if (signinManager.isSyncOptInAllowed()) {
             launchInternal(context, SyncConsentFragmentBase.createArguments(accessPoint, null));
             return true;
         }
