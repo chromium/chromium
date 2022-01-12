@@ -298,6 +298,25 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    isDictationCommandsFeatureEnabled_: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.getBoolean('isDictationCommandsFeatureEnabled');
+      }
+    },
+
+    /**
+     * TODO(crbug.com/1247299): This support page does not exist. Make sure to
+     * get the correct URL before launch.
+     * @private
+     */
+    dictationLearnMoreUrl_: {
+      type: String,
+      value: 'https://support.google.com/chromebook?p=dictation',
+    },
+
     /**
      * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
      * start undefined so observers don't trigger until they have been

@@ -772,6 +772,10 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("areDictationLocalePrefsAllowed",
                           AreDictationLocalePrefsAllowed());
 
+  html_source->AddBoolean(
+      "isDictationCommandsFeatureEnabled",
+      ::features::IsExperimentalAccessibilityDictationCommandsEnabled());
+
   ::settings::AddCaptionSubpageStrings(html_source);
 }
 
