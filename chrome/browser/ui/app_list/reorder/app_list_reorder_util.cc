@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_util.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_analysis.h"
 
 namespace app_list {
@@ -47,6 +49,14 @@ SyncItemWrapper<std::u16string>::SyncItemWrapper(
     : id(sync_item.item_id),
       item_ordinal(sync_item.item_ordinal),
       is_folder(sync_item.item_type == sync_pb::AppListSpecifics::TYPE_FOLDER) {
+  // Handle the case when the folder item name is not specified and set the
+  // `key_attribute` to the default placeholder.
+  if (is_folder && sync_item.item_name.empty()) {
+    key_attribute =
+        l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
+    return;
+  }
+
   key_attribute = base::UTF8ToUTF16(sync_item.item_name);
 }
 
@@ -56,6 +66,14 @@ SyncItemWrapper<std::u16string>::SyncItemWrapper(
     : id(app_list_item.id()),
       item_ordinal(app_list_item.position()),
       is_folder(app_list_item.is_folder()) {
+  // Handle the case when the folder item name is not specified and set the
+  // `key_attribute` to the default placeholder.
+  if (is_folder && app_list_item.name().empty()) {
+    key_attribute =
+        l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
+    return;
+  }
+
   key_attribute = base::UTF8ToUTF16(app_list_item.name());
 }
 

@@ -3095,7 +3095,9 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
                                           model_updater);
   folder_item3->SetChromeIsFolder(true);
   ItemTestApi(folder_item3.get()).SetPosition(position);
-  // Use an empty folder name.
+  // Use an empty folder name. Note that empty folder name will be interpreted
+  // as "Unnamed" during sorting, which is the same as the name showing to the
+  // users.
   ItemTestApi(folder_item3.get()).SetName("");
   app_list_syncable_service()->AddItem(std::move(folder_item3));
 
@@ -3103,7 +3105,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
   app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(GetOrderedNamesFromSyncableService(),
-            std::vector<std::string>({"", "Folder1", "Folder2"}));
+            std::vector<std::string>({"Folder1", "Folder2", ""}));
 
   // Install a new app.
   const std::string kNewAppId = CreateNextAppId(GenerateId("app_id"));
@@ -3113,7 +3115,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
 
   // Verify that the app is placed after folders.
   EXPECT_EQ(GetOrderedNamesFromSyncableService(),
-            std::vector<std::string>({"", "Folder1", "Folder2", "B"}));
+            std::vector<std::string>({"Folder1", "Folder2", "", "B"}));
 
   // Verify that the entropy is zero.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
@@ -3128,13 +3130,13 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
 
   // Verify that the app is placed after folders.
   EXPECT_EQ(GetOrderedNamesFromSyncableService(),
-            std::vector<std::string>({"", "Folder1", "Folder2", "B", "C"}));
+            std::vector<std::string>({"Folder1", "Folder2", "", "B", "C"}));
 
   // Change folders' names so that folders are out of order.
   ChangeItemName(kFolderItemId1, "Folder2");
   ChangeItemName(kFolderItemId2, "Folder1");
   EXPECT_EQ(GetOrderedNamesFromSyncableService(),
-            std::vector<std::string>({"", "Folder2", "Folder1", "B", "C"}));
+            std::vector<std::string>({"Folder2", "Folder1", "", "B", "C"}));
 
   // There is one folder item out of order so the entropy should be 1/5 = 0.2.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
@@ -3148,7 +3150,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
   InstallExtension(app3.get());
   EXPECT_EQ(
       GetOrderedNamesFromSyncableService(),
-      std::vector<std::string>({"", "Folder2", "Folder1", "B", "C", "D"}));
+      std::vector<std::string>({"Folder2", "Folder1", "", "B", "C", "D"}));
 
   // Install the forth app. Verify that the new item is inserted between a
   // folder and an app.
@@ -3158,7 +3160,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
   InstallExtension(app4.get());
   EXPECT_EQ(
       GetOrderedNamesFromSyncableService(),
-      std::vector<std::string>({"", "Folder2", "Folder1", "A", "B", "C", "D"}));
+      std::vector<std::string>({"Folder2", "Folder1", "", "A", "B", "C", "D"}));
 }
 
 // Verifies that the new app's position maintains the launcher sort order among
