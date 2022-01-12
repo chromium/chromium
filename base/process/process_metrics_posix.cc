@@ -119,11 +119,7 @@ size_t GetMallocUsageMallinfo() {
   struct mallinfo minfo = mallinfo();
 #endif
 #undef MALLINFO2_FOUND_IN_LIBC
-#if BUILDFLAG(USE_TCMALLOC)
-  return minfo.uordblks;
-#else
   return minfo.hblkhd + minfo.arena;
-#endif
 }
 
 }  // namespace

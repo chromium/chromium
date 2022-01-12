@@ -45,16 +45,6 @@ NOINLINE Type HideValueFromCompiler(volatile Type value) {
   return value;
 }
 
-// TCmalloc, currently supported only by Linux/CrOS, supports malloc limits.
-// - USE_TCMALLOC (should be set if compiled with use_allocator=="tcmalloc")
-// - ADDRESS_SANITIZER it has its own memory allocator
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && BUILDFLAG(USE_TCMALLOC) && \
-                              !defined(ADDRESS_SANITIZER)
-#define MALLOC_OVERFLOW_TEST(function) function
-#else
-#define MALLOC_OVERFLOW_TEST(function) DISABLED_##function
-#endif
-
 // There are platforms where these tests are known to fail. We would like to
 // be able to easily check the status on the bots, but marking tests as
 // FAILS_ is too clunky.
@@ -120,61 +110,5 @@ TEST(SecurityTest, MAYBE_NewOverflow) {
   }
 #endif  // !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
 }
-
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__x86_64__)
-// Check if ptr1 and ptr2 are separated by less than size chars.
-bool ArePointersToSameArea(void* ptr1, void* ptr2, size_t size) {
-  ptrdiff_t ptr_diff = reinterpret_cast<char*>(std::max(ptr1, ptr2)) -
-                       reinterpret_cast<char*>(std::min(ptr1, ptr2));
-  return static_cast<size_t>(ptr_diff) <= size;
-}
-
-// Check if TCMalloc uses an underlying random memory allocator.
-TEST(SecurityTest, MALLOC_OVERFLOW_TEST(RandomMemoryAllocations)) {
-  size_t kPageSize = 4096;  // We support x86_64 only.
-  // Check that malloc() returns an address that is neither the kernel's
-  // un-hinted mmap area, nor the current brk() area. The first malloc() may
-  // not be at a random address because TCMalloc will first exhaust any memory
-  // that it has allocated early on, before starting the sophisticated
-  // allocators.
-  void* default_mmap_heap_address =
-      mmap(nullptr, kPageSize, PROT_READ | PROT_WRITE,
-           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  ASSERT_NE(default_mmap_heap_address,
-            static_cast<void*>(MAP_FAILED));
-  ASSERT_EQ(munmap(default_mmap_heap_address, kPageSize), 0);
-  void* brk_heap_address = sbrk(0);
-  ASSERT_NE(brk_heap_address, reinterpret_cast<void*>(-1));
-  ASSERT_TRUE(brk_heap_address != nullptr);
-  // 1 MB should get us past what TCMalloc pre-allocated before initializing
-  // the sophisticated allocators.
-  size_t kAllocSize = 1<<20;
-  std::unique_ptr<char, base::FreeDeleter> ptr(
-      static_cast<char*>(malloc(kAllocSize)));
-  ASSERT_TRUE(ptr != nullptr);
-  // If two pointers are separated by less than 512MB, they are considered
-  // to be in the same area.
-  // Our random pointer could be anywhere within 0x3fffffffffff (46bits),
-  // and we are checking that it's not withing 1GB (30 bits) from two
-  // addresses (brk and mmap heap). We have roughly one chance out of
-  // 2^15 to flake.
-  const size_t kAreaRadius = 1<<29;
-  bool in_default_mmap_heap = ArePointersToSameArea(
-      ptr.get(), default_mmap_heap_address, kAreaRadius);
-  EXPECT_FALSE(in_default_mmap_heap);
-
-  bool in_default_brk_heap = ArePointersToSameArea(
-      ptr.get(), brk_heap_address, kAreaRadius);
-  EXPECT_FALSE(in_default_brk_heap);
-
-  // In the implementation, we always mask our random addresses with
-  // kRandomMask, so we use it as an additional detection mechanism.
-  const uintptr_t kRandomMask = 0x3fffffffffffULL;
-  bool impossible_random_address =
-      reinterpret_cast<uintptr_t>(ptr.get()) & ~kRandomMask;
-  EXPECT_FALSE(impossible_random_address);
-}
-
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__x86_64__)
 
 }  // namespace

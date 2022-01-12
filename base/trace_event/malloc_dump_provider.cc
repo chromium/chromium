@@ -183,22 +183,14 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                             &resident_size, &allocated_objects_size,
                             &syscall_count);
 
+  // Even when PartitionAlloc is used, WinHeap is still used as well, report
+  // its statistics.
 #if OS_WIN
   ReportWinHeapStats(args.level_of_detail, pmd, &total_virtual_size,
                      &resident_size, &allocated_objects_size,
                      &allocated_objects_count);
 #endif
   // TODO(keishi): Add glibc malloc on Android
-#elif BUILDFLAG(USE_TCMALLOC)
-  bool res =
-      allocator::GetNumericProperty("generic.heap_size", &total_virtual_size);
-  DCHECK(res);
-  res = allocator::GetNumericProperty("generic.total_physical_bytes",
-                                      &resident_size);
-  DCHECK(res);
-  res = allocator::GetNumericProperty("generic.current_allocated_bytes",
-                                      &allocated_objects_size);
-  DCHECK(res);
 #elif defined(OS_APPLE)
   malloc_statistics_t stats = {0};
   malloc_zone_statistics(nullptr, &stats);
@@ -260,9 +252,8 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   }
 
   if (resident_size > allocated_objects_size) {
-    // Explicitly specify why is extra memory resident. In tcmalloc it accounts
-    // for free lists and caches. In mac and ios it accounts for the
-    // fragmentation and metadata.
+    // Explicitly specify why is extra memory resident. In mac and ios it
+    // accounts for the fragmentation and metadata.
     MemoryAllocatorDump* other_dump =
         pmd->CreateAllocatorDump("malloc/metadata_fragmentation_caches");
     other_dump->AddScalar(MemoryAllocatorDump::kNameSize,

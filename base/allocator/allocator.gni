@@ -72,11 +72,8 @@ if (!use_partition_alloc && use_allocator == "partition") {
   use_allocator = "none"
 }
 
-# No longer the default on any platform, but still supported through GN args on Linux.
-assert(use_allocator != "tcmalloc" || is_linux,
-       "tcmalloc is only supported on Linux")
-assert(use_allocator == "none" || use_allocator == "partition" ||
-       use_allocator == "tcmalloc")
+# TODO(crbug.com/1257213): Completely remove tcmalloc and related files.
+assert(use_allocator == "none" || use_allocator == "partition")
 
 assert(
     !use_allocator_shim || is_linux || is_chromeos || is_android || is_win ||
