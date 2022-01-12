@@ -193,6 +193,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAutocompleteValue) {
   RunTypedTest<kMacAttributes>("ax-autocomplete-value.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXBlockQuoteLevel) {
+  RunTypedTest<kMacAttributes>("ax-block-quote-level.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXColumnHeaderUIElements) {
   RunTypedTest<kMacAttributes>("ax-column-header-ui-elements.html");
 }

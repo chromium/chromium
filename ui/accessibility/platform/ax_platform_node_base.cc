@@ -131,6 +131,12 @@ gfx::NativeViewAccessible AXPlatformNodeBase::GetParent() const {
   return nullptr;
 }
 
+AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformParent() const {
+  if (delegate_)
+    return FromNativeViewAccessible(delegate_->GetParent());
+  return nullptr;
+}
+
 int AXPlatformNodeBase::GetChildCount() const {
   if (delegate_)
     return delegate_->GetChildCount();

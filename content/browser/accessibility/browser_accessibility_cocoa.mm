@@ -66,7 +66,6 @@ static_assert(
 namespace {
 
 // Private WebKit accessibility attributes.
-NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
 NSString* const NSAccessibilityDropEffectsAttribute = @"AXDropEffects";
 NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
@@ -689,7 +688,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     NSString* attribute;
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
-      {NSAccessibilityBlockQuoteLevelAttribute, @"blockQuoteLevel"},
       {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityIdentifierChromeAttribute, @"internalId"},
       {NSAccessibilityColumnsAttribute, @"columns"},
@@ -793,22 +791,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   _owner = nullptr;
   [super detach];
-}
-
-- (id)blockQuoteLevel {
-  if (![self instanceActive])
-    return nil;
-  // TODO(accessibility) This is for the number of ancestors that are a
-  // <blockquote>, including self, useful for tracking replies to replies etc.
-  // in an email.
-  int level = 0;
-  BrowserAccessibility* ancestor = _owner;
-  while (ancestor) {
-    if (ancestor->GetRole() == ax::mojom::Role::kBlockquote)
-      ++level;
-    ancestor = ancestor->PlatformGetParent();
-  }
-  return @(level);
 }
 
 - (NSArray*)AXChildren {
@@ -2918,8 +2900,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   // General attributes.
   NSMutableArray* ret = [NSMutableArray
-      arrayWithObjects:NSAccessibilityBlockQuoteLevelAttribute,
-                       NSAccessibilityChildrenAttribute,
+      arrayWithObjects:NSAccessibilityChildrenAttribute,
                        NSAccessibilityIdentifierChromeAttribute,
                        NSAccessibilityDescriptionAttribute,
                        NSAccessibilityElementBusyAttribute,

@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/ax_private_roles_mac.h"
@@ -653,6 +654,7 @@ bool IsAXSetter(SEL selector) {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
+    NSAccessibilityBlockQuoteLevelAttribute,
     NSAccessibilityDOMClassList,
     NSAccessibilityDOMIdentifierAttribute,
     NSAccessibilityChildrenAttribute,
@@ -1003,6 +1005,24 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kAutoComplete];
+}
+
+- (id)AXBlockQuoteLevel {
+  if (![self instanceActive])
+    return nil;
+  // This is for the number of ancestors that are a <blockquote>, including
+  // self, useful for tracking replies to replies etc. in an email.
+  int level = 0;
+
+  for (ui::AXPlatformNodeBase* ancestor = _node; ancestor;
+       ancestor = ancestor->GetPlatformParent()) {
+    // Do not cross document boundaries.
+    if (ui::IsPlatformDocument(ancestor->GetRole()))
+      break;
+    if (ancestor->GetRole() == ax::mojom::Role::kBlockquote)
+      ++level;
+  }
+  return @(level);
 }
 
 - (NSArray*)AXColumnHeaderUIElements {

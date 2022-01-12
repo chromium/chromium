@@ -102,6 +102,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool IsDescendantOf(AXPlatformNode* ancestor) const override;
 
   // Helpers.
+  AXPlatformNodeBase* GetPlatformParent() const;
   AXPlatformNodeBase* GetPreviousSibling() const;
   AXPlatformNodeBase* GetNextSibling() const;
   AXPlatformNodeBase* GetFirstChild() const;

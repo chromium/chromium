@@ -1,0 +1,2 @@
+level_one.AXBlockQuoteLevel=1
+not_applicable.AXBlockQuoteLevel=0
