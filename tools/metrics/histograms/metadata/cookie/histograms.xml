@@ -1025,6 +1025,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV14" units="ms"
     expires_after="2022-01-09">
+  <obsolete>
+    Removed Jan 2022: no longer needed and expired.
+  </obsolete>
   <owner>wfh@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>

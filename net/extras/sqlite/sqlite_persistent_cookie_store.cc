@@ -1184,7 +1184,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 13) {
-    const base::TimeTicks start_time = base::TimeTicks::Now();
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return absl::nullopt;
@@ -1246,8 +1245,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     meta_table()->SetCompatibleVersionNumber(
         std::min(cur_version, kCompatibleVersionNumber));
     transaction.Commit();
-    base::UmaHistogramTimes("Cookie.TimeDatabaseMigrationToV14",
-                            base::TimeTicks::Now() - start_time);
   }
 
   if (cur_version == 14) {
