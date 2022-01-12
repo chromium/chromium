@@ -240,10 +240,7 @@ TEST_F(FontAccessManagerImplTest, FailsIfFrameNotInViewport) {
   AutoGrantPermission();
   SetFrameHidden();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kNotVisible);
   EXPECT_FALSE(region.IsValid());
 }
@@ -252,27 +249,25 @@ TEST_F(FontAccessManagerImplTest, EnumerationConsumesUserActivation) {
   AskGrantPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
-  EXPECT_EQ(status, FontEnumerationStatus::kOk)
-      << "Font Enumeration was successful.";
+  {
+    const auto [status, region] = manager_sync_->EnumerateLocalFonts();
+    EXPECT_EQ(status, FontEnumerationStatus::kOk)
+        << "Font Enumeration was successful.";
+  }
 
   AskGrantPermission();
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-  EXPECT_EQ(status, FontEnumerationStatus::kNeedsUserActivation)
-      << "User Activation Required.";
+  {
+    const auto [status, region] = manager_sync_->EnumerateLocalFonts();
+    EXPECT_EQ(status, FontEnumerationStatus::kNeedsUserActivation)
+        << "User Activation Required.";
+  }
 }
 
 TEST_F(FontAccessManagerImplTest, PreviouslyGrantedValidateEnumerationBasic) {
   AutoGrantPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kOk);
   ValidateFontEnumerationBasic(std::move(status), std::move(region));
 }
@@ -281,20 +276,14 @@ TEST_F(FontAccessManagerImplTest, UserActivationRequiredBeforeGrant) {
   AskGrantPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kOk);
 }
 
 TEST_F(FontAccessManagerImplTest, EnumerationFailsIfNoActivation) {
   AskGrantPermission();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kNeedsUserActivation);
 }
 
@@ -302,10 +291,7 @@ TEST_F(FontAccessManagerImplTest, PermissionDeniedOnAskErrors) {
   AskDenyPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
 }
 
@@ -313,10 +299,7 @@ TEST_F(FontAccessManagerImplTest, PermissionPreviouslyDeniedErrors) {
   AutoDenyPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
 }
 

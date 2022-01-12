@@ -2590,9 +2590,7 @@ std::tuple<int64_t, int64_t> QuotaManagerImpl::CallGetVolumeInfo(
     LOG(WARNING) << "Create directory failed for path" << path.value();
     return std::make_tuple<int64_t, int64_t>(0, 0);
   }
-  int64_t total;
-  int64_t available;
-  std::tie(total, available) = get_volume_info_fn(path);
+  const auto [total, available] = get_volume_info_fn(path);
   if (total < 0 || available < 0) {
     LOG(WARNING) << "Unable to get volume info: " << path.value();
     return std::make_tuple<int64_t, int64_t>(0, 0);
