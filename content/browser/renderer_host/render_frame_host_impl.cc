@@ -4502,6 +4502,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
   // Sets a default value for before_unload_end_time so that the browser
   // survives a hacked renderer.
   base::TimeTicks before_unload_end_time = renderer_before_unload_end_time;
+  base::TimeDelta browser_to_renderer_ipc_time_delta;
   if (!renderer_before_unload_start_time.is_null() &&
       !renderer_before_unload_end_time.is_null()) {
     base::TimeTicks before_unload_completed_time = base::TimeTicks::Now();
@@ -4523,6 +4524,19 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
           converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
               renderer_before_unload_end_time));
       before_unload_end_time = browser_before_unload_end_time.ToTimeTicks();
+      if (base::FeatureList::IsEnabled(
+              features::kIncludeIpcOverheadInNavigationStart)) {
+        const blink::LocalTimeTicks browser_before_unload_start_time =
+            converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+                renderer_before_unload_start_time));
+        browser_to_renderer_ipc_time_delta =
+            browser_before_unload_start_time.ToTimeTicks() -
+            send_before_unload_start_time_;
+      }
+    } else if (base::FeatureList::IsEnabled(
+                   features::kIncludeIpcOverheadInNavigationStart)) {
+      browser_to_renderer_ipc_time_delta =
+          (renderer_before_unload_start_time - send_before_unload_start_time_);
     }
 
     base::TimeDelta on_before_unload_overhead_time =
@@ -4565,7 +4579,12 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
               proceed, before_unload_end_time);
         }
       },
-      weak_ptr_factory_.GetWeakPtr(), before_unload_end_time, proceed,
+      // The overhead of the browser->renderer IPC may be non trivial. Account
+      // for it here. Ideally this would also include the time to execute the
+      // JS, but we would need to exclude the time spent waiting for a dialog,
+      // which is tricky.
+      weak_ptr_factory_.GetWeakPtr(),
+      before_unload_end_time - browser_to_renderer_ipc_time_delta, proceed,
       unload_ack_is_for_navigation_);
 
   if (is_frame_being_destroyed) {
