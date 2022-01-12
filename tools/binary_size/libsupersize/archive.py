@@ -563,8 +563,7 @@ def _CreateMergeStringsReplacements(merge_string_syms,
   return ret
 
 
-def _UpdateSymbolNamesFromNm(raw_symbols, names_by_address):
-  """Updates raw_symbols names with extra information from nm."""
+def _AddOutlinedSymbolCountsFromNm(raw_symbols, names_by_address):
   logging.debug('Update symbol names')
   # linker_map_parser extracts '** outlined function' without knowing how many
   # such symbols exist at each address. nm has this information, and stores the
@@ -927,7 +926,10 @@ def _ParseElfInfo(native_spec, outdir_context=None):
         'Adding symbols removed by identical code folding (as reported by nm)')
     # This normally does not block (it's finished by this time).
     names_by_address = elf_nm_result.get()
-    _UpdateSymbolNamesFromNm(raw_symbols, names_by_address)
+    if native_spec.map_path:
+      # This rewrites outlined symbols from |map_path|, and can be skipped if
+      # symbols already came from nm (e.g., for dwarf mode).
+      _AddOutlinedSymbolCountsFromNm(raw_symbols, names_by_address)
 
     raw_symbols = _AddNmAliases(raw_symbols, names_by_address)
 
