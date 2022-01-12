@@ -625,8 +625,10 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
                        MAYBE_HasZombieProfile) {
-  ASSERT_TRUE(
-      base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose));
+  // We observe Profile destruction in this test, so skip it for the handful of
+  // bots that don't destroy Profiles.
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
+    GTEST_SKIP();
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
