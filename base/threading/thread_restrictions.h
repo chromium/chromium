@@ -170,6 +170,7 @@ class BrowserTestBase;
 class CategorizedWorkerPool;
 class DesktopCaptureDevice;
 class DWriteFontCollectionProxy;
+class DWriteFontProxyImpl;
 class EmergencyTraceFinalisationCoordinator;
 class InProcessUtilityThread;
 class NestedMessagePumpAndroid;
@@ -445,6 +446,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class blink::DiskDataAllocator;
   friend class chromecast::CrashUtil;
   friend class content::BrowserProcessIOThread;
+  friend class content::DWriteFontProxyImpl;
   friend class content::NetworkServiceInstancePrivate;
   friend class content::PepperPrintSettingsManagerImpl;
   friend class content::RenderProcessHostImpl;

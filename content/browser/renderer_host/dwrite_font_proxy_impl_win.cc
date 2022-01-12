@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/dwrite_font_file_util_win.h"
@@ -265,6 +266,9 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
   // as file handles. The renderer would be unable to open the files directly
   // due to sandbox policy (it would get ERROR_ACCESS_DENIED instead). Passing
   // handles allows the renderer to bypass the restriction and use the fonts.
+  // TODO(jam): if kDWriteFontProxyOnIO is removed also remove the exception
+  // for this class from thread_restrictions.h
+  base::ScopedAllowBlocking allow_io;
   for (const auto& custom_font_path : custom_font_path_set) {
     // Specify FLAG_WIN_EXCLUSIVE_WRITE to prevent base::File from opening the
     // file with FILE_SHARE_WRITE access. FLAG_WIN_EXCLUSIVE_WRITE doesn't
