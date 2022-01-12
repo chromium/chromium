@@ -34,6 +34,9 @@ class CONTENT_EXPORT IsolatedAppThrottle : public NavigationThrottle {
       bool needs_app_isolation,
       NavigationThrottle::ThrottleAction block_action);
 
+  // Opens a url in the systems' default application for the given url.
+  bool OpenUrlExternal(const GURL& url);
+
   bool embedder_requests_app_isolation();
 
   // These two fields store the starting and destination origins of the most

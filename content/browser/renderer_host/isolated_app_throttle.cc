@@ -129,6 +129,29 @@ IsolatedAppThrottle::WillProcessResponse() {
                     NavigationThrottle::BLOCK_RESPONSE);
 }
 
+bool IsolatedAppThrottle::OpenUrlExternal(const GURL& url) {
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(navigation_handle());
+  const FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
+  return GetContentClient()->browser()->HandleExternalProtocol(
+      url,
+      base::BindRepeating(
+          [](const int frame_tree_node_id) {
+            return WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+          },
+          frame_tree_node->frame_tree_node_id()),
+      ChildProcessHost::kInvalidUniqueID, frame_tree_node->frame_tree_node_id(),
+      navigation_request->GetNavigationUIData(),
+      /*is_main_frame=*/true, network::mojom::WebSandboxFlags::kNone,
+      (navigation_handle()->GetRedirectChain().size() > 1)
+          ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
+          : ui::PageTransition::PAGE_TRANSITION_LINK,
+      navigation_request->HasUserGesture(),
+      /*initiating_origin=*/absl::nullopt,
+      /*initiator_document=*/nullptr, &loader_factory);
+}
+
 NavigationThrottle::ThrottleCheckResult IsolatedAppThrottle::DoThrottle(
     bool needs_app_isolation,
     NavigationThrottle::ThrottleAction block_action) {
@@ -154,13 +177,15 @@ NavigationThrottle::ThrottleCheckResult IsolatedAppThrottle::DoThrottle(
       dest_origin_.GetTupleOrPrecursorTupleIfOpaque();
   DCHECK(web_contents_isolation_tuple.IsValid());
 
-  // If the main frame tries to leave the app's origin, cancel the navigation
-  // and open the URL in the user's default browser. Iframes are allowed to
-  // leave the app's origin.
+  // If the main frame tries to leave the app's origin, cancel the
+  // navigation and open the URL in the systems' default application.
+  // Iframes are allowed to leave the app's origin.
   if (dest_tuple != web_contents_isolation_tuple) {
-    // TODO(crbug.com/1237636): Load the URL in the default browser.
-    return navigation_handle()->IsInMainFrame() ? NavigationThrottle::CANCEL
-                                                : NavigationThrottle::PROCEED;
+    if (navigation_handle()->IsInMainFrame()) {
+      OpenUrlExternal(navigation_handle()->GetURL());
+      return NavigationThrottle::CANCEL;
+    }
+    return NavigationThrottle::PROCEED;
   }
 
   // Block renderer-initiated iframe navigations into the app that were
