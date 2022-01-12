@@ -3986,7 +3986,7 @@
   {
     "name": "nearby-sharing-arc",
     "owners": [ "phshah", "alanding", "cros-sharesheet@google.com", "arc-app-dev@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 99
   },
   {
     "name": "nearby-sharing-background-scanning",
