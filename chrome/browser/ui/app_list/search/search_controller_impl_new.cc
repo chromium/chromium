@@ -298,9 +298,23 @@ void SearchControllerImplNew::Rank(ash::AppListSearchResultType provider_type) {
 }
 
 void SearchControllerImplNew::Publish() {
-  // Sort categories and create a vector of category enums in display order.
+  // Sort categories first by burn-in iteration number, then by score.
   std::sort(categories_.begin(), categories_.end(),
-            [](const auto& a, const auto& b) { return a.score > b.score; });
+            [](const auto& a, const auto& b) {
+              const int a_burnin = a.burnin_iteration;
+              const int b_burnin = b.burnin_iteration;
+              if (a_burnin != b_burnin) {
+                // Sort order: 0, 1, 2, 3, ... then -1.
+                // The effect of this is to sort by arrival order, with unseen
+                // categories ranked last.
+                // N.B. (a ^ b) < 0 checks for opposite sign.
+                return (a_burnin ^ b_burnin) < 0 ? a_burnin > b_burnin
+                                                 : a_burnin < b_burnin;
+              } else {
+                return a.score > b.score;
+              }
+            });
+  // Create a vector of category enums in display order.
   std::vector<Category> category_enums;
   for (const auto& category : categories_)
     category_enums.push_back(category.category);

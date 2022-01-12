@@ -252,31 +252,6 @@ class SearchControllerImplNewTest : public testing::Test {
   TestRankerDelegate* ranker_delegate_{nullptr};
 };
 
-// Tests that categories are ordered correctly, and their results are grouped
-// together and ordered by score.
-TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly) {
-  ranker_delegate_->SetCategoryRanks(
-      {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
-  auto file_results = MakeResults({"a"}, {Category::kFiles}, {false}, {0.9});
-  auto web_results = MakeResults(
-      {"c", "d", "b"}, {Category::kWeb, Category::kWeb, Category::kWeb},
-      {false, false, false}, {0.2, 0.1, 0.4});
-  auto app_results = MakeResults({"e"}, {Category::kApps}, {false}, {0.1});
-
-  // Simulate starting a search.
-  search_controller_->StartSearch(u"abc");
-  ElapseBurnInPeriod();
-  // Simulate several providers returning results.
-  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
-                                 std::move(web_results));
-  search_controller_->SetResults(SimpleProvider(Result::kInstalledApp),
-                                 std::move(app_results));
-  search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
-                                 std::move(file_results));
-
-  ExpectIdOrder({"a", "b", "c", "d", "e"});
-}
-
 // Tests that best matches are ordered first, and categories are ignored when
 // ranking within best match.
 TEST_F(SearchControllerImplNewTest, BestMatchesOrderedAboveOtherResults) {
@@ -402,18 +377,71 @@ TEST_F(SearchControllerImplNewTest,
                                       {Category::kSettings, 3}});
 }
 
-TEST_F(SearchControllerImplNewTest,
-       SetResultsPreAndPostBurnIn_OneProviderReturnPerCategory) {
-  // When there is only a single provider return per final category, we do not
-  // expect there to be any effect from sorting by burn-in iteration number.
-
+// Tests that categories which arrive pre-burn-in are ordered correctly, and
+// their results are grouped together and ordered by score.
+TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly_PreBurnIn) {
   ranker_delegate_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto file_results = MakeResults({"a"}, {Category::kFiles}, {false}, {0.9});
   auto web_results = MakeResults(
       {"c", "d", "b"}, {Category::kWeb, Category::kWeb, Category::kWeb},
+      {false, false, false}, {0.2, 0.1, 0.4});
+  auto app_results = MakeResults({"e"}, {Category::kApps}, {false}, {0.1});
+
+  // Simulate starting a search.
+  search_controller_->StartSearch(u"abc");
+  // Simulate several providers returning results pre-burn-in.
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(web_results));
+  search_controller_->SetResults(SimpleProvider(Result::kInstalledApp),
+                                 std::move(app_results));
+  search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
+                                 std::move(file_results));
+  ElapseBurnInPeriod();
+
+  ExpectIdOrder({"a", "b", "c", "d", "e"});
+}
+
+// Tests that categories which arrive post-burn-in are ordered correctly, and
+// their results are grouped together and ordered by score.
+TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly_PostBurnIn) {
+  ranker_delegate_->SetCategoryRanks(
+      {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
+  auto web_results = MakeResults(
+      {"b", "c", "a"}, {Category::kWeb, Category::kWeb, Category::kWeb},
+      {false, false, false}, {0.2, 0.1, 0.4});
+  auto app_results = MakeResults({"e", "d"}, {Category::kApps, Category::kApps},
+                                 {false, false}, {0.7, 0.9});
+  auto file_results = MakeResults({"f"}, {Category::kFiles}, {false}, {0.8});
+
+  // Simulate starting a search.
+  search_controller_->StartSearch(u"abc");
+  // Simulate several providers returning results post-burn-in.
+  ElapseBurnInPeriod();
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(web_results));
+  ExpectIdOrder({"a", "b", "c"});
+  search_controller_->SetResults(SimpleProvider(Result::kInstalledApp),
+                                 std::move(app_results));
+  ExpectIdOrder({"a", "b", "c", "d", "e"});
+  search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
+                                 std::move(file_results));
+  ExpectIdOrder({"a", "b", "c", "d", "e", "f"});
+}
+
+// Tests that categories are ordered correctly, where some categories arrive
+// pre-burn-in and others arrive post-burn-in. Test that their results are
+// grouped together and ordered by score.
+TEST_F(
+    SearchControllerImplNewTest,
+    CategoriesOrderedCorrectly_PreAndPostBurnIn_OneProviderReturnPerCategory) {
+  ranker_delegate_->SetCategoryRanks(
+      {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
+  auto web_results = MakeResults(
+      {"c", "d", "b"}, {Category::kWeb, Category::kWeb, Category::kWeb},
       {false, false, false}, {0.3, 0.2, 0.4});
   auto app_results = MakeResults({"e"}, {Category::kApps}, {false}, {0.1});
+  auto file_results = MakeResults({"a"}, {Category::kFiles}, {false}, {0.9});
 
   // Simulate starting a search.
   search_controller_->StartSearch(u"abc");
@@ -433,11 +461,15 @@ TEST_F(SearchControllerImplNewTest,
   ExpectIdOrder({"b", "c", "d", "e"});
   search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
                                  std::move(file_results));
-  ExpectIdOrder({"a", "b", "c", "d", "e"});
+  ExpectIdOrder({"b", "c", "d", "e", "a"});
 }
 
-TEST_F(SearchControllerImplNewTest,
-       SetResultsPreAndPostBurnIn_SingleProviderReturnsMultipleTimes) {
+// Tests that results are ordered correctly, where results are of a single
+// category, and originate from a single provider which returns multiple times
+// both pre- and post-burn-in.
+TEST_F(
+    SearchControllerImplNewTest,
+    ResultsOrderedCorrectly_PreAndPostBurnIn_SingleProviderReturnsMultipleTimes) {
   ranker_delegate_->SetCategoryRanks({{Category::kWeb, 0.2}});
   auto web_results_1 = MakeResults(
       {"b", "c", "a"}, {Category::kWeb, Category::kWeb, Category::kWeb},
@@ -467,7 +499,8 @@ TEST_F(SearchControllerImplNewTest,
   ExpectIdOrder({"a", "b", "c"});
 
   // When a single provider returns multiple times for a category, sorting by
-  // burn-in iteration number takes precedence over sorting by result score.
+  // result burn-in iteration number takes precedence over sorting by result
+  // score.
   //
   // Simulate the provider returning results twice after the burn-in period.
   search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
@@ -478,8 +511,12 @@ TEST_F(SearchControllerImplNewTest,
   ExpectIdOrder({"a", "b", "c", "d", "e"});
 }
 
-TEST_F(SearchControllerImplNewTest,
-       SetResultsPreAndPostBurnIn_MultipleProvidersReturnToSingleCategory) {
+// Tests that results are ordered correctly, where results are of a single
+// category, and originate from multiple providers. Providers return a single
+// time, pre- or post-burn-in.
+TEST_F(
+    SearchControllerImplNewTest,
+    ResultsOrderedCorrectly_PreAndPostBurnIn_MultipleProvidersReturnToSingleCategory) {
   ranker_delegate_->SetCategoryRanks({{Category::kWeb, 0.2}});
 
   auto installed_app_results = MakeResults(
