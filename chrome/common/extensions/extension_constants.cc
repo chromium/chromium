@@ -34,6 +34,7 @@ const char kGooglePlusAppId[] = "dlppkpafhbajpcmmoheippocdidnckmm";
 const char kIdentityApiUiAppId[] = "ahjaciijnoiaklcomgnblndopackapon";
 const char kTextEditorAppId[] = "mmfbcljfglbokpmkimbfghdkjmjhdgbg";
 const char kInAppPaymentsSupportAppId[] = "nmmhkkegccagdldgiimedpiccmgmieda";
+const char kKeyboardExtensionId[] = "mppnpdlheglhdfmldimlhpnegondlapf";
 
 const char* const kBuiltInFirstPartyExtensionIds[] = {
     kCalculatorAppId,
@@ -75,6 +76,9 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
 #if defined(OS_CHROMEOS)
 const char kAssessmentAssistantExtensionId[] =
     "gndmhdcefbhlchkhipcnnbkcmicncehk";
+const char kGnubbyAppId[] = "beknehfpfkghjoafdifaflglpjkojoco";
+const char kGnubbyV3ExtensionId[] = "lfboplenmmjcmpbkeemecobbadnmpfhi";
+const char kGCSEExtensionId[] = "cfmgaohenjcikllcgjpepfadgbflcjof";
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAccessibilityCommonExtensionId[] =
@@ -115,7 +119,13 @@ const char kGoogleSpeechSynthesisExtensionPath[] =
 const char kGoogleSpeechSynthesisExtensionId[] =
     "gjjabgpgjpampikjhjpfhneeoapjbjaf";
 const char kWallpaperManagerId[] = "obklkkbkpaoaejdabbfldmcfplpdgolj";
+const char kHelpAppExtensionId[] = "honijodknafkokifofgiaalefdiedpko";
+const char kEchoExtensionId[] = "kddnkjkcjddckihglkfcickdhbmaodcn";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
+// The extension id of the Hangout Service extnsion.
+const char kHangoutServiceExtensionId[] = "nkeimhogjdpnpccoofpliimaahmaaome";
+#endif
 
 const char kAppStateNotInstalled[] = "not_installed";
 const char kAppStateInstalled[] = "installed";

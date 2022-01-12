@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
@@ -18,8 +19,6 @@ using extensions::mojom::ManifestLocation;
 namespace {
 
 const char kRandomExtensionId[] = "abacabadabacabaeabacabadabacabaf";
-// Gnubby
-const char kGnubbyExtensionId[] = "beknehfpfkghjoafdifaflglpjkojoco";
 //  smart card connector
 const char kSampleSigninExtensionId[] = "khpfeaanjngmcnplbdlpegiifgpfgdco";
 
@@ -74,8 +73,8 @@ TEST_F(SigninScreenPolicyProviderTest, DenyRandomPolicyExtension) {
 
 TEST_F(SigninScreenPolicyProviderTest, AllowEssentialExtension) {
   // Essential component extensions for the login screen should always work.
-  scoped_refptr<const extensions::Extension> extension =
-      CreateTestApp(kGnubbyExtensionId, ManifestLocation::kExternalComponent);
+  scoped_refptr<const extensions::Extension> extension = CreateTestApp(
+      extension_misc::kGnubbyAppId, ManifestLocation::kExternalComponent);
   std::u16string error;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error));
   EXPECT_TRUE(error.empty());

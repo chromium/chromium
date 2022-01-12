@@ -2632,6 +2632,9 @@ extern const char kEnableSuggestedLocalFilesDescription[];
 extern const char kEnableWireGuardName[];
 extern const char kEnableWireGuardDescription[];
 
+extern const char kEnforceAshExtensionKeeplistName[];
+extern const char kEnforceAshExtensionKeeplistDescription[];
+
 extern const char kExoGamepadVibrationName[];
 extern const char kExoGamepadVibrationDescription[];
 

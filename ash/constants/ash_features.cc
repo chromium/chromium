@@ -549,6 +549,11 @@ const base::Feature kEnableSamlReauthenticationOnLockscreen{
 const base::Feature kEnableWireGuard{"EnableWireGuard",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enforces Ash extension keep-list. Only the extensions/Chrome apps in the
+// keep-list are enabled in Ash.
+const base::Feature kEnforceAshExtensionKeeplist{
+    "EnforceAshExtensionKeeplist", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

@@ -4591,6 +4591,12 @@ const char kEnableWireGuardDescription[] =
     "Enable the support of WireGuard VPN as a native VPN option. Requires a "
     "kernel version that support it.";
 
+const char kEnforceAshExtensionKeeplistName[] =
+    "Enforce Ash extension keeplist";
+const char kEnforceAshExtensionKeeplistDescription[] =
+    "Enforce the Ash extension keeplist. Only the extensions and Chrome apps on"
+    " the keeplist are enabled in Ash.";
+
 const char kESimPolicyName[] = "Enable ESim Policy";
 const char kESimPolicyDescription[] =
     "Enable the support for policy controlled provisioning and configuration "

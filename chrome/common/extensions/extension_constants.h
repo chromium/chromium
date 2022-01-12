@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/buildflags.h"
 #include "url/gurl.h"
 
 namespace extension_urls {
@@ -66,6 +67,9 @@ extern const char kTextEditorAppId[];
 
 // The extension id of the in-app payments support application.
 extern const char kInAppPaymentsSupportAppId[];
+
+// The extension id of virtual keyboard extension.
+extern const char kKeyboardExtensionId[];
 
 // A list of all the first party extension IDs, last entry is null.
 extern const char* const kBuiltInFirstPartyExtensionIds[];
@@ -159,6 +163,12 @@ enum AppLaunchBucket {
 #if defined(OS_CHROMEOS)
 // The extension id of the Assessment Assistant extension.
 extern const char kAssessmentAssistantExtensionId[];
+// The extension id of the Gnubby chrome app.
+extern const char kGnubbyAppId[];
+// The extension id of the new v3 Gnubby extension.
+extern const char kGnubbyV3ExtensionId[];
+// The extension id of the GCSE.
+extern const char kGCSEExtensionId[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Accessibility Common extension.
@@ -219,6 +229,13 @@ extern const char kEspeakSpeechSynthesisExtensionPath[];
 extern const char kEspeakSpeechSynthesisExtensionId[];
 // The extension id of the wallpaper manager application.
 extern const char kWallpaperManagerId[];
+// The extension id of official HelpApp extension.
+extern const char kHelpAppExtensionId[];
+extern const char kEchoExtensionId[];
+#endif
+#if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
+// The extension id of the Hangout Service extnsion.
+extern const char kHangoutServiceExtensionId[];
 #endif
 
 // What causes an extension to be installed? Used in histograms, so don't

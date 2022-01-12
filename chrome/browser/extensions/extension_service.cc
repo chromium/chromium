@@ -379,7 +379,12 @@ ExtensionService::ExtensionService(Profile* profile,
       extension_registrar_(profile_, this),
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
-      corrupted_extension_reinstaller_(profile_) {
+      corrupted_extension_reinstaller_(profile_)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      ,
+      ash_keeplist_manager_(profile, extension_prefs, this)
+#endif
+{
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
 
@@ -509,6 +514,10 @@ void ExtensionService::Init() {
 
   // Must be called after extensions are loaded.
   allowlist_.Init();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash_keeplist_manager_.Init();
+#endif
 
   // Check for updates especially for corrupted user installed extension from
   // the webstore. This will do nothing if an extension update check was

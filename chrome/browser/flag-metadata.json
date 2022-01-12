@@ -3011,6 +3011,11 @@
     "owners": [ "robsc", "napper", "jennyz", "thanhdng" ],
     "expiry_milestone": 98
   },
+  {
+    "name": "enforce-ash-extension-keeplist",
+    "owners": ["jennyz", "erikchen"],
+    "expiry_milestone": 130
+  },
    {
     "name": "enforce-system-aec",
     "owners": [ "peah" ],

@@ -51,8 +51,10 @@ enum DisableReason {
   DISABLE_REINSTALL = 1 << 19,
   // Disabled by Safe Browsing extension allowlist enforcement.
   DISABLE_NOT_ALLOWLISTED = 1 << 20,
+  // Disabled by Ash extension keep-list enforcement.
+  DISABLE_NOT_ASH_KEEPLISTED = 1 << 21,
   // This should always be the last value.
-  DISABLE_REASON_LAST = 1LL << 21,
+  DISABLE_REASON_LAST = 1LL << 22,
 };
 
 static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),

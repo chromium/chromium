@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/ui/login_web_dialog.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,9 +26,6 @@ namespace {
 
 using ::content::BrowserThread;
 using ::extensions::ExtensionRegistry;
-
-// Official HelpApp extension id.
-const char kExtensionId[] = "honijodknafkokifofgiaalefdiedpko";
 
 const char kHelpAppFormat[] = "chrome-extension://%s/oobe.html?id=%d";
 
@@ -49,7 +47,7 @@ void HelpAppLauncher::ShowHelpTopic(HelpTopic help_topic_id) {
   if (!registry)
     return;
 
-  const char* extension_id = kExtensionId;
+  const char* extension_id = extension_misc::kHelpAppExtensionId;
   if (g_extension_id_for_test && *g_extension_id_for_test != '\0') {
     extension_id = g_extension_id_for_test;
   }

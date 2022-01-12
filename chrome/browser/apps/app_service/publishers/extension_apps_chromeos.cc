@@ -41,6 +41,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
+#include "chrome/browser/extensions/extension_keeplist_ash.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -759,7 +760,7 @@ std::unique_ptr<App> ExtensionAppsChromeOs::CreateApp(
   const bool disable_for_lacros =
       extension->is_platform_app() &&
       crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-      !apps::ExtensionAppRunsInAsh(extension->id());
+      !extensions::ExtensionAppRunsInAsh(extension->id());
   const bool is_app_disabled =
       base::Contains(disabled_apps_, extension->id()) || disable_for_lacros;
 
@@ -779,7 +780,7 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
   const bool disable_for_lacros =
       extension->is_platform_app() &&
       crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-      !apps::ExtensionAppRunsInAsh(extension->id());
+      !extensions::ExtensionAppRunsInAsh(extension->id());
   const bool is_app_disabled =
       base::Contains(disabled_apps_, extension->id()) || disable_for_lacros;
 

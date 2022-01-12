@@ -4,14 +4,6 @@
 
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 
-#include <set>
-
-#include "base/containers/contains.h"
-#include "base/no_destructor.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "extensions/common/constants.h"
-
 namespace apps {
 
 extensions::UninstallReason GetExtensionUninstallReason(
@@ -28,17 +20,5 @@ extensions::UninstallReason GetExtensionUninstallReason(
       return extensions::UNINSTALL_REASON_MIGRATED;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool ExtensionAppRunsInAsh(const std::string& app_id) {
-  static base::NoDestructor<std::set<std::string>> keep_list(
-      {file_manager::kAudioPlayerAppId, extension_misc::kFeedbackExtensionId,
-       extension_misc::kFilesManagerAppId, extension_misc::kGoogleKeepAppId,
-       extension_misc::kCalculatorAppId, extension_misc::kTextEditorAppId,
-       extension_misc::kInAppPaymentsSupportAppId,
-       extension_misc::kWallpaperManagerId});
-  return base::Contains(*keep_list, app_id);
-}
-#endif
 
 }  // namespace apps

@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/file_manager/prefs_migration_uma.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/extensions/extension_keeplist_ash.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -222,7 +223,8 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
   for (const auto& policy_dict_entry : policy_apps->GetList()) {
     const std::string* policy_entry =
         policy_dict_entry.is_dict()
-            ? policy_dict_entry.FindStringKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey)
+            ? policy_dict_entry.FindStringKey(
+                  ChromeShelfPrefs::kPinnedAppsPrefAppIDKey)
             : nullptr;
 
     if (!policy_entry) {
@@ -656,7 +658,7 @@ bool ChromeShelfPrefs::IsAshExtensionApp(const std::string& app_id) {
 }
 
 bool ChromeShelfPrefs::IsAshKeepListApp(const std::string& app_id) {
-  return apps::ExtensionAppRunsInAsh(app_id);
+  return extensions::ExtensionAppRunsInAsh(app_id);
 }
 
 std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
@@ -670,7 +672,7 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
   // If this app is on the ash keep list, immediately return it. Even if there's
   // a lacros chrome app that matches this id, we still want to use the ash
   // version.
-  if (apps::ExtensionAppRunsInAsh(sync_id))
+  if (extensions::ExtensionAppRunsInAsh(sync_id))
     return sync_id;
 
   std::string transformed_app_id = kLacrosChromeAppPrefix + sync_id;
