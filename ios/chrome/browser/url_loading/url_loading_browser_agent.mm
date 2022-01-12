@@ -97,7 +97,7 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
       (crash_string == "" || crash_string == "true")) {
     // Induce an intentional crash in the browser process.
-    CHECK(false);
+    CHECK(false) << "User triggered inducebrowsercrashforrealz.";
     // Call another function, so that the above CHECK can't be tail call
     // optimized. This ensures that this method's name will show up in the stack
     // for easier identification.
