@@ -1993,11 +1993,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "enable-experimental-accessibility-switch-access-setup-guide",
-    "owners": ["anastasi@google.com", "josiahk@google.com", "//ui/accessibility/OWNERS"],
-    "expiry_milestone": 97
-  },
-  {
     "name": "enable-experimental-accessibility-switch-access-text",
     "owners": [ "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 95
