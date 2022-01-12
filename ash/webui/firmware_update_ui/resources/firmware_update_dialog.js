@@ -19,13 +19,6 @@ import {FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdatePro
 import {getUpdateProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 
-/** @enum {number} */
-export const DialogState = {
-  CLOSED: 0,
-  UPDATING: 2,
-  UPDATE_DONE: 3,
-};
-
 /**
  * @fileoverview
  * 'firmware-update-dialog' displays information related to a firmware update.
@@ -57,16 +50,9 @@ export class FirmwareUpdateDialogElement extends
         type: Object,
       },
 
-      /** @type {?InstallationProgress} */
+      /** @type {!InstallationProgress} */
       installationProgress: {
         type: Object,
-      },
-
-      /** @type {!DialogState} */
-      dialogState: {
-        type: Number,
-        value: DialogState.CLOSED,
-        computed: 'onStateChanged_(installationProgress.state)'
       },
     };
   }
@@ -109,28 +95,10 @@ export class FirmwareUpdateDialogElement extends
   }
 
   /** @protected */
-  onStateChanged_() {
-    if (!this.installationProgress) {
-      return DialogState.CLOSED;
-    }
-    // TODO(michaelcheco): Handle restarting and failed states.
-    switch (this.installationProgress.state) {
-      case UpdateState.kUnknown:
-      case UpdateState.kIdle:
-        return DialogState.CLOSED;
-      case UpdateState.kUpdating:
-      case UpdateState.kRestarting:
-        return DialogState.UPDATING;
-      case UpdateState.kFailed:
-      case UpdateState.kSuccess:
-        return DialogState.UPDATE_DONE;
-    }
-  }
-
-  /** @protected */
   closeDialog_() {
-    this.dialogState = DialogState.CLOSED;
-    this.installationProgress = null;
+    // Resetting |installationProgress| triggers a call to
+    // |shouldShowUpdateDialog_|.
+    this.installationProgress = {percentage: 0, state: UpdateState.kIdle};
   }
 
   /** @protected */
@@ -165,8 +133,14 @@ export class FirmwareUpdateDialogElement extends
    * @return {boolean}
    */
   shouldShowUpdateDialog_() {
-    return this.isUpdateInProgress_() ||
-        this.dialogState === DialogState.UPDATE_DONE;
+    /** @type {!Array<!UpdateState>} */
+    const activeDialogStates = [
+      UpdateState.kUpdating,
+      UpdateState.kRestarting,
+      UpdateState.kFailed,
+      UpdateState.kSuccess,
+    ];
+    return activeDialogStates.includes(this.installationProgress.state);
   }
 
   /**
@@ -185,7 +159,7 @@ export class FirmwareUpdateDialogElement extends
    * @return {boolean}
    */
   isUpdateInProgress_() {
-    return this.dialogState === DialogState.UPDATING;
+    return this.installationProgress.state === UpdateState.kUpdating;
   }
 
   /**
@@ -213,7 +187,7 @@ export class FirmwareUpdateDialogElement extends
    */
   computeUpdateDialogBodyText_() {
     const {deviceName, deviceVersion} = this.update;
-    return this.dialogState === DialogState.UPDATE_DONE ?
+    return this.installationProgress.state === UpdateState.kSuccess ?
         this.i18n(
             'hasBeenUpdated', mojoString16ToString(deviceName), deviceVersion) :
         this.i18n('updatingInfo');

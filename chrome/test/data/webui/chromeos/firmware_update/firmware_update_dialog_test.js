@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogState, FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
+import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update_types.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

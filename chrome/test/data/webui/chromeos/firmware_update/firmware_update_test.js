@@ -8,8 +8,7 @@ import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateController} from 'chrome://accessory-update/fake_update_controller.js';
 import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
 import {FirmwareUpdateAppElement} from 'chrome://accessory-update/firmware_update_app.js';
-import {DialogState} from 'chrome://accessory-update/firmware_update_dialog.js';
-import {FirmwareUpdate, UpdateProviderInterface} from 'chrome://accessory-update/firmware_update_types.js';
+import {FirmwareUpdate, UpdateProviderInterface, UpdateState} from 'chrome://accessory-update/firmware_update_types.js';
 import {getUpdateProvider, setUpdateControllerForTesting, setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
 import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
@@ -69,9 +68,10 @@ export function firmwareUpdateAppTest() {
         dialogElement.querySelector('#nextButton'));
   }
 
-  /** @return {!DialogState} */
-  function getDialogState() {
-    return page.shadowRoot.querySelector('firmware-update-dialog').dialogState;
+  /** @return {!UpdateState} */
+  function getUpdateState() {
+    return page.shadowRoot.querySelector('firmware-update-dialog')
+        .installationProgress.state;
   }
 
   /** @return {!FirmwareUpdate} */
@@ -117,7 +117,7 @@ export function firmwareUpdateAppTest() {
     // Process |OnStateChanged| and |OnProgressChanged| calls.
     await flushTasks();
     await flushTasks();
-    assertEquals(DialogState.UPDATING, getDialogState());
+    assertEquals(UpdateState.kUpdating, getUpdateState());
     const fakeFirmwareUpdate = getFirmwareUpdateFromDialog();
     assertEquals(
         `Updating ${mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
@@ -125,7 +125,7 @@ export function firmwareUpdateAppTest() {
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
     await flushTasks();
-    assertEquals(DialogState.UPDATE_DONE, getDialogState());
+    assertEquals(UpdateState.kSuccess, getUpdateState());
     assertTrue(getUpdateDialog().open);
     assertEquals(
         `Your ${
