@@ -39,11 +39,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "account-management-flows-v2",
-    "owners": [ "anastasiian", "sinhak" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "activate-metrics-reporting-enabled-policy",
     "owners": [ "oastorga", "ftirelo" ],
     "expiry_milestone": 109
