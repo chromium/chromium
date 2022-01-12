@@ -86,7 +86,7 @@ compile_js_files = [
   "views/camera/timertick.ts",
   "views/camera/video_encoder_options.ts",
   "views/crop_document.ts",
-  "views/dialog.js",
+  "views/dialog.ts",
   "views/ptz_panel.js",
   "views/review.ts",
   "views/settings.js",

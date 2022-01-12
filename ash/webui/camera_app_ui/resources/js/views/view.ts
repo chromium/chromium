@@ -11,7 +11,7 @@ import {WaitableEvent} from '../waitable_event.js';
  * message for message of the dialog view, cancellable for whether the dialog
  * view is cancellable.
  */
-interface DialogEnterOptions {
+export interface DialogEnterOptions {
   message?: string;
   cancellable?: boolean;
 }
@@ -40,6 +40,9 @@ export class PTZPanelOptions {
   }
 }
 
+// TODO(pihsun): After we migrate all files into TypeScript, we can have some
+// sort of "global" view registration, so we can enforce the enter / leave type
+// at compile time.
 export type EnterOptions =
     DialogEnterOptions|WarningEnterOptions|PTZPanelOptions;
 
