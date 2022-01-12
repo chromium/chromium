@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace favicon {
@@ -40,8 +40,7 @@ class WebStateList;
 // TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
 // This means removing legacy Feed and non refactored NTP code.
 @interface ContentSuggestionsMediator
-    : NSObject <ContentSuggestionsDataSource,
-                StartSurfaceRecentTabObserving>
+    : NSObject <StartSurfaceRecentTabObserving>
 
 // Default initializer.
 // TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
@@ -70,6 +69,9 @@ class WebStateList;
 
 // Delegate used to communicate to communicate events to the DiscoverFeed.
 @property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
+
+// The consumer that will be notified when the data change.
+@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
 // WebStateList associated with this mediator.
 @property(nonatomic, assign) WebStateList* webStateList;

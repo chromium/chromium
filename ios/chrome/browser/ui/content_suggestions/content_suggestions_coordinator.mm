@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
@@ -221,8 +220,6 @@
 
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
       initWithStyle:CollectionViewControllerStyleDefault];
-  [self.suggestionsViewController
-      setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
   self.suggestionsViewController.audience = self;
   self.suggestionsViewController.contentSuggestionsEnabled =
@@ -248,6 +245,11 @@
   // TODO(crbug.com/1114792): Remove header provider and use refactored header
   // synchronizer instead.
   self.suggestionsViewController.headerProvider = self.headerController;
+
+  // Set consumer after configuring the header to ensure that view controller
+  // has access to it when configuring its elements.
+  DCHECK(self.suggestionsViewController.headerProvider);
+  self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
 
   self.suggestionsViewController.collectionView.accessibilityIdentifier =
       kContentSuggestionsCollectionIdentifier;
@@ -296,6 +298,12 @@
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.contentSuggestionsMediator hideRecentTabTile];
   }
+}
+
+- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
+  return [SceneStateBrowserAgent::FromBrowser(self.browser)
+              ->GetSceneState()
+              .window.rootViewController.view safeAreaInsets];
 }
 
 #pragma mark - URLDropDelegate
@@ -352,7 +360,7 @@
 }
 
 - (void)reload {
-  [self.contentSuggestionsMediator.dataSink reloadAllData];
+  [self.contentSuggestionsMediator reloadAllData];
 }
 
 - (void)locationBarDidBecomeFirstResponder {

@@ -8,7 +8,6 @@
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/status.h"
 #include "components/ntp_tiles/ntp_tile.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 
 @class ContentSuggestionsMostVisitedActionItem;
@@ -33,8 +32,6 @@ ContentSuggestionsSectionInformation* MostVisitedSectionInformation();
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
     const ntp_tiles::NTPTile& tile,
     ContentSuggestionsSectionInformation* sectionInfo);
-
-content_suggestions::StatusCode ConvertStatusCode(ntp_snippets::Status status);
 
 // Creates and returns a Bookmarks action item.
 ContentSuggestionsMostVisitedActionItem* BookmarkActionItem();

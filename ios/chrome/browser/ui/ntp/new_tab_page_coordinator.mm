@@ -633,12 +633,6 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 
 #pragma mark - DiscoverFeedDelegate
 
-- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
-  return [SceneStateBrowserAgent::FromBrowser(self.browser)
-              ->GetSceneState()
-              .window.rootViewController.view safeAreaInsets];
-}
-
 - (void)contentSuggestionsWasUpdated {
   [self updateDiscoverFeedLayout];
   [self setContentOffsetToTop];

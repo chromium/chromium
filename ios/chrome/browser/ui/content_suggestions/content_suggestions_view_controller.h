@@ -8,18 +8,58 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+
+namespace {
+
+using CSCollectionViewModel = CollectionViewModel<CSCollectionViewItem*>;
+
+// Enum defining the type of a ContentSuggestions.
+typedef NS_ENUM(NSInteger, ContentSuggestionType) {
+  // Use this type to pass information about an empty section. Suggestion of
+  // this type are empty and should not be displayed. The information to be
+  // displayed are contained in the SectionInfo.
+  ContentSuggestionTypeEmpty,
+  ContentSuggestionTypeMostVisited,
+  ContentSuggestionTypeReturnToRecentTab,
+  ContentSuggestionTypePromo,
+};
+
+// Enum defining the ItemTypes of this ContentSuggestionsViewController.
+typedef NS_ENUM(NSInteger, ItemType) {
+  ItemTypeFooter = kItemTypeEnumZero,
+  ItemTypeHeader,
+  ItemTypeEmpty,
+  ItemTypeMostVisited,
+  ItemTypePromo,
+  ItemTypeReturnToRecentTab,
+  ItemTypeUnknown,
+};
+
+// Enum defining the SectionIdentifiers of this
+// ContentSuggestionsViewController.
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierMostVisited = kSectionIdentifierEnumZero,
+  SectionIdentifierLogo,
+  SectionIdentifierReturnToRecentTab,
+  SectionIdentifierPromo,
+  SectionIdentifierDefault,
+};
+
+}  // namespace
 
 @class ContentSuggestionsSectionInformation;
 @protocol ContentSuggestionsActionHandler;
 @protocol ContentSuggestionsCommands;
-@protocol ContentSuggestionsDataSource;
 @protocol ContentSuggestionsHeaderControlling;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol SuggestedContent;
 
 // CollectionViewController to display the suggestions items.
-@interface ContentSuggestionsViewController : CollectionViewController
+@interface ContentSuggestionsViewController
+    : CollectionViewController <ContentSuggestionsConsumer>
 
 // Inits view controller with |style|.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
@@ -50,13 +90,6 @@
 @property(nonatomic, weak) id<ContentSuggestionsActionHandler> handler;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
-
-- (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
-
-// Removes the entry at |indexPath|, from the collection and its model.
-- (void)dismissEntryAtIndexPath:(NSIndexPath*)indexPath;
-// Removes the |section|.
-- (void)dismissSection:(NSInteger)section;
 
 @end
 

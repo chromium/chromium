@@ -8,7 +8,7 @@
 #include "components/favicon/core/large_icon_service.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
@@ -42,9 +42,6 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
 @end
 
 @implementation ContentSuggestionsFaviconMediator
-
-@synthesize mostVisitedAttributesProvider = _mostVisitedAttributesProvider;
-@synthesize dataSink = _dataSink;
 
 #pragma mark - Public.
 
@@ -83,7 +80,7 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
 
     strongItem.attributes = attributes;
     [strongSelf logFaviconFetchedForItem:strongItem];
-    [strongSelf.dataSink itemHasChanged:strongItem];
+    [strongSelf.consumer itemHasChanged:strongItem];
   };
 
   [self.mostVisitedAttributesProvider fetchFaviconAttributesForURL:item.URL

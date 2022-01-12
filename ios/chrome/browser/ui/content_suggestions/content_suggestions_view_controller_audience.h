@@ -14,6 +14,11 @@
 // Notifies the audience of the UIKit viewDidDisappear: callback.
 - (void)viewDidDisappear;
 
+// Returns current safe area insets for the window owning this discover feed.
+// TODO:(crbug.com/1285378) Remove this after Content Suggestions header is
+// moved out the Content Suggestions CollectionView.
+- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
