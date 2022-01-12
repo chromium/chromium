@@ -676,7 +676,9 @@
       },
       {
         "args": [
-          "--use-cmd-decoder=passthrough"
+          "--use-cmd-decoder=passthrough",
+          "--use-gpu-in-tests",
+          "--no-xvfb"
         ],
         "merge": {
           "args": [],
@@ -687,7 +689,9 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-18.04"
+              "gpu": "10de:1cb3",
+              "os": "Ubuntu",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

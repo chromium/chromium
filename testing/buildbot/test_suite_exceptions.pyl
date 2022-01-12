@@ -1656,6 +1656,21 @@
           ],
         },
       },
+      'Linux CFI (reclient shadow)': {
+        'args': [
+          '--use-gpu-in-tests',
+          '--no-xvfb',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': '10de:1cb3',
+              'os': 'Ubuntu',
+              'pool': 'chromium.tests.gpu',
+            },
+          ],
+        },
+      },
       'Linux TSan Tests': {
         'args': [
           '--use-gpu-in-tests',

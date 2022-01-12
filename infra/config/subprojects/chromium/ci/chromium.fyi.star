@@ -644,15 +644,11 @@ ci.builder(
     ),
     cores = 32,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
-    execution_timeout = 8 * time.hour,
+    execution_timeout = 5 * time.hour,
     goma_backend = None,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-    # Note, while this builder runs in verification mode (ensure_verified)
-    # it will run with a parallelism (-j) of cores, not reclient_jobs.
     reclient_jobs = 400,
     reclient_instance = rbe_instance.DEFAULT,
-    reclient_ensure_verified = True,
-    reclient_rewrapper_env = {"RBE_compare": "true"},
 )
 # End - Reclient migration, phase 2, block 1 shadow builders
 
