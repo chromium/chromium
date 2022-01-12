@@ -177,6 +177,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         PrivacyReviewStep.MSBB,
         {
           nextStep: PrivacyReviewStep.CLEAR_ON_EXIT,
+          previousStep: PrivacyReviewStep.WELCOME,
           isAvailable: () => true,
         },
       ],

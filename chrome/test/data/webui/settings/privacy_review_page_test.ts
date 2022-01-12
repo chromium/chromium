@@ -260,6 +260,7 @@ suite('PrivacyReviewPage', function() {
     assertQueryParameter(PrivacyReviewStep.MSBB);
     assertCardComponentsVisible({
       isSettingFooterVisibleExpected: true,
+      isBackButtonVisibleExpected: true,
       isMsbbFragmentVisibleExpected: true,
     });
     assertStepIndicatorModel(0);
@@ -350,6 +351,15 @@ suite('PrivacyReviewPage', function() {
 
     setSyncEnabled(true);
     assertMsbbCardVisible();
+  });
+
+  test('msbbBackNavigation', function() {
+    navigateToStep(PrivacyReviewStep.MSBB);
+    assertMsbbCardVisible();
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    flush();
+    assertWelcomeCardVisible();
   });
 
   test('msbbForwardNavigationSyncOn', function() {
