@@ -79,7 +79,7 @@ class OopPixelTest : public testing::Test,
     gles2_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             /*enable_gles2_interface=*/true, /*support_locking=*/true,
-            viz::RasterInterfaceType::GPU);
+            viz::RasterInterfaceType::LEGACY_GPU);
     gpu::ContextResult result = gles2_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int gles2_max_texture_size =
@@ -105,8 +105,7 @@ class OopPixelTest : public testing::Test,
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             /*enable_gles2_interface=*/false, /*support_locking=*/true,
-            viz::RasterInterfaceType::OOPR, &gr_shader_cache_,
-            &activity_flags_);
+            viz::RasterInterfaceType::GPU, &gr_shader_cache_, &activity_flags_);
     gpu::ContextResult result = raster_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int raster_max_texture_size =

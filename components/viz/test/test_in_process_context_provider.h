@@ -39,7 +39,7 @@ class DisplayCompositorMemoryAndTaskController;
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext();
 
-enum RasterInterfaceType { None, Software, GPU, OOPR };
+enum RasterInterfaceType { None, Software, LEGACY_GPU, GPU };
 
 class TestInProcessContextProvider
     : public base::RefCountedThreadSafe<TestInProcessContextProvider>,

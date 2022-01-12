@@ -106,13 +106,13 @@ void TestInProcessContextProvider::Release() const {
 }
 
 gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
-  if (raster_interface_type_ == RasterInterfaceType::OOPR ||
+  if (raster_interface_type_ == RasterInterfaceType::GPU ||
       raster_interface_type_ == RasterInterfaceType::Software) {
     DCHECK(!enable_gles2_interface_);
     gpu::ContextCreationAttribs attribs;
     attribs.bind_generates_resource = false;
     attribs.enable_oop_rasterization =
-        raster_interface_type_ == RasterInterfaceType::OOPR;
+        raster_interface_type_ == RasterInterfaceType::GPU;
     attribs.enable_raster_interface = true;
     attribs.enable_gles2_interface = false;
 
@@ -130,7 +130,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
         base::ThreadTaskRunnerHandle::Get());
 
     caps_ = raster_context_->GetCapabilities();
-  } else if (raster_interface_type_ == RasterInterfaceType::GPU ||
+  } else if (raster_interface_type_ == RasterInterfaceType::LEGACY_GPU ||
              enable_gles2_interface_) {
     display_controller_ =
         std::make_unique<DisplayCompositorMemoryAndTaskController>(
@@ -144,7 +144,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
     cache_controller_ = std::make_unique<ContextCacheController>(
         gles2_context_->GetImplementation(),
         base::ThreadTaskRunnerHandle::Get());
-    if (raster_interface_type_ == RasterInterfaceType::GPU) {
+    if (raster_interface_type_ == RasterInterfaceType::LEGACY_GPU) {
       raster_implementation_gles2_ =
           std::make_unique<gpu::raster::RasterImplementationGLES>(
               gles2_context_->GetImplementation(), ContextSupport());
@@ -157,8 +157,8 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
   // service will return for this capability. But we want to use gpu
   // rasterization if and only if the test requests it.
   caps_.gpu_rasterization =
-      raster_interface_type_ == RasterInterfaceType::GPU ||
-      raster_interface_type_ == RasterInterfaceType::OOPR;
+      raster_interface_type_ == RasterInterfaceType::LEGACY_GPU ||
+      raster_interface_type_ == RasterInterfaceType::GPU;
 
   cache_controller_->SetLock(GetLock());
   return gpu::ContextResult::kSuccess;

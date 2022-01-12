@@ -935,9 +935,8 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
       2 /*xoffset*/, 1 /*yoffset*/, false /*flip_y*/, true);
 }
 
-// Fixture for tests that require a GL context. The input parameter indicates
-// whether OOPR mode is enabled.
-class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
+// Fixture for tests that require a GL context.
+class PaintCanvasVideoRendererWithGLTest : public testing::Test {
  public:
   using GetColorCallback = base::RepeatingCallback<SkColor(int, int)>;
 
@@ -946,9 +945,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
         /*enable_gles2_interface=*/false,
-        /*support_locking=*/false,
-        GetParam() ? viz::RasterInterfaceType::OOPR
-                   : viz::RasterInterfaceType::GPU);
+        /*support_locking=*/false, viz::RasterInterfaceType::GPU);
     gpu::ContextResult result = media_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
@@ -1139,11 +1136,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
   base::test::TaskEnvironment task_environment_;
 };
 
-INSTANTIATE_TEST_SUITE_P(OopRasterMode,
-                         PaintCanvasVideoRendererWithGLTest,
-                         testing::Bool());
-
-TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
+TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
@@ -1174,7 +1167,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->DeleteTextures(1, &texture);
 }
 
-TEST_P(PaintCanvasVideoRendererWithGLTest,
+TEST_F(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameYUVDataToGLTexture_FlipY) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
@@ -1208,7 +1201,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly copy a RGBA shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest,
+TEST_F(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
@@ -1222,7 +1215,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
 // Checks that we correctly copy a RGBA shared image VideoFrame that needs read
 // lock fences, when using CopyVideoFrameYUVDataToGLTexture, including correct
 // cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest,
+TEST_F(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
@@ -1236,7 +1229,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a RGBA shared image VideoFrame, including
 // correct cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
 
@@ -1248,7 +1241,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
 
 // Checks that we correctly copy an I420 shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest,
+TEST_F(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureI420) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
@@ -1261,7 +1254,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a I420 shared image VideoFrame, including
 // correct cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420) {
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
 
@@ -1273,7 +1266,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420) {
 
 // Checks that we correctly paint a I420 shared image VideoFrame, including
 // correct cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame =
       CreateTestI420FrameNotSubset(run_loop.QuitClosure());
@@ -1286,7 +1279,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
 
 // Checks that we correctly copy a NV12 shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest,
+TEST_F(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureNV12) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
@@ -1303,7 +1296,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a NV12 shared image VideoFrame, including
 // correct cropping.
-TEST_P(PaintCanvasVideoRendererWithGLTest, PaintNV12) {
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintNV12) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
   if (!frame) {
