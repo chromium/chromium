@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
@@ -77,7 +76,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -553,8 +551,6 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1144676")
-    @Features.
-    EnableFeatures({ChromeFeatureList.OMNIBOX_ENABLE_CLIPBOARD_PROVIDER_IMAGE_SUGGESTIONS})
     public void testImageSearch() throws InterruptedException, Exception {
         // Put an image into system clipboard.
         putAnImageIntoClipboard();
@@ -627,8 +623,6 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1144676")
-    @Features.
-    EnableFeatures({ChromeFeatureList.OMNIBOX_ENABLE_CLIPBOARD_PROVIDER_IMAGE_SUGGESTIONS})
     public void testImageSearch_OnlyTrustedIntentCanPost() throws InterruptedException, Exception {
         // Put an image into system clipboard.
         putAnImageIntoClipboard();

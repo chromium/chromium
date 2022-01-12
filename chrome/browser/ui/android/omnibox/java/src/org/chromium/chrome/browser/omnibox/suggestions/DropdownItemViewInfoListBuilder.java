@@ -13,7 +13,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
@@ -60,7 +59,6 @@ class DropdownItemViewInfoListBuilder {
     private @NonNull ExploreIconProvider mExploreIconProvider;
     @Px
     private int mDropdownHeight;
-    private boolean mEnableAdaptiveSuggestionsCount;
     private boolean mBuiltListHasFullyConcealedElements;
 
     DropdownItemViewInfoListBuilder(@NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState,
@@ -211,9 +209,6 @@ class DropdownItemViewInfoListBuilder {
 
     /** Signals that native initialization has completed. */
     void onNativeInitialized() {
-        mEnableAdaptiveSuggestionsCount =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
-
         mHeaderProcessor.onNativeInitialized();
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
             mPriorityOrderedSuggestionProcessors.get(index).onNativeInitialized();
@@ -239,7 +234,7 @@ class DropdownItemViewInfoListBuilder {
         // When Adaptive Suggestions are set, perform partial grouping by search vs url.
         // Take action only if we have more suggestions to offer than just a default match and
         // one suggestion (otherwise no need to perform grouping).
-        if (suggestionsCount > 2 && mEnableAdaptiveSuggestionsCount) {
+        if (suggestionsCount > 2) {
             final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
             // TODO(crbug.com/1073169): this should either infer the count from UI height or supply
             // the default value if height is not known. For the time being we group the entire list

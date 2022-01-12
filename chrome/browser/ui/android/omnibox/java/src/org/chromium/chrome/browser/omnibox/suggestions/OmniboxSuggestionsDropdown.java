@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
@@ -486,7 +485,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                     currentInsets = mAnchorView.getRootWindowInsets();
                     result = !currentInsets.equals(mWindowInsets);
                     mWindowInsets = currentInsets;
-                } else if (isAdaptiveSuggestionsCountEnabled()) {
+                } else {
                     mEmbedder.getWindowDelegate().getWindowVisibleDisplayFrame(mTempRect);
                     result = !mTempRect.equals(mWindowRect);
                     mWindowRect.set(mTempRect);
@@ -516,12 +515,5 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         setPadding(mTempPosition[0], getPaddingTop(),
                 mAnchorView.getWidth() - mAlignmentView.getWidth() - mTempPosition[0],
                 getPaddingBottom());
-    }
-
-    /** Return whether Adaptive Suggestions Count feature is enabled. */
-    private boolean isAdaptiveSuggestionsCountEnabled() {
-        return ChromeFeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
     }
 }
