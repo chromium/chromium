@@ -240,6 +240,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:requires_testing_checker",
+    use_python3 = True,
 )
 
 build_recipe(
