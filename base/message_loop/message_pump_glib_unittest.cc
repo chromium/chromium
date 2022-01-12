@@ -554,6 +554,9 @@ class MessagePumpGLibFdWatchTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Wait for the IO thread to exit before closing FDs which may have been
+    // passed to it.
+    io_thread_.Stop();
     if (IGNORE_EINTR(close(pipefds_[0])) < 0)
       PLOG(ERROR) << "close";
     if (IGNORE_EINTR(close(pipefds_[1])) < 0)
