@@ -77,7 +77,7 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
 
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::StyleSrc,
-        "style-src 'self' 'unsafe-inline';");
+        "style-src 'self' 'unsafe-inline' chrome-untrusted://resources;");
 
 #if !DCHECK_IS_ON()
     // When DCHECKs are off and a user goes to an invalid url serve a default
