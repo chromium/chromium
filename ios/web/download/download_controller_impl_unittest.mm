@@ -96,14 +96,14 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
 
   if (@available(iOS 15, *)) {
     WKDownload* fake_download = nil;
-    id<DownloadNativeTaskBridgeReadyDelegate> fake_ready_delegate;
-    FakeNativeTaskBridge* fake_task_bridge_ =
+    id<DownloadNativeTaskBridgeDelegate> fake_delegate = nil;
+    FakeNativeTaskBridge* fake_task_bridge =
         [[FakeNativeTaskBridge alloc] initWithDownload:fake_download
-                                 downloadReadyDelegate:fake_ready_delegate];
+                                              delegate:fake_delegate];
 
     download_controller_->CreateNativeDownloadTask(
         &web_state_, identifier, url, @"POST", kContentDisposition,
-        /*total_bytes=*/-1, kMimeType, fake_task_bridge_);
+        /*total_bytes=*/-1, kMimeType, fake_task_bridge);
 
     ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
     DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();

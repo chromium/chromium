@@ -9,7 +9,7 @@
 
 @class DownloadNativeTaskBridge;
 
-@protocol DownloadNativeTaskBridgeReadyDelegate <NSObject>
+@protocol DownloadNativeTaskBridgeDelegate <NSObject>
 
 // Used to set response url, content length, mimetype and http response headers
 // in CRWWkNavigationHandler so method can interact with WKWebView.
@@ -23,10 +23,9 @@
 // as private instance variables in the implementation file in ios/web/download
 @interface DownloadNativeTaskBridge : NSObject <WKDownloadDelegate>
 
-// Default initializer. |download| and |readyDelegate| must be non-nil.
+// Default initializer. |download| and |delegate| must be non-nil.
 - (instancetype)initWithDownload:(WKDownload*)download
-           downloadReadyDelegate:
-               (id<DownloadNativeTaskBridgeReadyDelegate>)readyDelegate
+                        delegate:(id<DownloadNativeTaskBridgeDelegate>)delegate
     NS_DESIGNATED_INITIALIZER API_AVAILABLE(ios(15));
 
 - (instancetype)init NS_UNAVAILABLE;

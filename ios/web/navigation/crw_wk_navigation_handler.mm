@@ -65,7 +65,7 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 
 }  // namespace
 
-@interface CRWWKNavigationHandler () <DownloadNativeTaskBridgeReadyDelegate> {
+@interface CRWWKNavigationHandler () <DownloadNativeTaskBridgeDelegate> {
   // Referrer for the current page; does not include the fragment.
   NSString* _currentReferrerString;
 
@@ -1064,7 +1064,7 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 
   [_nativeTaskBridges
       addObject:[[DownloadNativeTaskBridge alloc] initWithDownload:WKDownload
-                                             downloadReadyDelegate:self]];
+                                                          delegate:self]];
 }
 
 - (void)onDownloadNativeTaskBridgeReadyForDownload:

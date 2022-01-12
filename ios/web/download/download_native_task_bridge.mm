@@ -12,19 +12,18 @@
 
 @implementation DownloadNativeTaskBridge {
   void (^_startDownloadBlock)(NSURL*);
-  id<DownloadNativeTaskBridgeReadyDelegate> _readyDelegate;
+  id<DownloadNativeTaskBridgeDelegate> _delegate;
   void (^_progressionHandler)();
   void (^_completionHandler)(int error_code);
   BOOL _observingDownloadProgress;
 }
 
 - (instancetype)initWithDownload:(WKDownload*)download
-           downloadReadyDelegate:
-               (id<DownloadNativeTaskBridgeReadyDelegate>)readyDelegate
+                        delegate:(id<DownloadNativeTaskBridgeDelegate>)delegate
     API_AVAILABLE(ios(15)) {
   if ((self = [super init])) {
     _download = download;
-    _readyDelegate = readyDelegate;
+    _delegate = delegate;
     _download.delegate = self;
   }
   return self;
@@ -98,7 +97,7 @@
   _suggestedFilename = suggestedFilename;
   _startDownloadBlock = completionHandler;
 
-  [_readyDelegate onDownloadNativeTaskBridgeReadyForDownload:self];
+  [_delegate onDownloadNativeTaskBridgeReadyForDownload:self];
 }
 
 - (void)download:(WKDownload*)download

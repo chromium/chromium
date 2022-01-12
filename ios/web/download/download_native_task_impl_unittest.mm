@@ -70,8 +70,8 @@ class DownloadNativeTaskImplTest : public PlatformTest {
  protected:
   DownloadNativeTaskImplTest()
       : fake_task_bridge_([[FakeNativeTaskBridge alloc]
-                 initWithDownload:fake_download
-            downloadReadyDelegate:fake_ready_delegate]),
+            initWithDownload:fake_download_
+                    delegate:fake_delegate_]),
         task_(std::make_unique<DownloadNativeTaskImpl>(&web_state_,
                                                        GURL(kUrl),
                                                        kHttpMethod,
@@ -88,8 +88,8 @@ class DownloadNativeTaskImplTest : public PlatformTest {
   FakeBrowserState browser_state_;
   FakeWebState web_state_;
   testing::StrictMock<FakeDownloadNativeTaskImplDelegate> task_delegate_;
-  WKDownload* fake_download API_AVAILABLE(ios(15)) = nil;
-  id<DownloadNativeTaskBridgeReadyDelegate> fake_ready_delegate;
+  WKDownload* fake_download_ API_AVAILABLE(ios(15)) = nil;
+  id<DownloadNativeTaskBridgeDelegate> fake_delegate_ = nil;
   FakeNativeTaskBridge* fake_task_bridge_;
   std::unique_ptr<DownloadNativeTaskImpl> task_;
   MockDownloadTaskObserver task_observer_;

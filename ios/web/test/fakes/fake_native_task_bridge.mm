@@ -16,9 +16,9 @@
 @synthesize suggestedFilename = _suggestedFilename;
 
 - (instancetype)initWithDownload:(WKDownload*)download
-           downloadReadyDelegate:
-               (id<DownloadNativeTaskBridgeReadyDelegate>)ready {
-  if (self = [super initWithDownload:download downloadReadyDelegate:ready]) {
+                        delegate:
+                            (id<DownloadNativeTaskBridgeDelegate>)delegate {
+  if (self = [super initWithDownload:download delegate:delegate]) {
     _calledStartDownloadBlock = NO;
     if (@available(iOS 15, *))
       [self downloadInitialized];
