@@ -8,10 +8,14 @@ static_library("enterprise") {
   sources = [
     "browser/reporting/browser_report_generator.cc",
     "browser/reporting/browser_report_generator.h",
+    "browser/reporting/chrome_profile_request_generator.cc",
+    "browser/reporting/chrome_profile_request_generator.h",
     "browser/reporting/cloud_reporting_policy_handler.cc",
     "browser/reporting/cloud_reporting_policy_handler.h",
     "browser/reporting/common_pref_names.cc",
     "browser/reporting/common_pref_names.h",
+    "browser/reporting/os_report_generator.cc",
+    "browser/reporting/os_report_generator.h",
     "browser/reporting/policy_info.cc",
     "browser/reporting/policy_info.h",
     "browser/reporting/profile_report_generator.cc",
@@ -91,13 +95,17 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "browser/reporting/report_uploader_unittest.cc" ]
+  sources = [
+    "browser/reporting/chrome_profile_request_generator_unittest.cc",
+    "browser/reporting/report_uploader_unittest.cc",
+  ]
 
   deps = [
     ":enterprise",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/policy/core/common:test_support",
+    "//components/version_info",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -52,13 +52,21 @@ void BrowserReportGenerator::GenerateProfileInfo(em::BrowserReport* report) {
 
 void BrowserReportGenerator::GenerateBasicInfo(em::BrowserReport* report,
                                                ReportType report_type) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  report->set_browser_version(version_info::GetVersionNumber());
-  report->set_channel(policy::ConvertToProtoChannel(delegate_->GetChannel()));
-  if (delegate_->IsExtendedStableChannel())
-    report->set_is_extended_stable_channel(true);
-  delegate_->GenerateBuildStateInfo(report);
-#endif
+  // Chrome OS user session report doesn't include version and channel
+  // information.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool contains_version_and_channel = report_type == ReportType::kProfileReport;
+#else
+  bool contains_version_and_channel = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (contains_version_and_channel) {
+    report->set_browser_version(version_info::GetVersionNumber());
+    report->set_channel(policy::ConvertToProtoChannel(delegate_->GetChannel()));
+    if (delegate_->IsExtendedStableChannel())
+      report->set_is_extended_stable_channel(true);
+    delegate_->GenerateBuildStateInfo(report);
+  }
 
   switch (report_type) {
     case ReportType::kFull:

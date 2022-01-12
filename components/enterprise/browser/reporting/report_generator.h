@@ -57,10 +57,6 @@ class ReportGenerator {
                           ReportType report_type,
                           ReportCallback callback);
 
-  // Returns an OS report contains basic OS information includes OS name, OS
-  // architecture and OS version.
-  virtual std::unique_ptr<enterprise_management::OSReport> GetOSReport();
-
   // Returns the name of computer.
   virtual std::string GetMachineName();
 

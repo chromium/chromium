@@ -73,15 +73,16 @@ const char kPluginVersion[] = "plugin_version";
 const char kPluginDescription[] = "plugin_description";
 #endif  // BUILDFLAG(ENABLE_PLUGINS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void VerifyBrowserVersionAndChannel(em::BrowserReport* report) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_FALSE(report->has_browser_version());
-  EXPECT_FALSE(report->has_channel());
-  EXPECT_FALSE(report->has_installed_browser_version());
-#else
-  EXPECT_NE(std::string(), report->browser_version());
-  EXPECT_TRUE(report->has_channel());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+void VerifyBrowserVersionAndChannel(em::BrowserReport* report,
+                                    bool with_version_info) {
+  if (with_version_info) {
+    EXPECT_NE(std::string(), report->browser_version());
+    EXPECT_TRUE(report->has_channel());
+  } else {
+    EXPECT_FALSE(report->has_browser_version());
+    EXPECT_FALSE(report->has_channel());
+    EXPECT_FALSE(report->has_installed_browser_version());
+  }
 }
 
 void VerifyBuildState(em::BrowserReport* report) {
@@ -220,8 +221,12 @@ class BrowserReportGeneratorTest : public ::testing::Test {
               EXPECT_EQ(
                   base::PathService::CheckedGet(base::DIR_EXE).AsUTF8Unsafe(),
                   report->executable_path());
-
-              VerifyBrowserVersionAndChannel(report.get());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+              bool with_version_info = false;
+#else
+              bool with_version_info = true;
+#endif  // if BUILDFLAG(IS_CHROMEOS_ASH)
+              VerifyBrowserVersionAndChannel(report.get(), with_version_info);
               VerifyBuildState(report.get());
               VerifyExtendedStableChannel(report.get());
               VerifyProfile(report.get());
@@ -244,7 +249,8 @@ class BrowserReportGeneratorTest : public ::testing::Test {
                                         .AsUTF8Unsafe()),
                   report->executable_path());
 
-              VerifyBrowserVersionAndChannel(report.get());
+              VerifyBrowserVersionAndChannel(report.get(),
+                                             /*with_version_info=*/true);
               VerifyBuildState(report.get());
               VerifyExtendedStableChannel(report.get());
               EXPECT_LE(0, report->plugins_size());

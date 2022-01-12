@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
+#include "components/enterprise/browser/reporting/os_report_generator.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -68,14 +69,6 @@ void ReportGenerator::CreateBasicRequest(
 #else
   GenerateReport(report_type, std::move(callback), std::move(basic_request));
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
-}
-
-std::unique_ptr<em::OSReport> ReportGenerator::GetOSReport() {
-  auto report = std::make_unique<em::OSReport>();
-  report->set_name(policy::GetOSPlatform());
-  report->set_arch(policy::GetOSArchitecture());
-  report->set_version(policy::GetOSVersion());
-  return report;
 }
 
 std::string ReportGenerator::GetMachineName() {
