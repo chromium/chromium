@@ -4,6 +4,8 @@
 
 #include "components/permissions/prediction_service/prediction_common.h"
 
+#include <cmath>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
