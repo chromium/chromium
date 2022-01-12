@@ -190,7 +190,7 @@ void OfflineMetricsCollectorImpl::SaveToPrefs() {
   prefs_->SetInteger(prefs::kPrefetchUsageOpenedCount, prefetch_opened_count_);
   prefs_->SetInteger(prefs::kPrefetchUsageMixedCount, prefetch_mixed_count_);
 
-  prefs_->CommitPendingWrite();
+  prefs_->SchedulePendingLossyWrites();
 }
 
 void OfflineMetricsCollectorImpl::SetTrackingFlag(bool* flag) {
