@@ -448,9 +448,8 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
 
   if (original_phase != PaintPhase::kSelfBlockBackgroundOnly &&
       original_phase != PaintPhase::kSelfOutlineOnly &&
-      // For now all scrollers with overlay overflow controls are
-      // self-painting layers, so we don't need to traverse descendants
-      // here.
+      // kOverlayOverflowControls is for the current object itself, so we don't
+      // need to traverse descendants here.
       original_phase != PaintPhase::kOverlayOverflowControls) {
     if (original_phase == PaintPhase::kMask ||
         !box_fragment_.GetLayoutObject()->IsBox()) {
