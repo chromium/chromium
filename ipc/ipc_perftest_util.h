@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -27,7 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/core.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -79,9 +80,9 @@ class LockThreadAffinity {
 
  private:
   bool affinity_set_ok_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD_PTR old_affinity_;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   cpu_set_t old_cpuset_;
 #endif
 };

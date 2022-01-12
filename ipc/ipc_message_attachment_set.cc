@@ -62,7 +62,7 @@ unsigned MessageAttachmentSet::size() const {
 bool MessageAttachmentSet::AddAttachment(
     scoped_refptr<MessageAttachment> attachment,
     size_t* index) {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (attachment->GetType() == MessageAttachment::Type::PLATFORM_FILE &&
       num_descriptors() == kMaxDescriptorsPerMessage) {
     DLOG(WARNING) << "Cannot add file descriptor. MessageAttachmentSet full.";

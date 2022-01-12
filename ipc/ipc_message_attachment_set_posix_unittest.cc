@@ -130,7 +130,7 @@ TEST(MessageAttachmentSet, WalkWrongOrder) {
   set->CommitAllDescriptors();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DontClose DISABLED_DontClose
 #else
 #define MAYBE_DontClose DontClose

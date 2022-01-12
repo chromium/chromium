@@ -35,11 +35,11 @@
 #include "ipc/ipc_sync_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
 #include <lib/zx/vmo.h>
 #endif
@@ -60,7 +60,7 @@ namespace IPC {
 
 struct ChannelHandle;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PlatformFileForTransit;
 #endif
 
@@ -204,8 +204,9 @@ struct ParamTraits<unsigned int> {
 //   3) Android 64 bit and Fuchsia also have int64_t typedef'd to long.
 // Since we want to support Android 32<>64 bit IPC, as long as we don't have
 // these traits for 32 bit ARM then that'll catch any errors.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_FUCHSIA) || (defined(OS_ANDROID) && defined(ARCH_CPU_64_BITS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA) ||                                              \
+    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_64_BITS))
 template <>
 struct ParamTraits<long> {
   typedef long param_type;
@@ -341,7 +342,7 @@ struct ParamTraits<std::u16string> {
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<std::wstring> {
   typedef std::wstring param_type;
@@ -542,7 +543,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::DictionaryValue> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // FileDescriptors may be serialised over IPC channels on POSIX. On the
 // receiving side, the FileDescriptor is a valid duplicate of the file
 // descriptor which was transmitted: *it is not just a copy of the integer like
@@ -578,9 +579,9 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::ScopedFD> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::win::ScopedHandle> {
   using param_type = base::win::ScopedHandle;
@@ -592,7 +593,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::win::ScopedHandle> {
 };
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<zx::vmo> {
   typedef zx::vmo param_type;
@@ -612,9 +613,9 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<zx::channel> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 template <>
 struct COMPONENT_EXPORT(IPC)
     ParamTraits<base::android::ScopedHardwareBufferHandle> {
@@ -679,7 +680,7 @@ struct COMPONENT_EXPORT(IPC)
   static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<PlatformFileForTransit> {
   typedef PlatformFileForTransit param_type;
@@ -689,7 +690,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<PlatformFileForTransit> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::FilePath> {
@@ -736,12 +737,12 @@ struct SimilarTypeTraits<base::File::Error> {
   typedef int Type;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct SimilarTypeTraits<HWND> {
   typedef HANDLE Type;
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::Time> {
@@ -1063,7 +1064,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<Message> {
 
 // Windows ParamTraits ---------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<HANDLE> {
   typedef HANDLE param_type;
@@ -1083,7 +1084,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<MSG> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 //-----------------------------------------------------------------------------
 // Generic message subclasses

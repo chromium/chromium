@@ -5,9 +5,9 @@
 #include "build/build_config.h"
 #include "ipc/ipc_platform_file.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <unistd.h>
 
 #include "base/posix/eintr_wrapper.h"
@@ -15,7 +15,7 @@
 
 namespace IPC {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 PlatformFileForTransit::PlatformFileForTransit() : handle_(nullptr) {}
 
 PlatformFileForTransit::PlatformFileForTransit(HANDLE handle)
@@ -39,11 +39,11 @@ bool PlatformFileForTransit::IsValid() const {
   return handle_ != nullptr;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 PlatformFileForTransit GetPlatformFileForTransit(base::PlatformFile handle,
                                                  bool close_source_handle) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HANDLE raw_handle = INVALID_HANDLE_VALUE;
   DWORD options = DUPLICATE_SAME_ACCESS;
   if (close_source_handle)
@@ -55,7 +55,7 @@ PlatformFileForTransit GetPlatformFileForTransit(base::PlatformFile handle,
   }
 
   return IPC::PlatformFileForTransit(raw_handle);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // If asked to close the source, we can simply re-use the source fd instead of
   // dup()ing and close()ing.
   // When we're not closing the source, we need to duplicate the handle and take

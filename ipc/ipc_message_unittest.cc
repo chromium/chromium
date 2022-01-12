@@ -297,7 +297,7 @@ TEST_F(IPCMessageParameterTest, EmptyDispatcherWithParam) {
   EXPECT_TRUE(called_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_OneIntegerWithParam DISABLED_OneIntegerWithParam
 #else
 #define MAYBE_OneIntegerWithParam OneIntegerWithParam

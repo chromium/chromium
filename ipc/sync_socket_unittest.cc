@@ -21,7 +21,7 @@
 #include "ipc/ipc_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
 #endif
 
@@ -36,9 +36,9 @@
 // Message class to pass a base::SyncSocket::Handle to another process.  This
 // is not as easy as it sounds, because of the differences in transferring
 // Windows HANDLEs versus posix file descriptors.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IPC_MESSAGE_CONTROL1(MsgClassSetHandle, base::SyncSocket::Handle)
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 IPC_MESSAGE_CONTROL1(MsgClassSetHandle, base::FileDescriptor)
 #endif
 
@@ -82,17 +82,17 @@ class SyncSocketServerListener : public IPC::Listener {
   // This sort of message is sent first, causing the transfer of
   // the handle for the SyncSocket.  This message sends a buffer
   // on the SyncSocket and then sends a response to the client.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnMsgClassSetHandle(const base::SyncSocket::Handle handle) {
     SetHandle(handle);
   }
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   void OnMsgClassSetHandle(const base::FileDescriptor& fd_struct) {
     SetHandle(fd_struct.fd);
   }
 #else
 # error "What platform?"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   void SetHandle(base::SyncSocket::Handle handle) {
     base::SyncSocket sync_socket(handle);
@@ -181,7 +181,7 @@ TEST_F(SyncSocketTest, SanityTest) {
   // Connect the channel and listener.
   ASSERT_TRUE(ConnectChannel());
   listener.Init(&pair[0], channel());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On windows we need to duplicate the handle into the server process.
   BOOL retval = DuplicateHandle(GetCurrentProcess(), pair[1].handle(),
                                 client_process().Handle(), &target_handle,
@@ -194,7 +194,7 @@ TEST_F(SyncSocketTest, SanityTest) {
   // Set up a message to pass the handle to the server.
   base::FileDescriptor filedesc(target_handle, false);
   IPC::Message* msg = new MsgClassSetHandle(filedesc);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   EXPECT_TRUE(sender()->Send(msg));
   // Use the current thread as the I/O thread.
   base::RunLoop().Run();

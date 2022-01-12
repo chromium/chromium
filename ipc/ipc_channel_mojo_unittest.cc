@@ -56,7 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/file_descriptor_posix.h"
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #endif
@@ -415,7 +415,7 @@ class HandleSendingHelper {
               GetSendingFileContent());
   }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static base::FilePath GetSendingFilePath(const base::FilePath& dir_path) {
     return dir_path.Append("ListenerThatExpectsFile.txt");
   }
@@ -1486,7 +1486,7 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(DropAssociatedRequest,
   DestroyProxy();
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 // TODO(wez): On Mac we need to set up a MachPortBroker before we can transfer
 // Mach ports (which underpin Sharedmemory on Mac) across IPC.
 
@@ -1610,9 +1610,9 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(
 
   Close();
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 class ListenerThatExpectsFile : public TestListenerBase {
  public:
@@ -1711,9 +1711,9 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(
   Close();
 }
 
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 const base::ProcessId kMagicChildId = 54321;
 
@@ -1760,6 +1760,6 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(IPCChannelMojoTestVerifyGlobalPidClient) {
   Close();
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

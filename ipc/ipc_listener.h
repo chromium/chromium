@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(IPC) Listener {
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) {}
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Called on the server side when a channel that listens for connections
   // denies an attempt to connect.
   virtual void OnChannelDenied() {}

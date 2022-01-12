@@ -484,7 +484,7 @@ ChannelProxy::~ChannelProxy() {
 void ChannelProxy::Init(const IPC::ChannelHandle& channel_handle,
                         Channel::Mode mode,
                         bool create_pipe_now) {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // When we are creating a server on POSIX, we need its file descriptor
   // to be created immediately so that it can be accessed and passed
   // to other processes. Forcing it to be created immediately avoids
@@ -492,7 +492,7 @@ void ChannelProxy::Init(const IPC::ChannelHandle& channel_handle,
   if (mode & Channel::MODE_SERVER_FLAG) {
     create_pipe_now = true;
   }
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   Init(
       ChannelFactory::Create(channel_handle, mode, context_->ipc_task_runner()),
       create_pipe_now);

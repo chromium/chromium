@@ -94,7 +94,7 @@ TEST(IPCMessageIntegrity, ReadVectorNegativeSize) {
   EXPECT_FALSE(ReadParam(&m, &iter, &vec));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ReadVectorTooLarge1 DISABLED_ReadVectorTooLarge1
 #else
 #define MAYBE_ReadVectorTooLarge1 ReadVectorTooLarge1

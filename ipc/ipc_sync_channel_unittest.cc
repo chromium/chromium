@@ -326,7 +326,7 @@ void Simple() {
   RunTest(workers);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Simple DISABLED_Simple
 #else
 #define MAYBE_Simple Simple
@@ -567,7 +567,7 @@ TEST_F(IPCSyncChannelTest, Unblock) {
 
 //------------------------------------------------------------------------------
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ChannelDeleteDuringSend DISABLED_ChannelDeleteDuringSend
 #else
 #define MAYBE_ChannelDeleteDuringSend ChannelDeleteDuringSend
@@ -1543,7 +1543,7 @@ class RestrictedDispatchPipeWorker : public Worker {
   raw_ptr<int> success_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_RestrictedDispatch4WayDeadlock \
   DISABLED_RestrictedDispatch4WayDeadlock
 #else

@@ -4,6 +4,8 @@
 
 #include "ipc/ipc_logging.h"
 
+#include "build/build_config.h"
+
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #define IPC_MESSAGE_MACROS_LOG_ENABLED
 #endif
@@ -27,7 +29,7 @@
 #include "ipc/ipc_sender.h"
 #include "ipc/ipc_sync_message.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 
@@ -51,7 +53,7 @@ Logging::Logging()
       sender_(nullptr),
       main_thread_(base::ThreadTaskRunnerHandle::Get()),
       consumer_(nullptr) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // getenv triggers an unsafe warning. Simply check how big of a buffer
   // would be needed to fetch the value to see if the enviornment variable is
   // set.
@@ -64,12 +66,12 @@ Logging::Logging()
     if (requiredSize && !strncmp("color", buffer, 6))
       enabled_color_ = true;
   }
-#else  // !defined(OS_WIN)
+#else   // !BUILDFLAG(IS_WIN)
   const char* ipc_logging = getenv("CHROME_IPC_LOGGING");
   bool logging_env_var_set = (ipc_logging != NULL);
   if (ipc_logging && !strcmp(ipc_logging, "color"))
     enabled_color_ = true;
-#endif  //defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   if (logging_env_var_set) {
     enabled_ = true;
     enabled_on_stderr_ = true;
