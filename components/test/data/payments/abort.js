@@ -9,12 +9,22 @@
 var request;
 
 /**
- * Launches the PaymentRequest UI.
+ * Launches the PaymentRequest UI with basic-card request.
  */
-function buy() { // eslint-disable-line no-unused-vars
+ function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([{
+      supportedMethods: 'basic-card',
+      data: {supportedNetworks: ['visa']}}]);
+ }
+
+/**
+ * Launches the PaymentRequest UI.
+ * @param {Array<Object>} methodData An array of payment method objects.
+ */
+function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest(
-        [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
+        methodData,
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
     request.show().catch(function(error) {
       print(error);

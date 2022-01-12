@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/content/payment_request.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,7 +52,12 @@ class PaymentRequestNoShippingTest : public PaymentRequestBrowserTestBase {
       delete;
 
  protected:
-  PaymentRequestNoShippingTest() {}
+  PaymentRequestNoShippingTest() {
+    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InactiveBrowserWindow) {
@@ -171,13 +177,95 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InvalidSSL) {
   ExpectBodyContains({"NotSupportedError"});
 }
 
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestNoShippingTest, with the basic-card being disabled.
+// Parameterized tests are not used because the test setup for both tests are
+// too different.
+class PaymentRequestNoShippingWithBasicCardDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestNoShippingWithBasicCardDisabledTest(
+      const PaymentRequestNoShippingWithBasicCardDisabledTest&) = delete;
+  PaymentRequestNoShippingWithBasicCardDisabledTest& operator=(
+      const PaymentRequestNoShippingWithBasicCardDisabledTest&) = delete;
+
+ protected:
+  PaymentRequestNoShippingWithBasicCardDisabledTest() {
+    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+  void OpenPaymentRequestDialog() {
+    // Installs two apps so that the Payment Request UI will be shown.
+    std::string a_method_name;
+    InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                      &a_method_name);
+    std::string b_method_name;
+    InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                      &b_method_name);
+
+    NavigateTo("/payment_request_no_shipping_test.html");
+    InvokePaymentRequestUIWithJs(content::JsReplace(
+        "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+        a_method_name, b_method_name));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
+                       OpenAndNavigateTo404) {
+  OpenPaymentRequestDialog();
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  NavigateTo("/non-existent.html");
+  WaitForObservedEvent();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
+                       OpenAndNavigateToSame) {
+  OpenPaymentRequestDialog();
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  NavigateTo("/payment_request_no_shipping_test.html");
+  WaitForObservedEvent();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
+                       OpenAndReload) {
+  OpenPaymentRequestDialog();
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  WaitForObservedEvent();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
+                       OpenAndClickCancel) {
+  OpenPaymentRequestDialog();
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
+                           /*wait_for_animation=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingWithBasicCardDisabledTest,
+                       OrderSummaryAndClickCancel) {
+  OpenPaymentRequestDialog();
+  OpenOrderSummaryScreen();
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
+                           /*wait_for_animation=*/false);
+}
+
 class PaymentRequestAbortTest : public PaymentRequestBrowserTestBase {
  public:
   PaymentRequestAbortTest(const PaymentRequestAbortTest&) = delete;
   PaymentRequestAbortTest& operator=(const PaymentRequestAbortTest&) = delete;
 
  protected:
-  PaymentRequestAbortTest() {}
+  PaymentRequestAbortTest() {
+    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Testing the use of the abort() JS API.
@@ -227,6 +315,61 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestAbortTest,
   ExpectBodyContains({"Cannot abort"});
 }
 
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestAbortTest, with the basic-card being disabled.
+// Parameterized tests are not used because the test setup for both tests are
+// too different.
+class PaymentRequestAbortWithBasicCardDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestAbortWithBasicCardDisabledTest(
+      const PaymentRequestAbortWithBasicCardDisabledTest&) = delete;
+  PaymentRequestAbortWithBasicCardDisabledTest& operator=(
+      const PaymentRequestAbortWithBasicCardDisabledTest&) = delete;
+
+ protected:
+  PaymentRequestAbortWithBasicCardDisabledTest() {
+    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Testing the use of the abort() JS API.
+IN_PROC_BROWSER_TEST_F(PaymentRequestAbortWithBasicCardDisabledTest,
+                       OpenThenAbort) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_abort_test.html");
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+
+  ResetEventWaiterForSequence(
+      {DialogEvent::ABORT_CALLED, DialogEvent::DIALOG_CLOSED});
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  const std::string click_buy_button_js =
+      "(function() { document.getElementById('abort').click(); })();";
+  ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
+
+  WaitForObservedEvent();
+
+  ExpectBodyContains({"Aborted"});
+
+  // The web-modal dialog should now be closed.
+  web_modal::WebContentsModalDialogManager* web_contents_modal_dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  EXPECT_FALSE(web_contents_modal_dialog_manager->IsDialogActive());
+}
+
 class PaymentRequestPaymentMethodIdentifierTest
     : public PaymentRequestBrowserTestBase {
  public:
@@ -236,7 +379,9 @@ class PaymentRequestPaymentMethodIdentifierTest
       const PaymentRequestPaymentMethodIdentifierTest&) = delete;
 
  protected:
-  PaymentRequestPaymentMethodIdentifierTest() {}
+  PaymentRequestPaymentMethodIdentifierTest() {
+    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+  }
 
   void InvokePaymentRequestWithJs(const std::string& js) {
     ResetEventWaiterForDialogOpened();
@@ -245,6 +390,9 @@ class PaymentRequestPaymentMethodIdentifierTest
 
     WaitForObservedEvent();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // One network is specified in 'basic-card' data, one in supportedMethods.
@@ -306,6 +454,55 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentMethodIdentifierTest, Url_Valid) {
   EXPECT_EQ(GURL("https://bobpay.xyz"), url_payment_method_identifiers[0]);
 }
 
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestPaymentMethodIdentifierTest, with the basic-card being
+// disabled. Parameterized tests are not used because the test setup for both
+// tests are too different.
+class PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest(
+      const PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest&) =
+      delete;
+  PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest& operator=(
+      const PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest&) =
+      delete;
+
+ protected:
+  PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest() {
+    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// A url-based payment method identifier is only supported if it has an https
+// scheme.
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest,
+    Url_Valid) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_payment_method_identifier_test.html");
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyHelper([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+
+  std::vector<PaymentRequest*> requests = GetPaymentRequests();
+  EXPECT_EQ(1u, requests.size());
+  std::vector<GURL> url_payment_method_identifiers =
+      requests[0]->spec()->url_payment_method_identifiers();
+  EXPECT_EQ(2u, url_payment_method_identifiers.size());
+  EXPECT_EQ("https://", url_payment_method_identifiers[0].spec().substr(0, 8));
+}
+
 // Test harness integrating with DialogBrowserTest to present the dialog in an
 // interactive manner for visual testing.
 class PaymentsRequestVisualTest
@@ -316,7 +513,9 @@ class PaymentsRequestVisualTest
       delete;
 
  protected:
-  PaymentsRequestVisualTest() {}
+  PaymentsRequestVisualTest() {
+    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+  }
 
   // TestBrowserDialog:
   void ShowUi(const std::string& name) override { InvokePaymentRequestUI(); }
@@ -326,9 +525,66 @@ class PaymentsRequestVisualTest
     // show, but not the close, resulting in a DCHECK in its destructor.
     return true;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentsRequestVisualTest, InvokeUi_NoShipping) {
+  NavigateTo("/payment_request_no_shipping_test.html");
+  ShowAndVerifyUi();
+}
+
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestNoShippingTest, with the basic-card being disabled.
+// Parameterized tests are not used because the test setup for both tests are
+// too different.
+// Test harness integrating with DialogBrowserTest to present the dialog in an
+// interactive manner for visual testing.
+class PaymentsRequestVisualWithBasicCardDisabledTest
+    : public SupportsTestDialog<
+          PaymentRequestNoShippingWithBasicCardDisabledTest> {
+ public:
+  PaymentsRequestVisualWithBasicCardDisabledTest(
+      const PaymentsRequestVisualWithBasicCardDisabledTest&) = delete;
+  PaymentsRequestVisualWithBasicCardDisabledTest& operator=(
+      const PaymentsRequestVisualWithBasicCardDisabledTest&) = delete;
+
+ protected:
+  PaymentsRequestVisualWithBasicCardDisabledTest() {
+    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+  // TestBrowserDialog:
+  void ShowUi(const std::string& name) override {
+    InvokePaymentRequestUIWithJs(content::JsReplace(
+        "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+        a_method_name_, b_method_name_));
+  }
+
+  bool AlwaysCloseAsynchronously() override {
+    // Bypassing Widget::CanClose() causes payments::JourneyLogger to see the
+    // show, but not the close, resulting in a DCHECK in its destructor.
+    return true;
+  }
+
+  std::string a_method_name_;
+  std::string b_method_name_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentsRequestVisualWithBasicCardDisabledTest,
+                       InvokeUi_NoShipping) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name_);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name_);
+
   NavigateTo("/payment_request_no_shipping_test.html");
   ShowAndVerifyUi();
 }
@@ -341,7 +597,12 @@ class PaymentRequestSettingsLinkTest : public PaymentRequestBrowserTestBase {
       const PaymentRequestSettingsLinkTest&) = delete;
 
  protected:
-  PaymentRequestSettingsLinkTest() {}
+  PaymentRequestSettingsLinkTest() {
+    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that clicking the settings link brings the user to settings.
@@ -377,5 +638,63 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
       new_tab_contents->GetVisibleURL().spec());
 }
 
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestSettingsLinkTest, with the basic-card being disabled.
+// Parameterized tests are not used because the test setup for both tests are
+// too different.
+class PaymentRequestSettingsLinkWithBasicCardDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestSettingsLinkWithBasicCardDisabledTest(
+      const PaymentRequestSettingsLinkWithBasicCardDisabledTest&) = delete;
+  PaymentRequestSettingsLinkWithBasicCardDisabledTest& operator=(
+      const PaymentRequestSettingsLinkWithBasicCardDisabledTest&) = delete;
+
+ protected:
+  PaymentRequestSettingsLinkWithBasicCardDisabledTest() {
+    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that clicking the settings link brings the user to settings.
+IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkWithBasicCardDisabledTest,
+                       ClickSettingsLink) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Install the Settings App.
+  web_app::WebAppProvider::GetForTest(browser()->profile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+#endif
+
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_no_shipping_test.html");
+
+  // Click on the settings link in the payment request dialog window.
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+  views::StyledLabel* styled_label =
+      static_cast<views::StyledLabel*>(dialog_view()->GetViewByID(
+          static_cast<int>(DialogViewID::DATA_SOURCE_LABEL)));
+  EXPECT_TRUE(styled_label);
+  content::WebContentsAddedObserver web_contents_added_observer;
+  styled_label->ClickLinkForTesting();
+  content::WebContents* new_tab_contents =
+      web_contents_added_observer.GetWebContents();
+
+  EXPECT_EQ(
+      std::string(chrome::kChromeUISettingsURL) + chrome::kPaymentsSubPage,
+      new_tab_contents->GetVisibleURL().spec());
+}
 }  // namespace
 }  // namespace payments
