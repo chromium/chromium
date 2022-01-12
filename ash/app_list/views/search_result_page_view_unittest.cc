@@ -17,9 +17,11 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/test/views_test_base.h"
@@ -38,6 +40,10 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
 
   // Overridden from testing::Test:
   void SetUp() override {
+    // Search result page view unittests are not relevant when productivity
+    // launcher is enabled.
+    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                              false);
     views::ViewsTestBase::SetUp();
 
     // Setting up views.
@@ -79,6 +85,7 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
       nullptr;                                 // Owned by views hierarchy.
   SearchResultListView* list_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SearchResultPageViewTest, ResultsSorted) {
