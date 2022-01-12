@@ -196,4 +196,40 @@ export function reimagingCalibrationFailedPageTest() {
     await clickRetryCalibrationButton();
     assertEquals(1, startCalibrationCalls);
   });
+
+  test('ComponentChipsDisabled', async () => {
+    await initializeCalibrationPage(fakeCalibrationComponents);
+
+    const cameraComponent =
+        component.shadowRoot.querySelector('#componentCamera');
+    const batteryComponent =
+        component.shadowRoot.querySelector('#componentBattery');
+    const baseAccelerometerComponent =
+        component.shadowRoot.querySelector('#componentBaseAccelerometer');
+    const lidAccelerometerComponent =
+        component.shadowRoot.querySelector('#componentLidAccelerometer');
+    const touchpadComponent =
+        component.shadowRoot.querySelector('#componentTouchpad');
+    assertFalse(cameraComponent.disabled);
+    assertFalse(batteryComponent.disabled);
+    assertFalse(baseAccelerometerComponent.disabled);
+    assertFalse(lidAccelerometerComponent.disabled);
+    assertFalse(touchpadComponent.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(cameraComponent.disabled);
+    assertTrue(batteryComponent.disabled);
+    assertTrue(baseAccelerometerComponent.disabled);
+    assertTrue(lidAccelerometerComponent.disabled);
+    assertTrue(touchpadComponent.disabled);
+  });
+
+  test('RetryCalibrationButtonDisabled', async () => {
+    await initializeCalibrationPage(fakeCalibrationComponents);
+
+    const retryButton =
+        component.shadowRoot.querySelector('#retryCalibrationButton');
+    assertFalse(retryButton.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(retryButton.disabled);
+  });
 }

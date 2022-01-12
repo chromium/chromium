@@ -7,7 +7,8 @@
     <div>[[i18n('calibrationFailedInstructionsText')]]</div>
     <div>
       <cr-button id="retryCalibrationButton" class="cancel-button"
-          on-click="onRetryCalibrationButtonClicked_">
+          on-click="onRetryCalibrationButtonClicked_"
+          disabled="[[allButtonsDisabled]]">
         [[i18n('calibrationFailedRetryButtonLabel')]]
       </cr-button>
     </div>
@@ -18,7 +19,8 @@
         <calibration-component-chip id="[[component.id]]"
           checked="{{component.checked}}"
           failed="[[component.failed]]"
-          component-name="[[component.name]]">
+          component-name="[[component.name]]"
+          disabled="[[allButtonsDisabled]]">
         </calibration-component-chip>
       </template>
     </div>

@@ -40,7 +40,8 @@
   }
 </style>
 
-<cr-button id="componentButton" on-click="onComponentButtonClicked_">
+<cr-button id="componentButton" on-click="onComponentButtonClicked_"
+    disabled="[[disabled]]">
   <div id="labelDiv">
     <iron-icon id="infoIcon" icon="shimless-icon:info" hidden="[[!failed]]">
     </iron-icon>

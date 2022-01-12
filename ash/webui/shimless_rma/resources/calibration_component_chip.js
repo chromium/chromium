@@ -42,6 +42,12 @@ export class CalibrationComponentChipElement extends PolymerElement {
 
       /** @type {string} */
       componentName: {type: String, value: ''},
+
+      /** @type {boolean} */
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 

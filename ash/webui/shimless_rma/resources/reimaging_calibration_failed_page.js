@@ -58,6 +58,12 @@ export class ReimagingCalibrationFailedPage extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @private {!Array<!ComponentCheckbox>} */
       componentCheckboxes_: {
         type: Array,
