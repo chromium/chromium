@@ -92,7 +92,7 @@ struct Referrer;
 // Usually, observers should only care about the current RenderViewHost as
 // returned by GetRenderViewHost().
 //
-// TODO(creis, jochen): Hide the fact that there are several RenderViewHosts
+// TODO(creis): Hide the fact that there are several RenderViewHosts
 // from the WebContentsObserver API. http://crbug.com/173325
 class CONTENT_EXPORT WebContentsObserver {
  public:
