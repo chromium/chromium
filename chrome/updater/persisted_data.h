@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 
 class PrefService;
+class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
@@ -77,6 +78,11 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // application has a valid version.
   std::vector<std::string> GetAppIds() const;
 
+  // HadApps is set when the updater processes a registration for an app other
+  // than itself, and is never unset, even if the app is uninstalled.
+  bool GetHadApps() const;
+  void SetHadApps();
+
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;
   ~PersistedData();
@@ -95,6 +101,8 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
 
   raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned by this class.
 };
+
+void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);
 
 }  // namespace updater
 

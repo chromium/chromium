@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
@@ -111,6 +112,7 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   pref_registry->RegisterStringPref(kPrefActiveVersion, "0");
   pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
   pref_registry->RegisterIntegerPref(kPrefServerStarts, 0);
+  RegisterPersistedDataPrefs(pref_registry);
 
   return base::MakeRefCounted<UpdaterPrefsImpl>(
       std::move(lock), pref_service_factory.Create(pref_registry));
@@ -130,6 +132,7 @@ scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   update_client::RegisterPrefs(pref_registry.get());
   pref_registry->RegisterBooleanPref(kPrefQualified, false);
   pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
+  RegisterPersistedDataPrefs(pref_registry);
 
   return base::MakeRefCounted<UpdaterPrefsImpl>(
       nullptr, pref_service_factory.Create(pref_registry));

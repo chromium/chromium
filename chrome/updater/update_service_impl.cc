@@ -217,6 +217,9 @@ void UpdateServiceImpl::RegisterApp(
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request.app_id != kUpdaterAppId) {
+    persisted_data_->SetHadApps();
+  }
   base::Version current_version =
       persisted_data_->GetProductVersion(request.app_id);
   if (current_version.IsValid() &&

@@ -133,10 +133,11 @@ void AppUninstall::FirstTaskRun() {
 
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
     CHECK(global_prefs_);
+    auto persisted_data =
+        base::MakeRefCounted<PersistedData>(global_prefs_->GetPrefService());
     const bool should_uninstall = ShouldUninstall(
-        base::MakeRefCounted<PersistedData>(global_prefs_->GetPrefService())
-            ->GetAppIds(),
-        global_prefs_->CountServerStarts());
+        persisted_data->GetAppIds(), global_prefs_->CountServerStarts(),
+        persisted_data->GetHadApps());
     VLOG(1) << "ShouldUninstall returned: " << should_uninstall;
     if (should_uninstall) {
       base::ThreadPool::PostTaskAndReplyWithResult(

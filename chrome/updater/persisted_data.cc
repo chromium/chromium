@@ -6,11 +6,13 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/registration_data.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -25,6 +27,8 @@ constexpr char kECP[] = "ecp";  // Key for storing existence checker path.
 constexpr char kBC[] = "bc";    // Key for storing brand code.
 constexpr char kBP[] = "bp";    // Key for storing brand path.
 constexpr char kAP[] = "ap";    // Key for storing ap.
+
+constexpr char kHadApps[] = "had_apps";
 
 }  // namespace
 
@@ -195,6 +199,23 @@ void PersistedData::SetString(const std::string& id,
   DictionaryPrefUpdateDeprecated update(pref_service_,
                                         kPersistedDataPreference);
   GetOrCreateAppKey(id, update.Get())->SetStringKey(key, value);
+}
+
+bool PersistedData::GetHadApps() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_ && pref_service_->GetBoolean(kHadApps);
+}
+
+void PersistedData::SetHadApps() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_)
+    pref_service_->SetBoolean(kHadApps, true);
+}
+
+// Register persisted data prefs, except for kPersistedDataPreference.
+// kPersistedDataPreference is registered by update_client::RegisterPrefs.
+void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
+  registry->RegisterBooleanPref(kHadApps, false);
 }
 
 }  // namespace updater

@@ -124,10 +124,10 @@ void AppServer::MaybeUninstall() {
   if (!prefs_)
     return;
 
-  if (ShouldUninstall(
-          base::MakeRefCounted<PersistedData>(prefs_->GetPrefService())
-              ->GetAppIds(),
-          server_starts_)) {
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(prefs_->GetPrefService());
+  if (ShouldUninstall(persisted_data->GetAppIds(), server_starts_,
+                      persisted_data->GetHadApps())) {
     base::CommandLine command_line(
         base::CommandLine::ForCurrentProcess()->GetProgram());
     command_line.AppendSwitch(kUninstallIfUnusedSwitch);

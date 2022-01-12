@@ -499,8 +499,6 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   WaitForUpdaterExit();
   ExpectInstalled();
 
-  // TODO(crbug.com/1270520) - use a switch that can uninstall immediately if
-  // unused, instead of requiring server starts.
   SetServerStarts(24);
 
   // Uninstall the idle updater.
@@ -545,7 +543,6 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   RegisterApp("test1");
   ExpectInstalled();
   WaitForUpdaterExit();
-  SetServerStarts(24);
   RunWake(0);
   WaitForUpdaterExit();
   ExpectInstalled();
