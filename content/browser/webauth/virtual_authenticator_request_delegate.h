@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_VIRTUAL_AUTHENTICATOR_REQUEST_DELEGATE_H_
 #define CONTENT_BROWSER_WEBAUTH_VIRTUAL_AUTHENTICATOR_REQUEST_DELEGATE_H_
 
+#include <vector>
+
 #include "base/callback_forward.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 
 namespace content {
 
