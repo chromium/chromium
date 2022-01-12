@@ -286,14 +286,10 @@ void WorkletGlobalScope::FetchAndInvokeScript(
       ScriptController()->GetScriptState(),
       std::move(outside_settings_task_runner), pending_tasks);
 
-  // TODO(nhiroki): Pass an appropriate destination defined in each worklet
-  // spec (e.g., "paint worklet", "audio worklet") (https://crbug.com/843980,
-  // https://crbug.com/843982)
-  auto destination = mojom::blink::RequestContextType::SCRIPT;
+  auto request_context_type = mojom::blink::RequestContextType::SCRIPT;
   FetchModuleScript(module_url_record, outside_settings_object,
-                    outside_resource_timing_notifier, destination,
-                    network::mojom::RequestDestination::kScript,
-                    credentials_mode,
+                    outside_resource_timing_notifier, request_context_type,
+                    GetDestination(), credentials_mode,
                     ModuleScriptCustomFetchType::kWorkletAddModule, client);
 }
 

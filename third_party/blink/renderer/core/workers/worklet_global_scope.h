@@ -161,6 +161,10 @@ class CORE_EXPORT WorkletGlobalScope
                      WorkerThread*,
                      bool create_microtask_queue);
 
+  // Returns a destination used for fetching worklet scripts.
+  // https://html.spec.whatwg.org/C/#worklet-destination-type
+  virtual network::mojom::RequestDestination GetDestination() const = 0;
+
   EventTarget* ErrorEventTarget() final { return nullptr; }
 
   // The |url_| and |user_agent_| are inherited from the parent Document.

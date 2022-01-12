@@ -20,6 +20,10 @@ class FakeWorkletGlobalScope final : public WorkletGlobalScope {
   }
 
  private:
+  network::mojom::RequestDestination GetDestination() const override {
+    return network::mojom::RequestDestination::kScript;
+  }
+
   // A fake token identifying this worker. This is default constructed to a
   // valid token.
   const AnimationWorkletToken token_;
