@@ -680,7 +680,7 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
       options->hasDelegate()) {
     Vector<String> capability_list;
     options->delegate().Split(' ', capability_list);
-    delegate_payment_request = capability_list.Contains("paymentrequest");
+    delegate_payment_request = capability_list.Contains("payment");
   }
 
   PostedMessage* posted_message = MakeGarbageCollected<PostedMessage>();
