@@ -255,12 +255,6 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
     out_content->append(file_contents);
     return true;
   }
-  if (HasString()) {
-    std::u16string data;
-    GetString(&data);
-    out_content->append(base::UTF16ToUTF8(data));
-    return true;
-  }
   if (HasCustomFormat(ui::ClipboardFormatType::WebCustomDataType())) {
     base::Pickle pickle;
     GetPickledData(ui::ClipboardFormatType::WebCustomDataType(), &pickle);
@@ -268,7 +262,16 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                pickle.size());
     return true;
   }
-
+  // Lastly, attempt to extract string data. Note: Keep this as the last
+  // condition otherwise, for data maps that contain both string and custom
+  // data, for example, it may result in subtle issues, such as,
+  // https://crbug.com/1271311.
+  if (HasString()) {
+    std::u16string data;
+    GetString(&data);
+    out_content->append(base::UTF16ToUTF8(data));
+    return true;
+  }
   return false;
 }
 

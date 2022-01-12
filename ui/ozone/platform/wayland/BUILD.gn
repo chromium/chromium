@@ -487,6 +487,7 @@ source_set("wayland_unittests") {
     "host/wayland_connection_unittest.cc",
     "host/wayland_data_drag_controller_unittest.cc",
     "host/wayland_event_source_unittest.cc",
+    "host/wayland_exchange_data_provider_unittest.cc",
     "host/wayland_input_method_context_unittest.cc",
     "host/wayland_keyboard_unittest.cc",
     "host/wayland_pointer_unittest.cc",
