@@ -148,10 +148,10 @@ PrefService* GetLocalStateLegacy() {
 // Checks if values in |dict| correspond with |account_id| identity.
 bool UserMatches(const AccountId& account_id,
                  const base::DictionaryValue& dict) {
-  std::string value;
-  if (account_id.GetAccountType() != AccountType::UNKNOWN &&
-      dict.GetString(kAccountTypeKey, &value) &&
-      account_id.GetAccountType() != AccountId::StringToAccountType(value)) {
+  const std::string* account_type = dict.FindStringKey(kAccountTypeKey);
+  if (account_id.GetAccountType() != AccountType::UNKNOWN && account_type &&
+      account_id.GetAccountType() !=
+          AccountId::StringToAccountType(*account_type)) {
     return false;
   }
 
@@ -160,14 +160,14 @@ bool UserMatches(const AccountId& account_id,
   // this function should likely be returning false even if the e-mail matches.
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE: {
-      bool has_gaia_id = dict.GetString(kGAIAIdKey, &value);
-      if (has_gaia_id && account_id.GetGaiaId() == value)
+      const std::string* gaia_id = dict.FindStringKey(kGAIAIdKey);
+      if (gaia_id && account_id.GetGaiaId() == *gaia_id)
         return true;
       break;
     }
     case AccountType::ACTIVE_DIRECTORY: {
-      bool has_obj_guid = dict.GetString(kObjGuidKey, &value);
-      if (has_obj_guid && account_id.GetObjGuid() == value)
+      const std::string* obj_guid = dict.FindStringKey(kObjGuidKey);
+      if (obj_guid && account_id.GetObjGuid() == *obj_guid)
         return true;
       break;
     }
@@ -175,8 +175,8 @@ bool UserMatches(const AccountId& account_id,
     }
   }
 
-  bool has_email = dict.GetString(kCanonicalEmail, &value);
-  if (has_email && account_id.GetUserEmail() == value)
+  const std::string* email = dict.FindStringKey(kCanonicalEmail);
+  if (email && account_id.GetUserEmail() == *email)
     return true;
 
   return false;
@@ -279,7 +279,10 @@ bool KnownUser::GetStringPref(const AccountId& account_id,
   if (!FindPrefs(account_id, &user_pref_dict))
     return false;
 
-  return user_pref_dict->GetString(path, out_value);
+  const std::string* pref = user_pref_dict->FindStringPath(path);
+  if (pref && out_value)
+    *out_value = *pref;
+  return pref;
 }
 
 void KnownUser::SetStringPref(const AccountId& account_id,
@@ -439,27 +442,26 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
     if (element_value.is_dict()) {
       const base::DictionaryValue& element =
           base::Value::AsDictionaryValue(element_value);
-      std::string email;
-      std::string gaia_id;
-      std::string obj_guid;
-      const bool has_email = element.GetString(kCanonicalEmail, &email);
-      const bool has_gaia_id = element.GetString(kGAIAIdKey, &gaia_id);
-      const bool has_obj_guid = element.GetString(kObjGuidKey, &obj_guid);
+      const std::string* email = element.FindStringKey(kCanonicalEmail);
+      const std::string* gaia_id = element.FindStringKey(kGAIAIdKey);
+      const std::string* obj_guid = element.FindStringKey(kObjGuidKey);
       AccountType account_type = AccountType::GOOGLE;
-      std::string account_type_string;
-      if (element.GetString(kAccountTypeKey, &account_type_string)) {
-        account_type = AccountId::StringToAccountType(account_type_string);
+      if (const std::string* account_type_string =
+              element.FindStringKey(kAccountTypeKey)) {
+        account_type = AccountId::StringToAccountType(*account_type_string);
       }
       switch (account_type) {
         case AccountType::GOOGLE:
-          if (has_email || has_gaia_id) {
-            result.push_back(AccountId::FromUserEmailGaiaId(email, gaia_id));
+          if (email || gaia_id) {
+            result.push_back(AccountId::FromUserEmailGaiaId(
+                email ? *email : std::string(),
+                gaia_id ? *gaia_id : std::string()));
           }
           break;
         case AccountType::ACTIVE_DIRECTORY:
-          if (has_email && has_obj_guid) {
+          if (email && obj_guid) {
             result.push_back(
-                AccountId::AdFromUserEmailObjGuid(email, obj_guid));
+                AccountId::AdFromUserEmailObjGuid(*email, *obj_guid));
           }
           break;
         default:
