@@ -125,7 +125,6 @@ void MediaRouterE2EBrowserTest::OpenMediaPage() {
 // Test cases
 
 IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_TabMirroring) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -146,7 +145,6 @@ IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_TabMirroring) {
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_CastApp) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   // Wait for 30 seconds to make sure the route is stable.
   CreateMediaRoute(
       MediaSource::ForPresentationUrl(GURL(kCastAppPresentationUrl)),

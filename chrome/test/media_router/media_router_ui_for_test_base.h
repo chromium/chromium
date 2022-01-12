@@ -59,6 +59,8 @@ class MediaRouterUiForTestBase {
   // Called by MediaRouterDialogControllerViews.
   virtual void OnDialogCreated();
 
+  content::WebContents* web_contents() const { return web_contents_; }
+
  protected:
   enum class WatchType {
     kNone,

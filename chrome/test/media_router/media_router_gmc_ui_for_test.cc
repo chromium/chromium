@@ -33,9 +33,8 @@ void MediaRouterGmcUiForTest::SetUp() {
 }
 
 void MediaRouterGmcUiForTest::ShowDialog() {
-  base::RunLoop loop;
   dialog_ui_.ClickToolbarIcon();
-  loop.Run();
+  CHECK(dialog_ui_.WaitForDialogOpened());
 }
 
 bool MediaRouterGmcUiForTest::IsDialogShown() const {
@@ -75,7 +74,7 @@ void MediaRouterGmcUiForTest::WaitForAnyRoute() {
 }
 
 void MediaRouterGmcUiForTest::WaitForDialogShown() {
-  NOTIMPLEMENTED();
+  CHECK(dialog_ui_.WaitForDialogOpened());
 }
 
 void MediaRouterGmcUiForTest::WaitForDialogHidden() {

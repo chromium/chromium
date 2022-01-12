@@ -64,6 +64,7 @@ class MediaRouterIntegrationBrowserTest
   ~MediaRouterIntegrationBrowserTest() override;
 
   // InProcessBrowserTest Overrides
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUp() override;
 
  protected:

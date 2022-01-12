@@ -34,11 +34,16 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::WebContents;
 using testing::Optional;
@@ -84,8 +89,26 @@ class NoRoutesObserver : public MediaRoutesObserver {
 }  // namespace
 
 MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() {
-  // TODO(crbug.com/1229305): Implement testing with the feature enabled.
-  feature_list_.InitAndDisableFeature(kGlobalMediaControlsCastStartStop);
+  switch (GetParam()) {
+    case UiForBrowserTest::kCast:
+      feature_list_.InitAndDisableFeature(kGlobalMediaControlsCastStartStop);
+      break;
+    case UiForBrowserTest::kGmc:
+      feature_list_.InitWithFeatures(
+          {
+            media::kGlobalMediaControls, kGlobalMediaControlsCastStartStop,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                // Without this flag, SodaInstaller::GetInstance() fails a
+                // DCHECK on Chrome OS.  The call to
+                // SodaInstaller::GetInstance() is in
+                // MediaDialogView::AddedToWidget(), which is called indirectly
+                // from MediaDialogView::ShowDialogForPresentationRequest().
+                ash::features::kOnDeviceSpeechRecognition,
+#endif
+          },
+          {});
+      break;
+  }
 }
 
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
@@ -95,20 +118,32 @@ Browser* MediaRouterIntegrationBrowserTest::browser() {
   return InProcessBrowserTest::browser();
 }
 
+void MediaRouterIntegrationBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(
+      switches::kAutoplayPolicy,
+      // Needed to allow a video to autoplay from a browser test.
+      switches::autoplay::kNoUserGestureRequiredPolicy);
+}
+
 void MediaRouterIntegrationBrowserTest::SetUp() {
   ParseCommandLine();
   InProcessBrowserTest::SetUp();
 }
 
 void MediaRouterIntegrationBrowserTest::InitTestUi() {
+  auto* const web_contents = GetActiveWebContents();
+  auto* const context = browser()->profile();
   switch (GetParam()) {
     case UiForBrowserTest::kCast:
-      test_ui_ = MediaRouterCastUiForTest::GetOrCreateForWebContents(
-          GetActiveWebContents());
+      CHECK(!GlobalMediaControlsCastStartStopEnabled(context));
+      test_ui_ =
+          MediaRouterCastUiForTest::GetOrCreateForWebContents(web_contents);
       break;
     case UiForBrowserTest::kGmc:
-      test_ui_ = MediaRouterGmcUiForTest::GetOrCreateForWebContents(
-          GetActiveWebContents());
+      CHECK(GlobalMediaControlsCastStartStopEnabled(context));
+      test_ui_ =
+          MediaRouterGmcUiForTest::GetOrCreateForWebContents(web_contents);
       break;
   }
 }
@@ -461,7 +496,6 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
 #define MAYBE_Basic Basic
 #endif
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunBasicTest();
 }
 
@@ -473,12 +507,10 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
 #endif
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MAYBE_SendAndOnMessage) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunSendMessageTest("foo");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_close_route_error_on_send();
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
@@ -494,30 +526,25 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
 #endif
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MAYBE_Fail_SendMessage) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunFailToSendMessageTest();
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_CreateRoute) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_route_error_message("Unknown sink");
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckStartFailed(web_contents, "UnknownError", "Unknown sink");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, ReconnectSession) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunReconnectSessionTest();
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_ReconnectSession) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunFailedReconnectSessionTest();
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_StartCancelled) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   WebContents* web_contents = StartSessionWithTestPageAndSink();
   test_ui_->HideDialog();
   CheckStartFailed(web_contents, "NotAllowedError", "Dialog closed.");
@@ -525,14 +552,12 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_StartCancelled) {
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_StartCancelledNoSinks) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_empty_sink_list();
   StartSessionAndAssertNotFoundError();
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_StartCancelledNoSupportedSinks) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   test_provider_->set_unsupported_media_sources_list();
   StartSessionAndAssertNotFoundError();
 }
@@ -544,7 +569,6 @@ Browser* MediaRouterIntegrationIncognitoBrowserTest::browser() {
 }
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunBasicTest();
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
@@ -554,7 +578,6 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
 
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest,
                        ReconnectSession) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunReconnectSessionTest();
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
