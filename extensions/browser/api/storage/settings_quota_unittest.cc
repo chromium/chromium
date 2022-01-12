@@ -103,7 +103,7 @@ TEST_F(ExtensionSettingsQuotaTest, SmallByteQuota) {
   CreateStorage(8u, UINT_MAX, UINT_MAX);
 
   EXPECT_TRUE(storage_->Set(DEFAULTS, "a", byte_value_1_).status().ok());
-  settings.Set("a", byte_value_1_.CreateDeepCopy());
+  settings.SetKey("a", byte_value_1_.Clone());
   EXPECT_TRUE(SettingsEqual(settings));
 
   EXPECT_FALSE(storage_->Set(DEFAULTS, "b", byte_value_16_).status().ok());
