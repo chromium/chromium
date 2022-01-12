@@ -31,7 +31,10 @@
 namespace ash {
 namespace quick_pair {
 
-FastPairPresenter::FastPairPresenter() = default;
+FastPairPresenter::FastPairPresenter()
+    : notification_controller_(
+          std::make_unique<FastPairNotificationController>()) {}
+
 FastPairPresenter::~FastPairPresenter() = default;
 
 void FastPairPresenter::ShowDiscovery(scoped_refptr<Device> device,
