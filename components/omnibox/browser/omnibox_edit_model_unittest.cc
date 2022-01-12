@@ -11,7 +11,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -29,7 +28,6 @@
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/url_formatter/url_fixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -712,9 +710,6 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
 }
 
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxKeywordSearchButton);
-
   ACMatches matches;
   for (size_t i = 0; i < 5; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,

@@ -55,7 +55,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
-#include "chrome/browser/ui/views/location_bar/keyword_hint_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/permission_quiet_chip.h"
@@ -271,11 +270,6 @@ void LocationBarView::Init() {
 
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
       this, TemplateURLServiceFactory::GetForProfile(profile_), font_list));
-
-  keyword_hint_view_ = AddChildView(std::make_unique<KeywordHintView>(
-      base::BindRepeating(&LocationBarView::KeywordHintViewPressed,
-                          base::Unretained(this)),
-      profile_));
 
   SkColor icon_color = GetColor(OmniboxPart::RESULTS_ICON);
 
@@ -559,7 +553,6 @@ void LocationBarView::Layout() {
     return;
 
   selected_keyword_view_->SetVisible(false);
-  keyword_hint_view_->SetVisible(false);
 
   const int edge_padding = GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
 
@@ -667,18 +660,6 @@ void LocationBarView::Layout() {
        i != content_setting_views_.rend(); ++i) {
     add_trailing_decoration(*i);
   }
-  // Because IMEs may eat the tab key, we don't show "press tab to search" while
-  // IME composition is in progress.
-  // The keyword hint is also not shown when the keyword button is enabled since
-  // it's redundant with that and is no longer accurate.
-  if (!OmniboxFieldTrial::IsKeywordSearchButtonEnabled() && HasFocus() &&
-      !keyword.empty() && omnibox_view_->model()->is_keyword_hint() &&
-      !omnibox_view_->IsImeComposing()) {
-    trailing_decorations.AddDecoration(vertical_padding, location_height, true,
-                                       0, edge_padding, keyword_hint_view_);
-    keyword_hint_view_->SetKeyword(keyword);
-  }
-
   add_trailing_decoration(clear_all_button_);
 
   // Perform layout.
@@ -1058,13 +1039,6 @@ bool LocationBarView::ShouldShowKeywordBubble() const {
 OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
   DCHECK(IsInitialized());
   return omnibox_view_->model()->get_popup_view();
-}
-
-void LocationBarView::KeywordHintViewPressed(const ui::Event& event) {
-  DCHECK(event.IsMouseEvent() || event.IsGestureEvent());
-  omnibox_view_->model()->AcceptKeyword(event.IsMouseEvent()
-                                            ? OmniboxEventProto::CLICK_HINT_VIEW
-                                            : OmniboxEventProto::TAP_HINT_VIEW);
 }
 
 void LocationBarView::OnPageInfoBubbleClosed(

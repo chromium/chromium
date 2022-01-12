@@ -183,15 +183,10 @@ std::u16string KeywordProvider::GetKeywordForText(
   if (!url_service)
     return std::u16string();
 
-  std::u16string keyword;
-  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-    // We want the Search button to persist as long as the input begins with a
-    // keyword. This is found by taking the input until the first white space.
-    keyword = CleanUserInputKeyword(url_service,
-                                    SplitKeywordFromInput(text, true, nullptr));
-  } else {
-    keyword = CleanUserInputKeyword(url_service, text);
-  }
+  // We want the Search button to persist as long as the input begins with a
+  // keyword. This is found by taking the input until the first white space.
+  std::u16string keyword = CleanUserInputKeyword(
+      url_service, SplitKeywordFromInput(text, true, nullptr));
 
   if (keyword.empty())
     return u"";

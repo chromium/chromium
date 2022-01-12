@@ -4253,8 +4253,6 @@ static_library("ui") {
       "views/location_bar/icon_label_bubble_view.h",
       "views/location_bar/intent_picker_view.cc",
       "views/location_bar/intent_picker_view.h",
-      "views/location_bar/keyword_hint_view.cc",
-      "views/location_bar/keyword_hint_view.h",
       "views/location_bar/location_bar_bubble_delegate_view.cc",
       "views/location_bar/location_bar_bubble_delegate_view.h",
       "views/location_bar/location_bar_layout.cc",

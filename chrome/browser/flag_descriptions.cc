@@ -3723,11 +3723,6 @@ const char kOmniboxPedalsTranslationConsoleDescription[] =
     "Use translation strings sourced from Translation Console "
     "for triggering some omnibox Pedals (aka Chrome Actions).";
 
-const char kOmniboxKeywordSearchButtonName[] = "Omnibox keyword search button";
-const char kOmniboxKeywordSearchButtonDescription[] =
-    "Enable the omnibox keyword search button which offers a way to search "
-    "on specific sites from the omnibox.";
-
 const char kOmniboxShortBookmarkSuggestionsName[] =
     "Omnibox short bookmark suggestions";
 const char kOmniboxShortBookmarkSuggestionsDescription[] =

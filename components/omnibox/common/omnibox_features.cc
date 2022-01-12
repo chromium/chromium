@@ -297,10 +297,6 @@ const base::Feature kOmniboxPedalsBatch3NonEnglish{
 const base::Feature kOmniboxPedalsTranslationConsole{
     "OmniboxPedalsTranslationConsole", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to enable the keyword search button.
-const base::Feature kOmniboxKeywordSearchButton{
-    "OmniboxKeywordSearchButton", enabled_by_default_desktop_only};
-
 // If enabled, uses WebUI to render the omnibox suggestions popup, similar to
 // how the NTP "realbox" is implemented.
 const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",

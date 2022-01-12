@@ -18,10 +18,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
@@ -43,8 +41,7 @@ class Button;
 class ImageButton;
 }  // namespace views
 
-class OmniboxResultView : public views::View,
-                          public views::AnimationDelegateViews {
+class OmniboxResultView : public views::View {
  public:
   METADATA_HEADER(OmniboxResultView);
   OmniboxResultView(OmniboxPopupContentsView* popup_contents_view,
@@ -66,9 +63,6 @@ class OmniboxResultView : public views::View,
   // the match so that we can continue to paint the last result even after the
   // model has changed.
   void SetMatch(const AutocompleteMatch& match);
-
-  // Sets the visibility of the keyword mode slide animation.
-  void ShowKeywordSlideAnimation(bool show_keyword);
 
   // Applies the current theme to the current text and widget colors.
   // Also refreshes the icons which may need to be re-colored as well.
@@ -124,9 +118,6 @@ class OmniboxResultView : public views::View,
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  // views::AnimationDelegateViews:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-
   // The parent view.
   const raw_ptr<OmniboxPopupContentsView> popup_contents_view_;
 
@@ -141,9 +132,6 @@ class OmniboxResultView : public views::View,
 
   // Accessible name (enables to emit certain events).
   std::u16string accessible_name_;
-
-  // For sliding in the keyword search.
-  std::unique_ptr<gfx::SlideAnimation> keyword_slide_animation_;
 
   // Container for the first row (for everything expect |button_row_|).
   raw_ptr<views::View> suggestion_container_;

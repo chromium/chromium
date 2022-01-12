@@ -440,12 +440,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
-  // This test covers the behavior of entering keyword mode by space, then
-  // exiting by pressing backspace.  AcceptKeywordBySpace is disabled when
-  // keyword search button is enabled, so for that case do not run this test.
-  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
-    return;
-
   // The results depend on the TemplateURLService being loaded. Make sure it is
   // loaded so that the autocomplete results are consistent.
   Profile* profile = browser()->profile();

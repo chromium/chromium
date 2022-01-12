@@ -1004,16 +1004,14 @@ bool OmniboxEditModel::AcceptKeyword(
     StartAutocomplete(false, true);
   }
 
-  // When entering keyword mode via tab (or if keyword search button is enabled,
-  // when the user text is empty), the new text to show is whatever the
-  // newly-selected match in the dropdown is.  When entering via space (or, if
-  // keyword button is enabled, when user text is not empty), however, we should
-  // make sure to use the actual |user_text_| as the basis for the new
-  // text.  This ensures that if the user types "<keyword><space>" and the
-  // default match would have inline autocompleted a further string (e.g.
-  // because there's a past multi-word search beginning with this keyword), the
-  // inline autocompletion doesn't get filled in as the keyword search query
-  // text.
+  // When user text is empty (the user hasn't typed anything beyond the
+  // keyword), the new text to show is whatever the newly-selected match in the
+  // dropdown is.  When user text is not empty, however, we should make sure to
+  // use the actual |user_text_| as the basis for the new text.  This ensures
+  // that if the user types "<keyword><space>" and the default match would have
+  // inline autocompleted a further string (e.g. because there's a past
+  // multi-word search beginning with this keyword), the inline autocompletion
+  // doesn't get filled in as the keyword search query text.
   //
   // We also treat tabbing into keyword mode like tabbing through the popup in
   // that we set |has_temporary_text_|, whereas pressing space is treated like
@@ -1024,11 +1022,7 @@ bool OmniboxEditModel::AcceptKeyword(
   // which we don't want to switch back to when exiting keyword mode; see
   // comments in ClearKeyword().
   const AutocompleteMatch& match = CurrentMatch(nullptr);
-  const bool can_overwrite_user_text =
-      OmniboxFieldTrial::IsKeywordSearchButtonEnabled()
-          ? user_text_.empty()
-          : entry_method == OmniboxEventProto::TAB;
-  if (can_overwrite_user_text) {
+  if (user_text_.empty()) {
     // Ensure the current selection is saved before showing keyword mode
     // so that moving to another line and then reverting the text will restore
     // the current state properly.
@@ -1037,9 +1031,7 @@ bool OmniboxEditModel::AcceptKeyword(
   } else {
     view_->OnTemporaryTextMaybeChanged(user_text_, match, !has_temporary_text_,
                                        true);
-    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-      view_->UpdatePopup();
-    }
+    view_->UpdatePopup();
   }
 
   base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));

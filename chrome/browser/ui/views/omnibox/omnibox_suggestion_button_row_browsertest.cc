@@ -23,7 +23,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -34,9 +33,7 @@
 // screenshots.
 class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
  public:
-  OmniboxSuggestionButtonRowBrowserTest() {
-    feature_list_.InitWithFeatures({omnibox::kOmniboxKeywordSearchButton}, {});
-  }
+  OmniboxSuggestionButtonRowBrowserTest() = default;
 
   OmniboxSuggestionButtonRowBrowserTest(
       const OmniboxSuggestionButtonRowBrowserTest&) = delete;
@@ -170,7 +167,6 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<OmniboxAction> action_;
 };
 

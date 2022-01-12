@@ -627,10 +627,6 @@ bool OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled() {
       omnibox::kOmniboxPedalsTranslationConsole);
 }
 
-bool OmniboxFieldTrial::IsKeywordSearchButtonEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxKeywordSearchButton);
-}
-
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }

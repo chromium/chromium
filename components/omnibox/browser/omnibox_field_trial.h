@@ -374,10 +374,6 @@ bool IsPedalsBatch3NonEnglishEnabled();
 // console.
 bool IsPedalsTranslationConsoleEnabled();
 
-// Returns true if the keyword button and suggestion button row features are
-// enabled.
-bool IsKeywordSearchButtonEnabled();
-
 // Simply a convenient wrapper for testing a flag. Used downstream for an
 // assortment of keyword mode experiments.
 bool IsExperimentalKeywordModeEnabled();

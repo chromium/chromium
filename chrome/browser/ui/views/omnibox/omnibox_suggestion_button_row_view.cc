@@ -263,15 +263,8 @@ const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
     OmniboxSuggestionRowButton* button,
     OmniboxPopupSelection::LineState state) {
-  // If the keyword button flag is not enabled, the classic keyword UI is
-  // used instead, so do not show the keyword button
-  if (button == keyword_button_ &&
-      !OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-    button->SetVisible(false);
-  } else {
-    button->SetVisible(model_->IsPopupControlPresentOnMatch(
-        OmniboxPopupSelection(model_index_, state)));
-  }
+  button->SetVisible(model_->IsPopupControlPresentOnMatch(
+      OmniboxPopupSelection(model_index_, state)));
 }
 
 void OmniboxSuggestionButtonRowView::ButtonPressed(
