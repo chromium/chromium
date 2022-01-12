@@ -8,6 +8,7 @@
 
 #[cfg(test)]
 mod rs_glue;
-
 #[cfg(test)]
 mod values;
+#[cfg(test)]
+mod values_deserialization;

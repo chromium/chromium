@@ -17,7 +17,6 @@
 /// C++ functions which exist only for the benefit of calls from
 /// Rust->C++ should live within the base::rs_glue C++ namespace.
 #[cxx::bridge(namespace=base::rs_glue)]
-#[allow(unused)] // #[cfg(test) not supported here
 pub(crate) mod ffi {
     unsafe extern "C++" {
         include!("base/rs_glue/values_glue.h");
