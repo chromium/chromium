@@ -624,9 +624,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const;
 #else
   ALWAYS_INLINE LayoutRect VisualOverflowRectAllowingUnset() const {
+    NOT_DESTROYED();
     return VisualOverflowRect();
   }
   ALWAYS_INLINE PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const {
+    NOT_DESTROYED();
     return PhysicalVisualOverflowRect();
   }
 #endif

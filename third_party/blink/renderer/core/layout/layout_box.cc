@@ -7790,11 +7790,13 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
 
 #if DCHECK_IS_ON()
 LayoutRect LayoutBox::VisualOverflowRectAllowingUnset() const {
+  NOT_DESTROYED();
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
   return VisualOverflowRect();
 }
 
 PhysicalRect LayoutBox::PhysicalVisualOverflowRectAllowingUnset() const {
+  NOT_DESTROYED();
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
   return PhysicalVisualOverflowRect();
 }
