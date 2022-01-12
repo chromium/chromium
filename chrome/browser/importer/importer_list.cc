@@ -39,9 +39,8 @@ void DetectIEProfiles(std::vector<importer::SourceProfile>* profiles) {
   importer::SourceProfile ie;
   ie.importer_name = l10n_util::GetStringUTF16(IDS_IMPORT_FROM_IE);
   ie.importer_type = importer::TYPE_IE;
-  ie.services_supported = importer::HISTORY | importer::FAVORITES |
-                          importer::COOKIES | importer::PASSWORDS |
-                          importer::SEARCH_ENGINES;
+  ie.services_supported =
+      importer::HISTORY | importer::FAVORITES | importer::SEARCH_ENGINES;
   profiles->push_back(ie);
 }
 
