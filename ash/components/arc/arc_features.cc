@@ -63,6 +63,11 @@ const base::Feature kEnableUsap{"ArcEnableUsap",
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls experimental key GMS Core and related services protection against to
+// be killed by low memory killer.
+const base::Feature kGmsCoreLowMemoryKillerProtection{
+    "ArcGmsCoreLowMemoryKillerProtection", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 const base::Feature kGuestZram{"ArcGuestZram",
                                base::FEATURE_DISABLED_BY_DEFAULT};
