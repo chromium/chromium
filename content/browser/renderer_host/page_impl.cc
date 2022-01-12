@@ -180,7 +180,7 @@ void PageImpl::ActivateForPrerendering(
   // inner WebContents. These are in a different FrameTree which might not know
   // it is being prerendered. We should teach these FrameTrees that they are
   // being prerendered, or ban inner FrameTrees in a prerendering page.
-  main_document_.ForEachRenderFrameHost(base::BindRepeating(
+  main_document_.ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
       [](PageImpl* page, RenderFrameHostImpl* rfh) {
         if (&rfh->GetPage() != page)
           return;

@@ -1792,7 +1792,7 @@ class MojoCapabilityControlTestContentBrowserClient
   void BindCancelInterface(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<mojom::TestInterfaceForCancel> receiver) {
-    cancel_receiver_.Bind(std::move(receiver));
+    cancel_receiver_set_.Add(this, std::move(receiver));
   }
 
   void BindUnexpectedInterface(
@@ -1811,7 +1811,7 @@ class MojoCapabilityControlTestContentBrowserClient
  private:
   mojo::ReceiverSet<mojom::TestInterfaceForDefer> defer_receiver_set_;
   mojo::ReceiverSet<mojom::TestInterfaceForGrant> grant_receiver_set_;
-  mojo::Receiver<mojom::TestInterfaceForCancel> cancel_receiver_{this};
+  mojo::ReceiverSet<mojom::TestInterfaceForCancel> cancel_receiver_set_;
   mojo::Receiver<mojom::TestInterfaceForUnexpected> unexpected_receiver_{this};
 };
 
@@ -2034,6 +2034,84 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(bad_message_error,
             "MBPA_BAD_INTERFACE: content.mojom.TestInterfaceForUnexpected");
 
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+// Regression test for https://crbug.com/1268714.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
+  MojoCapabilityControlTestContentBrowserClient test_browser_client;
+  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  GURL initial_url = GetUrl("/empty.html");
+  GURL prerendering_url =
+      GetUrl("/cross_site_iframe_factory.html?a.test(a.test,a.test)");
+  GURL cross_origin_iframe_url = GetCrossOriginUrl("/title1.html");
+
+  // 1. Navigate to an initial page and prerender a page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  int host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+
+  // 2. Let the first iframe navigate to a cross-origin url. It will create a
+  // speculative RFH and the navigation will be deferred.
+  TestNavigationManager subframe_navigation_manager(web_contents(),
+                                                    cross_origin_iframe_url);
+  std::string js = R"(
+    const frame = document.getElementById($1);
+    frame.contentWindow.location.href = $2;
+  )";
+  EXPECT_TRUE(ExecJs(prerendered_render_frame_host,
+                     JsReplace(js, "child-0", cross_origin_iframe_url.spec())));
+
+  // 3. Wait until the navigation to `cross_origin_iframe_url` is deferred by
+  // NavigationThrottle.
+  subframe_navigation_manager.WaitForFirstYieldAfterDidStartNavigation();
+  FrameTreeNode* child_ftn =
+      FrameTreeNode::GloballyFindByID(host_id)->child_at(0);
+  NavigationRequest* child_navigation = child_ftn->navigation_request();
+  ASSERT_NE(child_navigation, nullptr);
+  ASSERT_TRUE(child_navigation->IsDeferredForTesting());
+
+  // 4. Collect all RenderFrameHosts in the frame tree.
+  std::vector<RenderFrameHostImpl*> all_prerender_frames;
+  size_t count_speculative = 0;
+  prerendered_render_frame_host->ForEachRenderFrameHostIncludingSpeculative(
+      base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+        all_prerender_frames.push_back(rfh);
+        count_speculative +=
+            (rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative);
+      }));
+  ASSERT_EQ(all_prerender_frames.size(), 4u);
+  ASSERT_EQ(count_speculative, 1u);
+
+  // 5. Activate the prerendered page and listen to the DidFinishNavigation
+  // event, to ensure the Activate IPC is sent.
+  TestNavigationManager prerendered_activation_navigation(web_contents(),
+                                                          prerendering_url);
+  ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+                     JsReplace("location = $1", prerendering_url)));
+  prerendered_activation_navigation.WaitForNavigationFinished();
+  EXPECT_TRUE(
+      prerendered_activation_navigation.was_prerendered_page_activation());
+  EXPECT_TRUE(prerendered_activation_navigation.was_successful());
+
+  // 6. Renderers attempt to build Mojo connections for kCancel interfaces.
+  // This part simulates some subframe documents start sending kCancel
+  // interfaces after they know about the activation. It tests the regression
+  // situation caught by https://crbug.com/1268714. If some RenderFrameHostImpls
+  // are not informed of the activation, this test will crash.
+  for (auto* rfhi : all_prerender_frames) {
+    mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
+        rfhi->browser_interface_broker_receiver_for_testing();
+    blink::mojom::BrowserInterfaceBroker* prerender_broker =
+        bib.internal_state()->impl();
+
+    // Send a kCancel request to the browser. This test should not crash.
+    mojo::Remote<mojom::TestInterfaceForCancel> remote;
+    prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
+    remote.FlushForTesting();
+  }
   SetBrowserClientForTesting(old_browser_client);
 }
 
