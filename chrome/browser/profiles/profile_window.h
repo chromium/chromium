@@ -51,13 +51,12 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
                                  bool unblock_extensions,
-                                 Profile* profile,
-                                 Profile::CreateStatus status);
+                                 Profile* profile);
 
 // Loads the specified profile given by |path| asynchronously. Once profile is
 // loaded and initialized it runs |callback| if it isn't null.
 void LoadProfileAsync(const base::FilePath& path,
-                      ProfileManager::CreateCallback callback);
+                      base::OnceCallback<void(Profile*)> callback);
 
 // Opens a Browser with the specified profile given by |path|.
 // If |always_create| is true then a new window is created

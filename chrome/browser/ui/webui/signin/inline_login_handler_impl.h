@@ -114,8 +114,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
   };
 
   static void FinishCompleteLogin(const FinishCompleteLoginParams& params,
-                                  Profile* profile,
-                                  Profile::CreateStatus status);
+                                  Profile* profile);
 
   // True if the user has navigated to untrusted domains during the signin
   // process.
@@ -135,7 +134,6 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       base::WeakPtr<InlineLoginHandlerImpl> handler,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile,
-      Profile::CreateStatus create_status,
       const GURL& current_url,
       const std::string& email,
       const std::string& gaia_id,
@@ -174,14 +172,13 @@ class InlineSigninHelper : public GaiaAuthConsumer {
   GaiaAuthFetcher gaia_auth_fetcher_;
   base::WeakPtr<InlineLoginHandlerImpl> handler_;
   raw_ptr<Profile> profile_;
-  Profile::CreateStatus create_status_;
-  GURL current_url_;
-  std::string email_;
-  std::string gaia_id_;
-  std::string password_;
-  std::string auth_code_;
-  bool confirm_untrusted_signin_;
-  bool is_force_sign_in_with_usermanager_;
+  const GURL current_url_;
+  const std::string email_;
+  const std::string gaia_id_;
+  const std::string password_;
+  const std::string auth_code_;
+  const bool confirm_untrusted_signin_;
+  const bool is_force_sign_in_with_usermanager_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_IMPL_H_

@@ -377,9 +377,6 @@ void ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl(
   // Skip the FRE for this profile as it's replaced by profile creation flow.
   profile_->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
-  // TODO(crbug.com/1126913): Change the callback of
-  // profiles::OpenBrowserWindowForProfile() to be a OnceCallback as it is only
-  // called once.
   profiles::OpenBrowserWindowForProfile(
       base::BindOnce(&ProfilePickerSignedInFlowController::OnBrowserOpened,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -389,7 +386,7 @@ void ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl(
                                      // extensions because we only open browser
                                      // window if the Profile is not locked.
                                      // Hence there is no extension blocked.
-      profile_, Profile::CREATE_STATUS_INITIALIZED);
+      profile_);
 }
 
 void ProfilePickerSignedInFlowController::FinishAndOpenBrowserForSAML() {

@@ -307,7 +307,6 @@ InlineSigninHelper::InlineSigninHelper(
     base::WeakPtr<InlineLoginHandlerImpl> handler,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile,
-    Profile::CreateStatus create_status,
     const GURL& current_url,
     const std::string& email,
     const std::string& gaia_id,
@@ -319,7 +318,6 @@ InlineSigninHelper::InlineSigninHelper(
     : gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory),
       handler_(handler),
       profile_(profile),
-      create_status_(create_status),
       current_url_(current_url),
       email_(email),
       gaia_id_(gaia_id),
@@ -349,7 +347,7 @@ void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
         base::BindOnce(
             &InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened,
             base::Unretained(this), result),
-        true, false, true, profile_, create_status_);
+        true, false, true, profile_);
   } else {
     OnClientOAuthSuccessAndBrowserOpened(result, profile_);
   }
@@ -627,12 +625,13 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   Profile* profile = Profile::FromWebUI(web_ui());
   if (reason == HandlerSigninReason::kFetchLstOnly ||
       !profile->IsSystemProfile()) {
-    FinishCompleteLogin(FinishCompleteLoginParams(
-                            this, partition, current_url, base::FilePath(),
-                            confirm_untrusted_signin_, params.email,
-                            params.gaia_id, params.password, params.auth_code,
-                            params.choose_what_to_sync, false),
-                        profile, Profile::CREATE_STATUS_CREATED);
+    FinishCompleteLogin(
+        FinishCompleteLoginParams(this, partition, current_url,
+                                  base::FilePath(), confirm_untrusted_signin_,
+                                  params.email, params.gaia_id, params.password,
+                                  params.auth_code, params.choose_what_to_sync,
+                                  /*is_force_sign_in_with_usermanager=*/false),
+        profile);
     return;
   }
 
@@ -653,11 +652,11 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   FinishCompleteLoginParams finish_login_params(
       this, partition, current_url, path, confirm_untrusted_signin_,
       params.email, params.gaia_id, params.password, params.auth_code,
-      params.choose_what_to_sync, true);
-  ProfileManager::CreateCallback callback = base::BindRepeating(
+      params.choose_what_to_sync, /*is_force_sign_in_with_usermanager=*/true);
+  base::OnceCallback<void(Profile*)> callback = base::BindOnce(
       &InlineLoginHandlerImpl::FinishCompleteLogin, finish_login_params);
   // Browser window will be opened after ClientOAuthSuccess.
-  profiles::LoadProfileAsync(path, callback);
+  profiles::LoadProfileAsync(path, std::move(callback));
 }
 
 InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
@@ -693,8 +692,7 @@ InlineLoginHandlerImpl::FinishCompleteLoginParams::
 // static
 void InlineLoginHandlerImpl::FinishCompleteLogin(
     const FinishCompleteLoginParams& params,
-    Profile* profile,
-    Profile::CreateStatus status) {
+    Profile* profile) {
   DCHECK(params.handler);
   HandlerSigninReason reason = GetHandlerSigninReason(params.url);
 
@@ -777,7 +775,7 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
   // InlineSigninHelper will delete itself.
   new InlineSigninHelper(
       params.handler->GetWeakPtr(),
-      params.partition->GetURLLoaderFactoryForBrowserProcess(), profile, status,
+      params.partition->GetURLLoaderFactoryForBrowserProcess(), profile,
       params.url, params.email, params.gaia_id, params.password,
       params.auth_code, signin_scoped_device_id,
       params.confirm_untrusted_signin,

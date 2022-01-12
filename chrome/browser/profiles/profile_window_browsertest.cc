@@ -307,9 +307,8 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->profile();
   size_t num_browsers = BrowserList::GetInstance()->size();
-  profiles::OpenBrowserWindowForProfile(
-      base::OnceCallback<void(Profile*)>(), true, false, false, profile,
-      Profile::CreateStatus::CREATE_STATUS_INITIALIZED);
+  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
+                                        true, false, false, profile);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -337,9 +336,8 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
-  profiles::OpenBrowserWindowForProfile(
-      base::OnceCallback<void(Profile*)>(), true, false, false, profile,
-      Profile::CreateStatus::CREATE_STATUS_INITIALIZED);
+  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
+                                        true, false, false, profile);
   run_loop.Run();
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());

@@ -773,7 +773,7 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
       false,  // There is no need to unblock all extensions because we only open
               // browser window if the Profile is not locked. Hence there is no
               // extension blocked.
-      profile, Profile::CREATE_STATUS_INITIALIZED);
+      profile);
 }
 
 void ProfilePickerHandler::HandleRecordSignInPromoImpression(
