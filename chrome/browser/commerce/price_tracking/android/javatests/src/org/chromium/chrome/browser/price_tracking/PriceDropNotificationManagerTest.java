@@ -163,7 +163,7 @@ public class PriceDropNotificationManagerTest {
 
             mPriceDropNotificationManager.createNotificationChannel();
             assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
-            assertEquals(NotificationManager.IMPORTANCE_LOW,
+            assertEquals(NotificationManager.IMPORTANCE_DEFAULT,
                     mPriceDropNotificationManager.getNotificationChannel().getImportance());
 
             assertTrue(mPriceDropNotificationManager.canPostNotification());

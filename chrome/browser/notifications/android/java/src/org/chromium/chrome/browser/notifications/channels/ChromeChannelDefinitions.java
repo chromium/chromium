@@ -227,7 +227,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             map.put(ChannelId.PRICE_DROP,
                     PredefinedChannel.create(ChannelId.PRICE_DROP,
                             R.string.notification_category_price_drop,
-                            NotificationManager.IMPORTANCE_LOW, ChannelGroupId.GENERAL));
+                            NotificationManager.IMPORTANCE_DEFAULT, ChannelGroupId.GENERAL));
 
             // The security key notification channel will only appear for users
             // who use this feature.
