@@ -30,14 +30,13 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       const gfx::DisplayColorSpaces& input);
   static base::span<const gfx::BufferFormat> buffer_formats(
       const gfx::DisplayColorSpaces& input);
-  static float sdr_white_level(const gfx::DisplayColorSpaces& input) {
-    return input.GetSDRWhiteLevel();
+  static float sdr_max_luminance_nits(const gfx::DisplayColorSpaces& input) {
+    return input.GetSDRMaxLuminanceNits();
   }
-  static const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata(
+  static float hdr_max_luminance_relative(
       const gfx::DisplayColorSpaces& input) {
-    return input.hdr_static_metadata();
+    return input.GetHDRMaxLuminanceRelative();
   }
-
   static bool Read(gfx::mojom::DisplayColorSpacesDataView data,
                    gfx::DisplayColorSpaces* out);
 };

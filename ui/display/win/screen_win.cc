@@ -213,7 +213,7 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
   // https://crbug.com/1057163).
   display_color_spaces.SetOutputBufferFormats(gfx::BufferFormat::BGRX_8888,
                                               gfx::BufferFormat::BGRA_8888);
-  display_color_spaces.SetSDRWhiteLevel(sdr_white_level);
+  display_color_spaces.SetSDRMaxLuminanceNits(sdr_white_level);
   return display_color_spaces;
 }
 

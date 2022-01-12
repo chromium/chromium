@@ -129,7 +129,8 @@ gfx::DisplayColorSpaces FillDisplayColorSpaces(
         gfx::ContentColorUsage::kHDR, true /* needs_alpha */, hdr_color_space,
         gfx::BufferFormat::RGBA_1010102);
 
-    display_color_spaces.set_hdr_static_metadata(hdr_static_metadata);
+    // TODO(https://crbug.com/1286074): Populate maximum luminance based on
+    // `hdr_static_metadata`.
   }
   return display_color_spaces;
 }

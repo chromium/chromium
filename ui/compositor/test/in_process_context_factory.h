@@ -79,7 +79,6 @@ class InProcessContextFactory : public ContextFactory {
 
   skia::Matrix44 GetOutputColorMatrix(Compositor* compositor) const;
   gfx::DisplayColorSpaces GetDisplayColorSpaces(Compositor* compositor) const;
-  float GetSDRWhiteLevel(Compositor* compositor) const;
   base::TimeTicks GetDisplayVSyncTimeBase(Compositor* compositor) const;
   base::TimeDelta GetDisplayVSyncTimeInterval(Compositor* compositor) const;
   void ResetDisplayOutputParameters(Compositor* compositor);

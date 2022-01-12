@@ -16329,7 +16329,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SDRWhiteLevel) {
   constexpr float kCustomWhiteLevel = 200.f;
   auto hdr = gfx::ColorSpace::CreateHDR10();
   auto display_cs = gfx::DisplayColorSpaces(hdr);
-  display_cs.SetSDRWhiteLevel(kCustomWhiteLevel);
+  display_cs.SetSDRMaxLuminanceNits(kCustomWhiteLevel);
 
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());

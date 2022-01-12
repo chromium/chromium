@@ -68,12 +68,8 @@ bool StructTraits<
   if (!input.ReadColorSpaces(&color_spaces))
     return false;
 
-  out->SetSDRWhiteLevel(input.sdr_white_level());
-
-  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata(
-      out->hdr_static_metadata_);
-  if (!input.ReadHdrStaticMetadata(&hdr_static_metadata))
-    return false;
+  out->SetSDRMaxLuminanceNits(input.sdr_max_luminance_nits());
+  out->SetHDRMaxLuminanceRelative(input.hdr_max_luminance_relative());
 
   return true;
 }

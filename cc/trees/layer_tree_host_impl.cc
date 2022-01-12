@@ -1958,9 +1958,9 @@ float LayerTreeHostImpl::GetSDRWhiteLevel() const {
 
   // The pending tree will has the most recently updated color space, so use it.
   if (pending_tree_)
-    return pending_tree_->display_color_spaces().GetSDRWhiteLevel();
+    return pending_tree_->display_color_spaces().GetSDRMaxLuminanceNits();
   if (active_tree_)
-    return active_tree_->display_color_spaces().GetSDRWhiteLevel();
+    return active_tree_->display_color_spaces().GetSDRMaxLuminanceNits();
   return gfx::ColorSpace::kDefaultSDRWhiteLevel;
 }
 

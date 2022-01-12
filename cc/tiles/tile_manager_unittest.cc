@@ -3596,7 +3596,7 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     constexpr float kCustomWhiteLevel = 200.f;
     auto display_cs = gfx::DisplayColorSpaces(raster_cs);
     if (raster_cs.IsHDR())
-      display_cs.SetSDRWhiteLevel(kCustomWhiteLevel);
+      display_cs.SetSDRMaxLuminanceNits(kCustomWhiteLevel);
 
     pending_layer()->layer_tree_impl()->SetDisplayColorSpaces(display_cs);
     PictureLayerTilingSet* tiling_set =

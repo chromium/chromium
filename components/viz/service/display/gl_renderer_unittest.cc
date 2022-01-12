@@ -224,7 +224,7 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
           auto adjusted_color_space = src_color_space;
           if (src_color_space.IsHDR()) {
             adjusted_color_space = src_color_space.GetWithSDRWhiteLevel(
-                drawing_frame.display_color_spaces.GetSDRWhiteLevel());
+                drawing_frame.display_color_spaces.GetSDRMaxLuminanceNits());
           }
           SCOPED_TRACE(
               base::StringPrintf("adjusted_color_space=%s, dst_color_space=%s",
@@ -287,7 +287,7 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
   void TestShadersWithSDRWhiteLevel(const ProgramKey& program_key,
                                     float sdr_white_level) {
     GLRenderer::DrawingFrame frame;
-    frame.display_color_spaces.SetSDRWhiteLevel(sdr_white_level);
+    frame.display_color_spaces.SetSDRMaxLuminanceNits(sdr_white_level);
     TestShaderWithDrawingFrame(program_key, frame, false);
   }
 
@@ -998,7 +998,7 @@ class GLRendererTextureDrawQuadHDRTest
 
     constexpr float kSDRWhiteLevel = 123.0f;
     gfx::DisplayColorSpaces display_color_spaces;
-    display_color_spaces.SetSDRWhiteLevel(kSDRWhiteLevel);
+    display_color_spaces.SetSDRMaxLuminanceNits(kSDRWhiteLevel);
 
     DrawFrame(renderer_.get(), viewport_size, display_color_spaces);
 

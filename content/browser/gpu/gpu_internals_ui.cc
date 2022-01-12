@@ -416,7 +416,11 @@ base::Value GetDisplayInfo() {
     }
     display_info.Append(display::BuildGpuInfoEntry(
         "SDR white level in nits",
-        base::NumberToString(display.color_spaces().GetSDRWhiteLevel())));
+        base::NumberToString(display.color_spaces().GetSDRMaxLuminanceNits())));
+    display_info.Append(display::BuildGpuInfoEntry(
+        "HDR relative maximum luminance",
+        base::NumberToString(
+            display.color_spaces().GetHDRMaxLuminanceRelative())));
     display_info.Append(display::BuildGpuInfoEntry(
         "Bits per color component",
         base::NumberToString(display.depth_per_component())));
