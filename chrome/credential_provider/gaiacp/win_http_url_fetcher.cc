@@ -426,7 +426,6 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     unsigned int request_retries,
     absl::optional<base::Value>* request_result) {
   DCHECK(request_result);
-  HRESULT hr = S_OK;
 
   std::string request_body;
   if (request_dict.is_dict()) {
@@ -439,41 +438,32 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
   for (unsigned int try_count = 0; try_count <= request_retries; ++try_count) {
     HttpServiceRequest* request = HttpServiceRequest::Create(
         request_url, access_token, headers, request_body, request_timeout);
-
     if (!request)
       return E_FAIL;
 
     auto extracted_param =
         request->WaitForResponseFromHttpService(request_timeout);
-
-    if (!extracted_param) {
-      hr = E_FAIL;
+    if (!extracted_param)
       continue;
-    }
+
     *request_result = std::move(extracted_param);
-
-    base::Value* error_detail =
+    const base::Value* error_detail =
         (*request_result)->FindDictKey(kErrorKeyInRequestResult);
-    if (error_detail) {
-      hr = E_FAIL;
-      LOGFN(ERROR) << "error: " << *error_detail;
+    if (!error_detail)
+      return S_OK;
 
-      // If error code is known, retry only on retryable server errors.
-      absl::optional<int> error_code =
-          error_detail->FindIntKey(kHttpErrorCodeKeyNameInResponse);
-      if (error_code.has_value() &&
-          !base::Contains(kRetryableHttpErrorCodes, error_code.value())) {
-        break;
-      }
+    LOGFN(ERROR) << "error: " << *error_detail;
 
-      continue;
+    // If error code is known, retry only on retryable server errors.
+    absl::optional<int> error_code =
+        error_detail->FindIntKey(kHttpErrorCodeKeyNameInResponse);
+    if (error_code.has_value() &&
+        !base::Contains(kRetryableHttpErrorCodes, error_code.value())) {
+      return E_FAIL;
     }
-
-    hr = S_OK;
-    break;
   }
 
-  return hr;
+  return E_FAIL;
 }
 
 }  // namespace credential_provider
