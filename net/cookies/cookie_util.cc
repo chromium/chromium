@@ -283,15 +283,14 @@ bool GetCookieDomainWithString(const GURL& url,
                                const std::string& domain_string,
                                std::string* result) {
   const std::string url_host(url.host());
-
-  url::CanonHostInfo ignored;
-  std::string cookie_domain(CanonicalizeHost(domain_string, &ignored));
-
   // If no domain was specified in the domain string, default to a host cookie.
-  // We match IE/Firefox in allowing a domain=IPADDR if it matches the url
-  // ip address hostname exactly.  It should be treated as a host cookie.
+  // We match IE/Firefox in allowing a domain=IPADDR if it matches (case
+  // in-sensitive) the url ip address hostname and ignoring a leading dot if one
+  // exists. It should be treated as a host cookie.
   if (domain_string.empty() ||
-      (url.HostIsIPAddress() && url_host == cookie_domain)) {
+      (url.HostIsIPAddress() &&
+       (base::EqualsCaseInsensitiveASCII(url_host, domain_string) ||
+        base::EqualsCaseInsensitiveASCII("." + url_host, domain_string)))) {
     *result = url_host;
     DCHECK(DomainIsHostOnly(*result));
     return true;
@@ -303,6 +302,8 @@ bool GetCookieDomainWithString(const GURL& url,
       return false;
   }
 
+  url::CanonHostInfo ignored;
+  std::string cookie_domain(CanonicalizeHost(domain_string, &ignored));
   // Get the normalized domain specified in cookie line.
   if (cookie_domain.empty())
     return false;
