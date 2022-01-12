@@ -6,19 +6,41 @@
 
 #import <memory>
 
+#import "base/feature_list.h"
+#import "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+@interface TextFragmentsMediator ()
+
+@property(nonatomic, weak, readonly) id<TextFragmentsDelegate> consumer;
+
+@end
+
 @implementation TextFragmentsMediator
 
+#pragma mark - TextFragmentsDelegate methods
+
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState {
-  // TODO(crbug.com/1259227): Right now, this treats every tap as if the user
-  // wants to remove the highlight. Instead, the user should be provided with a
-  // menu to select an action to take.
-  web::TextFragmentsManager::FromWebState(webState)->RemoveHighlights();
+  if (base::FeatureList::IsEnabled(
+          shared_highlighting::kIOSSharedHighlightingV2)) {
+    [self.consumer userTappedTextFragmentInWebState:webState];
+  } else {
+    [self removeTextFragmentsInWebState:webState];
+  }
+}
+
+#pragma mark - public methods
+
+- (instancetype)initWithConsumer:(id<TextFragmentsDelegate>)consumer {
+  if (self = [super init]) {
+    _consumer = consumer;
+  }
+  return self;
 }
 
 - (void)registerWithWebState:(web::WebState*)webState {
@@ -28,6 +50,10 @@
   // available, so there's no need to explicitly detach ourselves on
   // destruction.
   web::TextFragmentsManager::FromWebState(webState)->RegisterDelegate(self);
+}
+
+- (void)removeTextFragmentsInWebState:(web::WebState*)webState {
+  web::TextFragmentsManager::FromWebState(webState)->RemoveHighlights();
 }
 
 @end
