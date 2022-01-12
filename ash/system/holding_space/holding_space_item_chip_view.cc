@@ -521,10 +521,12 @@ void HoldingSpaceItemChipView::UpdateImageAndProgressIndicatorVisibility() {
 
   // Similarly, the `image_` may be visible iff there is no visible secondary
   // action or multiselect UI but additionally, when v2 animations are enabled,
-  // the `image_` may only be visible upon progress completion.
+  // the `image_` may only be visible when `progress` is hidden or complete.
   bool is_image_visible = is_progress_indicator_inner_icon_visible;
-  if (features::IsHoldingSpaceInProgressAnimationV2Enabled())
-    is_image_visible &= item()->progress().IsComplete();
+  if (features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
+    const HoldingSpaceProgress& progress = item()->progress();
+    is_image_visible &= progress.IsHidden() || progress.IsComplete();
+  }
 
   image_->SetVisible(is_image_visible);
   progress_indicator_->SetInnerIconVisible(

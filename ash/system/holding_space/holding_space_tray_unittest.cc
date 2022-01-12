@@ -3124,6 +3124,19 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   EXPECT_FALSE(IsShowingContextMenu());
 
+  // Hide progress for the holding space `item`.
+  model()
+      ->UpdateItem(item->id())
+      ->SetProgress(
+          HoldingSpaceProgress(0, 100, /*complete=*/false, /*hidden=*/true));
+
+  // Hover over the tray.
+  MoveMouseTo(GetTray());
+
+  // When not hovered over, images should be shown for holding space items with
+  // hidden progress since progress indication will not be shown.
+  EXPECT_TRUE(IsShowingImage(item_views.front()));
+
   // Complete the holding space `item`.
   model()->UpdateItem(item->id())->SetProgress(HoldingSpaceProgress(100, 100));
 
