@@ -2087,17 +2087,17 @@ void X11Window::HandleEvent(const x11::Event& xev) {
                  focus->detail);
   } else if (auto* configure = xev.As<x11::ConfigureNotifyEvent>()) {
     OnConfigureEvent(*configure);
-  } else if (auto* crossing = xev.As<x11::Input::CrossingEvent>()) {
+  } else if (auto* crossing_input = xev.As<x11::Input::CrossingEvent>()) {
     TouchFactory* factory = TouchFactory::GetInstance();
-    if (factory->ShouldProcessCrossingEvent(*crossing)) {
-      auto mode = XI2ModeToXMode(crossing->mode);
-      auto detail = XI2DetailToXDetail(crossing->detail);
-      switch (crossing->opcode) {
+    if (factory->ShouldProcessCrossingEvent(*crossing_input)) {
+      auto mode = XI2ModeToXMode(crossing_input->mode);
+      auto detail = XI2DetailToXDetail(crossing_input->detail);
+      switch (crossing_input->opcode) {
         case x11::Input::CrossingEvent::Enter:
-          OnCrossingEvent(true, crossing->focus, mode, detail);
+          OnCrossingEvent(true, crossing_input->focus, mode, detail);
           break;
         case x11::Input::CrossingEvent::Leave:
-          OnCrossingEvent(false, crossing->focus, mode, detail);
+          OnCrossingEvent(false, crossing_input->focus, mode, detail);
           break;
         case x11::Input::CrossingEvent::FocusIn:
           OnFocusEvent(true, mode, detail);
