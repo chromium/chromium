@@ -49,8 +49,9 @@ BiquadProcessor::BiquadProcessor(float sample_rate,
       has_sample_accurate_values_(false) {}
 
 BiquadProcessor::~BiquadProcessor() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     Uninitialize();
+  }
 }
 
 std::unique_ptr<AudioDSPKernel> BiquadProcessor::CreateKernel() {
@@ -105,8 +106,9 @@ void BiquadProcessor::CheckForDirtyCoefficients() {
       bool is_stable2 = parameter2_->Smooth();
       bool is_stable3 = parameter3_->Smooth();
       bool is_stable4 = parameter4_->Smooth();
-      if (!(is_stable1 && is_stable2 && is_stable3 && is_stable4))
+      if (!(is_stable1 && is_stable2 && is_stable3 && is_stable4)) {
         filter_coefficients_dirty_ = true;
+      }
     }
   }
 }
@@ -131,10 +133,11 @@ void BiquadProcessor::Process(const AudioBus* source,
 
   // For each channel of our input, process using the corresponding
   // BiquadDSPKernel into the output channel.
-  for (unsigned i = 0; i < kernels_.size(); ++i)
+  for (unsigned i = 0; i < kernels_.size(); ++i) {
     kernels_[i]->Process(source->Channel(i)->Data(),
                          destination->Channel(i)->MutableData(),
                          frames_to_process);
+  }
 }
 
 void BiquadProcessor::ProcessOnlyAudioParams(uint32_t frames_to_process) {

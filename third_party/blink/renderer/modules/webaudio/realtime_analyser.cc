@@ -63,8 +63,9 @@ bool RealtimeAnalyser::SetFftSize(uint32_t size) {
 
   // Only allow powers of two within the allowed range.
   if (size > kMaxFFTSize || size < kMinFFTSize ||
-      !audio_utilities::IsPowerOfTwo(size))
+      !audio_utilities::IsPowerOfTwo(size)) {
     return false;
+  }
 
   if (fft_size_ != size) {
     analysis_frame_ = std::make_unique<FFTFrame>(size);
@@ -98,8 +99,9 @@ void RealtimeAnalyser::WriteInput(AudioBus* bus, uint32_t frames_to_process) {
          frames_to_process * sizeof(*dest));
 
   write_index += frames_to_process;
-  if (write_index >= kInputBufferSize)
+  if (write_index >= kInputBufferSize) {
     write_index = 0;
+  }
   SetWriteIndex(write_index);
 }
 
@@ -241,10 +243,12 @@ void RealtimeAnalyser::ConvertToByteData(DOMUint8Array* destination_array) {
           UCHAR_MAX * (db_mag - min_decibels) * range_scale_factor;
 
       // Clip to valid range.
-      if (scaled_value < 0)
+      if (scaled_value < 0) {
         scaled_value = 0;
-      if (scaled_value > UCHAR_MAX)
+      }
+      if (scaled_value > UCHAR_MAX) {
         scaled_value = UCHAR_MAX;
+      }
 
       destination[i] = static_cast<unsigned char>(scaled_value);
     }
@@ -325,10 +329,12 @@ void RealtimeAnalyser::GetByteTimeDomainData(DOMUint8Array* destination_array) {
       double scaled_value = 128 * (value + 1);
 
       // Clip to valid range.
-      if (scaled_value < 0)
+      if (scaled_value < 0) {
         scaled_value = 0;
-      if (scaled_value > UCHAR_MAX)
+      }
+      if (scaled_value > UCHAR_MAX) {
         scaled_value = UCHAR_MAX;
+      }
 
       destination[i] = static_cast<unsigned char>(scaled_value);
     }

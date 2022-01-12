@@ -213,10 +213,11 @@ bool ConvolverHandler::RequiresTailProcessing() const {
 
 double ConvolverHandler::TailTime() const {
   MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked())
+  if (try_locker.Locked()) {
     return reverb_ ? reverb_->ImpulseResponseLength() /
                          static_cast<double>(Context()->sampleRate())
                    : 0;
+  }
   // Since we don't want to block the Audio Device thread, we return a large
   // value instead of trying to acquire the lock.
   return std::numeric_limits<double>::infinity();
@@ -224,10 +225,11 @@ double ConvolverHandler::TailTime() const {
 
 double ConvolverHandler::LatencyTime() const {
   MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked())
+  if (try_locker.Locked()) {
     return reverb_ ? reverb_->LatencyFrames() /
                          static_cast<double>(Context()->sampleRate())
                    : 0;
+  }
   // Since we don't want to block the Audio Device thread, we return a large
   // value instead of trying to acquire the lock.
   return std::numeric_limits<double>::infinity();
@@ -338,16 +340,18 @@ ConvolverNode* ConvolverNode::Create(BaseAudioContext* context,
                                      ExceptionState& exception_state) {
   ConvolverNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 
   // It is important to set normalize first because setting the buffer will
   // examing the normalize attribute to see if normalization needs to be done.
   node->setNormalize(!options->disableNormalization());
-  if (options->hasBuffer())
+  if (options->hasBuffer()) {
     node->setBuffer(options->buffer(), exception_state);
+  }
   return node;
 }
 
@@ -362,8 +366,9 @@ AudioBuffer* ConvolverNode::buffer() const {
 void ConvolverNode::setBuffer(AudioBuffer* new_buffer,
                               ExceptionState& exception_state) {
   GetConvolverHandler().SetBuffer(new_buffer, exception_state);
-  if (!exception_state.HadException())
+  if (!exception_state.HadException()) {
     buffer_ = new_buffer;
+  }
 }
 
 bool ConvolverNode::normalize() const {

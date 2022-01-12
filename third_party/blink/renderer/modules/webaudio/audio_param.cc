@@ -175,8 +175,9 @@ float AudioParamHandler::Value() {
         DestinationHandler(), v, MinValue(), MaxValue(),
         GetDeferredTaskHandler().RenderQuantumFrames());
 
-    if (has_value)
+    if (has_value) {
       v = timeline_value;
+    }
   }
 
   SetIntrinsicValue(v);
@@ -221,8 +222,9 @@ bool AudioParamHandler::Smooth() {
     // If we get close enough then snap to actual value.
     // FIXME: the threshold needs to be adjustable depending on range - but
     // this is OK general purpose value.
-    if (fabs(smoothed_value - value) < kSnapThreshold)
+    if (fabs(smoothed_value - value) < kSnapThreshold) {
       smoothed_value = value;
+    }
     timeline_.SetSmoothedValue(smoothed_value);
   }
 
@@ -313,8 +315,9 @@ void AudioParamHandler::CalculateFinalValues(float* values,
         DestinationHandler(), value, MinValue(), MaxValue(),
         GetDeferredTaskHandler().RenderQuantumFrames());
 
-    if (has_value)
+    if (has_value) {
       value = timeline_value;
+    }
 
     for (unsigned k = 0; k < number_of_values; ++k) {
       values[k] = value;

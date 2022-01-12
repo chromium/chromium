@@ -269,8 +269,9 @@ ScriptPromise AudioContext::suspendContext(ScriptState* script_state) {
     suspended_by_user_ = true;
 
     // Stop rendering now.
-    if (destination())
+    if (destination()) {
       SuspendRendering();
+    }
 
     // Since we don't have any way of knowing when the hardware actually stops,
     // we'll just resolve the promise now.
@@ -330,8 +331,9 @@ ScriptPromise AudioContext::resumeContext(ScriptState* script_state,
 bool AudioContext::IsPullingAudioGraph() const {
   DCHECK(IsMainThread());
 
-  if (!destination())
+  if (!destination()) {
     return false;
+  }
 
   RealtimeAudioDestinationHandler& destination_handler =
       static_cast<RealtimeAudioDestinationHandler&>(
@@ -348,8 +350,9 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
 
   DCHECK(IsMainThread());
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  if (!window)
+  if (!window) {
     return result;
+  }
 
   if (!destination()) {
     result->setContextTime(0.0);
@@ -370,8 +373,9 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
 
   double performance_time = performance->MonotonicTimeToDOMHighResTimeStamp(
       base::TimeTicks() + base::Seconds(position.timestamp));
-  if (performance_time < 0.0)
+  if (performance_time < 0.0) {
     performance_time = 0.0;
+  }
 
   result->setContextTime(position.position);
   result->setPerformanceTime(performance_time);
@@ -408,8 +412,9 @@ ScriptPromise AudioContext::closeContext(ScriptState* script_state,
 void AudioContext::DidClose() {
   SetContextState(kClosed);
 
-  if (close_resolver_)
+  if (close_resolver_) {
     close_resolver_->Resolve();
+  }
 }
 
 bool AudioContext::IsContextCleared() const {
@@ -420,8 +425,9 @@ void AudioContext::StartRendering() {
   DCHECK(IsMainThread());
   SendLogMessage(String::Format("%s", __func__));
 
-  if (!keep_alive_)
+  if (!keep_alive_) {
     keep_alive_ = this;
+  }
   BaseAudioContext::StartRendering();
 }
 
@@ -489,8 +495,9 @@ void AudioContext::NotifySourceNodeStart() {
   DCHECK(IsMainThread());
 
   source_node_started_ = true;
-  if (!user_gesture_required_)
+  if (!user_gesture_required_) {
     return;
+  }
 
   MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType::kSourceNodeStart);
 
@@ -540,8 +547,9 @@ bool AudioContext::AreAutoplayRequirementsFulfilled() const {
 }
 
 void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
-  if (!user_gesture_required_ || !AreAutoplayRequirementsFulfilled())
+  if (!user_gesture_required_ || !AreAutoplayRequirementsFulfilled()) {
     return;
+  }
 
   DCHECK(!autoplay_status_.has_value() ||
          autoplay_status_ != AutoplayStatus::kSucceeded);
@@ -554,8 +562,9 @@ void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
 }
 
 bool AudioContext::IsAllowedToStart() const {
-  if (!user_gesture_required_)
+  if (!user_gesture_required_) {
     return true;
+  }
 
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   DCHECK(window);
@@ -586,8 +595,9 @@ bool AudioContext::IsAllowedToStart() const {
 }
 
 void AudioContext::RecordAutoplayMetrics() {
-  if (!autoplay_status_.has_value() || !GetDocument())
+  if (!autoplay_status_.has_value() || !GetDocument()) {
     return;
+  }
 
   ukm::UkmRecorder* ukm_recorder = GetDocument()->UkmRecorder();
   DCHECK(ukm_recorder);
@@ -665,8 +675,9 @@ void AudioContext::NotifyAudibleAudioStarted() {
   DCHECK(IsMainThread());
 
   EnsureAudioContextManagerService();
-  if (audio_context_manager_.is_bound())
+  if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStarted(context_id_);
+  }
 }
 
 void AudioContext::HandlePostRenderTasks() {
@@ -756,13 +767,15 @@ void AudioContext::NotifyAudibleAudioStopped() {
   DCHECK(IsMainThread());
 
   EnsureAudioContextManagerService();
-  if (audio_context_manager_.is_bound())
+  if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStopped(context_id_);
+  }
 }
 
 void AudioContext::EnsureAudioContextManagerService() {
-  if (audio_context_manager_.is_bound() || !GetDocument())
+  if (audio_context_manager_.is_bound() || !GetDocument()) {
     return;
+  }
 
   GetDocument()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       mojo::GenericPendingReceiver(

@@ -112,8 +112,9 @@ void DeferredTaskHandler::RemoveMarkedAudioNodeOutput(AudioNodeOutput* output) {
 
 void DeferredTaskHandler::HandleDirtyAudioSummingJunctions() {
   AssertGraphOwner();
-  for (AudioSummingJunction* junction : dirty_summing_junctions_)
+  for (AudioSummingJunction* junction : dirty_summing_junctions_) {
     junction->UpdateRenderingState();
+  }
   dirty_summing_junctions_.clear();
 }
 
@@ -126,8 +127,9 @@ void DeferredTaskHandler::HandleDirtyAudioNodeOutputs() {
   // Note: the updating of rendering state may cause output nodes
   // further down the chain to be marked as dirty. These will not
   // be processed in this render quantum.
-  for (AudioNodeOutput* output : dirty_outputs)
+  for (AudioNodeOutput* output : dirty_outputs) {
     output->UpdateRenderingState();
+  }
 }
 
 void DeferredTaskHandler::AddAutomaticPullNode(
@@ -276,15 +278,17 @@ void DeferredTaskHandler::RemoveChangedChannelInterpretation(
 
 void DeferredTaskHandler::UpdateChangedChannelCountMode() {
   AssertGraphOwner();
-  for (AudioHandler* node : deferred_count_mode_change_)
+  for (AudioHandler* node : deferred_count_mode_change_) {
     node->UpdateChannelCountMode();
+  }
   deferred_count_mode_change_.clear();
 }
 
 void DeferredTaskHandler::UpdateChangedChannelInterpretation() {
   AssertGraphOwner();
-  for (AudioHandler* node : deferred_channel_interpretation_change_)
+  for (AudioHandler* node : deferred_channel_interpretation_change_) {
     node->UpdateChannelInterpretation();
+  }
   deferred_channel_interpretation_change_.clear();
 }
 
@@ -387,10 +391,12 @@ void DeferredTaskHandler::ClearContextFromOrphanHandlers() {
   // be modified on the audio thread.
   GraphAutoLocker locker(*this);
 
-  for (auto& handler : rendering_orphan_handlers_)
+  for (auto& handler : rendering_orphan_handlers_) {
     handler->ClearContext();
-  for (auto& handler : deletable_orphan_handlers_)
+  }
+  for (auto& handler : deletable_orphan_handlers_) {
     handler->ClearContext();
+  }
 }
 
 void DeferredTaskHandler::SetAudioThreadToCurrentThread() {
@@ -435,8 +441,9 @@ void DeferredTaskHandler::FinishTailProcessing() {
       Vector<scoped_refptr<AudioHandler>> handlers_to_be_disabled;
 
       handlers_to_be_disabled.swap(tail_processing_handlers_);
-      for (auto& handler : handlers_to_be_disabled)
+      for (auto& handler : handlers_to_be_disabled) {
         handler->DisableOutputs();
+      }
     }
     DisableOutputsForTailProcessing();
   } while (tail_processing_handlers_.size() > 0 ||

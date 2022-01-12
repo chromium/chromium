@@ -111,11 +111,13 @@ AudioWorkletMessagingProxy::CreateWorkletThreadWithConstraints(
     WorkerReportingProxy& worker_reporting_proxy,
     const bool has_realtime_constraint,
     const bool is_top_level_frame) {
-  if (!has_realtime_constraint)
+  if (!has_realtime_constraint) {
     return std::make_unique<OfflineAudioWorkletThread>(worker_reporting_proxy);
+  }
 
-  if (is_top_level_frame)
+  if (is_top_level_frame) {
     return std::make_unique<RealtimeAudioWorkletThread>(worker_reporting_proxy);
+  }
 
   return std::make_unique<SemiRealtimeAudioWorkletThread>(
       worker_reporting_proxy);

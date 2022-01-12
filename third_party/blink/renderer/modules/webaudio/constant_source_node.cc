@@ -156,8 +156,9 @@ ConstantSourceNode* ConstantSourceNode::Create(
 
   ConstantSourceNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->offset()->setValue(options->offset());
 

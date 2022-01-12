@@ -75,8 +75,9 @@ static bool IsFilterStable(const Vector<double>& feedback_coef) {
 
   // If necessary, normalize filter coefficients so that constant term is 1.
   if (coef[0] != 1) {
-    for (int m = 1; m <= order; ++m)
+    for (int m = 1; m <= order; ++m) {
       coef[m] /= coef[0];
+    }
     coef[0] = 1;
   }
 
@@ -85,14 +86,16 @@ static bool IsFilterStable(const Vector<double>& feedback_coef) {
   for (int n = order; n >= 1; --n) {
     double k = coef[n];
 
-    if (std::fabs(k) >= 1)
+    if (std::fabs(k) >= 1) {
       return false;
+    }
 
     // Note that A[n](1/z)/z^n is basically the coefficients of A[n]
     // in reverse order.
     double factor = 1 - k * k;
-    for (int m = 0; m <= n; ++m)
+    for (int m = 0; m <= n; ++m) {
       work[m] = (coef[m] - k * coef[n - m]) / factor;
+    }
     coef.swap(work);
   }
 
@@ -118,8 +121,9 @@ void IIRFilterHandler::Process(uint32_t frames_to_process) {
 
 void IIRFilterHandler::NotifyBadState() const {
   DCHECK(IsMainThread());
-  if (!Context() || !Context()->GetExecutionContext())
+  if (!Context() || !Context()->GetExecutionContext()) {
     return;
+  }
 
   Context()->GetExecutionContext()->AddConsoleMessage(
       MakeGarbageCollected<ConsoleMessage>(
@@ -152,8 +156,9 @@ IIRFilterNode* IIRFilterNode::Create(BaseAudioContext& context,
 
   // TODO(crbug.com/1055983): Remove this when the execution context validity
   // check is not required in the AudioNode factory methods.
-  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state))
+  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
+  }
 
   if (feedback_coef.size() == 0 ||
       (feedback_coef.size() > IIRFilter::kMaxOrder + 1)) {
@@ -227,8 +232,9 @@ IIRFilterNode* IIRFilterNode::Create(BaseAudioContext* context,
   IIRFilterNode* node = Create(*context, options->feedforward(),
                                options->feedback(), exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

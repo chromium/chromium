@@ -42,8 +42,9 @@
 namespace blink {
 
 static void FixNANs(double& x) {
-  if (std::isnan(x) || std::isinf(x))
+  if (std::isnan(x) || std::isinf(x)) {
     x = 0.0;
+  }
 }
 
 PannerHandler::PannerHandler(AudioNode& node,
@@ -107,8 +108,9 @@ PannerHandler::~PannerHandler() {
 void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
 
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   // Ensure that we only process once per rendering quantum.
   // This handles the "fanout" problem where an output is connected to multiple
@@ -327,8 +329,9 @@ void PannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 }
 
 void PannerHandler::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
   auto listener = Listener();
   panner_ = Panner::Create(panning_model_, Context()->sampleRate(),
@@ -344,8 +347,9 @@ void PannerHandler::Initialize() {
 }
 
 void PannerHandler::Uninitialize() {
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   panner_.reset();
   auto listener = Listener();
@@ -376,12 +380,13 @@ String PannerHandler::PanningModel() const {
 void PannerHandler::SetPanningModel(const String& model) {
   // WebIDL should guarantee that we are never called with an invalid string
   // for the model.
-  if (model == "equalpower")
+  if (model == "equalpower") {
     SetPanningModel(Panner::PanningModel::kEqualPower);
-  else if (model == "HRTF")
+  } else if (model == "HRTF") {
     SetPanningModel(Panner::PanningModel::kHRTF);
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 // This method should only be called from setPanningModel(const String&)!
@@ -427,12 +432,13 @@ String PannerHandler::DistanceModel() const {
 }
 
 void PannerHandler::SetDistanceModel(const String& model) {
-  if (model == "linear")
+  if (model == "linear") {
     SetDistanceModel(DistanceEffect::kModelLinear);
-  else if (model == "inverse")
+  } else if (model == "inverse") {
     SetDistanceModel(DistanceEffect::kModelInverse);
-  else if (model == "exponential")
+  } else if (model == "exponential") {
     SetDistanceModel(DistanceEffect::kModelExponential);
+  }
 }
 
 bool PannerHandler::SetDistanceModel(unsigned model) {
@@ -457,8 +463,9 @@ bool PannerHandler::SetDistanceModel(unsigned model) {
 }
 
 void PannerHandler::SetRefDistance(double distance) {
-  if (RefDistance() == distance)
+  if (RefDistance() == distance) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -467,8 +474,9 @@ void PannerHandler::SetRefDistance(double distance) {
 }
 
 void PannerHandler::SetMaxDistance(double distance) {
-  if (MaxDistance() == distance)
+  if (MaxDistance() == distance) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -477,8 +485,9 @@ void PannerHandler::SetMaxDistance(double distance) {
 }
 
 void PannerHandler::SetRolloffFactor(double factor) {
-  if (RolloffFactor() == factor)
+  if (RolloffFactor() == factor) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -487,8 +496,9 @@ void PannerHandler::SetRolloffFactor(double factor) {
 }
 
 void PannerHandler::SetConeInnerAngle(double angle) {
-  if (ConeInnerAngle() == angle)
+  if (ConeInnerAngle() == angle) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -497,8 +507,9 @@ void PannerHandler::SetConeInnerAngle(double angle) {
 }
 
 void PannerHandler::SetConeOuterAngle(double angle) {
-  if (ConeOuterAngle() == angle)
+  if (ConeOuterAngle() == angle) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -507,8 +518,9 @@ void PannerHandler::SetConeOuterAngle(double angle) {
 }
 
 void PannerHandler::SetConeOuterGain(double angle) {
-  if (ConeOuterGain() == angle)
+  if (ConeOuterGain() == angle) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -592,29 +604,34 @@ void PannerHandler::CalculateAzimuthElevation(
 
   // Source  in front or behind the listener
   double front_back = gfx::DotProduct(projected_source, listener_forward_norm);
-  if (front_back < 0.0)
+  if (front_back < 0.0) {
     azimuth = 360.0 - azimuth;
+  }
 
   // Make azimuth relative to "front" and not "right" listener vector
-  if ((azimuth >= 0.0) && (azimuth <= 270.0))
+  if ((azimuth >= 0.0) && (azimuth <= 270.0)) {
     azimuth = 90.0 - azimuth;
-  else
+  } else {
     azimuth = 450.0 - azimuth;
+  }
 
   // Elevation
   double elevation =
       90 - gfx::AngleBetweenVectorsInDegrees(source_listener, up);
   FixNANs(elevation);  // avoid illegal values
 
-  if (elevation > 90.0)
+  if (elevation > 90.0) {
     elevation = 180.0 - elevation;
-  else if (elevation < -90.0)
+  } else if (elevation < -90.0) {
     elevation = -180.0 - elevation;
+  }
 
-  if (out_azimuth)
+  if (out_azimuth) {
     *out_azimuth = azimuth;
-  if (out_elevation)
+  }
+  if (out_elevation) {
     *out_elevation = elevation;
+  }
 }
 
 float PannerHandler::CalculateDistanceConeGain(
@@ -663,11 +680,13 @@ float PannerHandler::DistanceConeGain() {
 }
 
 void PannerHandler::MarkPannerAsDirty(unsigned dirty) {
-  if (dirty & PannerHandler::kAzimuthElevationDirty)
+  if (dirty & PannerHandler::kAzimuthElevationDirty) {
     is_azimuth_elevation_dirty_ = true;
+  }
 
-  if (dirty & PannerHandler::kDistanceConeGainDirty)
+  if (dirty & PannerHandler::kDistanceConeGainDirty) {
     is_distance_cone_gain_dirty_ = true;
+  }
 }
 
 void PannerHandler::SetChannelCount(unsigned channel_count,
@@ -679,8 +698,9 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
   if (channel_count > 0 && channel_count <= 2) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (InternalChannelCountMode() != kMax)
+      if (InternalChannelCountMode() != kMax) {
         UpdateChannelsForInputs();
+      }
     }
   } else {
     exception_state.ThrowDOMException(
@@ -714,8 +734,9 @@ void PannerHandler::SetChannelCountMode(const String& mode,
     new_channel_count_mode_ = old_mode;
   }
 
-  if (new_channel_count_mode_ != old_mode)
+  if (new_channel_count_mode_ != old_mode) {
     Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
+  }
 }
 
 bool PannerHandler::HasSampleAccurateValues() const {
@@ -823,8 +844,9 @@ PannerNode* PannerNode::Create(BaseAudioContext* context,
                                ExceptionState& exception_state) {
   PannerNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

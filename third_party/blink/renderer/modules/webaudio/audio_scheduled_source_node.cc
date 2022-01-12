@@ -94,8 +94,9 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
 
   // If we know the end time and it's already passed, then don't bother doing
   // any more rendering this cycle.
-  if (end_time_ != kUnknownTime && end_frame <= quantum_start_frame)
+  if (end_time_ != kUnknownTime && end_frame <= quantum_start_frame) {
     Finish();
+  }
 
   PlaybackState state = GetPlaybackState();
 
@@ -138,9 +139,10 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   // Zero any initial frames representing silence leading up to a rendering
   // start time in the middle of the quantum.
   if (quantum_frame_offset) {
-    for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i)
+    for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
       memset(output_bus->Channel(i)->MutableData(), 0,
              sizeof(float) * quantum_frame_offset);
+    }
   }
 
   // Handle silence after we're done playing.
@@ -159,14 +161,16 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
                    frames_to_zero <= quantum_frame_size &&
                    zero_start_frame + frames_to_zero <= quantum_frame_size;
     if (is_safe) {
-      if (frames_to_zero > non_silent_frames_to_process)
+      if (frames_to_zero > non_silent_frames_to_process) {
         non_silent_frames_to_process = 0;
-      else
+      } else {
         non_silent_frames_to_process -= frames_to_zero;
+      }
 
-      for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i)
+      for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
         memset(output_bus->Channel(i)->MutableData() + zero_start_frame, 0,
                sizeof(float) * frames_to_zero);
+      }
     }
 
     Finish();
@@ -266,8 +270,9 @@ void AudioScheduledSourceHandler::NotifyEnded() {
   if (GetNode()) {
     DispatchEventResult result =
         GetNode()->DispatchEvent(*Event::Create(event_type_names::kEnded));
-    if (result == DispatchEventResult::kCanceledBeforeDispatch)
+    if (result == DispatchEventResult::kCanceledBeforeDispatch) {
       return;
+    }
   }
   on_ended_notification_pending_ = false;
 }

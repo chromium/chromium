@@ -107,10 +107,11 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext* context,
 
   if (options->hasReal()) {
     real_coef = options->real();
-    if (options->hasImag())
+    if (options->hasImag()) {
       imag_coef = options->imag();
-    else
+    } else {
       imag_coef.resize(real_coef.size());
+    }
   } else if (options->hasImag()) {
     // |real| not given, but we have |imag|.
     imag_coef = options->imag();
@@ -468,8 +469,9 @@ void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
         float max_value;
         vector_math::Vmaxmgv(data, 1, &max_value, fft_size);
 
-        if (max_value)
+        if (max_value) {
           normalization_scale = 1.0f / max_value;
+        }
       }
     }
 

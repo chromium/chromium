@@ -82,15 +82,17 @@ void AudioWorkletGlobalScope::registerProcessor(
   //    TypeError .
   CallbackMethodRetriever retriever(processor_ctor);
   retriever.GetPrototypeObject(exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
 
   // TODO(crbug.com/1077911): Do not extract process() function at the
   // registration step.
   v8::Local<v8::Function> v8_process =
       retriever.GetMethodOrThrow("process", exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
   V8BlinkAudioWorkletProcessCallback* process =
       V8BlinkAudioWorkletProcessCallback::Create(v8_process);
 
@@ -124,8 +126,9 @@ void AudioWorkletGlobalScope::registerProcessor(
     const HeapVector<Member<AudioParamDescriptor>>& given_param_descriptors =
         NativeValueTraits<IDLSequence<AudioParamDescriptor>>::NativeValue(
             isolate, v8_parameter_descriptors, exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return;
+    }
 
     // 7.2. Let paramNames be an empty Array.
     HeapVector<Member<AudioParamDescriptor>> sanitized_param_descriptors;
@@ -220,8 +223,9 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
 AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(
     const String& name) {
   const auto it = processor_definition_map_.find(name);
-  if (it == processor_definition_map_.end())
+  if (it == processor_definition_map_.end()) {
     return nullptr;
+  }
   return it->value.Get();
 }
 

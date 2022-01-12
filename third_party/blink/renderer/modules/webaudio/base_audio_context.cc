@@ -114,8 +114,9 @@ BaseAudioContext::~BaseAudioContext() {
 }
 
 void BaseAudioContext::Initialize() {
-  if (IsDestinationInitialized())
+  if (IsDestinationInitialized()) {
     return;
+  }
 
   audio_worklet_ = MakeGarbageCollected<AudioWorklet>(this);
 
@@ -149,15 +150,17 @@ void BaseAudioContext::Clear() {
 void BaseAudioContext::Uninitialize() {
   DCHECK(IsMainThread());
 
-  if (!IsDestinationInitialized())
+  if (!IsDestinationInitialized()) {
     return;
+  }
 
   // Report the inspector that the context will be destroyed.
   ReportWillBeDestroyed();
 
   // This stops the audio thread and all audio rendering.
-  if (destination_node_)
+  if (destination_node_) {
     destination_node_->Handler().Uninitialize();
+  }
 
   // Remove tail nodes since the context is done.
   GetDeferredTaskHandler().FinishTailProcessing();
@@ -186,14 +189,16 @@ void BaseAudioContext::Dispose() {
 void BaseAudioContext::ContextLifecycleStateChanged(
     mojom::FrameLifecycleState state) {
   // Don't need to do anything for an offline context.
-  if (!HasRealtimeConstraint())
+  if (!HasRealtimeConstraint()) {
     return;
+  }
 
-  if (state == mojom::FrameLifecycleState::kRunning)
+  if (state == mojom::FrameLifecycleState::kRunning) {
     destination()->GetAudioDestinationHandler().Resume();
-  else if (state == mojom::FrameLifecycleState::kFrozen ||
-           state == mojom::FrameLifecycleState::kFrozenAutoResumeMedia)
+  } else if (state == mojom::FrameLifecycleState::kFrozen ||
+             state == mojom::FrameLifecycleState::kFrozenAutoResumeMedia) {
     destination()->GetAudioDestinationHandler().Pause();
+  }
 }
 
 void BaseAudioContext::ContextDestroyed() {
@@ -367,15 +372,17 @@ void BaseAudioContext::HandleDecodeAudioData(
   if (audio_buffer) {
     // Resolve promise successfully and run the success callback
     resolver->Resolve(audio_buffer);
-    if (success_callback)
+    if (success_callback) {
       success_callback->InvokeAndReportException(this, audio_buffer);
+    }
   } else {
     // Reject the promise and run the error callback
     auto* error = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kEncodingError, "Unable to decode audio data");
     resolver->Reject(error);
-    if (error_callback)
+    if (error_callback) {
       error_callback->InvokeAndReportException(this, error);
+    }
   }
 
   // We've resolved the promise.  Remove it now.
@@ -579,23 +586,27 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
   switch (type) {
     case OscillatorHandler::SINE:
       // Initialize the table if necessary
-      if (!periodic_wave_sine_)
+      if (!periodic_wave_sine_) {
         periodic_wave_sine_ = PeriodicWave::CreateSine(sampleRate());
+      }
       return periodic_wave_sine_;
     case OscillatorHandler::SQUARE:
       // Initialize the table if necessary
-      if (!periodic_wave_square_)
+      if (!periodic_wave_square_) {
         periodic_wave_square_ = PeriodicWave::CreateSquare(sampleRate());
+      }
       return periodic_wave_square_;
     case OscillatorHandler::SAWTOOTH:
       // Initialize the table if necessary
-      if (!periodic_wave_sawtooth_)
+      if (!periodic_wave_sawtooth_) {
         periodic_wave_sawtooth_ = PeriodicWave::CreateSawtooth(sampleRate());
+      }
       return periodic_wave_sawtooth_;
     case OscillatorHandler::TRIANGLE:
       // Initialize the table if necessary
-      if (!periodic_wave_triangle_)
+      if (!periodic_wave_triangle_) {
         periodic_wave_triangle_ = PeriodicWave::CreateTriangle(sampleRate());
+      }
       return periodic_wave_triangle_;
     default:
       NOTREACHED();
@@ -643,8 +654,9 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
 
   context_state_ = new_state;
 
-  if (new_state == kClosed)
+  if (new_state == kClosed) {
     GetDeferredTaskHandler().StopAcceptingTailProcessing();
+  }
 
   // Notify context that state changed
   if (GetExecutionContext()) {
@@ -725,8 +737,9 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
   DCHECK(IsMainThread());
 
   // When a posted task is performed, the execution context might be gone.
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   GraphAutoLocker locker(this);
 
@@ -751,8 +764,9 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
 void BaseAudioContext::ScheduleMainThreadCleanup() {
   DCHECK(IsAudioThread());
 
-  if (has_posted_cleanup_task_)
+  if (has_posted_cleanup_task_) {
     return;
+  }
   PostCrossThreadTask(
       *task_runner_, FROM_HERE,
       CrossThreadBindOnce(&BaseAudioContext::PerformCleanupOnMainThread,
@@ -822,8 +836,9 @@ void BaseAudioContext::Trace(Visitor* visitor) const {
 }
 
 const SecurityOrigin* BaseAudioContext::GetSecurityOrigin() const {
-  if (GetExecutionContext())
+  if (GetExecutionContext()) {
     return GetExecutionContext()->GetSecurityOrigin();
+  }
 
   return nullptr;
 }
@@ -879,8 +894,9 @@ int32_t BaseAudioContext::MaxChannelCount() {
 
   AudioDestinationNode* destination_node = destination();
   if (!destination_node ||
-      !destination_node->GetAudioDestinationHandler().IsInitialized())
+      !destination_node->GetAudioDestinationHandler().IsInitialized()) {
     return -1;
+  }
 
   return destination_node->GetAudioDestinationHandler().MaxChannelCount();
 }
@@ -891,8 +907,9 @@ int32_t BaseAudioContext::CallbackBufferSize() {
   AudioDestinationNode* destination_node = destination();
   if (!destination_node ||
       !destination_node->GetAudioDestinationHandler().IsInitialized() ||
-      !HasRealtimeConstraint())
+      !HasRealtimeConstraint()) {
     return -1;
+  }
 
   RealtimeAudioDestinationHandler& destination_handler =
       static_cast<RealtimeAudioDestinationHandler&>(

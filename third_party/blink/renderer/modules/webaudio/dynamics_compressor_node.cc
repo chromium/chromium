@@ -124,8 +124,9 @@ void DynamicsCompressorHandler::ProcessOnlyAudioParams(
 }
 
 void DynamicsCompressorHandler::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
   AudioHandler::Initialize();
   dynamics_compressor_ = std::make_unique<DynamicsCompressor>(
@@ -155,8 +156,9 @@ void DynamicsCompressorHandler::SetChannelCount(
   if (channel_count > 0 && channel_count <= 2) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (InternalChannelCountMode() != kMax)
+      if (InternalChannelCountMode() != kMax) {
         UpdateChannelsForInputs();
+      }
     }
   } else {
     exception_state.ThrowDOMException(
@@ -192,8 +194,9 @@ void DynamicsCompressorHandler::SetChannelCountMode(
     new_channel_count_mode_ = old_mode;
   }
 
-  if (new_channel_count_mode_ != old_mode)
+  if (new_channel_count_mode_ != old_mode) {
     Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
+  }
 }
 // ----------------------------------------------------------------
 
@@ -263,8 +266,9 @@ DynamicsCompressorNode* DynamicsCompressorNode::Create(
     ExceptionState& exception_state) {
   DynamicsCompressorNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

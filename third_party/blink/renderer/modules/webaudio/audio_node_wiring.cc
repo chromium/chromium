@@ -32,12 +32,14 @@ FindOutputResult FindOutput(AudioNodeOutput& output,
                             AudioNodeOutputSet& outputs,
                             AudioNodeOutputSet& disabled_outputs) {
   auto it = outputs.find(&output);
-  if (it != outputs.end())
+  if (it != outputs.end()) {
     return {outputs, it, false};
+  }
 
   it = disabled_outputs.find(&output);
-  if (it != disabled_outputs.end())
+  if (it != disabled_outputs.end()) {
     return {disabled_outputs, it, true};
+  }
 
   NOTREACHED() << "The output must be connected to the input.";
   return {outputs, {}, false};
@@ -55,8 +57,9 @@ void AudioNodeWiring::Connect(AudioNodeOutput& output, AudioNodeInput& input) {
   DCHECK_EQ(input_connected_to_output, output_connected_to_input);
 
   // Do nothing if already connected.
-  if (input_connected_to_output)
+  if (input_connected_to_output) {
     return;
+  }
 
   (output.is_enabled_ ? input.outputs_ : input.disabled_outputs_)
       .insert(&output);
@@ -64,8 +67,9 @@ void AudioNodeWiring::Connect(AudioNodeOutput& output, AudioNodeInput& input) {
 
   // If it has gained an active connection, the input may need to have its
   // rendering state updated.
-  if (output.is_enabled_)
+  if (output.is_enabled_) {
     input.ChangedOutputs();
+  }
 
   // The input node's handler needs to know about this connection. This may
   // cause it to re-enable itself.
@@ -81,8 +85,9 @@ void AudioNodeWiring::Connect(AudioNodeOutput& output,
   DCHECK_EQ(param_connected_to_output, output_connected_to_param);
 
   // Do nothing if already connected.
-  if (param_connected_to_output)
+  if (param_connected_to_output) {
     return;
+  }
 
   param.outputs_.insert(&output);
   output.params_.insert(&param);
@@ -109,8 +114,9 @@ void AudioNodeWiring::Disconnect(AudioNodeOutput& output,
 
   // If an active connection was disconnected, the input may need to have its
   // rendering state updated.
-  if (!result.is_disabled)
+  if (!result.is_disabled) {
     input.ChangedOutputs();
+  }
 
   // The input node's handler may try to disable itself if this was the last
   // connection. This must happen after the set erasures above, or the disabling
@@ -146,8 +152,9 @@ void AudioNodeWiring::Disable(AudioNodeOutput& output, AudioNodeInput& input) {
 
   // Move from the active list to the disabled list.
   // Do nothing if this is the current state.
-  if (!input.disabled_outputs_.insert(&output).is_new_entry)
+  if (!input.disabled_outputs_.insert(&output).is_new_entry) {
     return;
+  }
   input.outputs_.erase(&output);
 
   // Since it has lost an active connection, the input may need to have its
@@ -173,8 +180,9 @@ void AudioNodeWiring::Enable(AudioNodeOutput& output, AudioNodeInput& input) {
 
   // Move from the disabled list to the active list.
   // Do nothing if this is the current state.
-  if (!input.outputs_.insert(&output).is_new_entry)
+  if (!input.outputs_.insert(&output).is_new_entry) {
     return;
+  }
   input.disabled_outputs_.erase(&output);
 
   // Since it has gained an active connection, the input may need to have its
@@ -217,10 +225,12 @@ void AudioNodeWiring::WillBeDestroyed(AudioNodeInput& input) {
 
   input.GetDeferredTaskHandler().AssertGraphOwner();
 
-  for (AudioNodeOutput* output : input.outputs_)
+  for (AudioNodeOutput* output : input.outputs_) {
     output->inputs_.erase(&input);
-  for (AudioNodeOutput* output : input.disabled_outputs_)
+  }
+  for (AudioNodeOutput* output : input.disabled_outputs_) {
     output->inputs_.erase(&input);
+  }
   input.outputs_.clear();
   input.disabled_outputs_.clear();
 }

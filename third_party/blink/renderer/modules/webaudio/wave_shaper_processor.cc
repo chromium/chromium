@@ -38,8 +38,9 @@ WaveShaperProcessor::WaveShaperProcessor(float sample_rate,
       oversample_(kOverSampleNone) {}
 
 WaveShaperProcessor::~WaveShaperProcessor() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     Uninitialize();
+  }
 }
 
 std::unique_ptr<AudioDSPKernel> WaveShaperProcessor::CreateKernel() {
@@ -108,10 +109,11 @@ void WaveShaperProcessor::Process(const AudioBus* source,
   if (try_locker.Locked()) {
     // For each channel of our input, process using the corresponding
     // WaveShaperDSPKernel into the output channel.
-    for (unsigned i = 0; i < kernels_.size(); ++i)
+    for (unsigned i = 0; i < kernels_.size(); ++i) {
       kernels_[i]->Process(source->Channel(i)->Data(),
                            destination->Channel(i)->MutableData(),
                            frames_to_process);
+    }
   } else {
     // Too bad - the tryLock() failed. We must be in the middle of a setCurve()
     // call.

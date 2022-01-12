@@ -367,8 +367,9 @@ void OfflineAudioContext::FireCompletionEvent() {
         static_cast<OfflineAudioDestinationNode*>(destination())
             ->DestinationBuffer();
     DCHECK(rendered_buffer);
-    if (!rendered_buffer)
+    if (!rendered_buffer) {
       return;
+    }
 
     // Call the offline rendering completion event listener and resolve the
     // promise too.

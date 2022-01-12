@@ -78,8 +78,9 @@ void AnalyserHandler::Process(uint32_t frames_to_process) {
   // audio data through unchanged if the channel count matches from input to
   // output (resulting in inputBus == outputBus). Otherwise, do an up-mix to
   // stereo.
-  if (input_bus != output_bus)
+  if (input_bus != output_bus) {
     output_bus->CopyFrom(*input_bus);
+  }
 }
 
 void AnalyserHandler::SetFftSize(unsigned size,
@@ -211,8 +212,9 @@ AnalyserNode* AnalyserNode::Create(BaseAudioContext* context,
 
   AnalyserNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

@@ -47,8 +47,9 @@ AudioWorkletHandler::AudioWorkletHandler(
                              GetDeferredTaskHandler().RenderQuantumFrames()));
   }
 
-  for (unsigned i = 0; i < options->numberOfInputs(); ++i)
+  for (unsigned i = 0; i < options->numberOfInputs(); ++i) {
     AddInput();
+  }
   // The number of inputs does not change after the construnction, so it is
   // safe to reserve the array capacity and size.
   inputs_.ReserveInitialCapacity(options->numberOfInputs());
@@ -105,10 +106,12 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
   // the rendering in the AudioWorkletGlobalScope.
   if (processor_ && !processor_->hasErrorOccurred()) {
     // If the input is not connected, inform the processor with nullptr.
-    for (unsigned i = 0; i < NumberOfInputs(); ++i)
+    for (unsigned i = 0; i < NumberOfInputs(); ++i) {
       inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
-    for (unsigned i = 0; i < NumberOfOutputs(); ++i)
+    }
+    for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
       outputs_[i] = WrapRefCounted(Output(i).Bus());
+    }
 
     for (const auto& param_name : param_value_map_.Keys()) {
       auto* const param_handler = param_handler_map_.at(param_name);
@@ -134,8 +137,9 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
     // The initialization of handler or the associated processor might not be
     // ready yet or it is in the error state. If so, zero out the connected
     // output.
-    for (unsigned i = 0; i < NumberOfOutputs(); ++i)
+    for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
       Output(i).Bus()->Zero();
+    }
   }
 }
 
@@ -229,8 +233,9 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
 void AudioWorkletHandler::NotifyProcessorError(
     AudioWorkletProcessorErrorState error_state) {
   DCHECK(IsMainThread());
-  if (!Context() || !Context()->GetExecutionContext() || !GetNode())
+  if (!Context() || !Context()->GetExecutionContext() || !GetNode()) {
     return;
+  }
 
   static_cast<AudioWorkletNode*>(GetNode())->FireProcessorError(error_state);
 }
@@ -250,8 +255,9 @@ AudioWorkletNode::AudioWorkletNode(
     String param_name = param_info.Name().IsolatedCopy();
     AudioParamHandler::AutomationRate param_automation_rate(
         AudioParamHandler::AutomationRate::kAudio);
-    if (param_info.AutomationRate() == "k-rate")
+    if (param_info.AutomationRate() == "k-rate") {
       param_automation_rate = AudioParamHandler::AutomationRate::kControl;
+    }
     AudioParam* audio_param = AudioParam::Create(
         context, Uuid(), AudioParamHandler::kParamTypeAudioWorklet,
         param_info.DefaultValue(), param_automation_rate,
@@ -264,8 +270,9 @@ AudioWorkletNode::AudioWorkletNode(
 
     if (options->hasParameterData()) {
       for (const auto& key_value_pair : options->parameterData()) {
-        if (key_value_pair.first == param_name)
+        if (key_value_pair.first == param_name) {
           audio_param->setValue(key_value_pair.second);
+        }
       }
     }
   }

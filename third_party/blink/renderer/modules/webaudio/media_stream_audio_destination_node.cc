@@ -44,11 +44,13 @@ namespace blink {
 namespace {
 
 void DidCreateMediaStreamAndTracks(MediaStreamDescriptor* stream) {
-  for (uint32_t i = 0; i < stream->NumberOfAudioComponents(); ++i)
+  for (uint32_t i = 0; i < stream->NumberOfAudioComponents(); ++i) {
     MediaStreamUtils::DidCreateMediaStreamTrack(stream->AudioComponent(i));
+  }
 
-  for (uint32_t i = 0; i < stream->NumberOfVideoComponents(); ++i)
+  for (uint32_t i = 0; i < stream->NumberOfVideoComponents(); ++i) {
     MediaStreamUtils::DidCreateMediaStreamTrack(stream->VideoComponent(i));
+  }
 }
 
 }  // namespace
@@ -237,8 +239,9 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
 
   // TODO(crbug.com/1055983): Remove this when the execution context validity
   // check is not required in the AudioNode factory methods.
-  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state))
+  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<MediaStreamAudioDestinationNode>(
       context, number_of_channels);
@@ -250,8 +253,9 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!context->CheckExecutionContextAndThrowIfNecessary(exception_state))
+  if (!context->CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
+  }
   // Default to stereo; |options| will update it appropriately if needed.
   MediaStreamAudioDestinationNode* node =
       MakeGarbageCollected<MediaStreamAudioDestinationNode>(*context, 2);
@@ -260,8 +264,9 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
   // limit is different from the normal AudioNode::setChannelCount
   // limit of 32.  Error messages will sometimes show the wrong
   // limits.
-  if (options->hasChannelCount())
+  if (options->hasChannelCount()) {
     node->setChannelCount(options->channelCount(), exception_state);
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

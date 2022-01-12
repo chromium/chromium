@@ -36,14 +36,16 @@ SemiRealtimeAudioWorkletThread::SemiRealtimeAudioWorkletThread(
     params.thread_priority = base::ThreadPriority::NORMAL;
   }
 
-  if (++s_ref_count_ == 1)
+  if (++s_ref_count_ == 1) {
     EnsureSharedBackingThread(params);
+  }
 }
 
 SemiRealtimeAudioWorkletThread::~SemiRealtimeAudioWorkletThread() {
   DCHECK(IsMainThread());
-  if (--s_ref_count_ == 0)
+  if (--s_ref_count_ == 0) {
     ClearSharedBackingThread();
+  }
 }
 
 WorkerBackingThread& SemiRealtimeAudioWorkletThread::GetWorkerBackingThread() {

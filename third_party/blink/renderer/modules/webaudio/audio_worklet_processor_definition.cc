@@ -45,8 +45,9 @@ const AudioParamDescriptor*
     AudioWorkletProcessorDefinition::GetAudioParamDescriptor (
         const String& key) const {
   for (const auto& descriptor : audio_param_descriptors_) {
-    if (descriptor->name() == key)
+    if (descriptor->name() == key) {
       return descriptor;
+    }
   }
   return nullptr;
 }

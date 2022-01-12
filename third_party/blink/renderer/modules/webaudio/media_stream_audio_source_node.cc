@@ -178,8 +178,9 @@ MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
 
   // TODO(crbug.com/1055983): Remove this when the execution context validity
   // check is not required in the AudioNode factory methods.
-  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state))
+  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
+  }
 
   // The constructor algorithm:
   // https://webaudio.github.io/web-audio-api/#mediastreamaudiosourcenode
@@ -197,8 +198,9 @@ MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
   // (See: https://infra.spec.whatwg.org/#code-unit)
   MediaStreamTrack* audio_track = audio_tracks[0];
   for (auto track : audio_tracks) {
-    if (CodeUnitCompareLessThan(track->id(), audio_track->id()))
+    if (CodeUnitCompareLessThan(track->id(), audio_track->id())) {
       audio_track = track;
+    }
   }
 
   // 1.24.1. Step 5: The step is out of order because the constructor needs

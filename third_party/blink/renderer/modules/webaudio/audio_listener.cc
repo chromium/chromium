@@ -292,9 +292,10 @@ void AudioListener::UpdateState() {
 void AudioListener::CreateAndLoadHRTFDatabaseLoader(float sample_rate) {
   DCHECK(IsMainThread());
 
-  if (!hrtf_database_loader_)
+  if (!hrtf_database_loader_) {
     hrtf_database_loader_ =
         HRTFDatabaseLoader::CreateAndLoadAsynchronouslyIfNecessary(sample_rate);
+  }
 }
 
 bool AudioListener::IsHRTFDatabaseLoaded() {
@@ -302,14 +303,16 @@ bool AudioListener::IsHRTFDatabaseLoaded() {
 }
 
 void AudioListener::WaitForHRTFDatabaseLoaderThreadCompletion() {
-  if (hrtf_database_loader_)
+  if (hrtf_database_loader_) {
     hrtf_database_loader_->WaitForLoaderThreadCompletion();
+  }
 }
 
 void AudioListener::MarkPannersAsDirty(unsigned type) {
   DCHECK(IsMainThread());
-  for (PannerHandler* panner : panners_)
+  for (PannerHandler* panner : panners_) {
     panner->MarkPannerAsDirty(type);
+  }
 }
 
 void AudioListener::setPosition(const gfx::Point3F& position,

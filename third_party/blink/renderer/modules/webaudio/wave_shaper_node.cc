@@ -68,13 +68,15 @@ WaveShaperNode* WaveShaperNode::Create(BaseAudioContext* context,
                                        ExceptionState& exception_state) {
   WaveShaperNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 
-  if (options->hasCurve())
+  if (options->hasCurve()) {
     node->setCurve(options->curve(), exception_state);
+  }
 
   node->setOversample(options->oversample());
 
@@ -136,8 +138,9 @@ void WaveShaperNode::setCurve(const Vector<float>& curve,
 
 NotShared<DOMFloat32Array> WaveShaperNode::curve() {
   Vector<float>* curve = GetWaveShaperProcessor()->Curve();
-  if (!curve)
+  if (!curve) {
     return NotShared<DOMFloat32Array>(nullptr);
+  }
 
   unsigned size = curve->size();
 

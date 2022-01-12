@@ -49,8 +49,9 @@ AudioBasicProcessorHandler::~AudioBasicProcessorHandler() {
 }
 
 void AudioBasicProcessorHandler::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
   DCHECK(Processor());
   Processor()->Initialize();
@@ -59,8 +60,9 @@ void AudioBasicProcessorHandler::Initialize() {
 }
 
 void AudioBasicProcessorHandler::Uninitialize() {
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   DCHECK(Processor());
   Processor()->Uninitialize();
@@ -79,8 +81,9 @@ void AudioBasicProcessorHandler::Process(uint32_t frames_to_process) {
 
     // FIXME: if we take "tail time" into account, then we can avoid calling
     // processor()->process() once the tail dies down.
-    if (!Input(0).IsConnected())
+    if (!Input(0).IsConnected()) {
       source_bus->Zero();
+    }
 
     Processor()->Process(source_bus.get(), destination_bus, frames_to_process);
   }
@@ -88,8 +91,9 @@ void AudioBasicProcessorHandler::Process(uint32_t frames_to_process) {
 
 void AudioBasicProcessorHandler::ProcessOnlyAudioParams(
     uint32_t frames_to_process) {
-  if (!IsInitialized() || !Processor())
+  if (!IsInitialized() || !Processor()) {
     return;
+  }
 
   Processor()->ProcessOnlyAudioParams(frames_to_process);
 }
