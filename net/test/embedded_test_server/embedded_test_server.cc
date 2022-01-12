@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -35,7 +34,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
 #include "net/cert/internal/extended_key_usage.h"
-#include "net/cert/pem.h"
 #include "net/cert/test_root_certs.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/next_proto.h"
@@ -56,9 +54,6 @@
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "url/origin.h"
 
 namespace net {
@@ -220,22 +215,6 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
       BuildOCSPResponse(target->issuer()->GetSubject(),
                         target->issuer()->GetKey(), produced_at, responses);
   return true;
-}
-
-bssl::UniquePtr<EVP_PKEY> LoadPrivateKeyFromFile(
-    const base::FilePath& key_path) {
-  std::string key_string;
-  if (!base::ReadFileToString(key_path, &key_string))
-    return nullptr;
-  std::vector<std::string> headers;
-  headers.push_back("PRIVATE KEY");
-  PEMTokenizer pem_tokenizer(key_string, headers);
-  if (!pem_tokenizer.GetNext())
-    return nullptr;
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-           pem_tokenizer.data().size());
-  return bssl::UniquePtr<EVP_PKEY>(EVP_parse_private_key(&cbs));
 }
 
 }  // namespace
