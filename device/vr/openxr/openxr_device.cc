@@ -41,8 +41,8 @@ mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
   left_eye->field_of_view = mojom::VRFieldOfView::New(kFov, kFov, kFov, kFov);
   right_eye->field_of_view = left_eye->field_of_view.Clone();
 
-  left_eye->viewport = gfx::Rect(0, 0, kRenderWidth, kRenderHeight);
-  right_eye->viewport = gfx::Rect(kRenderWidth, 0, kRenderWidth, kRenderHeight);
+  left_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);
+  right_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);
 
   display_info->views.resize(2);
   display_info->views[0] = std::move(left_eye);
@@ -98,11 +98,6 @@ OpenXrDevice::OpenXrDevice(
       base::FeatureList::IsEnabled(
                   features::kOpenXrExtendedFeatureSupport))
     device_features.emplace_back(mojom::XRSessionFeature::HIT_TEST);
-
-  if (extension_helper_.ExtensionEnumeration()->ExtensionSupported(
-          XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME)) {
-    device_features.emplace_back(mojom::XRSessionFeature::SECONDARY_VIEWS);
-  }
 
   SetSupportedFeatures(device_features);
 }

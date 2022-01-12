@@ -232,11 +232,9 @@ class XRSession final
   // which gives 1:1 pixel ratio at the center of the user's view.
   double NativeFramebufferScale() const;
 
-  double RecommendedFramebufferScale() const;
-
   // Describes the recommended dimensions of layer framebuffers. Should be a
   // value that provides a good balance between quality and performance.
-  DoubleSize RecommendedFramebufferSize() const;
+  DoubleSize DefaultFramebufferSize() const;
 
   // Reports the size of the output canvas, if one is available. If not
   // reports (0, 0);
@@ -604,7 +602,7 @@ class XRSession final
   int output_height_ = 1;
 
   bool uses_input_eventing_ = false;
-  float recommended_framebuffer_scale_ = 1.0;
+  float default_framebuffer_scale_ = 1.0;
 
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;
