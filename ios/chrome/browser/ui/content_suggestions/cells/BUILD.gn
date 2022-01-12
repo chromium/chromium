@@ -11,6 +11,8 @@ source_set("cells") {
     "content_suggestions_most_visited_item.mm",
     "content_suggestions_return_to_recent_tab_item.h",
     "content_suggestions_return_to_recent_tab_item.mm",
+    "content_suggestions_return_to_recent_tab_view.h",
+    "content_suggestions_return_to_recent_tab_view.mm",
   ]
   deps = [
     ":cells_ui",
@@ -23,6 +25,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
     "//url",
   ]
@@ -43,6 +46,8 @@ source_set("cells_ui") {
     "content_suggestions_text_item.mm",
     "content_suggestions_whats_new_item.h",
     "content_suggestions_whats_new_item.mm",
+    "content_suggestions_whats_new_view.h",
+    "content_suggestions_whats_new_view.mm",
     "suggested_content.h",
   ]
   deps = [
