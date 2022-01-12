@@ -52,14 +52,6 @@ const base::Feature kScreenPowerListenerForNativeWinOcclusion{
     "ScreenPowerListenerForNativeWinOcclusion",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, displays Windows 11 style menus on Windows 11.
-const base::Feature kWin11StyleMenus{"Win11StyleMenus",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If this Windows 11 style menu feature parameter is enabled, displays that
-// style menu on all Windows versions.
-const char kWin11StyleMenuAllWindowsVersionsName[] = "All Windows Versions";
-
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -2619,16 +2619,6 @@ const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
     {"20", switches::kDocumentTransitionSlowdownFactor, "20"},
     {"50", switches::kDocumentTransitionSlowdownFactor, "50"}};
 
-#if defined(OS_WIN)
-const FeatureEntry::FeatureParam kWin11StyleMenusAllWindowsVersions[] = {
-    {features::kWin11StyleMenuAllWindowsVersionsName, "true"}};
-
-const FeatureEntry::FeatureVariation kWin11StyleMenusVariations[] = {
-    {" - All Windows Versions", kWin11StyleMenusAllWindowsVersions,
-     base::size(kWin11StyleMenusAllWindowsVersions), nullptr},
-};
-#endif  // defined(OS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Possible configurations for the snooping protection feature.
 // Empty params configures the feature to apply a simple threshold to one
@@ -7597,14 +7587,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseRealColorSpaceForAndroidVideoDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(media::kUseRealColorSpaceForAndroidVideo)},
 #endif
-
-#if defined(OS_WIN)
-    {"win11-style-menus", flag_descriptions::kWin11StyleMenusName,
-     flag_descriptions::kWin11StyleMenusDescription, kOsWin,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kWin11StyleMenus,
-                                    kWin11StyleMenusVariations,
-                                    "Win11StyleMenus")},
-#endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-desks-trackpad-swipe-improvements",
