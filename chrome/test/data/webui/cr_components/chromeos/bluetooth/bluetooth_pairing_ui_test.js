@@ -591,9 +591,11 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const deviceId1 = '123456';
     await pairByDeviceAddress(/*address=*/ deviceId1);
 
+    const handlePairDeviceResultPromise =
+        bluetoothPairingUi.waitForHandlePairDeviceResultForTest();
     const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
     deviceHandler.completePairDevice(/*success=*/ false);
-    await waitAfterNextRender(bluetoothPairingUi);
+    await handlePairDeviceResultPromise;
 
     // On failure, the device selection page should be shown.
     assertTrue(!!getDeviceSelectionPage());
