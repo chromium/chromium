@@ -13,16 +13,33 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "base/version.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace feed {
 
+// Information about the user account. Currently, for Feed purposes, we use
+// account information only when the user is signed-in with Sync enabled. If
+// Sync is disabled, AccountInfo should be empty.
+struct AccountInfo {
+  AccountInfo();
+  AccountInfo(const std::string& gaia, const std::string& email);
+  explicit AccountInfo(CoreAccountInfo account_info);
+  bool operator==(const AccountInfo& rhs) const;
+  bool operator!=(const AccountInfo& rhs) const { return !(*this == rhs); }
+  bool IsEmpty() const;
+
+  std::string gaia;
+  std::string email;
+};
+std::ostream& operator<<(std::ostream& os, const AccountInfo& o);
+
 enum class RefreshTaskId {
   kRefreshForYouFeed,
-  // TODO(1152592): Refresh is not currently used for the Web Feed. Remove this
-  // code if we don't need it.
+  // TODO(1152592): Refresh is not currently used for the Web Feed. Remove
+  // this code if we don't need it.
   kRefreshWebFeed,
 };
 
@@ -63,7 +80,8 @@ struct NetworkResponseInfo {
   GURL base_request_url;
   size_t response_body_bytes = 0;
   size_t encoded_size_bytes = 0;
-  bool was_signed_in = false;
+  // If it was a signed-in request, this is the associated account info.
+  AccountInfo account_info;
   base::TimeTicks fetch_time_ticks;
   base::TimeTicks loader_start_time_ticks;
 };
@@ -99,8 +117,8 @@ std::string SerializeDebugStreamData(const DebugStreamData& data);
 absl::optional<DebugStreamData> DeserializeDebugStreamData(
     base::StringPiece base64_encoded);
 
-// Information about a web page which may be used to determine an associated web
-// feed.
+// Information about a web page which may be used to determine an associated
+// web feed.
 class WebFeedPageInformation {
  public:
   WebFeedPageInformation();
@@ -176,9 +194,9 @@ struct WebFeedMetadata {
 };
 std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value);
 
-// This must be kept in sync with WebFeedSubscriptionRequestStatus in enums.xml.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// This must be kept in sync with WebFeedSubscriptionRequestStatus in
+// enums.xml. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
 enum class WebFeedSubscriptionRequestStatus {
   kUnknown = 0,

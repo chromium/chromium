@@ -162,7 +162,7 @@ class FeedNetworkImpl::NetworkFetch {
                signin::IdentityManager* identity_manager,
                network::SharedURLLoaderFactory* loader_factory,
                const std::string& api_key,
-               const std::string& gaia,
+               const AccountInfo& account_info,
                bool allow_bless_auth)
       : url_(url),
         request_method_(request_method),
@@ -172,7 +172,7 @@ class FeedNetworkImpl::NetworkFetch {
         loader_factory_(loader_factory),
         api_key_(api_key),
         entire_send_start_ticks_(base::TimeTicks::Now()),
-        gaia_(gaia),
+        account_info_(account_info),
         allow_bless_auth_(allow_bless_auth) {}
   ~NetworkFetch() = default;
   NetworkFetch(const NetworkFetch&) = delete;
@@ -181,7 +181,7 @@ class FeedNetworkImpl::NetworkFetch {
   void Start(base::OnceCallback<void(RawResponse)> done_callback) {
     done_callback_ = std::move(done_callback);
 
-    if (gaia_.empty()) {
+    if (account_info_.IsEmpty()) {
       StartLoader();
       return;
     }
@@ -203,7 +203,7 @@ class FeedNetworkImpl::NetworkFetch {
   void AccessTokenFetchFinished(base::TimeTicks token_start_ticks,
                                 GoogleServiceAuthError error,
                                 signin::AccessTokenInfo access_token_info) {
-    DCHECK(!gaia_.empty());
+    DCHECK(!account_info_.IsEmpty());
     UMA_HISTOGRAM_ENUMERATION(
         "ContentSuggestions.Feed.Network.TokenFetchStatus", error.state(),
         GoogleServiceAuthError::NUM_STATES);
@@ -215,7 +215,7 @@ class FeedNetworkImpl::NetworkFetch {
     access_token_ = access_token_info.token;
 
     // Abort if the signed-in user doesn't match.
-    if (delegate_->GetSyncSignedInGaia() != gaia_) {
+    if (delegate_->GetAccountInfo() != account_info_) {
       NetworkResponseInfo response_info;
       RawResponse raw_response;
       response_info.status_code = net::ERR_INVALID_ARGUMENT;
@@ -346,7 +346,9 @@ class FeedNetworkImpl::NetworkFetch {
         base::TimeTicks::Now() - entire_send_start_ticks_;
     response_info.fetch_time = base::Time::Now();
     response_info.base_request_url = GetUrlWithoutQuery(url_);
-    response_info.was_signed_in = !access_token_.empty();
+    if (!access_token_.empty()) {
+      response_info.account_info = account_info_;
+    }
     response_info.loader_start_time_ticks = loader_only_start_ticks_;
     response_info.encoded_size_bytes =
         completion_status ? completion_status->encoded_data_length : 0;
@@ -424,7 +426,7 @@ class FeedNetworkImpl::NetworkFetch {
   // Set when the NetworkFetch is constructed, before token and article fetch.
   const base::TimeTicks entire_send_start_ticks_;
 
-  const std::string gaia_;
+  const AccountInfo account_info_;
 
   // Should be set right before the article fetch, and after the token fetch if
   // there is one.
@@ -449,7 +451,7 @@ FeedNetworkImpl::~FeedNetworkImpl() = default;
 void FeedNetworkImpl::SendQueryRequest(
     NetworkRequestType request_type,
     const feedwire::Request& request,
-    const std::string& gaia,
+    const AccountInfo& account_info,
     base::OnceCallback<void(QueryRequestResult)> callback) {
   std::string binary_proto;
   request.SerializeToString(&binary_proto);
@@ -496,7 +498,7 @@ void FeedNetworkImpl::SendQueryRequest(
   AddMothershipPayloadQueryParams(base64proto, delegate_->GetLanguageTag(),
                                   url);
   Send(url, "GET", /*request_body=*/{},
-       /*allow_bless_auth=*/host_overridden, gaia,
+       /*allow_bless_auth=*/host_overridden, account_info,
        base::BindOnce(&ParseAndForwardQueryResponse, request_type,
                       std::move(callback)));
 }
@@ -509,11 +511,11 @@ void FeedNetworkImpl::Send(const GURL& url,
                            base::StringPiece request_method,
                            std::string request_body,
                            bool allow_bless_auth,
-                           const std::string& gaia,
+                           const AccountInfo& account_info,
                            base::OnceCallback<void(RawResponse)> callback) {
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_method, std::move(request_body), delegate_,
-      identity_manager_, loader_factory_.get(), api_key_, gaia,
+      identity_manager_, loader_factory_.get(), api_key_, account_info,
       allow_bless_auth);
   NetworkFetch* fetch_unowned = fetch.get();
   pending_requests_.emplace(std::move(fetch));
@@ -530,7 +532,7 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
     base::StringPiece request_path,
     base::StringPiece method,
     std::string request_body,
-    const std::string& gaia,
+    const AccountInfo& account_info,
     base::OnceCallback<void(RawResponse)> callback) {
   GURL url(base::StrCat({kDiscoverHost, request_path}));
   // Override url if requested.
@@ -544,7 +546,7 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
   }
 
   Send(url, method, std::move(request_body),
-       /*allow_bless_auth=*/false, gaia, std::move(callback));
+       /*allow_bless_auth=*/false, account_info, std::move(callback));
 }
 
 void FeedNetworkImpl::SendComplete(

@@ -80,8 +80,8 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // content determines the sign-in state of the subsequent load more requests.
   // This avoids a possible situation where there would be a mix of signed-in
   // and signed-out content, which we don't want.
-  std::string gaia =
-      model->signed_in() ? stream_.GetSyncSignedInGaia() : std::string();
+  AccountInfo account_info =
+      model->signed_in() ? stream_.GetAccountInfo() : AccountInfo{};
   // Send network request.
   fetch_start_time_ = base::TimeTicks::Now();
 
@@ -95,11 +95,11 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // WebFeeds.
   if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
     stream_.GetNetwork().SendApiRequest<QueryNextPageDiscoverApi>(
-        request, gaia,
+        request, account_info,
         base::BindOnce(&LoadMoreTask::QueryApiRequestComplete, GetWeakPtr()));
   } else {
     stream_.GetNetwork().SendQueryRequest(
-        NetworkRequestType::kNextPage, request, gaia,
+        NetworkRequestType::kNextPage, request, account_info,
         base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
   }
 }
@@ -128,7 +128,7 @@ void LoadMoreTask::ProcessNetworkResponse(
   RefreshResponseData translated_response =
       stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkLoadMore,
-          response_info.was_signed_in, base::Time::Now());
+          response_info.account_info, base::Time::Now());
 
   if (!translated_response.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);

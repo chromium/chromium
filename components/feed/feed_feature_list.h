@@ -27,6 +27,8 @@ extern const base::FeatureParam<int> kTimeoutDurationSeconds;
 extern const base::FeatureParam<bool> kThrottleBackgroundFetches;
 extern const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess;
 
+// TODO(b/213622639): The following two features are obsolete and should be
+// removed.
 // Determines whether conditions should be reached before enabling the upload of
 // click and view actions in the feed (e.g., the user needs to view X cards).
 // For example, this is needed when the notice card is at the second position in

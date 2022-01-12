@@ -19,6 +19,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/types.h"
 
 namespace feed {
 namespace {
@@ -64,8 +65,10 @@ StoreUpdate::~StoreUpdate() = default;
 StoreUpdate::StoreUpdate(StoreUpdate&&) = default;
 StoreUpdate& StoreUpdate::operator=(StoreUpdate&&) = default;
 
-StreamModel::StreamModel(Context* context)
-    : content_map_(&(context->revision_generator)) {}
+StreamModel::StreamModel(Context* context,
+                         const LoggingParameters& logging_parameters)
+    : logging_parameters_(logging_parameters),
+      content_map_(&(context->revision_generator)) {}
 
 StreamModel::~StreamModel() = default;
 

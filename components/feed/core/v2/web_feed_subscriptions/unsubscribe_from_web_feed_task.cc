@@ -51,7 +51,7 @@ void UnsubscribeFromWebFeedTask::Run() {
   SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
   request.set_name(web_feed_name_);
   stream_.GetNetwork().SendApiRequest<UnfollowWebFeedDiscoverApi>(
-      request, stream_.GetSyncSignedInGaia(),
+      request, stream_.GetAccountInfo(),
       base::BindOnce(&UnsubscribeFromWebFeedTask::RequestComplete,
                      base::Unretained(this)));
 }

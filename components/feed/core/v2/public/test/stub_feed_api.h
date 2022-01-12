@@ -37,8 +37,6 @@ class StubFeedApi : public FeedApi {
   void RemoveUnreadContentObserver(const StreamType& stream_type,
                                    UnreadContentObserver* observer) override {}
   bool IsArticlesListVisible() override;
-  bool IsActivityLoggingEnabled(const StreamType& stream_type) const override;
-  std::string GetClientInstanceId() const override;
   std::string GetSessionId() const override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override {}
   void LoadMore(const FeedStreamSurface& surface,
@@ -63,14 +61,12 @@ class StubFeedApi : public FeedApi {
                              EphemeralChangeId id) override;
   bool RejectEphemeralChange(const StreamType& stream_type,
                              EphemeralChangeId id) override;
-  void ProcessThereAndBackAgain(base::StringPiece data) override {}
   void ProcessThereAndBackAgain(
       base::StringPiece data,
-      const feedui::LoggingParameters& logging_parameters) override {}
-  void ProcessViewAction(base::StringPiece data) override {}
-  void ProcessViewAction(
-      base::StringPiece data,
-      const feedui::LoggingParameters& logging_parameters) override {}
+      const LoggingParameters& logging_parameters) override {}
+  void ProcessViewAction(base::StringPiece data,
+                         const LoggingParameters& logging_parameters) override {
+  }
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,

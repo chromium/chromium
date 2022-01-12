@@ -535,11 +535,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                                      : R.style.ThemeOverlay_Feed_Light));
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
-            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
-                    mActivity, context, mShowDarkBackground, () -> {
-                        if (mMediator.getFirstStream() == null) return false;
-                        return mMediator.getFirstStream().isActivityLoggingEnabled();
-                    });
+            mDependencyProvider =
+                    new FeedSurfaceScopeDependencyProvider(mActivity, context, mShowDarkBackground);
 
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
             if (mScrollableContainerDelegate != null) {

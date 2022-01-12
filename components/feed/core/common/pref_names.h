@@ -19,6 +19,7 @@ extern const char kHostOverrideHost[];
 // The pref name for the feed host override auth token.
 extern const char kHostOverrideBlessNonce[];
 
+// TODO(b/213622639): This pref is unused and should be cleared / removed.
 // The pref name for the bit that determines whether the conditions are reached
 // to enable the upload of click and view actions in the feed with the notice
 // card when using the feature kInterestFeedConditionalClickAndViewActionUpload.

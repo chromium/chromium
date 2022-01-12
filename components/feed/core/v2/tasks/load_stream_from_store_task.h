@@ -67,6 +67,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   LoadStreamFromStoreTask& operator=(const LoadStreamFromStoreTask&) = delete;
 
   void IgnoreStalenessForTesting() { ignore_staleness_ = true; }
+  void IngoreAccountForTesting() { ignore_account_ = true; }
 
  private:
   void Run() override;
@@ -88,6 +89,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   raw_ptr<FeedStore> store_;  // Unowned.
   bool ignore_staleness_ = false;
   bool missed_last_refresh_ = false;
+  bool ignore_account_ = false;
   base::OnceCallback<void(Result)> result_callback_;
 
   // Data to be stuffed into the Result when the task is complete.

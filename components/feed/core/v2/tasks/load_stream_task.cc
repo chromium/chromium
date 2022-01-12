@@ -22,6 +22,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/ios_shared_prefs.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -252,9 +253,8 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       GetRequestReason(options_.stream_type, options_.load_type),
       request_metadata, stream_.GetMetadata().consistency_token());
 
-  const std::string gaia =
-      force_signed_out_request ? std::string() : stream_.GetSyncSignedInGaia();
-
+  const AccountInfo account_info =
+      force_signed_out_request ? AccountInfo{} : stream_.GetAccountInfo();
   stream_.GetMetricsReporter().NetworkRefreshRequestStarted(
       options_.stream_type, request_metadata.content_order);
 
@@ -265,7 +265,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
     network.SendApiRequest<WebFeedListContentsDiscoverApi>(
-        std::move(request), gaia,
+        std::move(request), account_info,
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
   } else if (options_.stream_type.IsForYou() &&
              base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
@@ -275,13 +275,13 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       case LoadType::kInitialLoad:
       case LoadType::kManualRefresh:
         network.SendApiRequest<QueryInteractiveFeedDiscoverApi>(
-            request, gaia,
+            request, account_info,
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
         break;
       case LoadType::kBackgroundRefresh:
         network.SendApiRequest<QueryBackgroundFeedDiscoverApi>(
-            request, gaia,
+            request, account_info,
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
         break;
@@ -292,7 +292,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   } else {
     // Other requests use GWS.
     network.SendQueryRequest(
-        NetworkRequestType::kFeedQuery, request, gaia,
+        NetworkRequestType::kFeedQuery, request, account_info,
         base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
   }
 }
@@ -342,7 +342,7 @@ void LoadStreamTask::ProcessNetworkResponse(
   RefreshResponseData response_data =
       stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
-          response_info.was_signed_in, base::Time::Now());
+          response_info.account_info, base::Time::Now());
   server_send_timestamp_ns_ =
       response_data.server_request_received_timestamp_ns;
   server_receive_timestamp_ns_ =
@@ -363,11 +363,12 @@ void LoadStreamTask::ProcessNetworkResponse(
                                          *response_data.model_update_request),
                                      base::DoNothing());
 
-  fetched_content_has_notice_card_ =
+  const bool fetched_content_has_notice_card =
       response_data.model_update_request->stream_data
           .privacy_notice_fulfilled();
-
-  MetricsReporter::NoticeCardFulfilled(*fetched_content_has_notice_card_);
+  feed::prefs::SetLastFetchHadNoticeCard(*stream_.profile_prefs(),
+                                         fetched_content_has_notice_card);
+  MetricsReporter::NoticeCardFulfilled(fetched_content_has_notice_card);
 
   auto updated_metadata = stream_.GetMetadata();
   SetLastFetchTime(updated_metadata, options_.stream_type, base::Time::Now());
@@ -424,7 +425,6 @@ void LoadStreamTask::Done(LaunchResult launch_result) {
   result.network_response_info = network_response_info_;
   result.loaded_new_content_from_network = loaded_new_content_from_network_;
   result.latencies = std::move(latencies_);
-  result.fetched_content_has_notice_card = fetched_content_has_notice_card_;
   result.upload_actions_result = std::move(upload_actions_result_);
   result.experiments = experiments_;
   result.launch_result = launch_result.launch_result;

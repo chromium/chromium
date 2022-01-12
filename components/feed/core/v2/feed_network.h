@@ -24,6 +24,7 @@ class Response;
 }  // namespace feedwire
 
 namespace feed {
+struct AccountInfo;
 
 // DiscoverApi types. Defines information about each discover API. For use with
 // `FeedNetwork::SendApiRequest()`.
@@ -164,7 +165,7 @@ class FeedNetwork {
   virtual void SendQueryRequest(
       NetworkRequestType request_type,
       const feedwire::Request& request,
-      const std::string& gaia,
+      const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) = 0;
 
   // Send a Discover API request. Usage:
@@ -172,13 +173,13 @@ class FeedNetwork {
   template <typename API>
   void SendApiRequest(
       const typename API::Request& request,
-      const std::string& gaia,
+      const AccountInfo& account_info,
       base::OnceCallback<void(ApiResult<typename API::Response>)> callback) {
     std::string binary_proto;
     request.SerializeToString(&binary_proto);
     SendDiscoverApiRequest(
         API::kRequestType, API::RequestPath(request), API::Method(),
-        std::move(binary_proto), gaia,
+        std::move(binary_proto), account_info,
         base::BindOnce(&ParseAndForwardApiResponse<API>, std::move(callback)));
   }
 
@@ -195,7 +196,7 @@ class FeedNetwork {
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
-      const std::string& gaia,
+      const AccountInfo& account_info,
       base::OnceCallback<void(RawResponse)> callback) = 0;
 
   template <typename API>

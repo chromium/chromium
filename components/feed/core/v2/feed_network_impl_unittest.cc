@@ -22,6 +22,7 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -79,10 +80,10 @@ class TestDelegate : public FeedNetworkImpl::Delegate {
       : identity_test_env_(identity_test_env) {}
 
   std::string GetLanguageTag() override { return "en"; }
-  std::string GetSyncSignedInGaia() override {
-    return identity_test_env_->identity_manager()
-        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .gaia;
+  AccountInfo GetAccountInfo() override {
+    return AccountInfo{
+        identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSync)};
   }
 
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
@@ -116,7 +117,7 @@ class FeedNetworkTest : public testing::Test {
     return &identity_test_env_;
   }
 
-  std::string gaia() { return delegate_.GetSyncSignedInGaia(); }
+  AccountInfo account_info() { return delegate_.GetAccountInfo(); }
 
   network::TestURLLoaderFactory* test_factory() { return &test_factory_; }
 
@@ -226,7 +227,7 @@ class FeedNetworkTest : public testing::Test {
 TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   feedwire::Request(), gaia(),
+                                   feedwire::Request(), account_info(),
                                    receiver.Bind());
 
   ASSERT_TRUE(receiver.GetResult());
@@ -238,7 +239,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
 TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
@@ -260,7 +261,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
 TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), /*gaia=*/"",
+                                   GetTestFeedRequest(), AccountInfo{},
                                    receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
@@ -269,13 +270,15 @@ TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
       "https://www.google.com/httpservice/retry/TrellisClankService/"
       "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en&key=dummy_api_key",
       resource_request.url);
+  EXPECT_EQ(AccountInfo{},
+            receiver.RunAndGetResult().response_info.account_info);
   EXPECT_FALSE(resource_request.headers.HasHeader("Authorization"));
 }
 
 TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest("invalid", net::HTTP_OK);
 
@@ -288,7 +291,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
 TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
 
@@ -299,7 +302,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
       "https://www.google.com/httpservice/retry/TrellisClankService/FeedQuery",
       result.response_info.base_request_url);
   EXPECT_NE(base::Time(), result.response_info.fetch_time);
-  EXPECT_TRUE(result.response_info.was_signed_in);
+  EXPECT_EQ(account_info(), result.response_info.account_info);
   EXPECT_EQ(GetTestFeedResponse().response_version(),
             result.response_body->response_version());
 }
@@ -307,7 +310,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
 TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -322,9 +325,9 @@ TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
 
 TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), "some_other_gaia",
-                                   receiver.Bind());
+  feed_network()->SendQueryRequest(
+      NetworkRequestType::kFeedQuery, GetTestFeedRequest(),
+      {"other-gaia", "other@foo.com"}, receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -342,7 +345,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
 TEST_F(FeedNetworkTest, CancelRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   feed_network()->CancelRequests();
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -354,7 +357,7 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
   base::HistogramTester histogram_tester;
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   task_environment_.FastForwardBy(base::Seconds(30));
 
@@ -368,13 +371,13 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
 TEST_F(FeedNetworkTest, ParallelRequests) {
   CallbackReceiver<QueryRequestResult> receiver1, receiver2;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver1.Bind());
   // Make another request with a different URL so Respond() won't affect both
   // requests.
   feed_network()->SendQueryRequest(
       NetworkRequestType::kFeedQuery,
-      GetTestFeedRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL), gaia(),
+      GetTestFeedRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL), account_info(),
       receiver2.Bind());
 
   // Respond to both requests, avoiding FastForwardUntilNoTasksRemain until
@@ -398,7 +401,7 @@ TEST_F(FeedNetworkTest, ShouldReportResponseStatusCode) {
   CallbackReceiver<QueryRequestResult> receiver;
   base::HistogramTester histogram_tester;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -414,7 +417,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
   base::HistogramTester histogram_tester;
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
@@ -441,7 +444,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   identity_env()->ClearPrimaryAccount();
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   network::ResourceRequest resource_request =
@@ -458,7 +461,7 @@ TEST_F(FeedNetworkTest, TestDurationHistogram) {
   const base::TimeDelta kDuration = base::Milliseconds(12345);
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   task_environment_.FastForwardBy(kDuration);
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
@@ -475,7 +478,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithAuthHeader) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -496,7 +499,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPath) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/testpath");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -509,7 +512,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPathTrailingSlash) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/testpath/");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -521,7 +524,7 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActions) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), receiver.Bind());
+      GetTestActionRequest(), account_info(), receiver.Bind());
   RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -536,8 +539,11 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActions) {
 TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
+  AccountInfo other_account;
+  other_account.gaia = "some_other_gaia";
+  other_account.email = "some@other.com";
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), "some_other_gaia", receiver.Bind());
+      GetTestActionRequest(), other_account, receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -557,7 +563,7 @@ TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), receiver.Bind());
+      GetTestActionRequest(), account_info(), receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
@@ -593,7 +599,7 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
   CallbackReceiver<
       FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>>
       receiver;
-  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>({}, gaia(),
+  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>({}, account_info(),
                                                              receiver.Bind());
   RespondToDiscoverRequest("", net::HTTP_OK);
 
@@ -607,7 +613,7 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
 }
 
 TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
-  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>({}, gaia(),
+  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>({}, account_info(),
                                                           base::DoNothing());
   std::string requested_content_type;
   RespondToDiscoverRequest("", net::HTTP_OK)
@@ -620,7 +626,7 @@ TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectDiscoverApis) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), base::DoNothing());
+      GetTestActionRequest(), account_info(), base::DoNothing());
 
   EXPECT_EQ(GURL("https://discover-pa.googleapis.com/v1/actions:upload"),
             GetPendingRequestURL());
@@ -630,7 +636,7 @@ TEST_F(FeedNetworkTest, TestOverrideDiscoverEndpoint) {
   profile_prefs().SetString(feed::prefs::kDiscoverAPIEndpointOverride,
                             "http://www.newhost.com/");
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), base::DoNothing());
+      GetTestActionRequest(), account_info(), base::DoNothing());
 
   EXPECT_EQ(GURL("http://www.newhost.com/v1/actions:upload"),
             GetPendingRequestURL());

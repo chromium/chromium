@@ -20,15 +20,11 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider.VisibilityLogType;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -154,30 +150,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     }
 
     @Override
-    public String getAccountName() {
-        // Don't return account name if there's a signed-out session ID.
-        if (!getSignedOutSessionId().isEmpty()) {
-            return "";
-        }
-        assert ThreadUtils.runningOnUiThread();
-        CoreAccountInfo primaryAccount =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        return (primaryAccount == null) ? "" : primaryAccount.getEmail();
-    }
-
-    @Override
-    public String getClientInstanceId() {
-        // Don't return client instance id if there's a signed-out session ID.
-        if (!getSignedOutSessionId().isEmpty()) {
-            return "";
-        }
-        assert ThreadUtils.runningOnUiThread();
-        return FeedServiceBridge.getClientInstanceId();
-    }
-
-    @Override
     public int[] getExperimentIds() {
         // TODO(iwells): figure out why this is being called from another thread right after FRE
         if (!ThreadUtils.runningOnUiThread()) {
@@ -186,23 +158,13 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         return FeedProcessScopeDependencyProviderJni.get().getExperimentIds();
     }
 
-    @Override
-    public String getSignedOutSessionId() {
-        assert ThreadUtils.runningOnUiThread();
-        return FeedProcessScopeDependencyProviderJni.get().getSessionId();
-    }
-
     /**
      * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
      * message.
      */
     @Override
-    public void processViewAction(byte[] data) {
-        FeedProcessScopeDependencyProviderJni.get().processViewAction(data);
-    }
-    @Override
     public void processViewAction(byte[] data, LoggingParameters loggingParameters) {
-        FeedProcessScopeDependencyProviderJni.get().processViewActionWithLoggingParameters(
+        FeedProcessScopeDependencyProviderJni.get().processViewAction(
                 data, FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
     }
 
@@ -237,7 +199,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     public interface Natives {
         int[] getExperimentIds();
         String getSessionId();
-        void processViewAction(byte[] data);
-        void processViewActionWithLoggingParameters(byte[] actionData, byte[] loggingParameters);
+        void processViewAction(byte[] actionData, byte[] loggingParameters);
     }
 }

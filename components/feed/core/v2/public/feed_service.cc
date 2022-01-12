@@ -105,9 +105,9 @@ class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
     return service_delegate_->GetLanguageTag();
   }
 
-  std::string GetSyncSignedInGaia() override {
-    return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .gaia;
+  AccountInfo GetAccountInfo() override {
+    return AccountInfo(
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   }
 
  private:
@@ -151,13 +151,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   void PrefetchImage(const GURL& url) override {
     service_delegate_->PrefetchImage(url);
   }
-  std::string GetSyncSignedInGaia() override {
-    return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .gaia;
-  }
-  std::string GetSyncSignedInEmail() override {
-    return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .email;
+  AccountInfo GetAccountInfo() override {
+    return AccountInfo(
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   }
   void RegisterExperiments(const Experiments& experiments) override {
     service_delegate_->RegisterExperiments(experiments);

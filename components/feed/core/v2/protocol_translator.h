@@ -13,6 +13,7 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/data_operation.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -89,7 +90,7 @@ absl::optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
-    bool was_signed_in_request,
+    const AccountInfo& account_info,
     base::Time current_time);
 
 std::vector<feedstore::DataOperation> TranslateDismissData(

@@ -270,7 +270,7 @@ absl::optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
-    bool was_signed_in_request,
+    const AccountInfo& account_info,
     base::Time current_time) {
   if (response.response_version() != feedwire::Response::FEED_RESPONSE)
     return {};
@@ -330,7 +330,9 @@ RefreshResponseData TranslateWireResponse(
     result->stream_data.set_root_event_id(
         response_metadata.event_id().SerializeAsString());
   }
-  result->stream_data.set_signed_in(was_signed_in_request);
+  result->stream_data.set_signed_in(!account_info.IsEmpty());
+  result->stream_data.set_gaia(account_info.gaia);
+  result->stream_data.set_email(account_info.email);
   result->stream_data.set_logging_enabled(
       chrome_response_metadata.logging_enabled());
   result->stream_data.set_privacy_notice_fulfilled(
@@ -340,7 +342,7 @@ RefreshResponseData TranslateWireResponse(
   }
 
   absl::optional<std::string> session_id = absl::nullopt;
-  if (was_signed_in_request) {
+  if (!account_info.IsEmpty()) {
     // Signed-in requests don't use session_id tokens; set an empty value to
     // ensure that there are no old session_id tokens left hanging around.
     session_id = std::string();

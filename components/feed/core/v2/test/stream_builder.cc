@@ -17,6 +17,9 @@
 namespace feed {
 
 base::Time kTestTimeEpoch = base::Time::UnixEpoch();
+AccountInfo TestAccountInfo() {
+  return {"gaia", "user@foo"};
+}
 
 ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,
@@ -238,6 +241,10 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
       MakeSharedStateId(first_cluster_id);
   initial_update->stream_data.set_next_page_token("page-2");
   initial_update->stream_data.set_signed_in(signed_in);
+  if (signed_in) {
+    initial_update->stream_data.set_email(account_info.email);
+    initial_update->stream_data.set_gaia(account_info.gaia);
+  }
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
@@ -277,6 +284,10 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
   initial_update->stream_data.set_next_page_token(
       "page-" + base::NumberToString(page_number + 1));
   initial_update->stream_data.set_signed_in(signed_in);
+  if (signed_in) {
+    initial_update->stream_data.set_email(account_info.email);
+    initial_update->stream_data.set_gaia(account_info.gaia);
+  }
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);

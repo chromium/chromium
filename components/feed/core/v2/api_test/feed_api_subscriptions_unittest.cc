@@ -23,6 +23,10 @@ namespace test {
 namespace {
 using testing::PrintToString;
 
+AccountInfo TestAccountInfo() {
+  return {"examplegaia", "example@foo.com"};
+}
+
 FeedNetwork::RawResponse MakeFailedResponse() {
   FeedNetwork::RawResponse network_response;
   network_response.response_info.status_code = 400;
@@ -733,7 +737,7 @@ TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreClearedOnSignOut) {
   }
 
   // Sign out, and verify recommended web feeds are cleared.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
@@ -753,12 +757,12 @@ TEST_F(FeedApiSubscriptionsTest,
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
 
   // Sign out, this clears recommended Web Feeds.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
 
   // Sign in, and verify web feeds are fetched and stored.
-  signed_in_gaia_ = "examplegaia";
+  account_info_ = TestAccountInfo();
   stream_->OnSignedIn();
   WaitForIdleTaskQueue();
 
@@ -875,7 +879,7 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
   }
 
   // Sign out, and verify recommended web feeds are cleared.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
@@ -895,14 +899,14 @@ TEST_F(FeedApiSubscriptionsTest,
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
 
   // Sign out, and verify no web feeds are fetched.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 
   // Sign in, and verify web feeds are fetched and stored.
-  signed_in_gaia_ = "examplegaia";
+  account_info_ = TestAccountInfo();
   stream_->OnSignedIn();
   WaitForIdleTaskQueue();
 

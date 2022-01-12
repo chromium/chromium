@@ -100,6 +100,7 @@ enum class UploadActionsStatus {
   kUpdatedConsistencyToken = 4,
   kFinishedWithoutUpdatingConsistencyToken = 5,
   kAbortUploadForSignedOutUser = 6,
+  // TODO(b/213622639): This is unused, remove it.
   kAbortUploadBecauseDisabled = 7,
   kAbortUploadForWrongUser = 8,
   kAbortUploadActionsWithPendingClearAll = 9,

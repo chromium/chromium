@@ -73,16 +73,6 @@ static void JNI_FeedServiceBridge_ReportOpenVisitComplete(JNIEnv* env,
   api->ReportOpenVisitComplete(base::Milliseconds(visitTimeMs));
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_FeedServiceBridge_GetClientInstanceId(JNIEnv* env) {
-  std::string instance_id;
-  FeedApi* api = GetFeedApi();
-  if (api) {
-    instance_id = api->GetClientInstanceId();
-  }
-  return base::android::ConvertUTF8ToJavaString(env, instance_id);
-}
-
 static int JNI_FeedServiceBridge_GetVideoPreviewsTypePreference(JNIEnv* env) {
   PrefService* pref_service = ProfileManager::GetLastUsedProfile()->GetPrefs();
   return pref_service->GetInteger(feed::prefs::kVideoPreviewsType);

@@ -21,6 +21,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream/notice_card_tracker.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
@@ -127,12 +128,14 @@ TEST_F(FeedApiTest, BackgroundRefreshNotAttemptedAfterModelIsLoaded) {
 }
 
 TEST_F(FeedApiTest, SurfaceReceivesInitialContent) {
-  {
-    auto model = CreateStreamModel();
-    model->Update(MakeTypicalInitialModelState());
-    stream_->LoadModelForTesting(kForYouStream, std::move(model));
-  }
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  // Use `the_first_surface` to force loading content.
+  TestForYouSurface the_first_surface(stream_.get());
+  WaitForIdleTaskQueue();
+
   TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
   ASSERT_TRUE(surface.initial_state);
   const feedui::StreamUpdate& initial_state = surface.initial_state.value();
   ASSERT_EQ(2, initial_state.updated_slices().size());
@@ -156,13 +159,10 @@ TEST_F(FeedApiTest, SurfaceReceivesInitialContent) {
 }
 
 TEST_F(FeedApiTest, SurfaceReceivesInitialContentLoadedAfterAttach) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   ASSERT_FALSE(surface.initial_state);
-  {
-    auto model = CreateStreamModel();
-    model->Update(MakeTypicalInitialModelState());
-    stream_->LoadModelForTesting(kForYouStream, std::move(model));
-  }
+  WaitForIdleTaskQueue();
 
   ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   const feedui::StreamUpdate& initial_state = surface.initial_state.value();
@@ -201,8 +201,7 @@ TEST_F(FeedApiTest, SurfaceReceivesUpdatedContent) {
   const feedui::StreamUpdate& initial_state = surface.initial_state.value();
   const feedui::StreamUpdate& update = surface.update.value();
 
-  ASSERT_EQ("[View logging only user@foo] 2 slices -> 2 slices",
-            surface.DescribeUpdates());
+  ASSERT_EQ("2 slices -> 2 slices", surface.DescribeUpdates());
   // First slice is just an ID that matches the old 1st slice ID.
   EXPECT_EQ(initial_state.updated_slices(0).slice().slice_id(),
             update.updated_slices(0).slice_id());
@@ -237,8 +236,7 @@ TEST_F(FeedApiTest, SurfaceReceivesSecondUpdatedContent) {
 
   // The last update should have only one new piece of content.
   // This verifies the current content set is tracked properly.
-  ASSERT_EQ("[View logging only user@foo] 2 slices -> 3 slices -> 4 slices",
-            surface.DescribeUpdates());
+  ASSERT_EQ("2 slices -> 3 slices -> 4 slices", surface.DescribeUpdates());
 
   ASSERT_EQ(4, surface.update->updated_slices().size());
   EXPECT_FALSE(surface.update->updated_slices(0).has_slice());
@@ -783,7 +781,7 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
 
   // Validate that the network request was sent as signed out.
   ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_EQ("", network_.last_gaia);
+  EXPECT_EQ(AccountInfo{}, network_.last_account_info);
   EXPECT_TRUE(network_.query_request_sent->feed_request()
                   .client_info()
                   .chrome_client_info()
@@ -791,10 +789,7 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
                   .empty());
 
   // Validate the downstream consumption of the response.
-  // TODO(crbug.com/1268575): We should disable view logging for the signed-out
-  // feed even if the user is signed-in.
-  EXPECT_EQ("loading -> [View logging only user@foo] 2 slices",
-            surface.DescribeUpdates());
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
   EXPECT_FALSE(stream_->GetModel(surface.GetStreamType())->signed_in());
 
@@ -811,7 +806,7 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   // Validate that the network request was sent as signed out and
   // contained the session id.
   ASSERT_EQ(2, network_.send_query_call_count);
-  EXPECT_EQ("", network_.last_gaia);
+  EXPECT_EQ(AccountInfo{}, network_.last_account_info);
   EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
   EXPECT_EQ(network_.query_request_sent->feed_request()
                 .client_info()
@@ -832,7 +827,7 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
 
   // Validate that a signed-in request was sent.
   ASSERT_EQ(3, network_.send_query_call_count);
-  EXPECT_NE("", network_.last_gaia);
+  EXPECT_NE(AccountInfo{}, network_.last_account_info);
 
   // The model should now be in the signed-in state.
   EXPECT_TRUE(stream_->GetModel(kForYouStream)->signed_in());
@@ -853,7 +848,7 @@ TEST_F(FeedApiTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
   WaitForIdleTaskQueue();
 
   ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_NE("", network_.last_gaia);
+  EXPECT_NE(AccountInfo{}, network_.last_account_info);
 }
 
 TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
@@ -864,7 +859,7 @@ TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_NE("", network_.last_gaia);
+  EXPECT_NE(AccountInfo{}, network_.last_account_info);
   EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
 }
 
@@ -898,6 +893,20 @@ TEST_F(FeedApiTest, LoadStreamFromStore) {
   // Verify the model is filled correctly.
   EXPECT_STRINGS_EQUAL(ModelStateFor(MakeTypicalInitialModelState()),
                        stream_->GetModel(kForYouStream)->DumpStateForTesting());
+}
+
+TEST_F(FeedApiTest, LoadStreamFromStoreValidatesUser) {
+  // Fill the store with stream data for another user.
+  {
+    auto state = MakeTypicalInitialModelState();
+    state->stream_data.set_email("other@gmail.com");
+    store_->OverwriteStream(kForYouStream, std::move(state), base::DoNothing());
+  }
+
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ("loading -> cant-refresh", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, LoadingSpinnerIsSentInitially) {
@@ -1209,9 +1218,8 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
   // The root ID should not change for next-page content.
-  EXPECT_EQ(
-      MakeRootEventId(),
-      stream_->GetLoggingParameters(surface.GetStreamType()).root_event_id);
+  EXPECT_EQ(MakeRootEventId(),
+            surface.update->logging_parameters().root_event_id());
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
@@ -1422,7 +1430,7 @@ TEST_F(FeedApiTest, ReadNetworkResponse) {
             schedule.refresh_offsets);
 
   // The stream's user attributes are set, so activity logging is enabled.
-  EXPECT_TRUE(stream_->IsActivityLoggingEnabled(kForYouStream));
+  EXPECT_TRUE(surface.update->logging_parameters().logging_enabled());
   // This network response has content.
   EXPECT_TRUE(stream_->HasUnreadContent(kForYouStream));
 }
@@ -1480,21 +1488,23 @@ TEST_F(FeedApiTest, ClearAllWhileLoadingMoreDoesNotLoadMore) {
   EXPECT_EQ(false, cr.GetResult());
   EXPECT_EQ(
       "loading -> [user@foo] 2 slices -> 2 slices +spinner -> 2 slices -> "
-      "loading -> [NO logging user@foo] 2 slices",
+      "loading -> 2 slices",
       surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, ClearAllWipesAllState) {
   // Trigger saving a consistency token, so it can be cleared later.
   network_.consistency_token = "token-11";
-  stream_->UploadAction(MakeFeedAction(42ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   // Trigger saving a feed stream, so it can be cleared later.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   // Enqueue an action, so it can be cleared later.
-  stream_->UploadAction(MakeFeedAction(43ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(43ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
 
   // Trigger ClearAll, this should erase everything.
   stream_->OnCacheDataCleared();
@@ -1511,11 +1521,12 @@ TEST_F(FeedApiTest, ClearAllWipesAllState) {
 )",
             DumpStoreState(true));
   EXPECT_EQ("", stream_->GetMetadata().consistency_token());
-  EXPECT_FALSE(stream_->IsActivityLoggingEnabled(kForYouStream));
+  EXPECT_FALSE(surface.update->logging_parameters().logging_enabled());
 }
 
 TEST_F(FeedApiTest, StorePendingAction) {
-  stream_->UploadAction(MakeFeedAction(42ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
 
   std::vector<feedstore::StoredAction> result =
@@ -1527,17 +1538,19 @@ TEST_F(FeedApiTest, StorePendingAction) {
 }
 
 TEST_F(FeedApiTest, UploadActionWhileSignedOutIsNoOp) {
-  signed_in_gaia_ = "";
-  ASSERT_EQ(stream_->GetSyncSignedInGaia(), "");
-  stream_->UploadAction(MakeFeedAction(42ul), false, base::DoNothing());
+  account_info_ = {};
+  ASSERT_EQ(stream_->GetAccountInfo(), AccountInfo{});
+  stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(0ul, ReadStoredActions(stream_->GetStore()).size());
 }
 
 TEST_F(FeedApiTest, SignOutWhileUploadActionDoesNotUpload) {
-  stream_->UploadAction(MakeFeedAction(42ul), true, base::DoNothing());
-  signed_in_gaia_ = "";
+  stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
+  account_info_ = {};
 
   WaitForIdleTaskQueue();
 
@@ -1548,7 +1561,8 @@ TEST_F(FeedApiTest, SignOutWhileUploadActionDoesNotUpload) {
 
 TEST_F(FeedApiTest, ClearAllWhileUploadActionDoesNotUpload) {
   CallbackReceiver<UploadActionsTask::Result> cr;
-  stream_->UploadAction(MakeFeedAction(42ul), true, cr.Bind());
+  stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
+                        cr.Bind());
   stream_->OnCacheDataCleared();  // triggers ClearAll().
   WaitForIdleTaskQueue();
 
@@ -1561,14 +1575,32 @@ TEST_F(FeedApiTest, ClearAllWhileUploadActionDoesNotUpload) {
 
 TEST_F(FeedApiTest, WrongUserUploadActionDoesNotUpload) {
   CallbackReceiver<UploadActionsTask::Result> cr;
-  stream_->UploadAction(MakeFeedAction(42ul), true, cr.Bind());
-  // Sign in as another user.
-  signed_in_gaia_ = "someothergaia";
+  LoggingParameters logging_parameters = CreateLoggingParameters();
+  logging_parameters.email = "someothergaia";
+  stream_->UploadAction(MakeFeedAction(42ul), logging_parameters, true,
+                        cr.Bind());
 
   WaitForIdleTaskQueue();
 
   // Action should not upload.
   EXPECT_EQ(UploadActionsStatus::kAbortUploadForWrongUser,
+            metrics_reporter_->upload_action_status);
+  EXPECT_EQ(0, network_.GetActionRequestCount());
+  ASSERT_TRUE(cr.GetResult());
+  EXPECT_EQ(0ul, cr.GetResult()->upload_attempt_count);
+}
+
+TEST_F(FeedApiTest, LoggingPropertiesWithNoAccountDoesNotUpload) {
+  CallbackReceiver<UploadActionsTask::Result> cr;
+  LoggingParameters logging_parameters = CreateLoggingParameters();
+  logging_parameters.email.clear();
+  stream_->UploadAction(MakeFeedAction(42ul), logging_parameters, true,
+                        cr.Bind());
+
+  WaitForIdleTaskQueue();
+
+  // Action should not upload.
+  EXPECT_EQ(UploadActionsStatus::kAbortUploadForSignedOutUser,
             metrics_reporter_->upload_action_status);
   EXPECT_EQ(0, network_.GetActionRequestCount());
   ASSERT_TRUE(cr.GetResult());
@@ -1583,7 +1615,8 @@ TEST_F(FeedApiTest, StorePendingActionAndUploadNow) {
   {
     feedwire::ThereAndBackAgainData msg;
     *msg.mutable_action_payload() = MakeFeedAction(42ul).action_payload();
-    stream_->ProcessThereAndBackAgain(msg.SerializeAsString());
+    stream_->ProcessThereAndBackAgain(msg.SerializeAsString(),
+                                      CreateLoggingParameters());
   }
   WaitForIdleTaskQueue();
 
@@ -1597,7 +1630,8 @@ TEST_F(FeedApiTest, StorePendingActionAndUploadNow) {
 TEST_F(FeedApiTest, ProcessViewActionResultsInDelayedUpload) {
   network_.consistency_token = "token-11";
 
-  stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString());
+  stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString(),
+                             CreateLoggingParameters());
   WaitForIdleTaskQueue();
   // Verify it's not uploaded immediately.
   ASSERT_EQ(0, network_.GetActionRequestCount());
@@ -1610,16 +1644,30 @@ TEST_F(FeedApiTest, ProcessViewActionResultsInDelayedUpload) {
   EXPECT_EQ(1, network_.GetActionRequestCount());
 }
 
+TEST_F(FeedApiTest, ProcessViewActionDroppedBecauseNotEnabled) {
+  network_.consistency_token = "token-11";
+  LoggingParameters logging_parameters = CreateLoggingParameters();
+  logging_parameters.view_actions_enabled = false;
+  stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString(),
+                             logging_parameters);
+  WaitForIdleTaskQueue();
+  // Verify it's not uploaded, and not stored.
+  ASSERT_EQ(0, network_.GetActionRequestCount());
+  ASSERT_EQ(0ull, ReadStoredActions(stream_->GetStore()).size());
+}
+
 TEST_F(FeedApiTest, ActionsUploadWithoutConditionsWhenFeatureDisabled) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
 
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   stream_->ProcessViewAction(
-      feedwire::FeedAction::default_instance().SerializeAsString());
+      feedwire::FeedAction::default_instance().SerializeAsString(),
+      surface.GetLoggingParameters());
   WaitForIdleTaskQueue();
   stream_->ProcessThereAndBackAgain(
-      MakeThereAndBackAgainData(42ul).SerializeAsString());
+      MakeThereAndBackAgainData(42ul).SerializeAsString(),
+      surface.GetLoggingParameters());
   WaitForIdleTaskQueue();
 
   // Verify the actions were uploaded.
@@ -1628,7 +1676,8 @@ TEST_F(FeedApiTest, ActionsUploadWithoutConditionsWhenFeatureDisabled) {
 }
 
 TEST_F(FeedApiTest, LoadStreamFromNetworkUploadsActions) {
-  stream_->UploadAction(MakeFeedAction(99ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(99ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
 
   TestForYouSurface surface(stream_.get());
@@ -1638,7 +1687,8 @@ TEST_F(FeedApiTest, LoadStreamFromNetworkUploadsActions) {
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 
   // Uploaded action should have been erased from store.
-  stream_->UploadAction(MakeFeedAction(100ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(100ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
   EXPECT_EQ(2, network_.GetActionRequestCount());
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
@@ -1646,15 +1696,19 @@ TEST_F(FeedApiTest, LoadStreamFromNetworkUploadsActions) {
 
 TEST_F(FeedApiTest, UploadedActionsHaveSequentialNumbers) {
   // Send 3 actions.
-  stream_->UploadAction(MakeFeedAction(1ul), false, base::DoNothing());
-  stream_->UploadAction(MakeFeedAction(2ul), false, base::DoNothing());
-  stream_->UploadAction(MakeFeedAction(3ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(1ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(2ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(3ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetActionRequestCount());
   feedwire::UploadActionsRequest request1 = *network_.GetActionRequestSent();
 
   // Send another action in a new request.
-  stream_->UploadAction(MakeFeedAction(4ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(4ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
   ASSERT_EQ(2, network_.GetActionRequestCount());
   feedwire::UploadActionsRequest request2 = *network_.GetActionRequestSent();
@@ -1674,7 +1728,8 @@ TEST_F(FeedApiTest, LoadMoreUploadsActions) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  stream_->UploadAction(MakeFeedAction(99ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(99ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
 
   network_.consistency_token = "token-12";
@@ -1687,7 +1742,8 @@ TEST_F(FeedApiTest, LoadMoreUploadsActions) {
 
   // Uploaded action should have been erased from the store.
   network_.ClearTestData();
-  stream_->UploadAction(MakeFeedAction(100ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(100ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 
@@ -1697,32 +1753,25 @@ TEST_F(FeedApiTest, LoadMoreUploadsActions) {
           network_.GetActionRequestSent()->feed_actions(0).action_payload()));
 }
 
-TEST_F(FeedApiTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
-  EXPECT_FALSE(stream_->IsActivityLoggingEnabled(kForYouStream));
+TEST_F(FeedApiTest, LoadMoreDoesNotUpdateLoggingEnabled) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  EXPECT_TRUE(stream_->IsActivityLoggingEnabled(kForYouStream));
+  EXPECT_TRUE(surface.update->logging_parameters().logging_enabled());
 
   int page = 2;
-  for (bool signed_in : {true, false}) {
-    for (bool waa_on : {true, false}) {
-      for (bool privacy_notice_fulfilled : {true, false}) {
-        response_translator_.InjectResponse(
-            MakeTypicalNextPageState(page++, kTestTimeEpoch, signed_in, waa_on,
-                                     privacy_notice_fulfilled));
-        CallbackReceiver<bool> callback;
-        stream_->LoadMore(surface, callback.Bind());
-        WaitForIdleTaskQueue();
-        EXPECT_EQ(
-            stream_->IsActivityLoggingEnabled(kForYouStream),
-            (signed_in && waa_on) ||
-                (!signed_in && GetFeedConfig().send_signed_out_session_logs))
-            << "signed_in=" << signed_in << " waa_on=" << waa_on
-            << " privacy_notice_fulfilled=" << privacy_notice_fulfilled
-            << " send_signed_out_session_logs="
-            << GetFeedConfig().send_signed_out_session_logs;
-      }
+  // A NextPage request will not work when signed-out.
+  const bool signed_in = true;
+
+  // Logging parameters are not updated on LoadMore(), so logging remains
+  // enabled until the next refresh.
+  for (bool waa_on : {true, false}) {
+    for (bool privacy_notice_fulfilled : {true, false}) {
+      response_translator_.InjectResponse(MakeTypicalNextPageState(
+          page++, kTestTimeEpoch, signed_in, waa_on, privacy_notice_fulfilled));
+      stream_->LoadMore(surface, base::DoNothing());
+      WaitForIdleTaskQueue();
+      EXPECT_TRUE(surface.update->logging_parameters().logging_enabled());
     }
   }
 }
@@ -1731,13 +1780,14 @@ TEST_F(FeedApiTest, LoadStreamWithLoggingEnabled) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  EXPECT_TRUE(stream_->IsActivityLoggingEnabled(kForYouStream));
 
+  EXPECT_TRUE(surface.update->logging_parameters().logging_enabled());
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, BackgroundingAppUploadsActions) {
-  stream_->UploadAction(MakeFeedAction(1ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(1ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
@@ -1752,14 +1802,16 @@ TEST_F(FeedApiTest, BackgroundingAppDoesNotUploadActions) {
   config.upload_actions_on_enter_background = false;
   SetFeedConfigForTesting(config);
 
-  stream_->UploadAction(MakeFeedAction(1ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(1ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
   EXPECT_EQ(0, network_.GetActionRequestCount());
 }
 
 TEST_F(FeedApiTest, UploadedActionsAreNotSentAgain) {
-  stream_->UploadAction(MakeFeedAction(1ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(1ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetActionRequestCount());
@@ -1777,7 +1829,8 @@ TEST_F(FeedApiTest, UploadActionsOneBatch) {
   EXPECT_EQ(1, network_.GetActionRequestCount());
   EXPECT_EQ(3, network_.GetActionRequestSent()->feed_actions_size());
 
-  stream_->UploadAction(MakeFeedAction(99ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(99ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
   EXPECT_EQ(2, network_.GetActionRequestCount());
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
@@ -1799,20 +1852,23 @@ TEST_F(FeedApiTest, UploadActionsMultipleBatches) {
 
   EXPECT_EQ(3, network_.GetActionRequestCount());
 
-  stream_->UploadAction(MakeFeedAction(99ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(99ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
   EXPECT_EQ(4, network_.GetActionRequestCount());
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedApiTest, UploadActionsSkipsStaleActionsByTimestamp) {
-  stream_->UploadAction(MakeFeedAction(2ul), false, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(2ul), CreateLoggingParameters(), false,
+                        base::DoNothing());
   WaitForIdleTaskQueue();
   task_environment_.FastForwardBy(base::Hours(25));
 
   // Trigger upload
   CallbackReceiver<UploadActionsTask::Result> cr;
-  stream_->UploadAction(MakeFeedAction(3ul), true, cr.Bind());
+  stream_->UploadAction(MakeFeedAction(3ul), CreateLoggingParameters(), true,
+                        cr.Bind());
   WaitForIdleTaskQueue();
 
   // Just one action should have been uploaded.
@@ -1831,14 +1887,18 @@ TEST_F(FeedApiTest, UploadActionsSkipsStaleActionsByTimestamp) {
 TEST_F(FeedApiTest, UploadActionsErasesStaleActionsByAttempts) {
   // Three failed uploads, plus one more to cause the first action to be erased.
   network_.InjectEmptyActionRequestResult();
-  stream_->UploadAction(MakeFeedAction(0ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(0ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   network_.InjectEmptyActionRequestResult();
-  stream_->UploadAction(MakeFeedAction(1ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(1ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
   network_.InjectEmptyActionRequestResult();
-  stream_->UploadAction(MakeFeedAction(2ul), true, base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(2ul), CreateLoggingParameters(), true,
+                        base::DoNothing());
 
   CallbackReceiver<UploadActionsTask::Result> cr;
-  stream_->UploadAction(MakeFeedAction(3ul), true, cr.Bind());
+  stream_->UploadAction(MakeFeedAction(3ul), CreateLoggingParameters(), true,
+                        cr.Bind());
   WaitForIdleTaskQueue();
 
   // Four requests, three pending actions in the last request.
@@ -1858,7 +1918,7 @@ TEST_F(FeedApiTest, MetadataLoadedWhenDatabaseInitialized) {
     feedstore::Metadata initial_metadata;
     feedstore::SetSessionId(initial_metadata, "session-id", kExpiry);
     initial_metadata.set_consistency_token("token");
-    initial_metadata.set_gaia(GetSyncSignedInGaia());
+    initial_metadata.set_gaia(GetAccountInfo().gaia);
     store_->WriteMetadata(initial_metadata, base::DoNothing());
   }
 
@@ -2016,7 +2076,7 @@ TEST_F(FeedApiTest, SignedOutSessionIdConsistency) {
   const std::string kSessionToken1("session-token-1");
   const std::string kSessionToken2("session-token-2");
 
-  signed_in_gaia_ = "";
+  account_info_ = {};
 
   StreamModelUpdateRequestGenerator model_generator;
   model_generator.signed_in = false;
@@ -2116,7 +2176,7 @@ TEST_F(FeedApiTest, SignedOutSessionIdConsistency) {
 }
 
 TEST_F(FeedApiTest, ClearAllResetsSessionId) {
-  signed_in_gaia_ = "";
+  account_info_ = {};
 
   // Initialize a session id.
   feedstore::Metadata metadata = stream_->GetMetadata();
@@ -2137,7 +2197,7 @@ TEST_F(FeedApiTest, SignedOutSessionIdExpiry) {
   const std::string kSessionToken1("session-token-1");
   const std::string kSessionToken2("session-token-2");
 
-  signed_in_gaia_ = "";
+  account_info_ = {};
 
   StreamModelUpdateRequestGenerator model_generator;
   model_generator.signed_in = false;
@@ -2206,7 +2266,7 @@ TEST_F(FeedApiTest, SessionIdPersistsAcrossStreamLoads) {
 
   StreamModelUpdateRequestGenerator model_generator;
   model_generator.signed_in = false;
-  signed_in_gaia_ = "";
+  account_info_ = {};
 
   // (1) Do an initial load of the store
   //     - this should trigger a network request
@@ -2788,7 +2848,7 @@ TEST_F(FeedApiTest, ContentOrderPrefOverridesFinch) {
 
 // This is a regression test for crbug.com/1249772.
 TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
-  signed_in_gaia_.clear();  // not signed in initially.
+  account_info_ = {};  // not signed in initially.
   // Load content and simulate a restart, so that there is stored content.
   {
     response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -2803,7 +2863,7 @@ TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
   stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
   TestUnreadContentObserver observer;
   stream_->AddUnreadContentObserver(kForYouStream, &observer);
-  signed_in_gaia_ = "gaia";
+  account_info_ = TestAccountInfo();
   stream_->OnSignedIn();
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   WaitForIdleTaskQueue();
@@ -2819,7 +2879,7 @@ TEST_F(FeedApiTest, SignOutWhileSurfaceIsOpen) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   WaitForIdleTaskQueue();

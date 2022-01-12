@@ -52,7 +52,8 @@ class FeedStream : public ::feed::FeedStreamSurface {
   void ProcessThereAndBackAgain(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jbyteArray>& data);
+      const base::android::JavaParamRef<jbyteArray>& data,
+      const base::android::JavaParamRef<jbyteArray>& logging_parameters);
 
   int ExecuteEphemeralChange(
       JNIEnv* env,
@@ -72,11 +73,6 @@ class FeedStream : public ::feed::FeedStreamSurface {
 
   void SurfaceClosed(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
-
-  // Is activity logging enabled (ephemeral).
-  bool IsActivityLoggingEnabled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
 
   // Event reporting functions. See |FeedApi| for definitions.
   void ReportSliceViewed(JNIEnv* env,

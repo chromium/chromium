@@ -18,6 +18,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/types.h"
 #include "components/offline_pages/task/task.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -61,6 +62,7 @@ class UploadActionsTask : public offline_pages::Task {
   // string if no token was received).
   UploadActionsTask(feedwire::FeedAction action,
                     bool upload_now,
+                    const LoggingParameters& logging_parameters,
                     FeedStream* stream,
                     base::OnceCallback<void(Result)> callback);
   // Upload |pending_actions| and update the store. Note: |pending_actions|
@@ -80,6 +82,9 @@ class UploadActionsTask : public offline_pages::Task {
   UploadActionsTask& operator=(const UploadActionsTask&) = delete;
 
  private:
+  explicit UploadActionsTask(
+      FeedStream* stream,
+      base::OnceCallback<void(UploadActionsTask::Result)> callback);
   class Batch;
 
   void Run() override;
@@ -103,6 +108,7 @@ class UploadActionsTask : public offline_pages::Task {
   FeedStream& stream_;
   bool upload_now_ = false;
   bool read_pending_actions_ = false;
+  LoggingParameters logging_parameters_;
   // Pending action to be stored.
   absl::optional<feedwire::FeedAction> wire_action_;
 
@@ -120,9 +126,7 @@ class UploadActionsTask : public offline_pages::Task {
   // Number of stale actions.
   size_t stale_count_ = 0;
   absl::optional<NetworkResponseInfo> last_network_response_info_;
-
-  std::string gaia_;
-
+  AccountInfo account_info_;
   raw_ptr<LaunchReliabilityLogger> launch_reliability_logger_ = nullptr;
   NetworkRequestId last_network_request_id_;
 

@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/protocol_translator.h"
 
+#include <initializer_list>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -26,6 +27,12 @@ namespace {
 
 const char kResponsePbPath[] = "components/test/data/feed/response.binarypb";
 const base::Time kCurrentTime = base::Time::UnixEpoch() + base::Days(123);
+AccountInfo TestAccountInfo() {
+  AccountInfo account_info;
+  account_info.gaia = "gaia";
+  account_info.email = "user@foo.com";
+  return account_info;
+}
 
 feedwire::Response TestWireResponse() {
   // Read and parse response.binarypb.
@@ -85,14 +92,14 @@ feedwire::DataOperation MakeDataOperationWithRenderData(
 
 // Helpers to add some common params.
 RefreshResponseData TranslateWireResponse(feedwire::Response response,
-                                          bool was_signed_in_request) {
+                                          const AccountInfo& account_info) {
   return TranslateWireResponse(response,
                                StreamModelUpdateRequest::Source::kNetworkUpdate,
-                               was_signed_in_request, kCurrentTime);
+                               account_info, kCurrentTime);
 }
 
 RefreshResponseData TranslateWireResponse(feedwire::Response response) {
-  return TranslateWireResponse(response, true);
+  return TranslateWireResponse(response, TestAccountInfo());
 }
 absl::optional<feedstore::DataOperation> TranslateDataOperation(
     feedwire::DataOperation operation) {
@@ -146,12 +153,13 @@ TEST(ProtocolTranslatorTest, RootEventIdNotPresent) {
 
 TEST(ProtocolTranslatorTest, WasSignedInRequest) {
   feedwire::Response response = EmptyWireResponse();
-  for (bool was_signed_in_request_state : {true, false}) {
-    RefreshResponseData refresh =
-        TranslateWireResponse(response, was_signed_in_request_state);
+
+  for (AccountInfo account_info :
+       std::initializer_list<AccountInfo>{{"gaia", "user@foo.com"}, {}}) {
+    RefreshResponseData refresh = TranslateWireResponse(response, account_info);
     ASSERT_TRUE(refresh.model_update_request);
     EXPECT_EQ(refresh.model_update_request->stream_data.signed_in(),
-              was_signed_in_request_state);
+              !account_info.IsEmpty());
   }
 }
 

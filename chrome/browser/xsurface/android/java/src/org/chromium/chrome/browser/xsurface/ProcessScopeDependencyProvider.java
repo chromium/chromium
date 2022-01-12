@@ -133,8 +133,6 @@ public interface ProcessScopeDependencyProvider {
      * message.
      */
     default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
-    @Deprecated
-    default void processViewAction(byte[] data) {}
 
     /**
      * Reports whether the visibility log upload was successful.

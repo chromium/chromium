@@ -45,8 +45,7 @@ class SurfaceUpdater : public StreamModel::Observer,
   // surfaces, so they will keep any content they may have been displaying
   // before. We don't send a zero-state in this case, since we might want to
   // immediately trigger a load.
-  void SetModel(StreamModel* model,
-                const LoggingParameters& logging_parameters);
+  void SetModel(StreamModel* model);
 
   // StreamModel::Observer.
   void OnUiUpdate(const StreamModel::UiUpdate& update) override;
@@ -110,7 +109,6 @@ class SurfaceUpdater : public StreamModel::Observer,
   bool loading_more_ = false;
   bool loading_initial_ = false;
   bool load_stream_failed_ = false;
-  LoggingParameters logging_parameters_;
   LoadStreamStatus load_stream_status_ = LoadStreamStatus::kNoStatus;
 
   // The |DrawState| when the last update was sent to all surfaces.

@@ -54,6 +54,10 @@ message StreamData {
   repeated feedwire.ContentId shared_state_ids = 6;
   // Was this feed signed in.
   bool signed_in = 7;
+  // If signed_in, this is the account gaia tied to this stream data.
+  string gaia = 13;
+  // If signed_in, this is the account email tied to this stream data.
+  string email = 14;
   // Is activity logging enabled?
   bool logging_enabled = 8;
   // Has the privacy notice been fulfilled?

@@ -34,7 +34,7 @@ void WaitForStoreInitializeTask::OnStoreInitialized() {
 void WaitForStoreInitializeTask::ReadStartupDataDone(
     FeedStore::StartupData startup_data) {
   if (startup_data.metadata &&
-      startup_data.metadata->gaia() != stream_.GetSyncSignedInGaia()) {
+      startup_data.metadata->gaia() != stream_.GetAccountInfo().gaia) {
     store_.ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
                                    base::Unretained(this)));
     return;
@@ -57,7 +57,7 @@ void WaitForStoreInitializeTask::MaybeUpgradeStreamSchema() {
   if (metadata.stream_schema_version() != 1) {
     result_.startup_data.stream_data.clear();
     if (metadata.gaia().empty()) {
-      metadata.set_gaia(stream_.GetSyncSignedInGaia());
+      metadata.set_gaia(stream_.GetAccountInfo().gaia);
     }
     store_.UpgradeFromStreamSchemaV0(
         std::move(metadata),

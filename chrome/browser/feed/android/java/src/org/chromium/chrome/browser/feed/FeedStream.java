@@ -195,17 +195,12 @@ public class FeedStream implements Stream {
         static final String XSURFACE_CARD_URL = "Card URL";
 
         @Override
-        public void processThereAndBackAgainData(byte[] data) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data);
-        }
-
-        @Override
         public void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {
             assert ThreadUtils.runningOnUiThread();
             // TODO(crbug.com/1268575): Forward loggingParameters to FeedApi, and check that they
             // match the current state.
-            FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data);
+            FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data,
+                    FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
         }
 
         @Override
@@ -685,11 +680,6 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public boolean isActivityLoggingEnabled() {
-        return FeedStreamJni.get().isActivityLoggingEnabled(mNativeFeedStream, this);
-    }
-
-    @Override
     public void triggerRefresh(Callback<Boolean> callback) {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (mRenderer != null) {
@@ -1133,7 +1123,6 @@ public class FeedStream implements Stream {
     @VisibleForTesting
     public interface Natives {
         long init(FeedStream caller, boolean isForYou, long nativeFeedReliabilityLoggingBridge);
-        boolean isActivityLoggingEnabled(long nativeFeedStream, FeedStream caller);
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);
@@ -1146,7 +1135,8 @@ public class FeedStream implements Stream {
         void reportStreamScrollStart(long nativeFeedStream, FeedStream caller);
         void loadMore(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
         void manualRefresh(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
-        void processThereAndBackAgain(long nativeFeedStream, FeedStream caller, byte[] data);
+        void processThereAndBackAgain(
+                long nativeFeedStream, FeedStream caller, byte[] data, byte[] loggingParameters);
         int executeEphemeralChange(long nativeFeedStream, FeedStream caller, byte[] data);
         void commitEphemeralChange(long nativeFeedStream, FeedStream caller, int changeId);
         void discardEphemeralChange(long nativeFeedStream, FeedStream caller, int changeId);

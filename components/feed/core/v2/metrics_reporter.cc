@@ -642,7 +642,7 @@ void MetricsReporter::NetworkRequestComplete(
   VVLOG << "Network Request Complete type=" << NetworkRequestTypeUmaName(type)
         << " status=" << response_info.status_code
         << " url=" << response_info.base_request_url
-        << " signed_in=" << response_info.was_signed_in
+        << " account_info=" << response_info.account_info
         << " response_size=" << response_info.encoded_size_bytes
         << " duration=" << response_info.fetch_duration;
 

@@ -20,13 +20,6 @@ WebFeedSubscriptions& StubFeedApi::subscriptions() {
 bool StubFeedApi::IsArticlesListVisible() {
   return {};
 }
-bool StubFeedApi::IsActivityLoggingEnabled(
-    const StreamType& stream_type) const {
-  return {};
-}
-std::string StubFeedApi::GetClientInstanceId() const {
-  return {};
-}
 std::string StubFeedApi::GetSessionId() const {
   return {};
 }

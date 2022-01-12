@@ -5,7 +5,6 @@
 #include "components/feed/core/v2/types.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
-#include "components/feed/core/proto/v2/ui.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
@@ -60,36 +59,6 @@ TEST(Types, ContentIdSet) {
   EXPECT_FALSE(v123.ContainsAllOf(v1234));
   EXPECT_FALSE(v123.IsEmpty());
   EXPECT_TRUE(ContentIdSet().IsEmpty());
-}
-
-TEST(Types, LoggingParametersSet_ToFromProto) {
-  LoggingParameters params;
-  params.email = "foo@bar.com";
-  params.client_instance_id = "instanceid";
-  params.logging_enabled = true;
-  params.view_actions_enabled = true;
-
-  feedui::LoggingParameters proto;
-  ToProto(params, proto);
-
-  EXPECT_EQ("foo@bar.com", proto.email());
-  EXPECT_EQ("instanceid", proto.client_instance_id());
-  EXPECT_EQ(true, proto.logging_enabled());
-  EXPECT_EQ(true, proto.view_actions_enabled());
-  EXPECT_EQ(params, FromProto(proto));
-}
-
-TEST(Types, LoggingParametersEmpty_ToFromProto) {
-  LoggingParameters params;
-
-  feedui::LoggingParameters proto;
-  ToProto(params, proto);
-
-  EXPECT_EQ("", proto.email());
-  EXPECT_EQ("", proto.client_instance_id());
-  EXPECT_EQ(false, proto.logging_enabled());
-  EXPECT_EQ(false, proto.view_actions_enabled());
-  EXPECT_EQ(params, FromProto(proto));
 }
 
 }  // namespace feed

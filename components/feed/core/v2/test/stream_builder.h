@@ -14,6 +14,7 @@
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/types.h"
 
 // Functions that help build a feedstore::StreamStructure for testing.
@@ -23,6 +24,7 @@ struct StreamModelUpdateRequest;
 extern base::Time kTestTimeEpoch;
 constexpr int64_t kFollowerCount = 123;
 
+AccountInfo TestAccountInfo();
 ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,
                         int id_number);
@@ -59,6 +61,7 @@ feedstore::Record MakeRecord(feedstore::StreamData stream_data);
 struct StreamModelUpdateRequestGenerator {
   base::Time last_added_time = kTestTimeEpoch;
   bool signed_in = true;
+  AccountInfo account_info = TestAccountInfo();
   bool logging_enabled = true;
   bool privacy_notice_fulfilled = false;
   int event_id_number = 123;

@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/types.h"
 #include "components/version_info/channel.h"
 #include "url/gurl.h"
 
@@ -37,9 +38,9 @@ class FeedNetworkImpl : public FeedNetwork {
     // Returns a string which represents the top locale and region of the
     // device.
     virtual std::string GetLanguageTag() = 0;
-    // Returns the GAIA string for the signed in user if they are sync-enabled,
-    // or the empty string otherwise.
-    virtual std::string GetSyncSignedInGaia() = 0;
+    // Returns the AccountInfo for the signed in user if they are sync-enabled,
+    // or empty otherwise.
+    virtual AccountInfo GetAccountInfo() = 0;
   };
 
   FeedNetworkImpl(Delegate* delegate,
@@ -56,7 +57,7 @@ class FeedNetworkImpl : public FeedNetwork {
   void SendQueryRequest(
       NetworkRequestType request_type,
       const feedwire::Request& request,
-      const std::string& gaia,
+      const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
   void SendDiscoverApiRequest(
@@ -64,7 +65,7 @@ class FeedNetworkImpl : public FeedNetwork {
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
-      const std::string& gaia,
+      const AccountInfo& account_info,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   // Cancels all pending requests immediately. This could be used, for example,
@@ -80,7 +81,7 @@ class FeedNetworkImpl : public FeedNetwork {
             base::StringPiece request_method,
             std::string request_body,
             bool allow_bless_auth,
-            const std::string& gaia,
+            const AccountInfo& account_info,
             base::OnceCallback<void(FeedNetworkImpl::RawResponse)> callback);
 
   void SendComplete(NetworkFetch* fetch,

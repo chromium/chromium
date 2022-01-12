@@ -22,7 +22,6 @@
 
 namespace feedui {
 class StreamUpdate;
-class LoggingParameters;
 }  // namespace feedui
 namespace feedstore {
 class DataOperation;
@@ -32,6 +31,7 @@ namespace feed {
 class FeedStreamSurface;
 class PersistentKeyValueStore;
 class WebFeedSubscriptions;
+struct LoggingParameters;
 
 // This is the public access point for interacting with the Feed contents.
 // FeedApi serves multiple streams of data, one for each StreamType.
@@ -57,16 +57,6 @@ class FeedApi {
                                            UnreadContentObserver* observer) = 0;
 
   virtual bool IsArticlesListVisible() = 0;
-
-  // Returns true if activity logging is enabled. The returned value is
-  // ephemeral, this should be called for each candidate log, as it can change
-  // as the feed is refreshed or the user signs in/out.
-  virtual bool IsActivityLoggingEnabled(
-      const StreamType& stream_type) const = 0;
-
-  // Returns the signed-in client_instance_id. This value is reset whenever the
-  // feed stream is cleared (on sign-in, sign-out, and some data clear events).
-  virtual std::string GetClientInstanceId() const = 0;
 
   // Returns the client's signed-out session id. This value is reset whenever
   // the feed stream is cleared (on sign-in, sign-out, and some data clear
@@ -139,17 +129,15 @@ class FeedApi {
 
   // Sends 'ThereAndBackAgainData' back to the server. |data| is a serialized
   // |feedwire::ThereAndBackAgainData| message.
-  virtual void ProcessThereAndBackAgain(base::StringPiece data) = 0;
   virtual void ProcessThereAndBackAgain(
       base::StringPiece data,
-      const feedui::LoggingParameters& logging_parameters) = 0;
+      const LoggingParameters& logging_parameters) = 0;
   // Saves a view action for eventual upload. |data| is a serialized
   //|feedwire::FeedAction| message. `logging_parameters` are the logging
   // parameters associated with this item, see `feedui::StreamUpdate`.
-  virtual void ProcessViewAction(base::StringPiece data) = 0;
   virtual void ProcessViewAction(
       base::StringPiece data,
-      const feedui::LoggingParameters& logging_parameters) = 0;
+      const LoggingParameters& logging_parameters) = 0;
 
   // Returns whether `url` is a suggested Feed URLs, recently
   // navigated to by the user.

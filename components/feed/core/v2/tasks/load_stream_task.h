@@ -68,7 +68,6 @@ class LoadStreamTask : public offline_pages::Task {
     absl::optional<NetworkResponseInfo> network_response_info;
     bool loaded_new_content_from_network = false;
     std::unique_ptr<LoadLatencyTimes> latencies;
-    absl::optional<bool> fetched_content_has_notice_card;
 
     // Result of the upload actions task.
     std::unique_ptr<UploadActionsTask::Result> upload_actions_result;
@@ -134,7 +133,6 @@ class LoadStreamTask : public offline_pages::Task {
   base::OnceCallback<void(Result)> done_callback_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
   std::unique_ptr<UploadActionsTask::Result> upload_actions_result_;
-  absl::optional<bool> fetched_content_has_notice_card_;
   LaunchReliabilityLogger& launch_reliability_logger_;
   int64_t server_receive_timestamp_ns_ = 0l;
   int64_t server_send_timestamp_ns_ = 0l;

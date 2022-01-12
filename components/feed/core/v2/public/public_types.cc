@@ -5,8 +5,32 @@
 #include "components/feed/core/v2/public/types.h"
 
 #include <ostream>
+#include <tuple>
+#include "components/feed/core/proto/v2/ui.pb.h"
 
 namespace feed {
+
+AccountInfo::AccountInfo() = default;
+AccountInfo::AccountInfo(const std::string& gaia, const std::string& email)
+    : gaia(gaia), email(email) {}
+AccountInfo::AccountInfo(CoreAccountInfo account_info)
+    : gaia(std::move(account_info.gaia)),
+      email(std::move(account_info.email)) {}
+bool AccountInfo::IsEmpty() const {
+  DCHECK_EQ(gaia.empty(), email.empty());
+  return gaia.empty();
+}
+bool AccountInfo::operator==(const AccountInfo& rhs) const {
+  return tie(gaia, email) == tie(rhs.gaia, rhs.email);
+}
+
+std::ostream& operator<<(std::ostream& os, const AccountInfo& o) {
+  if (o.IsEmpty()) {
+    return os << "signed-out";
+  }
+  return os << o.gaia << ":" << o.email;
+}
+
 WebFeedMetadata::WebFeedMetadata() = default;
 WebFeedMetadata::WebFeedMetadata(const WebFeedMetadata&) = default;
 WebFeedMetadata::WebFeedMetadata(WebFeedMetadata&&) = default;
@@ -63,7 +87,7 @@ std::ostream& operator<<(std::ostream& os, const NetworkResponseInfo& o) {
             << " bless_nonce=" << o.bless_nonce
             << " base_request_url=" << o.base_request_url
             << " response_body_bytes=" << o.response_body_bytes
-            << " was_signed_in=" << o.was_signed_in << "}";
+            << " account_info=" << o.account_info << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, WebFeedSubscriptionStatus value) {

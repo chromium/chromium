@@ -26,11 +26,11 @@
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream/privacy_notice_card_tracker.h"
-#include "components/feed/core/v2/stream/upload_criteria.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/stream_surface_set.h"
 #include "components/feed/core/v2/tasks/load_more_task.h"
@@ -77,8 +77,7 @@ class FeedStream : public FeedApi,
     virtual std::string GetLanguageTag() = 0;
     virtual bool IsAutoplayEnabled() = 0;
     virtual void ClearAll() = 0;
-    virtual std::string GetSyncSignedInGaia() = 0;
-    virtual std::string GetSyncSignedInEmail() = 0;
+    virtual AccountInfo GetAccountInfo() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
   };
@@ -100,7 +99,6 @@ class FeedStream : public FeedApi,
   // FeedApi.
 
   WebFeedSubscriptionCoordinator& subscriptions() override;
-  bool IsActivityLoggingEnabled(const StreamType& stream_type) const override;
   std::string GetSessionId() const override;
   void AttachSurface(FeedStreamSurface*) override;
   void DetachSurface(FeedStreamSurface*) override;
@@ -109,7 +107,6 @@ class FeedStream : public FeedApi,
   void RemoveUnreadContentObserver(const StreamType& stream_type,
                                    UnreadContentObserver* observer) override;
   bool IsArticlesListVisible() override;
-  std::string GetClientInstanceId() const override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override;
   ImageFetchId FetchImage(
       const GURL& url,
@@ -133,14 +130,11 @@ class FeedStream : public FeedApi,
                              EphemeralChangeId id) override;
   bool RejectEphemeralChange(const StreamType& stream_type,
                              EphemeralChangeId id) override;
-  void ProcessThereAndBackAgain(base::StringPiece data) override;
   void ProcessThereAndBackAgain(
       base::StringPiece data,
-      const feedui::LoggingParameters& logging_parameters) override;
-  void ProcessViewAction(base::StringPiece data) override;
-  void ProcessViewAction(
-      base::StringPiece data,
-      const feedui::LoggingParameters& logging_parameters) override;
+      const LoggingParameters& logging_parameters) override;
+  void ProcessViewAction(base::StringPiece data,
+                         const LoggingParameters& logging_parameters) override;
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override;
@@ -216,6 +210,7 @@ class FeedStream : public FeedApi,
   // called with |true| if the consistency token was written to the store.
   void UploadAction(
       feedwire::FeedAction action,
+      const LoggingParameters& logging_parameters,
       bool upload_now,
       base::OnceCallback<void(UploadActionsTask::Result)> callback);
 
@@ -231,10 +226,8 @@ class FeedStream : public FeedApi,
 
   void PrefetchImage(const GURL& url);
 
-  bool IsSignedIn() const { return !delegate_->GetSyncSignedInGaia().empty(); }
-  std::string GetSyncSignedInGaia() const {
-    return delegate_->GetSyncSignedInGaia();
-  }
+  bool IsSignedIn() const { return !delegate_->GetAccountInfo().IsEmpty(); }
+  AccountInfo GetAccountInfo() const { return delegate_->GetAccountInfo(); }
 
   // Determines if we should attempt loading the stream or refreshing at all.
   // Returns |LoadStreamStatus::kNoStatus| if loading may be attempted.
@@ -306,13 +299,11 @@ class FeedStream : public FeedApi,
   }
   void SetIdleCallbackForTesting(base::RepeatingClosure idle_callback);
 
-  bool CanUploadActions() const;
-
   bool ClearAllInProgress() const { return clear_all_in_progress_; }
 
   bool IsEnabledAndVisible();
 
-  LoggingParameters GetLoggingParameters(const StreamType& stream_type);
+  PrefService* profile_prefs() const { return profile_prefs_; }
 
   base::WeakPtr<FeedStream> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -351,9 +342,6 @@ class FeedStream : public FeedApi,
 
   void SetRequestSchedule(RefreshTaskId task_id, RequestSchedule schedule);
 
-  // Re-evaluate whether or not activity logging should currently be enabled.
-  void UpdateIsActivityLoggingEnabled(const StreamType& stream_type);
-
   // A single function task to delete stored feed data and force a refresh.
   // To only be called from within a |Task|.
   void ForceRefreshForDebuggingTask(const StreamType& stream_type);
@@ -374,8 +362,6 @@ class FeedStream : public FeedApi,
   bool IsFeedEnabledByEnterprisePolicy();
 
   bool HasReachedConditionsToUploadActionsWithNoticeCard();
-
-  bool CanLogViews() const;
 
   void MaybeNotifyHasUnreadContent(const StreamType& stream_type);
   void EnabledPreferencesChanged();
@@ -431,7 +417,6 @@ class FeedStream : public FeedApi,
   // internals page for debugging purpose.
   feedui::StreamUpdate forced_stream_update_for_debugging_;
 
-  feed_stream::UploadCriteria upload_criteria_;
   PrivacyNoticeCardTracker privacy_notice_card_tracker_;
 
   std::map<std::string, NoticeCardTracker> notice_card_trackers_;

@@ -14,6 +14,7 @@
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/test/stream_builder.h"
+#include "components/feed/core/v2/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -73,7 +74,7 @@ class TestStoreObserver : public StreamModel::StoreObserver {
 
 TEST(StreamModelTest, ConstructEmptyModel) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   EXPECT_EQ(0UL, model.GetContentList().size());
@@ -81,7 +82,7 @@ TEST(StreamModelTest, ConstructEmptyModel) {
 
 TEST(StreamModelTest, ExecuteOperationsTypicalStream) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
   TestStoreObserver store_observer(&model);
 
@@ -95,7 +96,7 @@ TEST(StreamModelTest, ExecuteOperationsTypicalStream) {
 
 TEST(StreamModelTest, AddContentWithoutRoot) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations{
@@ -112,7 +113,7 @@ TEST(StreamModelTest, AddContentWithoutRoot) {
 // Verify Stream -> Content works.
 TEST(StreamModelTest, AddStreamContent) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations{
@@ -128,7 +129,7 @@ TEST(StreamModelTest, AddStreamContent) {
 TEST(StreamModelTest, AddRootAsChild) {
   // When the root is added as a child, it's no longer considered a root.
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
   feedstore::StreamStructure stream_with_parent = MakeStream();
   *stream_with_parent.mutable_parent_id() = MakeContentContentId(0);
@@ -146,7 +147,7 @@ TEST(StreamModelTest, AddRootAsChild) {
 
 TEST(StreamModelTest, RemoveCluster) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations =
@@ -160,7 +161,7 @@ TEST(StreamModelTest, RemoveCluster) {
 
 TEST(StreamModelTest, RemoveContent) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations =
@@ -174,7 +175,7 @@ TEST(StreamModelTest, RemoveContent) {
 
 TEST(StreamModelTest, RemoveRoot) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations =
@@ -188,7 +189,7 @@ TEST(StreamModelTest, RemoveRoot) {
 
 TEST(StreamModelTest, RemoveAndAddRoot) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations =
@@ -203,7 +204,7 @@ TEST(StreamModelTest, RemoveAndAddRoot) {
 
 TEST(StreamModelTest, SecondRootStreamIsIgnored) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   // Add a second stream root, but it is ignored.
@@ -226,7 +227,7 @@ TEST(StreamModelTest, SecondRootStreamIsIgnored) {
 
 TEST(StreamModelTest, SecondRootWithIsRootIsSelected) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   // Set up operations which add two roots. The second root is chosen because it
@@ -246,7 +247,7 @@ TEST(StreamModelTest, RemoveAndUpdateCluster) {
   // Remove a cluster and add it back. Adding it back keeps its original
   // placement.
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations =
@@ -262,7 +263,7 @@ TEST(StreamModelTest, RemoveAndUpdateCluster) {
 TEST(StreamModelTest, RemoveAndAppendToNewParent) {
   // Attempt to re-parent a node. This is not allowed, the old parent remains.
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   std::vector<feedstore::DataOperation> operations =
@@ -277,7 +278,7 @@ TEST(StreamModelTest, RemoveAndAppendToNewParent) {
 
 TEST(StreamModelTest, EphemeralNewCluster) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   model.ExecuteOperations(MakeTypicalStreamOperations());
@@ -296,7 +297,7 @@ TEST(StreamModelTest, EphemeralNewCluster) {
 
 TEST(StreamModelTest, CommitEphemeralChange) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   model.ExecuteOperations(MakeTypicalStreamOperations());
@@ -329,7 +330,7 @@ TEST(StreamModelTest, CommitEphemeralChange) {
 
 TEST(StreamModelTest, RejectEphemeralChange) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   model.ExecuteOperations(MakeTypicalStreamOperations());
@@ -350,7 +351,7 @@ TEST(StreamModelTest, RejectEphemeralChange) {
 
 TEST(StreamModelTest, RejectFirstEphemeralChange) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
 
   model.ExecuteOperations(MakeTypicalStreamOperations());
@@ -378,7 +379,7 @@ TEST(StreamModelTest, RejectFirstEphemeralChange) {
 
 TEST(StreamModelTest, InitialLoad) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
   TestStoreObserver store_observer(&model);
   model.Update(MakeTypicalInitialModelState());
@@ -397,7 +398,7 @@ TEST(StreamModelTest, InitialLoad) {
 
 TEST(StreamModelTest, StoreObserverReceivesIncreasingSequenceNumbers) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
   TestStoreObserver store_observer(&model);
 
@@ -423,7 +424,7 @@ TEST(StreamModelTest, StoreObserverReceivesIncreasingSequenceNumbers) {
 
 TEST(StreamModelTest, SharedStateCanBeAddedOnlyOnce) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
   TestStoreObserver store_observer(&model);
 
@@ -447,7 +448,7 @@ TEST(StreamModelTest, SharedStateCanBeAddedOnlyOnce) {
 
 TEST(StreamModelTest, SharedStateUpdatesKeepOriginal) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
   TestStoreObserver store_observer(&model);
   model.Update(MakeTypicalInitialModelState());
@@ -469,7 +470,7 @@ TEST(StreamModelTest, SharedStateUpdatesKeepOriginal) {
 
 TEST(StreamModelTest, ClearAllErasesSharedStates) {
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters());
   TestObserver observer(&model);
   TestStoreObserver store_observer(&model);
   // CLEAR_ALL is the first operation in the typical initial model state.

@@ -40,7 +40,7 @@ void FetchSubscribedWebFeedsTask::Run() {
   feedwire::webfeed::ListWebFeedsRequest request;
   SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
   stream_.GetNetwork().SendApiRequest<ListWebFeedsDiscoverApi>(
-      request, stream_.GetSyncSignedInGaia(),
+      request, stream_.GetAccountInfo(),
       base::BindOnce(&FetchSubscribedWebFeedsTask::RequestComplete,
                      base::Unretained(this)));
 }

@@ -394,8 +394,8 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
 
 TEST_F(FeedApiReliabilityLoggingTest, UploadActions) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  stream_->UploadAction(MakeFeedAction(1ul), /*upload_now=*/false,
-                        base::DoNothing());
+  stream_->UploadAction(MakeFeedAction(1ul), CreateLoggingParameters(),
+                        /*upload_now=*/false, base::DoNothing());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
