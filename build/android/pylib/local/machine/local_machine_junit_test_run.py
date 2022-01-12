@@ -9,11 +9,11 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 
 from six.moves import range  # pylint: disable=redefined-builtin
 from devil.utils import cmd_helper
-from devil.utils import parallelizer
 from py_utils import tempfile_ext
 from pylib import constants
 from pylib.base import base_test_result
@@ -42,24 +42,8 @@ _EXCLUDED_SUITES = {
 # and 6 sec with 2 or more shards.
 _MIN_CLASSES_PER_SHARD = 8
 
-
-# pylint: disable=bad-option-value,useless-object-inheritance
-class LocalMachineJunitTestShard(object):
-  """Class for Running junit shard processes."""
-
-  def __init__(self, cmd, output_stream):
-    self._cmd = cmd
-    self._output_stream = output_stream
-
-  def Run(self):
-    """Runs the cmd which should execute junit tests.
-
-    Returns:
-      returncode from the process execution.
-    """
-    return cmd_helper.Call(self._cmd,
-                           stdout=self._output_stream,
-                           stderr=self._output_stream)
+# Running the largest test suite with a single shard takes about 22 minutes.
+_SHARD_TIMEOUT = 30 * 60
 
 
 class LocalMachineJunitTestRun(test_run.TestRun):
@@ -168,25 +152,28 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       AddPropertiesJar(cmd_list, temp_dir, self._test_instance.resource_apk)
 
-      test_shards = []
+      procs = []
       temp_files = []
-      # One process prints the info out immediately to stdout, the others
-      # write the test info to files which are read later.
       for index, cmd in enumerate(cmd_list):
+        # First process prints to stdout, the rest write to files.
         if index == 0:
-          test_shards.append(LocalMachineJunitTestShard(cmd, sys.stdout))
+          procs.append(
+              cmd_helper.Popen(
+                  cmd,
+                  stdout=sys.stdout,
+                  stderr=subprocess.STDOUT,
+              ))
         else:
           temp_file = tempfile.TemporaryFile()
           temp_files.append(temp_file)
-          test_shards.append(LocalMachineJunitTestShard(cmd, temp_file))
+          procs.append(
+              cmd_helper.Popen(
+                  cmd,
+                  stdout=temp_file,
+                  stderr=temp_file,
+              ))
 
-      return_codes = parallelizer.Parallelizer(test_shards).Run().pGet(30 * 60)
-      for f in temp_files:
-        f.seek(0)
-        sys.stdout.write(f.read().decode('utf-8'))
-        f.close()
-      if None in return_codes:
-        sys.stdout.write('Junit shard timed out.')
+      PrintProcessesStdout(procs, temp_files)
 
       results_list = []
       try:
@@ -263,6 +250,53 @@ def GroupTestsForShard(num_of_shards, test_classes):
     test_dict[count % num_of_shards].append(test_cls)
 
   return test_dict
+
+
+def PrintProcessesStdout(procs, temp_files):
+  """Prints the files that the processes wrote stdout to.
+
+  Waits for processes to finish, then writes the files to stdout.
+
+  Args:
+    procs: A list of subprocesses.
+    temp_files: A list of temporaryFile objects.
+
+  Returns: N/A
+
+  Raises:
+    TimeoutError: If timeout is exceeded.
+  """
+  # Wait for processes to finish running.
+  timeout_time = time.time() + _SHARD_TIMEOUT
+  timed_out = False
+  processes_running = True
+
+  # TODO(1286824): Move to p.wait(timeout) once running fully on py3.
+  while processes_running:
+    if all(p.poll() is not None for p in procs):
+      processes_running = False
+    else:
+      time.sleep(.25)
+
+    if time.time() > timeout_time:
+      timed_out = True
+      break
+
+  # Print out files in order.
+  for i, f in enumerate(temp_files):
+    f.seek(0)
+    sys.stdout.write('\nShard %d output:\n' % i)
+    sys.stdout.write(f.read().decode('utf-8'))
+    f.close()
+
+  if timed_out:
+    for i, p in enumerate(procs):
+      if p.poll() is None:
+        p.kill()
+        sys.stdout.write('Index of timed out shard: %d\n' % i)
+
+    sys.stdout.write('Output in shards may be cutoff due to timeout.\n\n')
+    raise cmd_helper.TimeoutError('Junit shards timed out.')
 
 
 def _GetTestClasses(file_path):
