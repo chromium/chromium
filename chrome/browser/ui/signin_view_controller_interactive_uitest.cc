@@ -140,8 +140,15 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 
 // Tests that the confirm button is focused by default in the signin email
 // confirmation dialog.
+// TODO(http://crbug.com/1286855): Flaky on MacOS.
+#if defined(OS_MAC)
+#define MAYBE_EmailConfirmationDefaultFocus \
+  DISABLED_EmailConfirmationDefaultFocus
+#else
+#define MAYBE_EmailConfirmationDefaultFocus EmailConfirmationDefaultFocus
+#endif
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
-                       EmailConfirmationDefaultFocus) {
+                       MAYBE_EmailConfirmationDefaultFocus) {
   content::TestNavigationObserver content_observer(
       GURL("chrome://signin-email-confirmation/"));
   content_observer.StartWatchingNewWebContents();
