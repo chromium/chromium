@@ -273,6 +273,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @MediumTest
     @Feature({"Browser"})
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE})
     public void testLensTranslateChipNotShowingIfNotEnabled() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -291,6 +292,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Feature({"Browser"})
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE})
     public void testSelectLensTranslateChip() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -319,6 +321,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @MediumTest
     @Feature({"Browser"})
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE})
     public void testLensChipNotShowingAfterMenuDismissed() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -348,6 +351,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE})
     public void testDismissContextMenuOnClickLensTranslateChipEnabled() throws TimeoutException {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -374,6 +378,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @MediumTest
     @Feature({"Browser"})
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE})
     public void testLensShoppingChipNotShowingIfNotEnabled() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -392,6 +397,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @MediumTest
     @Feature({"Browser"})
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE})
     public void testSelectLensShoppingChip() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
@@ -420,6 +426,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     // context menu.
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE})
     public void testDismissContextMenuOnClickShoppingLensChipEnabled() throws TimeoutException {
         // Required to avoid runtime error.
         Looper.prepare();

@@ -2664,6 +2664,21 @@
             ]
         }
     ],
+    "ContextMenuPopupStyleAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextMenuPopupStyle"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextMenuShopWithGoogleLens": [
         {
             "platforms": [
