@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy" content="frame-src 'none'">
+<title>Test Content-Security-Policy fenced-frame-src falling back to frame-src</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources//utils.js"></script>
+
+<body>
+<script>
+const key = KEYS["csp-frame-src-blocked"];
+
+window.addEventListener('securitypolicyviolation', function(e) {
+  // Write to the server even though the listener is in the same file in the
+  // test below.
+  writeValueToServer(key, e.violatedDirective + ";" + e.blockedURI);
+});
+
+promise_test(async () => {
+  attachFencedFrame("resources/csp-frame-src-blocked-inner.html");
+  const result = await nextValueFromServer(key);
+
+  const expected_blocked_uri =
+      new URL("resources/csp-frame-src-blocked-inner.html", location.href).toString();
+  assert_equals(result, "fenced-frame-src;" + expected_blocked_uri,
+                "The fenced frame is blocked because of CSP violation");
+}, "csp-frame-src-blocked");
+</script>
+</body>

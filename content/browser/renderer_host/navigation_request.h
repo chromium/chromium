@@ -1114,10 +1114,10 @@ class CONTENT_EXPORT NavigationRequest
       bool is_response_check,
       network::CSPContext::CheckCSPDisposition disposition);
 
-  // Checks if CSP allows the navigation. This will check the frame-src and
-  // navigate-to directives.
-  // Returns net::OK if the checks pass, and net::ERR_ABORTED or
-  // net::ERR_BLOCKED_BY_CSP depending on which checks fail.
+  // Checks if CSP allows the navigation. This will check the frame-src,
+  // fenced-frame-src and navigate-to directives. Returns net::OK if the checks
+  // pass, and net::ERR_ABORTED or net::ERR_BLOCKED_BY_CSP depending on which
+  // checks fail.
   net::Error CheckCSPDirectives(
       RenderFrameHostCSPContext parent_context,
       const PolicyContainerPolicies* parent_policies,

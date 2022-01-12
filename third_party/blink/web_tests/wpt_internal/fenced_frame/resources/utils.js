@@ -111,6 +111,11 @@ const KEYS = {
   "csp"                                         : "00000000-0000-0000-0000-00000000004B",
 
   "cookie_value"                                : "00000000-0000-0000-0000-00000000004C",
+
+  "csp-fenced-frame-src-blocked"                : "00000000-0000-0000-0000-00000000004D",
+  "csp-fenced-frame-src-allowed"                : "00000000-0000-0000-0000-00000000004E",
+  "csp-frame-src-blocked"                       : "00000000-0000-0000-0000-00000000004F",
+  "csp-frame-src-allowed"                       : "00000000-0000-0000-0000-000000000050",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

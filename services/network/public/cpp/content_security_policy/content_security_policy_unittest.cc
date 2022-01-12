@@ -2062,4 +2062,88 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
   }
 }
 
+TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
+  auto allow_host = [](const char* host) {
+    std::vector<mojom::CSPSourcePtr> sources;
+    sources.push_back(BuildCSPSource("http", host));
+    auto csp_source_list = mojom::CSPSourceList::New();
+    csp_source_list->sources = std::move(sources);
+    return csp_source_list;
+  };
+
+  {
+    CSPContextTest context;
+    auto policy = EmptyCSP();
+    policy->directives[CSPDirectiveName::DefaultSrc] = allow_host("a.com");
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+    ASSERT_EQ(1u, context.violations().size());
+    const char kConsoleMessage[] =
+        "Refused to frame 'http://b.com/' as a fenced frame because it "
+        "violates the following Content Security Policy directive: "
+        "\"default-src http://a.com\". Note that 'fenced-frame-src' was not "
+        "explicitly set, so 'default-src' is used as a fallback.\n";
+    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+  }
+  {
+    CSPContextTest context;
+    auto policy = EmptyCSP();
+    policy->directives[CSPDirectiveName::ChildSrc] = allow_host("a.com");
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+    ASSERT_EQ(1u, context.violations().size());
+    const char kConsoleMessage[] =
+        "Refused to frame 'http://b.com/' as a fenced frame because it "
+        "violates the following Content Security Policy directive: "
+        "\"child-src http://a.com\". Note that 'fenced-frame-src' was not "
+        "explicitly set, so 'child-src' is used as a fallback.\n";
+    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+  }
+  {
+    CSPContextTest context;
+    auto policy = EmptyCSP();
+    policy->directives[CSPDirectiveName::FrameSrc] = allow_host("a.com");
+
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+    ASSERT_EQ(1u, context.violations().size());
+    const char kConsoleMessage[] =
+        "Refused to frame 'http://b.com/' as a fenced frame because it "
+        "violates the following Content Security Policy directive: "
+        "\"frame-src http://a.com\". Note that 'fenced-frame-src' was not "
+        "explicitly set, so 'frame-src' is used as a fallback.\n";
+    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+  }
+  {
+    CSPContextTest context;
+    auto policy = EmptyCSP();
+    policy->directives[CSPDirectiveName::FencedFrameSrc] = allow_host("a.com");
+    policy->directives[CSPDirectiveName::FrameSrc] = allow_host("b.com");
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
+        false, false, &context, SourceLocation(), false));
+    ASSERT_EQ(1u, context.violations().size());
+    const char kConsoleMessage[] =
+        "Refused to frame 'http://b.com/' as a fenced frame because it "
+        "violates the following Content Security Policy directive: "
+        "\"fenced-frame-src http://a.com\".\n";
+    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+  }
+}
+
 }  // namespace network

@@ -2187,6 +2187,7 @@ test("content_unittests") {
     "../browser/renderer_host/policy_container_host_unittest.cc",
     "../browser/renderer_host/policy_container_navigation_bundle_unittest.cc",
     "../browser/renderer_host/recently_destroyed_hosts_unittest.cc",
+    "../browser/renderer_host/render_frame_host_csp_context_unittest.cc",
     "../browser/renderer_host/render_frame_host_impl_unittest.cc",
     "../browser/renderer_host/render_frame_host_manager_unittest.cc",
     "../browser/renderer_host/render_frame_host_permissions_policy_unittest.cc",
