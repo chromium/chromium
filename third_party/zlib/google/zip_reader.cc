@@ -24,6 +24,10 @@
 #endif  // defined(OS_WIN)
 #endif  // defined(USE_SYSTEM_MINIZIP)
 
+#if defined(OS_POSIX)
+#include <sys/stat.h>
+#endif
+
 namespace zip {
 
 namespace {
@@ -51,6 +55,8 @@ class StringWriterDelegate : public WriterDelegate {
   bool WriteBytes(const char* data, int num_bytes) override;
 
   void SetTimeModified(const base::Time& time) override;
+
+  void SetPosixFilePermissions(int mode) override;
 
  private:
   size_t max_read_bytes_;
@@ -81,6 +87,33 @@ void StringWriterDelegate::SetTimeModified(const base::Time& time) {
   // Do nothing.
 }
 
+void StringWriterDelegate::SetPosixFilePermissions(int mode) {
+  // Do nothing.
+}
+
+#if defined(OS_POSIX)
+void SetPosixFilePermissions(int fd, int mode) {
+  base::stat_wrapper_t sb;
+  if (base::File::Fstat(fd, &sb)) {
+    return;
+  }
+  mode_t new_mode = sb.st_mode;
+  // Transfer the executable bit only if the file is readable.
+  if ((sb.st_mode & S_IRUSR) == S_IRUSR && (mode & S_IXUSR) == S_IXUSR) {
+    new_mode |= S_IXUSR;
+  }
+  if ((sb.st_mode & S_IRGRP) == S_IRGRP && (mode & S_IXGRP) == S_IXGRP) {
+    new_mode |= S_IXGRP;
+  }
+  if ((sb.st_mode & S_IROTH) == S_IROTH && (mode & S_IXOTH) == S_IXOTH) {
+    new_mode |= S_IXOTH;
+  }
+  if (new_mode != sb.st_mode) {
+    fchmod(fd, new_mode);
+  }
+}
+#endif
+
 }  // namespace
 
 // TODO(satorux): The implementation assumes that file names in zip files
@@ -91,7 +124,8 @@ ZipReader::EntryInfo::EntryInfo(const std::string& file_name_in_zip,
     : file_path_(base::FilePath::FromUTF8Unsafe(file_name_in_zip)),
       is_directory_(false),
       is_unsafe_(false),
-      is_encrypted_(false) {
+      is_encrypted_(false),
+      posix_mode_(0) {
   original_size_ = raw_file_info.uncompressed_size;
 
   // Directory entries in zip files end with "/".
@@ -132,6 +166,11 @@ ZipReader::EntryInfo::EntryInfo(const std::string& file_name_in_zip,
 
   if (!base::Time::FromUTCExploded(exploded_time, &last_modified_))
     last_modified_ = base::Time::UnixEpoch();
+
+#if defined(OS_POSIX)
+  posix_mode_ =
+      (raw_file_info.external_fa >> 16L) & (S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
 }
 
 ZipReader::ZipReader() {
@@ -277,9 +316,11 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
 
   unzCloseCurrentFile(zip_file_);
 
-  if (entire_file_extracted &&
-      current_entry_info()->last_modified() != base::Time::UnixEpoch()) {
-    delegate->SetTimeModified(current_entry_info()->last_modified());
+  if (entire_file_extracted) {
+    delegate->SetPosixFilePermissions(current_entry_info()->posix_mode());
+    if (current_entry_info()->last_modified() != base::Time::UnixEpoch()) {
+      delegate->SetTimeModified(current_entry_info()->last_modified());
+    }
   }
 
   return entire_file_extracted;
@@ -471,6 +512,12 @@ void FileWriterDelegate::SetTimeModified(const base::Time& time) {
   file_->SetTimes(base::Time::Now(), time);
 }
 
+void FileWriterDelegate::SetPosixFilePermissions(int mode) {
+#if defined(OS_POSIX)
+  zip::SetPosixFilePermissions(file_->GetPlatformFile(), mode);
+#endif
+}
+
 // FilePathWriterDelegate ------------------------------------------------------
 
 FilePathWriterDelegate::FilePathWriterDelegate(
@@ -497,6 +544,12 @@ bool FilePathWriterDelegate::WriteBytes(const char* data, int num_bytes) {
 void FilePathWriterDelegate::SetTimeModified(const base::Time& time) {
   file_.Close();
   base::TouchFile(output_file_path_, base::Time::Now(), time);
+}
+
+void FilePathWriterDelegate::SetPosixFilePermissions(int mode) {
+#if defined(OS_POSIX)
+  zip::SetPosixFilePermissions(file_.GetPlatformFile(), mode);
+#endif
 }
 
 }  // namespace zip

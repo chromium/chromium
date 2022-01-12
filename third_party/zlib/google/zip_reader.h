@@ -41,6 +41,11 @@ class WriterDelegate {
 
   // Sets the last-modified time of the data.
   virtual void SetTimeModified(const base::Time& time) = 0;
+
+  // Called with the POSIX file permissions of the data; POSIX implementations
+  // may apply some of the permissions (for example, the executable bit) to the
+  // output file.
+  virtual void SetPosixFilePermissions(int mode) = 0;
 };
 
 // This class is used for reading zip files. A typical use case of this
@@ -112,6 +117,9 @@ class ZipReader {
     // Returns true if the entry is encrypted.
     bool is_encrypted() const { return is_encrypted_; }
 
+    // Returns the posix file permissions of the entry.
+    int posix_mode() const { return posix_mode_; }
+
    private:
     const base::FilePath file_path_;
     int64_t original_size_;
@@ -119,6 +127,7 @@ class ZipReader {
     bool is_directory_;
     bool is_unsafe_;
     bool is_encrypted_;
+    int posix_mode_;
   };
 
   ZipReader();
@@ -261,6 +270,10 @@ class FileWriterDelegate : public WriterDelegate {
   // Sets the last-modified time of the data.
   void SetTimeModified(const base::Time& time) override;
 
+  // On POSIX systems, sets the file to be executable if the source file was
+  // executable.
+  void SetPosixFilePermissions(int mode) override;
+
   // Return the actual size of the file.
   int64_t file_length() { return file_length_; }
 
@@ -296,6 +309,10 @@ class FilePathWriterDelegate : public WriterDelegate {
 
   // Sets the last-modified time of the data.
   void SetTimeModified(const base::Time& time) override;
+
+  // On POSIX systems, sets the file to be executable if the source file was
+  // executable.
+  void SetPosixFilePermissions(int mode) override;
 
  private:
   base::FilePath output_file_path_;

@@ -23,8 +23,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -111,6 +113,7 @@ class MockWriterDelegate : public zip::WriterDelegate {
   MOCK_METHOD0(PrepareOutput, bool());
   MOCK_METHOD2(WriteBytes, bool(const char*, int));
   MOCK_METHOD1(SetTimeModified, void(const base::Time&));
+  MOCK_METHOD1(SetPosixFilePermissions, void(int));
 };
 
 bool ExtractCurrentEntryToFilePath(zip::ZipReader* reader,
@@ -564,6 +567,38 @@ TEST_F(ZipReaderTest, ExtractPartOfCurrentEntry) {
   reader.Close();
 }
 
+TEST_F(ZipReaderTest, ExtractPosixPermissions) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  ZipReader reader;
+  ASSERT_TRUE(
+      reader.Open(test_data_dir_.AppendASCII("test_posix_permissions.zip")));
+  for (auto entry : {"0.txt", "1.txt", "2.txt", "3.txt"}) {
+    ASSERT_TRUE(LocateAndOpenEntry(&reader, base::FilePath::FromASCII(entry)));
+    FilePathWriterDelegate delegate(temp_dir.GetPath().AppendASCII(entry));
+    ASSERT_TRUE(reader.ExtractCurrentEntry(&delegate, 10000));
+  }
+  reader.Close();
+
+#if defined(OS_POSIX)
+  // This assumes a umask of at least 0400.
+  int mode = 0;
+  EXPECT_TRUE(base::GetPosixFilePermissions(
+      temp_dir.GetPath().AppendASCII("0.txt"), &mode));
+  EXPECT_EQ(mode & 0700, 0700);
+  EXPECT_TRUE(base::GetPosixFilePermissions(
+      temp_dir.GetPath().AppendASCII("1.txt"), &mode));
+  EXPECT_EQ(mode & 0700, 0600);
+  EXPECT_TRUE(base::GetPosixFilePermissions(
+      temp_dir.GetPath().AppendASCII("2.txt"), &mode));
+  EXPECT_EQ(mode & 0700, 0700);
+  EXPECT_TRUE(base::GetPosixFilePermissions(
+      temp_dir.GetPath().AppendASCII("3.txt"), &mode));
+  EXPECT_EQ(mode & 0700, 0600);
+#endif
+}
+
 // This test exposes http://crbug.com/430959, at least on OS X
 TEST_F(ZipReaderTest, DISABLED_LeakDetectionTest) {
   for (int i = 0; i < 100000; ++i) {
@@ -617,6 +652,7 @@ TEST_F(ZipReaderTest, ExtractCurrentEntrySuccess) {
       .WillOnce(Return(true));
   EXPECT_CALL(mock_writer, WriteBytes(_, _))
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_writer, SetPosixFilePermissions(_));
   EXPECT_CALL(mock_writer, SetTimeModified(_));
 
   base::FilePath target_path(FILE_PATH_LITERAL("foo/bar/quux.txt"));

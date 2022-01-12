@@ -34,6 +34,7 @@ class DudWriterDelegate : public zip::WriterDelegate {
   bool PrepareOutput() override { return false; }
   bool WriteBytes(const char* data, int num_bytes) override { return false; }
   void SetTimeModified(const base::Time& time) override {}
+  void SetPosixFilePermissions(int mode) override {}
 };
 
 std::string PathToMojoString(const base::FilePath& path) {
