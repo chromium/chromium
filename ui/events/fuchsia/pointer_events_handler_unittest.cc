@@ -81,6 +81,8 @@ TEST_F(PointerEventsHandlerTest, Watch_EventCallbacksAreIndependent) {
 
   ASSERT_EQ(events.size(), 1u);
   EXPECT_TRUE(events[0]->IsTouchEvent());
+  EXPECT_EQ(events[0]->AsTouchEvent()->pointer_details().pointer_type,
+            EventPointerType::kTouch);
 
   std::vector<fup::MouseEvent> mouse_events =
       MouseEventBuilder()
@@ -94,6 +96,8 @@ TEST_F(PointerEventsHandlerTest, Watch_EventCallbacksAreIndependent) {
 
   ASSERT_EQ(events.size(), 2u);
   EXPECT_TRUE(events[1]->IsMouseEvent());
+  EXPECT_EQ(events[1]->AsMouseEvent()->pointer_details().pointer_type,
+            EventPointerType::kMouse);
 }
 
 TEST_F(PointerEventsHandlerTest, Data_FuchsiaTimeVersusChromeTime) {

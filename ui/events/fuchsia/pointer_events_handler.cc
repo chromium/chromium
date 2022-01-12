@@ -209,7 +209,7 @@ MouseEvent CreateMouseEventDraft(const fup::MouseEvent& event,
   const auto& sample = event.pointer_sample();
 
   auto timestamp = base::TimeTicks::FromZxTime(event.timestamp());
-  PointerDetails pointer_details(EventPointerType::kTouch, sample.device_id());
+  PointerDetails pointer_details(EventPointerType::kMouse, sample.device_id());
   // View parameters can change mid-interaction; apply transform on the fly.
   auto logical =
       ViewportToViewCoordinates(sample.position_in_viewport(),
