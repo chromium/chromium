@@ -502,16 +502,13 @@ void OnIntentPickerClosed(
   // |package_name| matches a valid option and return the index.
   const size_t selected_app_index = GetAppIndex(handlers, selected_app_package);
 
-  // Make sure that the instance at least supports HandleUrl.
+  // Make sure ARC intent helper instance is connected.
   auto* arc_service_manager = ArcServiceManager::Get();
-  mojom::IntentHelperInstance* instance = nullptr;
-  if (arc_service_manager) {
-    instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc_service_manager->arc_bridge_service()->intent_helper(), HandleUrl);
-  }
-
-  if (!instance)
+  if (!arc_service_manager || !arc_service_manager->arc_bridge_service()
+                                   ->intent_helper()
+                                   ->IsConnected()) {
     reason = apps::IntentPickerCloseReason::ERROR_AFTER_PICKER;
+  }
 
   if (reason == apps::IntentPickerCloseReason::OPEN_APP ||
       reason == apps::IntentPickerCloseReason::STAY_IN_CHROME) {
@@ -529,9 +526,10 @@ void OnIntentPickerClosed(
       DCHECK(arc_service_manager);
 
       if (should_persist) {
-        if (ARC_GET_INSTANCE_FOR_METHOD(
-                arc_service_manager->arc_bridge_service()->intent_helper(),
-                AddPreferredPackage)) {
+        mojom::IntentHelperInstance* instance = ARC_GET_INSTANCE_FOR_METHOD(
+            arc_service_manager->arc_bridge_service()->intent_helper(),
+            AddPreferredPackage);
+        if (instance) {
           instance->AddPreferredPackage(
               handlers[selected_app_index]->package_name);
         }
@@ -556,8 +554,7 @@ void OnIntentPickerClosed(
       [[fallthrough]];
     case apps::IntentPickerCloseReason::ERROR_AFTER_PICKER:
       LOG(ERROR) << "IntentPickerBubbleView returned CloseReason::ERROR: "
-                 << "instance=" << instance
-                 << ", selected_app_index=" << selected_app_index
+                 << "selected_app_index=" << selected_app_index
                  << ", handlers.size=" << handlers.size();
       [[fallthrough]];
     case apps::IntentPickerCloseReason::DIALOG_DEACTIVATED:
@@ -668,16 +665,6 @@ void OnUrlHandlerList(int render_process_host_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* arc_service_manager = ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    // ARC is not running anymore. Show the Chrome OS dialog.
-    ShowExternalProtocolDialogWithoutApps(render_process_host_id, routing_id,
-                                          url, initiating_origin,
-                                          std::move(handled_cb));
-    return;
-  }
-
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->intent_helper(), HandleUrl);
 
   WebContents* web_contents =
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
@@ -688,7 +675,11 @@ void OnUrlHandlerList(int render_process_host_id,
   // We only reach here if Chrome doesn't think it can handle the URL. If ARC is
   // not running anymore, or Chrome is the only candidate returned, show the
   // usual Chrome OS dialog that says we cannot handle the URL.
-  if (!instance || !intent_helper_bridge || handlers.empty() ||
+  if (!arc_service_manager ||
+      !arc_service_manager->arc_bridge_service()
+           ->intent_helper()
+           ->IsConnected() ||
+      !intent_helper_bridge || handlers.empty() ||
       IsChromeOnlyAppCandidate(handlers)) {
     ShowExternalProtocolDialogWithoutApps(render_process_host_id, routing_id,
                                           url, initiating_origin,
