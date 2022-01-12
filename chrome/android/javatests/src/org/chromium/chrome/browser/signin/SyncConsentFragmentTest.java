@@ -268,6 +268,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1286093")
     public void testFragmentWithRegularChildAccount() throws IOException {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
