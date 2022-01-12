@@ -580,7 +580,7 @@ class TraceHelper : public tracing::ExperimentalObserver {
   // tracing::ExperimentalObserver implementation:
   void OnDataCollected(const tracing::DataCollectedParams& params) override {
     for (const auto& value : *params.GetValue()) {
-      tracing_data_->Append(value->CreateDeepCopy());
+      tracing_data_->Append(value->Clone());
     }
   }
 
