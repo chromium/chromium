@@ -327,20 +327,20 @@
       base::MD5Hash32Constexpr(IPC_TASK_ANNOTATOR_STRINGIFY(msg_class)); \
   base::TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(kMessageHash);
 
-#define IPC_BEGIN_MESSAGE_MAP(class_name, msg) \
-  { \
-    typedef class_name _IpcMessageHandlerClass ALLOW_UNUSED_TYPE; \
-    void* param__ = NULL; \
-    (void)param__; \
-    const IPC::Message& ipc_message__ = msg; \
+#define IPC_BEGIN_MESSAGE_MAP(class_name, msg)                   \
+  {                                                              \
+    using _IpcMessageHandlerClass [[maybe_unused]] = class_name; \
+    [[maybe_unused]] void* param__ = nullptr;                    \
+    const IPC::Message& ipc_message__ = msg;                     \
     switch (ipc_message__.type()) {
 
-#define IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(class_name, msg, param)  \
-  {                                                               \
-    typedef class_name _IpcMessageHandlerClass ALLOW_UNUSED_TYPE; \
-    decltype(param) param__ = param;                              \
-    const IPC::Message& ipc_message__ = msg;                      \
+#define IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(class_name, msg, param) \
+  {                                                              \
+    using _IpcMessageHandlerClass [[maybe_unused]] = class_name; \
+    decltype(param) param__ = param;                             \
+    const IPC::Message& ipc_message__ = msg;                     \
     switch (ipc_message__.type()) {
+
 #define IPC_MESSAGE_FORWARD(msg_class, obj, member_func)         \
   case msg_class::ID: {                                          \
     IPC_TASK_ANNOTATOR_CONTEXT(msg_class)                        \
