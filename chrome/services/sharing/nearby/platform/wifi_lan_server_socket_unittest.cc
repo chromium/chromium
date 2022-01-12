@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -34,6 +35,12 @@ const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 75),
 
 const net::IPEndPoint kRemoteAddress(net::IPAddress(192, 168, 86, 62), 33333);
 
+class FakeFirewallHole : public sharing::mojom::FirewallHole {
+ public:
+  FakeFirewallHole() = default;
+  ~FakeFirewallHole() override = default;
+};
+
 }  // namespace
 
 class WifiLanServerSocketTest : public testing::Test {
@@ -51,9 +58,15 @@ class WifiLanServerSocketTest : public testing::Test {
         std::move(fake_tcp_server_socket),
         tcp_server_socket.InitWithNewPipeAndPassReceiver());
 
+    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole;
+    firewall_hole_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
+        std::make_unique<FakeFirewallHole>(),
+        firewall_hole.InitWithNewPipeAndPassReceiver());
+
     wifi_lan_server_socket_ = std::make_unique<WifiLanServerSocket>(
         WifiLanServerSocket::ServerSocketParameters(
-            kLocalAddress, std::move(tcp_server_socket)));
+            kLocalAddress, std::move(tcp_server_socket),
+            std::move(firewall_hole)));
   }
 
   void TearDown() override { wifi_lan_server_socket_.reset(); }
@@ -105,6 +118,8 @@ class WifiLanServerSocketTest : public testing::Test {
   FakeTcpServerSocket* fake_tcp_server_socket_;
   mojo::SelfOwnedReceiverRef<network::mojom::TCPServerSocket>
       tcp_server_socket_self_owned_receiver_ref_;
+  mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHole>
+      firewall_hole_self_owned_receiver_ref_;
   std::unique_ptr<WifiLanServerSocket> wifi_lan_server_socket_;
 };
 
@@ -235,7 +250,8 @@ TEST_F(WifiLanServerSocketTest, Destroy_WhileWaitingForAccept) {
   run_loop.Run();
 }
 
-TEST_F(WifiLanServerSocketTest, Disconnect_WhileWaitingForAccept) {
+TEST_F(WifiLanServerSocketTest,
+       Disconnect_WhileWaitingForAccept_TcpServerSocket) {
   const size_t kNumThreads = 3;
   base::RunLoop run_loop;
   CallAcceptFromThreads(
@@ -247,6 +263,21 @@ TEST_F(WifiLanServerSocketTest, Disconnect_WhileWaitingForAccept) {
   // Destroying the TCPServerSocket receiver will trigger the remote's
   // disconnect handler, which will close the WifiLanServerSocket.
   tcp_server_socket_self_owned_receiver_ref_->Close();
+  run_loop.Run();
+}
+
+TEST_F(WifiLanServerSocketTest, Disconnect_WhileWaitingForAccept_FirewallHole) {
+  const size_t kNumThreads = 3;
+  base::RunLoop run_loop;
+  CallAcceptFromThreads(
+      kNumThreads,
+      /*expected_num_accept_calls_sent_to_tcp_socket=*/kNumThreads,
+      /*expected_success=*/false,
+      /*on_accept_calls_finished=*/run_loop.QuitClosure());
+
+  // Destroying the FirewallHole receiver will trigger the remote's
+  // disconnect handler, which will close the WifiLanServerSocket.
+  firewall_hole_self_owned_receiver_ref_->Close();
   run_loop.Run();
 }
 

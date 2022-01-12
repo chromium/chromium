@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 
 #include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform/fake_tcp_socket_factory.h"
@@ -30,6 +31,35 @@ const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 75),
 const char kRemoteIpString[] = "\xC0\xA8\x56\x3E";
 const int kRemotePort = ash::nearby::TcpServerSocketPort::kMax;
 
+class FakeFirewallHole : public sharing::mojom::FirewallHole {
+ public:
+  FakeFirewallHole() = default;
+  ~FakeFirewallHole() override = default;
+};
+
+class FakeFirewallHoleFactory : public sharing::mojom::FirewallHoleFactory {
+ public:
+  FakeFirewallHoleFactory() = default;
+  ~FakeFirewallHoleFactory() override = default;
+
+  // Immediately invokes |callback| with a fake firewall hole if
+  // |should_succeed_| is true and NullRemote if false.
+  void OpenFirewallHole(const ash::nearby::TcpServerSocketPort& port,
+                        OpenFirewallHoleCallback callback) override {
+    if (should_succeed_) {
+      mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<FakeFirewallHole>(),
+          firewall_hole.InitWithNewPipeAndPassReceiver());
+      std::move(callback).Run(std::move(firewall_hole));
+    } else {
+      std::move(callback).Run(/*firewall_hole=*/mojo::NullRemote());
+    }
+  }
+
+  bool should_succeed_ = true;
+};
+
 }  // namespace
 
 class WifiLanMediumTest : public ::testing::Test {
@@ -47,8 +77,15 @@ class WifiLanMediumTest : public ::testing::Test {
         std::move(fake_socket_factory),
         socket_factory_shared_remote_.BindNewPipeAndPassReceiver());
 
-    wifi_lan_medium_ =
-        std::make_unique<WifiLanMedium>(socket_factory_shared_remote_);
+    auto fake_firewall_hole_factory =
+        std::make_unique<FakeFirewallHoleFactory>();
+    fake_firewall_hole_factory_ = fake_firewall_hole_factory.get();
+    mojo::MakeSelfOwnedReceiver(
+        std::move(fake_firewall_hole_factory),
+        firewall_hole_factory_shared_remote_.BindNewPipeAndPassReceiver());
+
+    wifi_lan_medium_ = std::make_unique<WifiLanMedium>(
+        socket_factory_shared_remote_, firewall_hole_factory_shared_remote_);
   }
 
   void TearDown() override { wifi_lan_medium_.reset(); }
@@ -141,8 +178,11 @@ class WifiLanMediumTest : public ::testing::Test {
   base::OnceClosure on_connect_calls_finished_;
   base::OnceClosure on_listen_calls_finished_;
   FakeTcpSocketFactory* fake_socket_factory_;
+  FakeFirewallHoleFactory* fake_firewall_hole_factory_;
   mojo::SharedRemote<sharing::mojom::TcpSocketFactory>
       socket_factory_shared_remote_;
+  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory_shared_remote_;
   std::unique_ptr<WifiLanMedium> wifi_lan_medium_;
 };
 
@@ -267,6 +307,20 @@ TEST_F(WifiLanMediumTest,
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
     fake_socket_factory_->FinishNextCreateServerSocket(net::ERR_FAILED);
   }
+  run_loop.Run();
+}
+
+TEST_F(WifiLanMediumTest, Listen_Failure_CreateFirewallHole) {
+  // Fail to create the firewall hole.
+  fake_firewall_hole_factory_->should_succeed_ = false;
+
+  base::RunLoop run_loop;
+  CallListenForServiceFromThreads(
+      /*num_threads=*/1u,
+      /*expected_num_calls_sent_to_socket_factory=*/1u,
+      /*expected_success=*/false,
+      /*on_listen_calls_finished=*/run_loop.QuitClosure());
+  fake_socket_factory_->FinishNextCreateServerSocket(net::OK);
   run_loop.Run();
 }
 

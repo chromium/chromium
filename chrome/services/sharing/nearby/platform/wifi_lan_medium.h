@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
@@ -48,9 +49,10 @@ namespace chrome {
 // connection and listening attempts return before destruction.
 class WifiLanMedium : public api::WifiLanMedium {
  public:
-  explicit WifiLanMedium(
-      const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
-          socket_factory);
+  WifiLanMedium(const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
+                    socket_factory,
+                const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
+                    firewall_hole_factory);
   WifiLanMedium(const WifiLanMedium&) = delete;
   WifiLanMedium& operator=(const WifiLanMedium&) = delete;
   ~WifiLanMedium() override;
@@ -108,13 +110,13 @@ class WifiLanMedium : public api::WifiLanMedium {
       const ash::nearby::TcpServerSocketPort& port,
       int32_t result,
       const absl::optional<net::IPEndPoint>& local_addr);
-  // TODO(https://crbug.com/1261238): Add firewall hole PendingRemote argument.
   void OnFirewallHoleCreated(
       absl::optional<WifiLanServerSocket::ServerSocketParameters>*
           server_socket_parameters,
       base::WaitableEvent* listen_waitable_event,
       mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
-      const net::IPEndPoint& local_addr);
+      const net::IPEndPoint& local_addr,
+      mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole);
   /*==========================================================================*/
 
   /*==========================================================================*/
@@ -138,9 +140,10 @@ class WifiLanMedium : public api::WifiLanMedium {
   // attempts with null results.
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
 
-  // TODO(https://crbug.com/1261238): Add firewall hole factory.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::SharedRemote<sharing::mojom::TcpSocketFactory> socket_factory_;
+  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory_;
 
   // Track all pending connect/listen tasks in case Close() is called while
   // waiting.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_socket.h"
@@ -29,30 +30,30 @@ namespace nearby {
 namespace chrome {
 
 // An implementation of Nearby Connections's abstract class
-// api::WifiLanServerSocket. This implementation wraps a TCPServerSocket which
-// lives until Close() is called or the WifiLanServerSocket instance is
-// destroyed.
+// api::WifiLanServerSocket. This implementation wraps a TCPServerSocket and
+// FirewallHole which live until Close() is called or the WifiLanServerSocket
+// instance is destroyed.
 //
 // The methods Accept() and Close() are thread safe as is the destructor, which
 // closes the socket if not closed already. Accept() and Close() are blocking.
 // All pending Accept() calls are guaranteed to return after Close() is called
 // or before destruction. All pending Close() calls are guaranteed to return
 // before destruction.
-//
-// TODO(https://crbug.com/1261238): Comment on firewall hole strategy.
 class WifiLanServerSocket : public api::WifiLanServerSocket {
  public:
   // Parameters needed to construct a WifiLanServerSocket.
   struct ServerSocketParameters {
     ServerSocketParameters(
         const net::IPEndPoint& local_end_point,
-        mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket);
+        mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
+        mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole);
     ~ServerSocketParameters();
     ServerSocketParameters(ServerSocketParameters&&);
     ServerSocketParameters& operator=(ServerSocketParameters&&);
 
     net::IPEndPoint local_end_point;
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket;
+    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole;
   };
 
   explicit WifiLanServerSocket(ServerSocketParameters server_socket_parameters);
@@ -97,12 +98,19 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
   // Calls to this method are sequenced on |task_runner_| and thus thread safe.
   void FinishAcceptAttempt(base::WaitableEvent* event);
 
-  // Close if the TCP server socket disconnects.
+  // Close if the TCP server socket or firewall hole disconnect.
   void OnTcpServerSocketDisconnected();
+  void OnFirewallHoleDisconnected();
 
   const net::IPEndPoint local_end_point_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Uniquely owned by the WifiLanServerSocket instance. The underlying
+  // TCPServerSocket/FirewallHole implementation is destroyed when the
+  // corresponding remote endpoint, |tcp_server_socket_|/|firewall_hole_|, is
+  // destroyed.
   mojo::SharedRemote<network::mojom::TCPServerSocket> tcp_server_socket_;
+  mojo::SharedRemote<sharing::mojom::FirewallHole> firewall_hole_;
 
   // Track all pending accept tasks in case Close() is called while waiting.
   base::flat_set<base::WaitableEvent*> pending_accept_waitable_events_;

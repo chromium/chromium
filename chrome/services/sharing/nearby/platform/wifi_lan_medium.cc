@@ -63,13 +63,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 WifiLanMedium::WifiLanMedium(
-    const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>& socket_factory)
+    const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>& socket_factory,
+    const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
+        firewall_hole_factory)
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
-      socket_factory_(socket_factory) {
-  // NOTE: We do not set the disconnect handler for |socket_factory_| here. It
-  // is a fundamental dependency of the Nearby Connections process, which will
-  // crash if any dependency disconnects.
+      socket_factory_(socket_factory),
+      firewall_hole_factory_(firewall_hole_factory) {
+  // NOTE: We do not set the disconnect handler for |socket_factory_| or
+  // |firewall_hole_factory_| here. They are fundamental dependencies of the
+  // Nearby Connections process, which will crash if any dependency disconnects.
 }
 
 WifiLanMedium::~WifiLanMedium() {
@@ -284,7 +287,6 @@ void WifiLanMedium::OnTcpServerSocketCreated(
     int32_t result,
     const absl::optional<net::IPEndPoint>& local_addr) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
   // TODO(https://crbug.com/1261238): Log metric.
   if (result != net::OK) {
     LOG(WARNING) << "WifiLanMedium::" << __func__
@@ -312,9 +314,11 @@ void WifiLanMedium::OnTcpServerSocketCreated(
     return;
   }
 
-  // TODO(https://crbug.com/1261238): Open firewall hole.
-  OnFirewallHoleCreated(server_socket_parameters, listen_waitable_event,
-                        std::move(tcp_server_socket), *local_addr);
+  firewall_hole_factory_->OpenFirewallHole(
+      port, base::BindOnce(&WifiLanMedium::OnFirewallHoleCreated,
+                           base::Unretained(this), server_socket_parameters,
+                           listen_waitable_event, std::move(tcp_server_socket),
+                           *local_addr));
 }
 
 void WifiLanMedium::OnFirewallHoleCreated(
@@ -322,13 +326,21 @@ void WifiLanMedium::OnFirewallHoleCreated(
         server_socket_parameters,
     base::WaitableEvent* listen_waitable_event,
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
-    const net::IPEndPoint& local_addr) {
+    const net::IPEndPoint& local_addr,
+    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  // TODO(https://crbug.com/1261238): Process firewall hole, log metric, and add
-  // firewall hole to server socket parameters.
-
-  *server_socket_parameters = {local_addr, std::move(tcp_server_socket)};
+  // TODO(https://crbug.com/1261238): Log metric.
+  if (firewall_hole) {
+    VLOG(1) << "WifiLanMedium::" << __func__
+            << ": Created firewall hole. local_addr=" << local_addr.ToString();
+    *server_socket_parameters = {local_addr, std::move(tcp_server_socket),
+                                 std::move(firewall_hole)};
+  } else {
+    LOG(WARNING) << "WifiLanMedium::" << __func__
+                 << ": Failed to create firewall hole. local_addr="
+                 << local_addr.ToString();
+  }
 
   FinishListenAttempt(listen_waitable_event);
 }
@@ -392,10 +404,10 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
 
   // Note that resetting the Remote will cancel any pending callbacks, including
   // those already in the task queue.
-  // TODO(https://crbug.com/1261238): Reset firewall hole factory.
   VLOG(1) << "WifiLanMedium::" << __func__
-          << ": Closing TcpSocketFactory Remote.";
+          << ": Closing TcpSocketFactory and FirewallHoleFactory Remotes.";
   socket_factory_.reset();
+  firewall_hole_factory_.reset();
 
   // Cancel all pending connect/listen calls. This is thread safe because all
   // changes to the pending-event sets are sequenced. Make a copy of the events
