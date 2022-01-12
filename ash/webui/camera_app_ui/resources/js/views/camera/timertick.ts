@@ -10,15 +10,14 @@ import {CanceledError} from '../../type.js';
 
 /**
  * Handler to cancel the active running timer-ticks.
- * @type {?function(): void}
  */
-let doCancel = null;
+let doCancel: (() => void)|null = null;
 
 /**
  * Starts timer ticking if applicable.
- * @return {!Promise} Promise for the operation.
+ * @return Promise for the operation.
  */
-export function start() {
+export function start(): Promise<void> {
   doCancel = null;
   if (!state.get(state.State.TIMER)) {
     return Promise.resolve();
@@ -63,7 +62,7 @@ export function start() {
 /**
  * Cancels active timer ticking if applicable.
  */
-export function cancel() {
+export function cancel(): void {
   if (doCancel) {
     doCancel();
     doCancel = null;
