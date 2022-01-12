@@ -5,6 +5,7 @@
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -483,6 +484,10 @@ ServiceWorkerStorageControlImpl::CreateLiveVersionReferenceRemote(
     reference->Add(remote_reference.InitWithNewPipeAndPassReceiver());
     live_versions_[version_id] = std::move(reference);
   } else {
+    // TODO(https://crbug.com/1277263): Remove the following CHECK() once the
+    // cause is identified.
+    base::debug::Alias(&version_id);
+    CHECK(it->second.get()) << "Invalid version id: " << version_id;
     it->second->Add(remote_reference.InitWithNewPipeAndPassReceiver());
   }
   return remote_reference;
