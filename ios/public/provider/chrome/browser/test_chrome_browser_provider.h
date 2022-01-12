@@ -26,7 +26,6 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
 
   // ChromeBrowserProvider:
   ChromeTrustedVaultService* GetChromeTrustedVaultService() override;
-  UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
   TestUserFeedbackProvider* GetUserFeedbackProvider() const override;
   MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;

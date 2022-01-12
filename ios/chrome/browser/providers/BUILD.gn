@@ -6,12 +6,9 @@ source_set("providers") {
   sources = [
     "chromium_browser_provider.h",
     "chromium_browser_provider.mm",
-    "chromium_logo_controller.h",
-    "chromium_logo_controller.mm",
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/voice:voice_search_language",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/public/provider/chrome/browser",
@@ -51,6 +48,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
     "//ios/chrome/browser/providers/signin:chromium_signin_resources",
     "//ios/chrome/browser/providers/text_zoom:chromium_text_zoom",
+    "//ios/chrome/browser/providers/ui_utils:chromium_ui_utils",
     "//ios/chrome/browser/providers/url_rewriters:chromium_url_rewriters",
     "//ios/chrome/browser/providers/voice_search:chromium_voice_search",
 

@@ -42,10 +42,6 @@ TestChromeBrowserProvider::GetChromeTrustedVaultService() {
   return chrome_trusted_vault_service_.get();
 }
 
-UITextField* TestChromeBrowserProvider::CreateStyledTextField() const {
-  return [[UITextField alloc] initWithFrame:CGRectZero];
-}
-
 TestUserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
     const {
   return user_feedback_provider_.get();

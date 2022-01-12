@@ -10,6 +10,7 @@
 #include "components/metrics/metrics_provider.h"
 #import "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,7 +71,7 @@ ChromeBrowserProvider::GetChromeTrustedVaultService() {
 }
 
 UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
-  return nil;
+  return provider::CreateStyledTextField();
 }
 
 void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {}
@@ -78,7 +79,7 @@ void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {}
 id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
     Browser* browser,
     web::WebState* web_state) const {
-  return nil;
+  return provider::CreateLogoVendor(browser, web_state);
 }
 
 UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
@@ -97,9 +98,13 @@ MailtoHandlerProvider* ChromeBrowserProvider::GetMailtoHandlerProvider() const {
   return mailto_handler_provider_.get();
 }
 
-void ChromeBrowserProvider::HideModalViewStack() const {}
+void ChromeBrowserProvider::HideModalViewStack() const {
+  provider::HideModalViewStack();
+}
 
-void ChromeBrowserProvider::LogIfModalViewsArePresented() const {}
+void ChromeBrowserProvider::LogIfModalViewsArePresented() const {
+  provider::LogIfModalViewsArePresented();
+}
 
 void ChromeBrowserProvider::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);

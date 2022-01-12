@@ -13,10 +13,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
   ~ChromiumBrowserProvider() override;
 
   // ChromeBrowserProvider implementation
-  UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
-
-  id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state)
-      const override NS_RETURNS_RETAINED;
   UserFeedbackProvider* GetUserFeedbackProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
   FollowProvider* GetFollowProvider() const override;
