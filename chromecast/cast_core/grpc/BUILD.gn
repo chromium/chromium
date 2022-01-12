@@ -1,0 +1,133 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//third_party/grpc/grpc_library.gni")
+
+cast_source_set("calls") {
+  sources = [
+    "grpc_call.h",
+    "grpc_client_reactor.h",
+    "grpc_server_streaming_call.h",
+    "grpc_stub.h",
+    "grpc_unary_call.h",
+  ]
+
+  public_deps = [
+    ":grpc_call_options",
+    ":grpc_status_or",
+    "//base",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
+cast_source_set("handlers") {
+  sources = [
+    "cancellable_reactor.h",
+    "grpc_handler.cc",
+    "grpc_handler.h",
+    "grpc_server.cc",
+    "grpc_server.h",
+    "grpc_server_reactor.h",
+    "grpc_server_streaming_handler.h",
+    "grpc_unary_handler.h",
+    "server_reactor_tracker.cc",
+    "server_reactor_tracker.h",
+    "trackable_reactor.h",
+  ]
+
+  public_deps = [
+    ":grpc_call_options",
+    ":grpc_status_or",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
+cast_source_set("grpc_call_options") {
+  sources = [
+    "grpc_call_options.cc",
+    "grpc_call_options.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
+cast_source_set("grpc_status_or") {
+  sources = [
+    "grpc_status_or.cc",
+    "grpc_status_or.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
+cast_source_set("status_matchers") {
+  testonly = true
+
+  sources = [
+    "status_matchers.cc",
+    "status_matchers.h",
+  ]
+
+  deps = [ "//testing/gmock" ]
+}
+
+grpc_library("test_service_proto") {
+  sources = [ "test_service.proto" ]
+}
+
+cast_source_set("test_service_handlers") {
+  testonly = true
+
+  sources = [
+    "test_service_handlers.cc",
+    "test_service_handlers.h",
+  ]
+
+  deps = [
+    ":handlers",
+    ":test_service_proto",
+  ]
+}
+
+cast_source_set("test_service_stubs") {
+  sources = [ "test_service_stubs.h" ]
+
+  deps = [
+    ":calls",
+    ":test_service_proto",
+  ]
+}
+
+cast_source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "grpc_server_streaming_test.cc",
+    "grpc_status_or_test.cc",
+    "grpc_unary_test.cc",
+  ]
+
+  deps = [
+    ":calls",
+    ":handlers",
+    ":status_matchers",
+    ":test_service_handlers",
+    ":test_service_proto",
+    ":test_service_stubs",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

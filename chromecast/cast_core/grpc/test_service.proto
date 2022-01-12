@@ -1,0 +1,31 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package cast.utils;
+
+option optimize_for = LITE_RUNTIME;
+
+// An unary test service.
+service SimpleService {
+  // Makes an unary test call.
+  rpc SimpleCall(TestRequest) returns (TestResponse);
+}
+
+// A server streaming test service.
+service ServerStreamingService {
+  // Makes a server streaming test call.
+  rpc StreamingCall(TestRequest) returns (stream TestResponse);
+}
+
+// Test request.
+message TestRequest {
+  string foo = 1;
+}
+
+// Test response.
+message TestResponse {
+  string bar = 1;
+}

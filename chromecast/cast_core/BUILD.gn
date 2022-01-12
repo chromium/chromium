@@ -28,6 +28,7 @@ group("all_unit_tests") {
   testonly = true
 
   deps = [
+    "//chromecast/cast_core/grpc:unit_tests",
     "//chromecast/cast_core/runtime/browser:unit_tests",
     "//chromecast/cast_core/runtime/browser/url_rewrite:unit_tests",
     "//chromecast/cast_core/runtime/common:unit_tests",
