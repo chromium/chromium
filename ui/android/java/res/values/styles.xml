@@ -5,8 +5,6 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="ColorOverlay.Ui" parent="ColorOverlay.Ui.DayNight">
-        <!-- Common icon colors for drawables. -->
-        <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
     </style>
     <style name="ColorOverlay.Ui.DayNight" parent="">
         <!-- TODO(https://crbug.com/1216642): Move color attributes here. -->

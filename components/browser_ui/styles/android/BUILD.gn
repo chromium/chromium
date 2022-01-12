@@ -25,6 +25,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/color/default_icon_color_accent1_tint_list.xml",
     "java/res/color/default_icon_color_dark_tint_list.xml",
+    "java/res/color/default_icon_color_disabled.xml",
     "java/res/color/default_icon_color_light_tint_list.xml",
     "java/res/color/default_icon_color_secondary_light_tint_list.xml",
     "java/res/color/default_icon_color_secondary_tint_list.xml",
