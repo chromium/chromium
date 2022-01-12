@@ -68,6 +68,21 @@ class WifiLanMedium : public api::WifiLanMedium {
   std::unique_ptr<api::WifiLanServerSocket> ListenForService(int port) override;
 
  private:
+  enum class ConnectResult {
+    kSuccess,
+    kCanceled,
+    kErrorFailedToCreateTcpSocket,
+  };
+
+  enum class ListenResult {
+    kSuccess,
+    kCanceled,
+    kErrorInvalidPort,
+    kErrorFailedToCreateTcpServerSocket,
+    kErrorUnexpectedTcpServerSocketIpEndpoint,
+    kErrorFailedToCreateFirewallHole,
+  };
+
   /*==========================================================================*/
   // ConnectToService() helpers: Connect to remote server socket.
   /*==========================================================================*/
@@ -133,8 +148,8 @@ class WifiLanMedium : public api::WifiLanMedium {
 
   // Removes |event| from the set of pending events and signals |event|. Calls
   // to these methods are sequenced on |task_runner_| and thus thread safe.
-  void FinishConnectAttempt(base::WaitableEvent* event);
-  void FinishListenAttempt(base::WaitableEvent* event);
+  void FinishConnectAttempt(base::WaitableEvent* event, ConnectResult result);
+  void FinishListenAttempt(base::WaitableEvent* event, ListenResult result);
 
   // Resets the |tcp_socket_factory_| and finishes all pending connect/listen
   // attempts with null results.
