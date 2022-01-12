@@ -1549,8 +1549,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithThirdPartyDelegation,
 }
 
 // Flaky on all platforms. https://crbug.com/1285479.
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
-                       DISABLED_DelegateToFoo_MetaName) {
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaName) {
   // Go to a page which delegates hints to `foo.com`.
   GURL gurl = meta_name_accept_ch_delegation_foo();
   SetClientHintExpectationsOnMainFrame(false);
