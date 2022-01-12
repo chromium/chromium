@@ -1213,6 +1213,12 @@ const FeatureEntry::FeatureVariation kMaxZeroSuggestMatchesVariations[] = {
     {"15", kMaxZeroSuggestMatches15, base::size(kMaxZeroSuggestMatches15),
      nullptr}};
 
+const FeatureEntry::FeatureVariation
+    kOmniboxTrendingZeroPrefixSuggestionsOnNTPVariations[] = {
+        {"Signed-in Users", {}, 0, "t4693175"},
+        {"Signed-out Users", {}, 0, "t4693176"},
+        {"All Users", {}, 0, "t4693177"}};
+
 constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration15Secs[] =
     {{"ZeroSuggestCacheDurationSec", "15"}};
 constexpr FeatureEntry::FeatureParam
@@ -4541,7 +4547,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPName,
      flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP,
+         kOmniboxTrendingZeroPrefixSuggestionsOnNTPVariations,
+         "OmniboxBundledExperimentV1")},
 
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,

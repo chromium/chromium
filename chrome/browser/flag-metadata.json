@@ -4340,7 +4340,7 @@
   {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
     "owners": [ "mahmadi", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 104
   },
   {
     "name": "omnibox-trigger-for-prerender2",

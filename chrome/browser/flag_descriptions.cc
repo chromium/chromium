@@ -1720,7 +1720,7 @@ const char kOmniboxPreserveLongerShortcutsTextDescription[] =
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[] =
     "Omnibox Trending Zero Prefix Suggestions";
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[] =
-    "Enables trending zero prefix suggestions for signed-in users with no or "
+    "Enables trending zero prefix suggestions for users with no or "
     "insufficient search history.";
 
 const char kOmniboxZeroSuggestPrefetchingName[] =
