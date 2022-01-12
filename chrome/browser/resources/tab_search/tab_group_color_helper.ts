@@ -15,6 +15,7 @@ const colorMap = new Map<Color, string>([
   [Color.kPink, 'pink'],
   [Color.kPurple, 'purple'],
   [Color.kCyan, 'cyan'],
+  [Color.kOrange, 'orange'],
 ]);
 
 export function colorName(color: Color): string {
