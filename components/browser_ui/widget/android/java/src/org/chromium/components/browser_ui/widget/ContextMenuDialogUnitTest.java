@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -53,6 +54,8 @@ public class ContextMenuDialogUnitTest {
     UiWidgetFactory mMockUiWidgetFactory;
     @Spy
     PopupWindow mSpyPopupWindow;
+    @Mock
+    View mMockTouchEventDelegateView;
 
     @Before
     public void setup() {
@@ -112,9 +115,7 @@ public class ContextMenuDialogUnitTest {
     public void testShowPopupWindow() {
         mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/false);
         mDialog.show();
-        // Change layout params and request layout so #onLayoutChange is triggered.
-        mRootView.setRight(mRootView.getRight() + 1);
-        mRootView.requestLayout();
+        requestLayoutForRootView();
 
         final ArgumentCaptor<Integer> gravityCaptor = ArgumentCaptor.forClass(Integer.class);
         Mockito.verify(mSpyPopupWindow)
@@ -135,17 +136,14 @@ public class ContextMenuDialogUnitTest {
         mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/false);
         mDialog.show();
         // Change layout params and request layout so #onLayoutChange is triggered.
-        mRootView.setRight(mRootView.getRight() + 1);
-        mRootView.requestLayout();
+        requestLayoutForRootView();
         Mockito.verify(mSpyPopupWindow)
                 .showAtLocation(eq(mRootView.getRootView()), anyInt(), anyInt(), anyInt());
 
         // Mock up popup window is showing.
         Mockito.doReturn(true).when(mSpyPopupWindow).isShowing();
 
-        // Change layout params and request layout so #onLayoutChange is triggered.
-        mRootView.setRight(mRootView.getRight() - 1);
-        mRootView.requestLayout();
+        requestLayoutForRootView();
         Mockito.verify(mSpyPopupWindow).dismiss();
     }
 
@@ -163,9 +161,50 @@ public class ContextMenuDialogUnitTest {
         Mockito.verify(mSpyPopupWindow, Mockito.times(0)).dismiss();
     }
 
+    @Test
+    public void testDispatchTouchToDelegate() {
+        mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/true);
+        mDialog.show();
+        requestLayoutForRootView();
+        Mockito.verify(mSpyPopupWindow)
+                .showAtLocation(eq(mRootView.getRootView()), anyInt(), anyInt(), anyInt());
+
+        // common motion events other than ACTION_DOWN should be forwarded to touch event delegate.
+        int[] motionEvenActions = new int[] {MotionEvent.ACTION_CANCEL,
+                MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_EXIT,
+                MotionEvent.ACTION_HOVER_MOVE, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_OUTSIDE,
+                MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_POINTER_UP,
+                MotionEvent.ACTION_SCROLL, MotionEvent.ACTION_UP};
+        for (int actionType : motionEvenActions) {
+            MotionEvent event = createMockMotionEventWithActionType(actionType);
+            mDialog.onTouchEvent(event);
+            Mockito.verify(mMockTouchEventDelegateView).dispatchTouchEvent(eq(event));
+        }
+
+        // ACTION_DOWN should dismiss the dialog and the popup window.
+        MotionEvent downEvent = createMockMotionEventWithActionType(MotionEvent.ACTION_DOWN);
+        mDialog.onTouchEvent(downEvent);
+        Mockito.verify(mMockTouchEventDelegateView, Mockito.times(0))
+                .dispatchTouchEvent(eq(downEvent));
+        Mockito.verify(mSpyPopupWindow).dismiss();
+    }
+
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
         return new ContextMenuDialog(mActivity, 0, 0, 0, 0, ContextMenuDialog.NO_CUSTOM_MARGIN,
                 ContextMenuDialog.NO_CUSTOM_MARGIN, mRootView, mMenuContentView, isPopup,
-                shouldRemoveScrim, 0, 0);
+                shouldRemoveScrim, 0, 0, mMockTouchEventDelegateView);
+    }
+
+    private void requestLayoutForRootView() {
+        // Change layout params and request layout so #onLayoutChange is triggered.
+        mRootView.setRight(mRootView.getRight() + 1);
+        mRootView.requestLayout();
+    }
+
+    private MotionEvent createMockMotionEventWithActionType(int actionType) {
+        MotionEvent motionEvent = Mockito.mock(MotionEvent.class);
+        Mockito.doReturn(actionType).when(motionEvent).getAction();
+
+        return motionEvent;
     }
 }

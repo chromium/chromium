@@ -69,6 +69,8 @@ public class ContextMenuCoordinatorTest {
     @Implements(ContextMenuDialog.class)
     public static class ShadowContextMenuDialog {
         boolean mShouldRemoveScrim;
+        @Nullable
+        View mTouchEventDelegateView;
 
         public ShadowContextMenuDialog() {}
 
@@ -76,8 +78,10 @@ public class ContextMenuCoordinatorTest {
         public void __constructor__(Activity ownerActivity, int theme, float touchPointXPx,
                 float touchPointYPx, float topContentOffsetPx, int topMarginPx, int bottomMarginPx,
                 View layout, View contentView, boolean isPopup, boolean shouldRemoveScrim,
-                @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth) {
+                @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth,
+                @Nullable View touchEventDelegateView) {
             mShouldRemoveScrim = shouldRemoveScrim;
+            mTouchEventDelegateView = touchEventDelegateView;
         }
     }
 
@@ -193,11 +197,7 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     public void testCreateContextMenuDialog() {
-        View contentView = Mockito.mock(View.class);
-        View rootView = Mockito.mock(View.class);
-
-        ContextMenuDialog dialog = ContextMenuCoordinator.createContextMenuDialog(
-                mActivity, rootView, contentView, /*isPopup=*/false, 0, 0, 0, 0, 0, 0, 0);
+        ContextMenuDialog dialog = createContextMenuDialogForTest(/*isPopup=*/false);
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
 
         Assert.assertFalse("Dialog should have scrim behind.", shadowDialog.mShouldRemoveScrim);
@@ -206,14 +206,12 @@ public class ContextMenuCoordinatorTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
     public void testCreateContextMenuDialog_PopupStyle() {
-        View contentView = Mockito.mock(View.class);
-        View rootView = Mockito.mock(View.class);
-
-        ContextMenuDialog dialog = ContextMenuCoordinator.createContextMenuDialog(
-                mActivity, rootView, contentView, /*isPopup=*/true, 0, 0, 0, 0, 0, 0, 0);
+        ContextMenuDialog dialog = createContextMenuDialogForTest(/*isPopup=*/true);
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
 
         Assert.assertTrue("Dialog should remove scrim behind.", shadowDialog.mShouldRemoveScrim);
+        Assert.assertNotNull("TouchEventDelegateView should not be null when drag drop is enabled.",
+                shadowDialog.mTouchEventDelegateView);
     }
 
     private ListItem createListItem(@Item int item) {
@@ -232,5 +230,14 @@ public class ContextMenuCoordinatorTest {
                         .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
+    }
+
+    private ContextMenuDialog createContextMenuDialogForTest(boolean isPopup) {
+        View contentView = Mockito.mock(View.class);
+        View rootView = Mockito.mock(View.class);
+        View webContentView = Mockito.mock(View.class);
+
+        return ContextMenuCoordinator.createContextMenuDialog(
+                mActivity, rootView, contentView, isPopup, 0, 0, 0, 0, 0, 0, 0, webContentView);
     }
 }

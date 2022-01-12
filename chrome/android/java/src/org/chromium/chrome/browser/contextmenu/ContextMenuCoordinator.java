@@ -146,9 +146,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         Integer desiredPopupContentWidth = params.getOpenedFromHighlight()
                 ? activity.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width)
                 : null;
+        View webContentView = webContents.getViewAndroidDelegate() != null
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_AND_DROP_ANDROID)
+                ? webContents.getViewAndroidDelegate().getContainerView()
+                : null;
         mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,
                 touchPointYPx, mTopContentOffsetPx, dialogTopMarginPx, dialogBottomMarginPx,
-                popupMargin, desiredPopupContentWidth);
+                popupMargin, desiredPopupContentWidth, webContentView);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.run());
 
@@ -243,7 +247,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     }
 
     /**
-     * Returns the fully complete dialog based off the params and the itemGroups.
+     * Returns the fully complete dialog based off the params, the itemGroups, and related Chrome
+     * feature flags.
      *
      * @param activity Used to inflate the dialog.
      * @param layout The inflated context menu layout that will house the context menu.
@@ -258,6 +263,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
      *                       defined in XML.
      * @param popupMargin The margin for the popup window.
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
+     * @param webContentView The web content view presented behind the context menu.
      * @return Returns a final dialog that does not have a background can be displayed using
      *         {@link AlertDialog#show()}.
      */
@@ -265,14 +271,14 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     static ContextMenuDialog createContextMenuDialog(Activity activity, View layout, View view,
             boolean isPopup, float touchPointXPx, float touchPointYPx, float topContentOffsetPx,
             int topMarginPx, int bottomMarginPx, @Nullable Integer popupMargin,
-            @Nullable Integer desiredPopupContentWidth) {
+            @Nullable Integer desiredPopupContentWidth, @Nullable View webContentView) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
         boolean shouldRemoveScrim =
                 isPopup && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE);
-        final ContextMenuDialog dialog =
-                new ContextMenuDialog(activity, R.style.Theme_Chromium_AlertDialog, touchPointXPx,
-                        touchPointYPx, topContentOffsetPx, topMarginPx, bottomMarginPx, layout,
-                        view, isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth);
+        final ContextMenuDialog dialog = new ContextMenuDialog(activity,
+                R.style.Theme_Chromium_AlertDialog, touchPointXPx, touchPointYPx,
+                topContentOffsetPx, topMarginPx, bottomMarginPx, layout, view, isPopup,
+                shouldRemoveScrim, popupMargin, desiredPopupContentWidth, webContentView);
         dialog.setContentView(layout);
 
         return dialog;
