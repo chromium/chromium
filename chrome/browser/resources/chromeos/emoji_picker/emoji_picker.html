@@ -16,6 +16,7 @@
             + var(--emoji-size) * (var(--emoji-per-row) - 1)
             + var(--emoji-spacing) * (var(--emoji-per-row) - 1));
     --emoji-picker-group-highlight-bar-width: 24px;
+    --emoji-picker-subcategory-bar-inline-margin: 18px;
     /* Actual properties of the emoji picker */
     background-color: var(--cros-bg-color);
     display: flex;
@@ -60,13 +61,12 @@
   }
 
   /* Mark the first and 10th group as scroll targets to get the correct scroll
-   * snapping behavior. Only apply scroll snapping when using emoji-based
-   subcategory bar. */
-  :host(:not([text-subcategory-bar-enabled])) #tabs :nth-child(2) {
+   * snapping behavior. Scroll snapping is applied in emoji picker v1. */
+  :host(:not([v2-enabled])) #tabs :nth-child(2) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
-  :host(:not([text-subcategory-bar-enabled])) #tabs :nth-child(14) {
+  :host(:not([v2-enabled])) #tabs :nth-child(14) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
@@ -166,6 +166,40 @@
     width: var(--v2-emoji-picker-width);
   }
 
+  :host([v2-enabled]) #tabs {
+    padding-bottom: 5px;
+    padding-top: 12px;
+  }
+
+  /* v2Enabled without text bar specifies the v2 emoji-based subcategory bar. */
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #tabs {
+    grid-gap: var(--v2-emoji-group-spacing);
+  }
+
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #left-chevron {
+    display: none;
+  }
+
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #right-chevron {
+    display: none;
+  }
+
+  :host([text-subcategory-bar-enabled]) .chevron {
+    --cr-icon-button-size: var(--v2-emoji-size);
+    width: var(--v2-emoji-size);
+  }
+
+  :host([text-subcategory-bar-enabled]) #left-chevron {
+    left: var(--emoji-picker-subcategory-bar-inline-margin);
+    margin-inline-end: var(--v2-tab-button-margin);
+  }
+
+  :host([text-subcategory-bar-enabled]) #right-chevron {
+    left: calc(var(--v2-emoji-picker-width) - var(--v2-emoji-size)
+    - var(--emoji-picker-subcategory-bar-inline-margin));
+    padding-inline-end: 0;
+  }
+
   /* Center vertically the history icon and text buttons.*/
   :host([text-subcategory-bar-enabled]) #tabs {
     align-items: center;
@@ -174,6 +208,15 @@
 
   :host([text-subcategory-bar-enabled]) #bar {
     margin-inline: 9px;
+    padding-inline: 0;
+  }
+
+  :host([v2-enabled]:not([text-subcategory-bar-enabled])) #bar {
+    /*
+     * Introduce some margin to align the highlight bar vertically centered with
+     * the emoji button.
+     */
+    margin-inline: 4px;
     padding-inline: 0;
   }
 </style>
@@ -208,7 +251,8 @@
             group-id="[[item.groupId]]"
             active="[[item.active]]"
             disabled="[[item.disabled]]"
-            icon="[[item.icon]]" name="[[item.name]]">
+            icon="[[item.icon]]" name="[[item.name]]"
+            v2-enabled$="[[v2Enabled]]">>
           </emoji-group-button>
         </template>
         <!--Fake group button to increase maximum scrolling, need an icon to
@@ -241,7 +285,8 @@
             disabled="[[emojiGroupTabs.0.disabled]]"
             icon="[[emojiGroupTabs.0.icon]]"
             name="[[emojiGroupTabs.0.name]]"
-            class="tab">
+            class="tab"
+            v2-enabled$="[[v2Enabled]]">
           </emoji-group-button>
           <!-- Render non history tab. -->
           <template is="dom-repeat"
