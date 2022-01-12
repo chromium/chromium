@@ -115,16 +115,22 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // Iterator over platform children.
   class CONTENT_EXPORT PlatformChildIterator : public ChildIterator {
    public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = int;
+    using value_type = BrowserAccessibility;
+    using pointer = BrowserAccessibility*;
+    using reference = BrowserAccessibility&;
+
     PlatformChildIterator(const BrowserAccessibility* parent,
                           BrowserAccessibility* child);
     PlatformChildIterator(const PlatformChildIterator& it);
     ~PlatformChildIterator() override;
     bool operator==(const ChildIterator& rhs) const override;
     bool operator!=(const ChildIterator& rhs) const override;
-    void operator++() override;
-    void operator++(int) override;
-    void operator--() override;
-    void operator--(int) override;
+    PlatformChildIterator& operator++() override;
+    PlatformChildIterator& operator++(int) override;
+    PlatformChildIterator& operator--() override;
+    PlatformChildIterator& operator--(int) override;
     gfx::NativeViewAccessible GetNativeViewAccessible() const override;
     BrowserAccessibility* get() const;
     int GetIndexInParent() const override;
@@ -151,6 +157,13 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
     PlatformChildIterator begin() { return parent_->PlatformChildrenBegin(); }
     PlatformChildIterator end() { return parent_->PlatformChildrenEnd(); }
+
+    std::reverse_iterator<PlatformChildIterator> rbegin() {
+      return std::reverse_iterator(parent_->PlatformChildrenEnd());
+    }
+    std::reverse_iterator<PlatformChildIterator> rend() {
+      return std::reverse_iterator(parent_->PlatformChildrenBegin());
+    }
 
    private:
     const BrowserAccessibility* const parent_;

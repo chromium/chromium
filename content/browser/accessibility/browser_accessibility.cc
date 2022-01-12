@@ -1599,20 +1599,28 @@ bool BrowserAccessibility::PlatformChildIterator::operator!=(
   return GetIndexInParent() != rhs.GetIndexInParent();
 }
 
-void BrowserAccessibility::PlatformChildIterator::operator++() {
+BrowserAccessibility::PlatformChildIterator&
+BrowserAccessibility::PlatformChildIterator::operator++() {
   ++platform_iterator;
+  return *this;
 }
 
-void BrowserAccessibility::PlatformChildIterator::operator++(int) {
+BrowserAccessibility::PlatformChildIterator&
+BrowserAccessibility::PlatformChildIterator::operator++(int) {
   ++platform_iterator;
+  return *this;
 }
 
-void BrowserAccessibility::PlatformChildIterator::operator--() {
+BrowserAccessibility::PlatformChildIterator&
+BrowserAccessibility::PlatformChildIterator::operator--() {
   --platform_iterator;
+  return *this;
 }
 
-void BrowserAccessibility::PlatformChildIterator::operator--(int) {
+BrowserAccessibility::PlatformChildIterator&
+BrowserAccessibility::PlatformChildIterator::operator--(int) {
   --platform_iterator;
+  return *this;
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformChildIterator::get() const {

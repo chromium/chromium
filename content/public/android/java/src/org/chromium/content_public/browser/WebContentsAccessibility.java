@@ -142,4 +142,9 @@ public interface WebContentsAccessibility {
      * @return Whether the hover event was consumed.
      */
     boolean onHoverEventNoRenderer(MotionEvent event);
+
+    /**
+     * Called to reset focus state to nothing.
+     */
+    void resetFocus();
 }

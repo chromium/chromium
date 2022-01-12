@@ -150,10 +150,10 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
     ~ChildIteratorBase() override = default;
     bool operator==(const ChildIterator& rhs) const override;
     bool operator!=(const ChildIterator& rhs) const override;
-    void operator++() override;
-    void operator++(int) override;
-    void operator--() override;
-    void operator--(int) override;
+    ChildIteratorBase& operator++() override;
+    ChildIteratorBase& operator++(int) override;
+    ChildIteratorBase& operator--() override;
+    ChildIteratorBase& operator--(int) override;
     gfx::NativeViewAccessible GetNativeViewAccessible() const override;
     int GetIndexInParent() const override;
     AXPlatformNodeDelegate& operator*() const override;

@@ -400,6 +400,10 @@ public class PlayerManager {
         }
     }
 
+    public boolean supportsAccessibility() {
+        return mWebContentsAccessibility != null;
+    }
+
     public void setCompressOnClose(boolean compressOnClose) {
         if (mDelegate != null) {
             mDelegate.setCompressOnClose(compressOnClose);

@@ -228,6 +228,7 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
       reinterpret_cast<ui::AXTreeUpdate*>(ax_tree_update_ptr));
   manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
       *ax_tree_snapshot, GetWeakPtr(), nullptr);
+  manager_->BuildAXTreeHitTestCache();
   connector_ = nullptr;
   BrowserAccessibilityStateImplAndroid* accessibility_state =
       static_cast<BrowserAccessibilityStateImplAndroid*>(
@@ -596,8 +597,7 @@ bool WebContentsAccessibilityAndroid::OnHoverEventNoRenderer(
   if (BrowserAccessibilityManagerAndroid* root_manager =
           GetRootBrowserAccessibilityManager()) {
     auto* hover_node = static_cast<BrowserAccessibilityAndroid*>(
-        root_manager->GetRoot()->ApproximateHitTest(
-            gfx::ToFlooredPoint(point)));
+        root_manager->ApproximateHitTest(gfx::ToFlooredPoint(point)));
     if (hover_node && hover_node != root_manager->GetRoot()) {
       HandleHover(hover_node->unique_id());
       return true;

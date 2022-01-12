@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "cc/base/rtree.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "content/common/render_accessibility.mojom-forward.h"
@@ -537,6 +538,31 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Returns the current page scale factor for this frame.
   float GetPageScaleFactor() const;
 
+  // Builds a cache for hit testing an AXTree. Note that the structure is cache
+  // from the last time this was called and must be updated if the underlying
+  // AXTree is modified.
+  void BuildAXTreeHitTestCache();
+
+  // This is an approximate hit test that only uses the information in
+  // the browser process to compute the correct result. It will not return
+  // correct results in many cases of z-index, overflow, and absolute
+  // positioning, so BrowserAccessibilityManager::CachingAsyncHitTest
+  // should be used instead, which falls back on calling ApproximateHitTest
+  // automatically. Note that if BuildAXTreeHitTestCache is called before this
+  // method then BrowserAccessibilityManager::AXTreeHitTest will be used instead
+  // of BrowserAccessibility::ApproximateHitTest.
+  //
+  // Note that unlike BrowserAccessibilityManager::CachingAsyncHitTest, this
+  // method takes a parameter in Blink's definition of screen coordinates.
+  // This is so that the scale factor is consistent with what we receive from
+  // Blink and store in the AX tree.
+  // Blink screen coordinates are 1:1 with physical pixels if use-zoom-for-dsf
+  // is disabled; they're physical pixels divided by device scale factor if
+  // use-zoom-for-dsf is disabled. For more information see:
+  // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
+  BrowserAccessibility* ApproximateHitTest(
+      const gfx::Point& blink_screen_point) const;
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerTest,
                            TestShouldFireEventForNode);
@@ -653,10 +679,24 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // with error information.
   bool Unserialize(const ui::AXTreeUpdate& tree_update);
 
+  void BuildAXTreeHitTestCacheInternal(
+      const BrowserAccessibility* node,
+      std::vector<const BrowserAccessibility*>* storage);
+
+  // Performs hit testing on the AXTree using the cache from
+  // BuildAXTreeHitTestCache. This requires BuildAXTreeHitTestCache to be
+  // called first.
+  BrowserAccessibility* AXTreeHitTest(
+      const gfx::Point& blink_screen_point) const;
+
   // The underlying tree of accessibility objects.
   std::unique_ptr<ui::AXSerializableTree> tree_;
 
   ui::AXEventGenerator event_generator_;
+
+  // Only used on the root node for AXTree hit testing as an alternative to
+  // ApproximateHitTest when used without a renderer.
+  std::unique_ptr<cc::RTree<ui::AXNodeID>> cached_node_rtree_;
 
   // Automatically stops observing notifications from the AXTree when this class
   // is destructed.

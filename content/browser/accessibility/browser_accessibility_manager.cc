@@ -1714,7 +1714,78 @@ BrowserAccessibility* BrowserAccessibilityManager::CachingAsyncHitTest(
   // more complicated layouts. The hope is that if the user is moving the
   // mouse, this fallback will only be used transiently, and the asynchronous
   // result will be used for the next call.
+  return ApproximateHitTest(blink_screen_point);
+}
+
+BrowserAccessibility* BrowserAccessibilityManager::ApproximateHitTest(
+    const gfx::Point& blink_screen_point) const {
+  if (cached_node_rtree_)
+    return AXTreeHitTest(blink_screen_point);
+
   return GetRoot()->ApproximateHitTest(blink_screen_point);
+}
+
+void BrowserAccessibilityManager::BuildAXTreeHitTestCache() {
+  auto* root = GetRoot();
+  if (!root)
+    return;
+
+  std::vector<const BrowserAccessibility*> storage;
+  BuildAXTreeHitTestCacheInternal(root, &storage);
+  // Use AXNodeID for this as nodes are unchanging with this cache.
+  cached_node_rtree_ = std::make_unique<cc::RTree<ui::AXNodeID>>();
+  cached_node_rtree_->Build(
+      storage,
+      [](const std::vector<const BrowserAccessibility*>& storage,
+         size_t index) {
+        return storage[index]->GetUnclippedRootFrameBoundsRect();
+      },
+      [](const std::vector<const BrowserAccessibility*>& storage,
+         size_t index) { return storage[index]->GetId(); });
+}
+
+void BrowserAccessibilityManager::BuildAXTreeHitTestCacheInternal(
+    const BrowserAccessibility* node,
+    std::vector<const BrowserAccessibility*>* storage) {
+  // Based on behavior in ApproximateHitTest() and node ordering in Blink:
+  // Generated backwards so that in the absence of any other information, we
+  // assume the object that occurs later in the tree is on top of one that comes
+  // before it.
+  auto range = node->PlatformChildren();
+  for (auto child = range.rbegin(); child != range.rend(); ++child) {
+    // Skip table columns because cells are only contained in rows,
+    // not columns.
+    if (child->GetRole() == ax::mojom::Role::kColumn)
+      continue;
+
+    BuildAXTreeHitTestCacheInternal(&(*child), storage);
+  }
+
+  storage->push_back(node);
+}
+
+BrowserAccessibility* BrowserAccessibilityManager::AXTreeHitTest(
+    const gfx::Point& blink_screen_point) const {
+  DCHECK(IsRootTree());
+  DCHECK(cached_node_rtree_);
+
+  std::vector<ui::AXNodeID> results;
+  std::vector<gfx::Rect> rects;
+  cached_node_rtree_->Search(
+      gfx::Rect(blink_screen_point.x(), blink_screen_point.y(), /*width=*/1,
+                /*height=*/1),
+      &results, &rects);
+
+  if (results.empty())
+    return nullptr;
+
+  // Find the tightest enclosing rect. Work backwards as leaf nodes come
+  // last and should be preferred.
+  auto rit = std::min_element(rects.rbegin(), rects.rend(),
+                              [](const gfx::Rect& a, const gfx::Rect& b) {
+                                return a.size().Area64() < b.size().Area64();
+                              });
+  return GetFromID(results[std::distance(rects.begin(), rit.base()) - 1]);
 }
 
 void BrowserAccessibilityManager::CacheHitTestResult(

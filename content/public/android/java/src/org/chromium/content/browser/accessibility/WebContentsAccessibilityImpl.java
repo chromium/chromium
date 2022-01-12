@@ -305,8 +305,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         } else {
             refreshState();
         }
-        mDelegate.setOnScrollPositionChangedCallback(
-                () -> handleScrollPositionChanged(mAccessibilityFocusId));
+        mDelegate.setOnScrollPositionChangedCallback(() -> {
+            handleScrollPositionChanged(mAccessibilityFocusId);
+            moveAccessibilityFocusToIdAndRefocusIfNeeded(mAccessibilityFocusId);
+        });
 
         BrowserAccessibilityState.addListener(this);
 
@@ -1109,6 +1111,20 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return WebContentsAccessibilityImplJni.get().onHoverEventNoRenderer(mNativeObj, this, x, y);
     }
 
+    @Override
+    public void resetFocus() {
+        if (mNativeObj == 0) return;
+
+        // Reset accessibility focus.
+        WebContentsAccessibilityImplJni.get().moveAccessibilityFocus(
+                mNativeObj, WebContentsAccessibilityImpl.this, mAccessibilityFocusId, View.NO_ID);
+        mAccessibilityFocusId = View.NO_ID;
+        mAccessibilityFocusRect = null;
+
+        sendAccessibilityEvent(mLastHoverId, AccessibilityEvent.TYPE_VIEW_HOVER_EXIT);
+        mLastHoverId = View.NO_ID;
+    }
+
     /**
      * Notify us when the frame info is initialized,
      * the first time, since until that point, we can't use AccessibilityCoordinates to transform
@@ -1614,6 +1630,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!mIsHovering) return;
 
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
+        // The above call doesn't work reliably for nodes that weren't in the viewport when
+        // using an AXTree that was cached.
+        if (mDelegate.getNativeAXTree() != 0) {
+            // As a workaround force the node into focus when a paint preview is showing.
+            moveAccessibilityFocusToIdAndRefocusIfNeeded(id);
+        }
     }
 
     @CalledByNative

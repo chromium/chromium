@@ -1539,4 +1539,43 @@ TEST_F(BrowserAccessibilityManagerTest, NestedChildRoot) {
   EXPECT_EQ(manager->GetPopupRoot(), nullptr);
 }
 
+TEST_F(BrowserAccessibilityManagerTest, TestApproximateHitTestCache) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  root.relative_bounds.bounds = gfx::RectF(0, 0, 200, 200);
+  root.child_ids = {2, 3};
+
+  ui::AXNodeData child1;
+  child1.id = 2;
+  child1.role = ax::mojom::Role::kGenericContainer;
+  child1.SetName("child1");
+  child1.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
+
+  ui::AXNodeData child2;
+  child2.id = 3;
+  child2.role = ax::mojom::Role::kGenericContainer;
+  child2.SetName("child2");
+  child2.relative_bounds.bounds = gfx::RectF(50, 50, 50, 50);
+
+  ui::AXTreeUpdate update = MakeAXTreeUpdate(root, child1, child2);
+
+  // Create manager.
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          update, test_browser_accessibility_delegate_.get()));
+  manager->BuildAXTreeHitTestCache();
+
+  auto* hittest1 = manager->ApproximateHitTest(gfx::Point(1, 1));
+  ASSERT_NE(nullptr, hittest1);
+  ASSERT_EQ("child1",
+            hittest1->GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  auto* hittest2 = manager->CachingAsyncHitTest(gfx::Point(75, 75));
+  ASSERT_NE(nullptr, hittest2);
+  ASSERT_EQ("child2",
+            hittest2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
 }  // namespace content
