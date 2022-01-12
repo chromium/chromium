@@ -4920,27 +4920,24 @@ void ChromeContentBrowserClient::
                      extensions::CreateExtensionURLLoaderFactory(
                          render_process_id, render_frame_id));
 
+  content::BrowserContext* browser_context =
+      content::RenderProcessHost::FromID(render_process_id)
+          ->GetBrowserContext();
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser_context)
+          ->enabled_extensions()
+          .GetExtensionOrAppByURL(request_initiator_origin->GetURL());
+
   // This path will be taken for service workers, where there is no
   // RenderFrameHost, but we still need to initialize file URL access.
-  if (render_frame_id == MSG_ROUTING_NONE) {
-    content::BrowserContext* browser_context =
-        content::RenderProcessHost::FromID(render_process_id)
-            ->GetBrowserContext();
-    extensions::ExtensionRegistry* extension_registry =
-        extensions::ExtensionRegistry::Get(browser_context);
-    for (const std::string& extension_id :
-         extensions::ProcessMap::Get(browser_context)
-             ->GetExtensionsInProcess(render_process_id)) {
-      const extensions::Extension* extension =
-          extension_registry->enabled_extensions().GetByID(extension_id);
-      // TODO(crbug.com/1280411) Factories should not be created for unloaded
-      // extensions.
-      if (!extension)
-        continue;
-
-      InitializeFileURLLoaderFactoryForExtension(
-          render_process_id, browser_context, extension, factories);
-    }
+  // For service worker contexts, we only allow file access. The remainder of
+  // this code is used to allow extensions to access chrome:-scheme
+  // resources, which we are moving away from.
+  // TODO(crbug.com/1280411) Factories should not be created for unloaded
+  // extensions.
+  if (render_frame_id == MSG_ROUTING_NONE && extension) {
+    InitializeFileURLLoaderFactoryForExtension(
+        render_process_id, browser_context, extension, factories);
   }
 
   // This logic should match
@@ -4969,13 +4966,8 @@ void ChromeContentBrowserClient::
           web_contents);
 
   // There is nothing to do if no ChromeExtensionWebContentsObserver is attached
-  // to the |web_contents|.
-  if (!web_observer)
-    return;
-
-  const Extension* extension =
-      web_observer->GetExtensionFromFrame(frame_host, false);
-  if (!extension)
+  // to the |web_contents| or no enabled extension exists.
+  if (!web_observer || !extension)
     return;
 
   std::vector<std::string> allowed_webui_hosts;
