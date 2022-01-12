@@ -94,6 +94,10 @@ public class AccessibilityNodeInfoUtils {
         if (node.getError() != null) {
             builder.append(" error:\"").append(node.getError()).append("\"");
         }
+        if (node.getStateDescription() != null
+                && !node.getStateDescription().toString().isEmpty()) {
+            builder.append(" stateDescription:\"").append(node.getStateDescription()).append("\"");
+        }
 
         // Boolean properties - Only print when set to true except for enabled and visibleToUser,
         // which are both mostly true, so only print when they are false.

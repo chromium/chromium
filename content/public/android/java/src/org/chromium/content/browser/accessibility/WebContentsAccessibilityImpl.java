@@ -1848,9 +1848,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         CharSequence computedText = computeText(
                 text, annotateAsLink, language, suggestionStarts, suggestionEnds, suggestions);
 
-        // For pre-Android R, we add stateDescription to text for backwards compatibility.
+        // We add the stateDescription attribute when it is non-null and not empty.
         if (stateDescription != null && !stateDescription.isEmpty()) {
-            computedText = computedText + ", " + stateDescription;
+            node.setStateDescription(stateDescription);
         }
 
         // We expose the nested structure of links, which results in the roles of all nested nodes
@@ -1859,20 +1859,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             node.setContentDescription(computedText);
         } else {
             node.setText(computedText);
-        }
-
-        // TODO(mschillaci): In a follow-up CL, match these across Android versions and fix tests.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // For Android R and higher, we will not rely on concatenating text and
-            // stateDescription, and will instead revert text to original content and set
-            // stateDescription separately.
-            if (stateDescription != null && !stateDescription.isEmpty()) {
-                CharSequence originalText = computeText(text, annotateAsLink, language,
-                        suggestionStarts, suggestionEnds, suggestions);
-
-                node.setText(originalText);
-                node.setStateDescription(stateDescription);
-            }
         }
     }
 

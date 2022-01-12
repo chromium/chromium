@@ -1,6 +1,6 @@
 WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++View CollectionInfo:[hierarchical, rows=2, cols=0] actions:[AX_FOCUS] bundle:[chromeRole="tree", roleDescription="tree"]
-++++View text:"Animals, Partially Checked" clickable CollectionItemInfo:[rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="treeItem", roleDescription="tree item"]
+++++View text:"Animals" stateDescription:"Partially Checked" clickable CollectionItemInfo:[rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="treeItem", roleDescription="tree item"]
 ++++++View text:"null" contentDescription:"Animals" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/aria/aria-tree.html#animals"]
 ++++++++TextView text:"Animals" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="group"]
