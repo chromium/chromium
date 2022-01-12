@@ -3164,8 +3164,8 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
   bool clipboard_changed_ = false;
 };
 
-// TODO(crbug.com/1268983): Fix flakiness on Linux and reenable.
-#if defined(OS_LINUX)
+// TODO(crbug.com/1121446): Fix flakiness.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_IndividualShiftRightArrowPresses \
   DISABLED_IndividualShiftRightArrowPresses
 #else
@@ -3219,8 +3219,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
-// Flaky, http://crbug.com/1269104
-#if defined(OS_LINUX)
+// Flaky, http://crbug.com/1121446
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_CombinedShiftRightArrowPresses \
   DISABLED_CombinedShiftRightArrowPresses
 #else
@@ -3254,7 +3254,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 }
 
 // Flaky on Linux (https://crbug.com/1121446)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_CombinedShiftArrowPresses DISABLED_CombinedShiftArrowPresses
 #else
 #define MAYBE_CombinedShiftArrowPresses CombinedShiftArrowPresses
