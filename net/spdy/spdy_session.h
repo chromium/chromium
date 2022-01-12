@@ -98,6 +98,15 @@ const spdy::SpdyStreamId kLastStreamId = 0x7fffffff;
 // attacker from growing this queue unboundedly.
 const int kSpdySessionMaxQueuedCappedFrames = 10000;
 
+// Default time to delay sending small receive window updates (can be
+// configured through SetTimeToBufferSmallWindowUpdates()). Usually window
+// updates are sent when half of the receive window has been processed by
+// the client but in the case of a client that consumes the data slowly,
+// this strategy alone would make servers consider the connection or stream
+// idle.
+constexpr base::TimeDelta kDefaultTimeToBufferSmallWindowUpdates =
+    base::Seconds(5);
+
 class NetLog;
 class NetworkQualityEstimator;
 class SpdyStream;
@@ -528,6 +537,18 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // whenever receive window size is increased.
   void SendStreamWindowUpdate(spdy::SpdyStreamId stream_id,
                               uint32_t delta_window_size);
+
+  // Configure the amount of time that small receive window updates should
+  // be accumulated over (defaults to kDefaultTimeToBufferSmallWindowUpdates).
+  void SetTimeToBufferSmallWindowUpdates(const base::TimeDelta buffer_time) {
+    time_to_buffer_small_window_updates_ = buffer_time;
+  }
+
+  // Returns the configured time that small receive window updates should
+  // be accumulated over.
+  base::TimeDelta TimeToBufferSmallWindowUpdates() const {
+    return time_to_buffer_small_window_updates_;
+  }
 
   // Accessors for the session's availability state.
   bool IsAvailable() const { return availability_state_ == STATE_AVAILABLE; }
@@ -1222,6 +1243,12 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // and this member keeps count of them until the corresponding WINDOW_UPDATEs
   // are sent.  Zero unless session flow control is turned on.
   int32_t session_unacked_recv_window_bytes_;
+
+  // Time of the last WINDOW_UPDATE for the receive window.
+  base::TimeTicks last_recv_window_update_;
+
+  // Time to accumilate small receive window updates for.
+  base::TimeDelta time_to_buffer_small_window_updates_;
 
   // Initial send window size for this session's streams. Can be
   // changed by an arriving SETTINGS frame. Newly created streams use

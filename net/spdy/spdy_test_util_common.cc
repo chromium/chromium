@@ -510,6 +510,10 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);
   EXPECT_TRUE(HasSpdySession(http_session->spdy_session_pool(), key));
+  // Disable the time-based receive window updates by setting the delay to
+  // the max time interval. This prevents time-based flakiness in the tests
+  // for any test not explicitly exercising the window update buffering.
+  spdy_session->SetTimeToBufferSmallWindowUpdates(base::TimeDelta::Max());
   return spdy_session;
 }
 
@@ -600,6 +604,10 @@ base::WeakPtr<SpdySession> CreateFakeSpdySession(SpdySessionPool* pool,
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);
   EXPECT_TRUE(HasSpdySession(pool, key));
+  // Disable the time-based receive window updates by setting the delay to
+  // the max time interval. This prevents time-based flakiness in the tests
+  // for any test not explicitly exercising the window update buffering.
+  spdy_session->SetTimeToBufferSmallWindowUpdates(base::TimeDelta::Max());
   return spdy_session;
 }
 

@@ -107,6 +107,7 @@ SpdyStream::SpdyStream(SpdyStreamType type,
       max_recv_window_size_(max_recv_window_size),
       recv_window_size_(max_recv_window_size),
       unacked_recv_window_bytes_(0),
+      last_recv_window_update_(base::TimeTicks::Now()),
       session_(session),
       delegate_(nullptr),
       request_headers_valid_(false),
@@ -332,8 +333,16 @@ void SpdyStream::IncreaseRecvWindowSize(int32_t delta_window_size) {
                                               recv_window_size_);
   });
 
+  // Update the receive window once half of the buffer is ready to be acked
+  // to prevent excessive window updates on fast downloads. Also send an update
+  // if too much time has elapsed since the last update to deal with
+  // slow-reading clients so the server doesn't think the stream is idle.
   unacked_recv_window_bytes_ += delta_window_size;
-  if (unacked_recv_window_bytes_ > max_recv_window_size_ / 2) {
+  const base::TimeDelta elapsed =
+      base::TimeTicks::Now() - last_recv_window_update_;
+  if (unacked_recv_window_bytes_ > max_recv_window_size_ / 2 ||
+      elapsed >= session_->TimeToBufferSmallWindowUpdates()) {
+    last_recv_window_update_ = base::TimeTicks::Now();
     session_->SendStreamWindowUpdate(
         stream_id_, static_cast<uint32_t>(unacked_recv_window_bytes_));
     unacked_recv_window_bytes_ = 0;

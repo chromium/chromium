@@ -33,6 +33,10 @@
 
 namespace net {
 
+namespace test {
+class SpdyStreamTest;
+}
+
 class IPEndPoint;
 struct LoadTimingInfo;
 class SSLInfo;
@@ -405,6 +409,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
   }
 
  private:
+  friend class test::SpdyStreamTest;
+
   class HeadersBufferProducer;
 
   // SpdyStream states and transitions are modeled
@@ -488,6 +494,9 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // and this member keeps count of them until the corresponding WINDOW_UPDATEs
   // are sent.
   int32_t unacked_recv_window_bytes_;
+
+  // Time of the last WINDOW_UPDATE for the receive window
+  base::TimeTicks last_recv_window_update_;
 
   const base::WeakPtr<SpdySession> session_;
 

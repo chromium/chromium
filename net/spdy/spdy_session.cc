@@ -983,6 +983,9 @@ SpdySession::SpdySession(
       session_max_queued_capped_frames_(session_max_queued_capped_frames),
       session_recv_window_size_(0),
       session_unacked_recv_window_bytes_(0),
+      last_recv_window_update_(base::TimeTicks::Now()),
+      time_to_buffer_small_window_updates_(
+          kDefaultTimeToBufferSmallWindowUpdates),
       stream_initial_send_window_size_(kDefaultInitialWindowSize),
       max_header_table_size_(
           initial_settings.at(spdy::SETTINGS_HEADER_TABLE_SIZE)),
@@ -2667,6 +2670,7 @@ void SpdySession::SendInitialData() {
                                                  session_recv_window_size_);
     });
 
+    last_recv_window_update_ = base::TimeTicks::Now();
     session_unacked_recv_window_bytes_ += delta_window_size;
     net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_SEND_WINDOW_UPDATE, [&] {
       return NetLogSpdyWindowUpdateFrameParams(
@@ -3699,8 +3703,16 @@ void SpdySession::IncreaseRecvWindowSize(int32_t delta_window_size) {
                                                session_recv_window_size_);
   });
 
+  // Update the receive window once half of the buffer is ready to be acked
+  // to prevent excessive window updates on fast downloads. Also send an update
+  // if too much time has elapsed since the last update to deal with
+  // slow-reading clients so the server doesn't think the session is idle.
   session_unacked_recv_window_bytes_ += delta_window_size;
-  if (session_unacked_recv_window_bytes_ > session_max_recv_window_size_ / 2) {
+  const base::TimeDelta elapsed =
+      base::TimeTicks::Now() - last_recv_window_update_;
+  if (session_unacked_recv_window_bytes_ > session_max_recv_window_size_ / 2 ||
+      elapsed >= time_to_buffer_small_window_updates_) {
+    last_recv_window_update_ = base::TimeTicks::Now();
     SendWindowUpdateFrame(spdy::kSessionFlowControlStreamId,
                           session_unacked_recv_window_bytes_, HIGHEST);
     session_unacked_recv_window_bytes_ = 0;
