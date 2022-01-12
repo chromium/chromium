@@ -140,6 +140,8 @@
     # Deduplicate the sources files in the input so the same source file
     # don't appear in multiple sets
     sources = set(sources)
+    # Convert sources to sorted list so the sources are split into 3 targets deterministically
+    sources = sorted(sources)
     out_sources = []
     repeated1 = []
     repeated2 = []
