@@ -29,8 +29,8 @@ class QueryRunner {
     return JSON.parse(output.toString());
   }
 
-  // Returns a parsed JSON object from the contents in `filename` for the
-  // specified `task_id`.
+  // Returns a promoise for a parsed JSON object from the contents in `filename`
+  // for the specified `task_id`.
   retrieveJSONFile(task_id, filename) {
     // This is going to create some temp directory. So put this in a try/finally
     // block so that the temp directory gets cleaned up correctly.
@@ -53,13 +53,16 @@ class QueryRunner {
   }
 
   retrieveFile_(task_id, filename, temp_dir) {
-    const cmds = [
-      this.bin_, 'collect', '-S', this.swarming_server_,
-      `-output-dir="${temp_dir}"`, task_id
-    ];
-    const output = child_process.execSync(cmds.join(' '));
-    const filepath = path.join(temp_dir, task_id, filename);
-    return JSON.parse(fs.readFileSync(filepath).toString());
+    return new Promise((resolve, reject) => {
+      const cmds = [
+        this.bin_, 'collect', '-S', this.swarming_server_,
+        `-output-dir="${temp_dir}"`, task_id
+      ];
+      const output = child_process.exec(cmds.join(' '), () => {
+        const filepath = path.join(temp_dir, task_id, filename);
+        resolve(JSON.parse(fs.readFileSync(filepath).toString()));
+      });
+    });
   }
 };
 

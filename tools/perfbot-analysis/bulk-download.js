@@ -4,19 +4,12 @@
 
 'use strict';
 
-function tryRequire(name) {
-  try {
-    return require(name);
-  } catch (ex) {
-    return undefined;
-  }
-}
-
 const bulider = require('./builder.js');
 const gsutil = require('./gsutil.js');
+const tryrequire = require('./try-require.js');
 
 const fs = require('fs');
-const yargs = tryRequire('yargs');
+const yargs = tryrequire.tryrequire('yargs');
 if (!yargs) {
   console.error('Please install the `yargs` package from npm (`npm i yargs`).');
   return;
@@ -75,32 +68,40 @@ async function main() {
   printUpdate(`Found ${children.length} child tasks.`);
 
   const all = {};
+  const promises = [];
+  let taskno = 0;
   for (const child of children) {
-    const output = child.downloadJSONFile('output.json');
+    const p = child.downloadJSONFile('output.json');
+    promises.push(p);
 
-    if (argv.benchmark in output.tests) {
-      const tests = Object.keys(output.tests[argv.benchmark]);
-      printUpdate(`${tests.length} tests found for ${argv.benchmark} in ${
-          child.task_id}.`);
-      for (const t of tests) {
-        const artifacts = output.tests[argv.benchmark][t].artifacts;
-        if (artifacts && artifacts['trace.html']) {
-          const trace = artifacts['trace.html'];
-          const url =
-              (typeof (trace) === 'object' && typeof (trace[0]) === 'string') ?
-              trace[0] :
-              trace;
-          if (t in all) {
-            all[t].push(url);
-          } else {
-            all[t] = [url];
+    p.then((output) => {
+      if (argv.benchmark in output.tests) {
+        const tests = Object.keys(output.tests[argv.benchmark]);
+        printUpdate(
+            `${++taskno}/${children.length} ${tests.length} tests found for ${
+                argv.benchmark} in ${child.task_id}.`);
+        for (const t of tests) {
+          const artifacts = output.tests[argv.benchmark][t].artifacts;
+          if (artifacts && artifacts['trace.html']) {
+            const trace = artifacts['trace.html'];
+            const url = (typeof (trace) === 'object' &&
+                         typeof (trace[0]) === 'string') ?
+                trace[0] :
+                trace;
+            if (t in all) {
+              all[t].push(url);
+            } else {
+              all[t] = [url];
+            }
           }
         }
+      } else {
+        printUpdate(`${++taskno}/${children.length} 0 tests found for ${
+            argv.benchmark} in ${child.task_id}.`);
       }
-    } else {
-      printUpdate(`0 tests found for ${argv.benchmark} in ${child.task_id}.`);
-    }
+    });
   }
+  await Promise.all(promises);
 
   // Maps a gs:// url to a local filename.
   const map = {};

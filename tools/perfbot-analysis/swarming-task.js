@@ -31,7 +31,9 @@ class SwarmingTask {
 // artifacts. So to find all the failed tests, it downloads the artifacts from
 // the swarming server, and parses the `output.json` file.
 class ChildSwarmingTask extends SwarmingTask {
-  downloadJSONFile(filename) {
+  // Returns a promoise for a parsed JSON object from the contents in
+  // `filename` for this task.
+  async downloadJSONFile(filename) {
     return this.query_runner_.retrieveJSONFile(this.task_id_, filename);
   }
 };
