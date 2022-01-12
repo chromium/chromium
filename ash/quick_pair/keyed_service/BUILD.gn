@@ -52,7 +52,9 @@ source_set("unit_tests") {
 
   deps = [
     ":keyed_service",
+    "//ash/constants:constants",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/feature_status_tracker:test_support",
     "//ash/quick_pair/message_stream",
     "//ash/quick_pair/message_stream:test_support",
@@ -65,6 +67,7 @@ source_set("unit_tests") {
     "//ash/services/quick_pair:test_support",
     "//base",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//components/user_manager:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",

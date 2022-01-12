@@ -6,9 +6,14 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "components/prefs/pref_registry.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -19,9 +24,21 @@ class FastPairFeatureUsageMetricsLoggerTest : public ::testing::Test {
   FastPairFeatureUsageMetricsLoggerTest() = default;
   ~FastPairFeatureUsageMetricsLoggerTest() override = default;
 
-  void SetUp() override {}
+  void SetUp() override {
+    browser_delegate_ = std::make_unique<MockQuickPairBrowserDelegate>();
+    ON_CALL(*browser_delegate_, GetActivePrefService())
+        .WillByDefault(testing::Return(&pref_service_));
+    pref_service_.registry()->RegisterBooleanPref(ash::prefs::kFastPairEnabled,
+                                                  /*default_value=*/true);
+  }
+
+  void SetEnabled(bool is_enabled) {
+    pref_service_.SetBoolean(ash::prefs::kFastPairEnabled, is_enabled);
+  }
 
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligible) {
@@ -29,9 +46,16 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligible) {
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabled_Enabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
+}
+
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabled_NotEnabled) {
+  FastPairFeatureUsageMetricsLogger feature_usage_metrics;
+
+  SetEnabled(/*is_enabled=*/false);
+  EXPECT_FALSE(feature_usage_metrics.IsEnabled());
 }
 
 TEST_F(FastPairFeatureUsageMetricsLoggerTest, RecordUsage) {

@@ -4,6 +4,10 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
+#include "components/prefs/pref_service.h"
+
 namespace {
 
 const char kFastPairUmaFeatureName[] = "FastPair";
@@ -29,8 +33,9 @@ bool FastPairFeatureUsageMetricsLogger::IsEligible() const {
 }
 
 bool FastPairFeatureUsageMetricsLogger::IsEnabled() const {
-  // crbug/1250479: Update SFUL IsEnabled to support settings toggle
-  return true;
+  PrefService* pref_service =
+      QuickPairBrowserDelegate::Get()->GetActivePrefService();
+  return pref_service && pref_service->GetBoolean(ash::prefs::kFastPairEnabled);
 }
 
 }  // namespace quick_pair

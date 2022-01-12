@@ -40,9 +40,11 @@ component("common") {
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//ash/services/quick_pair/public/mojom",
     "//base",
     "//chromeos/components/feature_usage",
+    "//components/prefs",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
   ]
@@ -79,8 +81,11 @@ source_set("unit_tests") {
 
   deps = [
     ":common",
+    ":test_support",
+    "//ash/constants:constants",
     "//base/test:test_support",
     "//chromeos/components/feature_usage",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }

@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/pairing/fake_retroactive_pairing_detector.h"
@@ -26,6 +28,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_registry.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -139,6 +144,12 @@ class QuickPairMetricsLoggerTest : public testing::Test {
         kTestMetadataId, kTestAddress, Protocol::kFastPairSubsequent);
     retroactive_device_ = base::MakeRefCounted<Device>(
         kTestMetadataId, kTestAddress, Protocol::kFastPairRetroactive);
+
+    browser_delegate_ = std::make_unique<MockQuickPairBrowserDelegate>();
+    ON_CALL(*browser_delegate_, GetActivePrefService())
+        .WillByDefault(testing::Return(&pref_service_));
+    pref_service_.registry()->RegisterBooleanPref(ash::prefs::kFastPairEnabled,
+                                                  /*default_value=*/true);
 
     metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
         scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get(),
@@ -367,6 +378,9 @@ class QuickPairMetricsLoggerTest : public testing::Test {
   scoped_refptr<Device> initial_device_;
   scoped_refptr<Device> subsequent_device_;
   scoped_refptr<Device> retroactive_device_;
+
+  std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
+  TestingPrefServiceSimple pref_service_;
 
   MockScannerBroker* mock_scanner_broker_ = nullptr;
   MockPairerBroker* mock_pairer_broker_ = nullptr;
