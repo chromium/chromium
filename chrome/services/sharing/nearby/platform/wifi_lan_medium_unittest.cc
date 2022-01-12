@@ -7,11 +7,12 @@
 #include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "chrome/services/sharing/nearby/platform/fake_network_context.h"
+#include "chrome/services/sharing/nearby/platform/fake_tcp_socket_factory.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,35 +40,35 @@ class WifiLanMediumTest : public ::testing::Test {
   WifiLanMediumTest& operator=(const WifiLanMediumTest&) = delete;
 
   void SetUp() override {
-    auto fake_network_context = std::make_unique<FakeNetworkContext>(
+    auto fake_socket_factory = std::make_unique<FakeTcpSocketFactory>(
         /*default_local_addr=*/kLocalAddress);
-    fake_network_context_ = fake_network_context.get();
+    fake_socket_factory_ = fake_socket_factory.get();
     mojo::MakeSelfOwnedReceiver(
-        std::move(fake_network_context),
-        network_context_shared_remote_.BindNewPipeAndPassReceiver());
+        std::move(fake_socket_factory),
+        socket_factory_shared_remote_.BindNewPipeAndPassReceiver());
 
     wifi_lan_medium_ =
-        std::make_unique<WifiLanMedium>(network_context_shared_remote_);
+        std::make_unique<WifiLanMedium>(socket_factory_shared_remote_);
   }
 
   void TearDown() override { wifi_lan_medium_.reset(); }
 
   // Calls ConnectToService()/ListenForService() from |num_threads|, which will
   // each block until failure or the TCP connected/server socket is created.
-  // This method returns when |expected_num_calls_sent_to_network_context|
-  // NetworkContext::CreateTCPConnectedSocket()/CreateTCPServerSocket() calls
+  // This method returns when |expected_num_calls_sent_to_socket_factory|
+  // TcpSocketFactory::CreateTCPConnectedSocket()/CreateTCPServerSocket() calls
   // are queued up. When the ConnectToService()/ListenForService() calls finish
   // on all threads, |on_finished| is invoked.
   void CallConnectToServiceFromThreads(
       size_t num_threads,
-      size_t expected_num_calls_sent_to_network_context,
+      size_t expected_num_calls_sent_to_socket_factory,
       bool expected_success,
       base::OnceClosure on_connect_calls_finished) {
-    // The run loop quits when NetworkContext receives all of the expected
+    // The run loop quits when TcpSocketFactory receives all of the expected
     // CreateTCPConnectedSocket() calls.
     base::RunLoop run_loop;
-    fake_network_context_->SetCreateConnectedSocketCallExpectations(
-        expected_num_calls_sent_to_network_context,
+    fake_socket_factory_->SetCreateConnectedSocketCallExpectations(
+        expected_num_calls_sent_to_socket_factory,
         /*on_all_create_connected_socket_calls_queued=*/run_loop.QuitClosure());
 
     on_connect_calls_finished_ = std::move(on_connect_calls_finished);
@@ -83,14 +84,14 @@ class WifiLanMediumTest : public ::testing::Test {
 
   void CallListenForServiceFromThreads(
       size_t num_threads,
-      size_t expected_num_calls_sent_to_network_context,
+      size_t expected_num_calls_sent_to_socket_factory,
       bool expected_success,
       base::OnceClosure on_listen_calls_finished) {
-    // The run loop quits when NetworkContext receives all of the expected
+    // The run loop quits when TcpSocketFactory receives all of the expected
     // CreateTCPServerSocket() calls.
     base::RunLoop run_loop;
-    fake_network_context_->SetCreateServerSocketCallExpectations(
-        expected_num_calls_sent_to_network_context,
+    fake_socket_factory_->SetCreateServerSocketCallExpectations(
+        expected_num_calls_sent_to_socket_factory,
         /*on_all_create_server_socket_calls_queued=*/run_loop.QuitClosure());
 
     on_listen_calls_finished_ = std::move(on_listen_calls_finished);
@@ -139,9 +140,9 @@ class WifiLanMediumTest : public ::testing::Test {
   size_t num_running_listen_calls_ = 0;
   base::OnceClosure on_connect_calls_finished_;
   base::OnceClosure on_listen_calls_finished_;
-  FakeNetworkContext* fake_network_context_;
-  mojo::SharedRemote<network::mojom::NetworkContext>
-      network_context_shared_remote_;
+  FakeTcpSocketFactory* fake_socket_factory_;
+  mojo::SharedRemote<sharing::mojom::TcpSocketFactory>
+      socket_factory_shared_remote_;
   std::unique_ptr<WifiLanMedium> wifi_lan_medium_;
 };
 
@@ -152,10 +153,10 @@ TEST_F(WifiLanMediumTest, Connect_Success) {
   base::RunLoop run_loop;
   CallConnectToServiceFromThreads(
       /*num_threads=*/1u,
-      /*expected_num_calls_sent_to_network_context=*/1u,
+      /*expected_num_calls_sent_to_socket_factory=*/1u,
       /*expected_success=*/true,
       /*on_connect_calls_finished=*/run_loop.QuitClosure());
-  fake_network_context_->FinishNextCreateConnectedSocket(net::OK);
+  fake_socket_factory_->FinishNextCreateConnectedSocket(net::OK);
   run_loop.Run();
 }
 
@@ -164,11 +165,11 @@ TEST_F(WifiLanMediumTest, Connect_Success_ConcurrentCalls) {
   base::RunLoop run_loop;
   CallConnectToServiceFromThreads(
       kNumThreads,
-      /*expected_num_calls_sent_to_network_context=*/kNumThreads,
+      /*expected_num_calls_sent_to_socket_factory=*/kNumThreads,
       /*expected_success=*/true,
       /*on_connect_calls_finished=*/run_loop.QuitClosure());
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
-    fake_network_context_->FinishNextCreateConnectedSocket(net::OK);
+    fake_socket_factory_->FinishNextCreateConnectedSocket(net::OK);
   }
   run_loop.Run();
 }
@@ -177,10 +178,10 @@ TEST_F(WifiLanMediumTest, Connect_Failure) {
   base::RunLoop run_loop;
   CallConnectToServiceFromThreads(
       /*num_threads=*/1u,
-      /*expected_num_calls_sent_to_network_context=*/1u,
+      /*expected_num_calls_sent_to_socket_factory=*/1u,
       /*expected_success=*/false,
       /*on_connect_calls_finished=*/run_loop.QuitClosure());
-  fake_network_context_->FinishNextCreateConnectedSocket(net::ERR_FAILED);
+  fake_socket_factory_->FinishNextCreateConnectedSocket(net::ERR_FAILED);
   run_loop.Run();
 }
 
@@ -189,11 +190,11 @@ TEST_F(WifiLanMediumTest, Connect_Failure_ConcurrentCalls) {
   base::RunLoop run_loop;
   CallConnectToServiceFromThreads(
       kNumThreads,
-      /*expected_num_calls_sent_to_network_context=*/kNumThreads,
+      /*expected_num_calls_sent_to_socket_factory=*/kNumThreads,
       /*expected_success=*/false,
       /*on_connect_calls_finished=*/run_loop.QuitClosure());
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
-    fake_network_context_->FinishNextCreateConnectedSocket(net::ERR_FAILED);
+    fake_socket_factory_->FinishNextCreateConnectedSocket(net::ERR_FAILED);
   }
   run_loop.Run();
 }
@@ -203,7 +204,7 @@ TEST_F(WifiLanMediumTest, Connect_DestroyWhileWaiting) {
   base::RunLoop run_loop;
   CallConnectToServiceFromThreads(
       kNumThreads,
-      /*expected_num_calls_sent_to_network_context=*/kNumThreads,
+      /*expected_num_calls_sent_to_socket_factory=*/kNumThreads,
       /*expected_success=*/false,
       /*on_connect_calls_finished=*/run_loop.QuitClosure());
 
@@ -222,10 +223,10 @@ TEST_F(WifiLanMediumTest, Listen_Success) {
   base::RunLoop run_loop;
   CallListenForServiceFromThreads(
       /*num_threads=*/1u,
-      /*expected_num_calls_sent_to_network_context=*/1u,
+      /*expected_num_calls_sent_to_socket_factory=*/1u,
       /*expected_success=*/true,
       /*on_listen_calls_finished=*/run_loop.QuitClosure());
-  fake_network_context_->FinishNextCreateServerSocket(net::OK);
+  fake_socket_factory_->FinishNextCreateServerSocket(net::OK);
   run_loop.Run();
 }
 
@@ -234,11 +235,11 @@ TEST_F(WifiLanMediumTest, Listen_Success_ConcurrentCalls) {
   base::RunLoop run_loop;
   CallListenForServiceFromThreads(
       kNumThreads,
-      /*expected_num_calls_sent_to_network_context=*/kNumThreads,
+      /*expected_num_calls_sent_to_socket_factory=*/kNumThreads,
       /*expected_success=*/true,
       /*on_listen_calls_finished=*/run_loop.QuitClosure());
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
-    fake_network_context_->FinishNextCreateServerSocket(net::OK);
+    fake_socket_factory_->FinishNextCreateServerSocket(net::OK);
   }
   run_loop.Run();
 }
@@ -247,10 +248,10 @@ TEST_F(WifiLanMediumTest, Listen_Failure_CreateTcpServerSocket) {
   base::RunLoop run_loop;
   CallListenForServiceFromThreads(
       /*num_threads=*/1u,
-      /*expected_num_calls_sent_to_network_context=*/1u,
+      /*expected_num_calls_sent_to_socket_factory=*/1u,
       /*expected_success=*/false,
       /*on_listen_calls_finished=*/run_loop.QuitClosure());
-  fake_network_context_->FinishNextCreateServerSocket(net::ERR_FAILED);
+  fake_socket_factory_->FinishNextCreateServerSocket(net::ERR_FAILED);
   run_loop.Run();
 }
 
@@ -260,11 +261,11 @@ TEST_F(WifiLanMediumTest,
   base::RunLoop run_loop;
   CallListenForServiceFromThreads(
       kNumThreads,
-      /*expected_num_calls_sent_to_network_context=*/kNumThreads,
+      /*expected_num_calls_sent_to_socket_factory=*/kNumThreads,
       /*expected_success=*/false,
       /*on_listen_calls_finished=*/run_loop.QuitClosure());
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
-    fake_network_context_->FinishNextCreateServerSocket(net::ERR_FAILED);
+    fake_socket_factory_->FinishNextCreateServerSocket(net::ERR_FAILED);
   }
   run_loop.Run();
 }
@@ -279,7 +280,7 @@ TEST_F(WifiLanMediumTest, Listen_DestroyWhileWaiting) {
   base::RunLoop run_loop;
   CallListenForServiceFromThreads(
       kNumThreads,
-      /*expected_num_calls_sent_to_network_context=*/kNumThreads,
+      /*expected_num_calls_sent_to_socket_factory=*/kNumThreads,
       /*expected_success=*/false,
       /*on_listen_calls_finished=*/run_loop.QuitClosure());
 

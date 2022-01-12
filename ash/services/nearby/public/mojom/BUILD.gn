@@ -19,6 +19,7 @@ mojom("mojom") {
     "nearby_decoder_types.mojom",
     "sharing.mojom",
     "tcp_server_socket_port.mojom",
+    "tcp_socket_factory.mojom",
     "webrtc.mojom",
     "webrtc_signaling_messenger.mojom",
   ]

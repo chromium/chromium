@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
@@ -18,7 +19,6 @@
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/cpp/platform/api/wifi_lan.h"
@@ -39,18 +39,18 @@ namespace nearby {
 namespace chrome {
 
 // An implementation of the abstract Nearby Connections's class
-// api::WifiLanMedium. The implementation uses the network services's
-// NetworkContext mojo interface to 1) connect to remote server sockets, and 2)
-// open local server sockets to listen for incoming connection requests from
-// remote devices. We block while 1) trying to connect, 2) creating a server
-// socket, and 3) cancelling pending tasks in the destructor. We guarantee
-// thread safety, and we guarantee that all blocking connection and listening
-// attempts return before destruction.
+// api::WifiLanMedium. The implementation uses the
+// sharing::mojom::TcpSocketFactory mojo interface to 1) connect to remote
+// server sockets, and 2) open local server sockets to listen for incoming
+// connection requests from remote devices. We block while 1) trying to connect,
+// 2) creating a server socket, and 3) cancelling pending tasks in the
+// destructor. We guarantee thread safety, and we guarantee that all blocking
+// connection and listening attempts return before destruction.
 class WifiLanMedium : public api::WifiLanMedium {
  public:
   explicit WifiLanMedium(
-      const mojo::SharedRemote<network::mojom::NetworkContext>&
-          network_context);
+      const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
+          socket_factory);
   WifiLanMedium(const WifiLanMedium&) = delete;
   WifiLanMedium& operator=(const WifiLanMedium&) = delete;
   ~WifiLanMedium() override;
@@ -134,13 +134,13 @@ class WifiLanMedium : public api::WifiLanMedium {
   void FinishConnectAttempt(base::WaitableEvent* event);
   void FinishListenAttempt(base::WaitableEvent* event);
 
-  // Resets the |network_context_| and finishes all pending connect/listen
+  // Resets the |tcp_socket_factory_| and finishes all pending connect/listen
   // attempts with null results.
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
 
   // TODO(https://crbug.com/1261238): Add firewall hole factory.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  mojo::SharedRemote<network::mojom::NetworkContext> network_context_;
+  mojo::SharedRemote<sharing::mojom::TcpSocketFactory> socket_factory_;
 
   // Track all pending connect/listen tasks in case Close() is called while
   // waiting.

@@ -2,31 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_NETWORK_CONTEXT_H_
-#define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_NETWORK_CONTEXT_H_
+#ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SOCKET_FACTORY_H_
+#define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SOCKET_FACTORY_H_
 
+#include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "services/network/test/test_network_context.h"
 
 namespace location {
 namespace nearby {
 namespace chrome {
 
-// An implementation of NetworkContext used for unit tests. The user sets
+// An implementation of TcpSocketFactory used for unit tests. The user sets
 // expectations--via SetCreate{Server,Connected}SocketCallExpectations()--for
 // the number of CreateTCP{Server,Connected}Socket() calls that will be queued
 // up. The user is notified when all calls are queued. The user sequentially
 // processes the callbacks in the queue via
 // FinishNextCreate{Server,Connected}Socket(). On success,
 // FakeTcp{Server,Connected}Sockets are returned.
-class FakeNetworkContext : public network::TestNetworkContext {
+class FakeTcpSocketFactory : public sharing::mojom::TcpSocketFactory {
  public:
-  explicit FakeNetworkContext(const net::IPEndPoint& default_local_addr);
-  ~FakeNetworkContext() override;
-  FakeNetworkContext(const FakeNetworkContext&) = delete;
-  FakeNetworkContext& operator=(const FakeNetworkContext&) = delete;
+  explicit FakeTcpSocketFactory(const net::IPEndPoint& default_local_addr);
+  ~FakeTcpSocketFactory() override;
+  FakeTcpSocketFactory(const FakeTcpSocketFactory&) = delete;
+  FakeTcpSocketFactory& operator=(const FakeTcpSocketFactory&) = delete;
 
   void SetCreateServerSocketCallExpectations(
       size_t expected_num_create_server_socket_calls,
@@ -41,9 +43,10 @@ class FakeNetworkContext : public network::TestNetworkContext {
  private:
   using CreateCallback = base::OnceCallback<void(int32_t result)>;
 
-  // network::TestNetworkContext:
+  // sharing::mojom::TcpSocketFactory:
   void CreateTCPServerSocket(
-      const net::IPEndPoint& local_addr,
+      const net::IPAddress& local_addr,
+      const ash::nearby::TcpServerSocketPort& port,
       uint32_t backlog,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
@@ -71,4 +74,4 @@ class FakeNetworkContext : public network::TestNetworkContext {
 }  // namespace nearby
 }  // namespace location
 
-#endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_NETWORK_CONTEXT_H_
+#endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SOCKET_FACTORY_H_

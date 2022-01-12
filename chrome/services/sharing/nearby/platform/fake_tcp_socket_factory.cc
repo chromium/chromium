@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/sharing/nearby/platform/fake_network_context.h"
+#include "chrome/services/sharing/nearby/platform/fake_tcp_socket_factory.h"
 
 #include "base/test/bind.h"
 #include "chrome/services/sharing/nearby/platform/fake_tcp_connected_socket.h"
@@ -15,13 +15,13 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-FakeNetworkContext::FakeNetworkContext(
+FakeTcpSocketFactory::FakeTcpSocketFactory(
     const net::IPEndPoint& default_local_addr)
     : default_local_addr_(default_local_addr) {}
 
-FakeNetworkContext::~FakeNetworkContext() = default;
+FakeTcpSocketFactory::~FakeTcpSocketFactory() = default;
 
-void FakeNetworkContext::SetCreateServerSocketCallExpectations(
+void FakeTcpSocketFactory::SetCreateServerSocketCallExpectations(
     size_t expected_num_create_server_socket_calls,
     base::OnceClosure on_all_create_server_socket_calls_queued) {
   expected_num_create_server_socket_calls_ =
@@ -34,7 +34,7 @@ void FakeNetworkContext::SetCreateServerSocketCallExpectations(
   }
 }
 
-void FakeNetworkContext::SetCreateConnectedSocketCallExpectations(
+void FakeTcpSocketFactory::SetCreateConnectedSocketCallExpectations(
     size_t expected_num_create_connected_socket_calls,
     base::OnceClosure on_all_create_connected_socket_calls_queued) {
   expected_num_create_connected_socket_calls_ =
@@ -47,7 +47,7 @@ void FakeNetworkContext::SetCreateConnectedSocketCallExpectations(
   }
 }
 
-void FakeNetworkContext::FinishNextCreateServerSocket(int32_t result) {
+void FakeTcpSocketFactory::FinishNextCreateServerSocket(int32_t result) {
   DCHECK(!pending_create_server_socket_callbacks_.empty());
   CreateCallback callback =
       std::move(pending_create_server_socket_callbacks_.front());
@@ -56,7 +56,7 @@ void FakeNetworkContext::FinishNextCreateServerSocket(int32_t result) {
   std::move(callback).Run(result);
 }
 
-void FakeNetworkContext::FinishNextCreateConnectedSocket(int32_t result) {
+void FakeTcpSocketFactory::FinishNextCreateConnectedSocket(int32_t result) {
   DCHECK(!pending_create_connected_socket_callbacks_.empty());
   CreateCallback callback =
       std::move(pending_create_connected_socket_callbacks_.front());
@@ -65,14 +65,15 @@ void FakeNetworkContext::FinishNextCreateConnectedSocket(int32_t result) {
   std::move(callback).Run(result);
 }
 
-void FakeNetworkContext::CreateTCPServerSocket(
-    const net::IPEndPoint& local_addr,
+void FakeTcpSocketFactory::CreateTCPServerSocket(
+    const net::IPAddress& local_addr,
+    const ash::nearby::TcpServerSocketPort& port,
     uint32_t backlog,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
     CreateTCPServerSocketCallback callback) {
   pending_create_server_socket_callbacks_.push_back(base::BindLambdaForTesting(
-      [local_addr, socket = std::move(socket),
+      [local_addr, port, socket = std::move(socket),
        callback = std::move(callback)](int32_t result) mutable {
         if (result != net::OK) {
           std::move(callback).Run(result, /*local_addr_out=*/absl::nullopt);
@@ -82,7 +83,8 @@ void FakeNetworkContext::CreateTCPServerSocket(
         mojo::MakeSelfOwnedReceiver(std::make_unique<FakeTcpServerSocket>(),
                                     std::move(socket));
 
-        std::move(callback).Run(result, local_addr);
+        std::move(callback).Run(result,
+                                net::IPEndPoint(local_addr, port.port()));
       }));
 
   DCHECK_GE(expected_num_create_server_socket_calls_,
@@ -95,7 +97,7 @@ void FakeNetworkContext::CreateTCPServerSocket(
   }
 }
 
-void FakeNetworkContext::CreateTCPConnectedSocket(
+void FakeTcpSocketFactory::CreateTCPConnectedSocket(
     const absl::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,

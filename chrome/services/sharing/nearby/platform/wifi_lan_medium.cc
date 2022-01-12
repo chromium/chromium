@@ -63,11 +63,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 WifiLanMedium::WifiLanMedium(
-    const mojo::SharedRemote<network::mojom::NetworkContext>& network_context)
+    const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>& socket_factory)
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
-      network_context_(network_context) {
-  // NOTE: We do not set the disconnect handler for |network_context_| here. It
+      socket_factory_(socket_factory) {
+  // NOTE: We do not set the disconnect handler for |socket_factory_| here. It
   // is a fundamental dependency of the Nearby Connections process, which will
   // crash if any dependency disconnects.
 }
@@ -142,7 +142,7 @@ void WifiLanMedium::DoConnect(
   mojo::PendingRemote<network::mojom::TCPConnectedSocket> tcp_connected_socket;
   mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver =
       tcp_connected_socket.InitWithNewPipeAndPassReceiver();
-  network_context_->CreateTCPConnectedSocket(
+  socket_factory_->CreateTCPConnectedSocket(
       /*local_addr=*/absl::nullopt, address_list,
       /*tcp_connected_socket_options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
@@ -264,8 +264,8 @@ void WifiLanMedium::OnLocalIpAddressFetched(
 
   mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket;
   auto receiver = tcp_server_socket.InitWithNewPipeAndPassReceiver();
-  network_context_->CreateTCPServerSocket(
-      net::IPEndPoint(ip_address, port.port()), kBacklog,
+  socket_factory_->CreateTCPServerSocket(
+      ip_address, port, kBacklog,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(receiver),
       base::BindOnce(&WifiLanMedium::OnTcpServerSocketCreated,
@@ -394,8 +394,8 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   // those already in the task queue.
   // TODO(https://crbug.com/1261238): Reset firewall hole factory.
   VLOG(1) << "WifiLanMedium::" << __func__
-          << ": Closing NetworkContext Remote.";
-  network_context_.reset();
+          << ": Closing TcpSocketFactory Remote.";
+  socket_factory_.reset();
 
   // Cancel all pending connect/listen calls. This is thread safe because all
   // changes to the pending-event sets are sequenced. Make a copy of the events
