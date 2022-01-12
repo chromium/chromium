@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -38,6 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -98,11 +100,16 @@ public class PriceDropNotificationManagerTest {
     @Mock
     private SubscriptionsManagerImpl mMockSubscriptionsManager;
 
+    @Mock
+    private BookmarkBridge mMockBookmarkBridge;
+
     @Before
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = new PriceDropNotificationManager();
+        when(mMockBookmarkBridge.isBookmarkModelLoaded()).thenReturn(true);
+        PriceDropNotificationManager.setBookmarkBridgeForTesting(mMockBookmarkBridge);
     }
 
     @After
