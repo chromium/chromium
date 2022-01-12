@@ -16,9 +16,8 @@ namespace enterprise_connectors {
 
 namespace {
 
-const base::ListValue* GetPolicyUrlPatterns(PrefService* prefs) {
-  return &base::Value::AsListValue(
-      *prefs->GetList(kContextAwareAccessSignalsAllowlistPref));
+const base::Value* GetPolicyUrlPatterns(PrefService* prefs) {
+  return prefs->GetList(kContextAwareAccessSignalsAllowlistPref);
 }
 
 bool ConnectorPolicyHasValues(PrefService* profile_prefs) {
@@ -80,7 +79,7 @@ void DeviceTrustConnectorService::OnConnectorEnabled() {
 void DeviceTrustConnectorService::OnPolicyUpdated() {
   DCHECK(IsDeviceTrustConnectorFeatureEnabled());
 
-  const base::ListValue* url_patterns = GetPolicyUrlPatterns(profile_prefs_);
+  const base::Value* url_patterns = GetPolicyUrlPatterns(profile_prefs_);
 
   if (!matcher_ || !matcher_->IsEmpty()) {
     // Reset the matcher.
@@ -89,7 +88,8 @@ void DeviceTrustConnectorService::OnPolicyUpdated() {
 
   if (url_patterns && !url_patterns->GetList().empty()) {
     // Add the new endpoints to the conditions.
-    url_matcher::util::AddAllowFilters(matcher_.get(), url_patterns);
+    url_matcher::util::AddAllowFilters(
+        matcher_.get(), &base::Value::AsListValue(*url_patterns));
 
     // Call the hook which signals that the connector has been enabled.
     OnConnectorEnabled();
