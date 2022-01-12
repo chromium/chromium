@@ -365,6 +365,10 @@ void NavigationControllerImpl::DidFinishLoad(
   if (active_navigation_)
     return;
 
+  // Only allow the primary main frame to transition this state.
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return;
+
   is_main_document_loaded_ = true;
   OnNavigationEntryChanged();
 }
@@ -379,9 +383,6 @@ void NavigationControllerImpl::PrimaryMainFrameRenderProcessGone(
 
 void NavigationControllerImpl::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
