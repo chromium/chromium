@@ -22,7 +22,7 @@ namespace content_settings {
 
 class SupervisedUserProviderTest : public ::testing::Test {
  public:
-  SupervisedUserProviderTest() {}
+  SupervisedUserProviderTest() = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -68,7 +68,7 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(&rule.value));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
 
   // Re-enable the default geolocation setting.
   EXPECT_CALL(mock_observer_,
@@ -100,7 +100,7 @@ TEST_F(SupervisedUserProviderTest, CookiesTest) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, ValueToContentSetting(&rule.value));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, ValueToContentSetting(rule.value));
 
   // Re-enable the default cookie setting.
   EXPECT_CALL(mock_observer_,
@@ -138,7 +138,7 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(&rule.value));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
 
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::MEDIASTREAM_MIC, false);
@@ -148,7 +148,7 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(&rule.value));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
 
   // Re-enable the default camera and microphone setting.
   EXPECT_CALL(

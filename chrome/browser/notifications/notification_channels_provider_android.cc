@@ -422,7 +422,7 @@ void NotificationChannelsProviderAndroid::CreateChannelForRule(
   DCHECK(!origin.opaque());
   const std::string origin_string = origin.Serialize();
   ContentSetting content_setting =
-      content_settings::ValueToContentSetting(&rule.value);
+      content_settings::ValueToContentSetting(rule.value);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
       CreateChannelIfRequired(origin_string,

@@ -722,7 +722,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
     ASSERT_EQ(1u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[0].setting_value));
+                                         otr_settings[0].setting_value));
   }
 
   // Changing content settings on the main map should also affect the
@@ -742,12 +742,12 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
     otr_map->GetSettingsForOneType(ContentSettingsType::COOKIES, &otr_settings);
     ASSERT_EQ(2u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
-    EXPECT_EQ(CONTENT_SETTING_SESSION_ONLY,
-              content_settings::ValueToContentSetting(
-                  &otr_settings[0].setting_value));
+    EXPECT_EQ(
+        CONTENT_SETTING_SESSION_ONLY,
+        content_settings::ValueToContentSetting(otr_settings[0].setting_value));
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[1].setting_value));
+                                         otr_settings[1].setting_value));
   }
 
   host_content_settings_map->SetContentSettingDefaultScope(
@@ -778,13 +778,13 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
     ASSERT_EQ(3u, otr_settings.size());
     EXPECT_TRUE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[0].setting_value));
+                                         otr_settings[0].setting_value));
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_BLOCK, content_settings::ValueToContentSetting(
-                                         &otr_settings[1].setting_value));
+                                         otr_settings[1].setting_value));
     EXPECT_FALSE(otr_settings[2].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[2].setting_value));
+                                         otr_settings[2].setting_value));
   }
 }
 
@@ -861,7 +861,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
     ASSERT_EQ(1u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[0].setting_value));
+                                       otr_settings[0].setting_value));
   }
 
   // BLOCK should be inherited from the main map to the incognito map.
@@ -883,11 +883,11 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
     ASSERT_EQ(2u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_BLOCK, content_settings::ValueToContentSetting(
-                                         &otr_settings[0].setting_value));
+                                         otr_settings[0].setting_value));
 
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[1].setting_value));
+                                       otr_settings[1].setting_value));
   }
 
   // ALLOW should not be inherited from the main map to the incognito map (but
@@ -911,11 +911,11 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
     ASSERT_EQ(2u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[0].setting_value));
+                                       otr_settings[0].setting_value));
 
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[1].setting_value));
+                                       otr_settings[1].setting_value));
   }
 }
 

@@ -36,12 +36,6 @@ ContentSetting ValueToContentSetting(const base::Value& value) {
   return setting;
 }
 
-// DEPRECATED. Replace with method above when Value pointers are removed.
-ContentSetting ValueToContentSetting(const base::Value* value) {
-  base::Value empty;
-  return ValueToContentSetting(value ? *value : empty);
-}
-
 base::Value ContentSettingToValue(ContentSetting setting) {
   if (setting <= CONTENT_SETTING_DEFAULT ||
       setting >= CONTENT_SETTING_NUM_SETTINGS) {

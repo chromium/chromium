@@ -175,7 +175,7 @@ ContentSettingPatternSource& ContentSettingPatternSource::operator=(
 ContentSettingPatternSource::~ContentSettingPatternSource() {}
 
 ContentSetting ContentSettingPatternSource::GetContentSetting() const {
-  return content_settings::ValueToContentSetting(&setting_value);
+  return content_settings::ValueToContentSetting(setting_value);
 }
 
 bool ContentSettingPatternSource::IsExpired() const {

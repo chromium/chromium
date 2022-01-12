@@ -172,7 +172,7 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   ASSERT_TRUE(rule_iterator->HasNext());
   content_settings::Rule rule = rule_iterator->Next();
   EXPECT_EQ(sub_pattern, rule.primary_pattern);
-  EXPECT_EQ(2, content_settings::ValueToContentSetting(&rule.value));
+  EXPECT_EQ(2, content_settings::ValueToContentSetting(rule.value));
   EXPECT_EQ(t2,
             map.GetLastModified(rule.primary_pattern, rule.secondary_pattern,
                                 ContentSettingsType::COOKIES));
@@ -180,7 +180,7 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   ASSERT_TRUE(rule_iterator->HasNext());
   rule = rule_iterator->Next();
   EXPECT_EQ(pattern, rule.primary_pattern);
-  EXPECT_EQ(1, content_settings::ValueToContentSetting(&rule.value));
+  EXPECT_EQ(1, content_settings::ValueToContentSetting(rule.value));
   EXPECT_EQ(t1,
             map.GetLastModified(rule.primary_pattern, rule.secondary_pattern,
                                 ContentSettingsType::COOKIES));
@@ -209,7 +209,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     ASSERT_TRUE(rule_iterator->HasNext());
     content_settings::Rule rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule.primary_pattern);
-    EXPECT_EQ(2, content_settings::ValueToContentSetting(&rule.value));
+    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule.value));
     EXPECT_EQ(t1,
               map.GetLastModified(rule.primary_pattern, rule.secondary_pattern,
                                   ContentSettingsType::COOKIES));
@@ -219,7 +219,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
 
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule.primary_pattern);
-    EXPECT_EQ(1, content_settings::ValueToContentSetting(&rule.value));
+    EXPECT_EQ(1, content_settings::ValueToContentSetting(rule.value));
     EXPECT_EQ(t1,
               map.GetLastModified(rule.primary_pattern, rule.secondary_pattern,
                                   ContentSettingsType::COOKIES));
@@ -237,13 +237,13 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     ASSERT_TRUE(rule_iterator->HasNext());
     content_settings::Rule rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule.primary_pattern);
-    EXPECT_EQ(2, content_settings::ValueToContentSetting(&rule.value));
+    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule.value));
     EXPECT_EQ(t1,
               map.GetLastModified(rule.primary_pattern, rule.secondary_pattern,
                                   ContentSettingsType::COOKIES));
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule.primary_pattern);
-    EXPECT_EQ(3, content_settings::ValueToContentSetting(&rule.value));
+    EXPECT_EQ(3, content_settings::ValueToContentSetting(rule.value));
     EXPECT_EQ(t2,
               map.GetLastModified(rule.primary_pattern, rule.secondary_pattern,
                                   ContentSettingsType::COOKIES));

@@ -17,8 +17,6 @@ namespace content_settings {
 
 // Converts |value| to |ContentSetting|.
 ContentSetting ValueToContentSetting(const base::Value& value);
-// DEPRECATED: Use the method above if possible.
-ContentSetting ValueToContentSetting(const base::Value* value);
 
 // Returns a base::Value representation of |setting| if |setting| is
 // a valid content setting. Otherwise, returns an empty value.

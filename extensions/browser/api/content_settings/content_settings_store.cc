@@ -293,7 +293,7 @@ std::vector<base::Value> ContentSettingsStore::GetSettingsForExtension(
           kContentSettingsTypeKey,
           content_settings_helpers::ContentSettingsTypeToString(key));
       ContentSetting content_setting =
-          content_settings::ValueToContentSetting(&rule.value);
+          content_settings::ValueToContentSetting(rule.value);
       DCHECK_NE(CONTENT_SETTING_DEFAULT, content_setting);
 
       std::string setting_string =
