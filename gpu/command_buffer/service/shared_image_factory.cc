@@ -169,6 +169,33 @@ SharedImageFactory::SharedImageFactory(
 #endif
   }
 
+#if defined(OS_WIN)
+  // Only supported for passthrough command decoder and Skia-GL.
+  const bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
+                               gles2::PassthroughCommandDecoderSupported();
+  const bool is_skia_gl = gr_context_type_ == GrContextType::kGL;
+  // D3D11 device will be null if ANGLE is using the D3D9 backend.
+  // TODO(sunnyps): Should we get the device from SharedContextState instead?
+  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  if (use_passthrough && is_skia_gl && d3d11_device) {
+    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>(
+        std::move(d3d11_device),
+        shared_image_manager_->dxgi_shared_handle_manager());
+    d3d_backing_factory_ = d3d_factory.get();
+    factories_.push_back(std::move(d3d_factory));
+  }
+#endif  // OS_WIN
+
+  if (use_gl) {
+    auto gl_image_backing_factory =
+        std::make_unique<SharedImageBackingFactoryGLImage>(
+            gpu_preferences, workarounds, gpu_feature_info, image_factory,
+            shared_context_state_ ? shared_context_state_->progress_reporter()
+                                  : nullptr,
+            /*for_shared_memory_gmbs=*/true);
+    factories_.push_back(std::move(gl_image_backing_factory));
+  }
+
   // TODO(ccameron): This block of code should be changed to a switch on
   // |gr_context_type|.
   if (gr_context_type_ == GrContextType::kVulkan) {
@@ -224,29 +251,15 @@ SharedImageFactory::SharedImageFactory(
 #endif
   }
 
-#if defined(OS_WIN)
-  // Only supported for passthrough command decoder and Skia-GL.
-  const bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
-                               gles2::PassthroughCommandDecoderSupported();
-  const bool is_skia_gl = gr_context_type_ == GrContextType::kGL;
-  // D3D11 device will be null if ANGLE is using the D3D9 backend.
-  // TODO(sunnyps): Should we get the device from SharedContextState instead?
-  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  if (use_passthrough && is_skia_gl && d3d11_device) {
-    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>(
-        std::move(d3d11_device),
-        shared_image_manager_->dxgi_shared_handle_manager());
-    d3d_backing_factory_ = d3d_factory.get();
-    factories_.push_back(std::move(d3d_factory));
-  }
-#endif  // OS_WIN
-
+  // TODO(hitawala): Temporary factory that will be replaced with Ozone and
+  // other backings
   if (use_gl) {
     auto gl_image_backing_factory =
         std::make_unique<SharedImageBackingFactoryGLImage>(
             gpu_preferences, workarounds, gpu_feature_info, image_factory,
             shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr);
+                                  : nullptr,
+            /*for_shared_memory_gmbs=*/false);
     factories_.push_back(std::move(gl_image_backing_factory));
   }
 

@@ -41,12 +41,14 @@ SharedImageBackingFactoryGLImage::SharedImageBackingFactoryGLImage(
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
     ImageFactory* image_factory,
-    gl::ProgressReporter* progress_reporter)
+    gl::ProgressReporter* progress_reporter,
+    const bool for_shared_memory_gmbs)
     : SharedImageBackingFactoryGLCommon(gpu_preferences,
                                         workarounds,
                                         gpu_feature_info,
                                         progress_reporter),
-      image_factory_(image_factory) {
+      image_factory_(image_factory),
+      for_shared_memory_gmbs_(for_shared_memory_gmbs) {
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(workarounds, gpu_feature_info);
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
@@ -257,6 +259,12 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
     return false;
   }
   if (thread_safe) {
+    return false;
+  }
+  // If the GLImage factory is created specifically for SHARED_MEMORY Gmbs,
+  // make sure that it used for that purpose based on flag
+  if ((for_shared_memory_gmbs_ && gmb_type != gfx::SHARED_MEMORY_BUFFER) ||
+      (!for_shared_memory_gmbs_ && gmb_type == gfx::SHARED_MEMORY_BUFFER)) {
     return false;
   }
 #if defined(OS_MAC)

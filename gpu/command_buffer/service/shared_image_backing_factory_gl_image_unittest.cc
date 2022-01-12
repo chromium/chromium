@@ -107,7 +107,10 @@ class SharedImageBackingFactoryGLImageTestBase
     preferences.use_passthrough_cmd_decoder = use_passthrough();
     backing_factory_ = std::make_unique<SharedImageBackingFactoryGLImage>(
         preferences, workarounds, GpuFeatureInfo(), factory,
-        &progress_reporter_);
+        &progress_reporter_, /*for_shared_memory_gmbs=*/false);
+    backing_factory_shmem_ = std::make_unique<SharedImageBackingFactoryGLImage>(
+        preferences, workarounds, GpuFeatureInfo(), factory,
+        &progress_reporter_, /*for_shared_memory_gmbs=*/true);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =
@@ -137,6 +140,7 @@ class SharedImageBackingFactoryGLImageTestBase
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageBackingFactoryGLImage> backing_factory_;
+  std::unique_ptr<SharedImageBackingFactoryGLImage> backing_factory_shmem_;
   gles2::MailboxManagerImpl mailbox_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
@@ -771,7 +775,7 @@ TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
   handle.stride = static_cast<int32_t>(
       gfx::RowSizeForBufferFormat(size.width(), format, 0));
 
-  auto backing = backing_factory_->CreateSharedImage(
+  auto backing = backing_factory_shmem_->CreateSharedImage(
       mailbox, kClientId, std::move(handle), format, gfx::BufferPlane::DEFAULT,
       kNullSurfaceHandle, size, color_space, surface_origin, alpha_type, usage);
   if (!can_create_scanout_or_gmb_shared_image(get_format())) {
