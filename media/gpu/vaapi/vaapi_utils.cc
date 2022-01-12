@@ -54,6 +54,7 @@ ScopedVABufferMapping::ScopedVABufferMapping(
 }
 
 ScopedVABufferMapping::~ScopedVABufferMapping() {
+  CHECK(sequence_checker_.CalledOnValidSequence());
   if (va_buffer_data_) {
     MAYBE_ASSERT_ACQUIRED(lock_);
     Unmap();
@@ -61,6 +62,7 @@ ScopedVABufferMapping::~ScopedVABufferMapping() {
 }
 
 VAStatus ScopedVABufferMapping::Unmap() {
+  CHECK(sequence_checker_.CalledOnValidSequence());
   MAYBE_ASSERT_ACQUIRED(lock_);
   const VAStatus result = vaUnmapBuffer(va_display_, buffer_id_);
   if (result == VA_STATUS_SUCCESS)
@@ -159,6 +161,7 @@ ScopedVAImage::ScopedVAImage(base::Lock* lock,
 }
 
 ScopedVAImage::~ScopedVAImage() {
+  CHECK(sequence_checker_.CalledOnValidSequence());
   if (image_->image_id != VA_INVALID_ID) {
     base::AutoLockMaybe auto_lock(lock_);
 

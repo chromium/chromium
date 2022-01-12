@@ -38,9 +38,13 @@ class ScopedVABufferMapping {
   ScopedVABufferMapping& operator=(const ScopedVABufferMapping&) = delete;
 
   ~ScopedVABufferMapping();
-  bool IsValid() const { return !!va_buffer_data_; }
+  bool IsValid() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return !!va_buffer_data_;
+  }
   void* data() const {
     DCHECK(IsValid());
+    CHECK(sequence_checker_.CalledOnValidSequence());
     return va_buffer_data_;
   }
   // Explicit destruction method, to retrieve the success/error result. It is
@@ -51,6 +55,8 @@ class ScopedVABufferMapping {
   const base::Lock* lock_;  // Only for AssertAcquired() calls.
   const VADisplay va_display_;
   const VABufferID buffer_id_;
+
+  base::SequenceCheckerImpl sequence_checker_;
 
   void* va_buffer_data_ = nullptr;
 };
@@ -74,9 +80,18 @@ class ScopedVABuffer {
   ScopedVABuffer& operator=(const ScopedVABuffer&) = delete;
   ~ScopedVABuffer();
 
-  VABufferID id() const { return va_buffer_id_; }
-  VABufferType type() const { return va_buffer_type_; }
-  size_t size() const { return size_; }
+  VABufferID id() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return va_buffer_id_;
+  }
+  VABufferType type() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return va_buffer_type_;
+  }
+  size_t size() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return size_;
+  }
 
  private:
   ScopedVABuffer(base::Lock* lock,
@@ -87,6 +102,8 @@ class ScopedVABuffer {
 
   base::Lock* const lock_;
   const VADisplay va_display_ GUARDED_BY(lock_);
+
+  base::SequenceCheckerImpl sequence_checker_;
 
   const VABufferID va_buffer_id_;
   const VABufferType va_buffer_type_;
@@ -114,9 +131,13 @@ class ScopedVAImage {
 
   bool IsValid() const { return va_buffer_ && va_buffer_->IsValid(); }
 
-  const VAImage* image() const { return image_.get(); }
+  const VAImage* image() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return image_.get();
+  }
   const ScopedVABufferMapping* va_buffer() const {
     DCHECK(IsValid());
+    CHECK(sequence_checker_.CalledOnValidSequence());
     return va_buffer_.get();
   }
 
@@ -125,6 +146,8 @@ class ScopedVAImage {
   const VADisplay va_display_ GUARDED_BY(lock_);
   std::unique_ptr<VAImage> image_;
   std::unique_ptr<ScopedVABufferMapping> va_buffer_;
+
+  base::SequenceCheckerImpl sequence_checker_;
 };
 
 // A VA-API-specific surface used by video/image codec accelerators to work on.
