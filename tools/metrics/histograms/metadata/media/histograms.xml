@@ -92,6 +92,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.BecomingNoisy" enum="Boolean"
+    expires_after="2022-07-01">
+  <owner>liberato@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Android-specific metric. Occasionally, we cannot start a foreground service
+    when headphones are unplugged. This tracks how often that occurs, which is
+    one recorded boolean per &quot;user unplugs headphones while media is
+    playing&quot;. See https://crbug.com/1245017 for more details.
+  </summary>
+</histogram>
+
 <histogram name="Media.Android.GetColorSpaceError" enum="BooleanError"
     expires_after="2022-06-12">
   <owner>vasilyt@chromium.org</owner>
