@@ -255,6 +255,8 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
   if (acknowledged_state->should_dispatch_pageshow_for_debugging) {
     blink::RecordUMAEventPageShowPersisted(
         blink::EventPageShowPersisted::kYesInBrowserAck);
+    // We have received the ack, no need to track info for failures.
+    persisted_pageshow_timestamp_bug_1234634_.reset();
   }
 
   last_acknowledged_state_ = std::move(acknowledged_state);
