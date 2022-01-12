@@ -13,7 +13,6 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/metrics",
-    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
@@ -28,7 +27,6 @@ group("provider_api") {
   deps = [
     # The individual APIs.
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
-    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/modals:modals_api",

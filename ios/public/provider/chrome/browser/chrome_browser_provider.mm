@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "components/metrics/metrics_provider.h"
-#import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
@@ -49,10 +48,7 @@ ChromeBrowserProvider::~ChromeBrowserProvider() {
 
 void ChromeBrowserProvider::AppendSwitchesFromExperimentalSettings(
     NSUserDefaults* experimental_settings,
-    base::CommandLine* command_line) const {
-  provider::AppendSwitchesFromExperimentalSettings(experimental_settings,
-                                                   command_line);
-}
+    base::CommandLine* command_line) const {}
 
 void ChromeBrowserProvider::Initialize() const {}
 
@@ -78,9 +74,7 @@ UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
   return provider::CreateStyledTextField();
 }
 
-void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {
-  provider::AttachBrowserAgents(browser);
-}
+void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {}
 
 id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
     Browser* browser,
