@@ -350,6 +350,18 @@ def _ParseSummaryOutput(forward_args):
   return None
 
 
+def _IsRunningOnBots(forward_args):
+  """Detects if the script is running on bots or not.
+
+  Args:
+    forward_args (list): Args to be forwarded to the test command.
+
+  Returns:
+    True if the script is running on bots. Otherwise returns False.
+  """
+  return '--test-launcher-bot-mode' in forward_args
+
+
 def _RunTestWithAshChrome(args, forward_args):
   """Runs tests with ash-chrome.
 
@@ -443,6 +455,13 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     log = None
     if args.ash_logging_path:
       log = open(args.ash_logging_path, 'a')
+    # Ash logs can be useful. Enable ash log by default on bots.
+    elif _IsRunningOnBots(forward_args):
+      summary_file = _ParseSummaryOutput(forward_args)
+      if summary_file:
+        ash_log_path = os.path.join(os.path.dirname(summary_file),
+                                    'ash_chrome.log')
+        log = open(ash_log_path, 'a')
 
     while not ash_process_has_started and num_tries < total_tries:
       num_tries += 1
