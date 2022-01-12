@@ -5,6 +5,7 @@
 import './elements/viewer-error-dialog.js';
 import './elements/viewer-page-indicator.js';
 import './elements/shared-vars.js';
+import './elements/viewer-zoom-toolbar.js';
 import './pdf_viewer_shared_style.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';

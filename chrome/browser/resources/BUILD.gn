@@ -162,9 +162,6 @@ if (enable_js_type_check) {
     if (enable_nacl) {
       deps += [ "about_nacl:closure_compile" ]
     }
-    if (enable_pdf) {
-      deps += [ "pdf:closure_compile" ]
-    }
     if (is_android) {
       deps += [
         "explore_sites_internals:closure_compile",

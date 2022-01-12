@@ -4,62 +4,62 @@
 
 import("//chrome/common/features.gni")
 import("//pdf/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
 import("./pdf.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-
 assert(enable_pdf, "enable_pdf check failed")
+
+preprocess_folder = "preprocessed"
+tsc_folder = "tsc"
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = pdf_non_webcomponents_files + shared_non_webcomponents_files
+  in_files = pdf_non_webcomponents_files + shared_non_webcomponents_files +
+             print_preview_non_webcomponents_files
 }
 
 preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = pdf_webcomponents_files + shared_webcomponents_files
+  in_files = pdf_webcomponents_files + shared_webcomponents_files +
+             print_preview_webcomponents_files
 }
 
-# Extra files that are needed by Print Preview.
-preprocess_if_expr("preprocess_print_preview") {
+# Preprocess and build a manifest file for the Print Preview HTML/CSS files,
+# which aren't passed to ts_library().
+print_preview_html_css_manifest = "print_preview_html_css_manifest.json"
+preprocess_if_expr("preprocess_print_preview_html_css") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = print_preview_non_webcomponents_files
+  out_manifest = "$target_gen_dir/$print_preview_html_css_manifest"
+  in_files = [
+    "index_pp.html",
+    "index.css",
+  ]
 }
 
-preprocess_if_expr("preprocess_print_preview_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = print_preview_webcomponents_files
-}
-
+# Build the grdp for Print Preview.
 generate_grd("build_print_preview_grdp") {
+  # Get all the shared files out of the tsc folder.
   input_files =
-      print_preview_non_webcomponents_files + shared_non_webcomponents_files +
-      print_preview_webcomponents_files + shared_webcomponents_files
+      shared_non_webcomponents_files + shared_webcomponents_files +
+      print_preview_non_webcomponents_files + print_preview_webcomponents_files
   input_files_base_dir =
-      rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+      rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
+
+  manifest_files = [ "$target_gen_dir/$print_preview_html_css_manifest" ]
   deps = [
-    ":preprocess",
-    ":preprocess_generated",
-    ":preprocess_print_preview",
-    ":preprocess_print_preview_generated",
+    ":build_ts",
+    ":preprocess_print_preview_html_css",
   ]
   resource_path_rewrites = [
     "index_pp.html|index.html",
@@ -75,31 +75,30 @@ generate_grd("build_print_preview_grdp") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
 }
 
-# Just copy to $preprocess_folder.
-copy("preprocess_internal_plugin") {
-  sources = [ "pdf_internal_plugin_wrapper.js" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
-
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
     host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
     js_out_files = [ "pdf_viewer_wrapper.rollup.js" ]
     js_module_in_files = [ "pdf_viewer_wrapper.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
-      ":preprocess",
-      ":preprocess_generated",
+      ":build_ts",
       "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
       "browser_api.js",
       "chrome://resources/js/cr.m.js",
     ]
+    if (enable_ink) {
+      excludes += [
+        "ink/drawing_canvas_externs.js",
+        "ink/ink_api.js",
+      ]
+    }
   }
 }
 
@@ -108,14 +107,13 @@ if (optimize_webui) {
 build_internal_plugin_manifest = "build_internal_plugin_manifest.json"
 optimize_webui("build_internal_plugin") {
   host = "about:blank"
-  input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+  input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
   js_out_files = [ "pdf_internal_plugin_wrapper.rollup.js" ]
   js_module_in_files = [ "pdf_internal_plugin_wrapper.js" ]
   out_manifest = "$target_gen_dir/$build_internal_plugin_manifest"
 
   deps = [
-    ":preprocess",
-    ":preprocess_internal_plugin",
+    ":build_ts",
     "../../../../ui/webui/resources:preprocess",
   ]
   excludes = [
@@ -126,33 +124,29 @@ optimize_webui("build_internal_plugin") {
 
 generate_grd("build_grd") {
   input_files = [
-    "browser_api.js",
     "index.css",
     "index.html",
-    "main.js",
   ]
   if (enable_ink) {
-    input_files += [
-      "ink/index.html",
-      "ink/ink_api.js",
-    ]
+    input_files += [ "ink/index.html" ]
   }
   input_files_base_dir = rebase_path(".", "//")
 
   if (optimize_webui) {
+    input_files += [
+      "browser_api.js",
+      "main.js",
+    ]
+    if (enable_ink) {
+      input_files += [ "ink/ink_api.js" ]
+    }
     deps = [ ":build" ]
     resource_path_rewrites =
         [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
   } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
+    deps = [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 
   deps += [ ":build_internal_plugin" ]
@@ -186,238 +180,26 @@ html_to_js("web_components") {
              shared_webcomponents_files
 }
 
-group("closure_compile") {
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/$tsc_folder"
+  tsconfig_base = "tsconfig_base.json"
+  composite = true
+
+  in_files =
+      pdf_non_webcomponents_files + pdf_webcomponents_files +
+      shared_non_webcomponents_files + shared_webcomponents_files +
+      print_preview_non_webcomponents_files + print_preview_webcomponents_files
+  manifest_excludes =
+      [ "pdf_internal_plugin_wrapper.js" ] +
+      print_preview_non_webcomponents_files + print_preview_webcomponents_files
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   deps = [
-    ":closure_compile_local",
-    "elements:closure_compile",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-  if (enable_ink) {
-    deps += [ "ink:closure_compile" ]
-  }
-}
-
-js_library("annotation_tool") {
-}
-
-js_library("bookmark_type") {
-}
-
-js_library("browser_api") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/mime_handler_private.js",
-  ]
-}
-
-js_library("constants") {
-}
-
-js_library("gesture_detector") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("open_pdf_params_parser") {
-  deps = [ ":constants" ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("pdf_scripting_api") {
-}
-
-js_library("viewport_scroller") {
-}
-
-js_library("viewport") {
-  deps = [
-    ":constants",
-    ":gesture_detector",
-    ":internal_plugin",
-    ":zoom_manager",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("zoom_manager") {
-  deps = [
-    ":browser_api",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("metrics") {
-  deps = [ ":constants" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("navigator") {
-  deps = [
-    ":browser_api",
-    ":open_pdf_params_parser",
-    ":viewport",
-  ]
-}
-
-js_library("toolbar_manager") {
-  deps = [
-    "elements:viewer-zoom-toolbar",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("ink_controller") {
-  deps = [
-    ":annotation_tool",
-    ":controller",
-    ":viewport",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("local_storage_proxy") {
-}
-
-js_library("controller") {
-  deps = [
-    ":gesture_detector",
-    ":internal_plugin",
-    ":viewport",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("internal_plugin") {
-}
-
-js_library("pdf_internal_plugin_wrapper") {
-  deps = [
-    ":constants",
-    ":gesture_detector",
-    ":viewport_scroller",
-  ]
-}
-
-js_library("pdf_viewer_base") {
-  deps = [
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":metrics",
-    ":pdf_scripting_api",
-    ":pdf_viewer_utils",
-    ":viewport",
-    ":viewport_scroller",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("pdf_viewer") {
-  deps = [
-    ":bookmark_type",
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":ink_controller",
-    ":local_storage_proxy",
-    ":metrics",
-    ":navigator",
-    ":pdf_scripting_api",
-    ":pdf_viewer_base",
-    ":pdf_viewer_utils",
-    "elements:viewer-bookmark",
-    "elements:viewer-error-dialog",
-    "elements:viewer-password-dialog",
-    "elements:viewer-pdf-sidenav",
-    "elements:viewer-properties-dialog",
-    "elements:viewer-toolbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("pdf_viewer_wrapper") {
-  deps = [ ":pdf_viewer" ]
-}
-
-js_library("pdf_viewer_utils") {
-  deps = [
-    ":controller",
-    ":viewport",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("pdf_viewer_pp") {
-  deps = [
-    ":constants",
-    ":controller",
-    ":pdf_scripting_api",
-    ":pdf_viewer_base",
-    ":pdf_viewer_utils",
-    ":toolbar_manager",
-    ":viewport",
-    "elements:viewer-error-dialog",
-    "elements:viewer-page-indicator",
-    "elements:viewer-zoom-toolbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("main") {
-  deps = [
-    ":browser_api",
-    ":pdf_viewer",
-  ]
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  deps = [
-    ":annotation_tool",
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":gesture_detector",
-    ":ink_controller",
-    ":local_storage_proxy",
-    ":main",
-    ":metrics",
-    ":navigator",
-    ":open_pdf_params_parser",
-    ":pdf_internal_plugin_wrapper",
-    ":pdf_scripting_api",
-    ":pdf_viewer",
-    ":pdf_viewer_base",
-    ":pdf_viewer_pp",
-    ":pdf_viewer_utils",
-    ":pdf_viewer_wrapper",
-    ":toolbar_manager",
-    ":viewport",
-    ":viewport_scroller",
-    ":zoom_manager",
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
   ]
 }

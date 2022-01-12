@@ -11,10 +11,16 @@ pdf_non_webcomponents_files = [
   "local_storage_proxy.js",
   "navigator.js",
   "pdf_viewer_wrapper.js",
+  "pdf_internal_plugin_wrapper.js",
 ]
 
 if (enable_ink) {
-  pdf_non_webcomponents_files += [ "ink_controller.js" ]
+  pdf_non_webcomponents_files += [
+    "annotation_tool.js",
+    "ink_controller.js",
+    "ink/drawing_canvas_externs.js",
+    "ink/ink_api.js",
+  ]
 }
 
 # Files that need to be passed to html_to_js() that are used only in PDF Viewer.
@@ -44,15 +50,8 @@ if (enable_ink) {
 }
 
 # Files to pass directly to preprocess_if_expr() that are used only in Print
-# Preview. Note: browser_api.js, main.js and index.css are also used by the PDF
-# viewer, but the current PDF viewer build does not preprocess these files.
-print_preview_non_webcomponents_files = [
-  "browser_api.js",
-  "index.css",
-  "index_pp.html",
-  "main.js",
-  "toolbar_manager.js",
-]
+# Preview.
+print_preview_non_webcomponents_files = [ "toolbar_manager.js" ]
 
 # Files that need to be passed to html_to_js() that are used only in Print
 # Preview.
@@ -66,10 +65,12 @@ print_preview_webcomponents_files = [
 # Files to pass directly to preprocess_if_expr() that are shared by PDF Viewer
 # and Print Preview.
 shared_non_webcomponents_files = [
+  "browser_api.js",
   "constants.js",
   "controller.js",
   "gesture_detector.js",
   "internal_plugin.js",
+  "main.js",
   "metrics.js",
   "open_pdf_params_parser.js",
   "pdf_scripting_api.js",
