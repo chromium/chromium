@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
+#include "components/autofill_assistant/browser/js_flow_executor_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -40,8 +41,6 @@ using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::WithArg;
 
-// Parses |json| as a base::Value. No error handling - this will crash for
-// invalid json inputs.
 std::unique_ptr<base::Value> UniqueValueFromJson(const std::string& json) {
   return std::make_unique<base::Value>(
       std::move(*base::JSONReader::Read(json)));
@@ -160,17 +159,15 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionWithReturnValue) {
         )")));
 
   EXPECT_CALL(mock_delegate_, RunNativeAction)
-      .WillOnce([&](auto value, auto callback) {
-        EXPECT_EQ(*value, *UniqueValueFromJson(R"(
-          {"type":"string",
-           "value":"test"})"));
+      .WillOnce([&](std::unique_ptr<base::Value> value, auto callback) {
+        EXPECT_EQ(*value, base::Value("test"));
         std::move(callback).Run(ClientStatus(ACTION_APPLIED),
                                 std::move(native_return_value));
       });
 
   std::unique_ptr<base::Value> js_return_value;
   EXPECT_THAT(RunTest(R"(
-                        let [status, value] = await runNativeAction('test');
+                        let [status, value] = await runNativeAction("test");
                         if (status != 2) { // ACTION_APPLIED
                           return status;
                         }
@@ -201,18 +198,57 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionWithReturnValue) {
     )"));
 }
 
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionAsSimpleString) {
+  EXPECT_CALL(mock_delegate_, RunNativeAction)
+      .WillOnce([&](auto value, auto callback) {
+        EXPECT_EQ(*value, base::Value("test"));
+        std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      });
+
+  std::unique_ptr<base::Value> result;
+  EXPECT_THAT(RunTest(R"(
+      let [status, value] = await runNativeAction("test");
+      return status;
+  )",
+                      result),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+  EXPECT_EQ(*result, *base::JSONReader::Read(R"(
+      {
+        "result": {
+          "description": "2",
+          "type": "number",
+          "value": 2
+        }
+      }
+    )"));
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionAsJsonData) {
+  EXPECT_CALL(mock_delegate_, RunNativeAction)
+      .WillOnce([&](auto value, auto callback) {
+        EXPECT_EQ(*value,
+                  *UniqueValueFromJson(R"([1, null, "test", {"foo": "bar"}])"));
+        std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      });
+
+  std::unique_ptr<base::Value> result;
+  EXPECT_THAT(RunTest(R"(
+      let arg = [1, null, "test", {"foo": "bar"}];
+      let [status, value] = await runNativeAction(arg);
+      return status;
+  )",
+                      result),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+}
+
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunMultipleNativeActions) {
   EXPECT_CALL(mock_delegate_, RunNativeAction)
       .WillOnce([&](auto value, auto callback) {
-        EXPECT_EQ(*value, *UniqueValueFromJson(R"(
-          {"type":"string",
-           "value":"test1"})"));
+        EXPECT_EQ(*value, base::Value("action1"));
         std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
       })
       .WillOnce([&](auto value, auto callback) {
-        EXPECT_EQ(*value, *UniqueValueFromJson(R"(
-          {"type":"string",
-           "value":"test2"})"));
+        EXPECT_EQ(*value, base::Value("action2"));
         std::move(callback).Run(ClientStatus(OTHER_ACTION_STATUS), nullptr);
       });
 
@@ -221,9 +257,9 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunMultipleNativeActions) {
   // OTHER_ACTION_STATUS, i.e., 3.
   std::unique_ptr<base::Value> result;
   EXPECT_THAT(RunTest(R"(
-                        let [status, value] = await runNativeAction('test1');
+                        let [status, value] = await runNativeAction("action1");
                         if (status == 2) { // ACTION_APPLIED
-                          [status, value] = await runNativeAction('test2');
+                          [status, value] = await runNativeAction("action2");
                         }
                         return status;
                       )",
@@ -385,9 +421,8 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
   EXPECT_CALL(mock_delegate_, RunNativeAction).Times(0);
   ClientStatus status = RunTest(
       R"(
-        function foo(){}
-        // foo cannot be serialized as a JSON object, so this should fail.
-        let [status, result] = await runNativeAction(foo);
+        // NaN cannot be serialized as a JSON object, so this should fail.
+        let [status, result] = await runNativeAction(NaN);
         return status;
       )",
       result);
@@ -409,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, StartWhileAlreadyRunningFails) {
   std::unique_ptr<base::Value> result;
   ClientStatus status = RunTest(
       R"(
-      let [status, result] = await runNativeAction('');
+      let [status, result] = await runNativeAction("");
       return status;
       )",
       result);

@@ -168,6 +168,7 @@ void JsFlowExecutorImpl::OnNativeActionRequested(
           .SetObjectId(js_array_object_id)
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kArrayGetNthElement))
+          .SetReturnByValue(true)
           .Build(),
       kMainFrame,
       base::BindOnce(&JsFlowExecutorImpl::OnNativeActionRequestActionRetrieved,
@@ -210,7 +211,8 @@ void JsFlowExecutorImpl::OnNativeActionRequestActionRetrieved(
       kMainFrame,
       base::BindOnce(
           &JsFlowExecutorImpl::OnNativeActionRequestFulfillPromiseRetrieved,
-          weak_ptr_factory_.GetWeakPtr(), remote_object->Serialize()));
+          weak_ptr_factory_.GetWeakPtr(),
+          base::Value::ToUniquePtrValue(remote_object->GetValue()->Clone())));
 }
 
 void JsFlowExecutorImpl::OnNativeActionRequestFulfillPromiseRetrieved(
