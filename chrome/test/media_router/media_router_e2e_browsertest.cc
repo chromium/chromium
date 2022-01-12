@@ -74,9 +74,11 @@ void MediaRouterE2EBrowserTest::CreateMediaRoute(
   observer_->Init();
 
   DVLOG(1) << "Receiver name: " << receiver_;
-  // Wait for MediaSinks compatible with |source| to be discovered.
+  // Wait for MediaSinks compatible with |source| to be discovered.  Waiting is
+  // needed here because tests that use this method are always executed using a
+  // real device, as opposed to a fake device provided by the test MRP.
   ASSERT_TRUE(ConditionalWait(
-      base::Seconds(30), base::Seconds(1),
+      base::Seconds(60), base::Seconds(1),
       base::BindRepeating(&MediaRouterE2EBrowserTest::IsSinkDiscovered,
                           base::Unretained(this))));
 
@@ -93,7 +95,7 @@ void MediaRouterE2EBrowserTest::CreateMediaRoute(
 
   // Wait for the route request to be fulfilled (and route to be started).
   ASSERT_TRUE(ConditionalWait(
-      base::Seconds(30), base::Seconds(1),
+      base::Seconds(60), base::Seconds(1),
       base::BindRepeating(&MediaRouterE2EBrowserTest::IsRouteCreated,
                           base::Unretained(this))));
 }
