@@ -98,6 +98,13 @@ component("views_examples_lib") {
     "widget_example.h",
   ]
 
+  if (is_linux || is_chromeos || is_fuchsia) {
+    sources += [
+      "color_chooser_example.cc",
+      "color_chooser_example.h",
+    ]
+  }
+
   defines = [
     "GFX_VECTOR_ICONS_UNSAFE",
     "VIEWS_EXAMPLES_IMPLEMENTATION",

@@ -39,7 +39,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -434,23 +433,18 @@ std::unique_ptr<View> ColorChooser::BuildView() {
   view->AddChildView(std::move(container));
 
   auto container2 = std::make_unique<View>();
-  GridLayout* layout =
-      container2->SetLayoutManager(std::make_unique<views::GridLayout>());
-  ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(GridLayout::LEADING, GridLayout::FILL, 0,
-                     GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddPaddingColumn(0, kMarginWidth);
-  columns->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                     GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(0, 0);
+  BoxLayout* layout =
+      container2->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          BoxLayout::Orientation::kHorizontal, gfx::Insets(), kMarginWidth));
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
   textfield->SetDefaultWidthInChars(kTextfieldLengthInChars);
   textfield->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_COLOR_CHOOSER_HEX_INPUT));
-  textfield_ = layout->AddView(std::move(textfield));
+  textfield_ = container2->AddChildView(std::move(textfield));
   selected_color_patch_ =
-      layout->AddView(std::make_unique<SelectedColorPatchView>());
+      container2->AddChildView(std::make_unique<SelectedColorPatchView>());
+  layout->SetFlexForView(selected_color_patch_, 1);
   view->AddChildView(std::move(container2));
 
   OnColorChanged(initial_color_);
