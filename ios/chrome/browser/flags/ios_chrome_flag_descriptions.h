@@ -399,16 +399,6 @@ extern const char kScreenTimeIntegrationDescription[];
 extern const char kSearchHistoryLinkIOSName[];
 extern const char kSearchHistoryLinkIOSDescription[];
 
-// Title and description for the flag to enable the send-tab-to-self for a
-// signed-in user (non-syncing).
-extern const char kSendTabToSelfWhenSignedInName[];
-extern const char kSendTabToSelfWhenSignedInDescription[];
-
-// Title and description for the flag to enable the "Manage devices" link in
-// the send-tab-to-self feature UI.
-extern const char kSendTabToSelfManageDevicesLinkName[];
-extern const char kSendTabToSelfManageDevicesLinkDescription[];
-
 // Title and description for the flag to send UMA data over any network.
 extern const char kSendUmaOverAnyNetwork[];
 extern const char kSendUmaOverAnyNetworkDescription[];
