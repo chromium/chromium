@@ -106,7 +106,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux Builder (Wayland)": {
