@@ -1654,6 +1654,9 @@ def _AddContainerArguments(parser, is_top_args=False):
   group.add_argument('--no-native',
                      action='store_true',
                      help='Do not run on native symbols')
+  if is_top_args:
+    group.add_argument('--container-filter',
+                       help='Regular expression for which containers to create')
 
   group = parser.add_argument_group(title='Analysis Options for Native Code')
   if is_top_args:
@@ -2173,6 +2176,13 @@ def Run(top_args, on_config_error):
   if top_args.check_data_quality:
     start_time = time.time()
 
+  container_re = None
+  if top_args.container_filter:
+    try:
+      container_re = re.compile(top_args.container_filter)
+    except Exception as e:
+      on_config_error(f'Bad --container-filter input: {e}')
+
   build_config = {}
   seen_container_names = set()
   raw_symbols_list = []
@@ -2193,6 +2203,9 @@ def Run(top_args, on_config_error):
       if container_name in seen_container_names:
         raise ValueError('Duplicate container name: {}'.format(container_name))
       seen_container_names.add(container_name)
+      if container_re and not container_re.search(container_name):
+        logging.info('Skipping filtered container %s', container_name)
+        continue
       logging.info('Starting on container %s', container_name)
 
       metadata = CreateMetadata(build_config=build_config,
