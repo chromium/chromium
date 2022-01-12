@@ -1341,7 +1341,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   auto scroll_a = CreateScroll(ScrollPaintPropertyNode::Root(), ScrollState1(),
                                kNotScrollingOnMain, scroll_element_id_a);
   auto scroll_translation_a = CreateScrollTranslation(
-      t0(), 11, 13, *scroll_a, CompositingReason::kLayerForScrollingContents);
+      t0(), 11, 13, *scroll_a, CompositingReason::kOverflowScrolling);
 
   CompositorElementId scroll_element_id_b = ScrollElementId(3);
   auto scroll_b =
@@ -1948,7 +1948,7 @@ TEST_P(PaintArtifactCompositorTest, EffectWithElementIdWithAlias) {
 
 TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleMask) {
   auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
@@ -1982,12 +1982,13 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleMask) {
 
 TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
   auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
   masking_state.blend_mode = SkBlendMode::kDstIn;
-  masking_state.direct_compositing_reasons = CompositingReason::kLayerForMask;
+  masking_state.direct_compositing_reasons =
+      CompositingReason::kMaskWithCompositedDescendants;
   auto masking =
       EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
 
@@ -2015,7 +2016,7 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
 
 TEST_P(PaintArtifactCompositorTest, CompositedMaskTwoChildren) {
   auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
@@ -2024,7 +2025,7 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskTwoChildren) {
       EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
 
   auto child_of_masked = CreateOpacityEffect(
-      *masking, 1.0, CompositingReason::kIsolateCompositedDescendants);
+      *masking, 1.0, CompositingReason::kOpacityWithCompositedDescendants);
 
   TestPaintArtifact artifact;
   artifact.Chunk(t0(), c0(), *masked)
@@ -2052,7 +2053,7 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskTwoChildren) {
 
 TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleExoticBlendMode) {
   auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
@@ -2079,7 +2080,7 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleExoticBlendMode) {
 
 TEST_P(PaintArtifactCompositorTest, ForcedCompositedExoticBlendMode) {
   auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
@@ -2112,7 +2113,7 @@ TEST_P(PaintArtifactCompositorTest, ForcedCompositedExoticBlendMode) {
 TEST_P(PaintArtifactCompositorTest,
        CompositedExoticBlendModeOnTwoOpacityAnimationLayers) {
   auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   auto masked_child1 = CreateOpacityEffect(
       *masked, 1.0, CompositingReason::kActiveOpacityAnimation);
   auto masked_child2 = CreateOpacityEffect(
@@ -2150,7 +2151,7 @@ TEST_P(PaintArtifactCompositorTest,
 TEST_P(PaintArtifactCompositorTest,
        CompositedExoticBlendModeOnTwo3DTransformLayers) {
   auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   auto transform1 =
       CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
                       CompositingReason::k3DTransform);
@@ -2189,7 +2190,7 @@ TEST_P(PaintArtifactCompositorTest,
 
 TEST_P(PaintArtifactCompositorTest, DecompositeExoticBlendModeWithoutBackdrop) {
   auto parent_effect = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   EffectPaintPropertyNode::State blend_state1;
   blend_state1.local_transform_space = &t0();
   blend_state1.blend_mode = SkBlendMode::kScreen;
@@ -2220,7 +2221,7 @@ TEST_P(PaintArtifactCompositorTest, DecompositeExoticBlendModeWithoutBackdrop) {
 TEST_P(PaintArtifactCompositorTest,
        DecompositeExoticBlendModeWithNonDrawingLayer) {
   auto parent_effect = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
+      e0(), 1.0, CompositingReason::kOpacityWithCompositedDescendants);
   EffectPaintPropertyNode::State blend_state1;
   blend_state1.local_transform_space = &t0();
   blend_state1.blend_mode = SkBlendMode::kScreen;

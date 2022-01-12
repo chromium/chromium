@@ -51,17 +51,6 @@ class CompositingReasonFinderTest : public RenderingTest,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CompositingReasonFinderTest);
 
-TEST_P(CompositingReasonFinderTest, CompositingReasonDependencies) {
-  EXPECT_FALSE(CompositingReason::kComboAllDirectNonStyleDeterminedReasons &
-               (~CompositingReason::kComboAllDirectReasons));
-  EXPECT_REASONS(
-      CompositingReason::kComboAllDirectReasons,
-      CompositingReason::kComboAllDirectStyleDeterminedReasons |
-          CompositingReason::kComboAllDirectNonStyleDeterminedReasons);
-  EXPECT_FALSE(CompositingReason::kComboAllDirectNonStyleDeterminedReasons &
-               CompositingReason::kComboAllStyleDeterminedReasons);
-}
-
 TEST_P(CompositingReasonFinderTest, PromoteTrivial3D) {
   SetBodyInnerHTML(R"HTML(
     <div id='target'
