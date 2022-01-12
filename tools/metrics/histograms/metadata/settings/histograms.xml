@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.Enabled"
     enum="SettingsPrivacySandboxEnabled" expires_after="2022-06-26">
-  <owner>harrisonseean@chromium.org</owner>
+  <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -234,14 +234,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PrivacySandboxReferrer"
-    enum="PrivacySandboxReferrer" expires_after="M95">
+    enum="PrivacySandboxReferrer" expires_after="M104">
   <owner>andzaytsev@google.com</owner>
-  <owner>harrisonseean@chromium.org</owner>
+  <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
     Referrer of a navigation to the Privacy Sandbox UI Settings view. Recorded
     when the user enters the view.
+
+    Warning: This histogram was expired after M95 and restored M99. Data may be
+    missing M96-98.
   </summary>
 </histogram>
 
