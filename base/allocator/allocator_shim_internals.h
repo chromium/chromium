@@ -14,8 +14,7 @@
 #endif
 
 #ifndef __THROW  // Not a glibc system
-#if defined(_NOEXCEPT) && !defined(OS_FUCHSIA)
-// LLVM libc++ uses noexcept instead
+#ifdef _NOEXCEPT  // LLVM libc++ uses noexcept instead
 #define __THROW _NOEXCEPT
 #else
 #define __THROW
