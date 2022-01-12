@@ -121,6 +121,7 @@
     text_highlight_color: {
       light: "rgba($google_blue_600_rgb, 0.3)",
       dark: "rgba($google_blue_400_rgb, 0.3)",
+      generate_per_mode: true,
     },
 
     /*
@@ -188,6 +189,7 @@
       light: "$google_blue_50",
       dark: "rgba($google_blue_300_rgb, 0.3)",
       debug: "rgba($google_red_300_rgb, 0.3)",
+      generate_per_mode: true,
     },
     highlight_color_error: {
       light: "$google_red_50",
