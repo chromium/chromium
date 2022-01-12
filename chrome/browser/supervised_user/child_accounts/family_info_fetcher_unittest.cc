@@ -150,11 +150,11 @@ class FamilyInfoFetcherTest
     return identity_test_env_.SetPrimaryAccount(kAccountId,
                                                 signin::ConsentLevel::kSync);
 #elif defined(OS_ANDROID)
-    // TODO(https://crbug.com/1046746): Change to ConsentLevel::kSignin
-    // when Android supports the concept of an unconsented primary account that
-    // is different than the primary account.
+    // Android supports Unicorn accounts in signed in state with sync disabled.
+    // Using that setup in these tests checks that we aren't overly
+    // restrictive.
     return identity_test_env_.SetPrimaryAccount(kAccountId,
-                                                signin::ConsentLevel::kSync);
+                                                signin::ConsentLevel::kSignin);
 #else
 #error Unsupported platform.
 #endif
@@ -165,11 +165,11 @@ class FamilyInfoFetcherTest
     identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
                                                    signin::ConsentLevel::kSync);
 #elif defined(OS_ANDROID)
-    // TODO(https://crbug.com/1046746): Change to ConsentLevel::kSignin
-    // when Android supports the concept of an unconsented primary account that
-    // is different than the primary account.
-    identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
-                                                   signin::ConsentLevel::kSync);
+    // Android supports Unicorn accounts in signed in state with sync disabled.
+    // Using that setup in these tests checks that we aren't overly
+    // restrictive.
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kAccountId, signin::ConsentLevel::kSignin);
 #else
 #error Unsupported platform.
 #endif

@@ -57,6 +57,10 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kPhotosModuleOAuth2Scope,
       GaiaConstants::kPhotosModuleImageOAuth2Scope,
 
+      // Required for displaying information about parents on supervised child
+      // devices.  Consent is obtained outside Chrome within Family Link flows.
+      GaiaConstants::kKidFamilyReadonlyOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAccountsReauthOAuth2Scope,
