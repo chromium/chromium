@@ -13,7 +13,8 @@
       <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
         <repair-component-chip id="[[component.id]]"
           checked="{{component.checked}}"
-          disabled$="[[component.disabled]]"
+          disabled$="[[isComponentDisabled_(component.disabled,
+              allButtonsDisabled)]]"
           component-name="[[component.name]]"
           component-id="[[component.uniqueId]]">
         </repair-component-chip>

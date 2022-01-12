@@ -53,6 +53,12 @@ export class OnboardingSelectComponentsPageElement extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected {!Array<!ComponentCheckbox>} */
       componentCheckboxes_: {
         type: Array,
@@ -149,8 +155,22 @@ export class OnboardingSelectComponentsPageElement extends
         this.i18nAdvanced('reworkFlowLinkText', {attrs: ['id']});
     const linkElement = this.shadowRoot.querySelector('#reworkFlowLink');
     linkElement.setAttribute('href', '#');
-    linkElement.addEventListener(
-        'click', e => this.onReworkFlowLinkClicked_(e));
+    linkElement.addEventListener('click', e => {
+      if (this.allButtonsDisabled) {
+        return;
+      }
+
+      this.onReworkFlowLinkClicked_(e);
+    });
+  }
+
+  /**
+   * @param {boolean} componentDisabled
+   * @return {boolean}
+   * @protected
+   */
+  isComponentDisabled_(componentDisabled) {
+    return this.allButtonsDisabled || componentDisabled;
   }
 }
 

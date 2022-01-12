@@ -166,4 +166,33 @@ export function onboardingSelectComponentsPageTest() {
     assertEquals(1, callCounter);
     assertDeepEquals(expectedResult, savedResult);
   });
+
+  test('SelectComponentsPageDisablesComponents', async () => {
+    await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
+
+    const cameraComponent =
+        component.shadowRoot.querySelector('#componentCamera');
+    const touchpadComponent =
+        component.shadowRoot.querySelector('#componentTouchpad');
+    assertFalse(cameraComponent.disabled);
+    assertFalse(touchpadComponent.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(cameraComponent.disabled);
+    assertTrue(touchpadComponent.disabled);
+  });
+
+  test('SelectComponentsPageReworkLinkDisabled', async () => {
+    const resolver = new PromiseResolver();
+    await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
+    let callCounter = 0;
+    service.reworkMainboard = () => {
+      callCounter++;
+      return resolver.promise;
+    };
+
+    component.allButtonsDisabled = true;
+    await clickReworkButton();
+
+    assertEquals(0, callCounter);
+  });
 }
