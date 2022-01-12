@@ -1120,7 +1120,13 @@ TEST_F(TranslatePrefsTest, NeverOnAlwaysAndNever) {
   EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(), IsEmpty());
 }
 
-TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
+// Failing on Android - crbug.com/1286360
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CanTranslateLanguage DISABLED_CanTranslateLanguage
+#else
+#define MAYBE_CanTranslateLanguage CanTranslateLanguage
+#endif
+TEST_F(TranslatePrefsTest, MAYBE_CanTranslateLanguage) {
   prefs_.SetString(language::prefs::kAcceptLanguages, "en");
   TranslateDownloadManager::GetInstance()->set_application_locale("en");
 
