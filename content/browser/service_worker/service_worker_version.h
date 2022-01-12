@@ -946,15 +946,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   ServiceWorkerRegistration::Status registration_status_;
 
   // Cross-Origin-Embedder-Policy for the service worker script. This persists
-  // in the disk.
-  //
-  // On brand new service workers, the COEP value is not known initially. It
-  // will be set in PrepareForUpdate(), after the main script has been processed
-  // by the renderer process.
-  //
-  // PlzServiceWorker(https://crbug.com/996511):
-  // Once landed, there is no more need to use an absl::optional here. The COEP
-  // header is going to be known from the beginning and can be mark as 'const'.
+  // in the disk. On brand new service workers, the COEP value is not known
+  // initially. It will be set in PrepareForUpdate() once the response headers
+  // are received.
   absl::optional<network::CrossOriginEmbedderPolicy>
       cross_origin_embedder_policy_;
 
@@ -1081,6 +1075,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // called. This allows the browser process to prevent the renderer from
   // evaluating the script immediately after the script has been loaded, until
   // the subresource loader factories are updated.
+  // TODO(crbug.com/1270772): This can probably be removed since
+  // PlzServiceWorker has landed, as it looks only used in tests. Verify and
+  // remove if that's accurate.
   bool initialize_global_scope_after_main_script_loaded_ = false;
 
   // Populated via network::mojom::URLResponseHead of the main script.

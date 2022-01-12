@@ -20,7 +20,6 @@
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/url_loader_throttles.h"
-#include "content/public/common/content_features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -547,11 +546,9 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
     DCHECK(cache_writer_->did_replace());
     bytes_written = cache_writer_->bytes_written();
   } else {
-    // When we fail a main script fetch with plzServiceWorker, we do not have
-    // a renderer in which to log the failure. We call into devtools with the
-    // frame id instead.
+    // When we fail a main script fetch, we do not have a renderer in which to
+    // log the failure. We call into devtools with the frame id instead.
     if (requesting_frame_id_) {
-      DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
       devtools_instrumentation::OnServiceWorkerMainScriptFetchingFailed(
           requesting_frame_id_, status_message);
     } else {

@@ -529,10 +529,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, RequestOrigin) {
       [&](URLLoaderInterceptor::RequestParams* params) {
         auto it = expected_request_urls.find(params->url_request.url);
         if (it != expected_request_urls.end()) {
-          if (base::FeatureList::IsEnabled(features::kPlzServiceWorker) &&
-              it->second) {
-            // The main script is loaded in the browser process when
-            // PlzServiceWorker is enabled. In that case,
+          if (it->second) {
+            // The main script is loaded from the browser process. In that case,
             // `originated_from_service_worker` is set to false and the
             // `trusted_params` is available.
             EXPECT_FALSE(params->url_request.originated_from_service_worker);
@@ -1149,12 +1147,6 @@ class UserAgentServiceWorkerBrowserTest
                                     kOriginTrialTestPublicKey);
   }
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kPlzServiceWorker);
-
-    ServiceWorkerBrowserTest::SetUp();
-  }
-
   bool WithUserAgentReductionOriginTrialToken() const { return GetParam(); }
 
   std::string GetExpectedUserAgent() const {
@@ -1163,9 +1155,6 @@ class UserAgentServiceWorkerBrowserTest
       return client->GetReducedUserAgent();
     return client->GetUserAgent();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
@@ -3294,30 +3283,19 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
       running_info.render_process_id;
   if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_TRUE(is_in_process);
-  if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // When PlzServiceWorker is enabled, the page and the worker cannot live in
-    // the same process.
-    EXPECT_NE(base::FeatureList::IsEnabled(features::kPlzServiceWorker),
-              is_in_process);
-  }
+  if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated())
+    EXPECT_FALSE(is_in_process);
+
   if (IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_FALSE(is_in_process);
-  if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // When PlzServiceWorker is enabled, the page and the worker live in the
-    // same process.
-    EXPECT_EQ(base::FeatureList::IsEnabled(features::kPlzServiceWorker),
-              is_in_process);
-  }
+  if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated())
+    EXPECT_TRUE(is_in_process);
 
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
-  if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
-    EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
-              process_lock.GetWebExposedIsolationInfo().is_isolated());
-  } else {
-    EXPECT_FALSE(process_lock.GetWebExposedIsolationInfo().is_isolated());
-  }
+  EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
+            process_lock.GetWebExposedIsolationInfo().is_isolated());
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,

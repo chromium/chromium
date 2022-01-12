@@ -408,7 +408,6 @@ ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
 
 void ServiceWorkerDevToolsAgentHost::set_should_pause_on_start(
     bool should_pause_on_start) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   should_pause_on_start_ = should_pause_on_start;
 }
 
