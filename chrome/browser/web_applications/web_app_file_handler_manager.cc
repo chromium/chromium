@@ -103,14 +103,16 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
     const AppId& app_id,
     ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!ShouldOsIntegrationBeEnabled(app_id)) {
+    // No work is required.
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+
   SetOsIntegrationState(app_id, OsIntegrationState::kDisabled);
 
-  // Temporarily allow file handlers unregistration only if an app has them.
-  // TODO(crbug.com/1088434, crbug.com/1076688): Do not start async
-  // CreateShortcuts process in OnWebAppWillBeUninstalled / Unregistration.
-  const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
-
-  if (!ShouldRegisterFileHandlersWithOs() || !file_handlers ||
+  if (!ShouldRegisterFileHandlersWithOs() ||
       disable_os_integration_for_testing_) {
     // This enumeration signals if there was not an error. Exiting early here is
     // WAI, so this is a success.

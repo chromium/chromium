@@ -2350,7 +2350,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  EXPECT_TRUE(GetProvider().registrar().GetAppFileHandlers(app_id));
+  auto* file_handlers = GetProvider().registrar().GetAppFileHandlers(app_id);
+  ASSERT_TRUE(file_handlers);
+  EXPECT_TRUE(file_handlers->empty());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
