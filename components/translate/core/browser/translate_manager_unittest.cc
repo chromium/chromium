@@ -684,15 +684,15 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
 
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
-  translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("zu", true);
   network_notifier_.SimulateOnline();
 
-  translate_manager_->InitiateTranslation("en");
+  translate_manager_->InitiateTranslation("zu");
   EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
               ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1),
                           Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
 
-  translate_manager_->TranslatePage("en", "hi", false);
+  translate_manager_->TranslatePage("zu", "hi", false);
 
   // Accept languages should now contain "hi" because the user chose to
   // translate to it once.
@@ -1137,7 +1137,7 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
   PrepareTranslateManager();
   manager_->set_application_locale("en");
-  ASSERT_TRUE(TranslateDownloadManager::IsSupportedLanguage("en"));
+  ASSERT_TRUE(TranslateDownloadManager::IsSupportedLanguage("zu"));
 
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
@@ -1152,19 +1152,19 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
 
-  translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("zu", true);
 
   EXPECT_CALL(
       mock_translate_client_,
-      ShowTranslateUI(translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "en", "ru",
+      ShowTranslateUI(translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "zu", "ru",
                       TranslateErrors::NONE, /*triggered_from_menu=*/false))
       .WillOnce(Return(true));
 
   base::HistogramTester histogram_tester;
-  translate_manager_->InitiateTranslation("en");
+  translate_manager_->InitiateTranslation("zu");
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kInitiationStatusName),
-      ElementsAre(Bucket(
+      ::testing::Contains(Bucket(
           metrics::INITIATION_STATUS_SHOW_UI_PREDEFINED_TARGET_LANGUAGE, 1)));
 }
 
