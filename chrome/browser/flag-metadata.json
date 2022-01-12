@@ -812,11 +812,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "composite-after-paint",
-    "owners": [ "pdr", "wangxianzhu" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "compositor-threaded-scrollbar-scrolling",
     "owners": [ "arakeri@microsoft.com" ],
     "expiry_milestone": 90
