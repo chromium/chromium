@@ -36,6 +36,8 @@ class DateTimeChooserAndroid
   void OpenDateTimeDialog(blink::mojom::DateTimeDialogValuePtr value,
                           OpenDateTimeDialogCallback callback) override;
 
+  void CloseDateTimeDialog() override;
+
   // Replaces the current value.
   void ReplaceDateTime(JNIEnv* env,
                        const base::android::JavaRef<jobject>&,
@@ -45,6 +47,8 @@ class DateTimeChooserAndroid
   void CancelDialog(JNIEnv* env, const base::android::JavaRef<jobject>&);
 
  private:
+  void DismissAndDestroyJavaObject();
+
   friend class content::WebContentsUserData<DateTimeChooserAndroid>;
   content::WebContents* web_contents_;
 

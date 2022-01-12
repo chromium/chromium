@@ -145,6 +145,10 @@ void ExternalDateTimeChooser::DidCancelChooser() {
 
 void ExternalDateTimeChooser::EndChooser() {
   DCHECK(client_);
+  if (date_time_chooser_.is_bound()) {
+    date_time_chooser_->CloseDateTimeDialog();
+    date_time_chooser_.reset();
+  }
   DateTimeChooserClient* client = client_;
   client_ = nullptr;
   client->DidEndChooser();
