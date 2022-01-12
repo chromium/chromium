@@ -211,10 +211,7 @@ interface RenderWidgetHostNSViewHost {
   // then return |success| as false.
   [Sync]
   SyncGetFirstRectForRange(
-      gfx.mojom.Range
-      requested_range,
-      gfx.mojom.Rect rect,
-      gfx.mojom.Range actual_range) =>
+      gfx.mojom.Range requested_range) =>
           (gfx.mojom.Rect out_rect,
            gfx.mojom.Range out_actual_range,
            bool success);
