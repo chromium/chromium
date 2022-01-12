@@ -2359,6 +2359,8 @@ message PaymentInstrumentProto {
   map<int32, AutofillEntryProto> card_values = 2;
   // The network of the card.
   optional string network = 5;
+  // The last 4 digits of the card.
+  optional string last_four_digits = 6;
   // The values for the billing address, where the key is one of
   // autofill::ServerFieldType.
   map<int32, AutofillEntryProto> address_values = 3;

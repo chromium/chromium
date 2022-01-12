@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.IntList;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.LoginDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ModelProto.ModelValue;
+import org.chromium.chrome.browser.autofill_assistant.proto.PaymentInstrumentProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PopupListSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
@@ -988,5 +989,60 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "email"), is("johndoe@google.com"));
+    }
+
+    /**
+     * Load and show a card from backend.
+     * TODO(b/214022384): Fill it into a form (requires unmasking).
+     */
+    @Test
+    @MediumTest
+    public void testShowBackendCard() throws Exception {
+        UserDataProto.Builder
+                data = UserDataProto.newBuilder().setLocale("en-US").addAvailablePaymentInstruments(
+                PaymentInstrumentProto.newBuilder()
+                        .putCardValues(55, AutofillEntryProto.newBuilder().setValue("2050").build())
+                        .putCardValues(53, AutofillEntryProto.newBuilder().setValue("7").build())
+                        .putCardValues(
+                                51, AutofillEntryProto.newBuilder().setValue("John Doe").build())
+                        .setNetwork("visaCC")
+                        .setLastFourDigits("1111")
+                        .putAddressValues(
+                                35, AutofillEntryProto.newBuilder().setValue("80302").build())
+                        .putAddressValues(
+                                36, AutofillEntryProto.newBuilder().setValue("US").build())
+                        .putAddressValues(
+                                33, AutofillEntryProto.newBuilder().setValue("Boulder").build())
+                        .putAddressValues(30,
+                                AutofillEntryProto.newBuilder().setValue("123 Broadway St").build())
+                        .putAddressValues(
+                                34, AutofillEntryProto.newBuilder().setValue("CO").build())
+                        .putAddressValues(
+                                7, AutofillEntryProto.newBuilder().setValue("John Doe").build()));
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(CollectUserDataProto.newBuilder()
+                                                     .setUserData(data)
+                                                     .setRequestPaymentMethod(true)
+                                                     .setBillingAddressName("billing_address")
+                                                     .addSupportedBasicCardNetworks("visa")
+                                                     .setRequestTermsAndConditions(false))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(allOf(withId(R.id.credit_card_number),
+                                              isDescendantOfA(withId(R.id.payment_method_summary))),
+                allOf(withText(containsString("1111")), isDisplayed()));
+        waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
     }
 }
