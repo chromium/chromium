@@ -1184,7 +1184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeTimeUntilEncryptionKeyFound2{SyncModelType}"
-    units="GetUpdates" expires_after="2022-02-06">
+    units="GetUpdates" expires_after="2022-03-06">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
