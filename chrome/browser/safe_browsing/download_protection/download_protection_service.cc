@@ -235,14 +235,20 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
   bool safe_browsing_enabled =
       profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
   auto settings = DeepScanningRequest::ShouldUploadBinary(item);
+  bool report_only_scan =
+      base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
+      settings.has_value() &&
+      settings.value().block_until_verdict ==
+          enterprise_connectors::BlockUntilVerdict::NO_BLOCK;
 
   if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
       base::FeatureList::IsEnabled(
           kSafeBrowsingDisableConsumerCsdForEnterprise) &&
-      settings.has_value()) {
+      settings.has_value() && !report_only_scan) {
     // Since this branch implies that the CSD check is done through the deep
     // scanning request and not with a consumer check, the pre-deep scanning
-    // DownloadCheckResult is considered UNKNOWN.
+    // DownloadCheckResult is considered UNKNOWN. This shouldn't trigger on
+    // report-only scans to avoid skipping the consumer check.
     UploadForDeepScanning(item, std::move(callback),
                           DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
                           DownloadCheckResult::UNKNOWN,
@@ -255,9 +261,9 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     return true;
   }
 
-  // TODO(https://crbug.com/1165815): Remove this check once the enterpise CSD
-  // check has fully launched.
   if (settings.has_value()) {
+    DCHECK(report_only_scan);
+    DCHECK(!safe_browsing_enabled);
     // Since this branch implies that Safe Browsing is disabled, the pre-deep
     // scanning DownloadCheckResult is considered UNKNOWN.
     UploadForDeepScanning(item, std::move(callback),
