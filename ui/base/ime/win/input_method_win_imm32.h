@@ -18,7 +18,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinImm32
     : public InputMethodWinBase {
  public:
   InputMethodWinImm32(internal::InputMethodDelegate* delegate,
-                      HWND toplevel_window_handle);
+                      HWND attached_window_handle);
 
   InputMethodWinImm32(const InputMethodWinImm32&) = delete;
   InputMethodWinImm32& operator=(const InputMethodWinImm32&) = delete;

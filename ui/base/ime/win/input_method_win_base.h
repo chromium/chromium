@@ -18,7 +18,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
     : public InputMethodBase {
  public:
   InputMethodWinBase(internal::InputMethodDelegate* delegate,
-                     HWND toplevel_window_handle);
+                     HWND attached_window_handle);
 
   InputMethodWinBase(const InputMethodWinBase&) = delete;
   InputMethodWinBase& operator=(const InputMethodWinBase&) = delete;
@@ -62,8 +62,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
       ui::KeyEvent* event,
       const std::vector<CHROME_MSG>* char_msgs);
 
-  // The toplevel window handle.
-  const HWND toplevel_window_handle_;
+  // For standard Chromium browser this should always be the top-level window.
+  // However for embedded Chromium windows this might be the embedder or the
+  // ancestor of the embedder.
+  const HWND attached_window_handle_;
 
   // Represents if WM_CHAR[wparam=='\r'] should be dispatched to the focused
   // text input client or ignored silently. This flag is introduced as a quick
