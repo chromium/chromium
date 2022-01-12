@@ -558,15 +558,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   {
     const crosapi::mojom::BrowserInitParams* init_params =
         lacros_service_->init_params();
-    // default_paths may null on browser_tests.
-    if (init_params->default_paths) {
-      base::FilePath drivefs;
-      if (init_params->default_paths->drivefs.has_value())
-        drivefs = init_params->default_paths->drivefs.value();
-      chrome::SetLacrosDefaultPaths(init_params->default_paths->documents,
-                                    init_params->default_paths->downloads,
-                                    drivefs);
-    }
+    chrome::SetLacrosDefaultPathsFromInitParams(init_params);
     // This lives here rather than in ChromeBrowserMainExtraPartsLacros due to
     // timing constraints. If we relocate it, then the flags aren't propagated
     // to the GPU process.

@@ -635,6 +635,7 @@ static_library("constants") {
       "chrome_paths_lacros.h",
     ]
     deps += [ "//chromeos/crosapi/cpp" ]
+    public_deps += [ "//chromeos/crosapi/mojom" ]
   } else if (is_linux || is_chromeos) {
     sources += [ "chrome_paths_linux.cc" ]
   }

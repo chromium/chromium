@@ -180,6 +180,7 @@ source_set("crosapi") {
     "//chromeos/crosapi/mojom",
     "//chromeos/cryptohome",
     "//chromeos/dbus",
+    "//chromeos/dbus/cros_disks",
     "//chromeos/dbus/power",
     "//chromeos/dbus/resourced",
     "//chromeos/dbus/session_manager",

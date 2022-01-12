@@ -6355,6 +6355,7 @@ test("unit_tests") {
         "//chromeos/dbus/attestation",
         "//chromeos/dbus/cicerone",
         "//chromeos/dbus/concierge",
+        "//chromeos/dbus/cros_disks",
         "//chromeos/dbus/debug_daemon",
         "//chromeos/dbus/hermes",
         "//chromeos/dbus/power",

@@ -579,6 +579,27 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   if (drivefs_mounted && drivefs.IsParent(path))
     return path;
 
+  // Allow paths for removable media devices.
+  base::FilePath removable_media_path;
+  if (chrome::GetRemovableMediaPath(&removable_media_path) &&
+      removable_media_path.IsParent(path)) {
+    return path;
+  }
+
+  // Allow paths under the Android files mount point.
+  base::FilePath android_files_path;
+  if (chrome::GetAndroidFilesPath(&android_files_path) &&
+      android_files_path.IsParent(path)) {
+    return path;
+  }
+
+  // Allow Linux files mount point and subdirs.
+  base::FilePath linux_files_path;
+  if (chrome::GetLinuxFilesPath(&linux_files_path) &&
+      (linux_files_path == path || linux_files_path.IsParent(path))) {
+    return path;
+  }
+
   // Otherwise, return the safe default.
   return default_downloads_path;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)

@@ -473,32 +473,38 @@ enum MetricsReportingManaged {
   kManaged = 2,
 };
 
-// Default directories on the system.
+// Default directories on the system. We send the full path for each value for
+// future compatibility, to avoid assumptions about where on disk the directory
+// is located.
 [Stable]
 struct DefaultPaths {
   // The default (non-configurable) directory for documents. For example,
-  // /home/chronos/u-<hash>/MyFiles. We send the full path for future
-  // compatibility, to avoid assumptions about where on disk the directory is
-  // located.
+  // /home/chronos/u-<hash>/MyFiles.
   mojo_base.mojom.FilePath documents@0;
 
   // The default (non-configurable) directory for downloads. For example,
-  // /home/chronos/u-<hash>/MyFiles/Downloads.  We send the full path for future
-  // compatibility, to avoid assumptions about where on disk the directory is
-  // located.
+  // /home/chronos/u-<hash>/MyFiles/Downloads.
   mojo_base.mojom.FilePath downloads@1;
 
   // The (non-configurable) path of the mount point for drive in ChromeOS. For
-  // example, /media/fuse/drivefs-<hash>. We send the full path for future
-  // compatibility, to avoid assumptions about where on disk the directory is
-  // located.
+  // example, /media/fuse/drivefs-<hash>.
   [MinVersion=23] mojo_base.mojom.FilePath? drivefs@2;
 
   // The (non-configurable) path of the software user NSS database. For
-  // example, /home/chronos/u-<hash>/.pki/nssdb. We send the full path for
-  // future compatibility, to avoid assumptions about where on disk the
-  // directory is located.
+  // example, /home/chronos/u-<hash>/.pki/nssdb.
   [MinVersion=30] mojo_base.mojom.FilePath? user_nss_database@3;
+
+  // The (non-configurable) path at which removable media is mounted. For
+  // example, /media/removable.
+  [MinVersion=31] mojo_base.mojom.FilePath? removable_media@4;
+
+  // The (non-configurable) path at which ARC's storage is located (shown as
+  // "Play Files" in Files app). For example, /run/arc/sdcard/write/emulated/0.
+  [MinVersion=31] mojo_base.mojom.FilePath? android_files@5;
+
+  // The (non-configurable) path at which Crostini's home directory is
+  // mounted. For example, /media/fuse/crostini_<hash>_termina_penguin.
+  [MinVersion=31] mojo_base.mojom.FilePath? linux_files@6;
 };
 
 // The device specific data needed in Lacros.
