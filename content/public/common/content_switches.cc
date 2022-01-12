@@ -575,11 +575,6 @@ const char kLoggingLevel[]                  = "log-level";
 // affect which events are logged).
 const char kLogFile[] = "log-file";
 
-// Resizes of the main frame are caused by changing between landscape and
-// portrait mode (i.e. Android) so the page should be rescaled to fit.
-const char kMainFrameResizesAreOrientationChanges[] =
-    "main-frame-resizes-are-orientation-changes";
-
 // Allows user to override maximum number of active WebGL contexts per
 // renderer process.
 const char kMaxActiveWebGLContexts[] = "max-active-webgl-contexts";

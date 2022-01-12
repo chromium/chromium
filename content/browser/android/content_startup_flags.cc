@@ -51,9 +51,6 @@ void SetContentCommandLineFlags(bool single_process) {
   if (base::SysInfo::IsLowEndDevice())
     parsed_command_line->AppendSwitch(switches::kInProcessGPU);
 
-  parsed_command_line->AppendSwitch(
-      switches::kMainFrameResizesAreOrientationChanges);
-
   // Disable anti-aliasing.
   parsed_command_line->AppendSwitch(
       cc::switches::kDisableCompositedAntialiasing);

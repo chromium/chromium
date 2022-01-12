@@ -163,7 +163,6 @@ CONTENT_EXPORT extern const char kLaunchAsBrowser[];
 CONTENT_EXPORT extern const char kLogGpuControlListDecisions[];
 CONTENT_EXPORT extern const char kLoggingLevel[];
 CONTENT_EXPORT extern const char kLogFile[];
-CONTENT_EXPORT extern const char kMainFrameResizesAreOrientationChanges[];
 extern const char kMaxActiveWebGLContexts[];
 CONTENT_EXPORT extern const char kMaxDecodedImageSizeMb[];
 CONTENT_EXPORT extern const char kMaxWebMediaPlayerCount[];

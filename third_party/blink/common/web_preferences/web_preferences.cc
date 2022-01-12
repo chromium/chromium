@@ -125,14 +125,15 @@ WebPreferences::WebPreferences()
       viewport_style(mojom::ViewportStyle::kMobile),
       always_show_context_menu_on_touch(false),
       smooth_scroll_for_find_enabled(true),
+      main_frame_resizes_are_orientation_changes(true),
 #else
       viewport_meta_enabled(false),
       shrinks_viewport_contents_to_fit(false),
       viewport_style(mojom::ViewportStyle::kDefault),
       always_show_context_menu_on_touch(true),
       smooth_scroll_for_find_enabled(false),
-#endif
       main_frame_resizes_are_orientation_changes(false),
+#endif
       initialize_at_minimum_page_scale(true),
 #if defined(OS_MAC)
       smart_insert_delete_enabled(true),

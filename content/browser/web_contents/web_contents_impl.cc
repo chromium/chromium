@@ -2727,9 +2727,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
       prefs.viewport_meta_enabled = false;
   }
 
-  prefs.main_frame_resizes_are_orientation_changes =
-      command_line.HasSwitch(switches::kMainFrameResizesAreOrientationChanges);
-
   prefs.spatial_navigation_enabled =
       command_line.HasSwitch(switches::kEnableSpatialNavigation);
 
