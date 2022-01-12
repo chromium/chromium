@@ -274,4 +274,5 @@ build_recipe(
 
 build_recipe(
     name = "recipe:webrtc/chromium_ios",
+    use_python3 = True,
 )
