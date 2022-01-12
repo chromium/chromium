@@ -25,8 +25,15 @@ Polymer({
       type: Boolean,
       reflectToAttribute: true,
       observer: 'disabledChanged_',
-      computed: 'computeDisabled_(deviceState, deviceState.inhibitReason)'
+      computed: 'computeDisabled_(deviceState, deviceState.inhibitReason,' +
+          'disableItem)'
     },
+
+    /**
+     * Set by network-list to force disable this network item.
+     * @type {boolean}
+     */
+    disableItem: Boolean,
 
     /** @type {!NetworkList.NetworkListItemType|undefined} */
     item: {
@@ -366,6 +373,9 @@ Polymer({
    * @private
    */
   computeDisabled_() {
+    if (this.disableItem) {
+      return true;
+    }
     if (!this.deviceState) {
       return false;
     }

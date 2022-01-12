@@ -89,6 +89,9 @@ Polymer({
      * @private
      */
     listBlurred_: Boolean,
+
+    /** Disables all the network items. */
+    disabled: Boolean,
   },
 
   behaviors: [CrScrollableBehavior, ListPropertyUpdateBehavior],

@@ -600,6 +600,27 @@ suite('NetworkListItemTest', function() {
         assertFalse(eventTriggered);
       });
 
+  test(
+      'Network item force disabled, no arrow and enter and click does not ' +
+          'fire events',
+      async () => {
+        init();
+
+        listItem.disableItem = true;
+        await flushAsync();
+
+        let arrow = listItem.$$('#subpageButton');
+        assertFalse(!!arrow);
+
+        listItem.$$('#divOuter').click();
+        await flushAsync();
+        assertFalse(eventTriggered);
+
+        enter();
+        await flushAsync();
+        assertFalse(eventTriggered);
+      });
+
   test('Show locked sublabel when cellular network is locked', async () => {
     init();
 
