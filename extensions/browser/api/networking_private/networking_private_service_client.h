@@ -57,12 +57,12 @@ class NetworkingPrivateServiceClient
                 DictionaryCallback success_callback,
                 FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
-                     std::unique_ptr<base::DictionaryValue> properties_dict,
+                     base::Value properties_dict,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties_dict,
+                     base::Value properties_dict,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,
@@ -101,8 +101,8 @@ class NetworkingPrivateServiceClient
                                    FailureCallback failure_callback) override;
   base::Value GetEnabledNetworkTypes() override;
   std::unique_ptr<DeviceStateList> GetDeviceStateList() override;
-  std::unique_ptr<base::DictionaryValue> GetGlobalPolicy() override;
-  std::unique_ptr<base::DictionaryValue> GetCertificateLists() override;
+  base::Value GetGlobalPolicy() override;
+  base::Value GetCertificateLists() override;
   bool EnableNetworkType(const std::string& type) override;
   bool DisableNetworkType(const std::string& type) override;
   bool RequestScan(const std::string& type) override;

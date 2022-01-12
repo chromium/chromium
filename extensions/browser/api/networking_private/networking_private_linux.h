@@ -27,8 +27,7 @@ namespace extensions {
 // Linux NetworkingPrivateDelegate implementation.
 class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
  public:
-  using NetworkMap =
-      std::map<std::u16string, std::unique_ptr<base::DictionaryValue>>;
+  using NetworkMap = std::map<std::u16string, base::Value>;
 
   typedef std::vector<std::string> GuidList;
 
@@ -46,12 +45,12 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                 DictionaryCallback success_callback,
                 FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value properties,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value properties,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,
@@ -90,8 +89,8 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                                    FailureCallback failure_callback) override;
   base::Value GetEnabledNetworkTypes() override;
   std::unique_ptr<DeviceStateList> GetDeviceStateList() override;
-  std::unique_ptr<base::DictionaryValue> GetGlobalPolicy() override;
-  std::unique_ptr<base::DictionaryValue> GetCertificateLists() override;
+  base::Value GetGlobalPolicy() override;
+  base::Value GetCertificateLists() override;
   bool EnableNetworkType(const std::string& type) override;
   bool DisableNetworkType(const std::string& type) override;
   bool RequestScan(const std::string& type) override;
@@ -184,14 +183,13 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
 
   // Helper function for OnAccessPointsFound and OnAccessPointsFoundViaScan to
   // fire the OnNetworkListChangedEvent.
-  void SendNetworkListChangedEvent(const base::ListValue& network_list);
+  void SendNetworkListChangedEvent(const base::Value& network_list);
 
   // Gets a dictionary of information about the access point.
   // Returns false if there is an error getting information about the
   // supplied |access_point_path|.
-  bool GetAccessPointInfo(
-      const dbus::ObjectPath& access_point_path,
-      const std::unique_ptr<base::DictionaryValue>& access_point_info);
+  bool GetAccessPointInfo(const dbus::ObjectPath& access_point_path,
+                          base::Value* access_point_info);
 
   // Helper function to extract a property from a device.
   // Returns the dbus::Response object from calling Get on the supplied
@@ -203,10 +201,9 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // If the access_point is not already in the map it is added. Otherwise
   // the access point is updated (eg. with the max of the signal
   // strength).
-  void AddOrUpdateAccessPoint(
-      NetworkMap* network_map,
-      const std::string& network_guid,
-      std::unique_ptr<base::DictionaryValue>& access_point);
+  void AddOrUpdateAccessPoint(NetworkMap* network_map,
+                              const std::string& network_guid,
+                              base::Value* access_point);
 
   // Maps the WPA security flags to a human readable string.
   void MapSecurityFlagsToString(uint32_t securityFlags, std::string* security);
@@ -246,7 +243,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   void OnNetworksChangedEventTask(std::unique_ptr<GuidList> guid_list);
 
   void GetCachedNetworkProperties(const std::string& guid,
-                                  base::DictionaryValue* properties,
+                                  base::Value* properties,
                                   std::string* error);
 
   void OnNetworksChangedEventOnUIThread(const GuidList& network_guids);

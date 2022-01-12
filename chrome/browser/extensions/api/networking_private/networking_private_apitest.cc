@@ -69,7 +69,7 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   }
 
   void SetProperties(const std::string& guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value properties,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override {
@@ -77,7 +77,7 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   }
 
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value properties,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override {
     StringResult(std::move(success_callback), std::move(failure_callback),
@@ -100,13 +100,15 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
     if (fail_) {
       std::move(failure_callback).Run(kFailure);
     } else {
-      std::unique_ptr<base::ListValue> result(new base::ListValue);
-      std::unique_ptr<base::DictionaryValue> network(new base::DictionaryValue);
-      network->SetString(::onc::network_config::kType,
-                         ::onc::network_config::kEthernet);
-      network->SetString(::onc::network_config::kGUID, kGuid);
-      result->Append(std::move(network));
-      std::move(success_callback).Run(std::move(result));
+      base::Value result(base::Value::Type::LIST);
+      base::Value network(base::Value::Type::DICTIONARY);
+      network.SetStringPath(::onc::network_config::kType,
+                            ::onc::network_config::kEthernet);
+      network.SetStringPath(::onc::network_config::kGUID, kGuid);
+      result.Append(std::move(network));
+      std::move(success_callback)
+          .Run(base::ListValue::From(
+              base::Value::ToUniquePtrValue(std::move(result))));
     }
   }
 
@@ -182,12 +184,12 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
     return result;
   }
 
-  std::unique_ptr<base::DictionaryValue> GetGlobalPolicy() override {
-    return std::make_unique<base::DictionaryValue>();
+  base::Value GetGlobalPolicy() override {
+    return base::Value(base::Value::Type::DICTIONARY);
   }
 
-  std::unique_ptr<base::DictionaryValue> GetCertificateLists() override {
-    return std::make_unique<base::DictionaryValue>();
+  base::Value GetCertificateLists() override {
+    return base::Value(base::Value::Type::DICTIONARY);
   }
 
   bool EnableNetworkType(const std::string& type) override {
@@ -216,10 +218,10 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
     if (fail_) {
       std::move(failure_callback).Run(kFailure);
     } else {
-      std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue);
-      result->SetString(::onc::network_config::kGUID, guid);
-      result->SetString(::onc::network_config::kType,
-                        ::onc::network_config::kWiFi);
+      base::Value result(base::Value::Type::DICTIONARY);
+      result.SetStringPath(::onc::network_config::kGUID, guid);
+      result.SetStringPath(::onc::network_config::kType,
+                           ::onc::network_config::kWiFi);
       std::move(success_callback).Run(std::move(result));
     }
   }

@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/onc/onc_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -223,11 +224,10 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void NetworkingPrivateGetStateFunction::Success(
-    std::unique_ptr<base::DictionaryValue> result) {
-  FilterProperties(result.get(), PropertiesType::GET, extension(),
+void NetworkingPrivateGetStateFunction::Success(base::Value result) {
+  FilterProperties(&result, PropertiesType::GET, extension(),
                    source_context_type(), source_url());
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  Respond(OneArgument(std::move(result)));
 }
 
 void NetworkingPrivateGetStateFunction::Failure(const std::string& error) {
@@ -247,11 +247,11 @@ NetworkingPrivateSetPropertiesFunction::Run() {
       private_api::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::unique_ptr<base::DictionaryValue> properties_dict(
-      params->properties.ToValue());
+  base::Value properties_dict(
+      std::move(*params->properties.ToValue().release()));
 
   std::vector<std::string> not_allowed_properties =
-      FilterProperties(properties_dict.get(), PropertiesType::SET, extension(),
+      FilterProperties(&properties_dict, PropertiesType::SET, extension(),
                        source_context_type(), source_url());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
@@ -296,11 +296,11 @@ NetworkingPrivateCreateNetworkFunction::Run() {
     return RespondNow(Error(networking_private::kErrorAccessToSharedConfig));
   }
 
-  std::unique_ptr<base::DictionaryValue> properties_dict(
-      params->properties.ToValue());
+  base::Value properties_dict(
+      std::move(*params->properties.ToValue().release()));
 
   std::vector<std::string> not_allowed_properties =
-      FilterProperties(properties_dict.get(), PropertiesType::SET, extension(),
+      FilterProperties(&properties_dict, PropertiesType::SET, extension(),
                        source_context_type(), source_url());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
@@ -841,13 +841,11 @@ NetworkingPrivateGetGlobalPolicyFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetGlobalPolicyFunction::Run() {
-  std::unique_ptr<base::DictionaryValue> policy_dict(
-      GetDelegate(browser_context())->GetGlobalPolicy());
-  DCHECK(policy_dict);
+  base::Value policy_dict(GetDelegate(browser_context())->GetGlobalPolicy());
   // private_api::GlobalPolicy is a subset of the global policy dictionary
   // (by definition), so use the api setter/getter to generate the subset.
   std::unique_ptr<private_api::GlobalPolicy> policy(
-      private_api::GlobalPolicy::FromValue(*policy_dict));
+      private_api::GlobalPolicy::FromValue(policy_dict));
   DCHECK(policy);
   return RespondNow(
       ArgumentList(private_api::GetGlobalPolicy::Results::Create(*policy)));
@@ -866,11 +864,9 @@ NetworkingPrivateGetCertificateListsFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  std::unique_ptr<base::DictionaryValue> certificate_lists(
+  base::Value certificate_lists(
       GetDelegate(browser_context())->GetCertificateLists());
-  DCHECK(certificate_lists);
-  return RespondNow(OneArgument(
-      base::Value::FromUniquePtrValue(std::move(certificate_lists))));
+  return RespondNow(OneArgument(std::move(certificate_lists)));
 }
 
 }  // namespace extensions

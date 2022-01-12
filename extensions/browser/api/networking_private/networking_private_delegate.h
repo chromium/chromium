@@ -24,8 +24,7 @@ class NetworkingPrivateDelegateObserver;
 // networking_private.idl for descriptions of the expected inputs and results.
 class NetworkingPrivateDelegate : public KeyedService {
  public:
-  using DictionaryCallback =
-      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue>)>;
+  using DictionaryCallback = base::OnceCallback<void(base::Value)>;
   using VoidCallback = base::OnceCallback<void()>;
   using BoolCallback = base::OnceCallback<void(bool)>;
   using StringCallback = base::OnceCallback<void(const std::string&)>;
@@ -78,12 +77,12 @@ class NetworkingPrivateDelegate : public KeyedService {
                         DictionaryCallback success_callback,
                         FailureCallback failure_callback) = 0;
   virtual void SetProperties(const std::string& guid,
-                             std::unique_ptr<base::DictionaryValue> properties,
+                             base::Value properties,
                              bool allow_set_shared_config,
                              VoidCallback success_callback,
                              FailureCallback failure_callback) = 0;
   virtual void CreateNetwork(bool shared,
-                             std::unique_ptr<base::DictionaryValue> properties,
+                             base::Value properties,
                              StringCallback success_callback,
                              FailureCallback failure_callback) = 0;
   virtual void ForgetNetwork(const std::string& guid,
@@ -138,10 +137,10 @@ class NetworkingPrivateDelegate : public KeyedService {
   // dictionary is expected to be a superset of the networkingPrivate
   // GlobalPolicy dictionary. Any properties not in GlobalPolicy will be
   // ignored.
-  virtual std::unique_ptr<base::DictionaryValue> GetGlobalPolicy() = 0;
+  virtual base::Value GetGlobalPolicy() = 0;
 
   // Returns a dictionary of certificate lists.
-  virtual std::unique_ptr<base::DictionaryValue> GetCertificateLists() = 0;
+  virtual base::Value GetCertificateLists() = 0;
 
   // Returns true if the ONC network type |type| is enabled.
   virtual bool EnableNetworkType(const std::string& type) = 0;
