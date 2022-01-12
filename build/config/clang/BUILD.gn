@@ -19,6 +19,10 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "raw-ptr-template-as-trivial-member",
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "use-classify-type",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
