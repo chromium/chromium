@@ -632,6 +632,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
  public:
   CacheStorageImpl(
       CacheStorageDispatcherHost* host,
+      const blink::StorageKey& storage_key,
       const absl::optional<storage::BucketLocator>& bucket,
       bool incognito,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
@@ -639,6 +640,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           coep_reporter,
       storage::mojom::CacheStorageOwner owner)
       : host_(host),
+        storage_key_(storage_key),
         bucket_(bucket),
         cross_origin_embedder_policy_(cross_origin_embedder_policy),
         coep_reporter_(std::move(coep_reporter)),
@@ -857,7 +859,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           // against the requesting document's origin and
           // Cross-Origin-Embedder-Policy (COEP).
           if (ResponseBlockedByCrossOriginResourcePolicy(
-                  response.get(), self->bucket_->storage_key.origin(),
+                  response.get(), self->storage_key_.origin(),
                   self->cross_origin_embedder_policy_, self->coep_reporter_)) {
             std::move(callback).Run(blink::mojom::MatchResult::NewStatus(
                 CacheStorageError::kErrorCrossOriginResourcePolicy));
@@ -917,6 +919,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
                            TRACE_ID_GLOBAL(trace_id),
                            TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                            "cache_name", utf8_cache_name);
+    content::CacheStorage* cache_storage = GetOrCreateCacheStorage();
     auto cb = base::BindOnce(
         [](base::WeakPtr<CacheStorageImpl> self, base::TimeTicks start_time,
            int64_t trace_id, blink::mojom::CacheStorage::OpenCallback callback,
@@ -949,7 +952,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
                 coep_reporter.InitWithNewPipeAndPassReceiver());
           }
           auto cache_impl = std::make_unique<CacheImpl>(
-              self->host_, std::move(cache_handle), self->bucket_->storage_key,
+              self->host_, std::move(cache_handle), self->storage_key_,
               self->cross_origin_embedder_policy_, std::move(coep_reporter),
               self->owner_);
           self->host_->AddCacheReceiver(
@@ -970,7 +973,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
       return;
     }
 
-    content::CacheStorage* cache_storage = GetOrCreateCacheStorage();
     if (!cache_storage) {
       std::move(cb).Run(CacheStorageCacheHandle(),
                         MakeErrorStorage(ErrorStorageType::kStorageHandleNull));
@@ -988,18 +990,15 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   content::CacheStorage* GetOrCreateCacheStorage() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(host_);
-    DCHECK(bucket_.has_value())
-        << "A bucket must exist to get or create a CacheStorage";
-
     if (!cache_storage_handle_.value())
-      cache_storage_handle_ =
-          host_->OpenCacheStorage(bucket_->storage_key, owner_);
+      cache_storage_handle_ = host_->OpenCacheStorage(storage_key_, owner_);
     return cache_storage_handle_.value();
   }
 
   // Owns this.
   const raw_ptr<CacheStorageDispatcherHost> host_;
 
+  const blink::StorageKey storage_key_;
   // absl::nullopt when bucket retrieval has failed.
   const absl::optional<storage::BucketLocator> bucket_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
@@ -1031,12 +1030,9 @@ void CacheStorageDispatcherHost::AddReceiver(
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (bucket.has_value())
-    DCHECK_EQ(bucket->storage_key, storage_key);
-
   bool incognito = context_ ? context_->is_incognito() : false;
   auto impl = std::make_unique<CacheStorageImpl>(
-      this, bucket, incognito, cross_origin_embedder_policy,
+      this, storage_key, bucket, incognito, cross_origin_embedder_policy,
       std::move(coep_reporter), owner);
   receivers_.Add(std::move(impl), std::move(receiver));
 }
