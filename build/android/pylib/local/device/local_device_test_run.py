@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import fnmatch
+import hashlib
 import logging
 import posixpath
 import signal
@@ -274,10 +275,10 @@ class LocalDeviceTestRun(test_run.TestRun):
   # Sort by hash so we don't put all tests in a slow suite in the same
   # partition.
   def _SortTests(self, tests):
-    return sorted(
-        tests,
-        key=lambda t: hash(
-            self._GetUniqueTestName(t[0] if isinstance(t, list) else t)))
+    return sorted(tests,
+                  key=lambda t: hashlib.sha256(
+                      self._GetUniqueTestName(t[0] if isinstance(t, list) else t
+                                              ).encode()).hexdigest())
 
   # Partition tests evenly into |num_desired_partitions| partitions where
   # possible. However, many constraints make partitioning perfectly impossible.
