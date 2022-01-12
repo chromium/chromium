@@ -324,6 +324,15 @@ const base::Feature kDesktopPWAsTabStripSettings{
 const base::Feature kDesktopPWAsWebBundles{"DesktopPWAsWebBundles",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Tries disabling the HTTP disk cache.
+const base::Feature kDisableHttpDiskCache{"DisableHttpDiskCache",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// The size of the memory cache when the HTTP disk cache is disabled. 0 uses the
+// default size.
+const base::FeatureParam<int> kDisableHttpDiskCacheMemoryCacheSizeParam{
+    &kDisableHttpDiskCache, "MemoryCacheSize", 0};
+
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",

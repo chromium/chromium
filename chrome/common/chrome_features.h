@@ -216,6 +216,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsWebBundles;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kDisableHttpDiskCache;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kDisableHttpDiskCacheMemoryCacheSizeParam;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDnsOverHttps;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kDnsOverHttpsFallbackParam;

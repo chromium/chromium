@@ -704,10 +704,25 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         local_state->GetFilePath(prefs::kDiskCacheDir);
     if (!disk_cache_dir.empty())
       base_cache_path = disk_cache_dir.Append(base_cache_path.BaseName());
-    network_context_params->http_cache_path =
+    base::FilePath http_cache_path =
         base_cache_path.Append(chrome::kCacheDirname);
-    network_context_params->http_cache_max_size =
-        local_state->GetInteger(prefs::kDiskCacheSize);
+    if (base::FeatureList::IsEnabled(features::kDisableHttpDiskCache)) {
+      // Clear any existing on-disk cache first since if the user tries to
+      // remove the cache it would only affect the in-memory cache while in the
+      // experiment.
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                         http_cache_path));
+      network_context_params->http_cache_max_size =
+          features::kDisableHttpDiskCacheMemoryCacheSizeParam.Get();
+    } else {
+      network_context_params->http_cache_path = http_cache_path;
+      network_context_params->http_cache_max_size =
+          local_state->GetInteger(prefs::kDiskCacheSize);
+    }
 
     network_context_params->file_paths =
         ::network::mojom::NetworkContextFilePaths::New();
