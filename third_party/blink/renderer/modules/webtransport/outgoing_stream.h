@@ -65,6 +65,8 @@ class MODULES_EXPORT OutgoingStream final
 
   void InitWithExistingWritableStream(WritableStream*, ExceptionState&);
 
+  void AbortAlgorithm(OutgoingStream*);
+
   // Implementation of OutgoingStream IDL, used by client classes to implement
   // it. https://wicg.github.io/web-transport/#outgoing-stream
   WritableStream* Writable() const {
@@ -186,6 +188,8 @@ class MODULES_EXPORT OutgoingStream final
   // If a close() on the underlying sink object is pending, this will be
   // non-null.
   Member<ScriptPromiseResolver> close_promise_resolver_;
+
+  Member<ScriptPromiseResolver> pending_operation_;
 
   State state_ = State::kOpen;
 };

@@ -15,7 +15,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
@@ -31,6 +33,26 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+class SendStreamAbortAlgorithm final : public AbortSignal::Algorithm {
+ public:
+  explicit SendStreamAbortAlgorithm(OutgoingStream* stream) : stream_(stream) {}
+  ~SendStreamAbortAlgorithm() override = default;
+
+  void Run() override { stream_->AbortAlgorithm(stream_); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(stream_);
+    Algorithm::Trace(visitor);
+  }
+
+ private:
+  Member<OutgoingStream> stream_;
+};
+
+}  // namespace
 
 class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
  public:
@@ -73,6 +95,8 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
 
     outgoing_stream_->close_promise_resolver_ =
         MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    outgoing_stream_->pending_operation_ =
+        outgoing_stream_->close_promise_resolver_;
 
     // In some cases (when the stream is aborted by a network error for
     // example), there may not be a call to OnOutgoingStreamClose. In that case
@@ -173,12 +197,74 @@ void OutgoingStream::InitWithExistingWritableStream(
   stream->InitWithCountQueueingStrategy(
       script_state_, MakeGarbageCollected<UnderlyingSink>(this), 1,
       /*optimizer=*/nullptr, exception_state);
+
+  controller_->signal()->AddAlgorithm(
+      MakeGarbageCollected<SendStreamAbortAlgorithm>(this));
+}
+
+void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
+  // Step 6 of https://w3c.github.io/webtransport/#sendstream-create
+  // 1. If stream's [[PendingOperation]] is null, then abort these steps.
+  if (!stream->pending_operation_) {
+    return;
+  }
+
+  // 2. Let reason be stream’s [[controller]]'s [[signal]]'s abort reason.
+  ScriptValue reason = stream->controller_->signal()->reason(script_state_);
+
+  // 3. Let abortPromise be the result of aborting stream with reason.
+  // ASSERT_NO_EXCEPTION is used as OutgoingStream::UnderlyingSink::abort()
+  // does not throw an exception, and hence a proper ExceptionState does not
+  // have to be passed since it is not used.
+  auto* underlying_sink = MakeGarbageCollected<UnderlyingSink>(stream);
+  ScriptPromise abort_promise =
+      underlying_sink->abort(script_state_, reason, ASSERT_NO_EXCEPTION);
+
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  class ResolveFunction final : public PromiseHandler {
+    // 4. Upon fulfillment of abortPromise,
+   public:
+    explicit ResolveFunction(ScriptValue reason,
+                             ScriptPromiseResolver* resolver)
+        : reason_(reason), resolver_(resolver) {}
+
+    void CallWithLocal(ScriptState*, v8::Local<v8::Value>) override {
+      //    reject promise with reason.
+      resolver_->Reject(reason_);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(reason_);
+      visitor->Trace(resolver_);
+      PromiseHandler::Trace(visitor);
+    }
+
+   private:
+    ScriptValue reason_;
+    Member<ScriptPromiseResolver> resolver_;
+  };
+
+  StreamThenPromise(script_state_->GetContext(), abort_promise.V8Promise(),
+                    MakeGarbageCollected<NewScriptFunction>(
+                        script_state_, MakeGarbageCollected<ResolveFunction>(
+                                           reason, resolver)));
+
+  // 5. Let pendingOperation be stream’s [[PendingOperation]].
+  ScriptPromiseResolver* pending_operation = stream->pending_operation_;
+
+  // 6. Set stream’s [[PendingOperation]] to null.
+  stream->pending_operation_ = nullptr;
+
+  // 7. Resolve pendingOperation with promise.
+  pending_operation->Resolve(resolver->Promise());
 }
 
 void OutgoingStream::OnOutgoingStreamClosed() {
   DVLOG(1) << "OutgoingStream::OnOutgoingStreamClosed() this=" << this;
 
   DCHECK(close_promise_resolver_);
+  pending_operation_ = nullptr;
   close_promise_resolver_->Resolve();
   close_promise_resolver_ = nullptr;
 }
@@ -202,6 +288,7 @@ void OutgoingStream::Trace(Visitor* visitor) const {
   visitor->Trace(controller_);
   visitor->Trace(write_promise_resolver_);
   visitor->Trace(close_promise_resolver_);
+  visitor->Trace(pending_operation_);
 }
 
 void OutgoingStream::OnHandleReady(MojoResult result,
@@ -292,6 +379,7 @@ ScriptPromise OutgoingStream::WriteOrCacheData(ScriptState* script_state,
   write_watcher_.ArmOrNotify();
   write_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_operation_ = write_promise_resolver_;
   return write_promise_resolver_->Promise();
 }
 
@@ -311,6 +399,7 @@ void OutgoingStream::WriteCachedData() {
 
     cached_data_.reset();
     offset_ = 0;
+    pending_operation_ = nullptr;
     write_promise_resolver_->Resolve();
     write_promise_resolver_ = nullptr;
     return;

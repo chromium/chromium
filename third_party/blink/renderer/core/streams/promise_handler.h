@@ -39,7 +39,7 @@ class CORE_EXPORT PromiseHandlerWithValue : public NewScriptFunction::Callable {
 // PromiseHandlers. It avoids having to call BindToV8Function()
 // explicitly. If |on_rejected| is null then behaves like single-argument
 // Then(). If |on_fulfilled| is null then it behaves like Catch().
-v8::Local<v8::Promise> StreamThenPromise(
+CORE_EXPORT v8::Local<v8::Promise> StreamThenPromise(
     v8::Local<v8::Context>,
     v8::Local<v8::Promise>,
     NewScriptFunction* on_fulfilled,
