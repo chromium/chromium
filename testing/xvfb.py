@@ -208,7 +208,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
       # quick enough to start up before openbox is ready.
       # TODO(dpranke): remove this nasty hack once the test() template is
       # reworked.
-      wait_for_openbox = False
+      wait_for_openbox = True
       wait_openbox_program = './xwmstartupcheck'
       if not os.path.isfile(wait_openbox_program):
         wait_for_openbox = False
