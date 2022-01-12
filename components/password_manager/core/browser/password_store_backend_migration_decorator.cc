@@ -75,6 +75,9 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
                                std::move(completion));
   if (base::FeatureList::IsEnabled(
           features::kUnifiedPasswordManagerMigration)) {
+    migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
+        built_in_backend_.get(), android_backend_.get(), prefs_,
+        is_syncing_passwords_callback_);
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PasswordStoreBackendMigrationDecorator::StartMigration,
@@ -193,9 +196,7 @@ void PasswordStoreBackendMigrationDecorator::ClearAllLocalPasswords() {
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
-  migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
-      built_in_backend_.get(), android_backend_.get(), prefs_,
-      is_syncing_passwords_callback_);
+  DCHECK(migrator_);
   migrator_->StartMigrationIfNecessary();
 }
 

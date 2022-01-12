@@ -41,6 +41,7 @@ class BuiltInBackendToAndroidBackendMigrator {
 
  private:
   struct BackendAndLoginsResults;
+  class MigrationMetricsReporter;
 
   // Helper methods to {Add,Update,Remove} |form| in |backend|. This is used to
   // ensure that all the operations are happening inside
@@ -73,6 +74,8 @@ class BuiltInBackendToAndroidBackendMigrator {
   const raw_ptr<PasswordStoreBackend> android_backend_;
 
   const raw_ptr<PrefService> prefs_ = nullptr;
+
+  std::unique_ptr<MigrationMetricsReporter> metrics_reporter_;
 
   base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
 

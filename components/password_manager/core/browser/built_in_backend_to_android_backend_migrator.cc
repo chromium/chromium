@@ -10,7 +10,9 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -20,6 +22,8 @@ namespace password_manager {
 
 namespace {
 
+// Threshold for the next migration attempt. This is needed in order to prevent
+// clients from spamming GMS Core API.
 constexpr base::TimeDelta kMigrationThreshold = base::Days(1);
 
 struct IsPasswordLess {
@@ -65,6 +69,27 @@ struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
   ~BackendAndLoginsResults() = default;
 };
 
+class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
+ public:
+  explicit MigrationMetricsReporter(base::StringPiece metric_infix)
+      : metric_infix_(metric_infix) {}
+  ~MigrationMetricsReporter() = default;
+
+  void MigrationFinished(bool is_success) {
+    auto BuildMetricName = [this](base::StringPiece suffix) {
+      return base::StrCat({"PasswordManager.UnifiedPasswordManager.",
+                           metric_infix_, ".", suffix});
+    };
+    base::TimeDelta duration = base::Time::Now() - start_;
+    base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
+    base::UmaHistogramBoolean(BuildMetricName("Success"), is_success);
+  }
+
+ private:
+  base::Time start_ = base::Time::Now();
+  base::StringPiece metric_infix_;
+};
+
 BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
     PasswordStoreBackend* built_in_backend,
     PasswordStoreBackend* android_backend,
@@ -76,17 +101,21 @@ BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
       is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
+  base::UmaHistogramBoolean(
+      "PasswordManager.UnifiedPasswordManager.WasMigrationDone",
+      !IsInitialMigrationNeeded(prefs_));
 }
 
 BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
 void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
+  bool is_initial_migration_needed = IsInitialMigrationNeeded(prefs_);
+
   // For syncing users, we don't need to move passwords between the built-in
   // and the Android backends, since both backends should be able to
   // retrieve the same passwords from the sync server.
-  if (is_syncing_passwords_callback_.Run() &&
-      IsInitialMigrationNeeded(prefs_)) {
+  if (is_syncing_passwords_callback_.Run() && is_initial_migration_needed) {
     // TODO:(crbug.com/1252443) Drop metadata and only then update pref.
     UpdateMigrationVersionInPref();
     return;
@@ -103,8 +132,10 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
   // Manually migrate passwords between backends if initial or rolling migration
   // is needed. Even for syncing users we still should do rolling migration to
   // ensure deletions aren’t resurrected.
-  if (IsInitialMigrationNeeded(prefs_) ||
+  if (is_initial_migration_needed ||
       base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid)) {
+    metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
+        is_initial_migration_needed ? "InitialMigration" : "RollingMigration");
     PrepareForMigration();
   }
 }
@@ -140,11 +171,14 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
 void BuiltInBackendToAndroidBackendMigrator::
     MigratePasswordsBetweenAndroidAndBuiltInBackends(
         std::vector<BackendAndLoginsResults> results) {
+  DCHECK(metrics_reporter_);
   DCHECK_EQ(2u, results.size());
-  // TODO:(crbug.com/1252443) Record that migration was canceled due to an
-  // error.
-  if (results[0].HasError() || results[1].HasError())
+
+  if (results[0].HasError() || results[1].HasError()) {
+    metrics_reporter_->MigrationFinished(/*is_success=*/false);
+    metrics_reporter_.reset();
     return;
+  }
 
   base::flat_set<const PasswordForm*, IsPasswordLess> built_in_backend_logins =
       (results[0].backend == built_in_backend_) ? results[0].GetLogins()
@@ -174,15 +208,19 @@ void BuiltInBackendToAndroidBackendMigrator::
   // 3. version from |built_in_backend_| should be updated with version from the
   // |android_backend_|.
 
-  // Callbacks are chained in a LIFO way by passing 'callback_chain' as a
+  // Callbacks are chained like in a stack way by passing 'callback_chain' as a
   // completion for the next operation. If it is initial migration - update pref
   // to mark successful completion.
   base::OnceClosure callbacks_chain =
-      is_initial_migration
-          ? base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
-                               UpdateMigrationVersionInPref,
-                           weak_ptr_factory_.GetWeakPtr())
-          : base::DoNothing();
+      base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
+                         MigrationMetricsReporter::MigrationFinished,
+                     std::move(metrics_reporter_), /*is_success=*/true);
+  if (is_initial_migration) {
+    callbacks_chain = base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
+                                         UpdateMigrationVersionInPref,
+                                     weak_ptr_factory_.GetWeakPtr())
+                          .Then(std::move(callbacks_chain));
+  }
   for (auto* const login : built_in_backend_logins) {
     auto android_login_iter = android_logins.find(login);
 
@@ -215,7 +253,7 @@ void BuiltInBackendToAndroidBackendMigrator::
     // Passwords aren't identical.
     if (is_initial_migration &&
         login->date_created > android_login->date_created) {
-      // // During initial migration, pick the most recently created one. This
+      // During initial migration, pick the most recently created one. This
       // is aligned with the merge sync logic in PasswordSyncBridge.
       callbacks_chain = base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,

@@ -2826,6 +2826,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether passwords were successfully migrated from built in backed to
+    android backed and the current migration version stored in pref is
+    greater/equal to the version from feature parameters. Recorded on start up.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UnifiedPasswordManager.{Type}.Latency"
+    units="ms" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Real-time duration {Type}. Recorded when all operations are completed and
+    migration is finished.
+  </summary>
+  <token key="Type">
+    <variant name="InitialMigration"
+        summary="to migrate passwords from build-in backend to android
+                 backend"/>
+    <variant name="RollingMigration"
+        summary="to migrate passwords from android backend to build-in
+                 backend"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.UnifiedPasswordManager.{Type}.Success"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether {Type} migration finished successfully. Recorded when the
+    {Type} migration is finished.
+  </summary>
+  <token key="Type">
+    <variant name="InitialMigration" summary="initial"/>
+    <variant name="RollingMigration" summary="rolling"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.UpdateLoginPasswordIssuesHasValue"
     enum="BooleanSet" expires_after="2021-09-30">
   <obsolete>

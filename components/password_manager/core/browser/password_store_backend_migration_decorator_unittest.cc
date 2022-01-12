@@ -33,6 +33,9 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   PasswordStoreBackendMigrationDecoratorTest() = default;
 
   void Init(base::RepeatingCallback<bool()> is_sync_enabled) {
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+
     feature_list_.InitAndEnableFeatureWithParameters(
         /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
         {{"migration_version", "1"}});
@@ -82,15 +85,14 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncDisabled) {
-  // Set up pref to indicate that initial migration is finished.
-  prefs().registry()->RegisterIntegerPref(
-      prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
   base::MockCallback<base::RepeatingCallback<bool()>> is_sync_enabled_callback_;
   base::RepeatingClosure sync_status_changed_closure;
 
   Init(is_sync_enabled_callback_.Get());
+
+  // Set up pref to indicate that initial migration is finished.
+  prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
 
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
 
