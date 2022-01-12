@@ -92,6 +92,7 @@ class SyncServiceFactoryTest : public testing::Test {
     // preprocessor conditions in ChromeSyncClient::CreateDataTypeControllers:
 
     // ChromeSyncClient types.
+    datatypes.push_back(syncer::READING_LIST);
     datatypes.push_back(syncer::SECURITY_EVENTS);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -108,7 +109,6 @@ class SyncServiceFactoryTest : public testing::Test {
 
 #if !BUILDFLAG(IS_ANDROID)
     datatypes.push_back(syncer::THEMES);
-    datatypes.push_back(syncer::READING_LIST);
     datatypes.push_back(syncer::SEARCH_ENGINES);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

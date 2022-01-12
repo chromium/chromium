@@ -20,12 +20,11 @@ namespace reading_list {
 namespace switches {
 
 // Allow users to save tabs for later. Enables a new button and menu for
-// accessing tabs saved for later. https://crbug.com/1109316
-#if defined(OS_ANDROID)
-const base::Feature kReadLater{"ReadLater", base::FEATURE_DISABLED_BY_DEFAULT};
-#else
+// accessing tabs saved for later.
+// android: https://crbug.com/1123087
+// desktop: https://crbug.com/1109316
+// ios: https://crbug.com/577659
 const base::Feature kReadLater{"ReadLater", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
 
 bool IsReadingListEnabled() {
 #if defined(OS_IOS)
