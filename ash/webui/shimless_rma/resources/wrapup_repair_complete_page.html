@@ -55,16 +55,18 @@
   <div slot="header">
     <h1>[[i18n('repairCompletedTitleText')]]</h1>
     <div>[[i18n('repairCompletedDescriptionText')]]</div>
-    <cr-button id="shutDownButton" on-click="onShutDownButtonClick_">
+    <cr-button id="shutDownButton" on-click="onShutDownButtonClick_"
+        disabled="[[allButtonsDisabled]]">
         [[i18n('repairCompleteShutDownButtonText')]]
     </cr-button>
-    <cr-button id="rebootButton" on-click="onRebootButtonClick_">
+    <cr-button id="rebootButton" on-click="onRebootButtonClick_"
+        disabled="[[allButtonsDisabled]]">
         [[i18n('repairCompleteRebootButtonText')]]
     </cr-button>
   </div>
   <div slot="body">
     <cr-button id="diagnosticsButton" class="button-card"
-      on-click="onDiagnosticsButtonClick_">
+      on-click="onDiagnosticsButtonClick_" disabled="[[allButtonsDisabled]]">
       <div id="diagnosticsIconDiv">
         <img id="diagnosticsIcon" src="png/diagnostics_app_icon_192.png">
       </div>
@@ -78,7 +80,7 @@
       </div>
     </cr-button>
     <cr-button id="rmaLogButton" class="button-card"
-      on-click="onRmaLogButtonClick_">
+      on-click="onRmaLogButtonClick_" disabled="[[allButtonsDisabled]]">
       <iron-icon icon="shimless-icon:rma-log" class="button-icon"
           hidden="[[!checked]]">
       </iron-icon>
@@ -93,15 +95,18 @@
     </cr-button>
     <div id="batteryCutoffTooltipWrapper">
       <cr-button id="batteryCutButton" class="button-card"
-        on-click="onBatteryCutButtonClick_" disabled$="[[pluggedIn_]]">
-        <iron-icon id="battery-cutoff-icon" icon="shimless-icon:battery-cutoff" class="button-icon"
-            hidden="[[!checked]]">
+        on-click="onBatteryCutButtonClick_"
+        disabled$="[[disableBatteryCutButton_(pluggedIn_,
+            allButtonsDisabled)]]">
+        <iron-icon id="battery-cutoff-icon" icon="shimless-icon:battery-cutoff"
+            class="button-icon" hidden="[[!checked]]">
         </iron-icon>
         <div class="button-text">
           <div class="button-label">
             <span>[[i18n('repairCompletedShutoffButtonText')]]</span>
-            <iron-icon id="battery-cutoff-info-icon" icon="shimless-icon:info-grey" hidden="[[!pluggedIn_]]">
-            </iron-icon>  
+            <iron-icon id="battery-cutoff-info-icon" hidden="[[!pluggedIn_]]"
+                icon="shimless-icon:info-grey">
+            </iron-icon>
           </div>
           <div class="button-description">
             [[i18n('repairCompletedShutoffDescriptionText')]]

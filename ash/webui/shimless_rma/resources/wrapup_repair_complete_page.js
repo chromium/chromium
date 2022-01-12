@@ -40,6 +40,12 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       log_: {
         type: String,
@@ -134,6 +140,14 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
    */
   onPowerCableStateChanged(pluggedIn) {
     this.pluggedIn_ = pluggedIn;
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  disableBatteryCutButton_() {
+    return this.pluggedIn_ || this.allButtonsDisabled;
   }
 }
 

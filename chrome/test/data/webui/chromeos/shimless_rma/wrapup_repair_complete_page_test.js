@@ -162,4 +162,32 @@ export function wrapupRepairCompletePageTest() {
 
     await clickButton('#batteryCutButton');
   });
+
+  test('AllButtonsDisabled', async () => {
+    await initializeRepairCompletePage();
+    const shutDownButton =
+        component.shadowRoot.querySelector('#shutDownButton');
+    const rebootButton = component.shadowRoot.querySelector('#rebootButton');
+    const diagnosticsButton =
+        component.shadowRoot.querySelector('#diagnosticsButton');
+    const rmaLogButton = component.shadowRoot.querySelector('#rmaLogButton');
+    const batteryCutButton =
+        component.shadowRoot.querySelector('#batteryCutButton');
+
+    assertFalse(shutDownButton.disabled);
+    assertFalse(rebootButton.disabled);
+    assertFalse(diagnosticsButton.disabled);
+    assertFalse(rmaLogButton.disabled);
+
+    service.triggerPowerCableObserver(false, 0);
+    await flushTasks();
+    assertFalse(batteryCutButton.disabled);
+
+    component.allButtonsDisabled = true;
+    assertTrue(shutDownButton.disabled);
+    assertTrue(rebootButton.disabled);
+    assertTrue(diagnosticsButton.disabled);
+    assertTrue(rmaLogButton.disabled);
+    assertTrue(batteryCutButton.disabled);
+  });
 }
