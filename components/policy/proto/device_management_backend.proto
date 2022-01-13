@@ -1406,7 +1406,7 @@ enum BusDeviceClass {
   THUNDERBOLT_CONTROLLER = 5;
 }
 
-// Hardware component busses.
+// Hardware component buses.
 // Maps to BusInfo types from cros_healthd.
 enum BusType {
   BUS_TYPE_UNSPECIFIED = 0;

@@ -29116,7 +29116,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         {
           'name': 'ForceDisabled',
           'value': 1,
-          'caption': '''User Agent reduction diabled, and not enabled by Field-Trials or Origin-Trials.''',
+          'caption': '''User Agent reduction disabled, and not enabled by Field-Trials or Origin-Trials.''',
         },
         {
           'name': 'ForceEnabled',
