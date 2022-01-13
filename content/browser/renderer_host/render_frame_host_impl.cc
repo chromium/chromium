@@ -6314,6 +6314,7 @@ void RenderFrameHostImpl::ShowContextMenu(
   if (validated_params.selection_start_offset < 0) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_NEGATIVE_SELECTION_START_OFFSET);
+    return;
   }
 
   delegate_->ShowContextMenu(*this, std::move(context_menu_client),
