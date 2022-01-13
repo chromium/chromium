@@ -499,6 +499,8 @@ crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-008.html [ 
 crbug.com/1268426 external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
 crbug.com/1268426 virtual/threaded/external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
 
+# No emoji flag symbols available in the Windows system emoji font.
+crbug.com/1272436 [ Win10.20h2 ] external/wpt/css/CSS2/text/bidi-flag-emoji-02.html [ Failure ]
 
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
