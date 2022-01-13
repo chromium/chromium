@@ -64,7 +64,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
     return;
 
   // Write the new finalized `items` to persistent storage.
-  ListPrefUpdateDeprecated update(profile()->GetPrefs(), kPersistencePath);
+  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   for (const HoldingSpaceItem* item : items) {
     if (item->progress().IsComplete())
       update->Append(item->Serialize());
@@ -77,7 +77,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
     return;
 
   // Remove the `items` from persistent storage.
-  ListPrefUpdateDeprecated update(profile()->GetPrefs(), kPersistencePath);
+  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   update->EraseListValueIf([&items](const base::Value& persisted_item) {
     const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
         base::Value::AsDictionaryValue(persisted_item));
@@ -99,7 +99,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
     return;
 
   // Attempt to find the finalized `item` in persistent storage.
-  ListPrefUpdateDeprecated update(profile()->GetPrefs(), kPersistencePath);
+  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   auto item_it = std::find_if(
       update->GetList().begin(), update->GetList().end(),
       [&item](const base::Value& persisted_item) {
