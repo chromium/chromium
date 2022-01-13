@@ -3962,11 +3962,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "mobile-identity-consistency-fre",
-    "owners": [ "aliceywang", "msarda", "triploblastic" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "modern-tab-strip",
     "owners": [ "bling-flags@google.com" ],
     "expiry_milestone": 92

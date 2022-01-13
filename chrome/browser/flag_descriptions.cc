@@ -1579,12 +1579,6 @@ const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
 const char kMetricsSettingsAndroidDescription[] =
     "Enables the new design of metrics settings.";
 
-const char kMobileIdentityConsistencyFREName[] =
-    "Mobile identity consistency FRE";
-const char kMobileIdentityConsistencyFREDescription[] =
-    "Enables stronger identity consistency on mobile with different UIs for "
-    "the First Run Experience.";
-
 const char kMojoLinuxChannelSharedMemName[] =
     "Enable Mojo Shared Memory Channel";
 const char kMojoLinuxChannelSharedMemDescription[] =
