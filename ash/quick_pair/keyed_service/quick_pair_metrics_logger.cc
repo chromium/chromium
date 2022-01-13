@@ -129,6 +129,7 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
             *device, FastPairEngagementFlowEvent::
                          kDiscoveryUiDismissedByUserAfterLearnMorePressed);
         discovery_learn_more_devices_.erase(device);
+        feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
         break;
       }
 
@@ -142,6 +143,7 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
             *device, FastPairEngagementFlowEvent::
                          kDiscoveryUiDismissedAfterLearnMorePressed);
         discovery_learn_more_devices_.erase(device);
+        feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
         break;
       }
 
