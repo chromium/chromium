@@ -24,7 +24,8 @@ public class CommerceSubscriptionsServiceConfig {
     private static final String STALE_TAB_LOWER_BOUND_SECONDS_PARAM =
             "price_tracking_stale_tab_lower_bound_seconds";
 
-    private static final String IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM =
+    @VisibleForTesting
+    public static final String IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM =
             "implicit_subscriptions_enabled";
 
     private static final int DEFAULT_STALE_TAB_LOWER_BOUND_DAYS = 1;

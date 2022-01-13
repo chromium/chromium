@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -167,6 +168,7 @@ public class PriceTrackingUtilities {
      */
     public static boolean isPriceAlertsMessageCardEnabled() {
         return isPriceDropNotificationEligible()
+                && CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
                         PRICE_ALERTS_MESSAGE_CARD, isPriceTrackingEnabled())
                 && (!(new PriceDropNotificationManager()).canPostNotification());
