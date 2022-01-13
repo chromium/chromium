@@ -209,8 +209,9 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
 
   // Associate the destination data array with the output bus then fill the
   // FIFO.
-  for (unsigned i = 0; i < number_of_output_channels_; ++i)
+  for (unsigned i = 0; i < number_of_output_channels_; ++i) {
     output_bus_->SetChannelMemory(i, destination_data[i], number_of_frames);
+  }
 
   if (worklet_task_runner_) {
     // Use the dual-thread rendering if the AudioWorklet is activated.
@@ -245,11 +246,13 @@ void AudioDestination::RequestRender(size_t frames_requested,
 
   // The state might be changing by ::Stop() call. If the state is locked, do
   // not touch the below.
-  if (!locker.Locked())
+  if (!locker.Locked()) {
     return;
+  }
 
-  if (device_state_ != DeviceState::kRunning)
+  if (device_state_ != DeviceState::kRunning) {
     return;
+  }
 
   metric_reporter_.BeginTrace();
 
@@ -277,8 +280,9 @@ void AudioDestination::RequestRender(size_t frames_requested,
 
     // Some implementations give only rough estimation of |delay| so
     // we might have negative estimation |outputPosition| value.
-    if (output_position_.position < 0.0)
+    if (output_position_.position < 0.0) {
       output_position_.position = 0.0;
+    }
 
     if (resampler_) {
       resampler_->ResampleInternal(RenderQuantumFrames(), resampler_bus_.get());
@@ -301,8 +305,9 @@ void AudioDestination::Start() {
   TRACE_EVENT0("webaudio", "AudioDestination::Start");
   SendLogMessage(String::Format("%s", __func__));
 
-  if (device_state_ != DeviceState::kStopped)
+  if (device_state_ != DeviceState::kStopped) {
     return;
+  }
   web_audio_device_->Start();
   SetDeviceState(DeviceState::kRunning);
 }
@@ -314,8 +319,9 @@ void AudioDestination::StartWithWorkletTaskRunner(
   TRACE_EVENT0("webaudio", "AudioDestination::StartWithWorkletTaskRunner");
   SendLogMessage(String::Format("%s", __func__));
 
-  if (device_state_ != DeviceState::kStopped)
+  if (device_state_ != DeviceState::kStopped) {
     return;
+  }
 
   // The dual-thread rendering kicks off, so updates the earmark frames
   // accordingly.
@@ -331,8 +337,9 @@ void AudioDestination::Stop() {
   TRACE_EVENT0("webaudio", "AudioDestination::Stop");
   SendLogMessage(String::Format("%s", __func__));
 
-  if (device_state_ == DeviceState::kStopped)
+  if (device_state_ == DeviceState::kStopped) {
     return;
+  }
   web_audio_device_->Stop();
 
   // Resetting |worklet_task_runner_| here is safe because
@@ -348,8 +355,9 @@ void AudioDestination::Pause() {
   TRACE_EVENT0("webaudio", "AudioDestination::Pause");
   SendLogMessage(String::Format("%s", __func__));
 
-  if (device_state_ != DeviceState::kRunning)
+  if (device_state_ != DeviceState::kRunning) {
     return;
+  }
   web_audio_device_->Pause();
   SetDeviceState(DeviceState::kPaused);
 }
@@ -359,8 +367,9 @@ void AudioDestination::Resume() {
   TRACE_EVENT0("webaudio", "AudioDestination::Resume");
   SendLogMessage(String::Format("%s", __func__));
 
-  if (device_state_ != DeviceState::kPaused)
+  if (device_state_ != DeviceState::kPaused) {
     return;
+  }
   web_audio_device_->Resume();
   SetDeviceState(DeviceState::kRunning);
 }

@@ -129,8 +129,9 @@ void Vclip(const float* source_p,
 #if DCHECK_IS_ON()
   // Do the same DCHECKs that |ClampTo| would do so that optimization paths do
   // not have to do them.
-  for (size_t i = 0u; i < frames_to_process; ++i)
+  for (size_t i = 0u; i < frames_to_process; ++i) {
     DCHECK(!std::isnan(source_p[i]));
+  }
   // This also ensures that thresholds are not NaNs.
   DCHECK_LE(low_threshold, high_threshold);
 #endif
@@ -152,8 +153,9 @@ void Vclip(const float* source_p,
 #if DCHECK_IS_ON()
   // Do the same DCHECKs that |ClampTo| would do so that optimization paths do
   // not have to do them.
-  for (size_t i = 0u; i < frames_to_process; ++i)
+  for (size_t i = 0u; i < frames_to_process; ++i) {
     DCHECK(!std::isnan(source_p[i]));
+  }
   // This also ensures that thresholds are not NaNs.
   DCHECK_LE(low_threshold, high_threshold);
 #endif

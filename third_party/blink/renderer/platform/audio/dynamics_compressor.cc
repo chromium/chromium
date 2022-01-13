@@ -106,12 +106,13 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
     case 2:  // stereo
       source_channels_[0] = source_bus->Channel(0)->Data();
 
-      if (number_of_source_channels > 1)
+      if (number_of_source_channels > 1) {
         source_channels_[1] = source_bus->Channel(1)->Data();
-      else
+      } else {
         // Simply duplicate mono channel input data to right channel for stereo
         // processing.
         source_channels_[1] = source_channels_[0];
+      }
 
       break;
     default:
@@ -121,8 +122,9 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       return;
   }
 
-  for (unsigned i = 0; i < number_of_channels; ++i)
+  for (unsigned i = 0; i < number_of_channels; ++i) {
     destination_channels_[i] = destination_bus->Channel(i)->MutableData();
+  }
 
   float filter_stage_gain = ParameterValue(kParamFilterStageGain);
   float filter_stage_ratio = ParameterValue(kParamFilterStageRatio);

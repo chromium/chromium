@@ -40,8 +40,9 @@ double ConeEffect::Gain(gfx::Point3F source_position,
                         gfx::Vector3dF source_orientation,
                         gfx::Point3F listener_position) {
   if (source_orientation.IsZero() ||
-      ((inner_angle_ == 360.0) && (outer_angle_ == 360.0)))
+      ((inner_angle_ == 360.0) && (outer_angle_ == 360.0))) {
     return 1.0;  // no cone specified - unity gain
+  }
 
   // Source-listener vector
   gfx::Vector3dF source_to_listener = listener_position - source_position;

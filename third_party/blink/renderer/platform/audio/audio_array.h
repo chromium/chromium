@@ -71,8 +71,9 @@ class AudioArray {
     const unsigned kAlignment = 16;
 #endif
 
-    if (allocation_)
+    if (allocation_) {
       WTF::Partitions::FastFree(allocation_);
+    }
 
     // Always allocate extra space so that we are guaranteed to get
     // the desired alignment.  Some memory is wasted, but it should be
@@ -108,8 +109,9 @@ class AudioArray {
   void ZeroRange(unsigned start, unsigned end) {
     bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
-    if (!is_safe)
+    if (!is_safe) {
       return;
+    }
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().
@@ -119,8 +121,9 @@ class AudioArray {
   void CopyToRange(const T* source_data, unsigned start, unsigned end) {
     bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
-    if (!is_safe)
+    if (!is_safe) {
       return;
+    }
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().

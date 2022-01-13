@@ -654,8 +654,9 @@ static double RootFinder(double low,
   int iteration;
   for (iteration = 0; iteration < kMaxIterations; ++iteration) {
     root = (f_low * high - f_high * low) / (f_low - f_high);
-    if (fabs(high - low) < kAccuracyThreshold * fabs(high + low))
+    if (fabs(high - low) < kAccuracyThreshold * fabs(high + low)) {
       break;
+    }
     double fr = RepeatedRootResponse(root, c1, c2, r, log_eps);
 
     DCHECK(std::isfinite(fr));
@@ -669,8 +670,9 @@ static double RootFinder(double low,
       // fr and f_low have same sign. Copy root to f_low
       low = root;
       f_low = fr;
-      if (side == 1)
+      if (side == 1) {
         f_high /= 2;
+      }
       side = 1;
     } else {
       // f_low * fr looks like zero, so assume we've converged.

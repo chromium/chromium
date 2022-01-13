@@ -33,8 +33,9 @@ PushPullFIFO::PushPullFIFO(unsigned number_of_channels,
 
 PushPullFIFO::~PushPullFIFO() {
   // Capture metrics only after the FIFO is actually pulled.
-  if (pull_count_ == 0)
+  if (pull_count_ == 0) {
     return;
+  }
 
   // TODO(hongchan): The fast-shutdown process prevents the data below from
   // being collected correctly. Consider using "outside metric collector" that

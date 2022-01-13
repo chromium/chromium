@@ -113,8 +113,9 @@ HRTFDatabase* HRTFDatabaseLoader::Database() {
   // It's ok to return nullptr if we can't get the lock.
   MutexTryLocker try_locker(lock_);
 
-  if (!try_locker.Locked())
+  if (!try_locker.Locked()) {
     return nullptr;
+  }
 
   return hrtf_database_.get();
 }
@@ -130,8 +131,9 @@ void HRTFDatabaseLoader::WaitForLoaderThreadCompletion() {
   // the offline audio rendering thread.
   MutexLocker locker(lock_);
 
-  if (!thread_)
+  if (!thread_) {
     return;
+  }
 
   base::WaitableEvent sync;
   // TODO(alexclarke): Should this be posted as a loading task?

@@ -61,8 +61,9 @@ double DistanceEffect::LinearGain(double distance) {
   double dmax = std::max(ref_distance_, max_distance_);
   distance = ClampTo(distance, dref, dmax);
 
-  if (dref == dmax)
+  if (dref == dmax) {
     return 1 - rolloff_factor_;
+  }
 
   // We want a gain that decreases linearly from m_refDistance to
   // m_maxDistance. The gain is 1 at m_refDistance.
@@ -71,8 +72,9 @@ double DistanceEffect::LinearGain(double distance) {
 }
 
 double DistanceEffect::InverseGain(double distance) {
-  if (ref_distance_ == 0)
+  if (ref_distance_ == 0) {
     return 0;
+  }
 
   // Clamp distance according to spec
   distance = ClampTo(distance, ref_distance_);
@@ -82,8 +84,9 @@ double DistanceEffect::InverseGain(double distance) {
 }
 
 double DistanceEffect::ExponentialGain(double distance) {
-  if (ref_distance_ == 0)
+  if (ref_distance_ == 0) {
     return 0;
+  }
 
   // Clamp distance according to spec
   distance = ClampTo(distance, ref_distance_);

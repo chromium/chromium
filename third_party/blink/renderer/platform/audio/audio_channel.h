@@ -85,8 +85,9 @@ class PLATFORM_EXPORT AudioChannel {
 
   // Zeroes out all sample values in buffer.
   void Zero() {
-    if (silent_)
+    if (silent_) {
       return;
+    }
 
     silent_ = true;
 

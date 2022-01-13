@@ -43,8 +43,9 @@ void StereoPanner::PanWithSampleAccurateValues(const AudioBus* input_bus,
   float* destination_r =
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
 
-  if (!source_l || !source_r || !destination_l || !destination_r)
+  if (!source_l || !source_r || !destination_l || !destination_r) {
     return;
+  }
 
   double gain_l, gain_r, pan_radian;
 
@@ -104,8 +105,9 @@ void StereoPanner::PanToTargetValue(const AudioBus* input_bus,
   float* destination_r =
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
 
-  if (!source_l || !source_r || !destination_l || !destination_r)
+  if (!source_l || !source_r || !destination_l || !destination_r) {
     return;
+  }
 
   float target_pan = ClampTo(pan_value, -1.0, 1.0);
 

@@ -83,8 +83,9 @@ static scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
 
     bus = concatenated_impulse_responses;
     audio_bus_map.Set(subject_resource_id, bus);
-  } else
+  } else {
     bus = iterator->value;
+  }
 
   size_t response_length = bus->length();
   size_t expected_length =
@@ -120,8 +121,9 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
   scoped_refptr<AudioBus> bus(
       GetConcatenatedImpulseResponsesForSubject(subject_resource_id));
 
-  if (!bus)
+  if (!bus) {
     return false;
+  }
 
   // Just sequentially search the table to find the correct index.
   int elevation_index = -1;
@@ -245,8 +247,9 @@ std::unique_ptr<HRTFElevation> HRTFElevation::CreateForSubject(
         raw_index * kAzimuthSpacing, actual_elevation, sample_rate,
         subject_resource_id, kernel_list_l->at(interpolated_index),
         kernel_list_r->at(interpolated_index));
-    if (!success)
+    if (!success) {
       return nullptr;
+    }
 
     interpolated_index += kInterpolationFactor;
   }

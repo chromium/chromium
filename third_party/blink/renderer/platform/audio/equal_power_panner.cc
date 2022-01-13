@@ -61,18 +61,20 @@ void EqualPowerPanner::Pan(double azimuth,
   float* destination_r =
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
 
-  if (!source_l || !source_r || !destination_l || !destination_r)
+  if (!source_l || !source_r || !destination_l || !destination_r) {
     return;
+  }
 
   // Clamp azimuth to allowed range of -180 -> +180.
   azimuth = ClampTo(azimuth, -180.0, 180.0);
 
   // Alias the azimuth ranges behind us to in front of us:
   // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
-  if (azimuth < -90)
+  if (azimuth < -90) {
     azimuth = -180 - azimuth;
-  else if (azimuth > 90)
+  } else if (azimuth > 90) {
     azimuth = 180 - azimuth;
+  }
 
   double desired_pan_position;
   double desired_gain_l;
@@ -140,10 +142,11 @@ void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
 
   // Alias the azimuth ranges behind us to in front of us:
   // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
-  if (azimuth < -90)
+  if (azimuth < -90) {
     azimuth = -180 - azimuth;
-  else if (azimuth > 90)
+  } else if (azimuth > 90) {
     azimuth = 180 - azimuth;
+  }
 
   double desired_pan_position;
 

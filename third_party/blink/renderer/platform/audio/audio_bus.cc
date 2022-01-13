@@ -55,8 +55,9 @@ scoped_refptr<AudioBus> AudioBus::Create(unsigned number_of_channels,
                                          uint32_t length,
                                          bool allocate) {
   DCHECK_LE(number_of_channels, kMaxBusChannels);
-  if (number_of_channels > kMaxBusChannels)
+  if (number_of_channels > kMaxBusChannels) {
     return nullptr;
+  }
 
   return base::AdoptRef(new AudioBus(number_of_channels, length, allocate));
 }
@@ -88,27 +89,32 @@ void AudioBus::SetChannelMemory(unsigned channel_index,
 
 void AudioBus::ResizeSmaller(uint32_t new_length) {
   DCHECK_LE(new_length, length_);
-  if (new_length <= length_)
+  if (new_length <= length_) {
     length_ = new_length;
+  }
 
-  for (AudioChannel& channel : channels_)
+  for (AudioChannel& channel : channels_) {
     channel.ResizeSmaller(new_length);
+  }
 }
 
 void AudioBus::Zero() {
-  for (AudioChannel& channel : channels_)
+  for (AudioChannel& channel : channels_) {
     channel.Zero();
+  }
 }
 
 AudioChannel* AudioBus::ChannelByType(unsigned channel_type) {
   // For now we only support canonical channel layouts...
-  if (layout_ != kLayoutCanonical)
+  if (layout_ != kLayoutCanonical) {
     return nullptr;
+  }
 
   switch (NumberOfChannels()) {
     case 1:  // mono
-      if (channel_type == kChannelMono || channel_type == kChannelLeft)
+      if (channel_type == kChannelMono || channel_type == kChannelLeft) {
         return Channel(0);
+      }
       return nullptr;
 
     case 2:  // stereo
@@ -180,12 +186,14 @@ const AudioChannel* AudioBus::ChannelByType(unsigned type) const {
 
 // Returns true if the channel count and frame-size match.
 bool AudioBus::TopologyMatches(const AudioBus& bus) const {
-  if (NumberOfChannels() != bus.NumberOfChannels())
+  if (NumberOfChannels() != bus.NumberOfChannels()) {
     return false;  // channel mismatch
+  }
 
   // Make sure source bus has enough frames.
-  if (length() > bus.length())
+  if (length() > bus.length()) {
     return false;  // frame-size mismatch
+  }
 
   return true;
 }
@@ -201,17 +209,19 @@ scoped_refptr<AudioBus> AudioBus::CreateBufferFromRange(
   bool is_range_safe =
       start_frame < end_frame && end_frame <= number_of_source_frames;
   DCHECK(is_range_safe);
-  if (!is_range_safe)
+  if (!is_range_safe) {
     return nullptr;
+  }
 
   uint32_t range_length = end_frame - start_frame;
 
   scoped_refptr<AudioBus> audio_bus = Create(number_of_channels, range_length);
   audio_bus->SetSampleRate(source_buffer->SampleRate());
 
-  for (unsigned i = 0; i < number_of_channels; ++i)
+  for (unsigned i = 0; i < number_of_channels; ++i) {
     audio_bus->Channel(i)->CopyFromRange(source_buffer->Channel(i), start_frame,
                                          end_frame);
+  }
 
   return audio_bus;
 }
@@ -228,19 +238,22 @@ float AudioBus::MaxAbsValue() const {
 
 void AudioBus::Normalize() {
   float max = MaxAbsValue();
-  if (max)
+  if (max) {
     Scale(1.0f / max);
+  }
 }
 
 void AudioBus::Scale(float scale) {
-  for (unsigned i = 0; i < NumberOfChannels(); ++i)
+  for (unsigned i = 0; i < NumberOfChannels(); ++i) {
     Channel(i)->Scale(scale);
+  }
 }
 
 void AudioBus::CopyFrom(const AudioBus& source_bus,
                         ChannelInterpretation channel_interpretation) {
-  if (&source_bus == this)
+  if (&source_bus == this) {
     return;
+  }
 
   // Copying bus is equivalent to zeroing and then summing.
   Zero();
@@ -249,16 +262,18 @@ void AudioBus::CopyFrom(const AudioBus& source_bus,
 
 void AudioBus::SumFrom(const AudioBus& source_bus,
                        ChannelInterpretation channel_interpretation) {
-  if (&source_bus == this)
+  if (&source_bus == this) {
     return;
+  }
 
   unsigned number_of_source_channels = source_bus.NumberOfChannels();
   unsigned number_of_destination_channels = NumberOfChannels();
 
   // If the channel numbers are equal, perform channels-wise summing.
   if (number_of_source_channels == number_of_destination_channels) {
-    for (unsigned i = 0; i < number_of_source_channels; ++i)
+    for (unsigned i = 0; i < number_of_source_channels; ++i) {
       Channel(i)->SumFrom(source_bus.Channel(i));
+    }
 
     return;
   }
@@ -267,10 +282,11 @@ void AudioBus::SumFrom(const AudioBus& source_bus,
   // number of channels and the channel interpretation.
   switch (channel_interpretation) {
     case kSpeakers:
-      if (number_of_source_channels < number_of_destination_channels)
+      if (number_of_source_channels < number_of_destination_channels) {
         SumFromByUpMixing(source_bus);
-      else
+      } else {
         SumFromByDownMixing(source_bus);
+      }
       break;
     case kDiscrete:
       DiscreteSumFrom(source_bus);
@@ -284,12 +300,14 @@ void AudioBus::DiscreteSumFrom(const AudioBus& source_bus) {
 
   if (number_of_destination_channels < number_of_source_channels) {
     // Down-mix by summing channels and dropping the remaining.
-    for (unsigned i = 0; i < number_of_destination_channels; ++i)
+    for (unsigned i = 0; i < number_of_destination_channels; ++i) {
       Channel(i)->SumFrom(source_bus.Channel(i));
+    }
   } else if (number_of_destination_channels > number_of_source_channels) {
     // Up-mix by summing as many channels as we have.
-    for (unsigned i = 0; i < number_of_source_channels; ++i)
+    for (unsigned i = 0; i < number_of_source_channels; ++i) {
       Channel(i)->SumFrom(source_bus.Channel(i));
+    }
   }
 }
 
@@ -497,12 +515,14 @@ void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
 
   unsigned number_of_channels = NumberOfChannels();
   DCHECK_LE(number_of_channels, kMaxBusChannels);
-  if (number_of_channels > kMaxBusChannels)
+  if (number_of_channels > kMaxBusChannels) {
     return;
+  }
 
   // If it is copying from the same bus and no need to change gain, just return.
-  if (this == &source_bus && gain == 1)
+  if (this == &source_bus && gain == 1) {
     return;
+  }
 
   const float* sources[kMaxBusChannels];
   float* destinations[kMaxBusChannels];
@@ -562,8 +582,9 @@ void AudioBus::CopyWithSampleAccurateGainValuesFrom(
   const float* source = source_bus.Channel(0)->Data();
   for (unsigned channel_index = 0; channel_index < NumberOfChannels();
        ++channel_index) {
-    if (source_bus.NumberOfChannels() == NumberOfChannels())
+    if (source_bus.NumberOfChannels() == NumberOfChannels()) {
       source = source_bus.Channel(channel_index)->Data();
+    }
     float* destination = Channel(channel_index)->MutableData();
     vector_math::Vmul(source, 1, gain_values, 1, destination, 1,
                       number_of_gain_values);
@@ -577,21 +598,24 @@ scoped_refptr<AudioBus> AudioBus::CreateBySampleRateConverting(
   // sourceBus's sample-rate must be known.
   DCHECK(source_bus);
   DCHECK(source_bus->SampleRate());
-  if (!source_bus || !source_bus->SampleRate())
+  if (!source_bus || !source_bus->SampleRate()) {
     return nullptr;
+  }
 
   double source_sample_rate = source_bus->SampleRate();
   double destination_sample_rate = new_sample_rate;
   double sample_rate_ratio = source_sample_rate / destination_sample_rate;
   unsigned number_of_source_channels = source_bus->NumberOfChannels();
 
-  if (number_of_source_channels == 1)
+  if (number_of_source_channels == 1) {
     mix_to_mono = false;  // already mono
+  }
 
   if (source_sample_rate == destination_sample_rate) {
     // No sample-rate conversion is necessary.
-    if (mix_to_mono)
+    if (mix_to_mono) {
       return AudioBus::CreateByMixingToMono(source_bus);
+    }
 
     // Return exact copy.
     return AudioBus::CreateBufferFromRange(source_bus, 0, source_bus->length());
@@ -641,8 +665,9 @@ scoped_refptr<AudioBus> AudioBus::CreateBySampleRateConverting(
 
 scoped_refptr<AudioBus> AudioBus::CreateByMixingToMono(
     const AudioBus* source_bus) {
-  if (source_bus->IsSilent())
+  if (source_bus->IsSilent()) {
     return Create(1, source_bus->length());
+  }
 
   switch (source_bus->NumberOfChannels()) {
     case 1:
@@ -658,8 +683,9 @@ scoped_refptr<AudioBus> AudioBus::CreateByMixingToMono(
       float* destination = destination_bus->Channel(0)->MutableData();
 
       // Do the mono mixdown.
-      for (unsigned i = 0; i < n; ++i)
+      for (unsigned i = 0; i < n; ++i) {
         destination[i] = (source_l[i] + source_r[i]) / 2;
+      }
 
       destination_bus->ClearSilentFlag();
       destination_bus->SetSampleRate(source_bus->SampleRate());
@@ -676,22 +702,25 @@ bool AudioBus::IsSilent() const {
 }
 
 void AudioBus::ClearSilentFlag() {
-  for (AudioChannel& channel : channels_)
+  for (AudioChannel& channel : channels_) {
     channel.ClearSilentFlag();
+  }
 }
 
 scoped_refptr<AudioBus> DecodeAudioFileData(const char* data, size_t size) {
   WebAudioBus web_audio_bus;
-  if (Platform::Current()->DecodeAudioFileData(&web_audio_bus, data, size))
+  if (Platform::Current()->DecodeAudioFileData(&web_audio_bus, data, size)) {
     return web_audio_bus.Release();
+  }
   return nullptr;
 }
 
 scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
                                                   float sample_rate) {
   const WebData& resource = Platform::Current()->GetDataResource(resource_id);
-  if (resource.IsEmpty())
+  if (resource.IsEmpty()) {
     return nullptr;
+  }
 
   // Currently, the only client of this method is caching the result -- so
   // it's reasonable to (potentially) pay a one-time flat access cost.
@@ -702,12 +731,14 @@ scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
   scoped_refptr<AudioBus> audio_bus =
       DecodeAudioFileData(flat_data.Data(), flat_data.size());
 
-  if (!audio_bus.get())
+  if (!audio_bus.get()) {
     return nullptr;
+  }
 
   // If the bus is already at the requested sample-rate then return as is.
-  if (audio_bus->SampleRate() == sample_rate)
+  if (audio_bus->SampleRate() == sample_rate) {
     return audio_bus;
+  }
 
   return AudioBus::CreateBySampleRateConverting(audio_bus.get(), false,
                                                 sample_rate);
@@ -719,13 +750,15 @@ scoped_refptr<AudioBus> CreateBusFromInMemoryAudioFile(const void* data,
                                                        float sample_rate) {
   scoped_refptr<AudioBus> audio_bus =
       DecodeAudioFileData(static_cast<const char*>(data), data_size);
-  if (!audio_bus.get())
+  if (!audio_bus.get()) {
     return nullptr;
+  }
 
   // If the bus needs no conversion then return as is.
   if ((!mix_to_mono || audio_bus->NumberOfChannels() == 1) &&
-      audio_bus->SampleRate() == sample_rate)
+      audio_bus->SampleRate() == sample_rate) {
     return audio_bus;
+  }
 
   return AudioBus::CreateBySampleRateConverting(audio_bus.get(), mix_to_mono,
                                                 sample_rate);
