@@ -514,8 +514,7 @@ bool CanThrottleUpload(const FormStructure& form,
   // event pref to set the appropriate bit.
   bool is_first_upload_for_event = ((value & mask) == 0);
   if (is_first_upload_for_event) {
-    DictionaryPrefUpdateDeprecated update(pref_service,
-                                          prefs::kAutofillUploadEvents);
+    DictionaryPrefUpdate update(pref_service, prefs::kAutofillUploadEvents);
     update->SetKey(std::move(key), base::Value(value | mask));
   }
 
