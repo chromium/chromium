@@ -335,6 +335,20 @@ public class FeedSurfaceCoordinatorTest {
                 .logUiStarting(SURFACE_TYPE, SURFACE_CREATION_TIME_NS);
     }
 
+    @Test
+    public void testSetupHeaders_feedOn() {
+        mCoordinator.setupHeaders(true);
+        // Item count contains: feed header only
+        assertEquals(1, mContentManagerCaptor.getValue().getItemCount());
+    }
+
+    @Test
+    public void testSetupHeaders_feedOff() {
+        mCoordinator.setupHeaders(false);
+        // Item count contains: nothing, since ntp header is null
+        assertEquals(0, mContentManagerCaptor.getValue().getItemCount());
+    }
+
     private boolean hasStreamBound() {
         if (mCoordinator.getMediatorForTesting().getCurrentStreamForTesting() == null) {
             return false;

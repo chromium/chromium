@@ -9,12 +9,8 @@ import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.b
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -288,29 +284,26 @@ public class FeedSurfaceMediator
     /** Update the content based on supervised user or enterprise policy. */
     void updateContent() {
         mFeedEnabled = FeedFeatures.isFeedEnabled();
-        if ((mFeedEnabled && !mTabToStreamMap.isEmpty())
-                || (!mFeedEnabled && mCoordinator.getScrollViewForPolicy() != null)) {
+        if (mFeedEnabled == !mTabToStreamMap.isEmpty()) {
             return;
+        }
+
+        RecyclerView recyclerView = mCoordinator.getRecyclerView();
+        if (mSnapScrollHelper != null && recyclerView != null) {
+            mSnapScrollHelper.setView(recyclerView);
         }
 
         if (mFeedEnabled) {
             mIsLoadingFeed = true;
-            mCoordinator.createStream();
-            RecyclerView recyclerView = mCoordinator.getRecyclerView();
-            if (mSnapScrollHelper != null && recyclerView != null) {
-                mSnapScrollHelper.setView(recyclerView);
-            }
+            mCoordinator.setupHeaders(/* feedEnabled= */ true);
+
             // Only set up stream if recycler view initiation did not fail.
             if (recyclerView != null) {
                 initializePropertiesForStream();
             }
         } else {
+            mCoordinator.setupHeaders(/* feedEnabled= */ false);
             destroyPropertiesForStream();
-            mCoordinator.createScrollViewForPolicy();
-            if (mSnapScrollHelper != null) {
-                mSnapScrollHelper.setView(mCoordinator.getScrollViewForPolicy());
-            }
-            initializePropertiesForPolicy();
         }
     }
 
@@ -383,7 +376,8 @@ public class FeedSurfaceMediator
 
         boolean suggestionsVisible = isSuggestionsVisible();
 
-        addHeaderAndStream(getInterestFeedHeaderText(suggestionsVisible), mCoordinator.getStream());
+        addHeaderAndStream(
+                getInterestFeedHeaderText(suggestionsVisible), mCoordinator.createFeedStream(true));
         setHeaderIndicatorState(suggestionsVisible);
 
         // Build menu after section enabled key is set.
@@ -563,9 +557,22 @@ public class FeedSurfaceMediator
     }
 
     /** @return The stream that represents the 1st tab. */
-    Stream getFirstStream() {
-        if (mTabToStreamMap.isEmpty()) return null;
-        return mTabToStreamMap.get(0);
+    boolean hasStreams() {
+        return !mTabToStreamMap.isEmpty();
+    }
+
+    boolean isActivityLoggingEnabledForCurrentStream() {
+        if (mCurrentStream == null) return false;
+        return mCurrentStream.isActivityLoggingEnabled();
+    }
+
+    long getLastFetchTimeMsForCurrentStream() {
+        if (mCurrentStream == null) return 0;
+        return mCurrentStream.getLastFetchTimeMs();
+    }
+
+    boolean isPlaceholderShown() {
+        return mCurrentStream == null ? false : mCurrentStream.isPlaceholderShown();
     }
 
     @VisibleForTesting
@@ -597,15 +604,15 @@ public class FeedSurfaceMediator
     }
 
     private void initStreamHeaderViews() {
-        boolean signInPromoVisible = createSignInPromoIfNeeded();
+        boolean signInPromoVisible = shouldShowSigninPromo();
         mCoordinator.updateHeaderViews(signInPromoVisible);
     }
 
     /**
-     * Create and setup the SignInPromo if necessary.
+     * Determines whether a signin promo should be shown.
      * @return Whether the SignPromo should be visible.
      */
-    private boolean createSignInPromoIfNeeded() {
+    private boolean shouldShowSigninPromo() {
         SigninPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
         if (!SignInPromo.shouldCreatePromo()
                 || !SigninPromoController.canShowSyncPromo(
@@ -617,16 +624,6 @@ public class FeedSurfaceMediator
             mSignInPromo.setCanShowPersonalizedSuggestions(isSuggestionsVisible());
         }
         return mSignInPromo.isVisible();
-    }
-
-    private void updatePromoCardPadding(View promoCard) {
-        MarginLayoutParams layoutParams = promoCard.getLayoutParams() == null
-                ? new MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-                : (MarginLayoutParams) promoCard.getLayoutParams();
-        layoutParams.bottomMargin = isSuggestionsVisible()
-                ? 0
-                : mContext.getResources().getDimensionPixelSize(R.dimen.ntp_promo_bottom_margin);
-        promoCard.setLayoutParams(layoutParams);
     }
 
     /** Clear any dependencies related to the {@link Stream}. */
@@ -658,24 +655,10 @@ public class FeedSurfaceMediator
         TemplateUrlServiceFactory.get().removeObserver(this);
         mSigninManager.getIdentityManager().removeObserver(this);
 
-        PropertyListModel<PropertyModel, PropertyKey> headerList =
-                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
-        if (headerList.size() > 0) {
-            headerList.removeRange(0, headerList.size());
-        }
+        mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
 
         if (mCoordinator.getSurfaceScope() != null) {
             mCoordinator.getSurfaceScope().getFeedLaunchReliabilityLogger().cancelPendingEvents();
-        }
-    }
-
-    /**
-     * Initialize properties for the scroll view shown under supervised user or enterprise policy.
-     */
-    private void initializePropertiesForPolicy() {
-        ScrollView view = mCoordinator.getScrollViewForPolicy();
-        if (mSnapScrollHelper != null) {
-            view.getViewTreeObserver().addOnScrollChangedListener(mSnapScrollHelper::handleScroll);
         }
     }
 
@@ -795,7 +778,7 @@ public class FeedSurfaceMediator
         if (mCurrentStream != null) {
             mCurrentStream.toggledArticlesListVisible(isExpanded);
         } else {
-            mCoordinator.getStream().toggledArticlesListVisible(isExpanded);
+            mTabToStreamMap.get(0).toggledArticlesListVisible(isExpanded);
         }
     }
 
@@ -898,23 +881,16 @@ public class FeedSurfaceMediator
     }
 
     // TouchEnabledDelegate interface.
-
     @Override
     public void setTouchEnabled(boolean enabled) {
         mTouchEnabled = enabled;
     }
 
     // ScrollDelegate interface.
-
     @Override
     public boolean isScrollViewInitialized() {
-        if (mFeedEnabled) {
-            RecyclerView recyclerView = mCoordinator.getRecyclerView();
-            return recyclerView != null && recyclerView.getHeight() > 0;
-        } else {
-            ScrollView scrollView = mCoordinator.getScrollViewForPolicy();
-            return scrollView != null && scrollView.getHeight() > 0;
-        }
+        RecyclerView recyclerView = mCoordinator.getRecyclerView();
+        return recyclerView != null && recyclerView.getHeight() > 0;
     }
 
     @Override
@@ -923,54 +899,42 @@ public class FeedSurfaceMediator
         // Stream is visible.
         if (!isScrollViewInitialized()) return 0;
 
-        if (mFeedEnabled) {
-            if (!isChildVisibleAtPosition(0)) {
-                return Integer.MIN_VALUE;
-            }
-
-            LinearLayoutManager layoutManager =
-                    (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
-            if (layoutManager == null) {
-                return Integer.MIN_VALUE;
-            }
-
-            View view = layoutManager.findViewByPosition(0);
-            if (view == null) {
-                return Integer.MIN_VALUE;
-            }
-
-            return -view.getTop();
-        } else {
-            return mCoordinator.getScrollViewForPolicy().getScrollY();
+        if (!isChildVisibleAtPosition(0)) {
+            return Integer.MIN_VALUE;
         }
+
+        LinearLayoutManager layoutManager =
+                (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
+        if (layoutManager == null) {
+            return Integer.MIN_VALUE;
+        }
+
+        View view = layoutManager.findViewByPosition(0);
+        if (view == null) {
+            return Integer.MIN_VALUE;
+        }
+
+        return -view.getTop();
     }
 
     @Override
     public boolean isChildVisibleAtPosition(int position) {
         if (!isScrollViewInitialized()) return false;
 
-        if (mFeedEnabled) {
-            LinearLayoutManager layoutManager =
-                    (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
-            if (layoutManager == null) {
-                return false;
-            }
-
-            int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
-            int lastItemPosition = layoutManager.findLastVisibleItemPosition();
-            if (firstItemPosition == RecyclerView.NO_POSITION
-                    || lastItemPosition == RecyclerView.NO_POSITION) {
-                return false;
-            }
-
-            return firstItemPosition <= position && position <= lastItemPosition;
-        } else {
-            ScrollView scrollView = mCoordinator.getScrollViewForPolicy();
-            Rect rect = new Rect();
-            scrollView.getHitRect(rect);
-            View child = scrollView.getChildAt(position);
-            return child != null && child.getLocalVisibleRect(rect);
+        LinearLayoutManager layoutManager =
+                (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
+        if (layoutManager == null) {
+            return false;
         }
+
+        int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
+        int lastItemPosition = layoutManager.findLastVisibleItemPosition();
+        if (firstItemPosition == RecyclerView.NO_POSITION
+                || lastItemPosition == RecyclerView.NO_POSITION) {
+            return false;
+        }
+
+        return firstItemPosition <= position && position <= lastItemPosition;
     }
 
     @Override
@@ -984,11 +948,7 @@ public class FeedSurfaceMediator
         // Calculating the snap position should be idempotent.
         assert scrollTo == mSnapScrollHelper.calculateSnapPosition(scrollTo);
 
-        if (mFeedEnabled) {
-            mCoordinator.getRecyclerView().smoothScrollBy(0, scrollTo - initialScroll);
-        } else {
-            mCoordinator.getScrollViewForPolicy().smoothScrollBy(0, scrollTo - initialScroll);
-        }
+        mCoordinator.getRecyclerView().smoothScrollBy(0, scrollTo - initialScroll);
     }
 
     @Override
@@ -999,29 +959,28 @@ public class FeedSurfaceMediator
     @Override
     public void onItemSelected(PropertyModel item) {
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
-        Stream stream = mCoordinator.getStream();
         if (itemId == R.id.ntp_feed_header_menu_item_manage) {
             Intent intent = new Intent(mContext, FeedManagementActivity.class);
             mContext.startActivity(intent);
         } else if (itemId == R.id.ntp_feed_header_menu_item_activity) {
             mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://myactivity.google.com/myactivity?product=50"));
-            if (stream != null) {
-                stream.recordActionManageActivity();
+            if (mCurrentStream != null) {
+                mCurrentStream.recordActionManageActivity();
             }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MY_ACTIVITY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_interest) {
             mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://www.google.com/preferences/interests"));
-            if (stream != null) {
-                stream.recordActionManageInterests();
+            if (mCurrentStream != null) {
+                mCurrentStream.recordActionManageInterests();
             }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
         } else if (itemId == R.id.ntp_feed_header_menu_item_reactions) {
             mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://www.google.com/search/contributions/reactions"));
-            if (stream != null) {
-                stream.recordActionManageReactions();
+            if (mCurrentStream != null) {
+                mCurrentStream.recordActionManageReactions();
             }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
         } else if (itemId == R.id.ntp_feed_header_menu_item_autoplay) {
@@ -1029,8 +988,8 @@ public class FeedSurfaceMediator
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_learn) {
             mActionDelegate.openHelpPage();
-            if (stream != null) {
-                stream.recordActionLearnMore();
+            if (mCurrentStream != null) {
+                mCurrentStream.recordActionLearnMore();
             }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_LEARN_MORE);
         } else if (itemId == R.id.ntp_feed_header_menu_item_toggle_switch) {
@@ -1141,5 +1100,10 @@ public class FeedSurfaceMediator
     @VisibleForTesting
     void setStreamForTesting(int key, Stream stream) {
         mTabToStreamMap.put(key, stream);
+    }
+
+    @VisibleForTesting
+    int getTabToStreamSizeForTesting() {
+        return mTabToStreamMap.size();
     }
 }

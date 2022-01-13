@@ -19,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +35,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
-import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
@@ -61,12 +59,10 @@ import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -116,9 +112,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable View mSigninPromoView;
     private @Nullable FeedStreamViewResizer mStreamViewResizer;
-    // This is the "default"/interest feed stream, not necessarily the current stream.
-    // TODO(chili): Remove the necessity of this.
-    private @Nullable FeedStream mStream;
     // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
     private @Nullable ViewGroup mViewportView;
@@ -133,10 +126,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private @Nullable SurfaceScope mSurfaceScope;
     private @Nullable FeedSurfaceScopeDependencyProvider mDependencyProvider;
     private @Nullable HybridListRenderer mHybridListRenderer;
-
-    // Used when Feed is disabled by policy.
-    private @Nullable ScrollView mScrollViewForPolicy;
-    private @Nullable ViewResizer mScrollViewResizer;
 
     // Used to handle things related to the main scrollable container of NTP surface.
     // In start surface, it does not track scrolling events - only the header offset.
@@ -181,21 +170,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             if (mMediator != null && !mMediator.getTouchEnabled()) return true;
 
             return mDelegate.onInterceptTouchEvent(ev);
-        }
-    }
-
-    /**
-     * Provides the additional capabilities needed for the {@link ScrollView}.
-     */
-    private class PolicyScrollView extends ScrollView {
-        public PolicyScrollView(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected void onConfigurationChanged(Configuration newConfig) {
-            super.onConfigurationChanged(newConfig);
-            mUiConfig.updateDisplayStyle();
         }
     }
 
@@ -302,6 +276,18 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, resources.getDimensionPixelOffset(R.dimen.tab_strip_height), 0, 0);
         mUiConfig = new UiConfig(mRootView);
+        mRecyclerView = setUpView();
+        mStreamViewResizer = FeedStreamViewResizer.createAndAttach(
+                mActivity, mRecyclerView, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
+
+        // Pull-to-refresh set up.
+        if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.getParent() == null) {
+            mSwipeRefreshLayout.addOnRefreshListener(this);
+            mSwipeRefreshLayout.addView(mRecyclerView);
+            mRootView.addView(mSwipeRefreshLayout);
+        } else {
+            mRootView.addView(mRecyclerView);
+        }
 
         mHandler = new Handler(Looper.getMainLooper());
 
@@ -332,12 +318,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
 
         // Creates streams, initiates content changes.
         mMediator.updateContent();
-
-        // Enable pull-to-refresh.
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.enableSwipe(externalScrollableContainerDelegate);
-            mSwipeRefreshLayout.addOnRefreshListener(this);
-        }
     }
 
     private void stopScrollTracking() {
@@ -455,14 +435,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         return mFeedSurfaceLifecycleManager;
     }
 
-    /** @return The {@link Stream} that this class holds. */
-    Stream getStream() {
-        return mStream;
-    }
-
     /** @return Whether the placeholder is shown. */
     public boolean isPlaceholderShown() {
-        return mStream != null ? mStream.isPlaceholderShown() : false;
+        return mMediator.isPlaceholderShown();
     }
 
     /** Launches autoplay settings activity. */
@@ -572,6 +547,16 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             view.setClipToPadding(false);
             view.setBackgroundColor(
                     MaterialColors.getColor(context, R.attr.default_bg_color_dynamic, TAG));
+
+            // Work around https://crbug.com/943873 where default focus highlight shows up after
+            // toggling dark mode.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                view.setDefaultFocusHighlightEnabled(false);
+            }
+
+            if (mOverScrollDisabled) {
+                view.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            }
         } else {
             view = null;
         }
@@ -604,63 +589,37 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     }
 
     /**
-     * Create a {@link Stream} for this class.
+     * Configures header views and properties for feed:
+     * Adds the feed headers, creates the feed lifecycle manager, adds swipe-to-refresh if needed.
      */
-    void createStream() {
-        assert mStream == null;
-
-        if (mScrollViewForPolicy != null) {
-            mRootView.removeView(mScrollViewForPolicy);
-            mScrollViewForPolicy = null;
-            mScrollViewResizer.detach();
-            mScrollViewResizer = null;
-        }
-        mRecyclerView = setUpView();
-
-        mStream = createFeedStream(true);
-        mActionDelegate.onStreamCreated();
-        mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
-        mRecyclerView.setBackgroundColor(
-                MaterialColors.getColor(mActivity, R.attr.default_bg_color_dynamic, TAG));
-
-        // For New Tab Page, mSwipeRefreshLayout has not been added to a view container. We need to
-        // do it here.
-        if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.getParent() == null) {
-            mRootView.addView(mSwipeRefreshLayout);
-            mSwipeRefreshLayout.addView(mRecyclerView);
-        } else {
-            mRootView.addView(mRecyclerView);
-        }
-
-        mStreamViewResizer = FeedStreamViewResizer.createAndAttach(
-                mActivity, mRecyclerView, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
-
-        if (mNtpHeader != null) UiUtils.removeViewFromParent(mNtpHeader);
-        UiUtils.removeViewFromParent(mSectionHeaderView);
-        if (mSigninPromoView != null) UiUtils.removeViewFromParent(mSigninPromoView);
-
+    void setupHeaders(boolean feedEnabled) {
         // Directly add header views to content manager.
         List<View> headerList = new ArrayList<>();
         if (mNtpHeader != null) {
             headerList.add(mNtpHeader);
         }
-        headerList.add(mSectionHeaderView);
 
+        if (feedEnabled) {
+            mActionDelegate.onStreamCreated();
+            mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
+            headerList.add(mSectionHeaderView);
+            if (mSwipeRefreshLayout != null) {
+                mSwipeRefreshLayout.enableSwipe(mScrollableContainerDelegate);
+            }
+        } else {
+            if (mFeedSurfaceLifecycleManager != null) {
+                mFeedSurfaceLifecycleManager.destroy();
+                mFeedSurfaceLifecycleManager = null;
+            }
+            if (mSwipeRefreshLayout != null) {
+                mSwipeRefreshLayout.disableSwipe();
+            }
+        }
         setHeaders(headerList);
 
-        // Work around https://crbug.com/943873 where default focus highlight shows up after
-        // toggling dark mode.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mRecyclerView.setDefaultFocusHighlightEnabled(false);
-        }
-
         // Explicitly request focus on the scroll container to avoid UrlBar being focused after
-        // the scroll container for policy is removed.
+        // mRootView containers are refreshed.
         mRecyclerView.requestFocus();
-
-        if (mOverScrollDisabled) {
-            mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        }
     }
 
     /**
@@ -697,56 +656,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         }
     }
 
-    /**
-     * @return The {@link ScrollView} for displaying content for supervised user or enterprise
-     *         policy.
-     */
-    @VisibleForTesting
-    public ScrollView getScrollViewForPolicy() {
-        return mScrollViewForPolicy;
-    }
-
-    /**
-     * Create a {@link ScrollView} for displaying content for supervised user or enterprise policy.
-     */
-    void createScrollViewForPolicy() {
-        if (mStream != null) {
-            mStreamViewResizer.detach();
-            mStreamViewResizer = null;
-            mRootView.removeView(mRecyclerView);
-            assert mFeedSurfaceLifecycleManager
-                    != null
-                : "SurfaceLifecycleManager should not be null when the Stream is not null.";
-            mFeedSurfaceLifecycleManager.destroy();
-            mFeedSurfaceLifecycleManager = null;
-            mStream = null;
-            mSigninPromoView = null;
-        }
-
-        mScrollViewForPolicy = new PolicyScrollView(mActivity);
-        mScrollViewForPolicy.setBackgroundColor(
-                MaterialColors.getColor(mActivity, R.attr.default_bg_color_dynamic, TAG));
-        mScrollViewForPolicy.setVerticalScrollBarEnabled(false);
-
-        // Make scroll view focusable so that it is the next focusable view when the url bar clears
-        // focus.
-        mScrollViewForPolicy.setFocusable(true);
-        mScrollViewForPolicy.setFocusableInTouchMode(true);
-        mScrollViewForPolicy.setContentDescription(
-                mScrollViewForPolicy.getResources().getString(R.string.accessibility_new_tab_page));
-
-        if (mNtpHeader != null) {
-            UiUtils.removeViewFromParent(mNtpHeader);
-            mScrollViewForPolicy.addView(mNtpHeader);
-        }
-        mHeaderCount = 0;
-
-        mRootView.addView(mScrollViewForPolicy);
-        mScrollViewResizer = ViewResizer.createAndAttach(
-                mScrollViewForPolicy, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
-        mScrollViewForPolicy.requestFocus();
-    }
-
     /** @return The {@link SectionHeaderListProperties} model for the Feed section header. */
     @VisibleForTesting
     PropertyModel getSectionHeaderModelForTest() {
@@ -768,11 +677,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      * Update header views in the Feed.
      */
     void updateHeaderViews(boolean isSignInPromoVisible) {
-        if (mStream == null) return;
+        if (!mMediator.hasStreams()) return;
 
         List<View> headers = new ArrayList<>();
         if (mNtpHeader != null) {
-            assert mSectionHeaderView != null;
             headers.add(mNtpHeader);
         }
 
@@ -815,7 +723,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     void initializeBubbleTriggering() {
         // Don't do anything when there is no feed stream because the bubble isn't needed in that
         // case.
-        if (mStream == null) return;
+        if (!mMediator.hasStreams()) return;
 
         // Provide a delegate for the container of the feed surface that is handled by the feed
         // coordinator itself when not provided externally (e.g., by the NewTabPage).
@@ -861,7 +769,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      * deleted when disabled (e.g., by policy).
      */
     private void stopBubbleTriggering() {
-        if (mStream != null && mScrollableContainerDelegate != null) {
+        if (mMediator.hasStreams() && mScrollableContainerDelegate != null) {
             if (mHeaderIphScrollListener != null) {
                 mScrollableContainerDelegate.removeScrollListener(mHeaderIphScrollListener);
                 mHeaderIphScrollListener = null;
@@ -920,7 +828,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
 
     @Override
     public long getLastFetchTimeMs() {
-        return (mStream == null) ? 0 : mStream.getLastFetchTimeMs();
+        return mMediator.getLastFetchTimeMsForCurrentStream();
     }
 
     @Override

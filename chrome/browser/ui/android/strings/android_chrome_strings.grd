@@ -3696,9 +3696,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_BTN_LENS_CAMERA" desc="Content description for the Lens button. When the user taps the button, they can perform a 'search with your camera or photos', which opens the Google Lens app.">
         Search with your camera using Google Lens
       </message>
-      <message name="IDS_ACCESSIBILITY_NEW_TAB_PAGE" desc="Accessibility text to read aloud when the user focuses the new tab view.">
-        New tab
-      </message>
       <message name="IDS_ACCESSIBILITY_NEW_INCOGNITO_TAB_PAGE" desc="Accessibility text to read aloud when the user focuses the new Incognito tab view.">
         New Incognito tab
       </message>

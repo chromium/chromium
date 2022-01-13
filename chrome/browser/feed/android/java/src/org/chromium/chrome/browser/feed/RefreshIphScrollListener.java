@@ -27,7 +27,6 @@ public class RefreshIphScrollListener implements ScrollListener {
     private final FeedBubbleDelegate mDelegate;
     private final ScrollableContainerDelegate mScrollableContainerDelegate;
     private final Runnable mShowIPHRunnable;
-    private int mMaxLastVisibleFeedItemPosition;
 
     /**
      * Constructor for IPH triggering.
