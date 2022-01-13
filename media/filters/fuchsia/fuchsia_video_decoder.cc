@@ -617,7 +617,7 @@ bool FuchsiaVideoDecoder::DropInputQueue(DecoderStatus status) {
   auto weak_this = weak_this_;
 
   for (auto& cb : decode_callbacks_) {
-    std::move(cb).Run(std::move(status));
+    std::move(cb).Run(status);
 
     // DecodeCB may destroy |this|.
     if (!weak_this)
