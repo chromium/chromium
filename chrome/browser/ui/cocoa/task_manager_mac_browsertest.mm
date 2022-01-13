@@ -83,8 +83,8 @@ class TaskManagerMacTest : public InProcessBrowserTest {
     if (!local_state)
       FAIL();
 
-    DictionaryPrefUpdateDeprecated dict_update(
-        local_state, prefs::kTaskManagerColumnVisibility);
+    DictionaryPrefUpdate dict_update(local_state,
+                                     prefs::kTaskManagerColumnVisibility);
     dict_update->DictClear();
   }
 
