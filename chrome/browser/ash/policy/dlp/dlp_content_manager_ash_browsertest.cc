@@ -965,9 +965,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       web_contents, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kBlock, 1u);
-  // TODO(https://crbug.com/1246386): change below to TRUE after switching to
-  // CheckScreenShareRestriction which will also show the DLP notification.
-  EXPECT_FALSE(display_service_tester.GetNotification(
+  EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenShareBlockedNotificationId));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);

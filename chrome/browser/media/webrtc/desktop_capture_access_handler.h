@@ -108,6 +108,14 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   WebContentsCollection web_contents_collection_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called back after checking Data Leak Prevention (DLP) restrictions.
+  void OnDlpRestrictionChecked(
+      base::WeakPtr<content::WebContents> web_contents,
+      std::unique_ptr<PendingAccessRequest> pending_request,
+      const content::DesktopMediaID& media_id,
+      bool capture_audio,
+      bool is_dlp_allowed);
+
   aura::Window* primary_root_window_for_testing_ = nullptr;
 #endif
 };
