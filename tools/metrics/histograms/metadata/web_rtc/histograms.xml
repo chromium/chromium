@@ -1652,6 +1652,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.KeyProtocolByMedia"
     enum="PeerConnectionKeyProtocolByMedia" expires_after="2022-01-09">
+  <obsolete>
+    Support removed 2022-01-13
+  </obsolete>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
