@@ -99,8 +99,8 @@ void UpdateRecurrentInterstitialPref(PrefService* pref_service,
                                      int threshold) {
   double now = clock->Now().ToJsTime();
 
-  DictionaryPrefUpdateDeprecated pref_update(pref_service,
-                                             prefs::kRecurrentSSLInterstitial);
+  DictionaryPrefUpdate pref_update(pref_service,
+                                   prefs::kRecurrentSSLInterstitial);
   base::Value* list_value =
       pref_update->FindListKey(net::ErrorToShortString(error));
   if (list_value) {
@@ -524,8 +524,8 @@ bool StatefulSSLHostStateDelegate::HasSeenRecurrentErrors(int error) const {
 
 void StatefulSSLHostStateDelegate::ResetRecurrentErrorCountForTesting() {
   recurrent_errors_.clear();
-  DictionaryPrefUpdateDeprecated pref_update(pref_service_,
-                                             prefs::kRecurrentSSLInterstitial);
+  DictionaryPrefUpdate pref_update(pref_service_,
+                                   prefs::kRecurrentSSLInterstitial);
   pref_update->DictClear();
 }
 
