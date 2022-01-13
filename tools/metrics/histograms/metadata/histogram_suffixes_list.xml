@@ -5502,15 +5502,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GoogleUpdate.Result.TimeWindow.Unknown"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU_ContextType" separator=".">
-  <obsolete>
-    Expired in 2020/10/15.
-  </obsolete>
-  <suffix name="GLES" label="GLES Context."/>
-  <suffix name="WebGL" label="WebGL Context."/>
-  <affected-histogram name="GPU.ContextMemory"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GPU_DirectComposition_OverlayFormat" separator=".">
   <suffix name="BGRA" label="BGRA"/>
   <suffix name="NV12" label="NV12"/>
@@ -5518,17 +5509,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GPU.DirectComposition.OverlaySupportFlags2"/>
   <affected-histogram name="GPU.DirectComposition.SwapChainCreationResult"/>
   <affected-histogram name="GPU.DirectComposition.SwapChainCreationResult2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="GPU_MemorySamplingTime" separator=".">
-  <obsolete>
-    Expired in 2020/10/15.
-  </obsolete>
-  <suffix name="Periodic" label="Sampled periodically."/>
-  <suffix name="Pressure" label="Sampled on CRITICAL memory pressure signal."/>
-  <suffix name="Shutdown" label="Sampled at shutdown."/>
-  <affected-histogram name="GPU.ContextMemory.GLES"/>
-  <affected-histogram name="GPU.ContextMemory.WebGL"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="GPU_PeakMemoryAllocationSources" separator=".">
@@ -5582,7 +5562,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Init" label="Init"/>
   <suffix name="Normal" label="Normal"/>
   <suffix name="PowerResume" label="PowerResume"/>
-  <affected-histogram name="GPU.WatchdogThread.ExtraThreadTime"/>
   <affected-histogram name="GPU.WatchdogThread.Timeout"/>
 </histogram_suffixes>
 
@@ -5592,9 +5571,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="GpuRasterization" label="GpuRasterization"/>
   <suffix name="Webgl" label="Webgl"/>
   <suffix name="Webgl2" label="Webgl2"/>
-  <affected-histogram name="GPU.BlacklistFeatureTestResults"/>
   <affected-histogram name="GPU.BlacklistFeatureTestResultsWindows"/>
-  <affected-histogram name="GPU.BlacklistFeatureTestResultsWindows2"/>
   <affected-histogram name="GPU.BlocklistFeatureTestResults"/>
 </histogram_suffixes>
 

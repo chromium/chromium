@@ -23,188 +23,6 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="EventLatencyBreakdown">
-  <variant name="Activation" summary="the duration of the activation stage">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="BeginImplFrameToSendBeginMainFrame"
-      summary="the time from when the compositor impl frame is started to when
-               BeginMainFrame is sent">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="BrowserToRendererCompositor"
-      summary="the time from when the event is generated until the first
-               compositor stage after the event arrives in the renderer">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="Commit" summary="the duration of the commit stage">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="EndActivateToSubmitCompositorFrame"
-      summary="the time from when an activation is complete to the next
-               SubmitCompositorFrame">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="EndCommitToActivation"
-      summary="the time from when a commit is complete to the beginning of the
-               next activation">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit"
-      summary="the time from when the BeginMainFrame is sent to the beginning
-               of the commit">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.Animate"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               animations">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.BeginMainSentToStarted"
-      summary="the time portion of SendBeginMainFrameToCommit spent before
-               starting main thread work">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.Composite"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               compositing">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.CompositeCommit"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               composite commit">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.CompositingAssignments"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               updating compositing assignments">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.CompositingInputs"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               updating compositing inputs">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.HandleInputEvents"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               handling imput events">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.LayoutUpdate"
-      summary="the time portion of SendBeginMainFrameToCommit spent on layout
-               update">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.Paint"
-      summary="the time portion of SendBeginMainFrameToCommit spent on paint">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.Prepaint"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               prepaint">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.ScrollingCoordinator"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               scrolling coordinator">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.StyleUpdate"
-      summary="the time portion of SendBeginMainFrameToCommit spent on style
-               update">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SendBeginMainFrameToCommit.UpdateLayers"
-      summary="the time portion of SendBeginMainFrameToCommit spent on
-               updating layers">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant name="SubmitCompositorFrameToPresentationCompositorFrame"
-      summary="the time from when the compositor frame is submitted to the
-               display compositor to when it is presented">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant
-      name="SubmitCompositorFrameToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw"
-      summary="the time from when the compositor frame is received to when it
-               starts to draw">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant
-      name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart"
-      summary="the time from when the compositor frame is started to draw to
-               when it starts swap">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant
-      name="SubmitCompositorFrameToPresentationCompositorFrame.SubmitToReceiveCompositorFrame"
-      summary="the time from when the compositor frame is submitted to when it
-               is received">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant
-      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame"
-      summary="the time from when the compositor frame ends swap to when it is
-               presented">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
-  <variant
-      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd"
-      summary="the time from when the compositor frame starts to swap to when
-               it ends swap">
-    <obsolete>
-      Obsolete as of M90. Breakdowns are being tracked in UKM.
-    </obsolete>
-  </variant>
   <variant name="TotalLatency"
       summary="total latency from when the event is generated until the frame
                is presented on screen"/>
@@ -372,53 +190,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.FractionOfTimeWithoutUserInput" units="%"
-    expires_after="2021-06-16">
-  <obsolete>
-    Removed December 2021.
-  </obsolete>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    For each 10 second window, reports the fraction of the time there was no
-    user input. We consider there to be no user input if we haven't received any
-    events for &gt; 50ms.
-  </summary>
-</histogram>
-
-<histogram name="Event.FrameEventRouting.NoGestureTarget" units="units"
-    expires_after="2020-02-23">
-  <obsolete>
-    Removed 2020.10.20 - no longer in use.
-  </obsolete>
-  <owner>wjmaclean@chromium.org</owner>
-  <summary>
-    Record whether we unexpectedly encounter an empty gesture queue while
-    routing gesture events to frames' renderers: true =&gt; empty queue, false
-    =&gt; non-empty queue.
-  </summary>
-</histogram>
-
-<histogram name="Event.FrameEventRouting.TouchEventAckQueueSize" units="units"
-    expires_after="2020-07-19">
-  <obsolete>
-    2020.10.21 - Removed.
-  </obsolete>
-  <owner>wjmaclean@chromium.org</owner>
-  <owner>kenrb@chromium.org</owner>
-  <summary>
-    The size of the TouchEventAckQueue, recorded each time we process an event
-    ack (the queue usually, but not always, decreases in size during ack
-    processing). Ideally this queue will operate at length close to zero,
-    depending on how long it takes for events to travel to a renderer and be
-    processed and an ack sent back. As the size increases it indicates decreased
-    responsiveness of renderers with respect to touch events. One purpose of
-    this metric is to develop a sense of normal queue sizes for different
-    platforms. Initially we expect queue length to be less than 20 most of the
-    time, but this is a guess.
-  </summary>
-</histogram>
-
 <histogram name="Event.GestureCreated" enum="UIEventType"
     expires_after="2020-03-01">
   <owner>kuscher@google.com</owner>
@@ -426,18 +197,6 @@ chromium-metrics-reviews@google.com.
     The gesture-events recognized and dispatched by the browser gesture
     recognizer. This replaces Ash.GestureCreated, which did not record events on
     Android and Windows.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.HitTest" enum="EventHitTest" expires_after="2020-05-31">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
-  <owner>dtapuska@chromium.org</owner>
-  <summary>
-    For each hit test, records whether it was a hit or miss, and why.
 
     Team: input-dev@chromium.org.
   </summary>
@@ -508,22 +267,6 @@ chromium-metrics-reviews@google.com.
     Euclidean distance in pixels between two successive variations of touch
     scroll deltas which are the difference between a predicted scroll position
     and the interpolated real position that occurred at frame time.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.InputEventPrediction.Scroll.WrongDirection"
-    enum="Boolean" expires_after="M97">
-  <obsolete>
-    Removed 2021-12-02.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
-  <summary>
-    Boolean that indicates whether the prediction is in the same direction as
-    the real trajectory at the same prediction time. True means the direction is
-    not the same (wrong direction).
 
     Team: input-dev@chromium.org.
   </summary>
@@ -707,71 +450,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.OS_WIN.HIGH_RES" units="ms"
-    expires_after="2021-12-01">
-  <obsolete>
-    Removed 2021-04-22 - replaced by Event.Latency.OS2.
-  </obsolete>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Experimental Windows-only histogram similar to Event.Latency.OS, but
-    recorded only for MOUSE_PRESSED, KEY_PRESSED and TOUCH_PRESSED events and
-    including the true time between when the event is generated by the OS and
-    when it is received by Chrome.
-
-    On Windows, ui::Event structures include a timestamp based on the time the
-    event is received, not when it is generated, so the cross-platform
-    Event.Latency.OS histograms which are based on this timestamp are wrong.
-
-    This metric is only reported from clients with high-resolution clocks.
-    Clients with low-resolution clocks record Event.Latency.OS_WIN.LOW_RES
-    instead. Once we validate that there is no difference between the two
-    metrics and all is working as expected we will combine them into a single
-    cross-platform event latency metric.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.OS_WIN.LOW_RES" units="ms"
-    expires_after="2021-12-01">
-  <obsolete>
-    Removed 2021-04-22 - replaced by Event.Latency.OS2.
-  </obsolete>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Experimental Windows-only histogram similar to Event.Latency.OS, but
-    recorded only for MOUSE_PRESSED, KEY_PRESSED and TOUCH_PRESSED events and
-    including the true time between when the event is generated by the OS and
-    when it is received by Chrome.
-
-    On Windows, ui::Event structures include a timestamp based on the time the
-    event is received, not when it is generated, so the cross-platform
-    Event.Latency.OS histograms which are based on this timestamp are wrong.
-
-    This metric is only reported from clients with low-resolution clocks.
-    Clients with high-resolution clocks record Event.Latency.OS_WIN.HIGH_RES
-    instead. Once we validate that there is no difference between the two
-    metrics and all is working as expected we will combine them into a single
-    cross-platform event latency metric.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.OS_WIN_IS_VALID" enum="Boolean"
-    expires_after="2021-12-01">
-  <obsolete>
-    Removed 2021-04-22 - replaced by Event.Latency.OS2.
-  </obsolete>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Windows-only boolean that records whether an input event has a valid OS
-    timestamp, recorded for MOUSE_PRESSED, KEY_PRESSED and TOUCH_PRESSED events
-    when they are received by Chrome. This is used to estimate the bias caused
-    by skipping events with invalid timestamps in Event.Latency.OS_WIN.*.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.Scroll.Wheel.TimeToHandled2"
     units="microseconds" expires_after="2021-12-19">
   <owner>flackr@chromium.org</owner>
@@ -782,29 +460,6 @@ chromium-metrics-reviews@google.com.
     suffix). If no swap was induced by the ScrollUpdate gesture event, no
     recording is made. Unlike Event.Latency.ScrollUpdate.Wheel.TimeToHandled2
     this metric includes the first GSU of every scrolling sequence as well.
-
-    Team: input-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.Scroll.Wheel.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2020-06-21">
-  <obsolete>
-    Removed 2021-01-14 - replaced by Event.Latency.Scroll(Begin|Update).Wheel.*.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    Time between initial creation of a wheel event and start of the frame swap
-    on the GPU service caused by the generated ScrollUpdate gesture event. If no
-    swap was induced by the event, no recording is made. Unlike
-    Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin2 this metric
-    includes the first GSU of every scrolling sequence as well.
 
     Team: input-dev@chromium.org.
 
@@ -972,28 +627,6 @@ chromium-metrics-reviews@google.com.
     Records whether the browser top-controls (i.e. omnibox, toolbar) moved
     because of the scroll-begin event (i.e. the first scroll-update event of
     that sequence).
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollBegin.Touch.AverageLag" units="pixels"
-    expires_after="M97">
-  <obsolete>
-    Removed 2021.06.30 - replaced by AverageLagPresentation, which is more
-    accurate.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Measures an average distance that represents how the page sticks to the
-    finger when user scrolls. Only reports touch scrolling. See
-    https://docs.google.com/document/d/154jddNiKtxELBvrjLz9v6A7sA1J3iwQQzySHgtY12Oo/
-
-    This is the lag caused by the Gesture Scroll Begin Event. In each touch
-    interaction there is a GSB followed by multiple Gesture Scroll Updates,
-    which are separately logged by Event.Latency.ScrollUpdate.Touch.AverageLag.
-
-    Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
@@ -1600,62 +1233,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.ScrollUpdate.Touch.AverageLag" units="pixels"
-    expires_after="M97">
-  <obsolete>
-    Removed 2021.06.30 - replaced by AverageLagPresentation, which is more
-    accurate.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Measures an average distance that represents how the page sticks to the
-    finger when user scrolls. Only reports touch scrolling. See
-    https://docs.google.com/document/d/154jddNiKtxELBvrjLz9v6A7sA1J3iwQQzySHgtY12Oo/
-
-    This is the lag caused by the Gesture Scroll Updates occourring in the
-    lifetime of a scroll interaction.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram
-    name="Event.Latency.ScrollUpdate.Touch.AverageLag.{PredictionImpact}"
-    units="pixels" expires_after="M97">
-  <obsolete>
-    Removed 2021.06.30 - replaced by AverageLagPresentation.{PredictionImpact},
-    which is more accurate.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Improvement of prediction in touch lag. It is defined as
-    (Lag_without_prediction - Lag_with_prediction).
-
-    Lag is the distance between the finger position and the rendered position.
-
-    When positive, prediction improves touch performance (reduces lag). When
-    negative, prediction worsens touch performance (increases lag).
-
-    The duration of the interaction/interval is either 1s, or the time from when
-    the user starts scrolling to lifting the finger, whichever is smaller.
-
-    Lag_with_prediction =
-    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation
-    Lag_without_prediction =
-    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction
-
-    Team: input-dev@chromium.org.
-  </summary>
-  <token key="PredictionImpact">
-    <variant name="PredictionNegative" summary="Negative impact values"/>
-    <variant name="PredictionPositive" summary="Positive impact values"/>
-  </token>
-</histogram>
-
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"
     units="pixels" expires_after="2022-05-08">
   <owner>flackr@chromium.org</owner>
@@ -2160,37 +1737,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.TouchDuration" units="ms" expires_after="M77">
-  <obsolete>
-    Removed 2021.03.30 - no longer in use.
-  </obsolete>
-  <owner>kuscher@google.com</owner>
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    The duration of a touch-sequence. Only measured for single finger gestures.
-    This replaces Ash.TouchDuration2, which did not record events on Android and
-    Windows.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchMaxDistance" units="pixels" expires_after="M77">
-  <obsolete>
-    Removed 2021.03.30 - replaced by Event.MaxDragDistance.*.
-  </obsolete>
-  <owner>kuscher@google.com</owner>
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    The maximum euclidean distance in dips (device independent pixel) which a
-    touch point has travelled away from its starting point. Only measured for
-    single finger gestures. This replaces Ash.TouchMaxDistance, which did not
-    record events on Android and Windows.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram name="Event.TouchSelection.Duration" units="ms" expires_after="M77">
   <owner>nzolghadr@chromium.org</owner>
   <summary>
@@ -2375,14 +1921,6 @@ chromium-metrics-reviews@google.com.
     <variant name="TotalLatencyToSwapBegin"
         summary="total latency from when the event is generated until the
                  gpu-swap is started"/>
-    <variant name="TotalLatencyToSwapEnd"
-        summary="total latency from when the event is generated until the
-                 gpu-swap is completed">
-      <obsolete>
-        Deprecated as of 07/2020. Replaced with TotalLatencyToSwapBegin variant
-        which measures what we actually intended to measure.
-      </obsolete>
-    </variant>
   </token>
 </histogram>
 
