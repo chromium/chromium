@@ -53235,6 +53235,7 @@ from previous Chrome versions.
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>
   <int value="-239176328" label="BluetoothAggressiveAppearanceFilter:enabled"/>
+  <int value="-238415226" label="GlobalVaapiLock:disabled"/>
   <int value="-237367320" label="AssistantAudioEraser:disabled"/>
   <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
   <int value="-235949168" label="DrawPredictedInkPoint:enabled"/>
@@ -53893,6 +53894,7 @@ from previous Chrome versions.
   <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
   <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>
   <int value="270267831" label="enable-scripts-require-action"/>
+  <int value="271437172" label="GlobalVaapiLock:enabled"/>
   <int value="272108480" label="SmbFs:enabled"/>
   <int value="272631627" label="BookmarkAppsMac:enabled"/>
   <int value="273489120" label="CrostiniDiskResizing:disabled"/>

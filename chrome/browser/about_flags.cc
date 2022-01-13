@@ -7001,6 +7001,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"enable-global-vaapi-lock", flag_descriptions::kGlobalVaapiLockName,
+     flag_descriptions::kGlobalVaapiLockDescription, kOsCrOS | kOsLinux,
+     FEATURE_VALUE_TYPE(media::kGlobalVaapiLock)},
+
     {"enable-vp9-kSVC-decode-acceleration",
      flag_descriptions::kVp9kSVCHWDecodingName,
      flag_descriptions::kVp9kSVCHWDecodingDescription, kOsAll,

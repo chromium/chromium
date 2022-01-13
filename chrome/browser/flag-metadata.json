@@ -2057,6 +2057,14 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-global-vaapi-lock",
+    "owners": [
+      "jeffcchen",
+      "chromeos-gfx-video@google.com"
+    ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-google-srp-isolated-prerender-nsp",
     "owners": [ "//chrome/browser/prefetch/prefetch_proxy/OWNERS" ],
     "expiry_milestone": 95

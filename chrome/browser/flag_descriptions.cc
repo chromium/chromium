@@ -2565,6 +2565,11 @@ const char kVerticalSnapDescription[] =
     "This feature allows users to snap windows to top and bottom in portrait "
     "display orientation and maintains left/right snap for landscape display.";
 
+const char kGlobalVaapiLockName[] = "Global lock on the VA-API wrapper.";
+const char kGlobalVaapiLockDescription[] =
+    "Enable or disable the global VA-API lock for platforms and paths that "
+    "support controlling this.";
+
 const char kVp9kSVCHWDecodingName[] =
     "Hardware decode acceleration for k-SVC VP9";
 const char kVp9kSVCHWDecodingDescription[] =
