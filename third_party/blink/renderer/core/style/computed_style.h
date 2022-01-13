@@ -445,7 +445,9 @@ class ComputedStyle : public ComputedStyleBase,
       PseudoId,
       const AtomicString& pseudo_argument = g_null_atom) const;
   const ComputedStyle* AddCachedPseudoElementStyle(
-      scoped_refptr<const ComputedStyle>) const;
+      scoped_refptr<const ComputedStyle>,
+      PseudoId,
+      const AtomicString&) const;
   void ClearCachedPseudoElementStyles() const;
 
   // If this ComputedStyle is affected by animation/transitions, then the

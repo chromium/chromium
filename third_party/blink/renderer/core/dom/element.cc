@@ -5462,7 +5462,8 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
                                                     style_request);
   DCHECK(result);
   result->SetIsEnsuredInDisplayNone();
-  return element_style->AddCachedPseudoElementStyle(std::move(result));
+  return element_style->AddCachedPseudoElementStyle(
+      std::move(result), pseudo_element_specifier, pseudo_argument);
 }
 
 bool Element::HasDisplayContentsStyle() const {
@@ -5819,8 +5820,10 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
 
   scoped_refptr<ComputedStyle> result = UncachedStyleForPseudoElement(
       StyleRequest(pseudo_id, style, pseudo_argument));
-  if (result)
-    return style->AddCachedPseudoElementStyle(std::move(result));
+  if (result) {
+    return style->AddCachedPseudoElementStyle(std::move(result), pseudo_id,
+                                              pseudo_argument);
+  }
   return nullptr;
 }
 

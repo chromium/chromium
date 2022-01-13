@@ -4163,7 +4163,7 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
               first_line_block->GetUncachedPseudoElementStyle(
                   StyleRequest(kPseudoIdFirstLine, Style()))) {
         return StyleRef().AddCachedPseudoElementStyle(
-            std::move(first_line_style));
+            std::move(first_line_style), kPseudoIdFirstLine, g_null_atom);
       }
     }
   } else if (!IsAnonymous() && IsLayoutInline() &&
@@ -4180,7 +4180,8 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
               GetUncachedPseudoElementStyle(StyleRequest(
                   kPseudoIdFirstLineInherited, parent_first_line_style))) {
         return StyleRef().AddCachedPseudoElementStyle(
-            std::move(first_line_style));
+            std::move(first_line_style), kPseudoIdFirstLineInherited,
+            g_null_atom);
       }
     }
   }

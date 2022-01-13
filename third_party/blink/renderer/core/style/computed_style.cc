@@ -586,9 +586,16 @@ bool ComputedStyle::CachedPseudoElementStylesDependOnFontMetrics() const {
 }
 
 const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
-    scoped_refptr<const ComputedStyle> pseudo) const {
+    scoped_refptr<const ComputedStyle> pseudo,
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) const {
   DCHECK(pseudo);
-  DCHECK_GT(pseudo->StyleType(), kPseudoIdNone);
+
+  // Confirm that the styles being cached are for the (PseudoId,argument) that
+  // the caller intended (and presumably had checked was not present).
+  DCHECK_EQ(static_cast<unsigned>(pseudo->StyleType()),
+            static_cast<unsigned>(pseudo_id));
+  DCHECK_EQ(pseudo->PseudoArgument(), pseudo_argument);
 
   // The pseudo style cache assumes that only one entry will be added for any
   // any given (PseudoId,argument). Adding more than one entry is a bug, even
