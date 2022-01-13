@@ -50,8 +50,12 @@ design docs should follow the process at
 
 ## Legal stuff
 
-All contributors must complete the contributor license agreement. For
-individual contributors, please complete the [Individual Contributor License
+All contributors must have valid Gerrit/Google accounts (which means you must
+be [old enough to manage your own
+account](https://support.google.com/accounts/answer/1350409)) and complete the
+contributor license agreement.
+
+For individual contributors, please complete the [Individual Contributor License
 Agreement][individual-cla] online. Corporate contributors must fill out the
 [Corporate Contributor License Agreement][corporate-cla] and send it to us as
 described on that page.
