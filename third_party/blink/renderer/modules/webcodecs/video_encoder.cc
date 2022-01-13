@@ -452,8 +452,13 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
   return VerifyCodecSupportStatic(config, &exception_state);
 }
 
-void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
-                                    bool is_hw_accelerated) {
+void VideoEncoder::OnMediaEncoderCreated(std::string encoder_name,
+                                         bool is_hw_accelerated) {
+  if (is_hw_accelerated)
+    ApplyCodecPressure();
+  else
+    ReleaseCodecPressure();
+
   // TODO(https://crbug.com/1139089) : Add encoder properties.
   media::MediaLog* log = logger_->log();
 
@@ -511,16 +516,16 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
   switch (codec) {
     case media::VideoCodec::kAV1:
       result = CreateAv1VideoEncoder();
-      self->UpdateEncoderLog("Av1VideoEncoder", false);
+      self->OnMediaEncoderCreated("Av1VideoEncoder", false);
       break;
     case media::VideoCodec::kVP8:
     case media::VideoCodec::kVP9:
       result = CreateVpxVideoEncoder();
-      self->UpdateEncoderLog("VpxVideoEncoder", false);
+      self->OnMediaEncoderCreated("VpxVideoEncoder", false);
       break;
     case media::VideoCodec::kH264:
       result = CreateOpenH264VideoEncoder();
-      self->UpdateEncoderLog("OpenH264VideoEncoder", false);
+      self->OnMediaEncoderCreated("OpenH264VideoEncoder", false);
       break;
     default:
       break;
@@ -538,13 +543,13 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
       auto result = CreateAcceleratedVideoEncoder(
           config.profile, config.options, gpu_factories);
       if (result)
-        UpdateEncoderLog("AcceleratedVideoEncoder", true);
+        OnMediaEncoderCreated("AcceleratedVideoEncoder", true);
       return result;
     }
     case HardwarePreference::kNoPreference:
       if (auto result = CreateAcceleratedVideoEncoder(
               config.profile, config.options, gpu_factories)) {
-        UpdateEncoderLog("AcceleratedVideoEncoder", true);
+        OnMediaEncoderCreated("AcceleratedVideoEncoder", true);
         return std::make_unique<media::VideoEncoderFallback>(
             std::move(result),
             ConvertToBaseOnceCallback(CrossThreadBindOnce(

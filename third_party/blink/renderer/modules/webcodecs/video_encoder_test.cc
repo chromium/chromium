@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 
+#include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -25,6 +26,50 @@ namespace blink {
 
 namespace {
 
+using testing::_;
+using testing::Return;
+using testing::Unused;
+
+class FakeVideoEncoder : public VideoEncoder {
+ public:
+  FakeVideoEncoder(ScriptState* script_state,
+                   const VideoEncoderInit* init,
+                   ExceptionState& exception_state)
+      : VideoEncoder(script_state, init, exception_state) {}
+  ~FakeVideoEncoder() override = default;
+
+  void SetupMockEncoderCreation(bool is_hw_accelerated,
+                                base::RepeatingClosure quit_closure) {
+    next_mock_encoder_ = std::make_unique<media::MockVideoEncoder>();
+    mock_encoder_is_hw_ = is_hw_accelerated;
+    SetupExpectations(quit_closure);
+  }
+
+ private:
+  void SetupExpectations(base::RepeatingClosure quit_closure) {
+    EXPECT_CALL(*next_mock_encoder_, Initialize(_, _, _, _))
+        .WillOnce([quit_closure](Unused, Unused, Unused,
+                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+          base::SequencedTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(done_cb),
+                                        media::EncoderStatus::Codes::kOk));
+          base::SequencedTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, std::move(quit_closure));
+        });
+  }
+
+  std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
+      const ParsedConfig& config,
+      media::GpuVideoAcceleratorFactories* gpu_factories) override {
+    EXPECT_TRUE(next_mock_encoder_);
+    OnMediaEncoderCreated("MockEncoderName", mock_encoder_is_hw_);
+    return std::move(next_mock_encoder_);
+  }
+
+  bool mock_encoder_is_hw_;
+  std::unique_ptr<media::MockVideoEncoder> next_mock_encoder_;
+};
+
 class VideoEncoderTest : public testing::Test {
  public:
   VideoEncoderTest() = default;
@@ -44,6 +89,13 @@ VideoEncoder* CreateEncoder(ScriptState* script_state,
                             ExceptionState& exception_state) {
   return MakeGarbageCollected<VideoEncoder>(script_state, init,
                                             exception_state);
+}
+
+FakeVideoEncoder* CreateFakeEncoder(ScriptState* script_state,
+                                    const VideoEncoderInit* init,
+                                    ExceptionState& exception_state) {
+  return MakeGarbageCollected<FakeVideoEncoder>(script_state, init,
+                                                exception_state);
 }
 
 VideoEncoderInit* CreateInit(v8::Local<v8::Function> output_callback,
@@ -130,8 +182,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
 
   // Create a video encoder.
   auto* init =
-      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectCall());
-  auto* encoder = CreateEncoder(script_state, init, es);
+      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectNoCall());
+  auto* encoder = CreateFakeEncoder(script_state, init, es);
   ASSERT_FALSE(es.HadException());
 
   // Simulate backgrounding to enable reclamation.
@@ -141,40 +193,35 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
     DCHECK(encoder->is_backgrounded_for_testing());
   }
 
+  // Make sure VideoEncoder doesn't apply pressure by default.
+  EXPECT_FALSE(encoder->is_applying_codec_pressure());
+
   auto* config = CreateConfig();
-  encoder->configure(config, es);
-  ASSERT_FALSE(es.HadException());
   {
-    // We need this to make sure that configuration has completed.
-    auto promise = encoder->flush(es);
-    ScriptPromiseTester tester(script_state, promise);
-    tester.WaitUntilSettled();
-    ASSERT_TRUE(tester.IsFulfilled());
+    base::RunLoop run_loop;
+    encoder->SetupMockEncoderCreation(true, run_loop.QuitClosure());
+
+    encoder->configure(config, es);
+    ASSERT_FALSE(es.HadException());
+    run_loop.Run();
   }
 
-  // The encoder should be active, for reclamation purposes.
-  ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
+  // Make sure VideoEncoders apply pressure when configured with a HW encoder.
+  EXPECT_TRUE(encoder->is_applying_codec_pressure());
 
-  // Resetting the encoder should prevent codec reclamation, silently.
-  encoder->reset(es);
-  ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
-
-  // Reconfiguring the encoder should restart the reclamation timer.
-  encoder->configure(config, es);
-  ASSERT_FALSE(es.HadException());
+  // Change codec to avoid a pure reconfigure.
+  config->setCodec("avc1.42001E");
   {
-    // We need this to make sure that configuration has completed.
-    auto promise = encoder->flush(es);
-    ScriptPromiseTester tester(script_state, promise);
-    tester.WaitUntilSettled();
-    ASSERT_TRUE(tester.IsFulfilled());
+    base::RunLoop run_loop;
+    encoder->SetupMockEncoderCreation(false, run_loop.QuitClosure());
+
+    encoder->configure(config, es);
+    ASSERT_FALSE(es.HadException());
+    run_loop.Run();
   }
 
-  ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
-
-  // Reclaiming a configured encoder should call the error callback.
-  encoder->SimulateCodecReclaimedForTesting();
-  ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
+  // Make sure the pressure is released when reconfigured with a SW encoder.
+  EXPECT_FALSE(encoder->is_applying_codec_pressure());
 }
 
 }  // namespace

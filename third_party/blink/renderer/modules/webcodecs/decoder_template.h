@@ -42,8 +42,7 @@ template <typename Traits>
 class MODULES_EXPORT DecoderTemplate
     : public ScriptWrappable,
       public ActiveScriptWrappable<DecoderTemplate<Traits>>,
-      public ReclaimableCodec,
-      public ExecutionContextLifecycleObserver {
+      public ReclaimableCodec {
  public:
   typedef typename Traits::ConfigType ConfigType;
   typedef typename Traits::MediaConfigType MediaConfigType;
@@ -93,10 +92,10 @@ class MODULES_EXPORT DecoderTemplate
   // Sets the HardwarePreference on the |decoder_|.
   // The default implementation does nothing and must be overridden by derived
   // classes if needed.
-  // Decoder
   virtual void SetHardwarePreference(HardwarePreference preference);
 
-  MediaDecoderType* decoder() { return decoder_.get(); }
+  // Virtual for UTs.
+  virtual MediaDecoderType* decoder() { return decoder_.get(); }
 
   // Convert a chunk to a DecoderBuffer. You can assume that the last
   // configuration sent to MakeMediaConfig() is the active configuration for

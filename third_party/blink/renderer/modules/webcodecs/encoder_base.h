@@ -35,8 +35,7 @@ template <typename Traits>
 class MODULES_EXPORT EncoderBase
     : public ScriptWrappable,
       public ActiveScriptWrappable<EncoderBase<Traits>>,
-      public ReclaimableCodec,
-      public ExecutionContextLifecycleObserver {
+      public ReclaimableCodec {
  public:
   using InitType = typename Traits::Init;
   using ConfigType = typename Traits::Config;

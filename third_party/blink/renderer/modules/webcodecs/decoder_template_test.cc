@@ -149,12 +149,12 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
 
 #if defined(OS_LINUX) && defined(THREAD_SANITIZER)
 // https://crbug.com/1247967
-#define MAYBE_CodecReclamation DISABLED_CodecReclamation
+#define MAYBE_NoPressureByDefault DISABLED_NoPressureByDefault
 #else
-#define MAYBE_CodecReclamation CodecReclamation
+#define MAYBE_NoPressureByDefault NoPressureByDefault
 #endif
-// Ensures codecs can be reclaimed in a configured or unconfigured state.
-TYPED_TEST(DecoderTemplateTest, MAYBE_CodecReclamation) {
+// Ensures codecs do not apply reclamation pressure by default.
+TYPED_TEST(DecoderTemplateTest, MAYBE_NoPressureByDefault) {
   V8TestingScope v8_scope;
 
   // Create a decoder.
@@ -162,40 +162,17 @@ TYPED_TEST(DecoderTemplateTest, MAYBE_CodecReclamation) {
   auto* decoder =
       this->CreateDecoder(v8_scope.GetScriptState(),
                           this->CreateInit(mock_function.ExpectNoCall(),
-                                           mock_function.ExpectCall()),
+                                           mock_function.ExpectNoCall()),
                           v8_scope.GetExceptionState());
   ASSERT_TRUE(decoder);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
-
-  // Simulate backgrounding to enable reclamation.
-  if (!decoder->is_backgrounded_for_testing()) {
-    decoder->SimulateLifecycleStateForTesting(
-        scheduler::SchedulingLifecycleState::kHidden);
-    DCHECK(decoder->is_backgrounded_for_testing());
-  }
 
   // Configure the decoder.
   decoder->configure(this->CreateConfig(), v8_scope.GetExceptionState());
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
-  ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
-
-  // Resets count as activity for decoders.
-  decoder->reset(v8_scope.GetExceptionState());
-  ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
-
-  // Reclaiming a reset decoder should not call the error callback.
-  decoder->SimulateCodecReclaimedForTesting();
-  ASSERT_FALSE(decoder->IsReclamationTimerActiveForTesting());
-
-  // Configure the decoder once more.
-  decoder->configure(this->CreateConfig(), v8_scope.GetExceptionState());
-  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
-  ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
-
-  // Reclaiming a configured decoder should call the error callback.
-  decoder->SimulateCodecReclaimedForTesting();
-  ASSERT_FALSE(decoder->IsReclamationTimerActiveForTesting());
+  // Codecs shouldn't apply pressure by default.
+  ASSERT_FALSE(decoder->is_applying_codec_pressure());
 }
 
 }  // namespace

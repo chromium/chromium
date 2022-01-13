@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -25,12 +26,39 @@ class DOMException;
 extern const MODULES_EXPORT base::Feature kReclaimInactiveWebCodecs;
 extern const MODULES_EXPORT base::Feature kOnlyReclaimBackgroundWebCodecs;
 
-class MODULES_EXPORT ReclaimableCodec : public GarbageCollectedMixin {
+class MODULES_EXPORT ReclaimableCodec
+    : public ExecutionContextLifecycleObserver {
  public:
-  explicit ReclaimableCodec(ExecutionContext*);
+  // Use 1.5 minutes since some RDP clients are only ticking at 1 FPM.
+  static constexpr base::TimeDelta kInactivityReclamationThreshold =
+      base::Seconds(90);
+
+  enum class CodecType {
+    kDecoder,
+    kEncoder,
+  };
+
+  ReclaimableCodec(CodecType, ExecutionContext*);
+  ~ReclaimableCodec() override = default;
 
   // GarbageCollectedMixin override.
   void Trace(Visitor*) const override;
+
+  // Apply or release pressure, if this codec is holding on to constrained
+  // resources.
+  void ApplyCodecPressure();
+  void ReleaseCodecPressure();
+
+  // Notified when throttling state is changed. May be called consecutively
+  // with the same value.
+  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState);
+
+  bool is_applying_codec_pressure() const { return is_applying_pressure_; }
+
+  // Test support.
+  void SimulateCodecReclaimedForTesting();
+  void SimulateActivityTimerFiredForTesting();
+  void SimulateLifecycleStateForTesting(scheduler::SchedulingLifecycleState);
 
   bool IsReclamationTimerActiveForTesting() {
     return activity_timer_.IsActive();
@@ -38,48 +66,44 @@ class MODULES_EXPORT ReclaimableCodec : public GarbageCollectedMixin {
 
   bool is_backgrounded_for_testing() { return is_backgrounded_; }
 
-  void SimulateCodecReclaimedForTesting();
-  void SimulateActivityTimerFiredForTesting();
-  void SimulateLifecycleStateForTesting(scheduler::SchedulingLifecycleState);
-
   void set_tick_clock_for_testing(const base::TickClock* clock) {
     tick_clock_ = clock;
   }
 
-  // Use 1.5 minutes since some RDP clients are only ticking at 1 FPM.
-  static constexpr base::TimeDelta kInactivityReclamationThreshold =
-      base::Seconds(90);
-  static constexpr base::TimeDelta kTimerPeriod =
-      kInactivityReclamationThreshold / 2;
-
-  // Notified when throttling state is changed. May be called consecutively
-  // with the same value.
-  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState);
-
  protected:
   // Pushes back the time at which |this| can be reclaimed due to inactivity.
-  // Starts a inactivity reclamation timer, if it isn't already running.
   void MarkCodecActive();
-
-  // Called when a codec should no longer be reclaimed, such as when it is not
-  // holding on to any resources.
-  //
-  // Calling MarkCodecActive() will automatically unpause reclamation.
-  void PauseCodecReclamation();
 
   virtual void OnCodecReclaimed(DOMException*) = 0;
 
+  base::TimeTicks last_activity_for_testing() const { return last_activity_; }
+
  private:
-  void ActivityTimerFired(TimerBase*);
-  void StartTimer();
-  void PauseCodecReclamationInternal();
+  // Starts the idle reclamation timer if all preconditions are met, or stops it
+  // otherwise. Called when any of the following criteria change:
+  //   - |this| applies/releases codec pressure.
+  //   - |this|'s background status changes.
+  void OnReclamationPreconditionsUpdated();
+
+  bool AreReclamationPreconditionsMet();
+
+  void StartIdleReclamationTimer();
+  void StopIdleReclamationTimer();
+
+  void OnActivityTimerFired(TimerBase*);
 
   // This is used to make sure that there are two consecutive ticks of the
   // timer, before we reclaim for inactivity. This prevents immediately
   // reclaiming otherwise active codecs, right after a page suspended/resumed.
   bool last_tick_was_inactive_ = false;
 
+  // Whether this codec is holding on to platform resources.
+  bool is_applying_pressure_ = false;
+
   const base::TickClock* tick_clock_;
+
+  // Period of time after which a codec is considered to be inactive.
+  base::TimeDelta inactivity_threshold_;
 
   base::TimeTicks last_activity_;
   HeapTaskRunnerTimer<ReclaimableCodec> activity_timer_;
@@ -88,10 +112,6 @@ class MODULES_EXPORT ReclaimableCodec : public GarbageCollectedMixin {
   // This includes being in bg of tab strip, minimized, or (depending on OS)
   // covered by other windows.
   bool is_backgrounded_ = false;
-
-  // True if PauseCodecReclamation() has been called more recently than
-  // MarkCodecActive(), or if the codec is already reclaimed.
-  bool is_reclamation_paused_ = true;
 
   // Handle to unhook from FrameOrWorkerScheduler upon destruction.
   std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle>

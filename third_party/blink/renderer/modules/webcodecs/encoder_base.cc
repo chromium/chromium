@@ -56,8 +56,8 @@ template <typename Traits>
 EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
                                  const InitType* init,
                                  ExceptionState& exception_state)
-    : ReclaimableCodec(ExecutionContext::From(script_state)),
-      ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ReclaimableCodec(ReclaimableCodec::CodecType::kEncoder,
+                       ExecutionContext::From(script_state)),
       state_(V8CodecState::Enum::kUnconfigured),
       script_state_(script_state),
       trace_counter_id_(g_sequence_num_for_counters.GetNext()) {
@@ -203,10 +203,6 @@ void EncoderBase<Traits>::reset(ExceptionState& exception_state) {
 
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
   ResetInternal();
-
-  // This codec isn't holding on to any resources, and doesn't need to be
-  // reclaimed.
-  PauseCodecReclamation();
 }
 
 template <typename Traits>
@@ -230,6 +226,10 @@ void EncoderBase<Traits>::ResetInternal() {
   // the call stack and continu executing code belonging to deleted
   // |media_encoder_|.
   callback_runner_->DeleteSoon(FROM_HERE, std::move(media_encoder_));
+
+  // This codec isn't holding on to any resources, and doesn't need to be
+  // reclaimed.
+  ReleaseCodecPressure();
 }
 
 template <typename Traits>
@@ -245,7 +245,6 @@ void EncoderBase<Traits>::HandleError(DOMException* ex) {
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
   ResetInternal();
-  PauseCodecReclamation();
 
   // Errors are permanent. Shut everything down.
   error_callback_.Clear();
