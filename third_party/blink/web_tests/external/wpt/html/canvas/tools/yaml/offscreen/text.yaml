@@ -1303,6 +1303,24 @@
 
     t.done();
 
+- name: 2d.text.drawing.style.invalid.spacing
+  desc: Testing letter spacing and word spacing with invalid units
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+
+    function test_word_spacing(value) {
+      ctx.wordSpacing = value;
+      ctx.letterSpacing = value;
+      @assert ctx.wordSpacing === '0px';
+      @assert ctx.letterSpacing === '0px';
+    }
+    @nonfinite test_word_spacing(< '0s' '1min' '1deg' '1pp'>);
+
+    t.done();
+
 - name: 2d.text.drawing.style.letterSpacing.measure
   desc: Testing letter spacing and word spacing
   testing:

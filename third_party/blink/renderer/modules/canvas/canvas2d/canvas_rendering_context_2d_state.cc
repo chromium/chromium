@@ -56,9 +56,12 @@ bool StringToNumWithUnit(String spacing,
   const CSSParserToken* result = range.begin();
   range.Consume();
   // If there is more than 1 dimension token or |spacing| is not a valid
-  // dimension token, return immediately.
-  if (!range.AtEnd() || result->GetType() != kDimensionToken)
+  // dimension token, or unit is not a valid CSS length unit, return
+  // immediately.
+  if (!range.AtEnd() || result->GetType() != kDimensionToken ||
+      !CSSPrimitiveValue::IsLength(result->GetUnitType())) {
     return false;
+  }
   *number_spacing = result->NumericValue();
   *unit = result->GetUnitType();
   return true;
