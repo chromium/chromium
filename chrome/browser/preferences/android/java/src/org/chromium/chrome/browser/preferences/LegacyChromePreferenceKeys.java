@@ -103,6 +103,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED,
                 ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION,
                 ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH,
+                ChromePreferenceKeys.LOCALE_MANAGER_MISSING_TIMEZONES,
                 ChromePreferenceKeys.LOCALE_MANAGER_PARTNER_PROMO_KEYWORD_SELECTED,
                 ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN,
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,

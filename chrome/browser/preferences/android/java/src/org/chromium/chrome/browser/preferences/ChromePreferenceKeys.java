@@ -541,6 +541,8 @@ public final class ChromePreferenceKeys {
             "Chrome.CrashReporting.LastSessionApplicationState";
 
     public static final String LOCALE_MANAGER_AUTO_SWITCH = "LocaleManager_PREF_AUTO_SWITCH";
+    public static final String LOCALE_MANAGER_MISSING_TIMEZONES =
+            "com.android.chrome.MISSING_TIMEZONES";
     public static final String LOCALE_MANAGER_PARTNER_PROMO_KEYWORD_SELECTED =
             "LocaleManager_PARTNER_PROMO_SELECTED_KEYWORD";
     public static final String LOCALE_MANAGER_PROMO_SHOWN = "LocaleManager_PREF_PROMO_SHOWN";
