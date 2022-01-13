@@ -43,7 +43,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 15;
   static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 16;
   static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 17;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_FEEDBACK = 18;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
@@ -82,7 +81,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   void UngroupPressed(TabGroupHeader* header_view);
   void CloseGroupPressed();
   void MoveGroupToNewWindowPressed();
-  void SendFeedbackPressed();
 
   void OnBubbleClose();
 

@@ -182,18 +182,6 @@ class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
     dialog_model()->host()->Close();
   }
 
-  void SendFeedbackPressed() {
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_TabGroupBubble_SendFeedback"));
-    chrome::ShowFeedbackPage(
-        browser_, chrome::FeedbackSource::kFeedbackSourceDesktopTabGroups,
-        /*description_template=*/std::string(),
-        /*description_placeholder_text=*/std::string(),
-        /*category_tag=*/std::string(),
-        /*extra_diagnostics=*/std::string());
-    dialog_model()->host()->Close();
-  }
-
  private:
   const raw_ptr<const Browser> browser_;
   const tab_groups::TabGroupId group_;
@@ -580,18 +568,6 @@ void TabGroupEditorBubbleView::CloseGroupPressed() {
 
 void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
   browser_->tab_strip_model()->delegate()->MoveGroupToNewWindow(group_);
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-}
-
-void TabGroupEditorBubbleView::SendFeedbackPressed() {
-  base::RecordAction(
-      base::UserMetricsAction("TabGroups_TabGroupBubble_SendFeedback"));
-  chrome::ShowFeedbackPage(
-      browser_, chrome::FeedbackSource::kFeedbackSourceDesktopTabGroups,
-      /*description_template=*/std::string(),
-      /*description_placeholder_text=*/std::string(),
-      /*category_tag=*/std::string(),
-      /*extra_diagnostics=*/std::string());
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
