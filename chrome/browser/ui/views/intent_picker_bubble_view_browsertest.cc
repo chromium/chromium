@@ -363,6 +363,35 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerBubbleViewPrerenderingBrowserTest,
     testing::Values("", "noopener", "noreferrer", "nofollow"));
 
+class IntentPickerChipEnabledBrowserTest
+    : public IntentPickerBubbleViewBrowserTest {
+ public:
+  IntentPickerChipEnabledBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kLinkCapturingUiUpdate);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// When kLinkCapturingUiUpdate is enabled, clicking the Intent Picker icon
+// should open the app directly, without showing the bubble.
+IN_PROC_BROWSER_TEST_F(IntentPickerChipEnabledBrowserTest, SkipBubble) {
+  auto app_id = InstallTestWebApp(GetAppUrlHost(), GetAppScopePath());
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
+
+  ASSERT_TRUE(intent_picker_view->GetVisible());
+  intent_picker_view->ExecuteForTesting();
+
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+  ASSERT_FALSE(intent_picker_bubble());
+}
+
 class IntentPickerDialogTest : public DialogBrowserTest {
  public:
   IntentPickerDialogTest() = default;

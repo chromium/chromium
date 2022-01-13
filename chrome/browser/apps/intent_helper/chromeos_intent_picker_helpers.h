@@ -42,6 +42,11 @@ void OnIntentPickerClosedChromeOs(
     IntentPickerCloseReason close_reason,
     bool should_persist);
 
+void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
+                                       const GURL& url,
+                                       const std::string& launch_name,
+                                       PickerEntryType app_type);
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_

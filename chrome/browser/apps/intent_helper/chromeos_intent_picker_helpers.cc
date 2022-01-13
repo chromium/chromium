@@ -191,40 +191,48 @@ void OnIntentPickerClosedChromeOs(
   // e.g. due to the tab being closed. Keep count of this scenario so we can
   // stop the UI from showing after 2+ dismissals.
   if (entry_type == PickerEntryType::kUnknown &&
-      close_reason == IntentPickerCloseReason::DIALOG_DEACTIVATED) {
-    if (ui_auto_display_service) {
-      ui_auto_display_service->IncrementCounter(url);
-    }
+      close_reason == IntentPickerCloseReason::DIALOG_DEACTIVATED &&
+      ui_auto_display_service) {
+    ui_auto_display_service->IncrementCounter(url);
   }
 
   if (should_persist) {
-    // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
-    // after finding out the root cause.
-    if (launch_name.empty()) {
-      base::debug::DumpWithoutCrashing();
-    } else {
-      proxy->AddPreferredApp(launch_name, url);
-    }
+    DCHECK(!launch_name.empty());
+    proxy->AddPreferredApp(launch_name, url);
   }
 
   if (should_launch_app) {
-    if (entry_type == PickerEntryType::kWeb) {
-      web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
-    } else {
-      // TODO(crbug.com/853604): Distinguish the source from link and omnibox.
-      mojom::LaunchSource launch_source = mojom::LaunchSource::kFromLink;
-      proxy->LaunchAppWithUrl(
-          launch_name,
-          GetEventFlags(mojom::LaunchContainer::kLaunchContainerWindow,
-                        WindowOpenDisposition::NEW_WINDOW,
-                        /*prefer_container=*/true),
-          url, launch_source, apps::MakeWindowInfo(display::kDefaultDisplayId));
-      CloseOrGoBack(web_contents);
-    }
+    LaunchAppFromIntentPickerChromeOs(web_contents, url, launch_name,
+                                      entry_type);
   }
 
   IntentHandlingMetrics::RecordIntentPickerMetrics(entry_type, close_reason,
                                                    should_persist, show_state);
+}
+
+void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
+                                       const GURL& url,
+                                       const std::string& launch_name,
+                                       PickerEntryType app_type) {
+  DCHECK(!launch_name.empty());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
+
+  if (app_type == PickerEntryType::kWeb) {
+    web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
+  } else {
+    // TODO(crbug.com/853604): Distinguish the source from link and omnibox.
+    mojom::LaunchSource launch_source = mojom::LaunchSource::kFromLink;
+    proxy->LaunchAppWithUrl(
+        launch_name,
+        GetEventFlags(mojom::LaunchContainer::kLaunchContainerWindow,
+                      WindowOpenDisposition::NEW_WINDOW,
+                      /*prefer_container=*/true),
+        url, launch_source, apps::MakeWindowInfo(display::kDefaultDisplayId));
+    CloseOrGoBack(web_contents);
+  }
 }
 
 }  // namespace apps

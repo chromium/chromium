@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -58,6 +60,30 @@ std::vector<IntentPickerAppInfo> FindAppsForUrl(
   return apps;
 }
 
+void LaunchAppFromIntentPicker(content::WebContents* web_contents,
+                               const GURL& url,
+                               const std::string& launch_name,
+                               PickerEntryType app_type) {
+#if defined(OS_CHROMEOS)
+  LaunchAppFromIntentPickerChromeOs(web_contents, url, launch_name, app_type);
+#else
+  switch (app_type) {
+    case PickerEntryType::kWeb:
+      web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
+      break;
+    case PickerEntryType::kMacOs:
+#if defined(OS_MAC)
+      LaunchMacApp(url, launch_name);
+      break;
+#endif  // defined(OS_MAC)
+    case PickerEntryType::kArc:
+    case PickerEntryType::kDevice:
+    case PickerEntryType::kUnknown:
+      NOTREACHED();
+  }
+#endif  // defined(OS_CHROMEOS)
+}
+
 void OnIntentPickerClosed(
     content::WebContents* web_contents,
     IntentPickerAutoDisplayService* ui_auto_display_service,
@@ -73,30 +99,17 @@ void OnIntentPickerClosed(
 #else
   const bool should_launch_app =
       close_reason == apps::IntentPickerCloseReason::OPEN_APP;
-  switch (entry_type) {
-    case PickerEntryType::kWeb:
-      if (should_launch_app)
-        web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
-      break;
-    case apps::PickerEntryType::kUnknown:
-      // We reach here if the picker was closed without an app being chosen,
-      // e.g. due to the tab being closed. Keep count of this scenario so we can
-      // stop the UI from showing after 2+ dismissals.
-      if (close_reason == IntentPickerCloseReason::DIALOG_DEACTIVATED) {
-        if (ui_auto_display_service)
-          ui_auto_display_service->IncrementCounter(url);
-      }
-      break;
-    case PickerEntryType::kMacOs:
-#if defined(OS_MAC)
-      if (should_launch_app) {
-        LaunchMacApp(url, launch_name);
-      }
-      break;
-#endif  // defined(OS_MAC)
-    case PickerEntryType::kArc:
-    case PickerEntryType::kDevice:
-      NOTREACHED();
+  if (should_launch_app) {
+    LaunchAppFromIntentPicker(web_contents, url, launch_name, entry_type);
+  }
+
+  if (entry_type == PickerEntryType::kUnknown &&
+      close_reason == IntentPickerCloseReason::DIALOG_DEACTIVATED &&
+      ui_auto_display_service) {
+    // We reach here if the picker was closed without an app being chosen, e.g.
+    // due to the tab being closed. Keep count of this scenario so we can stop
+    // the UI from showing after 2+ dismissals.
+    ui_auto_display_service->IncrementCounter(url);
   }
 #endif  // defined(OS_CHROMEOS)
 }
@@ -163,6 +176,13 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
   apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
       apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconClicked);
 #endif
+
+  if (apps.size() == 1 &&
+      base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+    LaunchAppFromIntentPicker(web_contents, url, apps[0].launch_name,
+                              apps[0].type);
+    return;
+  }
 
   IntentPickerTabHelper::LoadAppIcons(
       web_contents, std::move(apps),

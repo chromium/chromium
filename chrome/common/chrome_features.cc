@@ -685,7 +685,7 @@ const base::Feature kKernelnextVMs{"KernelnextVMs",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID)
 const base::Feature kLinkCapturingUiUpdate{"LinkCapturingUiUpdate",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
