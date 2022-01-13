@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
@@ -173,7 +172,7 @@ class RemotingSenderTest : public ::testing::Test {
     return remoting_sender_->flow_restart_pending_;
   }
 
-  bool ProduceDataChunk(size_t offset, size_t size) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool ProduceDataChunk(size_t offset, size_t size) {
     std::vector<uint8_t> fake_chunk(size);
     for (size_t i = 0; i < size; ++i)
       fake_chunk[i] = static_cast<uint8_t>(offset + i);

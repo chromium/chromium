@@ -220,7 +220,7 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
   // immediate side effects, such as the scheduling of an auto-reload timer.
   //
   // Return true if the navigation was successful, or false if it failed.
-  bool NavigateMainFrame(const GURL& url) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool NavigateMainFrame(const GURL& url) {
     content::TestNavigationManager navigation(shell()->web_contents(), url);
     shell()->web_contents()->GetController().LoadURL(
         url, content::Referrer(), ui::PAGE_TRANSITION_TYPED,

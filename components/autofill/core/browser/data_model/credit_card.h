@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
@@ -184,8 +183,8 @@ class CreditCard : public AutofillDataModel {
   // two wouldn't result in unverified data overwriting verified data,
   // overwrites |this| card's data with the data in |imported_card|. Returns
   // true if the card numbers match, false otherwise.
-  bool UpdateFromImportedCard(const CreditCard& imported_card,
-                              const std::string& app_locale) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateFromImportedCard(const CreditCard& imported_card,
+                                            const std::string& app_locale);
 
   // Comparison for Sync.  Returns 0 if the card is the same as |this|, or < 0,
   // or > 0 if it is different.  The implied ordering can be used for culling

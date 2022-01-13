@@ -267,8 +267,7 @@ class PersonalDataManagerTestBase {
     WaitForOnPersonalDataChangedRepeatedly();
   }
 
-  bool TurnOnSyncFeature(PersonalDataManager* personal_data)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TurnOnSyncFeature(PersonalDataManager* personal_data) {
     sync_service_.SetHasSyncConsent(true);
     if (!sync_service_.IsSyncFeatureEnabled())
       return false;

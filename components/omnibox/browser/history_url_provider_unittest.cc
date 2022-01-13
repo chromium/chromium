@@ -208,7 +208,7 @@ class HistoryURLProviderTest : public testing::Test,
   void TearDown() override;
 
   // Does the real setup.
-  bool SetUpImpl(bool create_history_db) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetUpImpl(bool create_history_db);
 
   // Fills test data into the history system.
   void FillData();

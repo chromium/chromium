@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
@@ -114,9 +113,9 @@ class BookmarkRemoteUpdatesHandler {
   // entity (if any) as a result of resolving the conflict, which is often the
   // same as the input |tracked_entity|, but may also be different, including
   // null (if the conflict led to untracking).
-  const SyncedBookmarkTracker::Entity* ProcessConflict(
+  [[nodiscard]] const SyncedBookmarkTracker::Entity* ProcessConflict(
       const syncer::UpdateResponseData& update,
-      const SyncedBookmarkTracker::Entity* tracked_entity) WARN_UNUSED_RESULT;
+      const SyncedBookmarkTracker::Entity* tracked_entity);
 
   // Recursively removes the entities corresponding to |node| and its children
   // from |bookmark_tracker_|.

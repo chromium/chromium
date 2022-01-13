@@ -252,7 +252,7 @@ void DetermineDeviceCertificatePolicy(
 // Checks properties on the target certificate.
 //
 //   * The Key Usage must include Digital Signature
-WARN_UNUSED_RESULT bool CheckTargetCertificate(
+[[nodiscard]] bool CheckTargetCertificate(
     const net::ParsedCertificate* cert,
     std::unique_ptr<CertVerificationContext>* context) {
   // Get the Key Usage extension.

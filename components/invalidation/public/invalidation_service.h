@@ -82,9 +82,9 @@ class InvalidationService {
   // InvalidationHandler function returns false.
   //
   // Subscribed topics are persisted across restarts of sync.
-  virtual bool UpdateInterestedTopics(InvalidationHandler* handler,
-                                      const TopicSet& topics)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool UpdateInterestedTopics(
+      InvalidationHandler* handler,
+      const TopicSet& topics) = 0;
 
   // Stops sending notifications to |handler|.  |handler| must not be NULL, and
   // it must already be registered.  Note that this doesn't unregister the IDs

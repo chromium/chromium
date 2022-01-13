@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -542,13 +541,12 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Returns the field corresponding to |form| and |field| that can be
   // autofilled. Returns NULL if the field cannot be autofilled.
-  AutofillField* GetAutofillField(const FormData& form,
-                                  const FormFieldData& field)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
+                                                const FormFieldData& field);
 
   // Returns true if any form in the field corresponds to an address
   // |FieldTypeGroup|.
-  bool FormHasAddressField(const FormData& form) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool FormHasAddressField(const FormData& form);
 
   // Returns Suggestions corresponding to both the |autofill_field| type and
   // stored profiles whose values match the contents of |field|. |form| stores

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -108,7 +107,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return frame_timing_details_;
   }
 
-  FrameTimingDetailsMap TakeFrameTimingDetailsMap() WARN_UNUSED_RESULT;
+  [[nodiscard]] FrameTimingDetailsMap TakeFrameTimingDetailsMap();
 
   // Viz hit-test setup is only called when |is_root_| is true (except on
   // android webview).

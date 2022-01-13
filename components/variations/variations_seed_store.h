@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -66,9 +65,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // problem with loading, clears the seed pref value and returns false. If
   // successful, fills the the outparams with the loaded data and returns true.
   // Virtual for testing.
-  virtual bool LoadSeed(VariationsSeed* seed,
-                        std::string* seed_data,
-                        std::string* base64_seed_signature) WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool LoadSeed(VariationsSeed* seed,
+                                      std::string* seed_data,
+                                      std::string* base64_seed_signature);
 
   // Stores the given seed |data| (serialized protobuf) to local state, along
   // with a base64-encoded digital signature for seed and the date when it was
@@ -81,13 +80,13 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Additionally, stores the |country_code| that was received with the seed in
   // a separate pref. On success and if |parsed_seed| is not NULL, |parsed_seed|
   // will be filled with the de-serialized decoded protobuf.
-  bool StoreSeedData(const std::string& data,
-                     const std::string& base64_seed_signature,
-                     const std::string& country_code,
-                     const base::Time& date_fetched,
-                     bool is_delta_compressed,
-                     bool is_gzip_compressed,
-                     VariationsSeed* parsed_seed) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StoreSeedData(const std::string& data,
+                                   const std::string& base64_seed_signature,
+                                   const std::string& country_code,
+                                   const base::Time& date_fetched,
+                                   bool is_delta_compressed,
+                                   bool is_gzip_compressed,
+                                   VariationsSeed* parsed_seed);
 
   // Loads the safe variations seed data from local state into |seed| and
   // updates any relevant fields in |client_state|. Returns
@@ -99,9 +98,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // of the safe seed pref values.
   //
   // Virtual for testing.
-  virtual LoadSeedResult LoadSafeSeed(VariationsSeed* seed,
-                                      ClientFilterableState* client_state)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual LoadSeedResult LoadSafeSeed(
+      VariationsSeed* seed,
+      ClientFilterableState* client_state);
 
   // Stores the given |seed_data| (a serialized protobuf) to local state as a
   // safe seed, along with a base64-encoded digital signature for seed and any
@@ -183,66 +182,66 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // loading the seed was successful.
   // Side-effect: Upon any failure to read or validate the safe seed, clears all
   // of the pref values for the seed. This occurs iff the method returns false.
-  LoadSeedResult LoadSeedImpl(SeedType seed_type,
-                              VariationsSeed* seed,
-                              std::string* seed_data,
-                              std::string* base64_seed_signature)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] LoadSeedResult LoadSeedImpl(SeedType seed_type,
+                                            VariationsSeed* seed,
+                                            std::string* seed_data,
+                                            std::string* base64_seed_signature);
 
   // Reads the variations seed data from prefs into |seed_data|, and returns the
   // result of the load. The value stored into |seed_data| should only be used
   // if the result is SUCCESS. Reads either the latest or the safe seed,
   // according to the specified |seed_type|.
   // Side-effect: If the read fails, clears the prefs associated with the seed.
-  LoadSeedResult ReadSeedData(SeedType seed_type,
-                              std::string* seed_data) WARN_UNUSED_RESULT;
+  [[nodiscard]] LoadSeedResult ReadSeedData(SeedType seed_type,
+                                            std::string* seed_data);
 
   // Resolves a |delta_bytes| against the latest seed.
   // Returns success or an error, populating |seed_bytes| on success.
-  StoreSeedResult ResolveDelta(const std::string& delta_bytes,
-                               std::string* seed_bytes) WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult ResolveDelta(const std::string& delta_bytes,
+                                             std::string* seed_bytes);
 
   // Resolves instance manipulations applied to received data.
   // Returns success or an error, populating |seed_bytes| on success.
-  StoreSeedResult ResolveInstanceManipulations(const std::string& data,
-                                               const InstanceManipulations& im,
-                                               std::string* seed_bytes)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult ResolveInstanceManipulations(
+      const std::string& data,
+      const InstanceManipulations& im,
+      std::string* seed_bytes);
 
   // Validates that |seed_bytes| parses and matches |base64_seed_signature|.
   // Signature checking may be disabled via |signature_verification_enabled_|.
   // |seed_type| indicates the source of the seed for logging purposes.
   // |result| must be non-null, and will be populated on success.
   // Returns success or some error value.
-  StoreSeedResult ValidateSeedBytes(const std::string& seed_bytes,
-                                    const std::string& base64_seed_signature,
-                                    SeedType seed_type,
-                                    ValidatedSeed* result) WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult ValidateSeedBytes(
+      const std::string& seed_bytes,
+      const std::string& base64_seed_signature,
+      SeedType seed_type,
+      ValidatedSeed* result);
 
   // Gzip compresses and base64 encodes a validated seed.
   // Returns success or error and populates base64_seed_data on success.
-  StoreSeedResult CompressSeedBytes(const ValidatedSeed& validated,
-                                    std::string* base64_seed_data)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult CompressSeedBytes(
+      const ValidatedSeed& validated,
+      std::string* base64_seed_data);
 
   // Updates the latest seed with validated data.
-  StoreSeedResult StoreValidatedSeed(const ValidatedSeed& seed,
-                                     const std::string& country_code,
-                                     const base::Time& date_fetched)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult StoreValidatedSeed(
+      const ValidatedSeed& seed,
+      const std::string& country_code,
+      const base::Time& date_fetched);
 
   // Updates the safe seed with validated data.
-  StoreSeedResult StoreValidatedSafeSeed(
+  [[nodiscard]] StoreSeedResult StoreValidatedSafeSeed(
       const ValidatedSeed& seed,
       int seed_milestone,
       const ClientFilterableState& client_state,
-      base::Time seed_fetch_time) WARN_UNUSED_RESULT;
+      base::Time seed_fetch_time);
 
   // Applies a delta-compressed |patch| to |existing_data|, producing the result
   // in |output|. Returns whether the operation was successful.
-  static bool ApplyDeltaPatch(const std::string& existing_data,
-                              const std::string& patch,
-                              std::string* output) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool ApplyDeltaPatch(const std::string& existing_data,
+                                            const std::string& patch,
+                                            std::string* output);
 
   // The pref service used to persist the variations seed.
   raw_ptr<PrefService> local_state_;

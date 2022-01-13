@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ASSIST_RANKER_BINARY_CLASSIFIER_PREDICTOR_H_
 #define COMPONENTS_ASSIST_RANKER_BINARY_CLASSIFIER_PREDICTOR_H_
 
-#include "base/compiler_specific.h"
 #include "components/assist_ranker/base_predictor.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 
@@ -33,21 +32,19 @@ class BinaryClassifierPredictor : public BasePredictor {
   // Returns an new predictor instance with the given |config| and initialize
   // its model loader. The |request_context getter| is passed to the
   // predictor's model_loader which holds it as scoped_refptr.
-  static std::unique_ptr<BinaryClassifierPredictor> Create(
+  [[nodiscard]] static std::unique_ptr<BinaryClassifierPredictor> Create(
       const PredictorConfig& config,
       const base::FilePath& model_path,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      WARN_UNUSED_RESULT;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Fills in a boolean decision given a RankerExample. Returns false if a
   // prediction could not be made (e.g. the model is not loaded yet).
-  bool Predict(const RankerExample& example,
-               bool* prediction) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Predict(const RankerExample& example, bool* prediction);
 
   // Returns a score between 0 and 1. Returns false if a
   // prediction could not be made (e.g. the model is not loaded yet).
-  bool PredictScore(const RankerExample& example,
-                    float* prediction) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool PredictScore(const RankerExample& example,
+                                  float* prediction);
 
   // Validates that the loaded RankerModel is a valid BinaryClassifier model.
   static RankerModelStatus ValidateModel(const RankerModel& model);

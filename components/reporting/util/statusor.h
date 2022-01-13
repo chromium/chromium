@@ -60,7 +60,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "components/reporting/util/status.h"
@@ -216,7 +215,7 @@ class StatusOr {
   //
   // This method should only be called if this StatusOr object's status is OK
   // (i.e. a call to ok() returns true), otherwise this call will abort.
-  const T& WARN_UNUSED_RESULT ValueOrDie() const& {
+  [[nodiscard]] const T& ValueOrDie() const& {
     if (!ok()) {
       internal::StatusOrHelper::Crash(status_);
     }
@@ -227,7 +226,7 @@ class StatusOr {
   //
   // This method should only be called if this StatusOr object's status is OK
   // (i.e. a call to ok() returns true), otherwise this call will abort.
-  T& WARN_UNUSED_RESULT ValueOrDie() & {
+  [[nodiscard]] T& ValueOrDie() & {
     if (!ok()) {
       internal::StatusOrHelper::Crash(status_);
     }
@@ -240,7 +239,7 @@ class StatusOr {
   // (i.e. a call to ok() returns true), otherwise this call will abort. The
   // StatusOr object is invalidated after this call and will be updated to
   // contain a non-OK status with a |error::UNKNOWN| error code.
-  T WARN_UNUSED_RESULT ValueOrDie() && {
+  [[nodiscard]] T ValueOrDie() && {
     if (!ok()) {
       internal::StatusOrHelper::Crash(status_);
     }

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -92,7 +91,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   void RequestCopyOfOutput(Surface* surface);
   void ReleaseSurface();
 
-  absl::optional<FrameResult> TakeResult() WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<FrameResult> TakeResult();
 
   // For testing functionality that ensures that we have a valid frame.
   void CompleteSavedFrameForTesting();

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "components/assist_ranker/base_predictor.h"
 #include "components/assist_ranker/nn_classifier.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
@@ -34,22 +33,21 @@ class ClassifierPredictor : public BasePredictor {
   // Returns an new predictor instance with the given |config| and initialize
   // its model loader. The |request_context getter| is passed to the
   // predictor's model_loader which holds it as scoped_refptr.
-  static std::unique_ptr<ClassifierPredictor> Create(
+  [[nodiscard]] static std::unique_ptr<ClassifierPredictor> Create(
       const PredictorConfig& config,
       const base::FilePath& model_path,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      WARN_UNUSED_RESULT;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Performs inferencing on the specified RankerExample. The example is first
   // preprocessed using the model config. Returns false if a prediction could
   // not be made (e.g. the model is not loaded yet).
-  bool Predict(RankerExample example,
-               std::vector<float>* prediction) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Predict(RankerExample example,
+                             std::vector<float>* prediction);
 
   // Performs inferencing on the specified feature vector. Returns false if
   // a prediction could not be made.
-  bool Predict(const std::vector<float>& features,
-               std::vector<float>* prediction) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Predict(const std::vector<float>& features,
+                             std::vector<float>* prediction);
 
   // Validates that the loaded RankerModel is a valid BinaryClassifier model.
   static RankerModelStatus ValidateModel(const RankerModel& model);

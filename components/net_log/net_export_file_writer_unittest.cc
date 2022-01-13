@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -107,7 +106,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 }
 
 // Checks the "state" string of a NetExportFileWriter state.
-WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
+[[nodiscard]] ::testing::AssertionResult VerifyState(
     std::unique_ptr<base::DictionaryValue> state,
     const std::string& expected_state_string) {
   std::string actual_state_string;
@@ -127,7 +126,7 @@ WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
 // Checks all fields of a NetExportFileWriter state except possibly the
 // "captureMode" string; that field is only checked if
 // |expected_log_capture_mode_known| is true.
-WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
+[[nodiscard]] ::testing::AssertionResult VerifyState(
     std::unique_ptr<base::DictionaryValue> state,
     const std::string& expected_state_string,
     bool expected_log_exists,
@@ -167,7 +166,7 @@ WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
   return ::testing::AssertionSuccess();
 }
 
-WARN_UNUSED_RESULT ::testing::AssertionResult ReadCompleteLogFile(
+[[nodiscard]] ::testing::AssertionResult ReadCompleteLogFile(
     const base::FilePath& log_path,
     std::unique_ptr<base::DictionaryValue>* root) {
   DCHECK(!log_path.empty());
@@ -335,7 +334,7 @@ class NetExportFileWriterTest : public ::testing::Test {
     return test_callback.WaitForResult();
   }
 
-  WARN_UNUSED_RESULT ::testing::AssertionResult InitializeThenVerifyNewState(
+  [[nodiscard]] ::testing::AssertionResult InitializeThenVerifyNewState(
       bool expected_initialize_success,
       bool expected_log_exists) {
     file_writer_.Initialize();
@@ -368,7 +367,7 @@ class NetExportFileWriterTest : public ::testing::Test {
 
   // If |custom_log_path| is empty path, |file_writer_| will use its
   // default log path, which is cached in |default_log_path_|.
-  WARN_UNUSED_RESULT::testing::AssertionResult StartThenVerifyNewState(
+  [[nodiscard]] ::testing::AssertionResult StartThenVerifyNewState(
       const base::FilePath& custom_log_path,
       net::NetLogCaptureMode capture_mode,
       const std::string& expected_capture_mode_string,
@@ -410,7 +409,7 @@ class NetExportFileWriterTest : public ::testing::Test {
 
   // If |custom_log_path| is empty path, it's assumed the log file with be at
   // |default_log_path_|.
-  WARN_UNUSED_RESULT ::testing::AssertionResult StopThenVerifyNewStateAndFile(
+  [[nodiscard]] ::testing::AssertionResult StopThenVerifyNewStateAndFile(
       const base::FilePath& custom_log_path,
       std::unique_ptr<base::DictionaryValue> polled_data,
       const std::string& expected_capture_mode_string) {

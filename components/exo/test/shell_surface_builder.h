@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -43,7 +42,7 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetCentered();
 
   // once and the object cannot be used to create multiple windows.
-  std::unique_ptr<ShellSurface> BuildShellSurface() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<ShellSurface> BuildShellSurface();
 
   // Destroy's the root surface of the given 'shell_surface'.
   static void DestroyRootSurface(ShellSurfaceBase* shell_surface);

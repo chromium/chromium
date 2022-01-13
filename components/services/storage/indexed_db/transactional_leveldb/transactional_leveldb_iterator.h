@@ -72,16 +72,16 @@ class TransactionalLevelDBIterator {
   enum class Direction { kNext, kPrev };
   enum class IteratorState { kActive, kEvictedAndValid, kEvictedAndInvalid };
 
-  leveldb::Status WrappedIteratorStatus() WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status WrappedIteratorStatus();
 
   // Notifies the database of iterator usage and recreates iterator if needed.
   // If the iterator was previously evicted, this method returns the key that
   // was used, the status of reloading the iterator.
-  std::tuple<std::string, leveldb::Status> WillUseDBIterator(bool perform_seek)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::tuple<std::string, leveldb::Status> WillUseDBIterator(
+      bool perform_seek);
 
   // If this method fails, then iterator_ will be nullptr.
-  leveldb::Status ReloadIterator() WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status ReloadIterator();
 
   void NextPastScopesMetadata();
   void PrevPastScopesMetadata();

@@ -36,8 +36,8 @@ class SessionSyncServiceImpl : public SessionSyncService {
   OpenTabsUIDelegate* GetOpenTabsUIDelegate() override;
 
   // Allows client code to be notified when foreign sessions change.
-  base::CallbackListSubscription SubscribeToForeignSessionsChanged(
-      const base::RepeatingClosure& cb) override WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription
+  SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) override;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;

@@ -587,8 +587,8 @@ class HistoryService : public KeyedService {
   // Add a callback to the list. The callback will remain registered until the
   // returned subscription is destroyed. The subscription must be destroyed
   // before HistoryService is destroyed.
-  base::CallbackListSubscription AddFaviconsChangedCallback(
-      const FaviconsChangedCallback& callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddFaviconsChangedCallback(
+      const FaviconsChangedCallback& callback);
 
   // Testing -------------------------------------------------------------------
 

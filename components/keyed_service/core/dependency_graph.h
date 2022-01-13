@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
 class DependencyNode;
@@ -35,13 +34,11 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
 
   // Topologically sorts nodes to produce a safe construction order
   // (all nodes after their dependees).
-  bool GetConstructionOrder(std::vector<DependencyNode*>* order)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetConstructionOrder(std::vector<DependencyNode*>* order);
 
   // Topologically sorts nodes to produce a safe destruction order
   // (all nodes before their dependees).
-  bool GetDestructionOrder(std::vector<DependencyNode*>* order)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetDestructionOrder(std::vector<DependencyNode*>* order);
 
   // Returns representation of the dependency graph in graphviz format.
   std::string DumpAsGraphviz(
@@ -54,7 +51,7 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
 
   // Populates |construction_order_| with computed construction order.
   // Returns true on success.
-  bool BuildConstructionOrder() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool BuildConstructionOrder();
 
   // Keeps track of all live nodes (see AddNode, RemoveNode).
   std::vector<DependencyNode*> all_nodes_;

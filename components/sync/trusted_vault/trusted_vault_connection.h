@@ -109,39 +109,40 @@ class TrustedVaultConnection {
   // returned object is destroyed earlier. Caller should hold returned request
   // object until |callback| call or until request needs to be cancelled.
   // |trusted_vault_keys| must be ordered by version and must not be empty.
-  virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
+  [[nodiscard]] virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
       const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
       int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
       absl::optional<int> authentication_factor_type_hint,
-      RegisterAuthenticationFactorCallback callback) WARN_UNUSED_RESULT = 0;
+      RegisterAuthenticationFactorCallback callback) = 0;
 
   // Special version of the above for the case where the caller has no local
   // keys available. Attempts to register the device using constant key. May
   // succeed only if constant key is the only key known server-side.
-  virtual std::unique_ptr<Request> RegisterDeviceWithoutKeys(
+  [[nodiscard]] virtual std::unique_ptr<Request> RegisterDeviceWithoutKeys(
       const CoreAccountInfo& account_info,
       const SecureBoxPublicKey& device_public_key,
-      RegisterDeviceWithoutKeysCallback callback) WARN_UNUSED_RESULT = 0;
+      RegisterDeviceWithoutKeysCallback callback) = 0;
 
   // Asynchronously attempts to download new vault keys (e.g. keys with version
   // greater than the on in |last_trusted_vault_key_and_version|) from the
   // trusted vault server. Caller should hold returned request object until
   // |callback| call or until request needs to be cancelled.
-  virtual std::unique_ptr<Request> DownloadNewKeys(
+  [[nodiscard]] virtual std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
-      DownloadNewKeysCallback callback) WARN_UNUSED_RESULT = 0;
+      DownloadNewKeysCallback callback) = 0;
 
   // Asynchronously attempts to download degraded recoverability status from the
   // trusted vault server. Caller should hold returned request object until
   // |callback| call or until request needs to be cancelled.
-  virtual std::unique_ptr<Request> DownloadIsRecoverabilityDegraded(
+  [[nodiscard]] virtual std::unique_ptr<Request>
+  DownloadIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
-      IsRecoverabilityDegradedCallback callback) WARN_UNUSED_RESULT = 0;
+      IsRecoverabilityDegradedCallback callback) = 0;
 };
 
 }  // namespace syncer

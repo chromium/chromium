@@ -48,10 +48,11 @@ class ProfileOAuth2TokenServiceDelegate {
 
   virtual ~ProfileOAuth2TokenServiceDelegate();
 
-  virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
+  [[nodiscard]] virtual std::unique_ptr<OAuth2AccessTokenFetcher>
+  CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) WARN_UNUSED_RESULT = 0;
+      OAuth2AccessTokenConsumer* consumer) = 0;
 
   // Returns |true| if a refresh token is available for |account_id|, and
   // |false| otherwise.

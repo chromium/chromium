@@ -92,7 +92,7 @@ class VIZ_COMMON_EXPORT GLI420Converter final : public ContextLostObserver {
   // [Re]Configure the converter with the given |new_params|. Returns true on
   // success, or false on failure. If |new_params| does not specify an
   // |output_color_space|, it will be default to REC709.
-  bool Configure(const Parameters& new_params) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Configure(const Parameters& new_params);
 
   // Returns the currently-configured and resolved Parameters. Results are
   // undefined if Configure() has never been called successfully.

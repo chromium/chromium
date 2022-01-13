@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -81,19 +80,19 @@ class LevelDBScope {
     return scope_id_;
   }
 
-  leveldb::Status Put(const leveldb::Slice& key,
-                      const leveldb::Slice& value) WARN_UNUSED_RESULT;
-  leveldb::Status Delete(const leveldb::Slice& key) WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Put(const leveldb::Slice& key,
+                                    const leveldb::Slice& value);
+  [[nodiscard]] leveldb::Status Delete(const leveldb::Slice& key);
 
   // Deletes the range. |begin| is always inclusive. See
   // |LevelDBScopeDeletionMode| for the different types of range deletion.
-  leveldb::Status DeleteRange(const leveldb::Slice& begin,
-                              const leveldb::Slice& end,
-                              LevelDBScopeDeletionMode mode) WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status DeleteRange(const leveldb::Slice& begin,
+                                            const leveldb::Slice& end,
+                                            LevelDBScopeDeletionMode mode);
   // Submits pending changes & the undo log to LevelDB. Required to be able to
   // read any keys that have been submitted to |Put|, |Delete|, or
   // |DeleteRange|.
-  leveldb::Status WriteChangesAndUndoLog() WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status WriteChangesAndUndoLog();
 
   // In the case of LevelDBScopes being in the mode
   // TaskRunnerMode::kUseCurrentSequence, rollbacks happen synchronously. The
@@ -148,8 +147,7 @@ class LevelDBScope {
   // status & the mode of this scope. The caller (LevelDBScopes) is expected to
   // queue up a cleanup task if the mode is kUndoLogOnDisk. This instance should
   // not be used after this call.
-  std::pair<leveldb::Status, Mode> Commit(bool sync_on_commit)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::pair<leveldb::Status, Mode> Commit(bool sync_on_commit);
 
   // Submits pending changes & the undo log to LevelDB. Required to be able to
   // read any keys that have been submitted to Put, Delete, or
@@ -181,7 +179,7 @@ class LevelDBScope {
   bool CanSkipWritingUndoEntry(const leveldb::Slice& key);
 
   void AddCommitPoint();
-  leveldb::Status WriteBufferBatch(bool sync) WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status WriteBufferBatch(bool sync);
 
 #if DCHECK_IS_ON()
   std::vector<std::pair<std::string, std::string>> deferred_delete_ranges_;

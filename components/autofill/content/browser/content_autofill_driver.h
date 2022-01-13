@@ -389,8 +389,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // received from the renderer.
   void SetFrameAndFormMetaData(FormData& form,
                                FormFieldData* optional_field) const;
-  FormData GetFormWithFrameAndFormMetaData(FormData form) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
 
   // Returns whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used.

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -186,10 +185,10 @@ class AutofillManager
   // corresponding to |form| and |field|.  This might have the side-effect of
   // updating the cache.  Returns false if the |form| is not autofillable, or if
   // it is not already present in the cache and the cache is full.
-  bool GetCachedFormAndField(const FormData& form,
-                             const FormFieldData& field,
-                             FormStructure** form_structure,
-                             AutofillField** autofill_field) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetCachedFormAndField(const FormData& form,
+                                           const FormFieldData& field,
+                                           FormStructure** form_structure,
+                                           AutofillField** autofill_field);
 
   // Returns nullptr if no cached form structure is found with a matching
   // |form_id|. Runs in logarithmic time.

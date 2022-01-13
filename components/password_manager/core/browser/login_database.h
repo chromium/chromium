@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
@@ -69,31 +68,30 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // then the REMOVE is associated with the form that was added. Thus only the
   // primary key columns contain the values associated with the removed form. In
   // case of error, it sets |error| if |error| isn't null.
-  PasswordStoreChangeList AddLogin(const PasswordForm& form,
-                                   AddLoginError* error = nullptr)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] PasswordStoreChangeList AddLogin(
+      const PasswordForm& form,
+      AddLoginError* error = nullptr);
 
   // Updates existing password form. Returns the list of applied changes ({},
   // {UPDATE}). The password is looked up by the tuple {origin,
   // username_element, username_value, password_element, signon_realm}. These
   // columns stay intact. In case of error, it sets |error| if |error| isn't
   // null.
-  PasswordStoreChangeList UpdateLogin(const PasswordForm& form,
-                                      UpdateLoginError* error = nullptr)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] PasswordStoreChangeList UpdateLogin(
+      const PasswordForm& form,
+      UpdateLoginError* error = nullptr);
 
   // Removes |form| from the list of remembered password forms. Returns true if
   // |form| was successfully removed from the database. If |changes| is not be
   // null, it will be used to populate the change list of the removed forms if
   // any.
-  bool RemoveLogin(const PasswordForm& form,
-                   PasswordStoreChangeList* changes) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RemoveLogin(const PasswordForm& form,
+                                 PasswordStoreChangeList* changes);
 
   // Removes the form with |primary_key| from the list of remembered password
   // forms. Returns true if the form was successfully removed from the database.
-  bool RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
-                               PasswordStoreChangeList* changes)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
+                                             PasswordStoreChangeList* changes);
 
   // Removes all logins created from |delete_begin| onwards (inclusive) and
   // before |delete_end|. You may use a null Time value to do an unbounded
@@ -113,41 +111,40 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // and federated credentials.
   // |should_PSL_matching_apply| controls if the PSL matches are included or
   // only the exact matches.
-  bool GetLogins(const PasswordFormDigest& form,
-                 bool should_PSL_matching_apply,
-                 std::vector<std::unique_ptr<PasswordForm>>* forms)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetLogins(
+      const PasswordFormDigest& form,
+      bool should_PSL_matching_apply,
+      std::vector<std::unique_ptr<PasswordForm>>* forms);
 
   // Gets all logins created from |begin| onwards (inclusive) and before |end|.
   // You may use a null Time value to do an unbounded search in either
   // direction. |key_to_form_map| must not be null and will be used to return
   // the results. The key of the map is the DB primary key.
-  bool GetLoginsCreatedBetween(base::Time begin,
-                               base::Time end,
-                               PrimaryKeyToFormMap* key_to_form_map)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetLoginsCreatedBetween(
+      base::Time begin,
+      base::Time end,
+      PrimaryKeyToFormMap* key_to_form_map);
 
   // Gets the complete list of all credentials.
-  FormRetrievalResult GetAllLogins(PrimaryKeyToFormMap* key_to_form_map)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] FormRetrievalResult GetAllLogins(
+      PrimaryKeyToFormMap* key_to_form_map);
 
   // Gets list of logins which match |signon_realm| and |username|.
-  FormRetrievalResult GetLoginsBySignonRealmAndUsername(
+  [[nodiscard]] FormRetrievalResult GetLoginsBySignonRealmAndUsername(
       const std::string& signon_realm,
       const std::u16string& username,
-      PrimaryKeyToFormMap& key_to_form_map) WARN_UNUSED_RESULT;
+      PrimaryKeyToFormMap& key_to_form_map);
 
   // Gets the complete list of not blocklisted credentials.
-  bool GetAutofillableLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetAutofillableLogins(
+      std::vector<std::unique_ptr<PasswordForm>>* forms);
 
   // Gets the complete list of blocklisted credentials.
-  bool GetBlocklistLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetBlocklistLogins(
+      std::vector<std::unique_ptr<PasswordForm>>* forms);
 
   // Gets the list of auto-sign-inable credentials.
-  bool GetAutoSignInLogins(PrimaryKeyToFormMap* key_to_form_map)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetAutoSignInLogins(PrimaryKeyToFormMap* key_to_form_map);
 
   // Deletes the login database file on disk, and creates a new, empty database.
   // This can be used after migrating passwords to some other store, to ensure
@@ -249,17 +246,17 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // successful, or returning false and leaving cipher_text unchanged if
   // encryption fails (e.g., if the underlying OS encryption system is
   // temporarily unavailable).
-  EncryptionResult EncryptedString(const std::u16string& plain_text,
-                                   std::string* cipher_text) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] EncryptionResult EncryptedString(
+      const std::u16string& plain_text,
+      std::string* cipher_text) const;
 
   // Decrypts cipher_text, setting the value of plain_text and returning true if
   // successful, or returning false and leaving plain_text unchanged if
   // decryption fails (e.g., if the underlying OS encryption system is
   // temporarily unavailable).
-  EncryptionResult DecryptedString(const std::string& cipher_text,
-                                   std::u16string* plain_text) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] EncryptionResult DecryptedString(
+      const std::string& cipher_text,
+      std::u16string* plain_text) const;
 
   // Fills |form| from the values in the given statement (which is assumed to be
   // of the form used by the Get*Logins methods). Fills the corresponding DB
@@ -269,11 +266,11 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // ENCRYPTION_RESULT_SUCCESS, |form| is not filled. If
   // |decrypt_and_fill_password_value| is set to false, it always returns
   // ENCRYPTION_RESULT_SUCCESS.
-  EncryptionResult InitPasswordFormFromStatement(
+  [[nodiscard]] EncryptionResult InitPasswordFormFromStatement(
       sql::Statement& s,
       bool decrypt_and_fill_password_value,
       int* primary_key,
-      PasswordForm* form) const WARN_UNUSED_RESULT;
+      PasswordForm* form) const;
 
   // Gets all blocklisted or all non-blocklisted (depending on |blocklisted|)
   // credentials. On success returns true and overwrites |forms| with the
@@ -302,10 +299,10 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // returns true.
   // |key_to_form_map| must not be null and will be used to return the results.
   // The key of the map is the DB primary key.
-  FormRetrievalResult StatementToForms(sql::Statement* statement,
-                                       const PasswordFormDigest* matched_form,
-                                       PrimaryKeyToFormMap* key_to_form_map)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] FormRetrievalResult StatementToForms(
+      sql::Statement* statement,
+      const PasswordFormDigest* matched_form,
+      PrimaryKeyToFormMap* key_to_form_map);
 
   // Initializes all the *_statement_ data members with appropriate SQL
   // fragments based on |builder|.

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -125,8 +124,8 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // help must happen.
   // If |true| is returned, the caller *must* call Dismissed(...) when display
   // of feature enlightenment ends.
-  virtual bool ShouldTriggerHelpUI(const base::Feature& feature)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool ShouldTriggerHelpUI(
+      const base::Feature& feature) = 0;
 
   // For callers interested in showing a snooze button. For other callers, use
   // the ShouldTriggerHelpUI(..) method.

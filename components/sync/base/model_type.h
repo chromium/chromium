@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/enum_set.h"
 
 namespace base {
@@ -416,8 +415,9 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 // Converts a notification type to a real model type.  Returns true
 // iff |notification_type| was the notification type of a real model
 // type and |model_type| was filled in.
-bool NotificationTypeToRealModelType(const std::string& notification_type,
-                                     ModelType* model_type) WARN_UNUSED_RESULT;
+[[nodiscard]] bool NotificationTypeToRealModelType(
+    const std::string& notification_type,
+    ModelType* model_type);
 
 // Returns true if |model_type| is a real datatype
 bool IsRealDataType(ModelType model_type);

@@ -98,7 +98,7 @@ void VerifyDatabaseEmpty(sql::Database* db) {
 }
 
 // Helper to check that an expected mapping exists.
-WARN_UNUSED_RESULT bool CheckPageHasIcon(
+[[nodiscard]] bool CheckPageHasIcon(
     FaviconDatabase* db,
     const GURL& page_url,
     favicon_base::IconType expected_icon_type,

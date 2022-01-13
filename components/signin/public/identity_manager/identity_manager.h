@@ -180,34 +180,35 @@ class IdentityManager : public KeyedService,
   bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
   // Creates an AccessTokenFetcher given the passed-in information.
-  std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
-      const CoreAccountId& account_id,
-      const std::string& oauth_consumer_name,
-      const ScopeSet& scopes,
-      AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
+  CreateAccessTokenFetcherForAccount(const CoreAccountId& account_id,
+                                     const std::string& oauth_consumer_name,
+                                     const ScopeSet& scopes,
+                                     AccessTokenFetcher::TokenCallback callback,
+                                     AccessTokenFetcher::Mode mode);
 
   // Creates an AccessTokenFetcher given the passed-in information, allowing
   // to specify a custom |url_loader_factory| as well.
-  std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
+  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
+  CreateAccessTokenFetcherForAccount(
       const CoreAccountId& account_id,
       const std::string& oauth_consumer_name,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const ScopeSet& scopes,
       AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode) WARN_UNUSED_RESULT;
+      AccessTokenFetcher::Mode mode);
 
   // Creates an AccessTokenFetcher given the passed-in information, allowing to
   // specify custom |client_id| and |client_secret| to identify the OAuth client
   // app.
-  std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForClient(
-      const CoreAccountId& account_id,
-      const std::string& client_id,
-      const std::string& client_secret,
-      const std::string& oauth_consumer_name,
-      const ScopeSet& scopes,
-      AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
+  CreateAccessTokenFetcherForClient(const CoreAccountId& account_id,
+                                    const std::string& client_id,
+                                    const std::string& client_secret,
+                                    const std::string& oauth_consumer_name,
+                                    const ScopeSet& scopes,
+                                    AccessTokenFetcher::TokenCallback callback,
+                                    AccessTokenFetcher::Mode mode);
 
   // If an entry exists in the cache of access tokens corresponding to the
   // given information, removes that entry; in this case, the next access token

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -50,24 +49,24 @@ class TransactionalLevelDBTransaction
   TransactionalLevelDBTransaction& operator=(
       const TransactionalLevelDBTransaction&) = delete;
 
-  leveldb::Status Put(const base::StringPiece& key,
-                      std::string* value) WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Put(const base::StringPiece& key,
+                                    std::string* value);
 
-  leveldb::Status Remove(const base::StringPiece& key) WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Remove(const base::StringPiece& key);
 
-  leveldb::Status RemoveRange(const base::StringPiece& begin,
-                              const base::StringPiece& end,
-                              LevelDBScopeDeletionMode deletion_mode)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status RemoveRange(
+      const base::StringPiece& begin,
+      const base::StringPiece& end,
+      LevelDBScopeDeletionMode deletion_mode);
 
-  virtual leveldb::Status Get(const base::StringPiece& key,
-                              std::string* value,
-                              bool* found) WARN_UNUSED_RESULT;
-  virtual leveldb::Status Commit(bool sync_on_commit) WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual leveldb::Status Get(const base::StringPiece& key,
+                                            std::string* value,
+                                            bool* found);
+  [[nodiscard]] virtual leveldb::Status Commit(bool sync_on_commit);
 
   // If the underlying scopes system is in single-sequence mode, then this
   // method will return the result of the rollback task.
-  leveldb::Status Rollback() WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Rollback();
 
   // The returned iterator must be destroyed before the destruction of this
   // transaction.  This may return null, if it does, status will explain why.
