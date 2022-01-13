@@ -1838,8 +1838,7 @@ void Textfield::ExecuteTextEditCommand(ui::TextEditCommand command) {
   OnBeforeUserAction();
 
   gfx::SelectionModel selection_model = GetSelectionModel();
-  bool text_changed, cursor_changed;
-  std::tie(text_changed, cursor_changed) = DoExecuteTextEditCommand(command);
+  auto [text_changed, cursor_changed] = DoExecuteTextEditCommand(command);
 
   cursor_changed |= (GetSelectionModel() != selection_model);
   if (cursor_changed && HasSelection())

@@ -157,8 +157,7 @@ SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
   // then when this ratio is closest to 1, we have the contrast ratio closest to
   // our target.
   const auto ratio_of_ratios = [&](float contrast) {
-    float min, max;
-    std::tie(min, max) = std::minmax(contrast, target_contrast);
+    auto [min, max] = std::minmax(contrast, target_contrast);
     return max / min;
   };
   absl::optional<size_t> best_index;
