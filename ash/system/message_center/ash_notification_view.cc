@@ -205,6 +205,17 @@ using Orientation = views::BoxLayout::Orientation;
 BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
 END_METADATA
 
+void AshNotificationView::GroupedNotificationsContainer::
+    ChildPreferredSizeChanged(views::View* view) {
+  PreferredSizeChanged();
+  parent_notification_view_->GroupedNotificationsPreferredSizeChanged();
+}
+
+void AshNotificationView::GroupedNotificationsContainer::
+    SetParentNotificationView(AshNotificationView* parent_notification_view) {
+  parent_notification_view_ = parent_notification_view;
+}
+
 AshNotificationView::NotificationTitleRow::NotificationTitleRow(
     const std::u16string& title)
     : title_view_(AddChildView(GenerateTitleView(title))),
@@ -413,8 +424,9 @@ AshNotificationView::AshNotificationView(
             .SetDrawOverflowIndicator(false)
             .ClipHeightTo(0, std::numeric_limits<int>::max())
             .SetContents(
-                views::Builder<views::BoxLayoutView>()
+                views::Builder<GroupedNotificationsContainer>()
                     .CopyAddressTo(&grouped_notifications_container_)
+                    .SetParentNotificationView(this)
                     .SetOrientation(Orientation::kVertical)
                     .SetInsideBorderInsets(kGroupedNotificationContainerInsets)
                     .SetBetweenChildSpacing(
@@ -538,6 +550,10 @@ void AshNotificationView::ToggleExpand() {
   SetExpanded(!IsExpanded());
 
   PerformExpandCollapseAnimation();
+}
+
+void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
+  PreferredSizeChanged();
 }
 
 base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(

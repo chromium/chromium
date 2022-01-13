@@ -54,6 +54,9 @@ class ASH_EXPORT AshNotificationView
   // Toggle the expand state of the notification.
   void ToggleExpand();
 
+  // Called when a child notificaiton's preferred size changes.
+  void GroupedNotificationsPreferredSizeChanged();
+
   // Gets the animation duration for a recent bounds change. Called after
   // `PreferredSizeChanged()`, so the current state is the target state.
   base::TimeDelta GetBoundsAnimationDuration(
@@ -96,6 +99,28 @@ class ASH_EXPORT AshNotificationView
   int GetLargeImageViewMaxWidth() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
   void ActionButtonPressed(size_t index, const ui::Event& event) override;
+
+  // View containing all grouped notifications, propagates size changes
+  // to the parent notification view.
+  class GroupedNotificationsContainer : public views::BoxLayoutView {
+   public:
+    GroupedNotificationsContainer() = default;
+    GroupedNotificationsContainer(const GroupedNotificationsContainer&) =
+        delete;
+    GroupedNotificationsContainer& operator=(
+        const GroupedNotificationsContainer&) = delete;
+    void ChildPreferredSizeChanged(views::View* view) override;
+    void SetParentNotificationView(
+        AshNotificationView* parent_notification_view);
+
+   private:
+    AshNotificationView* parent_notification_view_ = nullptr;
+  };
+  BEGIN_VIEW_BUILDER(/*no export*/,
+                     GroupedNotificationsContainer,
+                     views::BoxLayoutView)
+  VIEW_BUILDER_PROPERTY(AshNotificationView*, ParentNotificationView)
+  END_VIEW_BUILDER
 
  private:
   friend class AshNotificationViewTest;
@@ -228,5 +253,8 @@ class ASH_EXPORT AshNotificationView
 };
 
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */,
+                    ash::AshNotificationView::GroupedNotificationsContainer)
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_
