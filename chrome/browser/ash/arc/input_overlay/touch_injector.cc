@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_mouse.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_mouse.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/controls/label.h"
@@ -43,6 +44,15 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
     if (keyboard_act_list && keyboard_act_list->is_list()) {
       for (const base::Value& val : keyboard_act_list->GetList()) {
         std::unique_ptr<Action> action = std::make_unique<ActionTapKey>(window);
+        bool succeed = action->ParseFromJson(val);
+        if (succeed)
+          actions.emplace_back(std::move(action));
+      }
+    }
+    const auto* mouse_act_list = tap_act_val->FindListKey(kMouse);
+    if (mouse_act_list && mouse_act_list->is_list()) {
+      for (const auto& val : mouse_act_list->GetList()) {
+        auto action = std::make_unique<input_overlay::ActionTapMouse>(window);
         bool succeed = action->ParseFromJson(val);
         if (succeed)
           actions.emplace_back(std::move(action));

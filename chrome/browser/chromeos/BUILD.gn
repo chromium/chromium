@@ -860,6 +860,8 @@ source_set("chromeos") {
     "../ash/arc/input_overlay/actions/action_move_mouse.h",
     "../ash/arc/input_overlay/actions/action_tap_key.cc",
     "../ash/arc/input_overlay/actions/action_tap_key.h",
+    "../ash/arc/input_overlay/actions/action_tap_mouse.cc",
+    "../ash/arc/input_overlay/actions/action_tap_mouse.h",
     "../ash/arc/input_overlay/actions/dependent_position.cc",
     "../ash/arc/input_overlay/actions/dependent_position.h",
     "../ash/arc/input_overlay/actions/position.cc",

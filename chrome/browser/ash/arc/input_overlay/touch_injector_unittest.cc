@@ -8,6 +8,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_mouse.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_mouse.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -62,6 +63,43 @@ constexpr const char kValidJsonActionTapKey[] =
           {
             "name": "Run",
             "key": "KeyB",
+            "location": [
+              {
+                "type": "position",
+                "anchor_to_target": [
+                  0.8,
+                  0.8
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    })json";
+
+constexpr const char kValidJsonActionTapMouse[] =
+    R"json({
+      "mouse_lock": {
+        "key": "KeyA"
+      },
+      "tap": {
+        "mouse": [
+          {
+            "name": "any name",
+            "mouse_action": "primary_click",
+            "location": [
+              {
+                "type": "position",
+                "anchor_to_target": [
+                  0.5,
+                  0.5
+                ]
+              }
+            ]
+          },
+          {
+            "name": "any name",
+            "mouse_action": "secondary_click",
             "location": [
               {
                 "type": "position",
@@ -368,6 +406,69 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(0, event->pointer_details().id);
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
   event_capturer_.Clear();
+}
+
+TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
+  base::JSONReader::ValueWithError json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
+  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
+  injector_->ParseActions(json_value.value.value());
+  EXPECT_EQ(2, injector_->actions().size());
+  injector_->RegisterEventRewriter();
+
+  auto* primary_action = static_cast<input_overlay::ActionTapMouse*>(
+      injector_->actions()[0].get());
+  EXPECT_EQ(primary_action->target_mouse_action(), "primary_click");
+  EXPECT_TRUE(primary_action->target_types().contains(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(primary_action->target_types().contains(ui::ET_MOUSE_RELEASED));
+  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, primary_action->target_flags());
+  auto* secondary_action = static_cast<input_overlay::ActionTapMouse*>(
+      injector_->actions()[1].get());
+  EXPECT_EQ(secondary_action->target_mouse_action(), "secondary_click");
+  EXPECT_TRUE(secondary_action->target_types().contains(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(secondary_action->target_types().contains(ui::ET_MOUSE_RELEASED));
+  EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, secondary_action->target_flags());
+
+  event_generator_->MoveMouseTo(gfx::Point(300, 200));
+  EXPECT_EQ(2, event_capturer_.mouse_events().size());
+  EXPECT_EQ(0, event_capturer_.touch_events().size());
+  event_capturer_.Clear();
+
+  // Lock mouse and check primary and secondary click.
+  event_generator_->PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE,
+                                       1 /* keyboard id */);
+  event_generator_->PressLeftButton();
+  EXPECT_TRUE(event_capturer_.mouse_events().empty());
+  EXPECT_EQ(1, event_capturer_.touch_events().size());
+  auto* event = event_capturer_.touch_events()[0].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
+  EXPECT_EQ(0, event->pointer_details().id);
+  gfx::PointF expect_primary =
+      gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
+  EXPECT_TRUE(IsPointsEqual(expect_primary, event->root_location_f()));
+  // Mouse secondary button click.
+  event_generator_->PressRightButton();
+  EXPECT_EQ(2, event_capturer_.touch_events().size());
+  event = event_capturer_.touch_events()[1].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
+  EXPECT_EQ(1, event->pointer_details().id);
+  gfx::PointF expect_secondary = gfx::PointF(
+      200 + 200 * 0.8, 100 + (400 - caption_height_) * 0.8 + caption_height_);
+  EXPECT_TRUE(IsPointsEqual(expect_secondary, event->root_location_f()));
+
+  event_generator_->ReleaseRightButton();
+  EXPECT_EQ(3, event_capturer_.touch_events().size());
+  event = event_capturer_.touch_events()[2].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
+  EXPECT_EQ(1, event->pointer_details().id);
+  EXPECT_TRUE(IsPointsEqual(expect_secondary, event->root_location_f()));
+
+  event_generator_->ReleaseLeftButton();
+  EXPECT_EQ(4, event_capturer_.touch_events().size());
+  event = event_capturer_.touch_events()[3].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
+  EXPECT_EQ(0, event->pointer_details().id);
+  EXPECT_TRUE(IsPointsEqual(expect_primary, event->root_location_f()));
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {

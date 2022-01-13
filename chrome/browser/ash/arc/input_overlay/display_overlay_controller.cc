@@ -21,7 +21,8 @@ class DisplayOverlayController::InputMappingView : public views::View {
               content_bounds.height());
     for (auto& action : actions) {
       auto view = action->CreateView(content_bounds);
-      AddChildView(std::move(view));
+      if (view)
+        AddChildView(std::move(view));
     }
   }
   InputMappingView(const InputMappingView&) = delete;
