@@ -1328,6 +1328,10 @@ class AutotestPrivateSetWindowBoundsFunction : public ExtensionFunction {
 class AutotestPrivateStartSmoothnessTrackingFunction
     : public ExtensionFunction {
  public:
+  // Default sampling interval to collect display smoothness.
+  static constexpr base::TimeDelta kDefaultThroughputInterval =
+      base::Seconds(5);
+
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.startSmoothnessTracking",
                              AUTOTESTPRIVATE_STARTSMOOTHNESSTRACKING)
 
@@ -1345,7 +1349,9 @@ class AutotestPrivateStopSmoothnessTrackingFunction : public ExtensionFunction {
   ~AutotestPrivateStopSmoothnessTrackingFunction() override;
   ResponseAction Run() override;
 
-  void OnReportData(const cc::FrameSequenceMetrics::CustomReportData& data);
+  void OnReportData(
+      const cc::FrameSequenceMetrics::CustomReportData& frame_data,
+      std::vector<int>&& throughput);
   void OnTimeOut(int64_t display_id);
 
   base::OneShotTimer timeout_timer_;

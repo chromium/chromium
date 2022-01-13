@@ -554,6 +554,25 @@ namespace autotestPrivate {
   };
   callback WindowBoundsCallback = void (SetWindowBoundsResult result);
 
+  // Collected DisplaySmoothness data between startSmoothnessTracking and
+  // stopSmoothnessTracking calls.
+  dictionary DisplaySmoothnessData {
+    // Number of frames expected to be shown for this animation.
+    long framesExpected;
+    // Number of frames actually shown for this animation.
+    long framesProduced;
+    // Number of janks during this animation. A jank is counted when the current
+    // frame latency is larger than previous ones.
+    long jankCount;
+    // Display throughput percentage at fixed intervals.
+    long[] throughput;
+  };
+
+  // Callback invoked to report the smoothness after StopSmoothnessTracking is
+  // called.
+  callback StopSmoothnessTrackingCallback = void
+      (DisplaySmoothnessData data);
+
   // Collected ui::ThroughputTracker data for one animation. It is based on
   // cc::FrameSequenceMetrics::ThroughputData.
   dictionary ThroughputTrackerAnimationData {
@@ -565,11 +584,6 @@ namespace autotestPrivate {
     // frame latency is larger than previous ones.
     long jankCount;
   };
-
-  // Callback invoked to report the smoothness after StopSmoothnessTracking is
-  // called.
-  callback StopSmoothnessTrackingCallback = void
-      (ThroughputTrackerAnimationData data);
 
   // Callback invoked to report the collection ui::ThroughputTracker data
   // after stopThroughputTrackerDataCollection is called.
@@ -1165,9 +1179,11 @@ namespace autotestPrivate {
 
     // Starts smoothness tracking for a display. If the display id is not
     // specified, the primary display is used. Otherwise, the display specified
-    // by the display id is used.
+    // by the display id is used. If `throughputIntervalMs` is not specified,
+    // default 5 seconds interval is used to collect throughput data.
     [supportsPromises] static void startSmoothnessTracking(
         optional DOMString displayId,
+        optional long throughputIntervalMs,
         VoidCallback callback);
 
     // Stops smoothness tracking for a display and report the smoothness. If

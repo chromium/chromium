@@ -920,6 +920,19 @@ var defaultTests = [
       });
     });
   },
+  function startSmoothnessTrackingExplicitThroughputInterval() {
+    chrome.autotestPrivate.startSmoothnessTracking(100, async function() {
+      chrome.test.assertNoLastError();
+
+      await sleep(200);
+
+      chrome.autotestPrivate.stopSmoothnessTracking(function(data) {
+        chrome.test.assertNoLastError();
+        chrome.test.assertTrue(data.hasOwnProperty('throughput'));
+        chrome.test.succeed();
+      });
+    });
+  },
   function startSmoothnessTrackingExplicitDisplay() {
     const badDisplay = '-1';
     chrome.autotestPrivate.startSmoothnessTracking(badDisplay, function() {

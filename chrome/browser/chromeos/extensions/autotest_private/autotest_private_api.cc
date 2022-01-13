@@ -57,6 +57,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -838,32 +839,105 @@ bool GetDisplayIdFromOptionalArg(const std::unique_ptr<std::string>& arg,
   return true;
 }
 
-struct SmoothnessTrackerInfo {
-  absl::optional<ui::ThroughputTracker> tracker;
-  ui::ThroughputTrackerHost::ReportCallback callback;
-  bool stopping = false;
+class DisplaySmoothnessTracker {
+ public:
+  using ReportCallback = base::OnceCallback<void(
+      const cc::FrameSequenceMetrics::CustomReportData& frame_data,
+      std::vector<int>&& throughput)>;
+
+  DisplaySmoothnessTracker() = default;
+  DisplaySmoothnessTracker(const DisplaySmoothnessTracker&) = delete;
+  DisplaySmoothnessTracker& operator=(const DisplaySmoothnessTracker&) = delete;
+  ~DisplaySmoothnessTracker() = default;
+
+  // Return true if tracking is started successfully.
+  bool Start(int64_t display_id,
+             base::TimeDelta throughput_interval,
+             ui::ThroughputTrackerHost::ReportCallback callback) {
+    auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id);
+    if (!root_window)
+      return false;
+
+    DCHECK(root_window_tracker_.windows().empty());
+    root_window_tracker_.Add(root_window);
+
+    tracker_ =
+        root_window->layer()->GetCompositor()->RequestNewThroughputTracker();
+    tracker_->Start(std::move(callback));
+
+    throughtput_timer_.Start(FROM_HERE, throughput_interval, this,
+                             &DisplaySmoothnessTracker::OnThroughputTimerFired);
+
+    return true;
+  }
+
+  void Stop(ReportCallback callback) {
+    stopping_ = true;
+    throughtput_timer_.Stop();
+    callback_ = std::move(callback);
+    tracker_->Stop();
+  }
+
+  ReportCallback TakeCallback() { return std::move(callback_); }
+  std::vector<int> TakeThroughput() { return std::move(throughput_); }
+
+  bool stopping() const { return stopping_; }
+  bool has_error() const { return has_error_; }
+
+ private:
+  void OnThroughputTimerFired() {
+    auto windows = root_window_tracker_.windows();
+    if (windows.empty()) {
+      // RootWindow is gone. This could happen when display is reconfigured
+      // during the test run. Treat it as error since no meaningful smoothness
+      // data would be captured in such case.
+      LOG(ERROR) << "Unable to collect throughput because underlying "
+                    "RootWindow is gone.";
+      has_error_ = true;
+      throughtput_timer_.Stop();
+      return;
+    }
+
+    DCHECK_EQ(windows.size(), 1u);
+    auto* root_window = windows[0];
+    throughput_.push_back(
+        root_window->GetHost()->compositor()->GetAverageThroughput());
+  }
+
+  aura::WindowTracker root_window_tracker_;
+  absl::optional<ui::ThroughputTracker> tracker_;
+  ReportCallback callback_;
+  bool stopping_ = false;
+  bool has_error_ = false;
+
+  base::RepeatingTimer throughtput_timer_;
+  std::vector<int> throughput_;
 };
-using DisplaySmoothnessTrackerInfos = std::map<int64_t, SmoothnessTrackerInfo>;
-DisplaySmoothnessTrackerInfos* GetDisplaySmoothnessTrackerInfos() {
-  static base::NoDestructor<DisplaySmoothnessTrackerInfos> trackers;
+
+using DisplaySmoothnessTrackers =
+    std::map<int64_t, std::unique_ptr<DisplaySmoothnessTracker>>;
+DisplaySmoothnessTrackers* GetDisplaySmoothnessTrackers() {
+  static base::NoDestructor<DisplaySmoothnessTrackers> trackers;
   return trackers.get();
 }
 
 // Forwards frame rate data to the callback for |display_id| and resets.
 void ForwardFrameRateDataAndReset(
     int64_t display_id,
-    const cc::FrameSequenceMetrics::CustomReportData& data) {
-  auto* infos = GetDisplaySmoothnessTrackerInfos();
-  auto it = infos->find(display_id);
-  DCHECK(it != infos->end());
-  DCHECK(it->second.callback);
+    const cc::FrameSequenceMetrics::CustomReportData& frame_data) {
+  auto* trackers = GetDisplaySmoothnessTrackers();
+  auto it = trackers->find(display_id);
+  DCHECK(it != trackers->end());
+
+  auto throughput = it->second->TakeThroughput();
 
   // Moves the callback out and erases the mapping first to allow new tracking
   // for |display_id| to start before |callback| run returns.
   // See https://crbug.com/1098886.
-  auto callback = std::move(it->second.callback);
-  infos->erase(it);
-  std::move(callback).Run(data);
+  auto callback = it->second->TakeCallback();
+  DCHECK(callback);
+  trackers->erase(it);
+  std::move(callback).Run(frame_data, std::move(throughput));
 }
 
 std::string ResolutionToString(
@@ -4999,24 +5073,26 @@ AutotestPrivateStartSmoothnessTrackingFunction::Run() {
         Error(base::StrCat({"Invalid display id: ", *params->display_id})));
   }
 
-  auto* infos = GetDisplaySmoothnessTrackerInfos();
-  if (infos->find(display_id) != infos->end()) {
+  auto* trackers = GetDisplaySmoothnessTrackers();
+  if (trackers->find(display_id) != trackers->end()) {
     return RespondNow(
         Error(base::StrCat({"Smoothness already tracked for display: ",
                             base::NumberToString(display_id)})));
   }
 
-  auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id);
-  if (!root_window) {
+  base::TimeDelta throughput_interval = kDefaultThroughputInterval;
+  if (params->throughput_interval_ms)
+    throughput_interval = base::Milliseconds(*params->throughput_interval_ms);
+
+  auto tracker = std::make_unique<DisplaySmoothnessTracker>();
+  if (!tracker->Start(
+          display_id, throughput_interval,
+          base::BindOnce(&ForwardFrameRateDataAndReset, display_id))) {
     return RespondNow(Error(base::StrCat(
         {"Invalid display_id; no root window found for the display id ",
          base::NumberToString(display_id)})));
   }
-
-  auto tracker =
-      root_window->layer()->GetCompositor()->RequestNewThroughputTracker();
-  tracker.Start(base::BindOnce(&ForwardFrameRateDataAndReset, display_id));
-  (*infos)[display_id].tracker = std::move(tracker);
+  (*trackers)[display_id] = std::move(tracker);
   return RespondNow(NoArguments());
 }
 
@@ -5039,21 +5115,23 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
         Error(base::StrCat({"Invalid display id: ", *params->display_id})));
   }
 
-  auto* infos = GetDisplaySmoothnessTrackerInfos();
-  auto it = infos->find(display_id);
-  if (it == infos->end()) {
+  auto* trackers = GetDisplaySmoothnessTrackers();
+  auto it = trackers->find(display_id);
+  if (it == trackers->end()) {
     return RespondNow(
         Error(base::StrCat({"Smoothness is not tracked for display: ",
                             base::NumberToString(display_id)})));
   }
 
-  if (it->second.stopping) {
+  if (it->second->stopping()) {
     return RespondNow(Error(
         base::StrCat({"stopSmoothnessTracking already called for display: ",
                       base::NumberToString(display_id)})));
   }
 
-  // ThroughputTracker::Stop does not invoke the report callback when
+  const bool has_error = it->second->has_error();
+
+  // DisplaySmoothnessTracker::Stop does not invoke the report callback when
   // gpu-process crashes and has no valid data to report. Start a timer to
   // handle this case.
   timeout_timer_.Start(
@@ -5061,30 +5139,36 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
       base::BindOnce(&AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut,
                      this, display_id));
 
-  it->second.callback = base::BindOnce(
-      &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this);
-  it->second.stopping = true;
-  it->second.tracker->Stop();
+  it->second->Stop(base::BindOnce(
+      &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this));
 
   // Trigger a repaint after ThroughputTracker::Stop() to generate a frame to
   // ensure the tracker report will be sent back.
   auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id);
   root_window->GetHost()->compositor()->ScheduleFullRedraw();
 
+  if (has_error) {
+    return RespondNow(Error(base::StrCat(
+        {"Error happened during smoothness collection for display: ",
+         base::NumberToString(display_id)})));
+  }
+
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
-    const cc::FrameSequenceMetrics::CustomReportData& data) {
+    const cc::FrameSequenceMetrics::CustomReportData& frame_data,
+    std::vector<int>&& throughput) {
   if (did_respond())
     return;
 
   timeout_timer_.AbandonAndStop();
 
-  api::autotest_private::ThroughputTrackerAnimationData result_data;
-  result_data.frames_expected = data.frames_expected;
-  result_data.frames_produced = data.frames_produced;
-  result_data.jank_count = data.jank_count;
+  api::autotest_private::DisplaySmoothnessData result_data;
+  result_data.frames_expected = frame_data.frames_expected;
+  result_data.frames_produced = frame_data.frames_produced;
+  result_data.jank_count = frame_data.jank_count;
+  result_data.throughput = std::move(throughput);
 
   Respond(ArgumentList(
       api::autotest_private::StopSmoothnessTracking::Results::Create(
@@ -5097,11 +5181,11 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut(
     return;
 
   // Clean up the non-functional tracker.
-  auto* infos = GetDisplaySmoothnessTrackerInfos();
-  auto it = infos->find(display_id);
-  if (it == infos->end())
+  auto* trackers = GetDisplaySmoothnessTrackers();
+  auto it = trackers->find(display_id);
+  if (it == trackers->end())
     return;
-  infos->erase(it);
+  trackers->erase(it);
 
   Respond(Error("Smoothness is not available"));
 }
