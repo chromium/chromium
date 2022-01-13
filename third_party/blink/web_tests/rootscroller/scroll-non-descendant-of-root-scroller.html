@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.runtimeFlags.implicitRootScrollerEnabled = true;
+</script>
 <style>
   ::-webkit-scrollbar {
     width: 0px;
@@ -67,14 +71,14 @@
   var rootScroller = document.querySelector('#rootscroller');
   var dialog = document.querySelector('#dialog');
 
-  document.rootScroller = rootScroller;
-
   var dialogRect = dialog.getBoundingClientRect();
 
   var x = dialogRect.left + dialogRect.width / 2;
   var y = dialogRect.top + dialogRect.height / 2;
 
   promise_test(async () => {
+      if (window.internals)
+        assert_equals(rootScroller, internals.effectiveRootScroller(document), 'implicit root scroller');
 
       // Sanity check - there should be no initial scroll.
       assert_equals(dialog.scrollLeft, 0);

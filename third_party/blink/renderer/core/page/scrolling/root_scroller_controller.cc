@@ -102,24 +102,8 @@ RootScrollerController::RootScrollerController(Document& document)
 
 void RootScrollerController::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
-  visitor->Trace(root_scroller_);
   visitor->Trace(effective_root_scroller_);
   visitor->Trace(implicit_candidates_);
-  visitor->Trace(implicit_root_scroller_);
-}
-
-void RootScrollerController::Set(Element* new_root_scroller) {
-  if (root_scroller_ == new_root_scroller)
-    return;
-
-  root_scroller_ = new_root_scroller;
-
-  if (LocalFrame* frame = document_->GetFrame())
-    frame->ScheduleVisualUpdateUnlessThrottled();
-}
-
-Element* RootScrollerController::Get() const {
-  return root_scroller_;
 }
 
 Node& RootScrollerController::EffectiveRootScroller() const {
@@ -145,7 +129,7 @@ void RootScrollerController::DidResizeFrameView() {
 
 void RootScrollerController::DidUpdateIFrameFrameView(
     HTMLFrameOwnerElement& element) {
-  if (&element != root_scroller_.Get() && &element != implicit_root_scroller_)
+  if (&element != effective_root_scroller_)
     return;
 
   // Ensure properties are re-applied even if the effective root scroller
@@ -161,17 +145,11 @@ void RootScrollerController::DidUpdateIFrameFrameView(
 }
 
 bool RootScrollerController::RecomputeEffectiveRootScroller() {
-  ProcessImplicitCandidates();
-
   Node* new_effective_root_scroller = document_;
 
   if (!DocumentFullscreen::fullscreenElement(*document_)) {
-    bool root_scroller_valid =
-        root_scroller_ && IsValidRootScroller(*root_scroller_);
-    if (root_scroller_valid) {
-      new_effective_root_scroller = root_scroller_;
-    } else if (implicit_root_scroller_) {
-      new_effective_root_scroller = implicit_root_scroller_;
+    if (auto* implicit_root_scroller = ImplicitRootScrollerFromCandidates()) {
+      new_effective_root_scroller = implicit_root_scroller;
       UseCounter::Count(document_, WebFeature::kActivatedImplicitRootScroller);
     }
   }
@@ -390,20 +368,19 @@ void RootScrollerController::UpdateIFrameGeometryAndLayoutSize(
     child_view->SetLayoutSize(document_->GetFrame()->View()->GetLayoutSize());
 }
 
-void RootScrollerController::ProcessImplicitCandidates() {
-  implicit_root_scroller_ = nullptr;
-
+Element* RootScrollerController::ImplicitRootScrollerFromCandidates() {
   if (!RuntimeEnabledFeatures::ImplicitRootScrollerEnabled())
-    return;
+    return nullptr;
 
   if (!document_->GetLayoutView())
-    return;
+    return nullptr;
 
   if (!document_->GetFrame()->IsMainFrame())
-    return;
+    return nullptr;
 
   bool multiple_matches = false;
 
+  Element* implicit_root_scroller = nullptr;
   HeapHashSet<WeakMember<Element>> copy(implicit_candidates_);
   for (auto& element : copy) {
     if (!IsValidImplicit(*element)) {
@@ -412,15 +389,14 @@ void RootScrollerController::ProcessImplicitCandidates() {
       continue;
     }
 
-    if (implicit_root_scroller_)
+    if (implicit_root_scroller)
       multiple_matches = true;
 
-    implicit_root_scroller_ = element;
+    implicit_root_scroller = element;
   }
 
   // Only promote an implicit root scroller if we have a unique match.
-  if (multiple_matches)
-    implicit_root_scroller_ = nullptr;
+  return multiple_matches ? nullptr : implicit_root_scroller;
 }
 
 void RootScrollerController::ElementRemoved(const Element& element) {
