@@ -15,7 +15,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -30,7 +31,7 @@ namespace autofill {
 // Defines a title view with an icon, a separator, and a label, to be used
 // by dialogs that need to present the Google or Google Pay logo with a
 // separator and custom horizontal padding.
-class TitleWithIconAndSeparatorView : public views::View {
+class TitleWithIconAndSeparatorView : public views::TableLayoutView {
  public:
   METADATA_HEADER(TitleWithIconAndSeparatorView);
 
@@ -55,7 +56,7 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield();
 
 // Defines a view with legal message. This class handles the legal message
 // parsing and the links clicking events.
-class LegalMessageView : public views::View {
+class LegalMessageView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(LegalMessageView);
 
@@ -71,7 +72,7 @@ PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
 
 // TODO(crbug.com/1249665): Replace all payments' progress bar usages with this.
 // Creates a progress bar with an explanatory text below.
-class ProgressBarWithTextView : public views::View {
+class ProgressBarWithTextView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(ProgressBarWithTextView);
 
