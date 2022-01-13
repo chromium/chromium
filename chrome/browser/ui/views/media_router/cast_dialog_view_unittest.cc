@@ -85,9 +85,6 @@ class MockCastDialogController : public CastDialogController {
   MOCK_METHOD2(StartCasting,
                void(const std::string& sink_id, MediaCastMode cast_mode));
   MOCK_METHOD1(StopCasting, void(const std::string& route_id));
-  MOCK_METHOD1(
-      ChooseLocalFile,
-      void(base::OnceCallback<void(const ui::SelectedFileInfo*)> callback));
   MOCK_METHOD1(ClearIssue, void(const Issue::Id& issue_id));
 };
 

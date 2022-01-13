@@ -62,9 +62,6 @@ class MockCastDialogController : public media_router::CastDialogController {
   void StartCasting(const media_router::MediaSink::Id& sink_id,
                     media_router::MediaCastMode cast_mode) override {}
   void StopCasting(const media_router::MediaRoute::Id& route_id) override {}
-  void ChooseLocalFile(
-      base::OnceCallback<void(const ui::SelectedFileInfo*)> callback) override {
-  }
   void ClearIssue(const media_router::Issue::Id& issue_id) override {}
 };
 

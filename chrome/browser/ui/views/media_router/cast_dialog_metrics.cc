@@ -34,8 +34,6 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           case MediaCastMode::DESKTOP_MIRROR:
             return DialogActivationLocationAndCastMode::
                 kPinnedIconAndDesktopMirror;
-          case MediaCastMode::LOCAL_FILE:
-            return DialogActivationLocationAndCastMode::kPinnedIconAndLocalFile;
         }
       } else {
         switch (cast_mode) {
@@ -48,9 +46,6 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           case MediaCastMode::DESKTOP_MIRROR:
             return DialogActivationLocationAndCastMode::
                 kEphemeralIconAndDesktopMirror;
-          case MediaCastMode::LOCAL_FILE:
-            return DialogActivationLocationAndCastMode::
-                kEphemeralIconAndLocalFile;
         }
       }
       break;
@@ -64,8 +59,6 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
         case MediaCastMode::DESKTOP_MIRROR:
           return DialogActivationLocationAndCastMode::
               kContextMenuAndDesktopMirror;
-        case MediaCastMode::LOCAL_FILE:
-          return DialogActivationLocationAndCastMode::kContextMenuAndLocalFile;
       }
       break;
     case MediaRouterDialogOpenOrigin::PAGE:
@@ -76,8 +69,6 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           return DialogActivationLocationAndCastMode::kPageAndTabMirror;
         case MediaCastMode::DESKTOP_MIRROR:
           return DialogActivationLocationAndCastMode::kPageAndDesktopMirror;
-        case MediaCastMode::LOCAL_FILE:
-          return DialogActivationLocationAndCastMode::kPageAndLocalFile;
       }
       break;
     case MediaRouterDialogOpenOrigin::APP_MENU:
@@ -88,8 +79,6 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           return DialogActivationLocationAndCastMode::kAppMenuAndTabMirror;
         case MediaCastMode::DESKTOP_MIRROR:
           return DialogActivationLocationAndCastMode::kAppMenuAndDesktopMirror;
-        case MediaCastMode::LOCAL_FILE:
-          return DialogActivationLocationAndCastMode::kAppMenuAndLocalFile;
       }
       break;
     // |OVERFLOW_MENU| refers to extension icons hidden in the app menu. That

@@ -15,7 +15,6 @@ namespace {
 // The amount of time to wait for a response when creating a new route.
 const int kCreateRouteTimeoutSeconds = 20;
 const int kCreateRouteTimeoutSecondsForTab = 60;
-const int kCreateRouteTimeoutSecondsForLocalFile = 60;
 const int kCreateRouteTimeoutSecondsForDesktop = 120;
 
 }  // namespace
@@ -48,8 +47,6 @@ base::TimeDelta GetRouteRequestTimeout(MediaCastMode cast_mode) {
       return base::Seconds(kCreateRouteTimeoutSecondsForTab);
     case DESKTOP_MIRROR:
       return base::Seconds(kCreateRouteTimeoutSecondsForDesktop);
-    case LOCAL_FILE:
-      return base::Seconds(kCreateRouteTimeoutSecondsForLocalFile);
     default:
       NOTREACHED();
       return base::TimeDelta();

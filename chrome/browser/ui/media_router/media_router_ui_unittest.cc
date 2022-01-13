@@ -91,16 +91,6 @@ class MockControllerObserver : public CastDialogController::Observer {
   raw_ptr<CastDialogController> controller_ = nullptr;
 };
 
-class MockMediaRouterFileDialog : public MediaRouterFileDialog {
- public:
-  MockMediaRouterFileDialog() : MediaRouterFileDialog(nullptr) {}
-  ~MockMediaRouterFileDialog() override {}
-
-  MOCK_METHOD0(GetLastSelectedFileUrl, GURL());
-  MOCK_METHOD0(GetLastSelectedFileName, std::u16string());
-  MOCK_METHOD1(OpenFileDialog, void(Browser* browser));
-};
-
 class PresentationRequestCallbacks {
  public:
   PresentationRequestCallbacks() {}
@@ -542,28 +532,6 @@ TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
   ui_->StartCasting(kSinkId, MediaCastMode::DESKTOP_MIRROR);
 }
 #endif
-
-// Tests that if a local file CreateRoute call is made from a new tab, the
-// file will be opened in the new tab.
-TEST_F(MediaRouterViewsUITest, RouteCreationLocalFileModeInTab) {
-  const GURL empty_tab = GURL(chrome::kChromeUINewTabURL);
-  const std::string file_url = "file:///some/url/for/a/file.mp3";
-  CreateMediaRouterUIForURL(empty_tab);
-  auto file_dialog = std::make_unique<MockMediaRouterFileDialog>();
-  auto* file_dialog_ptr = file_dialog.get();
-  ui_->set_media_router_file_dialog_for_test(std::move(file_dialog));
-
-  EXPECT_CALL(*file_dialog_ptr, GetLastSelectedFileUrl())
-      .WillOnce(Return(GURL(file_url)));
-  content::WebContents* location_file_opened = nullptr;
-  EXPECT_CALL(*mock_router_, CreateRouteInternal(_, _, _, _, _, _, _))
-      .WillOnce(SaveArgWithMove<3>(&location_file_opened));
-  ui_->CreateRoute(kSinkId, MediaCastMode::LOCAL_FILE);
-  ui_->SimulateDocumentAvailableForTest();
-
-  ASSERT_EQ(location_file_opened, web_contents());
-  ASSERT_EQ(location_file_opened->GetVisibleURL(), file_url);
-}
 
 TEST_F(MediaRouterViewsUITest, SortedSinks) {
   NotifyUiOnResultsUpdated({{CreateCastSink("sink3", "B sink"), {}},

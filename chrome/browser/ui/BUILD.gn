@@ -1136,8 +1136,6 @@ static_library("ui") {
       "media_router/cloud_services_dialog.h",
       "media_router/media_cast_mode.cc",
       "media_router/media_cast_mode.h",
-      "media_router/media_router_file_dialog.cc",
-      "media_router/media_router_file_dialog.h",
       "media_router/media_router_ui.cc",
       "media_router/media_router_ui.h",
       "media_router/media_router_ui_helper.cc",

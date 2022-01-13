@@ -11,10 +11,6 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 
-namespace ui {
-struct SelectedFileInfo;
-}  // namespace ui
-
 namespace media_router {
 
 class CastDialogModel;
@@ -48,11 +44,6 @@ class CastDialogController {
   // Stops casting by terminating the route given by |route_id|. No-op if the ID
   // is invalid.
   virtual void StopCasting(const MediaRoute::Id& route_id) = 0;
-
-  // Prompts the user to select a local file to cast. The callback is called
-  // with the info for the selected file, or nullptr if the user declined.
-  virtual void ChooseLocalFile(
-      base::OnceCallback<void(const ui::SelectedFileInfo*)> callback) = 0;
 
   // Removes the specified issue. No-op if the ID is invalid.
   virtual void ClearIssue(const Issue::Id& issue_id) = 0;

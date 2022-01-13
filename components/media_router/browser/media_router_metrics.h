@@ -34,25 +34,25 @@ enum class DialogActivationLocationAndCastMode {
   kPinnedIconAndPresentation,
   kPinnedIconAndTabMirror,
   kPinnedIconAndDesktopMirror,
-  kPinnedIconAndLocalFile,
+  kPinnedIconAndLocalFile,  // Obsolete.
   // One can start casting from an ephemeral icon by stopping a session, then
   // starting another from the same dialog.
   kEphemeralIconAndPresentation,
   kEphemeralIconAndTabMirror,
   kEphemeralIconAndDesktopMirror,
-  kEphemeralIconAndLocalFile,
+  kEphemeralIconAndLocalFile,  // Obsolete.
   kContextMenuAndPresentation,
   kContextMenuAndTabMirror,
   kContextMenuAndDesktopMirror,
-  kContextMenuAndLocalFile,
+  kContextMenuAndLocalFile,  // Obsolete.
   kPageAndPresentation,
   kPageAndTabMirror,
   kPageAndDesktopMirror,
-  kPageAndLocalFile,
+  kPageAndLocalFile,  // Obsolete.
   kAppMenuAndPresentation,
   kAppMenuAndTabMirror,
   kAppMenuAndDesktopMirror,
-  kAppMenuAndLocalFile,
+  kAppMenuAndLocalFile,  // Obsolete.
 
   // NOTE: Do not reorder existing entries, and add entries only immediately
   // above this line.

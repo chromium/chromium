@@ -26,8 +26,6 @@ enum MediaCastMode {
   // Capture the entire desktop and stream it to a media sink.  Available when
   // there is a compatible sink.
   DESKTOP_MIRROR = 0x4,
-  // Take a local media file to open in a tab and cast.
-  LOCAL_FILE = 0x8,
 };
 
 using CastModeSet = std::set<MediaCastMode>;

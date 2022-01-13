@@ -58835,23 +58835,23 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Pinned toolbar icon and presentation"/>
   <int value="1" label="Pinned toolbar icon and tab mirroring"/>
   <int value="2" label="Pinned toolbar icon and desktop mirroring"/>
-  <int value="3" label="Pinned toolbar icon and local file"/>
+  <int value="3" label="(Obsolete) Pinned toolbar icon and local file"/>
   <int value="4" label="Ephemeral icon and presentation"/>
   <int value="5" label="Ephemeral icon and tab mirroring"/>
   <int value="6" label="Ephemeral icon and desktop mirroring"/>
-  <int value="7" label="Ephemeral icon and local file"/>
+  <int value="7" label="(Obsolete) Ephemeral icon and local file"/>
   <int value="8" label="Context menu and presentation"/>
   <int value="9" label="Context menu and tab mirroring"/>
   <int value="10" label="Context menu and desktop mirroring"/>
-  <int value="11" label="Context menu and local file"/>
+  <int value="11" label="(Obsolete) Context menu and local file"/>
   <int value="12" label="Page and presentation"/>
   <int value="13" label="Page and tab mirroring"/>
   <int value="14" label="Page and desktop mirroring"/>
-  <int value="15" label="Page and local file"/>
+  <int value="15" label="(Obsolete) Page and local file"/>
   <int value="16" label="App menu and presentation"/>
   <int value="17" label="App menu and tab mirroring"/>
   <int value="18" label="App menu and desktop mirroring"/>
-  <int value="19" label="App menu and local file"/>
+  <int value="19" label="(Obsolete) App menu and local file"/>
 </enum>
 
 <enum name="MediaRouterDialogOpenOrigin">

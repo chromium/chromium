@@ -6401,7 +6401,6 @@ test("unit_tests") {
       "../browser/ui/autofill/save_update_address_profile_bubble_controller_impl_unittest.cc",
       "../browser/ui/media_router/cast_modes_with_media_sources_unittest.cc",
       "../browser/ui/media_router/media_cast_mode_unittest.cc",
-      "../browser/ui/media_router/media_router_file_dialog_unittest.cc",
       "../browser/ui/media_router/media_router_ui_helper_unittest.cc",
       "../browser/ui/media_router/media_router_ui_service_factory_unittest.cc",
       "../browser/ui/media_router/query_result_manager_unittest.cc",
