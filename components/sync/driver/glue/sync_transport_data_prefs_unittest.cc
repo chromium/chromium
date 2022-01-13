@@ -39,8 +39,8 @@ TEST_F(SyncTransportDataPrefsTest, InvalidationVersions) {
       sync_prefs_->GetInvalidationVersions();
 
   EXPECT_EQ(versions.size(), versions2.size());
-  for (auto map_iter : versions2) {
-    EXPECT_EQ(versions[map_iter.first], map_iter.second);
+  for (auto [type, version] : versions2) {
+    EXPECT_EQ(versions[type], version);
   }
 }
 

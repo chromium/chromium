@@ -195,10 +195,9 @@ void SyncTransportDataPrefs::UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
-  for (const auto& map_iter : invalidation_versions) {
-    std::string version_str = base::NumberToString(map_iter.second);
-    invalidation_dictionary->SetString(ModelTypeToString(map_iter.first),
-                                       version_str);
+  for (const auto& [type, version] : invalidation_versions) {
+    invalidation_dictionary->SetString(ModelTypeToString(type),
+                                       base::NumberToString(version));
   }
   pref_service_->Set(kSyncInvalidationVersions, *invalidation_dictionary);
 }

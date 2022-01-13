@@ -172,14 +172,14 @@ void NudgeTracker::SetTypeBackedOff(ModelType type,
 }
 
 void NudgeTracker::UpdateTypeThrottlingAndBackoffState() {
-  for (const auto& type_and_tracker : type_trackers_) {
-    type_and_tracker.second->UpdateThrottleOrBackoffState();
+  for (const auto& [type, tracker] : type_trackers_) {
+    tracker->UpdateThrottleOrBackoffState();
   }
 }
 
 bool NudgeTracker::IsAnyTypeBlocked() const {
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->IsBlocked()) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->IsBlocked()) {
       return true;
     }
   }
@@ -203,11 +203,10 @@ base::TimeDelta NudgeTracker::GetTimeUntilNextUnblock() const {
 
   // Return min of GetTimeUntilUnblock() values for all IsBlocked() types.
   base::TimeDelta time_until_next_unblock = base::TimeDelta::Max();
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->IsBlocked()) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->IsBlocked()) {
       time_until_next_unblock =
-          std::min(time_until_next_unblock,
-                   type_and_tracker.second->GetTimeUntilUnblock());
+          std::min(time_until_next_unblock, tracker->GetTimeUntilUnblock());
     }
   }
   DCHECK(!time_until_next_unblock.is_max());
@@ -224,9 +223,9 @@ base::TimeDelta NudgeTracker::GetTypeLastBackoffInterval(ModelType type) const {
 
 ModelTypeSet NudgeTracker::GetBlockedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->IsBlocked()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->IsBlocked()) {
+      result.Put(type);
     }
   }
   return result;
@@ -234,9 +233,9 @@ ModelTypeSet NudgeTracker::GetBlockedTypes() const {
 
 ModelTypeSet NudgeTracker::GetNudgedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->HasLocalChangePending()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->HasLocalChangePending()) {
+      result.Put(type);
     }
   }
   return result;
@@ -244,9 +243,9 @@ ModelTypeSet NudgeTracker::GetNudgedTypes() const {
 
 ModelTypeSet NudgeTracker::GetNotifiedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->HasPendingInvalidation()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->HasPendingInvalidation()) {
+      result.Put(type);
     }
   }
   return result;
@@ -254,9 +253,9 @@ ModelTypeSet NudgeTracker::GetNotifiedTypes() const {
 
 ModelTypeSet NudgeTracker::GetRefreshRequestedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->HasRefreshRequestPending()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->HasRefreshRequestPending()) {
+      result.Put(type);
     }
   }
   return result;
@@ -270,12 +269,11 @@ void NudgeTracker::SetLegacyNotificationHint(
 }
 
 sync_pb::SyncEnums::GetUpdatesOrigin NudgeTracker::GetOrigin() const {
-  for (const auto& type_and_tracker : type_trackers_) {
-    const DataTypeTracker& tracker = *type_and_tracker.second;
-    if (!tracker.IsBlocked() &&
-        (tracker.HasPendingInvalidation() ||
-         tracker.HasRefreshRequestPending() ||
-         tracker.HasLocalChangePending() || tracker.IsInitialSyncRequired())) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (!tracker->IsBlocked() && (tracker->HasPendingInvalidation() ||
+                                  tracker->HasRefreshRequestPending() ||
+                                  tracker->HasLocalChangePending() ||
+                                  tracker->IsInitialSyncRequired())) {
       return sync_pb::SyncEnums::GU_TRIGGER;
     }
   }
@@ -322,8 +320,8 @@ void NudgeTracker::SetSyncCycleStartTime(base::TimeTicks now) {
 }
 
 void NudgeTracker::SetHintBufferSize(size_t size) {
-  for (const auto& type_and_tracker : type_trackers_) {
-    type_and_tracker.second->UpdatePayloadBufferSize(size);
+  for (const auto& [type, tracker] : type_trackers_) {
+    tracker->UpdatePayloadBufferSize(size);
   }
 }
 

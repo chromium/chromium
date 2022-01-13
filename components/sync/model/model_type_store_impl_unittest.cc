@@ -139,10 +139,10 @@ void VerifyMetadata(
   EXPECT_EQ(state.SerializeAsString(),
             batch->GetModelTypeState().SerializeAsString());
   EntityMetadataMap actual_metadata = batch->TakeAllMetadata();
-  for (const auto& kv : expected_metadata) {
-    auto it = actual_metadata.find(kv.first);
+  for (const auto& [storage_key, metadata] : expected_metadata) {
+    auto it = actual_metadata.find(storage_key);
     ASSERT_TRUE(it != actual_metadata.end());
-    EXPECT_EQ(kv.second.SerializeAsString(), it->second->SerializeAsString());
+    EXPECT_EQ(metadata.SerializeAsString(), it->second->SerializeAsString());
     actual_metadata.erase(it);
   }
   EXPECT_EQ(0U, actual_metadata.size());

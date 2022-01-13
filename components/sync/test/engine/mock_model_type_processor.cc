@@ -293,9 +293,8 @@ int64_t MockModelTypeProcessor::GetCurrentSequenceNumber(
   auto it = sequence_numbers_.find(tag_hash);
   if (it == sequence_numbers_.end()) {
     return 0;
-  } else {
-    return it->second;
   }
+  return it->second;
 }
 
 // The model thread should be sending us items with strictly increasing
@@ -313,9 +312,8 @@ int64_t MockModelTypeProcessor::GetBaseVersion(
   auto it = base_versions_.find(tag_hash);
   if (it == base_versions_.end()) {
     return kUncommittedVersion;
-  } else {
-    return it->second;
   }
+  return it->second;
 }
 
 void MockModelTypeProcessor::SetBaseVersion(const ClientTagHash& tag_hash,

@@ -126,8 +126,8 @@ std::unique_ptr<Commit> Commit::Init(
   }
 
   ModelTypeSet contributed_data_types;
-  for (const auto& contribution : contributions) {
-    contributed_data_types.Put(contribution.first);
+  for (const auto& [type, contribution] : contributions) {
+    contributed_data_types.Put(type);
   }
 
   // Set the client config params.
@@ -219,14 +219,13 @@ SyncerError Commit::PostAndProcessResponse(
 
   // Let the contributors process the responses to each of their requests.
   SyncerError processing_result = SyncerError(SyncerError::SYNCER_OK);
-  for (ContributionMap::const_iterator it = contributions_.begin();
-       it != contributions_.end(); ++it) {
+  for (const auto& [type, contributions] : contributions_) {
     TRACE_EVENT1("sync", "ProcessCommitResponse", "type",
-                 ModelTypeToString(it->first));
+                 ModelTypeToString(type));
     SyncerError type_result =
-        it->second->ProcessCommitResponse(response, status);
+        contributions->ProcessCommitResponse(response, status);
     if (type_result.value() == SyncerError::SERVER_RETURN_CONFLICT) {
-      nudge_tracker->RecordCommitConflict(it->first);
+      nudge_tracker->RecordCommitConflict(type);
     }
     if (processing_result.value() == SyncerError::SYNCER_OK &&
         type_result.value() != SyncerError::SYNCER_OK) {

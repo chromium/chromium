@@ -156,9 +156,9 @@ std::unique_ptr<MetadataBatch>
 FakeModelTypeSyncBridge::Store::CreateMetadataBatch() const {
   auto metadata_batch = std::make_unique<MetadataBatch>();
   metadata_batch->SetModelTypeState(model_type_state_);
-  for (const auto& kv : metadata_store_) {
+  for (const auto& [storage_key, metadata] : metadata_store_) {
     metadata_batch->AddMetadata(
-        kv.first, std::make_unique<sync_pb::EntityMetadata>(kv.second));
+        storage_key, std::make_unique<sync_pb::EntityMetadata>(metadata));
   }
   return metadata_batch;
 }
@@ -253,9 +253,9 @@ absl::optional<ModelError> FakeModelTypeSyncBridge::MergeSyncData(
   }
 
   // Commit any local entities that aren't being overwritten by the server.
-  for (const auto& kv : db_->all_data()) {
-    if (remote_storage_keys.find(kv.first) == remote_storage_keys.end()) {
-      change_processor()->Put(kv.first, CopyEntityData(*kv.second),
+  for (const auto& [storage_key, entity_data] : db_->all_data()) {
+    if (remote_storage_keys.find(storage_key) == remote_storage_keys.end()) {
+      change_processor()->Put(storage_key, CopyEntityData(*entity_data),
                               metadata_change_list.get());
     }
   }
@@ -338,8 +338,8 @@ void FakeModelTypeSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   }
 
   auto batch = std::make_unique<MutableDataBatch>();
-  for (const auto& kv : db_->all_data()) {
-    batch->Put(kv.first, CopyEntityData(*kv.second));
+  for (const auto& [storage_key, entity_data] : db_->all_data()) {
+    batch->Put(storage_key, CopyEntityData(*entity_data));
   }
   std::move(callback).Run(std::move(batch));
 }
