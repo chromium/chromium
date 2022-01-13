@@ -885,7 +885,7 @@ void HintsManager::RegisterOptimizationTypes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool should_load_new_optimization_filter = false;
 
-  DictionaryPrefUpdateDeprecated previously_registered_opt_types(
+  DictionaryPrefUpdate previously_registered_opt_types(
       pref_service_, prefs::kPreviouslyRegisteredOptimizationTypes);
   for (const auto optimization_type : optimization_types) {
     if (optimization_type == proto::TYPE_UNSPECIFIED)
