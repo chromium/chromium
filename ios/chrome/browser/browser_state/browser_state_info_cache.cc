@@ -32,13 +32,10 @@ BrowserStateInfoCache::BrowserStateInfoCache(
     const base::FilePath& user_data_dir)
     : prefs_(prefs), user_data_dir_(user_data_dir) {
   // Populate the cache
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kBrowserStateInfoCache);
-  base::DictionaryValue* cache = update.Get();
-  for (base::DictionaryValue::Iterator it(*cache); !it.IsAtEnd();
-       it.Advance()) {
-    base::DictionaryValue* info = nullptr;
-    cache->GetDictionaryWithoutPathExpansion(it.key(), &info);
-    AddBrowserStateCacheKey(it.key());
+  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+  base::Value* cache = update.Get();
+  for (const auto it : cache->DictItems()) {
+    AddBrowserStateCacheKey(it.first);
   }
 }
 
@@ -49,13 +46,13 @@ void BrowserStateInfoCache::AddBrowserState(
     const std::string& gaia_id,
     const std::u16string& user_name) {
   std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kBrowserStateInfoCache);
-  base::DictionaryValue* cache = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+  base::Value* cache = update.Get();
 
-  std::unique_ptr<base::DictionaryValue> info(new base::DictionaryValue);
-  info->SetString(kGAIAIdKey, gaia_id);
-  info->SetString(kUserNameKey, user_name);
-  cache->SetWithoutPathExpansion(key, std::move(info));
+  base::Value info(base::Value::Type::DICTIONARY);
+  info.SetStringKey(kGAIAIdKey, gaia_id);
+  info.SetStringKey(kUserNameKey, user_name);
+  cache->SetKey(key, std::move(info));
   AddBrowserStateCacheKey(key);
 
   for (auto& observer : observer_list_)
@@ -80,8 +77,8 @@ void BrowserStateInfoCache::RemoveBrowserState(
     NOTREACHED();
     return;
   }
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kBrowserStateInfoCache);
-  base::DictionaryValue* cache = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+  base::Value* cache = update.Get();
   std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
   cache->RemoveKey(key);
   sorted_keys_.erase(std::find(sorted_keys_.begin(), sorted_keys_.end(), key));
@@ -185,8 +182,8 @@ const base::Value* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(
 
 void BrowserStateInfoCache::SetInfoForBrowserStateAtIndex(size_t index,
                                                           base::Value info) {
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kBrowserStateInfoCache);
-  base::DictionaryValue* cache = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+  base::Value* cache = update.Get();
   cache->SetKey(sorted_keys_[index], std::move(info));
 }
 
