@@ -63,7 +63,6 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/util",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser:test_support",
     "//ios/web",
     "//ios/web/public/test",
     "//net",
