@@ -13,7 +13,7 @@
 #include "services/network/network_context.h"
 #include "services/network/proxy_service_mojo.h"
 #include "services/network/public/cpp/features.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/proxy_resolution/win/dhcp_pac_file_fetcher_win.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/dhcp_pac_file_fetcher_mojo.h"
@@ -42,7 +42,7 @@ void URLRequestContextBuilderMojo::SetDhcpWpadUrlClient(
 std::unique_ptr<net::DhcpPacFileFetcher>
 URLRequestContextBuilderMojo::CreateDhcpPacFileFetcher(
     net::URLRequestContext* context) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_unique<net::DhcpPacFileFetcherWin>(context);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<DhcpPacFileFetcherMojo>(

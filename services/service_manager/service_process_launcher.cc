@@ -39,11 +39,11 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/switches.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/linux/services/namespace_sandbox.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 
 #include <windows.h>
@@ -187,7 +187,7 @@ base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
     mojo::OutgoingInvitation invitation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::LaunchOptions options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.handles_to_inherit = handle_passing_info;
   options.stdin_handle = INVALID_HANDLE_VALUE;
   options.stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -212,29 +212,29 @@ base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
       options.stdout_handle != options.stderr_handle) {
     options.handles_to_inherit.push_back(options.stderr_handle);
   }
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // LaunchProcess will share stdin/out/err with the child process by default.
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type))
     NOTIMPLEMENTED();
   options.handles_to_transfer = std::move(handle_passing_info);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   const base::FileHandleMappingVector fd_mapping{
       {STDIN_FILENO, STDIN_FILENO},
       {STDOUT_FILENO, STDOUT_FILENO},
       {STDERR_FILENO, STDERR_FILENO},
   };
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   options.fds_to_remap = fd_mapping;
   options.mach_ports_for_rendezvous = handle_passing_info;
 #else
   handle_passing_info.insert(handle_passing_info.end(), fd_mapping.begin(),
                              fd_mapping.end());
   options.fds_to_remap = handle_passing_info;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 #endif
   DVLOG(2) << "Launching child with command line: "
            << child_command_line->GetCommandLineString();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type)) {
     child_process_ =
         sandbox::NamespaceSandbox::LaunchProcess(*child_command_line, options);

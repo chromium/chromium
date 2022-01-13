@@ -146,7 +146,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
 };
 
 // CRLSets are not supported on iOS and Android system verifiers.
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 class NetworkServiceCRLSetTest : public NetworkServiceIntegrationTest {
  public:
@@ -368,10 +368,10 @@ TEST_F(NetworkServiceCRLSetTest, CRLSetDoesNotDowngrade) {
               net::CERT_STATUS_REVOKED);
 }
 
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/860189): AIA tests fail on iOS
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE(test_name) DISABLED_##test_name
 #else
 #define MAYBE(test_name) test_name

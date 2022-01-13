@@ -13,13 +13,13 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace media_session {
 
@@ -32,7 +32,7 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaImage {
 
   bool operator==(const MediaImage& other) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Creates a Java array of MediaImage instances and returns the JNI ref.
   static base::android::ScopedJavaLocalRef<jobjectArray> ToJavaArray(
       JNIEnv* env,

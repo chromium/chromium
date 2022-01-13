@@ -73,7 +73,7 @@ class NetworkLocationProvider : public LocationProvider,
 
   WifiDataProviderManager::WifiDataUpdateCallback wifi_data_update_callback_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Used to keep track of macOS System Permission changes. Also, ensures
   // lifetime of PermissionObserverList as the BrowserProcess may destroy its
   // reference on the UI Thread before we destroy this provider.

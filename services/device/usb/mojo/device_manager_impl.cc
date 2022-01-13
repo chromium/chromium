@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
@@ -85,7 +86,7 @@ void DeviceManagerImpl::GetSecurityKeyDevice(
                            /*allow_security_key_requests=*/true);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void DeviceManagerImpl::RefreshDeviceInfo(const std::string& guid,
                                           RefreshDeviceInfoCallback callback) {
   scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
@@ -116,7 +117,7 @@ void DeviceManagerImpl::OnPermissionGrantedToRefresh(
 
   std::move(callback).Run(device->device_info().Clone());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void DeviceManagerImpl::CheckAccess(const std::string& guid,

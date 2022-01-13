@@ -40,7 +40,7 @@ class DeviceOutputListener;
 class InputStreamActivityMonitor;
 
 // Only do power monitoring for non-mobile platforms to save resources.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #define AUDIO_POWER_MONITORING
 #endif
 

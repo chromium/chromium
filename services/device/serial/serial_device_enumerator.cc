@@ -10,11 +10,11 @@
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "services/device/serial/serial_device_enumerator_linux.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "services/device/serial/serial_device_enumerator_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "services/device/serial/serial_device_enumerator_win.h"
 #endif
 
@@ -23,11 +23,11 @@ namespace device {
 // static
 std::unique_ptr<SerialDeviceEnumerator> SerialDeviceEnumerator::Create(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return SerialDeviceEnumeratorLinux::Create();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return std::make_unique<SerialDeviceEnumeratorMac>();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return std::make_unique<SerialDeviceEnumeratorWin>(std::move(ui_task_runner));
 #else
 #error "No implementation of SerialDeviceEnumerator on this platform."
@@ -67,7 +67,7 @@ absl::optional<base::FilePath> SerialDeviceEnumerator::GetPathFromToken(
   if (it == ports_.end())
     return absl::nullopt;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (use_alternate_path)
     return it->second->alternate_path;
 #endif

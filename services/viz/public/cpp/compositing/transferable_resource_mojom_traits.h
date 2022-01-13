@@ -57,7 +57,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
 
   static bool is_backed_by_surface_texture(
       const viz::TransferableResource& resource) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // TransferableResource has this in an #ifdef, but mojo doesn't let us.
     // TODO(https://crbug.com/671901)
     return resource.is_backed_by_surface_texture;
@@ -67,7 +67,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
   }
 
   static bool wants_promotion_hint(const viz::TransferableResource& resource) {
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
     // TransferableResource has this in an #ifdef, but mojo doesn't let us.
     // TODO(https://crbug.com/671901)
     return resource.wants_promotion_hint;

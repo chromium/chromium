@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
 #endif  // OS_ANDROID
 
@@ -41,7 +41,7 @@ class PowerSaveBlocker {
 
   virtual ~PowerSaveBlocker();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, the mojom::WakeLockType::kPreventDisplaySleep type of
   // PowerSaveBlocker should associated with a View, so the blocker can be
   // removed by the platform. Note that |view_android| is guaranteed to be

@@ -21,7 +21,7 @@
 #include "media/base/audio_parameters.h"
 #include "services/audio/input_controller.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
 #endif
 

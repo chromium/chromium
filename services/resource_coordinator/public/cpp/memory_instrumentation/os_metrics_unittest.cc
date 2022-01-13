@@ -12,24 +12,24 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <libgen.h>
 #include <mach-o/dyld.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/strings/sys_string_conversions.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/mman.h>
 #endif
 
 namespace memory_instrumentation {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 namespace {
 const char kTestSmaps1[] =
     "00400000-004be000 r-xp 00000000 fc:01 1234              /file/1\n"
@@ -128,7 +128,8 @@ void CreateTempFileWithContents(const char* contents, base::ScopedFILE* file) {
 }
 
 }  // namespace
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
 TEST(OSMetricsTest, GivesNonZeroResults) {
   base::ProcessId pid = base::kNullProcessId;
@@ -136,17 +137,17 @@ TEST(OSMetricsTest, GivesNonZeroResults) {
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
   EXPECT_TRUE(OSMetrics::FillOSMemoryDump(pid, &dump));
   EXPECT_TRUE(dump.platform_private_footprint);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
   EXPECT_GT(dump.platform_private_footprint->rss_anon_bytes, 0u);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   EXPECT_GT(dump.platform_private_footprint->private_bytes, 0u);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   EXPECT_GT(dump.platform_private_footprint->internal_bytes, 0u);
 #endif
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 TEST(OSMetricsTest, ParseProcSmaps) {
   const uint32_t kProtR = mojom::VmRegion::kProtectionFlagsRead;
   const uint32_t kProtW = mojom::VmRegion::kProtectionFlagsWrite;
@@ -253,9 +254,10 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
   EXPECT_EQ(pages == accessed_pages_set, true);
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void DummyFunction() {}
 
 TEST(OSMetricsTest, TestWinModuleReading) {
@@ -304,9 +306,9 @@ TEST(OSMetricsTest, TestWinModuleReading) {
   EXPECT_TRUE(found_executable);
   EXPECT_TRUE(found_region_with_dummy);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 namespace {
 
 void CheckMachORegions(const std::vector<mojom::VmRegionPtr>& maps) {
@@ -347,6 +349,6 @@ TEST(OSMetricsTest, DISABLED_TestMachOReading) {
   maps = OSMetrics::GetProcessModules(base::kNullProcessId);
   CheckMachORegions(maps);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace memory_instrumentation

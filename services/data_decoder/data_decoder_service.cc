@@ -24,7 +24,7 @@
 #include "services/data_decoder/ble_scan_parser_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "services/data_decoder/image_decoder_impl.h"
 #endif
 
@@ -46,7 +46,7 @@ void DataDecoderService::BindReceiver(
 
 void DataDecoderService::BindImageDecoder(
     mojo::PendingReceiver<mojom::ImageDecoder> receiver) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   LOG(FATAL) << "ImageDecoder not supported on iOS.";
 #else
   if (drop_image_decoders_)

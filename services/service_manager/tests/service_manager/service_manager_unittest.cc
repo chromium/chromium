@@ -255,7 +255,7 @@ class ServiceManagerTest : public testing::Test,
     CHECK(base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &target_path));
 
     target_path = target_path.AppendASCII(kTestTargetName);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     target_path = target_path.AddExtensionASCII("exe");
 #endif
 

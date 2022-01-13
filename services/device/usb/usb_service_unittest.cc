@@ -54,7 +54,7 @@ TEST_F(UsbServiceTest, GetDevices) {
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(UsbServiceTest, GetDevicesNewBackend) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(device::kNewUsbBackend);
@@ -66,7 +66,7 @@ TEST_F(UsbServiceTest, GetDevicesNewBackend) {
     loop.Run();
   }
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(UsbServiceTest, ClaimGadget) {
   if (!UsbTestGadget::IsTestEnabled() || !usb_service_)

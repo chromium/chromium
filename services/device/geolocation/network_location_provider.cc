@@ -15,12 +15,13 @@
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/device_features.h"
 #endif
 
@@ -57,7 +58,7 @@ NetworkLocationProvider::NetworkLocationProvider(
           base::BindRepeating(&NetworkLocationProvider::OnLocationResponse,
                               base::Unretained(this)))) {
   DCHECK(position_cache_);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   geolocation_manager_ = geolocation_manager;
   permission_observers_ = geolocation_manager->GetObserverList();
   permission_observers_->AddObserver(this);
@@ -72,7 +73,7 @@ NetworkLocationProvider::NetworkLocationProvider(
 
 NetworkLocationProvider::~NetworkLocationProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   permission_observers_->RemoveObserver(this);
 #endif
   if (IsStarted())
@@ -116,7 +117,7 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!is_system_permission_granted_) {
     if (!is_awaiting_initial_permission_status_) {
       mojom::Geoposition error_position;
@@ -204,7 +205,7 @@ const mojom::Geoposition& NetworkLocationProvider::GetPosition() {
 void NetworkLocationProvider::RequestPosition() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!is_system_permission_granted_) {
     return;
   }

@@ -20,9 +20,9 @@
 
 namespace device {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 typedef uint64_t HidPlatformDeviceId;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 typedef std::wstring HidPlatformDeviceId;
 #else
 typedef std::string HidPlatformDeviceId;

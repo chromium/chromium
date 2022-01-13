@@ -41,11 +41,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/radio_utils.h"
 #include "base/power_monitor/power_monitor.h"
 #include "net/android/network_library.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace network {
 
@@ -998,7 +998,7 @@ class ResourceScheduler::Client
     request->Start(start_mode);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void RecordMetricsForWeakSignalThrottlingDuration() const {
     if (weak_signal_throttling_start_timestamp_.has_value()) {
       base::TimeDelta time_since_throttling_start =
@@ -1035,7 +1035,7 @@ class ResourceScheduler::Client
     return maybe_level.has_value() &&
            *maybe_level <= base::android::RadioSignalLevel::kModerate;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // While the radio signal is weak and the device is on battery power, we
   // only allow short periods when IDLE browser requests can be sent.
@@ -1050,7 +1050,7 @@ class ResourceScheduler::Client
       return;
     }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (!base::android::RadioUtils::IsSupported())
       return;
 
@@ -1101,7 +1101,7 @@ class ResourceScheduler::Client
 
     // Not currently throttling, so start throttling.
     weak_signal_throttling_start_timestamp_ = tick_clock_->NowTicks();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // Returns true if |request| should be throttled to avoid unnecessary

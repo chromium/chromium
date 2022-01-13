@@ -35,7 +35,7 @@ namespace {
 // TODO(crbug.com/83907): Find a good compromise between performance and
 // data granularity (mainly relevant to running with small buffer sizes
 // when we use background tracing) on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr size_t kDefaultSMBPageSizeBytes = 4 * 1024;
 #else
 constexpr size_t kDefaultSMBPageSizeBytes = 32 * 1024;
@@ -376,7 +376,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
                      perfetto::base::ScopedFile file) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     trace_config_ = trace_config;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // TODO(crbug.com/1158482): Add support on Windows.
     DCHECK(!file)
         << "Tracing directly to a file isn't supported on Windows yet";

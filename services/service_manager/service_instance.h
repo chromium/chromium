@@ -71,11 +71,11 @@ class ServiceInstance : public mojom::Connector,
   // Starts this instance using an already-established Service pipe.
   void StartWithRemote(mojo::PendingRemote<mojom::Service> remote);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Starts this instance from a path to a service executable on disk.
   bool StartWithProcessHost(std::unique_ptr<ServiceProcessHost> host,
                             sandbox::mojom::Sandbox sandbox_type);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Binds an endpoint for this instance to receive metadata about its
   // corresponding service process, if any.
@@ -177,7 +177,7 @@ class ServiceInstance : public mojom::Connector,
   // instances in the system.
   const bool can_contact_all_services_;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<ServiceProcessHost> process_host_;
 #endif
 

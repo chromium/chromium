@@ -662,7 +662,7 @@ void ConsumerHost::EnableTracing(
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1158482): Support writing to a file directly on Windows.
   DCHECK(!output_file.IsValid())
       << "Tracing directly to a file isn't supported yet on Windows";

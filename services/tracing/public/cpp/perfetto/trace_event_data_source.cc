@@ -65,7 +65,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pbzero.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "base/android/build_info.h"
 #include "base/trace_event/application_state_proto_android.h"
@@ -87,7 +87,7 @@ namespace {
 TraceEventMetadataSource* g_trace_event_metadata_source_for_testing = nullptr;
 
 void EmitRecurringUpdates() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static const ChromeProcessDescriptor::ProcessType process_type =
       GetProcessType(
           base::trace_event::TraceLog::GetInstance()->process_name());
@@ -196,7 +196,7 @@ void TraceEventMetadataSource::AddGeneratorFunction(
 void TraceEventMetadataSource::WriteMetadataPacket(
     perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
     bool privacy_filtering_enabled) {
-#if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
   // Version code is only set for official builds on Android.
   const char* version_code_str =
       base::android::BuildInfo::GetInstance()->package_version_code();
@@ -206,7 +206,7 @@ void TraceEventMetadataSource::WriteMetadataPacket(
     DCHECK(res);
     metadata_proto->set_chrome_version_code(version_code);
   }
-#endif  // defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
 
   AutoLockWithDeferredTaskPosting lock(lock_);
 
@@ -1444,17 +1444,17 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // the writer is only destroyed on the perfetto sequence in this case.
   perfetto::TraceWriter* writer;
   bool privacy_filtering_enabled;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool is_system_producer;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   {
     AutoLockWithDeferredTaskPosting lock(lock_);
     writer = trace_writer_.get();
     privacy_filtering_enabled = privacy_filtering_enabled_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     is_system_producer =
         producer_ == PerfettoTracedProcess::Get()->system_producer();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   if (!writer) {
@@ -1515,7 +1515,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
     chrome_process->set_crash_trace_id(*crash_trace_id);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Host app package name is only recorded if the corresponding TraceLog
   // setting is set to true and privacy filtering is disabled or this is a
   // system trace.
@@ -1529,7 +1529,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
           base::android::BuildInfo::GetInstance()->host_package_name());
     }
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // TODO(eseckler): Set other fields on |chrome_process|.
 

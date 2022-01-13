@@ -13,7 +13,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/dcheck_is_on.h"
 #endif
 
@@ -51,7 +51,7 @@ void AddCookiesToURLResponseHead(const std::vector<std::string>& cookies,
 
 mojom::NetworkContextParamsPtr CreateNetworkContextParamsForTesting() {
   mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();
-#if defined(OS_WIN) && DCHECK_IS_ON()
+#if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
   // For unit tests, no need to verify that permissions on the files are
   // correct, as this testing is done in integration tests.
   params->win_permissions_set = true;

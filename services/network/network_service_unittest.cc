@@ -155,7 +155,7 @@ TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
 }
 
 // Platforms where Negotiate can be used.
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
 // Returns the negotiate factory, if one exists, to query its configuration.
 net::HttpAuthHandlerNegotiate::Factory* GetNegotiateFactory(
     NetworkContext* network_context) {
@@ -184,25 +184,25 @@ TEST_F(NetworkServiceTest, AuthDefaultParams) {
   EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
   EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
 
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(GetNegotiateFactory(&network_context));
-#if defined(OS_POSIX) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ("",
             GetNegotiateFactory(&network_context)->GetLibraryNameForTesting());
 #endif
-#endif  // BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
 
   EXPECT_FALSE(auth_handler_factory->http_auth_preferences()
                    ->NegotiateDisableCnameLookup());
   EXPECT_FALSE(
       auth_handler_factory->http_auth_preferences()->NegotiateEnablePort());
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   EXPECT_TRUE(auth_handler_factory->http_auth_preferences()->NtlmV2Enabled());
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
-#if defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("", auth_handler_factory->http_auth_preferences()
                     ->AuthAndroidNegotiateAccountType());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(NetworkServiceTest, AuthSchemesDigestAndNtlmOnly) {
@@ -462,7 +462,7 @@ TEST_F(NetworkServiceTest, AuthEnableNegotiatePort) {
 }
 
 // DnsClient isn't supported on iOS.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
   // Create valid DnsConfig.
@@ -785,10 +785,10 @@ TEST_F(NetworkServiceTest, DohProbe_ContextRemovedAfterTimeout) {
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 }
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 // |ntlm_v2_enabled| is only supported on POSIX platforms.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(NetworkServiceTest, AuthNtlmV2Enabled) {
   // Set |ntlm_v2_enabled| to false before creating any NetworkContexts.
   mojom::HttpAuthDynamicParamsPtr auth_params =
@@ -821,10 +821,10 @@ TEST_F(NetworkServiceTest, AuthNtlmV2Enabled) {
   service()->ConfigureHttpAuthPrefs(std::move(auth_params));
   EXPECT_FALSE(auth_handler_factory->http_auth_preferences()->NtlmV2Enabled());
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 // |android_negotiate_account_type| is only supported on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(NetworkServiceTest, AuthAndroidNegotiateAccountType) {
   const char kInitialAccountType[] = "Scorpio";
   const char kFinalAccountType[] = "Pisces";
@@ -855,7 +855,7 @@ TEST_F(NetworkServiceTest, AuthAndroidNegotiateAccountType) {
   EXPECT_EQ(kFinalAccountType, auth_handler_factory->http_auth_preferences()
                                    ->AuthAndroidNegotiateAccountType());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 static int GetGlobalMaxConnectionsPerProxy() {
   return net::ClientSocketPoolManager::max_sockets_per_proxy_server(
@@ -1240,7 +1240,7 @@ class NetworkChangeTest : public testing::Test {
 
 // mojom:NetworkChangeManager isn't supported on iOS.
 // See the same ifdef in CreateNetworkChangeNotifierIfNeeded.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_NetworkChangeManagerRequest DISABLED_NetworkChangeManagerRequest
 #else
 #define MAYBE_NetworkChangeManagerRequest NetworkChangeManagerRequest

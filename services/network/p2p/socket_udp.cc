@@ -73,7 +73,7 @@ std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
     net::NetLog* net_log) {
   net::UDPServerSocket* socket =
       new net::UDPServerSocket(net_log, net::NetLogSource());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   socket->UseNonBlockingIO();
 #endif
 

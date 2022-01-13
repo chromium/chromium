@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "services/audio/service.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -48,7 +48,7 @@ class OwningAudioManagerAccessor : public Service::AudioManagerAccessor {
   void Shutdown() final;
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Required to access CoreAudio.
   base::win::ScopedCOMInitializer com_initializer_{
       base::win::ScopedCOMInitializer::kMTA};

@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -707,7 +708,7 @@ TEST_F(ConnectTest, ConnectToClientProcess_Blocked) {
   base::Process process;
   mojom::ConnectResult result =
       service_manager::test::LaunchAndConnectToProcess(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           base::StrCat({kTestExeName, ".exe"}),
 #else
           kTestExeName,

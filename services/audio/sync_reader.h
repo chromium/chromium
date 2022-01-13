@@ -21,7 +21,7 @@
 #include "media/base/audio_latency.h"
 #include "services/audio/output_controller.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
 #endif
 

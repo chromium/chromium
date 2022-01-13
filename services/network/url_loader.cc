@@ -94,7 +94,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/base/features.h"
 #include "services/network/radio_monitor_android.h"
 #endif
@@ -713,7 +713,7 @@ URLLoader::URLLoader(
         request.net_log_reference_info.value());
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(net::features::kRecordRadioWakeupTrigger)) {
     MaybeRecordURLLoaderCreationForWakeupTrigger(request, traffic_annotation);
   }

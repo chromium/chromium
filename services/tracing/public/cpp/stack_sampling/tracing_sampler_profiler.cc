@@ -601,7 +601,7 @@ void TracingSamplerProfiler::StackProfileWriter::ResetEmittedState() {
 
 // static
 void TracingSamplerProfiler::MangleModuleIDIfNeeded(std::string* module_id) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux ELF module IDs are 160bit integers, which we need to mangle
   // down to 128bit integers to match the id that Breakpad outputs.
   // Example on version '66.0.3359.170' x64:
@@ -753,7 +753,7 @@ void TracingSamplerProfiler::StartTracing(
 
   profile_builder_ = profile_builder.get();
   // Create and start the stack sampling profiler.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
   const auto create_unwinders = []() {
     std::vector<std::unique_ptr<base::Unwinder>> unwinders;
@@ -773,13 +773,13 @@ void TracingSamplerProfiler::StartTracing(
                                             module_cache));
   profiler_->Start();
 #endif
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder));
   if (aux_unwinder_factory_)
     profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
   profiler_->Start();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
   if (loader_lock_sampling_thread_)

@@ -82,13 +82,13 @@ mojom::ConnectResult LaunchAndConnectToProcess(
   loop.Run();
 
   base::LaunchOptions options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.handles_to_inherit = handle_passing_info;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   options.handles_to_transfer = handle_passing_info;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   options.mach_ports_for_rendezvous = handle_passing_info;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   options.fds_to_remap = handle_passing_info;
 #endif
   *process = base::LaunchProcess(child_command_line, options);

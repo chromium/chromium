@@ -7,9 +7,9 @@
 #include "build/build_config.h"
 #include "services/device/device_posture/device_posture_provider_impl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "services/device/device_posture/device_posture_platform_provider_win.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "services/device/device_posture/device_posture_platform_provider_android.h"
 #endif
 
@@ -18,9 +18,9 @@ namespace device {
 // static
 std::unique_ptr<DevicePosturePlatformProvider>
 DevicePosturePlatformProvider::Create() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_unique<DevicePosturePlatformProviderWin>();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<DevicePosturePlatformProviderAndroid>();
 #else
   return nullptr;

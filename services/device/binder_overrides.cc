@@ -5,6 +5,7 @@
 #include "services/device/binder_overrides.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 
 namespace device {
 namespace internal {
@@ -14,7 +15,7 @@ GeolocationContextBinder& GetGeolocationContextBinderOverride() {
   return *binder;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 NFCProviderBinder& GetNFCProviderBinderOverride() {
   static base::NoDestructor<NFCProviderBinder> binder;
   return *binder;

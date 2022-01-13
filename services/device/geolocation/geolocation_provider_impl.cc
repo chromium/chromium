@@ -18,13 +18,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "build/build_config.h"
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/geolocation/position_cache_impl.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "services/device/geolocation/geolocation_jni_headers/LocationProviderFactory_jni.h"
 #endif
@@ -58,7 +59,7 @@ void GeolocationProviderImpl::SetGeolocationConfiguration(
   g_custom_location_provider_callback.Get() = custom_location_provider_getter;
   g_geolocation_manager = geolocation_manager;
   if (use_gms_core_location_provider) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LocationProviderFactory_useGmsCoreLocationProvider(env);
 #else
@@ -175,7 +176,7 @@ void GeolocationProviderImpl::OnClientsChanged() {
   } else {
     if (!IsRunning()) {
       base::Thread::Options options;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
 #endif
       StartWithOptions(std::move(options));

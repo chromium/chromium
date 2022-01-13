@@ -145,7 +145,7 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
               static_cast<uint64_t>(kTestMaxImageSize));
 // Android does its own image shrinking for memory conservation deeper in
 // the decode, so more specific tests here won't work.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(widths[i] >> i, request.bitmap().width());
     EXPECT_EQ(heights[i] >> i, request.bitmap().height());
 

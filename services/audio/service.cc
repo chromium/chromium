@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/bind_to_current_loop.h"
 #include "services/audio/debug_recording.h"
@@ -23,7 +24,7 @@
 #include "services/audio/service_metrics.h"
 #include "services/audio/system_info.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "media/audio/mac/audio_device_listener_mac.h"
 #endif
 
@@ -157,7 +158,7 @@ void Service::BindTestingApi(
 
 void Service::InitializeDeviceMonitor() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (audio_device_listener_mac_)
     return;
 

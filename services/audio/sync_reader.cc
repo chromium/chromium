@@ -90,7 +90,7 @@ void LogPerLatencyGlitchUma(AudioLatency::LatencyType latency,
 
 namespace audio {
 
-#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
 const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -115,7 +115,7 @@ SyncReader::SyncReader(
       renderer_missed_callback_count_(0),
       trailing_renderer_missed_callback_count_(0),
       buffer_index_(0) {
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   maximum_wait_time_ = params.GetBufferDuration() / 2;
 #else

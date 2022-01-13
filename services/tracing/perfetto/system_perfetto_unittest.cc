@@ -38,9 +38,9 @@
 #include "third_party/perfetto/protos/perfetto/config/trace_config.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"  // nogncheck
-#endif                                // defined(OS_ANDROID)
+#endif
 
 namespace tracing {
 
@@ -242,7 +242,7 @@ class SystemPerfettoTest : public TracingUnitTest {
   const char* old_tmp_dir_ = nullptr;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1262132#c17
 #define MAYBE_SystemTraceEndToEnd DISABLED_SystemTraceEndToEnd
 #else
@@ -288,7 +288,7 @@ TEST_F(SystemPerfettoTest, MAYBE_SystemTraceEndToEnd) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1262132#c17
 #define MAYBE_OneSystemSourceWithMultipleLocalSources \
   DISABLED_OneSystemSourceWithMultipleLocalSources
@@ -393,7 +393,7 @@ TEST_F(SystemPerfettoTest, MAYBE_OneSystemSourceWithMultipleLocalSources) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1262132#c17
 #define MAYBE_MultipleSystemSourceWithOneLocalSourcesLocalFirst \
   DISABLED_MultipleSystemSourceWithOneLocalSourcesLocalFirst
@@ -518,7 +518,7 @@ TEST_F(SystemPerfettoTest,
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1262132#c17
 #define MAYBE_MultipleSystemAndLocalSources \
   DISABLED_MultipleSystemAndLocalSources
@@ -634,7 +634,7 @@ TEST_F(SystemPerfettoTest, MAYBE_MultipleSystemAndLocalSources) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1262132#c17
 #define MAYBE_MultipleSystemAndLocalSourcesLocalFirst \
   DISABLED_MultipleSystemAndLocalSourcesLocalFirst
@@ -747,7 +747,7 @@ TEST_F(SystemPerfettoTest, MAYBE_MultipleSystemAndLocalSourcesLocalFirst) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Flaky on all CrOS platforms: crbug.com/1262132#c18
 // Flaky on Android: crbug.com/1262132
 #define MAYBE_SystemTraceWhileLocalStartupTracing \
@@ -859,7 +859,7 @@ TEST_F(SystemPerfettoTest, MAYBE_SystemTraceWhileLocalStartupTracing) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Failing on android-pie-arm64-dbg, see crbug.com/1262132.
 TEST_F(SystemPerfettoTest, DISABLED_SystemToLowAPILevel) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
@@ -945,23 +945,23 @@ TEST_F(SystemPerfettoTest, DISABLED_EnabledOnDebugBuilds) {
     EXPECT_FALSE(ShouldSetupSystemTracing());
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1262132#c17
 #define MAYBE_RespectsFeatureList DISABLED_RespectsFeatureList
 #else
 #define MAYBE_RespectsFeatureList RespectsFeatureList
 #endif
 TEST_F(SystemPerfettoTest, MAYBE_RespectsFeatureList) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_debug_android()) {
     // The feature list is ignored on debug android builds so we should have a
     // real system producer so just bail out of this test.
     EXPECT_TRUE(ShouldSetupSystemTracing());
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(features::kEnablePerfettoSystemTracing);
@@ -974,7 +974,7 @@ TEST_F(SystemPerfettoTest, MAYBE_RespectsFeatureList) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1262132#c17
 TEST_F(SystemPerfettoTest, DISABLED_RespectsFeaturePreAndroidPie) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
@@ -1051,10 +1051,10 @@ TEST_F(SystemPerfettoTest, DISABLED_RespectsFeaturePreAndroidPie) {
   EXPECT_EQ(0u, run_test(/* enable_feature = */ false));
   EXPECT_EQ(1u, run_test(/* enable_feature = */ true));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(SystemPerfettoTest, DISABLED_EnablePerfettoSystemTracingDefaultState) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(features::kEnablePerfettoSystemTracing.default_state,
             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -1074,18 +1074,18 @@ TEST_F(SystemPerfettoTest, MAYBE_SetupSystemTracing) {
   EXPECT_FALSE(PerfettoTracedProcess::Get()->system_producer());
   PerfettoTracedProcess::Get()->SetupSystemTracing();
   EXPECT_TRUE(PerfettoTracedProcess::Get()->system_producer());
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   EXPECT_FALSE(PerfettoTracedProcess::Get()
                    ->system_producer()
                    ->IsDummySystemProducerForTesting());
-#else   // defined(OS_POSIX)
+#else   // BUILDFLAG(IS_POSIX)
   EXPECT_TRUE(PerfettoTracedProcess::Get()
                   ->system_producer()
                   ->IsDummySystemProducerForTesting());
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 TEST_F(SystemPerfettoTest, SandboxedOpenProducerSocket) {
   const char* kProducerSockEnvName = "PERFETTO_PRODUCER_SOCK_NAME";
   auto system_service = CreateMockSystemService();
@@ -1153,7 +1153,7 @@ TEST_F(SystemPerfettoTest, SandboxedOpenProducerSocket) {
   EXPECT_EQ(1u, system_consumer.received_test_packets());
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace tracing

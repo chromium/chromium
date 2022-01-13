@@ -15,11 +15,11 @@
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/task/post_task.h"
 #include "services/data_decoder/data_decoder_service.h"  // nogncheck
 #endif
@@ -107,7 +107,7 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
   DataDecoder::ResultCallback<V> callback_;
 };
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void BindInProcessService(
     mojo::PendingReceiver<mojom::DataDecoderService> receiver) {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
@@ -140,7 +140,7 @@ mojom::DataDecoderService* DataDecoder::GetService() {
     if (provider) {
       provider->BindDataDecoderService(service_.BindNewPipeAndPassReceiver());
     } else {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       BindInProcessService(service_.BindNewPipeAndPassReceiver());
 #else
       LOG(FATAL) << "data_decoder::ServiceProvider::Set() must be called "
@@ -158,7 +158,7 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 
 void DataDecoder::ParseJson(const std::string& json,
                             ValueParseCallback callback) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For Android, we use the in-process sanitizer and then parse with a simple
   // JSONReader.
   JsonSanitizer::Sanitize(

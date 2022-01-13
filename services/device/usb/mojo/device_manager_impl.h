@@ -66,13 +66,13 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
       mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void RefreshDeviceInfo(const std::string& guid,
                          RefreshDeviceInfoCallback callback) override;
   void OnPermissionGrantedToRefresh(scoped_refptr<UsbDevice> device,
                                     RefreshDeviceInfoCallback callback,
                                     bool granted);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void CheckAccess(const std::string& guid,

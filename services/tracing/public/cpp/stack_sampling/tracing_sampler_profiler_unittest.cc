@@ -27,7 +27,7 @@
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -186,7 +186,7 @@ class TestModule : public base::ModuleCache::Module {
 };
 
 bool ShouldSkipTestForMacOS11() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The sampling profiler does not work on macOS 11 and is disabled.
   // See https://crbug.com/1101399 and https://crbug.com/1098119.
   // DCHECK here so that when the sampling profiler is re-enabled on macOS 11,
@@ -469,7 +469,7 @@ TEST_F(TracingProfileBuilderTest, InvalidModule) {
                                     base::TimeTicks());
 }
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(TracingProfileBuilderTest, MangleELFModuleID) {
   TestModule module;
   // See explanation for the module_id mangling in

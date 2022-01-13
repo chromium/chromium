@@ -27,9 +27,9 @@ namespace {
 
 using ::testing::ElementsAreArray;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const uint64_t kTestDeviceIds[] = {0, 1, 2, 3};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const wchar_t* const kTestDeviceIds[] = {L"0", L"1", L"2", L"3"};
 #else
 const char* const kTestDeviceIds[] = {"0", "1", "2", "3"};

@@ -141,7 +141,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // Indicates whether audio power level analysis will be performed.  If false,
   // ReadCurrentPowerAndClip() can not be called.
   static constexpr bool will_monitor_audio_levels() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return false;
 #else
     return true;

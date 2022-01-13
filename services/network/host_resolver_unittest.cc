@@ -41,7 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/radio_utils.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1574,7 +1574,7 @@ TEST_F(HostResolverTest, MdnsListener_UnhandledResult) {
 }
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 class HostResolverRecordRadioWakeupTest : public HostResolverTest {
  public:
@@ -1625,7 +1625,7 @@ TEST_F(HostResolverRecordRadioWakeupTest, RecordPreconnect) {
       mojom::ResolveHostParameters::Purpose::kPreconnect, 1);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace network

@@ -57,7 +57,7 @@ constexpr uint64_t kSmallMessageThreshhold = 1 << 16;
 
 // The capacity of the data pipe to use for received messages, in bytes. Optimal
 // value depends on the platform.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr uint32_t kReceiveDataPipeCapacity = 1 << 16;
 #else
 // |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
