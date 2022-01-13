@@ -299,8 +299,8 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationDoNotSyncDefaults) {
 TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
   prefs_.SetString(kStringPrefName, kExampleUrl0);
   {
-    ListPrefUpdateDeprecated update(GetPrefs(), kListPrefName);
-    base::ListValue* url_list = update.Get();
+    ListPrefUpdate update(GetPrefs(), kListPrefName);
+    base::Value* url_list = update.Get();
     url_list->Append(kExampleUrl0);
     url_list->Append(kExampleUrl1);
   }
@@ -318,8 +318,8 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
 TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
   prefs_.SetString(kStringPrefName, kExampleUrl0);
   {
-    ListPrefUpdateDeprecated update(GetPrefs(), kListPrefName);
-    base::ListValue* url_list = update.Get();
+    ListPrefUpdate update(GetPrefs(), kListPrefName);
+    base::Value* url_list = update.Get();
     url_list->Append(kExampleUrl0);
   }
 
@@ -508,8 +508,8 @@ class PrefServiceSyncableMergeTest : public testing::Test {
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
   {
-    ListPrefUpdateDeprecated update(&prefs_, kListPrefName);
-    base::ListValue* url_list = update.Get();
+    ListPrefUpdate update(&prefs_, kListPrefName);
+    base::Value* url_list = update.Get();
     url_list->Append(kExampleUrl0);
     url_list->Append(kExampleUrl1);
   }
@@ -589,10 +589,10 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedDictionaryValues) {
   {
-    DictionaryPrefUpdateDeprecated update(&prefs_, kDictPrefName);
-    base::DictionaryValue* dict_value = update.Get();
-    dict_value->Set("my_key1", std::make_unique<base::Value>("my_value1"));
-    dict_value->Set("my_key3", std::make_unique<base::Value>("my_value3"));
+    DictionaryPrefUpdate update(&prefs_, kDictPrefName);
+    base::Value* dict_value = update.Get();
+    dict_value->SetStringKey("my_key1", "my_value1");
+    dict_value->SetStringKey("my_key3", "my_value3");
   }
 
   base::DictionaryValue remote_update;

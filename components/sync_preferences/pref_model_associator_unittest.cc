@@ -168,8 +168,8 @@ TEST_F(ListPreferenceMergeTest, LocalEmpty) {
 TEST_F(ListPreferenceMergeTest, ServerNull) {
   auto null_value = std::make_unique<base::Value>();
   {
-    ListPrefUpdateDeprecated update(pref_service_.get(), kListPrefName);
-    base::ListValue* local_list_value = update.Get();
+    ListPrefUpdate update(pref_service_.get(), kListPrefName);
+    base::Value* local_list_value = update.Get();
     local_list_value->Append(local_url0_);
   }
 
@@ -184,8 +184,8 @@ TEST_F(ListPreferenceMergeTest, ServerNull) {
 TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   std::unique_ptr<base::Value> empty_value(new base::ListValue);
   {
-    ListPrefUpdateDeprecated update(pref_service_.get(), kListPrefName);
-    base::ListValue* local_list_value = update.Get();
+    ListPrefUpdate update(pref_service_.get(), kListPrefName);
+    base::Value* local_list_value = update.Get();
     local_list_value->Append(local_url0_);
   }
 
@@ -199,8 +199,8 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
 
 TEST_F(ListPreferenceMergeTest, Merge) {
   {
-    ListPrefUpdateDeprecated update(pref_service_.get(), kListPrefName);
-    base::ListValue* local_list_value = update.Get();
+    ListPrefUpdate update(pref_service_.get(), kListPrefName);
+    base::Value* local_list_value = update.Get();
     local_list_value->Append(local_url0_);
     local_list_value->Append(local_url1_);
   }
@@ -220,8 +220,8 @@ TEST_F(ListPreferenceMergeTest, Merge) {
 
 TEST_F(ListPreferenceMergeTest, Duplicates) {
   {
-    ListPrefUpdateDeprecated update(pref_service_.get(), kListPrefName);
-    base::ListValue* local_list_value = update.Get();
+    ListPrefUpdate update(pref_service_.get(), kListPrefName);
+    base::Value* local_list_value = update.Get();
     local_list_value->Append(local_url0_);
     local_list_value->Append(server_url0_);
     local_list_value->Append(server_url1_);
@@ -241,8 +241,8 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
 
 TEST_F(ListPreferenceMergeTest, Equals) {
   {
-    ListPrefUpdateDeprecated update(pref_service_.get(), kListPrefName);
-    base::ListValue* local_list_value = update.Get();
+    ListPrefUpdate update(pref_service_.get(), kListPrefName);
+    base::Value* local_list_value = update.Get();
     local_list_value->Append(server_url0_);
     local_list_value->Append(server_url1_);
   }
@@ -288,9 +288,8 @@ TEST_F(DictionaryPreferenceMergeTest, LocalEmpty) {
 TEST_F(DictionaryPreferenceMergeTest, ServerNull) {
   auto null_value = std::make_unique<base::Value>();
   {
-    DictionaryPrefUpdateDeprecated update(pref_service_.get(),
-                                          kDictionaryPrefName);
-    base::DictionaryValue* local_dict_value = update.Get();
+    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    base::Value* local_dict_value = update.Get();
     SetContentPattern(local_dict_value, expression3_, 1);
   }
 
@@ -306,9 +305,8 @@ TEST_F(DictionaryPreferenceMergeTest, ServerNull) {
 TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
   std::unique_ptr<base::Value> empty_value(new base::DictionaryValue);
   {
-    DictionaryPrefUpdateDeprecated update(pref_service_.get(),
-                                          kDictionaryPrefName);
-    base::DictionaryValue* local_dict_value = update.Get();
+    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    base::Value* local_dict_value = update.Get();
     SetContentPattern(local_dict_value, expression3_, 1);
   }
 
@@ -323,9 +321,8 @@ TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
 
 TEST_F(DictionaryPreferenceMergeTest, MergeNoConflicts) {
   {
-    DictionaryPrefUpdateDeprecated update(pref_service_.get(),
-                                          kDictionaryPrefName);
-    base::DictionaryValue* local_dict_value = update.Get();
+    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    base::Value* local_dict_value = update.Get();
     SetContentPattern(local_dict_value, expression3_, 1);
   }
 
@@ -344,9 +341,8 @@ TEST_F(DictionaryPreferenceMergeTest, MergeNoConflicts) {
 
 TEST_F(DictionaryPreferenceMergeTest, MergeConflicts) {
   {
-    DictionaryPrefUpdateDeprecated update(pref_service_.get(),
-                                          kDictionaryPrefName);
-    base::DictionaryValue* local_dict_value = update.Get();
+    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    base::Value* local_dict_value = update.Get();
     SetContentPattern(local_dict_value, expression0_, 2);
     SetContentPattern(local_dict_value, expression2_, 1);
     SetContentPattern(local_dict_value, expression3_, 1);
@@ -382,9 +378,8 @@ TEST_F(DictionaryPreferenceMergeTest, MergeValueToDictionary) {
 
 TEST_F(DictionaryPreferenceMergeTest, Equal) {
   {
-    DictionaryPrefUpdateDeprecated update(pref_service_.get(),
-                                          kDictionaryPrefName);
-    base::DictionaryValue* local_dict_value = update.Get();
+    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    base::Value* local_dict_value = update.Get();
     SetContentPattern(local_dict_value, expression0_, 1);
     SetContentPattern(local_dict_value, expression1_, 2);
     SetContentPattern(local_dict_value, expression2_, 1);
@@ -399,9 +394,8 @@ TEST_F(DictionaryPreferenceMergeTest, Equal) {
 
 TEST_F(DictionaryPreferenceMergeTest, ConflictButServerWins) {
   {
-    DictionaryPrefUpdateDeprecated update(pref_service_.get(),
-                                          kDictionaryPrefName);
-    base::DictionaryValue* local_dict_value = update.Get();
+    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    base::Value* local_dict_value = update.Get();
     SetContentPattern(local_dict_value, expression0_, 2);
     SetContentPattern(local_dict_value, expression1_, 2);
     SetContentPattern(local_dict_value, expression2_, 1);
@@ -427,8 +421,8 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
 
   bool MergeListPreference(const char* pref) {
     {
-      ListPrefUpdateDeprecated update(pref_service_.get(), pref);
-      base::ListValue* local_list_value = update.Get();
+      ListPrefUpdate update(pref_service_.get(), pref);
+      base::Value* local_list_value = update.Get();
       local_list_value->Append(url1_);
     }
 
@@ -443,8 +437,8 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
 
   bool MergeDictionaryPreference(const char* pref) {
     {
-      DictionaryPrefUpdateDeprecated update(pref_service_.get(), pref);
-      base::DictionaryValue* local_dict_value = update.Get();
+      DictionaryPrefUpdate update(pref_service_.get(), pref);
+      base::Value* local_dict_value = update.Get();
       SetContentPattern(local_dict_value, expression1_, 1);
     }
 
