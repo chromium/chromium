@@ -86,6 +86,11 @@ bool PrintViewManager::PrintForSystemDialogNow(
   on_print_dialog_shown_callback_ = std::move(dialog_shown_callback);
   is_switching_to_system_dialog_ = true;
 
+  // Remember the ID for `print_preview_rfh_`, to enable checking that the
+  // `RenderFrameHost` is still valid after a possible inner message loop runs
+  // in `DisconnectFromCurrentPrintJob()`.
+  content::GlobalRenderFrameHostId rfh_id = print_preview_rfh_->GetGlobalId();
+
   auto weak_this = weak_factory_.GetWeakPtr();
   DisconnectFromCurrentPrintJob();
   if (!weak_this)
@@ -93,6 +98,10 @@ bool PrintViewManager::PrintForSystemDialogNow(
 
   // Don't print / print preview crashed tabs.
   if (IsCrashed())
+    return false;
+
+  // Don't print if `print_preview_rfh_` is no longer live.
+  if (!content::RenderFrameHost::FromID(rfh_id))
     return false;
 
   // TODO(crbug.com/809738)  Register with `PrintBackendServiceManager` when
