@@ -1,0 +1,64 @@
+# This workflow will check out wpt and run the WebDriver BiDi tests against our
+# implementation.
+
+name: web-platform-tests
+
+on:
+  pull_request:
+    branches: '*'
+
+jobs:
+  wpt:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Set up virtualenv
+        run: pip install virtualenv
+      - name: Set up hosts
+        run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
+        working-directory: wpt
+      # TODO: Install a pinned version of Chromium. This may become possible
+      # after https://github.com/web-platform-tests/wpt/issues/28970.
+      - name: Install Chrome
+        run: ./wpt install chrome browser
+        working-directory: wpt
+      - name: Run tests
+        # For verbose logging, add --log-mach - --log-mach-level info
+        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --manifest MANIFEST.json --metadata ../wpt-metadata --log-wptreport wptreport.json chrome webdriver/tests/bidi/
+        working-directory: wpt
+      - name: Update expectations
+        if: ${{ always() }}
+        run: ./wpt update-expectations --product chrome --manifest MANIFEST.json --metadata ../wpt-metadata wptreport.json
+        working-directory: wpt
+      - name: Upload expectations
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: wpt-metadata
+          path: wpt-metadata
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          # Note: runBiDiServer.sh will be run multiple times and log.txt will be
+          # overwritten. The problem might not be in the log.txt written last.
+          path: logs
+
+env:
+  FORCE_COLOR: 3
