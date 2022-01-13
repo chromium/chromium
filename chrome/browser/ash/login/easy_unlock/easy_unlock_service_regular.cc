@@ -279,8 +279,8 @@ void EasyUnlockServiceRegular::SetStoredRemoteDevices(
   JSONStringValueSerializer serializer(&remote_devices_json);
   serializer.Serialize(devices);
 
-  DictionaryPrefUpdateDeprecated pairing_update(profile()->GetPrefs(),
-                                                prefs::kEasyUnlockPairing);
+  DictionaryPrefUpdate pairing_update(profile()->GetPrefs(),
+                                      prefs::kEasyUnlockPairing);
   if (devices.GetList().empty())
     pairing_update->RemoveKey(kKeyDevices);
   else

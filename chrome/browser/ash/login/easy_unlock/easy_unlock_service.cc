@@ -152,8 +152,7 @@ void EasyUnlockService::ResetLocalStateForUser(const AccountId& account_id) {
   if (!local_state)
     return;
 
-  DictionaryPrefUpdateDeprecated update(local_state,
-                                        prefs::kEasyUnlockHardlockState);
+  DictionaryPrefUpdate update(local_state, prefs::kEasyUnlockHardlockState);
   update->RemoveKey(account_id.GetUserEmail());
 
   EasyUnlockTpmKeyManager::ResetLocalStateForUser(account_id);
@@ -549,10 +548,8 @@ void EasyUnlockService::SetHardlockStateForUser(
     return;
   }
 
-  DictionaryPrefUpdateDeprecated update(local_state,
-                                        prefs::kEasyUnlockHardlockState);
-  update->SetKey(account_id.GetUserEmail(),
-                 base::Value(static_cast<int>(state)));
+  DictionaryPrefUpdate update(local_state, prefs::kEasyUnlockHardlockState);
+  update->SetIntKey(account_id.GetUserEmail(), static_cast<int>(state));
 
   if (GetAccountId() == account_id)
     SetSmartLockHardlockedState(state);
