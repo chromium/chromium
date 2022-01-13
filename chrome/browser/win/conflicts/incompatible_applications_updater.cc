@@ -135,13 +135,13 @@ bool IsValidApplication(
 // |state_application_names|.
 void RemoveStaleApplications(
     const std::vector<std::string>& stale_application_names) {
-  // Early exit because DictionaryPrefUpdateDeprecated will write to the pref
-  // even if it doesn't contain a value.
+  // Early exit because DictionaryPrefUpdate will write to the pref even if it
+  // doesn't contain a value.
   if (stale_application_names.empty())
     return;
 
-  DictionaryPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                        prefs::kIncompatibleApplications);
+  DictionaryPrefUpdate update(g_browser_process->local_state(),
+                              prefs::kIncompatibleApplications);
   base::Value* existing_applications = update.Get();
 
   for (const auto& application_name : stale_application_names) {
@@ -209,8 +209,8 @@ void UpdateIncompatibleApplications(
   base::Value new_applications = ConvertToDictionary(incompatible_applications);
 
   // Update the existing dictionary.
-  DictionaryPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                        prefs::kIncompatibleApplications);
+  DictionaryPrefUpdate update(g_browser_process->local_state(),
+                              prefs::kIncompatibleApplications);
   base::Value* existing_applications = update.Get();
   for (auto&& element : new_applications.DictItems()) {
     existing_applications->SetKey(std::move(element.first),
