@@ -6,10 +6,14 @@ import("//build/config/android/rules.gni")
 
 android_resources("chrome_tabs_client_example_apk_resources") {
   sources = [
+    "src/res/anim/slide_in_bottom.xml",
     "src/res/anim/slide_in_left.xml",
     "src/res/anim/slide_in_right.xml",
+    "src/res/anim/slide_in_up.xml",
+    "src/res/anim/slide_out_bottom.xml",
     "src/res/anim/slide_out_left.xml",
     "src/res/anim/slide_out_right.xml",
+    "src/res/anim/slide_out_up.xml",
     "src/res/drawable-hdpi/cover.jpg",
     "src/res/drawable-hdpi/ic_arrow_back.png",
     "src/res/drawable-hdpi/ic_launcher.png",

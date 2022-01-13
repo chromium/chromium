@@ -120,6 +120,14 @@
             android:textAllCaps="false"
             android:text="@string/register_twa_service" />
 
+        <Button
+            android:id="@+id/launch_pcct_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:textAllCaps="false"
+            android:text="@string/launch_pcct_text" />
+
     </LinearLayout>
 
 </ScrollView>
