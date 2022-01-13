@@ -623,11 +623,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "calculate-native-win-occlusion",
-    "owners": [ "davidbienvenu", "fdoray" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "calendar-view",
     "owners": ["jiamingc"],
     "expiry_milestone" : 103

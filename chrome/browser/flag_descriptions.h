@@ -2141,9 +2141,6 @@ extern const char kSCTAuditingDescription[];
 
 #if defined(OS_WIN)
 
-extern const char kCalculateNativeWinOcclusionName[];
-extern const char kCalculateNativeWinOcclusionDescription[];
-
 extern const char kEnableIncognitoShortcutOnDesktopName[];
 extern const char kEnableIncognitoShortcutOnDesktopDescription[];
 
