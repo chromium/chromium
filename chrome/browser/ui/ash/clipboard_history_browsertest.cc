@@ -739,7 +739,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Create a browser and cache its active web contents.
   auto* browser = CreateBrowser(
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
   auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 

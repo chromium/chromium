@@ -245,7 +245,7 @@ class ProfileManagerTest : public testing::Test {
   // Helper function to register an user with id |user_id| and create profile
   // with a correct path.
   void RegisterUser(const AccountId& account_id) {
-    chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
+    ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
     const std::string user_id_hash =
         profile_helper->GetUserIdHashByUserIdForTesting(
             account_id.GetUserEmail());
@@ -263,7 +263,7 @@ class ProfileManagerTest : public testing::Test {
       bool user_is_child,
       bool profile_is_managed,
       absl::optional<bool> arc_is_managed) {
-    chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
+    ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
     const std::string user_email = "user_for_transition@example.com";
@@ -390,7 +390,7 @@ TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   user_manager->SwitchActiveUser(test_account_id);
 
   base::FilePath expected_logged_in(
-      chromeos::ProfileHelper::GetUserProfileDir(active_user->username_hash()));
+      ash::ProfileHelper::GetUserProfileDir(active_user->username_hash()));
   EXPECT_EQ(expected_logged_in.value(),
             profile_manager->GetInitialProfileDir().value());
   VLOG(1) << temp_dir_.GetPath()
@@ -400,7 +400,7 @@ TEST_F(ProfileManagerTest, LoggedInProfileDir) {
 
 // Test Get[ActiveUser|PrimaryUser|LastUsed]Profile does not load user profile.
 TEST_F(ProfileManagerTest, UserProfileLoading) {
-  using chromeos::ProfileHelper;
+  using ::ash::ProfileHelper;
 
   Profile* const signin_profile = ProfileHelper::GetSigninProfile();
 

@@ -205,7 +205,7 @@ void FindArcTasksAfterContentUrlsResolved(
 
   arc::mojom::IntentHelperInstance* arc_intent_helper = nullptr;
   // File manager in secondary profile cannot access ARC.
-  if (chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (ash::ProfileHelper::IsPrimaryProfile(profile)) {
     auto* arc_service_manager = arc::ArcServiceManager::Get();
     if (arc_service_manager) {
       arc_intent_helper = ARC_GET_INSTANCE_FOR_METHOD(
@@ -268,7 +268,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
   }
 
   // File manager in secondary profile cannot access ARC.
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     std::move(done).Run(
         extensions::api::file_manager_private::TASK_RESULT_FAILED,
         "Not primary profile");

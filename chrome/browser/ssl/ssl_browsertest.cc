@@ -5869,8 +5869,7 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
           kSecondProfileHash, false);
       // Set up the secondary profile.
       base::FilePath profile_dir = user_data_directory.Append(
-          chromeos::ProfileHelper::GetUserProfileDir(kSecondProfileHash)
-              .BaseName());
+          ash::ProfileHelper::GetUserProfileDir(kSecondProfileHash).BaseName());
       profile_2_ =
           g_browser_process->profile_manager()->GetProfile(profile_dir);
     }

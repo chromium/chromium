@@ -906,7 +906,7 @@ bool InputImeEventRouter::RegisterImeExtension(
     is_login = active_state->GetUIStyle() ==
                ash::input_method::InputMethodManager::UIStyle::kLogin;
   } else {
-    is_login = chromeos::ProfileHelper::IsSigninProfile(profile);
+    is_login = ash::ProfileHelper::IsSigninProfile(profile);
   }
 
   if (is_login && profile->HasPrimaryOTRProfile()) {

@@ -241,7 +241,7 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Bypass profile lifetime recording for ChromeOS helper profiles (sign-in,
   // lockscreen, etc).
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile_))
+  if (!ash::ProfileHelper::IsRegularProfile(profile_))
     return;
 #endif
   // Store incognito lifetime and navigations count histogram.

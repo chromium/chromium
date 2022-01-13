@@ -92,8 +92,7 @@ void ArcAppTest::SetUp(Profile* profile) {
   // If for any reason the garbage collector kicks in while we are waiting for
   // an icon, have the user-to-profile mapping ready to avoid using the real
   // profile manager (which is null).
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                    profile_);
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile_);
 
   // A valid |arc_app_list_prefs_| is needed for the ARC bridge service and the
   // ARC auth service.

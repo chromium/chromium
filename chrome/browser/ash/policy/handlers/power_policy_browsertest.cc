@@ -231,7 +231,7 @@ void PowerPolicyBrowserTestBase::StoreAndReloadUserPolicy() {
 
 void PowerPolicyBrowserTestBase::
     StoreAndReloadDevicePolicyAndWaitForLoginProfileChange() {
-  Profile* profile = chromeos::ProfileHelper::GetSigninProfile();
+  Profile* profile = ash::ProfileHelper::GetSigninProfile();
   ASSERT_TRUE(profile);
 
   // Install the new device policy blob in session manager client, reload device

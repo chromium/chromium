@@ -67,7 +67,7 @@ class ExtensionGarbageCollectorChromeOSUnitTest
 
     GetFakeUserManager()->AddUser(user_manager::StubAccountId());
     GetFakeUserManager()->LoginUser(user_manager::StubAccountId());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         GetFakeUserManager()->GetActiveUser(), profile_.get());
   }
 

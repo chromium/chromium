@@ -138,7 +138,7 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
   }
 
   // Show a warning info bar for secondary users.
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     CreateSimpleAlertInfoBar(
         infobars::ContentInfoBarManager::FromWebContents(
             flags_ui->web_ui()->GetWebContents()),

@@ -87,7 +87,7 @@ bool HasIsolatedStorage(const std::string& extension_id,
   const bool is_policy_extension =
       extension && Manifest::IsPolicyLocation(extension->location());
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile && chromeos::ProfileHelper::IsSigninProfile(profile) &&
+  if (profile && ash::ProfileHelper::IsSigninProfile(profile) &&
       is_policy_extension) {
     return true;
   }

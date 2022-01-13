@@ -34,7 +34,7 @@ bool CanBuildServiceForProfile(const Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // UserManager might be not available in tests.
   is_main_profile = user_manager::UserManager::IsInitialized() &&
-                    chromeos::ProfileHelper::IsPrimaryProfile(profile);
+                    ash::ProfileHelper::IsPrimaryProfile(profile);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // DLP policy is not per-profile yet and hence currently we do not
   // support secondary profiles. DLP policy is instantiated once with

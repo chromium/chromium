@@ -288,9 +288,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ActiveDirectoryEnabled) {
       GetFakeUserManager(),
       AccountId::AdFromObjGuid("f04557de-5da2-40ce-ae9d-b8874d8da96e"),
       user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -300,9 +299,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ActiveDirectoryDisabled) {
       GetFakeUserManager(),
       AccountId::AdFromObjGuid("f04557de-5da2-40ce-ae9d-b8874d8da96e"),
       user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -311,9 +309,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcNotAvailable) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -323,9 +320,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcInstalled) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -335,9 +331,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcSupported) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -398,7 +393,7 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
       profile()->GetProfileUserName(), kTestGaiaId));
   ScopedLogIn login(GetFakeUserManager(), id);
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile());
+      ash::ProfileHelper::Get()->GetUserByProfile(profile());
 
   // Unconfirmed
   EXPECT_FALSE(IsArcCompatibleFileSystemUsedForUser(user));

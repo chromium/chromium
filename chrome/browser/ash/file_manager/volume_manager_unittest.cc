@@ -252,8 +252,8 @@ class VolumeManagerTest : public testing::Test {
               AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(),
                                              "id")),
           user_(account_id_) {
-      chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
-      chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+      ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
+      ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
           &user_, profile_.get());
     }
 

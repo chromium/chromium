@@ -1213,7 +1213,7 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
     // Creates profile().
     ChromeShelfControllerTestBase::SetUp();
 
-    ASSERT_TRUE(chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile()));
+    ASSERT_TRUE(ash::ProfileHelper::Get()->IsPrimaryProfile(profile()));
   }
 
  private:

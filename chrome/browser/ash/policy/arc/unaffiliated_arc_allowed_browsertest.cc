@@ -96,8 +96,7 @@ IN_PROC_BROWSER_TEST_P(UnaffiliatedArcAllowedTest, ProfileTest) {
   AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   const user_manager::User* user = user_manager::UserManager::Get()->FindUser(
       affiliation_mixin_.account_id());
-  const Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  const Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   const bool affiliated = GetParam().affiliated;
 
   EXPECT_EQ(affiliated, user->IsAffiliated());

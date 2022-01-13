@@ -876,7 +876,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   if (chrome::IsRunningInForcedAppMode()) {
     user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(last_used_profile);
+        ash::ProfileHelper::Get()->GetUserByProfile(last_used_profile);
     if (user && user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
       chromeos::LaunchAppOrDie(
           last_used_profile,

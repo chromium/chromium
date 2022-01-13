@@ -45,7 +45,7 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
 
   vm_tools::cicerone::LaunchContainerApplicationRequest request;
   request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(ctx.profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(ctx.profile()));
   request.set_vm_name(ctx.vm_name());
   request.set_container_name(ctx.container_name());
   request.set_desktop_file_id(reg->DesktopFileId());

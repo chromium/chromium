@@ -36,8 +36,7 @@ CalendarKeyedService* CalendarKeyedServiceFactory::GetService(
 KeyedService* CalendarKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return nullptr;
 

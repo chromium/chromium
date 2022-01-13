@@ -33,7 +33,7 @@ class DriveNotificationManagerFactoryLoginScreenBrowserTest
 IN_PROC_BROWSER_TEST_F(DriveNotificationManagerFactoryLoginScreenBrowserTest,
                        NoDriveNotificationManager) {
   Profile* signin_profile =
-      chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+      ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
   EXPECT_FALSE(DriveNotificationManagerFactory::FindForBrowserContext(
       signin_profile));
 }
@@ -58,11 +58,11 @@ IN_PROC_BROWSER_TEST_F(DriveNotificationManagerFactoryGuestBrowserTest,
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
   Profile* guest_profile =
-      chromeos::ProfileHelper::Get()
+      ash::ProfileHelper::Get()
           ->GetProfileByUserUnsafe(user_manager->GetActiveUser())
           ->GetOriginalProfile();
   Profile* signin_profile =
-      chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+      ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
   EXPECT_FALSE(DriveNotificationManagerFactory::FindForBrowserContext(
       guest_profile));
   EXPECT_FALSE(DriveNotificationManagerFactory::FindForBrowserContext(

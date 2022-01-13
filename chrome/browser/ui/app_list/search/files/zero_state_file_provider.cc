@@ -97,7 +97,7 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
     files_ranker_ = std::make_unique<RecurrenceRanker>(
         "ZeroStateLocalFiles",
         profile->GetPath().AppendASCII("zero_state_local_files.pb"), config,
-        chromeos::ProfileHelper::IsEphemeralUserProfile(profile));
+        ash::ProfileHelper::IsEphemeralUserProfile(profile));
   }
 }
 

@@ -584,7 +584,7 @@ Profile* ProfileManager::GetLastUsedProfile() {
   // since it may refer to profile that has been in use in previous session.
   // That profile dir may not be mounted in this session so instead return
   // active profile from current session.
-  profile_dir = chromeos::ProfileHelper::Get()->GetActiveUserProfileDir();
+  profile_dir = ash::ProfileHelper::Get()->GetActiveUserProfileDir();
 
   Profile* profile = profile_manager->GetProfileByPath(
       profile_manager->user_data_dir().Append(profile_dir));
@@ -674,7 +674,7 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
       return nullptr;
 
     // Note: The ProfileHelper will take care of guest profiles.
-    return chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
+    return ash::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
   }
 #endif
 
@@ -700,7 +700,7 @@ Profile* ProfileManager::GetActiveUserProfile() {
     // yet created we load the profile using the profile directly.
     // TODO: This should be cleaned up with the new profile manager.
     if (user && user->is_profile_created())
-      return chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
+      return ash::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
   }
 #endif
   Profile* profile = profile_manager->GetActiveUserOrOffTheRecordProfile();
@@ -840,7 +840,7 @@ bool ProfileManager::IsValidProfile(const void* profile) {
 base::FilePath ProfileManager::GetInitialProfileDir() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsLoggedIn())
-    return chromeos::ProfileHelper::Get()->GetActiveUserProfileDir();
+    return ash::ProfileHelper::Get()->GetActiveUserProfileDir();
 #endif
   base::FilePath relative_profile_dir;
   // TODO(mirandac): should not automatically be default profile.
@@ -1234,7 +1234,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   // If profile type has changed, remove ProfileAttributesEntry for it to make
   // sure it is fully re-initialized later.
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user) {
     const bool user_is_child =
         (user->GetType() == user_manager::USER_TYPE_CHILD);
@@ -1582,10 +1582,10 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableLoginScreenApps) &&
-      chromeos::ProfileHelper::IsSigninProfile(profile)) {
+      ash::ProfileHelper::IsSigninProfile(profile)) {
     extensions_enabled = true;
   }
-  if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile))
+  if (ash::ProfileHelper::IsLockScreenAppProfile(profile))
     extensions_enabled = true;
 #endif
   extensions::ExtensionSystem::Get(profile)->InitForRegularProfile(
@@ -1627,7 +1627,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   UnifiedConsentServiceFactory::GetForProfile(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (!ash::ProfileHelper::IsSigninProfile(profile))
     captions::LiveCaptionControllerFactory::GetForProfile(profile)->Init();
 #elif !defined(OS_ANDROID)  // !OS_ANDROID && !IS_CHROMEOS_ASH
   captions::LiveCaptionControllerFactory::GetForProfile(profile)->Init();
@@ -2210,7 +2210,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user)
     init_params.account_id = user->GetAccountId();
 #endif
@@ -2236,7 +2236,7 @@ void ProfileManager::SetNonPersonalProfilePrefs(Profile* profile) {
 
 bool ProfileManager::ShouldGoOffTheRecord(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return true;
   }
 #endif

@@ -34,7 +34,7 @@ std::string GetSigninScopedDeviceIdForProfile(Profile* profile) {
     return std::string();
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return std::string();
 
@@ -62,7 +62,7 @@ void MigrateSigninScopedDeviceId(Profile* profile) {
     return;
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return;
   const AccountId account_id = user->GetAccountId();

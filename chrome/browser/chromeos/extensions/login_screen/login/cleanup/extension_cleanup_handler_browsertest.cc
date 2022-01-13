@@ -123,7 +123,7 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   Profile* GetActiveUserProfile() {
     const user_manager::User* active_user =
         user_manager::UserManager::Get()->GetActiveUser();
-    return chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
+    return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
   }
 
   void InstallUserExtension(const std::string& extension_id) {

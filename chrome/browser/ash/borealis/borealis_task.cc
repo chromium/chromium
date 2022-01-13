@@ -85,7 +85,7 @@ void CreateDiskImage::RunInternal(BorealisContext* context) {
   vm_tools::concierge::CreateDiskImageRequest request;
   request.set_vm_name(context->vm_name());
   request.set_cryptohome_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_disk_size(0);
@@ -194,7 +194,7 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
       context->wayland_path().AsUTF8Unsafe());
   request.set_start_termina(false);
   request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
   request.set_enable_gpu(true);
   request.set_software_tpm(false);
   request.set_enable_audio_capture(false);

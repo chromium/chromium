@@ -151,9 +151,9 @@ void CloudExternalDataPolicyObserver::Init() {
 void CloudExternalDataPolicyObserver::OnUserProfileLoaded(
     const AccountId& account_id) {
   Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {
     NOTREACHED();
     return;

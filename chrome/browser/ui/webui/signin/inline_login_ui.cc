@@ -200,7 +200,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
           ui::GetChromeOSDeviceName()));
 
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
   source->AddString("userName", user->GetGivenName());
   source->AddString("accountManagerOsSettingsUrl",
@@ -255,7 +255,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   content::WebUIDataSource* source = CreateWebUIDataSource(profile);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string username =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
+      ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
   AddEduStrings(source, username);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   content::WebUIDataSource::Add(profile, source);

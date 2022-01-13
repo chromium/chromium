@@ -107,8 +107,8 @@ class NetworkingAttributesAshTest : public testing::Test {
         user_manager->AddUserWithAffiliation(account_id, is_affiliated);
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false, /*is_child=*/false);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, &profile_);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                 &profile_);
   }
 
   void SetUpShillState() {

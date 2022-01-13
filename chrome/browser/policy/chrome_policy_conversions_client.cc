@@ -125,9 +125,8 @@ Value ChromePolicyConversionsClient::GetExtensionPolicies(
   const bool for_signin_screen =
       policy_domain == POLICY_DOMAIN_SIGNIN_EXTENSIONS;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* extension_profile = for_signin_screen
-                                   ? chromeos::ProfileHelper::GetSigninProfile()
-                                   : profile_;
+  Profile* extension_profile =
+      for_signin_screen ? ash::ProfileHelper::GetSigninProfile() : profile_;
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* extension_profile = profile_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

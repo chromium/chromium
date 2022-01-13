@@ -53,12 +53,12 @@ void SigninProfileExtensionsPolicyTestBase::AddExtensionForForceInstallation(
 }
 
 Profile* SigninProfileExtensionsPolicyTestBase::GetInitialProfile() {
-  // Intentionally not using the |chromeos::ProfileHelper::GetSigninProfile|
+  // Intentionally not using the |ash::ProfileHelper::GetSigninProfile|
   // method here, as it performs the lazy construction of the profile, while for
   // the testing purposes it's better to assert that it has been created before.
   Profile* const profile =
       g_browser_process->profile_manager()->GetProfileByPath(
-          chromeos::ProfileHelper::GetSigninProfileDir());
+          ash::ProfileHelper::GetSigninProfileDir());
   DCHECK(profile);
 
   return profile;

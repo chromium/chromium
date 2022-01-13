@@ -811,7 +811,7 @@ void ArcSessionManager::SetUserInfo() {
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile_));
   const cryptohome::Identification cryptohome_id(account);
   const std::string user_id_hash =
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_);
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_);
 
   std::string serialno = GetSerialNumber();
   arc_session_runner_->SetUserInfo(cryptohome_id, user_id_hash, serialno);
@@ -827,7 +827,7 @@ std::string ArcSessionManager::GetSerialNumber() const {
 
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile_));
   const std::string user_id_hash =
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_);
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_);
 
   std::string serialno;
   // ARC container doesn't need the serial number.

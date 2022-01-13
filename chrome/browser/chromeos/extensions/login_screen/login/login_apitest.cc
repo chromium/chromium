@@ -152,8 +152,7 @@ class LoginApitest : public LoginScreenApitestBase {
   GetTestExtensionRegistryObserver(const std::string& extension_id) {
     const user_manager::User* active_user =
         user_manager::UserManager::Get()->GetActiveUser();
-    Profile* profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
     return std::make_unique<extensions::TestExtensionRegistryObserver>(
         extensions::ExtensionRegistry::Get(profile), extension_id);
   }
@@ -378,8 +377,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest,
 
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
   PrefService* prefs = profile->GetPrefs();
   prefs->SetString(prefs::kLoginExtensionApiLaunchExtensionId,
                    kWrongExtensionId);

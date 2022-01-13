@@ -65,8 +65,7 @@ class InSessionAuthDialogClientTest : public testing::Test {
     auto* user = user_manager::UserManager::Get()->GetActiveUser();
     ASSERT_TRUE(user);
     // Set the profile mapping to avoid crashing in |OnPasswordAuthSuccess|.
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      nullptr);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, nullptr);
   }
 
   void SetExpectedContext(const UserContext& expected_user_context) {

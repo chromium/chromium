@@ -533,7 +533,7 @@ void CertStoreServiceTest::CheckInstalledCerts(
 }
 
 Profile* CertStoreServiceTest::profile() {
-  return chromeos::ProfileHelper::Get()->GetProfileByAccountId(
+  return ash::ProfileHelper::Get()->GetProfileByAccountId(
       affiliation_mixin_.account_id());
 }
 

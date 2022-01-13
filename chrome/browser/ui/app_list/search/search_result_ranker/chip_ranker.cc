@@ -95,7 +95,7 @@ ChipRanker::ChipRanker(Profile* profile) : profile_(profile) {
 
   type_ranker_ = std::make_unique<RecurrenceRanker>(
       "", profile_->GetPath().AppendASCII("suggested_files_ranker.pb"), config,
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile_));
+      ash::ProfileHelper::IsEphemeralUserProfile(profile_));
 }
 
 ChipRanker::~ChipRanker() = default;

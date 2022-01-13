@@ -235,7 +235,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcPipBridge::GetForBrowserContext(profile);
   ArcPolicyBridge::GetForBrowserContext(profile);
   ArcPowerBridge::GetForBrowserContext(profile)->SetUserIdHash(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile));
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile));
   ArcPrintSpoolerBridge::GetForBrowserContext(profile);
   ArcProcessService::GetForBrowserContext(profile);
   ArcPropertyBridge::GetForBrowserContext(profile);

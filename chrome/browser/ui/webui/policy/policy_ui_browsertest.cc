@@ -715,7 +715,7 @@ class ExtensionPolicyUITest : public PolicyUITest,
   Profile* extension_profile() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (UseSigninProfile()) {
-      return chromeos::ProfileHelper::GetSigninProfile();
+      return ash::ProfileHelper::GetSigninProfile();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return browser()->profile();

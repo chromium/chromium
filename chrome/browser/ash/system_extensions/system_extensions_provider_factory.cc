@@ -55,10 +55,10 @@ SystemExtensionsProviderFactory::GetBrowserContextToUse(
   if (profile->IsSystemProfile())
     return nullptr;
 
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
+  if (!ash::ProfileHelper::IsRegularProfile(profile))
     return nullptr;
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile))
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile))
     return nullptr;
 
   auto* user_manager = user_manager::UserManager::Get();

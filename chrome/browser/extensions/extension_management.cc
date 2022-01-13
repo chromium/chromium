@@ -63,7 +63,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
   TRACE_EVENT0("browser,startup",
                "ExtensionManagement::ExtensionManagement::ctor");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  is_signin_profile_ = chromeos::ProfileHelper::IsSigninProfile(profile);
+  is_signin_profile_ = ash::ProfileHelper::IsSigninProfile(profile);
 #endif
   pref_change_registrar_.Init(pref_service_);
   base::RepeatingClosure pref_change_callback = base::BindRepeating(

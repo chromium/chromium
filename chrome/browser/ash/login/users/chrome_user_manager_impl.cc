@@ -283,7 +283,7 @@ void CheckProfileForSanity() {
   // Confirm that we hadn't loaded the new profile previously.
   base::FilePath user_profile_dir =
       g_browser_process->profile_manager()->user_data_dir().Append(
-          chromeos::ProfileHelper::Get()->GetActiveUserProfileDir());
+          ProfileHelper::Get()->GetActiveUserProfileDir());
   CHECK(
       !g_browser_process->profile_manager()->GetProfileByPath(user_profile_dir))
       << "The user profile was loaded before we mounted the cryptohome.";

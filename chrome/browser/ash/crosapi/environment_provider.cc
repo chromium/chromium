@@ -31,7 +31,7 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   const Profile* const profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+      ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (profile->IsGuestSession()) {
     return mojom::SessionType::kGuestSession;
   }
@@ -74,7 +74,7 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   // support multi-signin.
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
 
   default_paths->user_nss_database =
       crypto::GetSoftwareNSSDBPath(profile->GetPath());

@@ -206,7 +206,7 @@ void AppManagerImpl::OnLockScreenProfileLoaded() {
   lock_screen_profile_ =
       lock_screen_profile_creator_->lock_screen_profile()->GetOriginalProfile();
 
-  CHECK(!chromeos::ProfileHelper::Get()->GetUserByProfile(lock_screen_profile_))
+  CHECK(!ash::ProfileHelper::Get()->GetUserByProfile(lock_screen_profile_))
       << "Lock screen profile should not be associated with any users.";
 
   UpdateLockScreenAppState();

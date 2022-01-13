@@ -554,8 +554,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(user_email, user_id);
     const std::string user_id_hash =
-        chromeos::ProfileHelper::Get()->GetUserIdHashByUserIdForTesting(
-            user_id);
+        ash::ProfileHelper::Get()->GetUserIdHashByUserIdForTesting(user_id);
 
     local_state_ = std::make_unique<ScopedTestingLocalState>(
         TestingBrowserProcess::GetGlobal());

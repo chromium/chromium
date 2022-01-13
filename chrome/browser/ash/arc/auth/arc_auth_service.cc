@@ -167,7 +167,7 @@ std::string GetAccountName(Profile* profile) {
       // IdentityManager::GetPrimaryAccountInfo(
       //    signin::ConsentLevel::kSignin).email might be more appropriate
       // here, but this is what we have done historically.
-      return chromeos::ProfileHelper::Get()
+      return ash::ProfileHelper::Get()
           ->GetUserByProfile(profile)
           ->GetDisplayEmail();
     case mojom::ChromeAccountType::ROBOT_ACCOUNT:

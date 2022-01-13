@@ -294,7 +294,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   // the long term fix is made in ash-chrome, atomically.
   params->exo_ime_support =
       crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround;
-  params->cros_user_id_hash = chromeos::ProfileHelper::GetUserIdHashFromProfile(
+  params->cros_user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
       ProfileManager::GetPrimaryUserProfile());
   params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
   params->idle_info = IdleServiceAsh::ReadIdleInfoFromSystem();
@@ -420,14 +420,14 @@ base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider,
 }
 
 bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return true;
 
   if (profile->IsOffTheRecord())
     return false;
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return false;
   return user->IsAffiliated();

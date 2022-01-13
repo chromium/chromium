@@ -499,7 +499,7 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   const AccountId& GetAccountId() override {
-    return chromeos::ProfileHelper::Get()
+    return ash::ProfileHelper::Get()
         ->GetUserByProfile(profile_)
         ->GetAccountId();
   }
@@ -1024,7 +1024,7 @@ void DriveIntegrationService::AvoidDriveAsDownloadDirectoryPreference() {
 bool DriveIntegrationService::DownloadDirectoryPreferenceIsInDrive() {
   const auto downloads_path =
       profile_->GetPrefs()->GetFilePath(::prefs::kDownloadDefaultDirectory);
-  const auto* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  const auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   return user && user->GetAccountId().HasAccountIdKey() &&
          GetMountPointPath().IsParent(downloads_path);
 }

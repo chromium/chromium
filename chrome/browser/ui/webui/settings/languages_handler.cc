@@ -76,7 +76,7 @@ void LanguagesHandler::HandleSetProspectiveUILanguage(
   // Secondary users and public session users cannot change the locale.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   const std::string& language_code = args->GetList()[0].GetString();
   if (user &&
       user->GetAccountId() == user_manager->GetPrimaryUser()->GetAccountId() &&

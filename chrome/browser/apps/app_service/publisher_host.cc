@@ -125,7 +125,7 @@ void PublisherHost::Initialize() {
   // profile. This also avoids creating an instance for the lock screen app
   // profile and ensures there is only one instance of StandaloneBrowserApps.
   if (crosapi::browser_util::IsLacrosEnabled() &&
-      chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+      ash::ProfileHelper::IsPrimaryProfile(profile)) {
     standalone_browser_apps_ = std::make_unique<StandaloneBrowserApps>(proxy_);
     standalone_browser_apps_->Initialize();
   }

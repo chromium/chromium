@@ -92,7 +92,7 @@ void CreateConfigurationPolicyProvider(
   *active_directory_policy_manager_out = nullptr;
 
   // Don't initialize cloud policy for the signin and the lock screen profile.
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return;
   }
 
@@ -101,7 +101,7 @@ void CreateConfigurationPolicyProvider(
   // happens right after sign-in. The just-signed-in User is the active user
   // during that time.
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   CHECK(user);
 
   // User policy exists for enterprise accounts:

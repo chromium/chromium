@@ -47,7 +47,7 @@
 
 namespace {
 
-using chromeos::ProfileHelper;
+using ::ash::ProfileHelper;
 using extensions::DictionaryBuilder;
 using extensions::ListBuilder;
 using lock_screen_apps::LockScreenProfileCreator;

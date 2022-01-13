@@ -75,9 +75,8 @@ gfx::NativeWindow ShowWebDialogWithParams(
   gfx::NativeWindow window =
       CreateWebDialogWidget(std::move(params), view, show);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          Profile::FromBrowserContext(context));
+  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
+      Profile::FromBrowserContext(context));
   if (user && session_manager::SessionManager::Get()->session_state() ==
                   session_manager::SessionState::ACTIVE) {
     // Dialogs should not be shown for other users when logged in and the

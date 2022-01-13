@@ -58,7 +58,7 @@ bool AreWebAppsEnabled(const Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Web Apps should not be installed to the ChromeOS system profiles.
-  if (!chromeos::ProfileHelper::IsRegularProfile(original_profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(original_profile)) {
     return false;
   }
   // Disable Web Apps if running any kiosk app.
@@ -142,13 +142,13 @@ base::FilePath GetWebAppsTempDirectory(
 
 std::string GetProfileCategoryForLogging(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return "SigninOrLockScreen";
   } else if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     return "Kiosk";
-  } else if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
+  } else if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     return "Ephemeral";
-  } else if (chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  } else if (ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return "Primary";
   } else {
     return "Other";

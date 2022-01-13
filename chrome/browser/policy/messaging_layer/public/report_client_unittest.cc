@@ -76,7 +76,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         profile_->GetProfileUserName(), "12345"));
     const user_manager::User* user =
         mock_user_manager->AddPublicAccountUser(account_id);
-    chromeos::ProfileHelper::Get()->SetActiveUserIdForTesting(
+    ash::ProfileHelper::Get()->SetActiveUserIdForTesting(
         profile_->GetProfileUserName());
     mock_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     /*browser_restart=*/false,

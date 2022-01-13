@@ -552,14 +552,14 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // profile, client certificates will only be selected for the StoragePartition
   // currently used in the sign-in frame (see SigninPartitionManager).
   if (chromeos::switches::IsSigninFrameClientCertsEnabled() &&
-      (chromeos::ProfileHelper::IsSigninProfile(profile_) ||
-       chromeos::ProfileHelper::IsLockScreenProfile(profile_))) {
+      (ash::ProfileHelper::IsSigninProfile(profile_) ||
+       ash::ProfileHelper::IsLockScreenProfile(profile_))) {
     use_system_key_slot = true;
   }
 
   std::string username_hash;
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user && !user->username_hash().empty()) {
     username_hash = user->username_hash();
 
@@ -867,12 +867,12 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool profile_supports_policy_certs = false;
-  if (chromeos::ProfileHelper::IsSigninProfile(profile_))
+  if (ash::ProfileHelper::IsSigninProfile(profile_))
     profile_supports_policy_certs = true;
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (user_manager) {
     const user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile_);
     // No need to initialize NSS for users with empty username hash:
     // Getters for a user's NSS slots always return NULL slot if the user's
     // username hash is empty, even when the NSS is not initialized for the

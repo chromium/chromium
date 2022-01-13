@@ -78,7 +78,7 @@ void ProfileInvalidationProviderFactoryLoginScreenBrowserTest::SetUpCommandLine(
 IN_PROC_BROWSER_TEST_F(ProfileInvalidationProviderFactoryLoginScreenBrowserTest,
                        NoInvalidationService) {
   Profile* login_profile =
-      chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+      ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
   EXPECT_FALSE(CanConstructProfileInvalidationProvider(login_profile));
 }
 
@@ -120,11 +120,11 @@ IN_PROC_BROWSER_TEST_F(ProfileInvalidationProviderFactoryGuestBrowserTest,
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
   Profile* guest_profile =
-      chromeos::ProfileHelper::Get()
+      ash::ProfileHelper::Get()
           ->GetProfileByUserUnsafe(user_manager->GetActiveUser())
           ->GetOriginalProfile();
   Profile* login_profile =
-      chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+      ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
   EXPECT_FALSE(CanConstructProfileInvalidationProvider(guest_profile));
   EXPECT_FALSE(CanConstructProfileInvalidationProvider(login_profile));
 }

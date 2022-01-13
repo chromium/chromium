@@ -98,8 +98,7 @@ void LaunchPluginVmAppImpl(Profile* profile,
   }
 
   vm_tools::cicerone::LaunchContainerApplicationRequest request;
-  request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile));
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile));
   request.set_vm_name(registration->VmName());
   request.set_container_name(registration->ContainerName());
   request.set_desktop_file_id(registration->DesktopFileId());

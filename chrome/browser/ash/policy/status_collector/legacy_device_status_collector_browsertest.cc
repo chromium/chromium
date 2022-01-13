@@ -1044,7 +1044,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(account_id.GetUserEmail());
     testing_profile_ = profile_builder.Build();
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
 
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
@@ -1079,7 +1079,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     }
 
     testing_profile_ = std::make_unique<TestingProfile>();
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
 
     SetDeviceLocalAccounts(&owner_settings_service_, accounts);

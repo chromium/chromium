@@ -1604,8 +1604,7 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
       kSecondProfileName, std::move(prefs),
       base::UTF8ToUTF16(kSecondProfileName), 1 /*avatar_id*/,
       std::string() /*supervised_user_id*/, TestingProfile::TestingFactories());
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-      user, second_profile);
+  ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, second_profile);
   InitExtensionService(second_profile);
 
   // Add test apps to secondary profile.

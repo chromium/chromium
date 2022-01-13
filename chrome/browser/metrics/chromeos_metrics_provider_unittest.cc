@@ -208,7 +208,7 @@ TEST_F(ChromeOSMetricsProviderTest, HasLinkedAndroidPhoneAndEnabledFeatures) {
   user_manager->AddKioskAppUser(account_id1);
   user_manager->LoginUser(account_id1);
   const user_manager::User* primary_user = user_manager->GetPrimaryUser();
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
       primary_user, testing_profile_);
 
   TestChromeOSMetricsProvider provider;

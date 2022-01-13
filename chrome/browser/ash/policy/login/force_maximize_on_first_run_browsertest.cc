@@ -51,8 +51,7 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
   const Browser* OpenNewBrowserWindow() {
     const user_manager::User* const user =
         user_manager::UserManager::Get()->GetActiveUser();
-    Profile* const profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     return CreateBrowser(profile);
   }
 };

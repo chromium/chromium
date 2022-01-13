@@ -136,7 +136,7 @@ PluginVmApps::PluginVmApps(AppServiceProxy* proxy)
   // `PluginVmFeatures::Get()->IsAllowed()` here because we still let the user
   // uninstall Plugin VM when it isn't allowed for some other reasons (e.g.
   // policy).
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile_)) {
     return;
   }
 

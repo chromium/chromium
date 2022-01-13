@@ -18,8 +18,7 @@ scoped_refptr<network::SharedURLLoaderFactory>
 FwupdDownloadClientImpl::GetURLLoaderFactory() {
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
   DCHECK(profile);
 
   return profile->GetURLLoaderFactory();

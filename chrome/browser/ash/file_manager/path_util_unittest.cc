@@ -707,7 +707,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyFiles) {
   GURL url;
   bool requires_sharing = false;
   const base::FilePath myfiles = GetMyFilesFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
   EXPECT_TRUE(ConvertPathToArcUrl(myfiles.AppendASCII("a/b/c"), &url,
                                   &requires_sharing));
@@ -734,7 +734,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
   GURL url;
   bool requires_sharing = false;
   const base::FilePath downloads2 = GetDownloadsFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user2@gmail.com-hash"));
   EXPECT_FALSE(ConvertPathToArcUrl(downloads2.AppendASCII("a/b/c"), &url,
                                    &requires_sharing));
@@ -843,7 +843,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Removable) {
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MyFiles) {
   base::test::ScopedRunningOnChromeOS running_on_chromeos;
   const base::FilePath myfiles = GetMyFilesFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(
@@ -884,7 +884,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
   const base::FilePath downloads = GetDownloadsFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(
@@ -908,7 +908,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidDownloads) {
   const base::FilePath downloads = GetDownloadsFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user2@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(

@@ -115,8 +115,8 @@ class FullRestoreServiceTest : public testing::Test {
         AccountId::FromUserEmailGaiaId("usertest@gmail.com", "1234567890");
     const auto* user = GetFakeUserManager()->AddUser(account_id_);
     GetFakeUserManager()->LoginUser(account_id_);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile_.get());
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile_.get());
 
     // Reset the restore flag and pref as the default value.
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id_,
@@ -745,8 +745,8 @@ class FullRestoreServiceMultipleUsersTest
         profile2_->GetProfileUserName(), "111111");
     const auto* user = GetFakeUserManager()->AddUser(account_id2_);
     GetFakeUserManager()->LoginUser(account_id2_);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile2_.get());
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile2_.get());
 
     // Reset the restore flag and pref as the default value.
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id2_,

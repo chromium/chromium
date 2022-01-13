@@ -184,7 +184,7 @@ void SearchResultRanker::InitializeRankers() {
                       ranker->profile_->GetPath().AppendASCII(
                           "zero_state_group_ranker.pb"),
                       parsed_config ? parsed_config.value() : default_config,
-                      chromeos::ProfileHelper::IsEphemeralUserProfile(
+                      ash::ProfileHelper::IsEphemeralUserProfile(
                           ranker->profile_));
             },
             base::Unretained(this), default_config));
@@ -204,7 +204,7 @@ void SearchResultRanker::InitializeRankers() {
 
   app_ranker_ = std::make_unique<RecurrenceRanker>(
       "AppRanker", profile_->GetPath().AppendASCII("app_ranker.pb"), config,
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile_));
+      ash::ProfileHelper::IsEphemeralUserProfile(profile_));
 }
 
 void SearchResultRanker::FetchRankings(const std::u16string& query) {

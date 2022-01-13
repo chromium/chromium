@@ -184,7 +184,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
     vm_tools::concierge::ListVmDisksRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(active_profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(active_profile_));
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
 

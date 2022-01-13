@@ -938,7 +938,7 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user = GetChromeOSUser();
   if (user) {
-    Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     // If primary user profile is not finalized, use the current profile.
     if (!profile)
       profile = Profile::FromBrowserContext(context_);

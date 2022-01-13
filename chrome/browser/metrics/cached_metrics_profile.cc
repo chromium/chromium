@@ -50,8 +50,7 @@ Profile* CachedMetricsProfile::GetMetricsProfile() {
       user_manager::UserManager::Get()->GetPrimaryUser();
   if (!primary_user || !primary_user->is_profile_created())
     return nullptr;
-  cached_profile_ =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  cached_profile_ = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
 #else
   // Find a suitable profile to use, and cache it so that we continue to report
   // statistics on the same profile.

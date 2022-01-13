@@ -33,7 +33,7 @@ namespace extensions {
 namespace {
 
 std::string GetLaunchExtensionIdPrefValue(const user_manager::User* user) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   PrefService* prefs = profile->GetPrefs();
   return prefs->GetString(prefs::kLoginExtensionApiLaunchExtensionId);

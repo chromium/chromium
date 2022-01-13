@@ -323,9 +323,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // updates (regression test for https://crbug.com/936677).
   shill_service_client_test_->SetHoldBackServicePropertyUpdates(true);
 
-  std::string user_hash =
-      chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(
-          test_account_id_.GetUserEmail());
+  std::string user_hash = ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
+      test_account_id_.GetUserEmail());
   LoginUser(test_account_id_);
   shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
 

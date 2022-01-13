@@ -1039,7 +1039,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // clearing only a specified set of sites.
     if (filter_builder->GetMode() != BrowsingDataFilterBuilder::Mode::kDelete) {
       const user_manager::User* user =
-          chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+          ash::ProfileHelper::Get()->GetUserByProfile(profile_);
       if (!user) {
         LOG(WARNING) << "Failed to find user for current profile.";
       } else {

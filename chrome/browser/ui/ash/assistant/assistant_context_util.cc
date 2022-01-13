@@ -78,7 +78,7 @@ void RequestAssistantStructureForActiveBrowserWindow(
 
   // Only returns context from the profile with assistant, which is primary
   // profile.
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(browser->profile())) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(browser->profile())) {
     std::move(callback).Run(nullptr, nullptr);
     return;
   }

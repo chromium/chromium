@@ -115,7 +115,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
   users_.push_back(user);
-  chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+  ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
 
   if (profile) {
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
@@ -173,7 +173,7 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
   users_.push_back(user);
-  chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+  ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
   return user;
 }
 
@@ -285,7 +285,7 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
   // `wallpaper_client` could be nullptr in tests.
   if (wallpaper_client)
     wallpaper_client->RemoveUserWallpaper(account_id);
-  chromeos::ProfileHelper::Get()->RemoveUserFromListForTesting(account_id);
+  ProfileHelper::Get()->RemoveUserFromListForTesting(account_id);
 
   const user_manager::UserList::iterator it =
       std::find_if(users_.begin(), users_.end(),

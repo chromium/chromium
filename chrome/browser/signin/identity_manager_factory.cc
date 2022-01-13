@@ -135,8 +135,7 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   params.account_manager_facade =
       GetAccountManagerFacade(profile->GetPath().value());
-  params.is_regular_profile =
-      chromeos::ProfileHelper::IsRegularProfile(profile);
+  params.is_regular_profile = ash::ProfileHelper::IsRegularProfile(profile);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

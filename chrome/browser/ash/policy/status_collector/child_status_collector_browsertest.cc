@@ -367,7 +367,7 @@ class ChildStatusCollectorTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(account_id.GetUserEmail());
     testing_profile_ = profile_builder.Build();
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
 
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())

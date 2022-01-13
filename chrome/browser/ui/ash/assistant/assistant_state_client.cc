@@ -65,7 +65,7 @@ void AssistantStateClient::OnArcPlayStoreEnabledChanged(bool enabled) {
 }
 
 void AssistantStateClient::SetProfileByUser(const user_manager::User* user) {
-  SetProfile(chromeos::ProfileHelper::Get()->GetProfileByUser(user));
+  SetProfile(ash::ProfileHelper::Get()->GetProfileByUser(user));
 }
 
 void AssistantStateClient::SetProfile(Profile* profile) {

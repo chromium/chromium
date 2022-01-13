@@ -38,7 +38,7 @@ ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
 // If this is the ChromeOS sign-in profile, just create the tracker from global
 // state.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     pref_proxy_config_tracker_ =
         ProxyServiceFactory::CreatePrefProxyConfigTrackerOfLocalState(
             g_browser_process->local_state());

@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
   ASSERT_EQ(user, user_manager::UserManager::Get()->GetPrimaryUser());
   ASSERT_EQ(user, user_manager::UserManager::Get()->FindUser(account_id_));
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
 
   // Supervised flag uses `FindExtendedAccountInfoForAccountWithRefreshToken`,
   // so wait for tokens to be loaded.
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
   ASSERT_EQ(user, user_manager::UserManager::Get()->GetPrimaryUser());
   ASSERT_EQ(user, user_manager::UserManager::Get()->FindUser(account_id_));
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
 
   // Supervised flag uses `FindExtendedAccountInfoForAccountWithRefreshToken`,
   // so wait for tokens to be loaded.

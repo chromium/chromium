@@ -189,8 +189,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     user_manager::User* user =
         fake_chrome_user_manager_->AddPublicAccountUser(account_id);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      profile);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }

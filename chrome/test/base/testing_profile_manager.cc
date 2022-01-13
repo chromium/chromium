@@ -79,11 +79,10 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile_name != chrome::kInitialProfile &&
       profile_name != chrome::kLockScreenProfile &&
-      profile_name != chromeos::ProfileHelper::GetLockScreenAppProfileName()) {
+      profile_name != ash::ProfileHelper::GetLockScreenAppProfileName()) {
     profile_path =
-        profile_path.Append(chromeos::ProfileHelper::Get()->GetUserProfileDir(
-            chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(
-                profile_name)));
+        profile_path.Append(ash::ProfileHelper::Get()->GetUserProfileDir(
+            ash::ProfileHelper::GetUserIdHashByUserIdForTesting(profile_name)));
   } else {
     profile_path = profile_path.AppendASCII(profile_name);
   }

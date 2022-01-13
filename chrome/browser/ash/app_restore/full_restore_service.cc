@@ -57,7 +57,7 @@ bool IsFullRestoreAvailableForLacros() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   DCHECK(user);
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   return FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(profile);
 }

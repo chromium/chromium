@@ -148,7 +148,7 @@ void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return;
   dict->SetBoolean("isAffiliated", user->IsAffiliated());
@@ -1018,7 +1018,7 @@ void PolicyUIHandler::AddExtensionPolicyNames(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* extension_profile =
       policy_domain == policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
-          ? chromeos::ProfileHelper::GetSigninProfile()
+          ? ash::ProfileHelper::GetSigninProfile()
           : Profile::FromWebUI(web_ui());
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* extension_profile = Profile::FromWebUI(web_ui());

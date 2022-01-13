@@ -84,7 +84,7 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
   const uint32_t user_session_id = GetSessionId(user);
   DCHECK_NE(0u, user_session_id);
 
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(&user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(&user);
   DCHECK(profile);
 
   auto session = std::make_unique<ash::UserSession>();
@@ -299,7 +299,7 @@ void SessionControllerClientImpl::EmitAshInitialized() {
 }
 
 PrefService* SessionControllerClientImpl::GetSigninScreenPrefService() {
-  return chromeos::ProfileHelper::Get()->GetSigninProfile()->GetPrefs();
+  return ash::ProfileHelper::Get()->GetSigninProfile()->GetPrefs();
 }
 
 PrefService* SessionControllerClientImpl::GetUserPrefService(
@@ -375,7 +375,7 @@ bool SessionControllerClientImpl::CanLockScreen() {
 bool SessionControllerClientImpl::ShouldLockScreenAutomatically() {
   const UserList logged_in_users = UserManager::Get()->GetLoggedInUsers();
   for (auto* user : logged_in_users) {
-    Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     if (profile &&
         profile->GetPrefs()->GetBoolean(ash::prefs::kEnableAutoScreenLock)) {
       return true;
@@ -499,13 +499,13 @@ void SessionControllerClientImpl::OnSessionStateChanged() {
 void SessionControllerClientImpl::OnUserProfileLoaded(
     const AccountId& account_id) {
   OnLoginUserProfilePrepared(
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id));
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id));
 }
 
 void SessionControllerClientImpl::OnCustodianInfoChanged() {
   DCHECK(supervised_user_profile_);
-  User* user = chromeos::ProfileHelper::Get()->GetUserByProfile(
-      supervised_user_profile_);
+  User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(supervised_user_profile_);
   if (user)
     SendUserSession(*user);
 }
@@ -525,7 +525,7 @@ void SessionControllerClientImpl::Observe(
 }
 
 void SessionControllerClientImpl::OnLoginUserProfilePrepared(Profile* profile) {
-  const User* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  const User* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
 
   if (profile->IsChild()) {
@@ -583,7 +583,7 @@ void SessionControllerClientImpl::SendUserSession(const User& user) {
   // Check user profile via GetProfileByUser() instead of is_profile_created()
   // flag because many tests have only setup testing user profile in
   // ProfileHelper but do not have the flag updated.
-  if (!chromeos::ProfileHelper::Get()->GetProfileByUser(&user)) {
+  if (!ash::ProfileHelper::Get()->GetProfileByUser(&user)) {
     pending_users_.insert(user.GetAccountId());
     return;
   }

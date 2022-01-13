@@ -67,7 +67,7 @@ Profile* GetProfileForPrimaryUser() {
   if (!primary_user)
     return nullptr;
 
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  return ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
 }
 
 }  // namespace

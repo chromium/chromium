@@ -313,7 +313,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   }
 
   if (profile->IsChild() &&
-      chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
+      ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     // Adds "playStoreMode" policy. The policy value is used to restrict the
     // user from being able to toggle between different accounts in ARC++.
     filtered_policies.SetStringKey("playStoreMode", "SUPERVISED");
@@ -636,7 +636,7 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
     return std::string();
   const Profile* const profile = Profile::FromBrowserContext(context_);
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   const CertStoreService* cert_store_service =
       CertStoreService::GetForBrowserContext(context_);
 

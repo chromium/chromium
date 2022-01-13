@@ -1242,8 +1242,8 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
     const user_manager::User* user = user_manager->AddUserWithAffiliation(
         account_id, /*is_affiliated=*/is_manageable_);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      profile_);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                 profile_);
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false,
                                /*is_child=*/false);

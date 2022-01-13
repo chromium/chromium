@@ -100,7 +100,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
 
   Profile* primary_account_profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(primary_account_id);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(primary_account_id);
 
   // Windows without an application id set will get filtered out here.
   const std::string& crostini_shelf_app_id = crostini::GetCrostiniShelfAppId(
@@ -224,7 +224,7 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // future, this may be replaced by some way of matching the container that
   // runs this app with the user that owns it.
   const Profile* primary_account_profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(
+      ash::ProfileHelper::Get()->GetProfileByAccountId(
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   std::string shelf_app_id = crostini::GetCrostiniShelfAppId(
       primary_account_profile, exo::GetShellApplicationId(window),

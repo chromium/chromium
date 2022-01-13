@@ -120,7 +120,7 @@ void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
 
 PluginVmManagerImpl::PluginVmManagerImpl(Profile* profile)
     : profile_(profile),
-      owner_id_(chromeos::ProfileHelper::GetUserIdHashFromProfile(profile)) {
+      owner_id_(ash::ProfileHelper::GetUserIdHashFromProfile(profile)) {
   chromeos::DBusThreadManager::Get()
       ->GetVmPluginDispatcherClient()
       ->AddObserver(this);

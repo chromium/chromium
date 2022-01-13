@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(DefaultProfileExtensionBrowserTest, NoExtensionHosts) {
   Profile* otr = original->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(profile(), otr);
-  EXPECT_TRUE(chromeos::ProfileHelper::IsSigninProfile(original));
+  EXPECT_TRUE(ash::ProfileHelper::IsSigninProfile(original));
 #endif
 
   ProcessManager* pm = ProcessManager::Get(original);

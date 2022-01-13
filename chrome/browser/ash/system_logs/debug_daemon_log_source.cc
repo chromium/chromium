@@ -184,8 +184,7 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
       continue;
 
     profile_dirs.emplace_back(
-        chromeos::ProfileHelper::GetProfilePathByUserIdHash(
-            user->username_hash()));
+        ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
   }
 
   auto response = std::make_unique<SystemLogsResponse>();

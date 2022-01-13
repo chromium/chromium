@@ -287,7 +287,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
             base::BindRepeating(FakeArcSession::Create)));
     ExpandPropertyFilesForTesting(ArcSessionManager::Get());
 
-    chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   }
 
   void TearDownOnMainThread() override {
@@ -316,7 +316,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     user_manager_enabler_.reset();
-    chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -379,7 +379,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
 
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
 
     auto* identity_test_env =

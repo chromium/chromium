@@ -449,7 +449,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
           ->SetString(prefs::kUserTimezone, param_value);
     } else {
       const user_manager::User* user =
-          chromeos::ProfileHelper::Get()->GetUserByProfile(
+          ash::ProfileHelper::Get()->GetUserByProfile(
               Profile::FromBrowserContext(browser_context()));
       if (user)
         ash::system::SetSystemTimezone(user, param_value);

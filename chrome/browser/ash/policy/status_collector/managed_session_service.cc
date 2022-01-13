@@ -72,10 +72,10 @@ void ManagedSessionService::OnSessionStateChanged() {
 
 void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
   Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   profile_observations_.AddObservation(profile);
   if (ash::SessionTerminationManager::Get() &&
-      chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
+      ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     ash::SessionTerminationManager::Get()->AddObserver(this);
   }
   for (auto& observer : observers_) {

@@ -1126,7 +1126,7 @@ settings_private::SetPrefResult PrefsUtil::SetCrosSettingsPref(
     if (!string_value)
       return settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
     const user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile_);
     if (user && ash::system::SetSystemTimezone(user, *string_value))
       return settings_private::SetPrefResult::SUCCESS;
     return settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
@@ -1200,7 +1200,7 @@ bool PrefsUtil::IsPrefOwnerControlled(const std::string& pref_name) {
     return false;
 
   if (IsPrivilegedCrosSetting(pref_name)) {
-    if (!chromeos::ProfileHelper::IsOwnerProfile(profile_))
+    if (!ash::ProfileHelper::IsOwnerProfile(profile_))
       return true;
   }
   return false;
@@ -1212,7 +1212,7 @@ bool PrefsUtil::IsPrefPrimaryUserControlled(const std::string& pref_name) {
   if (pref_name == prefs::kUserTimezone || pref_name == ash::kSystemTimezone) {
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     const user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile_);
     if (user && user->GetAccountId() !=
                     user_manager->GetPrimaryUser()->GetAccountId()) {
       return true;

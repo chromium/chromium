@@ -64,7 +64,7 @@
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
-using chromeos::ProfileHelper;
+using ::ash::ProfileHelper;
 using extension_misc::kWallpaperManagerId;
 using file_manager::VolumeManager;
 using session_manager::SessionManager;

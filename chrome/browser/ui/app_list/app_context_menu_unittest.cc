@@ -698,7 +698,7 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
     // Creates profile().
     AppContextMenuTest::SetUp();
 
-    ASSERT_TRUE(chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile()));
+    ASSERT_TRUE(ash::ProfileHelper::Get()->IsPrimaryProfile(profile()));
   }
 
  private:

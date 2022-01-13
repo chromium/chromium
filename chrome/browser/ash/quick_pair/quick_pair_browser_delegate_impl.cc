@@ -69,7 +69,7 @@ Profile* QuickPairBrowserDelegateImpl::GetActiveProfile() {
       user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(active_user);
 
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
+  return ProfileHelper::Get()->GetProfileByUser(active_user);
 }
 
 }  // namespace quick_pair

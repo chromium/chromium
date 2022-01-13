@@ -44,7 +44,7 @@ bool IsDeviceEnterpriseManaged() {
 
 bool IsChild(Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return false;
 
@@ -277,9 +277,8 @@ UsersPrivateGetCurrentUserFunction::~UsersPrivateGetCurrentUserFunction() =
     default;
 
 ExtensionFunction::ResponseAction UsersPrivateGetCurrentUserFunction::Run() {
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          Profile::FromBrowserContext(browser_context()));
+  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
+      Profile::FromBrowserContext(browser_context()));
   return user ? RespondNow(OneArgument(base::Value::FromUniquePtrValue(
                     CreateApiUser(user->GetAccountId().GetUserEmail(), *user)
                         .ToValue())))

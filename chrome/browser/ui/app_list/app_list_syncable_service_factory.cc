@@ -40,7 +40,7 @@ AppListSyncableServiceFactory* AppListSyncableServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService> AppListSyncableServiceFactory::BuildInstanceFor(
     content::BrowserContext* browser_context) {
   Profile* profile = static_cast<Profile*>(browser_context);
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
   VLOG(1) << "BuildInstanceFor: " << profile->GetDebugName()
@@ -95,7 +95,7 @@ content::BrowserContext* AppListSyncableServiceFactory::GetBrowserContextToUse(
     return nullptr;
 
   // No service for sign in profile.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 
   // Use profile as-is for guest session.

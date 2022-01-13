@@ -229,7 +229,7 @@ class LocalPrinterAshTestBase : public testing::Test {
   }
 
   void SetUp() override {
-    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     // Choose between running with local test runner or via a service.
@@ -282,7 +282,7 @@ class LocalPrinterAshTestBase : public testing::Test {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     PrintBackendServiceManager::ResetForTesting();
 #endif
-    chromeos::ProfileHelper::Get()->RemoveUserFromListForTesting(
+    ash::ProfileHelper::Get()->RemoveUserFromListForTesting(
         user_.GetAccountId());
   }
 

@@ -78,7 +78,7 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
     GetFakeUserManager()->AddUser(user_manager::StubAccountId());
     GetFakeUserManager()->LoginUser(user_manager::StubAccountId());
 
-    chromeos::ProfileHelper::Get()->SetActiveUserIdForTesting(kProfileName);
+    ash::ProfileHelper::Get()->SetActiveUserIdForTesting(kProfileName);
 #endif
     BrowserList::SetLastActive(browser());
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(

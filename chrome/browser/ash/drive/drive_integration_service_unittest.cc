@@ -24,7 +24,7 @@ class DriveIntegrationServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   // DriveIntegrationService depends on DriveNotificationManager which depends
   // on InvalidationService. On Chrome OS, the InvalidationServiceFactory
-  // uses chromeos::ProfileHelper, which needs the ProfileManager or a
+  // uses ash::ProfileHelper, which needs the ProfileManager or a
   // TestProfileManager to be running.
   TestingProfileManager profile_manager_;
 };

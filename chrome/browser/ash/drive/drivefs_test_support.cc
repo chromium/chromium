@@ -32,7 +32,7 @@ FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
       drive::FakeDriveFsHelper::kPredefinedProfileSalt);
   fake_drivefs_.RegisterMountingForAccountId(
       base::BindLambdaForTesting([profile]() {
-        auto* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
         if (!user)
           return std::string();
 

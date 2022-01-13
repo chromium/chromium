@@ -286,7 +286,7 @@ void CertificateProvisioningUiHandler::OnHoldBackUpdatesTimerExpired() {
 bool CertificateProvisioningUiHandler::ShouldUseDeviceWideProcesses(
     Profile* user_profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(user_profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(user_profile);
   return user && user->IsAffiliated();
 }
 

@@ -260,7 +260,7 @@ void SetLoginExtensionApiLaunchExtensionIdPref(const AccountId& account_id,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   DCHECK(user);
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   PrefService* prefs = profile->GetPrefs();
   prefs->SetString(::prefs::kLoginExtensionApiLaunchExtensionId, extension_id);

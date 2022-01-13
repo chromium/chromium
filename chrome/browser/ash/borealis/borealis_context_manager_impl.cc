@@ -108,8 +108,7 @@ void BorealisContextManagerImpl::ShutDownBorealisIfChromeCrashed() {
     return;
   }
   vm_tools::concierge::GetVmInfoRequest request;
-  request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(kBorealisVmName);
   chromeos::ConciergeClient::Get()->GetVmInfo(
       std::move(request),
@@ -130,8 +129,7 @@ void BorealisContextManagerImpl::SendShutdownRequest(
   // TODO(b/172178036): This could have been a task-sequence but that
   // abstraction is proving insufficient.
   vm_tools::concierge::StopVmRequest request;
-  request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(vm_name);
   chromeos::ConciergeClient::Get()->StopVm(
       std::move(request),
@@ -256,7 +254,7 @@ void BorealisContextManagerImpl::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
   if (context_ && context_->vm_name() == signal.name() &&
       signal.owner_id() ==
-          chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_)) {
+          ash::ProfileHelper::GetUserIdHashFromProfile(profile_)) {
     CloseBorealisSplashScreenView();
     // If |context_| exists, it's a "running" Borealis instance which we didn't
     // request to shut down.

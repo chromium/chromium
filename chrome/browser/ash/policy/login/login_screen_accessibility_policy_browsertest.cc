@@ -116,18 +116,18 @@ LoginScreenAccessibilityPolicyBrowsertest::
 
 void LoginScreenAccessibilityPolicyBrowsertest::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-  login_profile_ = chromeos::ProfileHelper::GetSigninProfile();
+  login_profile_ = ash::ProfileHelper::GetSigninProfile();
   ASSERT_TRUE(login_profile_);
   // Set the login screen profile.
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   accessibility_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 
   MagnificationManager* magnification_manager = MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   magnification_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 
   // Disable PolicyRecommendationRestorer. See https://crbug.com/1015763#c13 for
   // details.

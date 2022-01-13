@@ -88,7 +88,7 @@ Profile* LoginPolicyTestBase::GetProfileForActiveUser() {
 
   EXPECT_NE(user, nullptr);
 
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  return ash::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
 void LoginPolicyTestBase::GetMandatoryPoliciesValue(

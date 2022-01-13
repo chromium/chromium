@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto* loaded_profile : loaded_profiles) {
-    if (!chromeos::ProfileHelper::IsSigninProfile(loaded_profile)) {
+    if (!ash::ProfileHelper::IsSigninProfile(loaded_profile)) {
       profile = loaded_profile;
       break;
     }

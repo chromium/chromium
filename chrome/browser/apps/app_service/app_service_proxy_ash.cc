@@ -74,7 +74,7 @@ void AppServiceProxyAsh::Initialize() {
   }
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
     const AccountId& account_id = user->GetAccountId();
     app_registry_cache_.SetAccountId(account_id);
@@ -110,7 +110,7 @@ void AppServiceProxyAsh::Initialize() {
   publisher_host_ = std::make_unique<PublisherHost>(this);
 
   if (crosapi::browser_util::IsLacrosEnabled() &&
-      chromeos::ProfileHelper::IsPrimaryProfile(profile_) &&
+      ash::ProfileHelper::IsPrimaryProfile(profile_) &&
       web_app::IsWebAppsCrosapiEnabled()) {
     auto* browser_manager = crosapi::BrowserManager::Get();
     // In unit tests, it is possible that the browser manager is not created.

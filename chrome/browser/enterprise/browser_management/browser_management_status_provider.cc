@@ -92,7 +92,7 @@ ProfileCloudManagementStatusProvider::GetAuthority() {
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (primary_user &&
       IsProfileManaged(
-          chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user))) {
+          ash::ProfileHelper::Get()->GetProfileByUser(primary_user))) {
     return EnterpriseManagementAuthority::CLOUD;
   }
 #endif

@@ -227,10 +227,9 @@ base::FilePath GetFirstNonSigninNonLockScreenAppProfile(
   std::vector<ProfileAttributesEntry*> entries =
       storage->GetAllProfilesAttributesSortedByName();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::FilePath signin_path =
-      chromeos::ProfileHelper::GetSigninProfileDir();
+  const base::FilePath signin_path = ash::ProfileHelper::GetSigninProfileDir();
   const base::FilePath lock_screen_apps_path =
-      chromeos::ProfileHelper::GetLockScreenAppProfilePath();
+      ash::ProfileHelper::GetLockScreenAppProfilePath();
 
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath profile_path = entry->GetPath();

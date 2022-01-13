@@ -128,7 +128,7 @@ bool CanChangeChannel(Profile* profile) {
 
     // Get the currently logged-in user and check if it is affiliated.
     const user_manager::User* user =
-        profile ? chromeos::ProfileHelper::Get()->GetUserByProfile(profile)
+        profile ? ash::ProfileHelper::Get()->GetUserByProfile(profile)
                 : nullptr;
     return user && user->IsAffiliated();
   }

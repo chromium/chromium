@@ -339,8 +339,8 @@ void CloudExternalDataPolicyObserverTest::LogInAsDeviceLocalAccount(
   std::unique_ptr<PolicyServiceImpl> policy_service =
       std::make_unique<PolicyServiceImpl>(std::move(providers));
   builder.SetPolicyService(std::move(policy_service));
-  builder.SetPath(chromeos::ProfileHelper::Get()->GetProfilePathByUserIdHash(
-      chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(
+  builder.SetPath(ash::ProfileHelper::Get()->GetProfilePathByUserIdHash(
+      ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
           account_id.GetUserEmail())));
 
   profile_ = builder.Build();
@@ -373,9 +373,8 @@ void CloudExternalDataPolicyObserverTest::LogInAsRegularUser() {
   std::unique_ptr<PolicyServiceImpl> policy_service =
       std::make_unique<PolicyServiceImpl>(std::move(providers));
   builder.SetPolicyService(std::move(policy_service));
-  builder.SetPath(chromeos::ProfileHelper::Get()->GetProfilePathByUserIdHash(
-      chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(
-          kRegularUserID)));
+  builder.SetPath(ash::ProfileHelper::Get()->GetProfilePathByUserIdHash(
+      ash::ProfileHelper::GetUserIdHashByUserIdForTesting(kRegularUserID)));
 
   profile_ = builder.Build();
   profile_->set_profile_name(kRegularUserID);

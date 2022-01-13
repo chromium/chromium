@@ -38,7 +38,7 @@ class CrosapiUtilTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, &testing_profile_);
   }
 
@@ -91,7 +91,7 @@ TEST_F(CrosapiUtilTest,
   fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                    /*browser_restart=*/false,
                                    /*is_child=*/false);
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
       user, &testing_profile_);
 
   EXPECT_TRUE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(

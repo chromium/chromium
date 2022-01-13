@@ -43,7 +43,7 @@ void UserAddedRemovedReporter::OnLogin(Profile* profile) {
     return;
   }
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || user->IsKioskType() ||
       user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
       user->GetType() == user_manager::USER_TYPE_GUEST) {

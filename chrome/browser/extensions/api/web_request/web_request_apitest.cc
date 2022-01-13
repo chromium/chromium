@@ -1877,7 +1877,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   // Create a profile that will be destroyed later.
   base::ScopedAllowBlockingForTesting allow_blocking;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+  ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* temp_profile =

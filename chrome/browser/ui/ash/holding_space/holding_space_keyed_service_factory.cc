@@ -90,8 +90,7 @@ KeyedService* HoldingSpaceKeyedServiceFactory::BuildServiceInstanceForInternal(
   Profile* const profile = Profile::FromBrowserContext(context);
   DCHECK_EQ(profile->IsGuestSession(), profile->IsOffTheRecord());
 
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return nullptr;
 

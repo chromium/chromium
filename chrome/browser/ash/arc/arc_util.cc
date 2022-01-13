@@ -172,7 +172,7 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
     return false;
   }
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     VLOG_IF(1, should_report_reason)
         << "Non-primary users are not supported in ARC.";
     return false;
@@ -190,7 +190,7 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
   // different application install mechanism. ARC is not allowed otherwise
   // (e.g. in public sessions). cf) crbug.com/605545
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!IsArcAllowedForUser(user)) {
     VLOG_IF(1, should_report_reason) << "ARC is not allowed for the user.";
     return false;
@@ -250,7 +250,7 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
 
 bool IsRealUserProfile(const Profile* profile) {
   // Return false for signin, lock screen and incognito profiles.
-  return profile && chromeos::ProfileHelper::IsRegularProfile(profile) &&
+  return profile && ash::ProfileHelper::IsRegularProfile(profile) &&
          !profile->IsOffTheRecord();
 }
 
@@ -294,7 +294,7 @@ void ClearArcAllowedCheckForTesting() {
 
 bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
   // Return true for public accounts as they only have ext4 and
   // for ARC kiosk as migration to ext4 should always be triggered.
@@ -410,7 +410,7 @@ bool AreArcAllOptInPreferencesIgnorableForProfile(const Profile* profile) {
 
 bool IsActiveDirectoryUserForProfile(const Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user ? user->IsActiveDirectoryUser() : false;
 }
 

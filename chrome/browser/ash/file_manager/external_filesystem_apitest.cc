@@ -491,9 +491,9 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -541,10 +541,8 @@ class MultiProfileDriveFileSystemExtensionApiTest :
                                        kSecondProfileGiaId),
         kSecondProfileHash, false);
     // Set up the secondary profile.
-    base::FilePath profile_dir =
-        user_data_directory.Append(
-            chromeos::ProfileHelper::GetUserProfileDir(
-                kSecondProfileHash).BaseName());
+    base::FilePath profile_dir = user_data_directory.Append(
+        ash::ProfileHelper::GetUserProfileDir(kSecondProfileHash).BaseName());
     second_profile_ =
         g_browser_process->profile_manager()->GetProfile(profile_dir);
 
@@ -574,9 +572,9 @@ class MultiProfileDriveFileSystemExtensionApiTest :
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -660,9 +658,9 @@ class LocalAndDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 

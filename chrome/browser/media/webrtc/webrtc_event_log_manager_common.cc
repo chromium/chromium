@@ -1022,7 +1022,7 @@ bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
 // For Chrome OS, exclude special profiles and users.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // We do not log an error here since this can happen in several cases,
   // e.g. for signin profiles or lock screen app profiles.
   if (!user) {
@@ -1032,7 +1032,7 @@ bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
   if (user_type != user_manager::USER_TYPE_REGULAR) {
     return false;
   }
-  if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     return false;
   }
 #endif

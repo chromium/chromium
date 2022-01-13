@@ -2188,7 +2188,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
     return;
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ProfileHelper::Get()->GetUserByProfile(profile);
   if (ash::BrowserDataMigratorImpl::MaybeRestartToMigrate(
           user->GetAccountId(), user->username_hash())) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";

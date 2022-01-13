@@ -78,7 +78,7 @@ constexpr const char* kMostCommonPins[] = {"1212", "1004", "2000", "6969",
 // Returns the active set of quick unlock modes.
 void ComputeActiveModes(Profile* profile, ActiveModeCallback result) {
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   ash::quick_unlock::PinBackend::GetInstance()->IsSet(
       user->GetAccountId(),
       base::BindOnce(
@@ -192,7 +192,7 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   // When OOBE continues in-session as Furst Run UI, it is still executed
   // under Sign-In profile.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return ProfileManager::GetPrimaryUserProfile();
 
   return profile;
@@ -320,7 +320,7 @@ QuickUnlockPrivateSetPinAutosubmitEnabledFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
   ash::quick_unlock::PinBackend::GetInstance()->SetPinAutoSubmitEnabled(
       user->GetAccountId(), params->pin, params->enabled,
@@ -354,7 +354,7 @@ QuickUnlockPrivateCanAuthenticatePinFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
   ash::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
       user->GetAccountId(),
@@ -584,7 +584,7 @@ void QuickUnlockPrivateSetModesFunction::OnGetActiveModes(
   if (update_pin) {
     Profile* profile = GetActiveProfile(browser_context());
     user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile);
     if (pin_credential.empty()) {
       ash::quick_unlock::PinBackend::GetInstance()->Remove(
           user->GetAccountId(), params_->token,
@@ -627,7 +627,7 @@ void QuickUnlockPrivateSetModesFunction::ModeChangeComplete(
     FireEvent(updated_modes);
 
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
+      ash::ProfileHelper::Get()->GetUserByProfile(
           GetActiveProfile(browser_context()));
   const ash::UserContext user_context(*user);
 

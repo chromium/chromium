@@ -63,10 +63,9 @@ void FamilyLinkUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
   }
 
   DCHECK(primary_user->is_profile_created());
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
   DCHECK(profile);
-  DCHECK(chromeos::ProfileHelper::IsRegularProfile(profile));
+  DCHECK(ash::ProfileHelper::IsRegularProfile(profile));
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

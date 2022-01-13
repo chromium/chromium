@@ -71,7 +71,7 @@ const base::Feature MetricReportingManager::kEnableNetworkTelemetryReporting{
 
 bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) {
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user && user->IsAffiliated();
 }
 

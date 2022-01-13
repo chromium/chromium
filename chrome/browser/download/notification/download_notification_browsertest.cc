@@ -1220,7 +1220,7 @@ class MultiProfileDownloadNotificationTest
   }
 
   Profile* GetProfileByIndex(int index) {
-    return chromeos::ProfileHelper::GetProfileByUserIdHashForTest(
+    return ash::ProfileHelper::GetProfileByUserIdHashForTest(
         kTestAccounts[index].hash);
   }
 
@@ -1235,7 +1235,7 @@ class MultiProfileDownloadNotificationTest
         AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
         base::UTF8ToUTF16(info.display_name));
     Profile* profile =
-        chromeos::ProfileHelper::GetProfileByUserIdHashForTest(info.hash);
+        ash::ProfileHelper::GetProfileByUserIdHashForTest(info.hash);
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);

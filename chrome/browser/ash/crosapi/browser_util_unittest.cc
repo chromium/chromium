@@ -84,7 +84,7 @@ class BrowserUtilTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, &testing_profile_);
   }
 
@@ -130,7 +130,7 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
   // non-googlers, add a @test.com account instead.
   AddRegularUser("user@google.com");
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
 

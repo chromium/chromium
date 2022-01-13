@@ -947,9 +947,8 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
   std::string account_manager = GetAccountManager(profile);
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   auto* primary_profile =
-      primary_user
-          ? chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user)
-          : nullptr;
+      primary_user ? ash::ProfileHelper::Get()->GetProfileByUser(primary_user)
+                   : nullptr;
   const bool primary_user_managed =
       primary_profile ? IsProfileManaged(primary_profile) : false;
 

@@ -3015,9 +3015,9 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
 // no certificate got auto-selected.
 bool CanPromptWithNonmatchingCertificates(const Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
+  if (ash::ProfileHelper::IsSigninProfile(profile) ||
+      ash::ProfileHelper::IsLockScreenProfile(profile) ||
+      ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     // On non-regular profiles (e.g. sign-in profile or lock-screen profile),
     // never show certificate selection to the user. A client certificate is an
     // identifier that can be stable for a long time, so only the administrator
@@ -3071,9 +3071,9 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
   // context of the sign-in frame.
   // Note that this is explicitly not happening for the lock screen app profile
   // which does not support a gaia / SAML IdP sign-in frame.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenProfile(profile)) {
-    const char* profile_name = chromeos::ProfileHelper::IsSigninProfile(profile)
+  if (ash::ProfileHelper::IsSigninProfile(profile) ||
+      ash::ProfileHelper::IsLockScreenProfile(profile)) {
+    const char* profile_name = ash::ProfileHelper::IsSigninProfile(profile)
                                    ? "sign-in"
                                    : "lock screen";
     content::StoragePartition* storage_partition =

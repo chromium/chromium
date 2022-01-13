@@ -117,7 +117,7 @@ bool ShouldMountPrimaryUserDownloads(Profile* profile) {
   if (!base::SysInfo::IsRunningOnChromeOS() &&
       user_manager::UserManager::IsInitialized()) {
     const user_manager::User* const user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(
+        ash::ProfileHelper::Get()->GetUserByProfile(
             profile->GetOriginalProfile());
     const user_manager::User* const primary_user =
         user_manager::UserManager::Get()->GetPrimaryUser();
@@ -306,7 +306,7 @@ bool MigratePathFromOldFormat(Profile* profile,
 bool MigrateToDriveFs(Profile* profile,
                       const base::FilePath& old_path,
                       base::FilePath* new_path) {
-  const auto* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  const auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   auto* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   if (!integration_service || !integration_service->is_enabled() || !user ||
@@ -325,7 +325,7 @@ std::string GetDownloadsMountPointName(Profile* profile) {
   // because such a profile never belongs to a multi-profile session.
   const user_manager::User* const user =
       user_manager::UserManager::IsInitialized()
-          ? chromeos::ProfileHelper::Get()->GetUserByProfile(
+          ? ash::ProfileHelper::Get()->GetUserByProfile(
                 profile->GetOriginalProfile())
           : nullptr;
   const std::string id = user ? "-" + user->username_hash() : "";

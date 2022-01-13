@@ -42,7 +42,7 @@ using quick_answers::QuickAnswersExitPoint;
 constexpr int kMaxSurroundingTextLength = 300;
 
 bool IsInternalUser(Profile* profile) {
-  auto* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // TODO(b/186906279): Add user login support for browser test.
   if (!user)
     return false;

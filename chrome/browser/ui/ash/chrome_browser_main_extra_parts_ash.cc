@@ -363,8 +363,8 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override {
     Profile* profile =
-        chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-    if (chromeos::ProfileHelper::IsRegularProfile(profile) &&
+        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+    if (ash::ProfileHelper::IsRegularProfile(profile) &&
         !profile->IsGuestSession()) {
       // Start the error notifier services to show auth/sync notifications.
       ash::SigninErrorNotifierFactory::GetForProfile(profile);

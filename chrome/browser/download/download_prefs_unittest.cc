@@ -510,9 +510,9 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::FakeChromeUserManager user_manager;
     const auto* user = user_manager.AddUser(account_id);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, &profile2);
-    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                 &profile2);
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
         const_cast<user_manager::User*>(user));
     profile2.GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt,
                                    drivefs_profile_salt);

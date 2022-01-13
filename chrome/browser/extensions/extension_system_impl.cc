@@ -146,7 +146,7 @@ void ExtensionSystemImpl::Shared::RegisterManagementPolicyProviders() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Lazy creation of SigninScreenPolicyProvider.
   if (!signin_screen_policy_provider_) {
-    if (chromeos::ProfileHelper::IsSigninProfile(profile_)) {
+    if (ash::ProfileHelper::IsSigninProfile(profile_)) {
       signin_screen_policy_provider_ =
           std::make_unique<chromeos::SigninScreenPolicyProvider>();
     }
@@ -206,7 +206,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
                             !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!extensions_enabled ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile_)) {
+      ash::ProfileHelper::IsLockScreenAppProfile(profile_)) {
     autoupdate_enabled = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -261,9 +261,8 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   // Skip loading session extensions if we are not in a user session or if the
   // profile is the sign-in or lock screen app profile, which don't correspond
   // to a user session.
-  skip_session_extensions =
-      !chromeos::LoginState::Get()->IsUserLoggedIn() ||
-      !chromeos::ProfileHelper::IsRegularProfile(profile_);
+  skip_session_extensions = !chromeos::LoginState::Get()->IsUserLoggedIn() ||
+                            !ash::ProfileHelper::IsRegularProfile(profile_);
   if (chrome::IsRunningInForcedAppMode()) {
     extension_service_->component_loader()->
         AddDefaultComponentExtensionsForKioskMode(skip_session_extensions);

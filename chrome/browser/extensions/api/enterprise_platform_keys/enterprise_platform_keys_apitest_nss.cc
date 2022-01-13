@@ -151,7 +151,7 @@ base::FilePath GetExtensionPemFileName() {
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
-  return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
 void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,

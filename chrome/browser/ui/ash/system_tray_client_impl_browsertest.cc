@@ -38,7 +38,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
 
-using chromeos::ProfileHelper;
+using ::ash::ProfileHelper;
 using user_manager::UserManager;
 
 using SystemTrayClientEnterpriseTest = policy::DevicePolicyCrosBrowserTest;

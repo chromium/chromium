@@ -509,7 +509,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
 
   // Handle the cases where |web_contents| is not available or |web_contents| is
   // associated with Default profile.
-  if (!web_contents || chromeos::ProfileHelper::IsSigninProfile(profile_))
+  if (!web_contents || ash::ProfileHelper::IsSigninProfile(profile_))
     profile_ = ProfileManager::GetActiveUserProfile();
 
   DCHECK(profile_);

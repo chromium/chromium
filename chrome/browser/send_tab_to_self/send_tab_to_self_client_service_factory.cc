@@ -59,7 +59,7 @@ KeyedService* SendTabToSelfClientServiceFactory::BuildServiceInstanceFor(
   // users that are not Gaia users, such as public account users. Do not
   // create the service for them.
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // Ensure that the profile is a user profile.
   if (!user)
     return nullptr;

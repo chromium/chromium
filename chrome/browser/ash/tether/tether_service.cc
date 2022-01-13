@@ -42,7 +42,7 @@ TetherService* TetherService::Get(Profile* profile) {
   // TetherService object should be created for secondary users. If multiple
   // instances were created for each user, inconsistencies could lead to browser
   // crashes. See https://crbug.com/809357.
-  if (!chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile))
+  if (!ProfileHelper::Get()->IsPrimaryProfile(profile))
     return nullptr;
 
   return TetherServiceFactory::GetForBrowserContext(profile);

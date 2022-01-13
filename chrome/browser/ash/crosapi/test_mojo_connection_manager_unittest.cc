@@ -194,8 +194,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   TestingProfile* profile =
       testing_profile_manager.CreateTestingProfile(account.GetUserEmail());
   profile->set_profile_name(account.GetUserEmail());
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                    profile);
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
   auto crosapi_manager = std::make_unique<CrosapiManager>();
 

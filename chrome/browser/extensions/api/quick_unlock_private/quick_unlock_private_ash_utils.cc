@@ -48,7 +48,7 @@ void QuickUnlockPrivateGetAuthTokenHelper::Run(
   callback_ = std::move(callback);
 
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   ash::UserContext user_context(*user);
   user_context.SetKey(ash::Key(password));
 

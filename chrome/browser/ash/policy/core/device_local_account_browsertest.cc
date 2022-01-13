@@ -797,7 +797,7 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override {
     // Ignore lock screen apps profile.
-    if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile))
+    if (ash::ProfileHelper::IsLockScreenAppProfile(profile))
       return;
     registry_ = extensions::ExtensionRegistry::Get(profile);
     profile_manager_observer_.Reset();

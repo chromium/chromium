@@ -188,7 +188,7 @@ std::u16string GetAuthenticatedUsername(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // See https://crbug.com/994798 for details.
     user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile);
     // |user| may be null in tests.
     if (user)
       user_display_name = user->GetDisplayEmail();

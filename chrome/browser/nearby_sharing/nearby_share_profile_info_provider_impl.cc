@@ -18,7 +18,7 @@ NearbyShareProfileInfoProviderImpl::~NearbyShareProfileInfoProviderImpl() =
 absl::optional<std::u16string>
 NearbyShareProfileInfoProviderImpl::GetGivenName() const {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (!user)
     return absl::nullopt;
 

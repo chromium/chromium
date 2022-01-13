@@ -185,7 +185,7 @@ class UserCloudPolicyManagerAshTest
     // the signin Profile is an OTR Profile then for this test it suffices to
     // attach it to the main Profile.
     signin_profile_ = TestingProfile::Builder().BuildIncognito(profile_);
-    ASSERT_EQ(signin_profile_, chromeos::ProfileHelper::GetSigninProfile());
+    ASSERT_EQ(signin_profile_, ash::ProfileHelper::GetSigninProfile());
 
     RegisterLocalState(prefs_.registry());
 
@@ -407,7 +407,7 @@ class UserCloudPolicyManagerAshTest
     external_data_manager_->SetPolicyStore(store_);
     const user_manager::User* active_user = user_manager_->GetActiveUser();
     manager_ = std::make_unique<UserCloudPolicyManagerAsh>(
-        chromeos::ProfileHelper::Get()->GetProfileByUser(active_user),
+        ash::ProfileHelper::Get()->GetProfileByUser(active_user),
         std::move(store),
         base::WrapUnique<MockCloudExternalDataManager>(external_data_manager_),
         base::FilePath(), enforcement_type, fetch_timeout,

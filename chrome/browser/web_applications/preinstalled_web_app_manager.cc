@@ -737,7 +737,7 @@ base::FilePath PreinstalledWebAppManager::GetConfigDir() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Exclude sign-in and lock screen profiles.
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile_)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile_)) {
     return {};
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

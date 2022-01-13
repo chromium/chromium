@@ -47,7 +47,7 @@ constexpr char kTestUserName2[] = "test2@test.com";
 constexpr char kTestUser2GaiaId[] = "2222222222";
 
 void CreateAndStartUserSession(const AccountId& account_id) {
-  using chromeos::ProfileHelper;
+  using ::ash::ProfileHelper;
   using session_manager::SessionManager;
 
   user_manager::known_user::SetProfileRequiresPolicy(

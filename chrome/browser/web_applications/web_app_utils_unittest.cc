@@ -84,7 +84,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   Profile* lock_screen_profile = profile_manager.CreateTestingProfile(
-      chromeos::ProfileHelper::GetLockScreenAppProfileName());
+      ash::ProfileHelper::GetLockScreenAppProfileName());
   EXPECT_FALSE(AreWebAppsEnabled(lock_screen_profile));
   EXPECT_FALSE(AreWebAppsEnabled(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
@@ -149,7 +149,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   Profile* lock_screen_profile = profile_manager.CreateTestingProfile(
-      chromeos::ProfileHelper::GetLockScreenAppProfileName());
+      ash::ProfileHelper::GetLockScreenAppProfileName());
   EXPECT_FALSE(AreWebAppsUserInstallable(lock_screen_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));

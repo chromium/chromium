@@ -134,7 +134,7 @@ InstallStageTracker* InstallStageTracker::Get(
 InstallStageTracker::UserInfo InstallStageTracker::GetUserInfo(
     Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return UserInfo();
 

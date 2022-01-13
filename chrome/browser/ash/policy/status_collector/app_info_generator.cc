@@ -22,8 +22,8 @@ namespace {
 
 bool IsPrimaryAndAffiliated(Profile* profile) {
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  bool is_primary = chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  bool is_primary = ash::ProfileHelper::Get()->IsPrimaryProfile(profile);
   bool is_affiliated = user && user->IsAffiliated();
   if (!is_primary || !is_affiliated) {
     VLOG(1) << "The profile for the primary user is not associated with an "

@@ -41,9 +41,9 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
     TestingProfile* profile =
         profile_manager()->CreateTestingProfile(account_id.GetUserEmail());
     const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         const_cast<user_manager::User*>(user), profile);
-    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
         const_cast<user_manager::User*>(user));
     // Force creation of MultiProfileSupport.
     GetMultiUserWindowManager();

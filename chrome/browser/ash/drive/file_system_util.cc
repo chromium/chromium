@@ -86,7 +86,7 @@ bool IsDriveAvailableForProfile(Profile* profile) {
   if (profile->IsOffTheRecord())
     return false;
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || !user->HasGaiaAccount())
     return false;
 

@@ -30,7 +30,7 @@
 #include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 
-using chromeos::ProfileHelper;
+using ::ash::ProfileHelper;
 using testing::_;
 using user_manager::UserManager;
 

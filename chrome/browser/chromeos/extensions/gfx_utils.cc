@@ -200,7 +200,7 @@ bool ShouldApplyChromeBadge(content::BrowserContext* context,
 
   Profile* profile = Profile::FromBrowserContext(context);
   // Only apply Chrome badge for the primary profile.
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile) ||
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile) ||
       !multi_user_util::IsProfileFromActiveUser(profile)) {
     return false;
   }
@@ -221,7 +221,7 @@ bool ShouldApplyChromeBadgeToWebApp(content::BrowserContext* context,
 
   Profile* profile = Profile::FromBrowserContext(context);
   // Only apply Chrome badge for the primary profile.
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile) ||
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile) ||
       !multi_user_util::IsProfileFromActiveUser(profile)) {
     return false;
   }

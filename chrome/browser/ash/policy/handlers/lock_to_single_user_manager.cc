@@ -124,7 +124,7 @@ void LockToSingleUserManager::OnVmStarting() {
 }
 
 void LockToSingleUserManager::AddVmStartingObservers(user_manager::User* user) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
 
   crostini::CrostiniManager::GetForProfile(profile)->AddVmStartingObserver(
       this);

@@ -110,7 +110,7 @@ std::string GetDeviceDmToken(Profile* profile) {
     return std::string();
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return std::string();
 

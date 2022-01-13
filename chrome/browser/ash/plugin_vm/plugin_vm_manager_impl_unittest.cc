@@ -113,8 +113,7 @@ class PluginVmManagerImplTest : public testing::Test {
       vm_tools::plugin_dispatcher::VmToolsState state) {
     vm_tools::plugin_dispatcher::VmToolsStateChangedSignal state_changed_signal;
     state_changed_signal.set_owner_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(
-            testing_profile_.get()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
     state_changed_signal.set_vm_name(kPluginVmName);
     state_changed_signal.set_vm_tools_state(state);
     VmPluginDispatcherClient().NotifyVmToolsStateChanged(state_changed_signal);
@@ -123,8 +122,7 @@ class PluginVmManagerImplTest : public testing::Test {
   void NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState state) {
     vm_tools::plugin_dispatcher::VmStateChangedSignal state_changed_signal;
     state_changed_signal.set_owner_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(
-            testing_profile_.get()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
     state_changed_signal.set_vm_name(kPluginVmName);
     state_changed_signal.set_vm_state(state);
     VmPluginDispatcherClient().NotifyVmStateChanged(state_changed_signal);

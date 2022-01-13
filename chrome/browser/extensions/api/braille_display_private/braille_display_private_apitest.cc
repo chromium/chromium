@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateAPIUserTest, KeyEventOnLockScreen) {
   ash::ScreenLockerTester tester;
 
   // Make sure the signin profile and active profile are different.
-  Profile* signin_profile = chromeos::ProfileHelper::GetSigninProfile();
+  Profile* signin_profile = ash::ProfileHelper::GetSigninProfile();
   Profile* user_profile = ProfileManager::GetActiveUserProfile();
   ASSERT_FALSE(signin_profile->IsSameOrParent(user_profile))
       << signin_profile->GetDebugName() << " vs "

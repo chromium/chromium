@@ -132,7 +132,7 @@ class VpnProviderApiTest : public extensions::ExtensionApiTest {
   void AddNetworkProfileForUser() {
     ShillProfileClient::Get()->GetTestInterface()->AddProfile(
         kNetworkProfilePath,
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile()));
     content::RunAllPendingInMessageLoop();
   }
 

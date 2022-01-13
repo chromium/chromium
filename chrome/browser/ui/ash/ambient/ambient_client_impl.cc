@@ -75,7 +75,7 @@ constexpr net::NetworkTrafficAnnotationTag kAmbientClientNetworkTag =
 Profile* GetProfileForActiveUser() {
   const user_manager::User* const active_user = GetActiveUser();
   DCHECK(active_user);
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
+  return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
 }
 
 bool IsPrimaryUser() {

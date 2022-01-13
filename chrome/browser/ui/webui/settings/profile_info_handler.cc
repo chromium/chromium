@@ -139,7 +139,7 @@ ProfileInfoHandler::GetAccountNameAndIcon() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
   name = base::UTF16ToUTF8(user->GetDisplayName());
 

@@ -771,9 +771,8 @@ void BrowserManager::Start(
 
   // TODO(ythjkt): After M92 cherry-pick, clean up the following code by moving
   // the data wipe check logic from `BrowserDataMigrator` to browser_util.
-  const std::string user_id_hash =
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(
-          ProfileManager::GetPrimaryUserProfile());
+  const std::string user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
+      ProfileManager::GetPrimaryUserProfile());
   // Check if user data directory needs to be wiped for a backward incompatible
   // update.
   bool cleared_user_data_dir = !browser_util::IsDataWipeRequired(user_id_hash);
@@ -809,9 +808,8 @@ void BrowserManager::StartWithLogFile(
     return;
   }
 
-  const std::string user_id_hash =
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(
-          ProfileManager::GetPrimaryUserProfile());
+  const std::string user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
+      ProfileManager::GetPrimaryUserProfile());
   crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
                                        user_id_hash,
                                        version_info::GetVersion());
@@ -1128,7 +1126,7 @@ policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
 
   switch (user->GetType()) {
     case user_manager::USER_TYPE_REGULAR: {
-      Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+      Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
       DCHECK(profile);
       policy::CloudPolicyManager* user_cloud_policy_manager =
           profile->GetUserCloudPolicyManagerAsh();

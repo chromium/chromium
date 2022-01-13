@@ -373,7 +373,7 @@ void LoginScreenClientImpl::ShowGaiaSigninInternal(
   } else {
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(prefilled_account);
-    Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     DCHECK(session_manager::SessionManager::Get()->IsScreenLocked());
     auto* password_sync_manager =
         ash::InSessionPasswordSyncManagerFactory::GetForProfile(profile);

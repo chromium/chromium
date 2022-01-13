@@ -561,7 +561,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata() {
   Profile* profile = Profile::FromBrowserContext(context_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   const bool include_device_info = user && user->IsAffiliated();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool include_device_info =

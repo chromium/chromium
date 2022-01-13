@@ -2802,8 +2802,7 @@ bool DeviceStatusCollector::GetSessionStatusForUser(
     scoped_refptr<DeviceStatusCollectorState> state,
     em::SessionStatusReportRequest* status,
     const user_manager::User* user) {
-  Profile* const profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
     return false;
 
@@ -2930,7 +2929,7 @@ bool DeviceStatusCollector::GetCrostiniUsage(
 
 std::string DeviceStatusCollector::GetAppVersion(
     const std::string& kiosk_app_id) {
-  Profile* const profile = chromeos::ProfileHelper::Get()->GetProfileByUser(
+  Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager::UserManager::Get()->GetActiveUser());
   // TODO(b/191334671): Replace with DCHECK once we no longer hit this timing
   // issue.

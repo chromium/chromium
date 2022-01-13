@@ -153,9 +153,9 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -304,9 +304,9 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 

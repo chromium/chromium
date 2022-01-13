@@ -46,7 +46,7 @@ DMToken GetDMToken(Profile* const profile) {
     return dm_token;
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return dm_token;
 

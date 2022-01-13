@@ -128,8 +128,7 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
 }
 
 void LoginLogoutReporter::OnLogin(Profile* profile) {
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (user->IsKioskType()) {
     return;
   }

@@ -86,7 +86,7 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
 }
 
 const user_manager::User* GetUser(const Profile* profile) {
-  auto* profile_helper = chromeos::ProfileHelper::Get();
+  auto* profile_helper = ash::ProfileHelper::Get();
   DCHECK(profile_helper);
   const user_manager::User* user = profile_helper->GetUserByProfile(profile);
   DCHECK(user);

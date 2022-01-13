@@ -138,7 +138,7 @@ void StateController::Initialize() {
 
 void StateController::SetPrimaryProfile(Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || !user->HasGaiaAccount()) {
     if (!ready_callback_.is_null())
       std::move(ready_callback_).Run();
@@ -156,8 +156,8 @@ void StateController::SetPrimaryProfile(Profile* profile) {
     base::FilePath base_path;
     base::PathService::Get(chrome::DIR_USER_DATA, &base_path);
     base_path = base_path.AppendASCII("web_lock_screen_api_data");
-    base_path = base_path.Append(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile));
+    base_path =
+        base_path.Append(ash::ProfileHelper::GetUserIdHashFromProfile(profile));
     content::LockScreenStorage::GetInstance()->Init(profile, base_path);
   }
 }

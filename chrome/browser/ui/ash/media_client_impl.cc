@@ -319,7 +319,7 @@ void MediaClientImpl::RequestCaptureState() {
   auto* manager = user_manager::UserManager::Get();
   for (user_manager::User* user : manager->GetLRULoggedInUsers()) {
     capture_states[user->GetAccountId()] = GetMediaCaptureStateOfAllWebContents(
-        chromeos::ProfileHelper::Get()->GetProfileByUser(user));
+        ash::ProfileHelper::Get()->GetProfileByUser(user));
   }
 
   const user_manager::User* primary_user = manager->GetPrimaryUser();

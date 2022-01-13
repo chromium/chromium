@@ -151,7 +151,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
                               SyncServiceFactory::GetDefaultFactory());
     testing_profile_ = builder.Build();
 
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
 
     sync_service_ = static_cast<syncer::TestSyncService*>(

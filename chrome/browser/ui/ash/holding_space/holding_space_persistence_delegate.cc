@@ -25,7 +25,7 @@ namespace {
 bool ShouldIgnoreItem(Profile* profile, const HoldingSpaceItem* item) {
   return file_manager::util::GetAndroidFilesPath().IsParent(
              item->file_path()) &&
-         !chromeos::ProfileHelper::IsPrimaryProfile(profile);
+         !ProfileHelper::IsPrimaryProfile(profile);
 }
 
 }  // namespace

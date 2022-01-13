@@ -444,12 +444,11 @@ ProfileImpl::ProfileImpl(
                         << "profile files to the root directory!";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool is_regular_profile =
-      chromeos::ProfileHelper::IsRegularProfile(this);
+  const bool is_regular_profile = ash::ProfileHelper::IsRegularProfile(this);
 
   if (is_regular_profile) {
     const user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(this);
+        ash::ProfileHelper::Get()->GetUserByProfile(this);
     // A |User| instance should always exist for a profile which is not the
     // initial, the sign-in or the lock screen app profile.
     CHECK(user);
@@ -621,7 +620,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
 
   bool is_signin_profile = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  is_signin_profile = chromeos::ProfileHelper::IsSigninProfile(this);
+  is_signin_profile = ash::ProfileHelper::IsSigninProfile(this);
 #endif
   ::RegisterProfilePrefs(is_signin_profile,
                          g_browser_process->GetApplicationLocale(),
@@ -653,7 +652,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   // immediately. We need to cache the LacrosLaunchSwitch now, as the value is
   // needed later, while the profile is not fully initialized.
   if (force_immediate_policy_load &&
-      chromeos::ProfileHelper::IsPrimaryProfile(this)) {
+      ash::ProfileHelper::IsPrimaryProfile(this)) {
     auto& map = profile_policy_connector_->policy_service()->GetPolicies(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
     crosapi::browser_util::CacheLacrosLaunchSwitch(map);
@@ -1052,8 +1051,8 @@ bool ProfileImpl::IsChild() const {
 
 bool ProfileImpl::AllowsBrowserWindows() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(this) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(this)) {
+  if (ash::ProfileHelper::IsSigninProfile(this) ||
+      ash::ProfileHelper::IsLockScreenAppProfile(this)) {
     return false;
   }
 #endif
@@ -1132,7 +1131,7 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
     // or we are in tests. In both cases the first loaded locale is correct.
     OnLocaleReady(create_mode);
   } else {
-    if (chromeos::ProfileHelper::IsPrimaryProfile(this)) {
+    if (ash::ProfileHelper::IsPrimaryProfile(this)) {
       auto& map = profile_policy_connector_->policy_service()->GetPolicies(
           policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
       crosapi::browser_util::CacheLacrosLaunchSwitch(map);
@@ -1460,7 +1459,7 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
     local_state->SetString(language::prefs::kApplicationLocale, new_locale);
 
   if (user_manager::UserManager::Get()->GetOwnerAccountId() ==
-      chromeos::ProfileHelper::Get()->GetUserByProfile(this)->GetAccountId())
+      ash::ProfileHelper::Get()->GetUserByProfile(this)->GetAccountId())
     local_state->SetString(prefs::kOwnerLocale, new_locale);
 }
 
@@ -1473,7 +1472,7 @@ void ProfileImpl::OnLogin() {
 void ProfileImpl::InitChromeOSPreferences() {
   chromeos_preferences_ = std::make_unique<ash::Preferences>();
   chromeos_preferences_->Init(
-      this, chromeos::ProfileHelper::Get()->GetUserByProfile(this));
+      this, ash::ProfileHelper::Get()->GetUserByProfile(this));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -656,7 +656,7 @@ bool ArcSupportHost::Initialize() {
 
   loadtime_data.SetBoolean(kArcManaged, is_arc_managed_);
   loadtime_data.SetBoolean("isOwnerProfile",
-                           chromeos::ProfileHelper::IsOwnerProfile(profile_));
+                           ash::ProfileHelper::IsOwnerProfile(profile_));
 
   const std::string& country_code = base::CountryCodeForCurrentTimezone();
   loadtime_data.SetString("countryCode", country_code);

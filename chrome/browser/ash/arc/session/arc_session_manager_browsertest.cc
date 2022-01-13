@@ -138,7 +138,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ExpandPropertyFilesForTesting(ArcSessionManager::Get());
 
-    chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
@@ -154,7 +154,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
 
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         GetFakeUserManager()->GetPrimaryUser(), profile_.get());
 
     // Seed account info properly.
@@ -200,7 +200,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     profile_.reset();
     base::RunLoop().RunUntilIdle();
     user_manager_enabler_.reset();
-    chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 

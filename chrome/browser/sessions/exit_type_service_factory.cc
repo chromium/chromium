@@ -43,7 +43,7 @@ KeyedService* ExitTypeServiceFactory::BuildServiceInstanceFor(
     return nullptr;
     // TODO(sky): is this necessary?
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
   return new ExitTypeService(profile);

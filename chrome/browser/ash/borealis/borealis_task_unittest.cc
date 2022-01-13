@@ -180,7 +180,7 @@ TEST_F(BorealisTasksTest,
        AwaitBorealisStartupSucceedsAndCallbackRanWithResults) {
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
   signal.set_vm_name(context_->vm_name());
   signal.set_container_name("penguin");
 
@@ -198,7 +198,7 @@ TEST_F(BorealisTasksTest,
        AwaitBorealisStartupContainerAlreadyStartedAndCallbackRanWithResults) {
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
   signal.set_vm_name(context_->vm_name());
   signal.set_container_name("penguin");
 

@@ -789,8 +789,7 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
   Profile* active_user_profile() {
     const user_manager::User* const user =
         user_manager::UserManager::Get()->GetActiveUser();
-    Profile* const profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     return profile;
   }
 };
@@ -919,7 +918,7 @@ class PolicyProvidedCertsForSigninExtensionTest
     SigninProfileExtensionsPolicyTestBase::SetUpOnMainThread();
 
     signin_profile_ = GetInitialProfile();
-    ASSERT_TRUE(chromeos::ProfileHelper::IsSigninProfile(signin_profile_));
+    ASSERT_TRUE(ash::ProfileHelper::IsSigninProfile(signin_profile_));
 
     extensions::ExtensionHostTestHelper extension_1_observer(
         signin_profile_, kSigninScreenExtension1);

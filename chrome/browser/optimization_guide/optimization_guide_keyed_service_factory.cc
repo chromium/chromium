@@ -53,7 +53,7 @@ KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
   // are required are not available when the browser context for the signin
   // profile is created.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
   return new OptimizationGuideKeyedService(context);

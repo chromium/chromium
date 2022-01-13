@@ -39,7 +39,7 @@ void FeedbackAsh::ShowFeedbackPage(mojom::FeedbackInfoPtr feedback_info) {
     LOG(ERROR) << "Cannot invoke feedback for lacros: No primary user found!";
     return;
   }
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     LOG(ERROR)
         << "Cannot invoke feedback for lacros: No primary profile found!";

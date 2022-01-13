@@ -620,7 +620,7 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
 
   // |profile| may be null if sign-in has happened but the profile isn't loaded
   // yet.
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
     return;
 
@@ -787,7 +787,7 @@ void ChromeNewWindowClient::OpenAppWithIntent(
 
   // |profile| may be null if sign-in has happened but the profile isn't loaded
   // yet.
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
     return;
 

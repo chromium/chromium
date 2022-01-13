@@ -123,7 +123,7 @@ void DeviceActions::SetWifiEnabled(bool enabled) {
 void DeviceActions::SetBluetoothEnabled(bool enabled) {
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   // Simply toggle the user pref, which is being observed by ash's bluetooth
   // power controller.
@@ -162,7 +162,7 @@ void DeviceActions::SetScreenBrightnessLevel(double level, bool gradual) {
 void DeviceActions::SetNightLightEnabled(bool enabled) {
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   // Simply toggle the user pref, which is being observed by ash's night
   // light controller.
@@ -172,7 +172,7 @@ void DeviceActions::SetNightLightEnabled(bool enabled) {
 void DeviceActions::SetSwitchAccessEnabled(bool enabled) {
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   profile->GetPrefs()->SetBoolean(ash::prefs::kAccessibilitySwitchAccessEnabled,
                                   enabled);

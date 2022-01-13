@@ -61,7 +61,7 @@ TEST_F(LoginStateApiUnittest, GetProfileType_UserProfile) {
 // Test that |loginState.getProfileType()| returns |SIGNIN_PROFILE| for
 // extensions running in the signin profile.
 TEST_F(LoginStateApiUnittest, GetProfileType_SigninProfile) {
-  // |chromeos::ProfileHelper::GetSigninProfile()| cannot be used as the
+  // |ash::ProfileHelper::GetSigninProfile()| cannot be used as the
   // |TestingProfileManager| set up by |BrowserWithTestWindowTest| has an empty
   // user data directory.
   TestingProfile::Builder builder;

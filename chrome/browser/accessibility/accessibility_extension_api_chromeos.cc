@@ -86,7 +86,7 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
   // TODO(chrome-a11y-core): we can't open a settings page when you're on the
   // signin profile, but maybe we should notify the user and explain why?
   Profile* profile = AccessibilityManager::Get()->profile();
-  if (!chromeos::ProfileHelper::IsSigninProfile(profile) &&
+  if (!ash::ProfileHelper::IsSigninProfile(profile) &&
       chromeos::settings::IsOSSettingsSubPage(params->subpage)) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile, params->subpage);

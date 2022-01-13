@@ -1374,7 +1374,7 @@ class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
 
     LoginUser(account_id1_);
     ::full_restore::SetActiveProfilePath(
-        chromeos::ProfileHelper::Get()
+        ash::ProfileHelper::Get()
             ->GetProfileByAccountId(account_id1_)
             ->GetPath());
   }
@@ -1387,8 +1387,7 @@ class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
-  CreateBrowser(
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
+  CreateBrowser(ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
   // Capture the active desk, which contains the browser windows.
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();

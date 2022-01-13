@@ -62,12 +62,12 @@ KeyedService* UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // On the login/lock screen only device network policies apply.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
   // Currently, only the network policy of the primary user is supported. See
   // also http://crbug.com/310685 .

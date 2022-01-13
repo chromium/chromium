@@ -354,9 +354,8 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
-        profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+    if (profile->GetPath() == ProfileHelper::GetSigninProfileDir() ||
+        profile->GetPath() == ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 

@@ -118,7 +118,7 @@ std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
       continue;
     original_profiles.insert(profile);
     const user_manager::User* const user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile);
     if (!user || !user->is_logged_in())
       continue;
 
@@ -210,9 +210,8 @@ std::string Redact(const base::FilePath& path) {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateLogoutUserForReauthenticationFunction::Run() {
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          Profile::FromBrowserContext(browser_context()));
+  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
+      Profile::FromBrowserContext(browser_context()));
   if (user) {
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
         user->GetAccountId(), user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);

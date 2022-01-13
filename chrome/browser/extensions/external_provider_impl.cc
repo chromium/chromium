@@ -633,7 +633,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   ManifestLocation crx_location = ManifestLocation::kInvalidLocation;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     // Download extensions/apps installed by policy in the login profile.
     // Extensions (not apps) installed through this path will have type
     // |TYPE_LOGIN_SCREEN_EXTENSION| with limited API capabilities.
@@ -654,7 +654,7 @@ void ExternalProviderImpl::CreateExternalProviders(
       g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_chrome_os_public_session = false;
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   policy::DeviceLocalAccount::Type account_type;
   if (user && connector->IsDeviceEnterpriseManaged() &&
       policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),

@@ -137,7 +137,7 @@ bool IsBrowserManaged(Profile* profile) {
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (primary_user) {
     auto* primary_profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+        ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
     if (primary_profile) {
       auto* primary_profile_connector =
           primary_profile->GetProfilePolicyConnector();

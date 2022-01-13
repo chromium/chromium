@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
   // The --load-extension command line flag should not be applied to the sign-in
   // profile.
   EXPECT_EQ(0, GetNonComponentEnabledExtensionCount(
-                   chromeos::ProfileHelper::GetSigninProfile()));
+                   ash::ProfileHelper::GetSigninProfile()));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

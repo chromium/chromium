@@ -179,7 +179,7 @@ content::BrowserContext* ChromeExtensionsBrowserClient::GetOriginalContext(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string ChromeExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
-  return chromeos::ProfileHelper::GetUserIdHashFromProfile(
+  return ash::ProfileHelper::GetUserIdHashFromProfile(
       static_cast<Profile*>(context));
 }
 #endif
@@ -515,7 +515,7 @@ KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
 bool ChromeExtensionsBrowserClient::IsLockScreenContext(
     content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::ProfileHelper::IsLockScreenAppProfile(
+  return ash::ProfileHelper::IsLockScreenAppProfile(
       Profile::FromBrowserContext(context));
 #else
   return false;

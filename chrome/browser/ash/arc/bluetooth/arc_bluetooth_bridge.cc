@@ -2910,7 +2910,7 @@ void ArcBluetoothBridge::SetPrimaryUserBluetoothPowerSetting(
     bool enabled) const {
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   profile->GetPrefs()->SetBoolean(ash::prefs::kUserBluetoothAdapterEnabled,
                                   enabled);

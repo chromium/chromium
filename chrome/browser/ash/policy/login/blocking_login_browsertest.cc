@@ -120,7 +120,7 @@ class BlockingLoginTest
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override {
     ASSERT_EQ(chrome::NOTIFICATION_PROFILE_ADDED, type);
-    if (chromeos::ProfileHelper::IsLockScreenAppProfile(
+    if (ash::ProfileHelper::IsLockScreenAppProfile(
             content::Source<Profile>(source).ptr())) {
       return;
     }

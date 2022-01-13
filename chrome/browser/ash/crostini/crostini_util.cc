@@ -420,14 +420,14 @@ void LaunchCrostiniApp(Profile* profile,
 }
 
 std::string CryptohomeIdForProfile(Profile* profile) {
-  std::string id = chromeos::ProfileHelper::GetUserIdHashFromProfile(profile);
+  std::string id = ash::ProfileHelper::GetUserIdHashFromProfile(profile);
   // Empty id means we're running in a test.
   return id.empty() ? "test" : id;
 }
 
 std::string DefaultContainerUserNameForProfile(Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {
     return kCrostiniDefaultUsername;
   }

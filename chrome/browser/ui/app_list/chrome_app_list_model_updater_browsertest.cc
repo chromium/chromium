@@ -56,9 +56,9 @@ class OemAppPositionTest : public ash::LoginManagerTest {
     const std::string& email =
         login_mixin_.users()[0].account_id.GetUserEmail();
     const std::string user_id_hash =
-        chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(email);
+        ash::ProfileHelper::GetUserIdHashByUserIdForTesting(email);
     const base::FilePath user_profile_path = user_data_dir.Append(
-        chromeos::ProfileHelper::GetUserProfileDir(user_id_hash));
+        ash::ProfileHelper::GetUserProfileDir(user_id_hash));
     base::CreateDirectory(user_profile_path);
 
     base::FilePath src_dir;

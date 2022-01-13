@@ -151,7 +151,7 @@ class SigninPolicyPrefsTest : public PolicyPrefsTest {
 
 IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
   PrefService* signin_profile_prefs =
-      chromeos::ProfileHelper::GetSigninProfile()->GetPrefs();
+      ash::ProfileHelper::GetSigninProfile()->GetPrefs();
 
   // Only checking signin_profile_prefs here since |local_state| is already
   // checked by PolicyPrefsTest.PolicyToPrefsMapping test.

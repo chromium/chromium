@@ -38,7 +38,7 @@ Profile* GetProfile() {
   if (!user)
     return nullptr;
 
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  return ash::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
 // Returns the MediaRouter instance for the current primary profile, if there is

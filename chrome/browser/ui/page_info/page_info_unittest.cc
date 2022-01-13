@@ -166,10 +166,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     auto account_id =
         AccountId::FromUserEmailGaiaId(profile()->GetProfileUserName(), "id");
     user_ = std::make_unique<FakeAffiliatedUser>(account_id);
-    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
-        user_.get());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user_.get(), profile());
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user_.get());
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user_.get(),
+                                                                 profile());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());

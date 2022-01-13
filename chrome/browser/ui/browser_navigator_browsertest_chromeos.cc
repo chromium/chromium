@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
 
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
             Browser::GetCreationStatusForProfile(
-                chromeos::ProfileHelper::GetSigninProfile()));
+                ash::ProfileHelper::GetSigninProfile()));
 }
 
 // Verify that page navigation is blocked in locked fullscreen mode.
