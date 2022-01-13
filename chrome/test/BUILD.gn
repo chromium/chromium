@@ -2137,6 +2137,8 @@ if (!is_android && !is_fuchsia) {
       "data/webui/certificate_viewer_ui_test-inl.h",
       "data/webui/chrome_send_browsertest.cc",
       "data/webui/chrome_send_browsertest.h",
+      "data/webui/chrome_timeticks_browsertest.cc",
+      "data/webui/chrome_timeticks_browsertest.h",
       "data/webui/history_ui_browsertest.cc",
       "data/webui/history_ui_browsertest.h",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",

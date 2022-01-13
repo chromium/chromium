@@ -23,6 +23,7 @@ var expected = [
   'runtime',
   'send',
   'test',
+  'timeTicks'
 ];
 var actual = Object.keys(chrome).sort();
 

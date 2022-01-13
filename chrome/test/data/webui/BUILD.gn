@@ -13,6 +13,7 @@ import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/typescript/ts_definitions.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -76,6 +77,7 @@ if (include_js_tests) {
       "assertions.js",
       "async_gen.js",
       "bookmarks/bookmarks_browsertest.js",
+      "chrome_timeticks_browsertest.js",
       "cr_components/cr_components_browsertest.js",
       "cr_elements/cr_elements_browsertest.js",
       "download_shelf/download_shelf_browsertest.js",
@@ -618,6 +620,7 @@ generate_grd("build_grd") {
 
   deps = [
     ":build_chai_grdp",
+    ":build_ts",
     ":build_web_ui_test_mojo_grdp",
     "bookmarks:build_grdp",
     "cr_components:build_grdp",
@@ -666,6 +669,8 @@ generate_grd("build_grd") {
     grdp_files +=
         [ "$target_gen_dir/chromeos/personalization_app/resources.grdp" ]
   }
+
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
 # TypeScript related targets
@@ -695,5 +700,21 @@ ts_definitions("generate_definitions") {
   extra_deps = [
     ":copy_checked_in_dts_files",
     "//ui/webui/resources:generate_definitions",
+  ]
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
+  in_files = [ "chrome_timeticks_test.ts" ]
+  extra_deps = [ ":generate_definitions" ]
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/chrome_timeticks.d.ts",
   ]
 }
