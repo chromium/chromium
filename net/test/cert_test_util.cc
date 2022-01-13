@@ -64,10 +64,8 @@ scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
 }
 
 scoped_refptr<X509Certificate> ImportCertFromFile(
-    const base::FilePath& certs_dir,
-    base::StringPiece cert_file) {
+    const base::FilePath& cert_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath cert_path = certs_dir.AppendASCII(cert_file);
   std::string cert_data;
   if (!base::ReadFileToString(cert_path, &cert_data))
     return nullptr;
@@ -79,6 +77,12 @@ scoped_refptr<X509Certificate> ImportCertFromFile(
   if (certs_in_file.empty())
     return nullptr;
   return certs_in_file[0];
+}
+
+scoped_refptr<X509Certificate> ImportCertFromFile(
+    const base::FilePath& certs_dir,
+    base::StringPiece cert_file) {
+  return ImportCertFromFile(certs_dir.AppendASCII(cert_file));
 }
 
 bssl::UniquePtr<EVP_PKEY> LoadPrivateKeyFromFile(

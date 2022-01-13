@@ -19,6 +19,10 @@
 
 class GURL;
 
+namespace base {
+class FilePath;
+}
+
 namespace net {
 
 namespace der {
@@ -42,11 +46,23 @@ class CertBuilder {
   CertBuilder(CRYPTO_BUFFER* orig_cert, CertBuilder* issuer);
   ~CertBuilder();
 
+  // Initializes a CertBuilder using the certificate and private key from
+  // |cert_and_key_file| as a template. If |issuer| is null then the generated
+  // certificate will be self-signed. Otherwise, it will be signed using
+  // |issuer|.
+  static std::unique_ptr<CertBuilder> FromFile(
+      const base::FilePath& cert_and_key_file,
+      CertBuilder* issuer);
+
   // Creates a CertBuilder that will return a static |cert| and |key|.
   // This may be passed as the |issuer| param of another CertBuilder to create
   // a cert chain that ends in a pre-defined certificate.
   static std::unique_ptr<CertBuilder> FromStaticCert(CRYPTO_BUFFER* cert,
                                                      EVP_PKEY* key);
+  // Like FromStaticCert, but loads the certificate and private key from the
+  // PEM file |cert_and_key_file|.
+  static std::unique_ptr<CertBuilder> FromStaticCertFile(
+      const base::FilePath& cert_and_key_file);
 
   // Creates a simple leaf->intermediate->root chain of CertBuilders with no AIA
   // or CrlDistributionPoint extensions, and leaf having a subjectAltName of

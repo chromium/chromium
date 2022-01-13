@@ -90,6 +90,12 @@ scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
     base::StringPiece cert_file,
     int format);
 
+// Imports a single certificate from |cert_path|.
+// If the file contains multiple certificates, the first certificate found
+// will be returned.
+scoped_refptr<X509Certificate> ImportCertFromFile(
+    const base::FilePath& cert_path);
+
 // Imports a single certificate from |cert_file|.
 // |certs_dir| represents the test certificates directory. |cert_file| is the
 // name of the certificate file. If cert_file contains multiple certificates,

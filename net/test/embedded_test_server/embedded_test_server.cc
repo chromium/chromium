@@ -415,44 +415,27 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath certs_dir(GetTestCertsDirectory());
 
-  // Load root cert and key:
-  scoped_refptr<X509Certificate> root_cert =
-      ImportCertFromFile(certs_dir, "root_ca_cert.pem");
-  if (!root_cert)
-    return false;
-
-  bssl::UniquePtr<EVP_PKEY> root_private_key(
-      LoadPrivateKeyFromFile(certs_dir.AppendASCII("root_ca_cert.pem")));
-  if (!root_private_key)
-    return false;
-
-  std::unique_ptr<CertBuilder> static_root = CertBuilder::FromStaticCert(
-      root_cert->cert_buffer(), root_private_key.get());
+  std::unique_ptr<CertBuilder> static_root = CertBuilder::FromStaticCertFile(
+      certs_dir.AppendASCII("root_ca_cert.pem"));
 
   // Will be nullptr if cert_config_.intermediate == kNone.
   std::unique_ptr<CertBuilder> intermediate;
   std::unique_ptr<CertBuilder> leaf;
 
   if (cert_config_.intermediate != IntermediateType::kNone) {
-    CertificateList orig_leaf_and_intermediate = CreateCertificateListFromFile(
-        certs_dir, "ok_cert_by_intermediate.pem", X509Certificate::FORMAT_AUTO);
-    if (orig_leaf_and_intermediate.size() != 2)
+    intermediate = CertBuilder::FromFile(
+        certs_dir.AppendASCII("intermediate_ca_cert.pem"), static_root.get());
+    if (!intermediate)
       return false;
 
-    intermediate = std::make_unique<CertBuilder>(
-        orig_leaf_and_intermediate[1]->cert_buffer(), static_root.get());
-
-    leaf = std::make_unique<CertBuilder>(
-        orig_leaf_and_intermediate[0]->cert_buffer(), intermediate.get());
+    leaf = CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"),
+                                 intermediate.get());
   } else {
-    scoped_refptr<X509Certificate> orig_leaf =
-        ImportCertFromFile(certs_dir, "ok_cert.pem");
-    if (!orig_leaf)
-      return false;
-
-    leaf = std::make_unique<CertBuilder>(orig_leaf->cert_buffer(),
-                                         static_root.get());
+    leaf = CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"),
+                                 static_root.get());
   }
+  if (!leaf)
+    return false;
 
   std::vector<GURL> leaf_ca_issuers_urls;
   std::vector<GURL> leaf_ocsp_urls;
