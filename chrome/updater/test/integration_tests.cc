@@ -538,7 +538,15 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   ExpectClean();
 }
 
-TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1287235): Failing consistently on Mac.
+#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
+  DISABLED_UninstallUpdaterWhenAllAppsUninstalled
+#else
+#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
+  UninstallUpdaterWhenAllAppsUninstalled
+#endif
+TEST_F(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
   Install();
   RegisterApp("test1");
   ExpectInstalled();
