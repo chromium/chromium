@@ -356,6 +356,9 @@ int KeywordScoreForSufficientlyCompleteMatch();
 // Returns true if the tab switch suggestions flag is enabled.
 bool IsTabSwitchSuggestionsEnabled();
 
+// Returns true if the fuzzy URL suggestions feature is enabled.
+bool IsFuzzyUrlSuggestionsEnabled();
+
 // Returns true if the first batch of Pedals on Android is enabled.
 bool IsPedalsAndroidBatch1Enabled();
 

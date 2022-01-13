@@ -606,6 +606,10 @@ bool OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxTabSwitchSuggestions);
 }
 
+bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxFuzzyUrlSuggestions);
+}
+
 bool OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsAndroidBatch1);
 }

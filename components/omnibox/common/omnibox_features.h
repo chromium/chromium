@@ -74,6 +74,7 @@ extern const base::Feature kRichAutocompletion;
 extern const base::Feature kNtpRealboxPedals;
 extern const base::Feature kNtpRealboxSuggestionAnswers;
 extern const base::Feature kNtpRealboxTailSuggest;
+extern const base::Feature kOmniboxFuzzyUrlSuggestions;
 extern const base::Feature kOmniboxPedalsAndroidBatch1;
 extern const base::Feature kOmniboxPedalsBatch2NonEnglish;
 extern const base::Feature kOmniboxPedalsBatch3;
