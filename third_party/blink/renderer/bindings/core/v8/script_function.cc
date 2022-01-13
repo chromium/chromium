@@ -12,12 +12,12 @@ namespace {
 
 class CallableHolder final : public CustomWrappableAdapter {
  public:
-  explicit CallableHolder(NewScriptFunction::Callable* callable)
+  explicit CallableHolder(ScriptFunction::Callable* callable)
       : callable_(callable) {}
   const char* NameInHeapSnapshot() const final {
     return "ScriptFunction::Callable";
   }
-  NewScriptFunction::Callable* GetCallable() { return callable_; }
+  ScriptFunction::Callable* GetCallable() { return callable_; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(callable_);
@@ -25,17 +25,17 @@ class CallableHolder final : public CustomWrappableAdapter {
   }
 
  private:
-  const Member<NewScriptFunction::Callable> callable_;
+  const Member<ScriptFunction::Callable> callable_;
 };
 
 }  // namespace
 
-ScriptValue NewScriptFunction::Callable::Call(ScriptState*, ScriptValue) {
+ScriptValue ScriptFunction::Callable::Call(ScriptState*, ScriptValue) {
   NOTREACHED();
   return ScriptValue();
 }
 
-void NewScriptFunction::Callable::CallRaw(
+void ScriptFunction::Callable::CallRaw(
     ScriptState* script_state,
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   ScriptValue result =
@@ -43,7 +43,7 @@ void NewScriptFunction::Callable::CallRaw(
   V8SetReturnValue(args, result.V8Value());
 }
 
-v8::Local<v8::Function> NewScriptFunction::BindToV8Function(
+v8::Local<v8::Function> ScriptFunction::BindToV8Function(
     ScriptState* script_state,
     Callable* callable) {
   DCHECK(callable);
@@ -58,7 +58,7 @@ v8::Local<v8::Function> NewScriptFunction::BindToV8Function(
       .ToLocalChecked();
 }
 
-void NewScriptFunction::CallCallback(
+void ScriptFunction::CallCallback(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(args.GetIsolate(),
                                                "Blink_CallCallback");

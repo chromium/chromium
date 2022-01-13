@@ -53,13 +53,13 @@ DEFINE_TEXT_PROTO_FUZZER(
         ToScriptStateForMainWorld(&page_holder->GetFrame());
     ScriptState::Scope scope(script_state);
 
-    Persistent<NewScriptFunction> error_function =
-        MakeGarbageCollected<NewScriptFunction>(
+    Persistent<ScriptFunction> error_function =
+        MakeGarbageCollected<ScriptFunction>(
             script_state, MakeGarbageCollected<FakeFunction>("error"));
     Persistent<V8WebCodecsErrorCallback> error_callback =
         V8WebCodecsErrorCallback::Create(error_function->V8Function());
-    Persistent<NewScriptFunction> output_function =
-        MakeGarbageCollected<NewScriptFunction>(
+    Persistent<ScriptFunction> output_function =
+        MakeGarbageCollected<ScriptFunction>(
             script_state, MakeGarbageCollected<FakeFunction>("output"));
     Persistent<V8AudioDataOutputCallback> output_callback =
         V8AudioDataOutputCallback::Create(output_function->V8Function());

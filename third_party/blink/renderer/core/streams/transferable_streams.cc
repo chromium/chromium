@@ -58,8 +58,8 @@ namespace blink {
 namespace {
 
 template <typename T, typename... Args>
-NewScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
-  return MakeGarbageCollected<NewScriptFunction>(
+ScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
+  return MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
 }
 
@@ -405,7 +405,7 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     return StreamThenPromise(
         script_state->GetContext(),
         writable_->backpressure_promise_->V8Promise(isolate),
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state,
             MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this)));
   }
@@ -780,9 +780,9 @@ class CrossRealmTransformReadable::CancelAlgorithm final
 
 class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
  public:
-  using Constant = NewScriptFunction::Constant;
+  using Constant = ScriptFunction::Constant;
 
-  class PullSource2 final : public NewScriptFunction::Callable {
+  class PullSource2 final : public ScriptFunction::Callable {
    public:
     explicit PullSource2(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
@@ -792,21 +792,21 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     }
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
    private:
     const Member<ConcatenatingUnderlyingSource> source_;
   };
 
-  class OnReadingSource1Success final : public NewScriptFunction::Callable {
+  class OnReadingSource1Success final : public ScriptFunction::Callable {
    public:
     explicit OnReadingSource1Success(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
     ScriptValue Call(ScriptState* script_state,
                      ScriptValue read_result) override {
@@ -835,14 +835,14 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     const Member<ConcatenatingUnderlyingSource> source_;
   };
 
-  class OnReadingSource1Fail final : public NewScriptFunction::Callable {
+  class OnReadingSource1Fail final : public ScriptFunction::Callable {
    public:
     explicit OnReadingSource1Fail(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
     ScriptValue Call(ScriptState* script_state, ScriptValue value) override {

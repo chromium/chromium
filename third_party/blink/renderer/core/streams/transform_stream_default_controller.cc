@@ -356,7 +356,7 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
   // 2. Return the result of transforming transformPromise ...
   return StreamThenPromise(
       script_state->GetContext(), transform_promise, nullptr,
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectFunction>(
                             controller->controlled_transform_stream_)));
 }

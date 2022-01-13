@@ -1033,7 +1033,7 @@ static void isConfigSupportedWithHardwareOnly(
   resolver->Resolve(support);
 }
 
-class FindAnySupported final : public NewScriptFunction::Callable {
+class FindAnySupported final : public ScriptFunction::Callable {
  public:
   ScriptValue Call(ScriptState* state, ScriptValue value) override {
     ExceptionContext context(
@@ -1111,7 +1111,7 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
 
   // Wait for all |promises| to resolve and check if any of them have
   // support=true.
-  auto* find_any_supported = MakeGarbageCollected<NewScriptFunction>(
+  auto* find_any_supported = MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<FindAnySupported>());
 
   return ScriptPromise::All(script_state, promises).Then(find_any_supported);

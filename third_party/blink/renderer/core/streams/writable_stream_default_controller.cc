@@ -214,9 +214,9 @@ void WritableStreamDefaultController::SetUp(
 
   StreamThenPromise(
       script_state->GetContext(), start_promise,
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ResolvePromiseFunction>(stream)),
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectPromiseFunction>(stream)));
 }
 
@@ -557,9 +557,9 @@ void WritableStreamDefaultController::ProcessClose(
 
   StreamThenPromise(
       script_state->GetContext(), sinkClosePromise,
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ResolveFunction>(stream)),
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectFunction>(stream)));
 }
 
@@ -666,10 +666,10 @@ void WritableStreamDefaultController::ProcessWrite(
   };
 
   StreamThenPromise(script_state->GetContext(), sinkWritePromise,
-                    MakeGarbageCollected<NewScriptFunction>(
+                    MakeGarbageCollected<ScriptFunction>(
                         script_state, MakeGarbageCollected<ResolveFunction>(
                                           stream, controller)),
-                    MakeGarbageCollected<NewScriptFunction>(
+                    MakeGarbageCollected<ScriptFunction>(
                         script_state, MakeGarbageCollected<RejectFunction>(
                                           stream, controller)));
 }

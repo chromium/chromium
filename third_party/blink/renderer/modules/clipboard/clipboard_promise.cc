@@ -48,7 +48,7 @@ using mojom::blink::PermissionService;
 // This class deals with all the Blob promises and executes the write
 // operation after all the promises have been resolved.
 class ClipboardPromise::BlobPromiseResolverFunction final
-    : public NewScriptFunction::Callable {
+    : public ScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
 
@@ -56,10 +56,10 @@ class ClipboardPromise::BlobPromiseResolverFunction final
                      ScriptPromise promise,
                      ClipboardPromise* clipboard_promise) {
     promise.Then(
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state, MakeGarbageCollected<BlobPromiseResolverFunction>(
                               clipboard_promise, ResolveType::kFulfill)),
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state, MakeGarbageCollected<BlobPromiseResolverFunction>(
                               clipboard_promise, ResolveType::kReject)));
   }
@@ -69,7 +69,7 @@ class ClipboardPromise::BlobPromiseResolverFunction final
       : clipboard_promise_(clipboard_promise), type_(type) {}
 
   void Trace(Visitor* visitor) const final {
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
     visitor->Trace(clipboard_promise_);
   }
 

@@ -39,7 +39,7 @@ void RunWithStack(base::RunLoop* run_loop) {
 
 // Helper class for WaitForPromise{Fulfillment,Rejection}(). It provides a
 // function that invokes |callback| when a ScriptPromise is resolved.
-class ClosureRunnerCallable final : public NewScriptFunction::Callable {
+class ClosureRunnerCallable final : public ScriptFunction::Callable {
  public:
   explicit ClosureRunnerCallable(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
@@ -290,7 +290,7 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
 
 void WakeLockTestingContext::WaitForPromiseFulfillment(ScriptPromise promise) {
   base::RunLoop run_loop;
-  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+  promise.Then(MakeGarbageCollected<ScriptFunction>(
       GetScriptState(),
       MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the
@@ -304,7 +304,7 @@ void WakeLockTestingContext::WaitForPromiseRejection(ScriptPromise promise) {
   base::RunLoop run_loop;
   promise.Then(
       nullptr,
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           GetScriptState(),
           MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the

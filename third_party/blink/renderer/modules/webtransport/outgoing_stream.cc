@@ -246,7 +246,7 @@ void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
   };
 
   StreamThenPromise(script_state_->GetContext(), abort_promise.V8Promise(),
-                    MakeGarbageCollected<NewScriptFunction>(
+                    MakeGarbageCollected<ScriptFunction>(
                         script_state_, MakeGarbageCollected<ResolveFunction>(
                                            reason, resolver)));
 

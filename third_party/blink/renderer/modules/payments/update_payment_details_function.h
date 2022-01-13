@@ -14,7 +14,7 @@ class PaymentRequestDelegate;
 class ScriptState;
 class ScriptValue;
 
-class UpdatePaymentDetailsFunction : public NewScriptFunction::Callable {
+class UpdatePaymentDetailsFunction : public ScriptFunction::Callable {
  public:
   enum class ResolveType {
     kFulfill,

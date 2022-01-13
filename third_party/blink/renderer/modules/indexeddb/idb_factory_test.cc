@@ -31,7 +31,7 @@
 namespace blink {
 namespace {
 
-class TestHelperFunction : public NewScriptFunction::Callable {
+class TestHelperFunction : public ScriptFunction::Callable {
  public:
   explicit TestHelperFunction(bool* called_flag) : called_flag_(called_flag) {}
 
@@ -134,10 +134,10 @@ TEST_F(IDBFactoryTest, WebIDBGetDBInfoCallbacksResolvesPromise) {
 
   bool on_fulfilled = false;
   bool on_rejected = false;
-  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+  promise.Then(MakeGarbageCollected<ScriptFunction>(
                    scope.GetScriptState(),
                    MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-               MakeGarbageCollected<NewScriptFunction>(
+               MakeGarbageCollected<ScriptFunction>(
                    scope.GetScriptState(),
                    MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
 
@@ -182,10 +182,10 @@ TEST_F(IDBFactoryTest, WebIDBGetDBNamesCallbacksRejectsPromise) {
 
   bool on_fulfilled = false;
   bool on_rejected = false;
-  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+  promise.Then(MakeGarbageCollected<ScriptFunction>(
                    scope.GetScriptState(),
                    MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-               MakeGarbageCollected<NewScriptFunction>(
+               MakeGarbageCollected<ScriptFunction>(
                    scope.GetScriptState(),
                    MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
 

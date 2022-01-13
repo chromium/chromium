@@ -286,7 +286,7 @@ bool ConvertCryptoResult<bool>(v8::Isolate*, const ScriptValue& value) {
 }
 
 template <typename T>
-class WebCryptoResultAdapter : public NewScriptFunction::Callable {
+class WebCryptoResultAdapter : public ScriptFunction::Callable {
  public:
   explicit WebCryptoResultAdapter(base::RepeatingCallback<void(T)> function)
       : function_(std::move(function)) {}
@@ -308,11 +308,11 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
                                   base::RepeatingCallback<void(T)> function) {
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state);
   result->Promise().Then(
-      (MakeGarbageCollected<NewScriptFunction>(
+      (MakeGarbageCollected<ScriptFunction>(
            script_state, MakeGarbageCollected<WebCryptoResultAdapter<T>>(
                              std::move(function))))
           ->V8Function(),
-      (MakeGarbageCollected<NewScriptFunction>(
+      (MakeGarbageCollected<ScriptFunction>(
            script_state,
            MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
                WTF::BindRepeating([](DOMException* exception) {

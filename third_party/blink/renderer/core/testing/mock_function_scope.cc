@@ -24,16 +24,16 @@ v8::Local<v8::Function> MockFunctionScope::ExpectCall(String* captor) {
   mock_functions_.push_back(
       MakeGarbageCollected<MockFunction>(script_state_, captor));
   EXPECT_CALL(*mock_functions_.back(), Call(script_state_, testing::_));
-  return MakeGarbageCollected<NewScriptFunction>(script_state_,
-                                                 mock_functions_.back())
+  return MakeGarbageCollected<ScriptFunction>(script_state_,
+                                              mock_functions_.back())
       ->V8Function();
 }
 
 v8::Local<v8::Function> MockFunctionScope::ExpectCall() {
   mock_functions_.push_back(MakeGarbageCollected<MockFunction>());
   EXPECT_CALL(*mock_functions_.back(), Call(script_state_, testing::_));
-  return MakeGarbageCollected<NewScriptFunction>(script_state_,
-                                                 mock_functions_.back())
+  return MakeGarbageCollected<ScriptFunction>(script_state_,
+                                              mock_functions_.back())
       ->V8Function();
 }
 
@@ -41,8 +41,8 @@ v8::Local<v8::Function> MockFunctionScope::ExpectNoCall() {
   mock_functions_.push_back(MakeGarbageCollected<MockFunction>());
   EXPECT_CALL(*mock_functions_.back(), Call(script_state_, testing::_))
       .Times(0);
-  return MakeGarbageCollected<NewScriptFunction>(script_state_,
-                                                 mock_functions_.back())
+  return MakeGarbageCollected<ScriptFunction>(script_state_,
+                                              mock_functions_.back())
       ->V8Function();
 }
 

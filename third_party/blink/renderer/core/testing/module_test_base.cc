@@ -36,7 +36,7 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
                                exception_state);
 }
 
-class SaveResultFunction final : public NewScriptFunction::Callable {
+class SaveResultFunction final : public ScriptFunction::Callable {
  public:
   SaveResultFunction() = default;
 
@@ -55,7 +55,7 @@ class SaveResultFunction final : public NewScriptFunction::Callable {
   ScriptValue* result_ = nullptr;
 };
 
-class ExpectNotReached final : public NewScriptFunction::Callable {
+class ExpectNotReached final : public ScriptFunction::Callable {
  public:
   ExpectNotReached() = default;
 
@@ -78,10 +78,10 @@ v8::Local<v8::Value> ModuleTestBase::GetResult(ScriptState* script_state,
 
   auto* resolve_function = MakeGarbageCollected<SaveResultFunction>();
   result.GetPromise(script_state)
-      .Then(MakeGarbageCollected<NewScriptFunction>(script_state,
-                                                    resolve_function),
-            MakeGarbageCollected<NewScriptFunction>(
-                script_state, MakeGarbageCollected<ExpectNotReached>()));
+      .Then(
+          MakeGarbageCollected<ScriptFunction>(script_state, resolve_function),
+          MakeGarbageCollected<ScriptFunction>(
+              script_state, MakeGarbageCollected<ExpectNotReached>()));
 
   v8::MicrotasksScope::PerformCheckpoint(script_state->GetIsolate());
 
@@ -102,9 +102,9 @@ v8::Local<v8::Value> ModuleTestBase::GetException(
 
   auto* reject_function = MakeGarbageCollected<SaveResultFunction>();
   script_promise.Then(
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ExpectNotReached>()),
-      MakeGarbageCollected<NewScriptFunction>(script_state, reject_function));
+      MakeGarbageCollected<ScriptFunction>(script_state, reject_function));
 
   v8::MicrotasksScope::PerformCheckpoint(script_state->GetIsolate());
 

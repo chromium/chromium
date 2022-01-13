@@ -30,7 +30,7 @@ namespace blink {
 class DOMRectInit;
 class PlaneLayout;
 
-class FakeFunction : public NewScriptFunction::Callable {
+class FakeFunction : public ScriptFunction::Callable {
  public:
   explicit FakeFunction(std::string name);
 

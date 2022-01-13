@@ -112,7 +112,7 @@ DOMException* DOMExceptionFromReceiveError(SerialReceiveError error) {
 }
 
 // A ScriptFunction that calls ContinueClose() on the provided SerialPort.
-class ContinueCloseFunction : public NewScriptFunction::Callable {
+class ContinueCloseFunction : public ScriptFunction::Callable {
  public:
   explicit ContinueCloseFunction(SerialPort* port) : port_(port) {}
 
@@ -122,7 +122,7 @@ class ContinueCloseFunction : public NewScriptFunction::Callable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(port_);
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -130,7 +130,7 @@ class ContinueCloseFunction : public NewScriptFunction::Callable {
 };
 
 // A ScriptFunction that calls AbortClose() on the provided SerialPort.
-class AbortCloseFunction : public NewScriptFunction::Callable {
+class AbortCloseFunction : public ScriptFunction::Callable {
  public:
   explicit AbortCloseFunction(SerialPort* port) : port_(port) {}
 
@@ -141,7 +141,7 @@ class AbortCloseFunction : public NewScriptFunction::Callable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(port_);
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -417,9 +417,9 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
 
   return ScriptPromise::All(script_state, promises)
       .Then(
-          MakeGarbageCollected<NewScriptFunction>(
+          MakeGarbageCollected<ScriptFunction>(
               script_state, MakeGarbageCollected<ContinueCloseFunction>(this)),
-          MakeGarbageCollected<NewScriptFunction>(
+          MakeGarbageCollected<ScriptFunction>(
               script_state, MakeGarbageCollected<AbortCloseFunction>(this)));
 }
 

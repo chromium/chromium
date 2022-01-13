@@ -24,7 +24,7 @@ namespace blink {
 
 namespace {
 
-class TestHelperFunction : public NewScriptFunction::Callable {
+class TestHelperFunction : public ScriptFunction::Callable {
  public:
   explicit TestHelperFunction(String* value) : value_(value) {}
 
@@ -78,10 +78,10 @@ TEST_F(ScriptPromiseResolverTest, resolve) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<NewScriptFunction>(
+    promise.Then(MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<NewScriptFunction>(
+                 MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
   }
@@ -130,10 +130,10 @@ TEST_F(ScriptPromiseResolverTest, reject) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<NewScriptFunction>(
+    promise.Then(MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<NewScriptFunction>(
+                 MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
   }
@@ -182,10 +182,10 @@ TEST_F(ScriptPromiseResolverTest, stop) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<NewScriptFunction>(
+    promise.Then(MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<NewScriptFunction>(
+                 MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
   }
@@ -337,10 +337,10 @@ TEST_F(ScriptPromiseResolverTest, resolveVoid) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<NewScriptFunction>(
+    promise.Then(MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<NewScriptFunction>(
+                 MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
   }
@@ -365,10 +365,10 @@ TEST_F(ScriptPromiseResolverTest, rejectVoid) {
   ASSERT_FALSE(promise.IsEmpty());
   {
     ScriptState::Scope scope(GetScriptState());
-    promise.Then(MakeGarbageCollected<NewScriptFunction>(
+    promise.Then(MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
-                 MakeGarbageCollected<NewScriptFunction>(
+                 MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
   }

@@ -543,7 +543,7 @@ class Cache::BarrierCallbackForPutComplete final
 // Used to handle the ScopedFetcher::Fetch promise in AddAllImpl.
 // TODO(nhiroki): Unfortunately, we have to go through V8 to wait for the fetch
 // promise. It should be better to achieve this only within C++ world.
-class Cache::FetchHandler final : public NewScriptFunction::Callable {
+class Cache::FetchHandler final : public ScriptFunction::Callable {
  public:
   // |exception_state| is passed so that the context_type, interface_name and
   // property_name can be copied and then used to construct a new ExceptionState
@@ -586,7 +586,7 @@ class Cache::FetchHandler final : public NewScriptFunction::Callable {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(response_loader_);
     visitor->Trace(barrier_callback_);
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -1104,13 +1104,13 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
     auto* response_loader = MakeGarbageCollected<ResponseBodyLoader>(
         script_state, barrier_callback, i, /*require_ok_response=*/true,
         trace_id);
-    auto* on_resolve = MakeGarbageCollected<NewScriptFunction>(
+    auto* on_resolve = MakeGarbageCollected<ScriptFunction>(
         script_state,
         MakeGarbageCollected<FetchHandler>(response_loader, barrier_callback,
                                            exception_state.GetContext()));
     // The |response_loader=nullptr| makes this handler a reject handler
     // internally.
-    auto* on_reject = MakeGarbageCollected<NewScriptFunction>(
+    auto* on_reject = MakeGarbageCollected<ScriptFunction>(
         script_state, MakeGarbageCollected<FetchHandler>(
                           /*response_loader=*/nullptr, barrier_callback,
                           exception_state.GetContext()));

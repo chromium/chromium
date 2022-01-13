@@ -18,7 +18,7 @@ UpdatePaymentDetailsFunction::UpdatePaymentDetailsFunction(
 
 void UpdatePaymentDetailsFunction::Trace(Visitor* visitor) const {
   visitor->Trace(delegate_);
-  NewScriptFunction::Callable::Trace(visitor);
+  ScriptFunction::Callable::Trace(visitor);
 }
 
 ScriptValue UpdatePaymentDetailsFunction::Call(ScriptState* script_state,

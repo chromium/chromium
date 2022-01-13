@@ -36,8 +36,7 @@ base::TimeDelta WindowInteractionTimeout() {
 
 }  // anonymous namespace
 
-class WaitUntilObserver::ThenFunction final
-    : public NewScriptFunction::Callable {
+class WaitUntilObserver::ThenFunction final : public ScriptFunction::Callable {
  public:
   enum ResolveType {
     kFulfilled,
@@ -53,7 +52,7 @@ class WaitUntilObserver::ThenFunction final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(observer_);
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
@@ -155,11 +154,11 @@ bool WaitUntilObserver::WaitUntil(ScriptState* script_state,
   // 3. `Add f to the extend lifetime promises.`
   // 4. `Increment the pending promises count by one.`
   IncrementPendingPromiseCount();
-  script_promise.Then(MakeGarbageCollected<NewScriptFunction>(
+  script_promise.Then(MakeGarbageCollected<ScriptFunction>(
                           script_state, MakeGarbageCollected<ThenFunction>(
                                             this, ThenFunction::kFulfilled,
                                             std::move(on_promise_fulfilled))),
-                      MakeGarbageCollected<NewScriptFunction>(
+                      MakeGarbageCollected<ScriptFunction>(
                           script_state, MakeGarbageCollected<ThenFunction>(
                                             this, ThenFunction::kRejected,
                                             std::move(on_promise_rejected))));

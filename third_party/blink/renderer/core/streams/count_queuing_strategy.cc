@@ -18,11 +18,10 @@ namespace {
 
 static const V8PrivateProperty::SymbolKey kCountQueuingStrategySizeFunction;
 
-class CountQueuingStrategySizeFunction final
-    : public NewScriptFunction::Callable {
+class CountQueuingStrategySizeFunction final : public ScriptFunction::Callable {
  public:
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    auto* self = MakeGarbageCollected<NewScriptFunction>(
+    auto* self = MakeGarbageCollected<ScriptFunction>(
         script_state, MakeGarbageCollected<CountQueuingStrategySizeFunction>());
 
     // https://streams.spec.whatwg.org/#count-queuing-strategy-size-function

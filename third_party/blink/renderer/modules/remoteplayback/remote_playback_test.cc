@@ -27,7 +27,7 @@ namespace blink {
 
 namespace {
 
-class MockFunction : public NewScriptFunction::Callable {
+class MockFunction : public ScriptFunction::Callable {
  public:
   MockFunction() = default;
   MOCK_METHOD2(Call, ScriptValue(ScriptState*, ScriptValue));
@@ -270,8 +270,8 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
   MockFunction* callback_function = MakeGarbageCollected<MockFunction>();
   V8RemotePlaybackAvailabilityCallback* availability_callback =
       V8RemotePlaybackAvailabilityCallback::Create(
-          MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(),
-                                                  callback_function)
+          MakeGarbageCollected<ScriptFunction>(scope.GetScriptState(),
+                                               callback_function)
               ->V8Function());
 
   const int kNumberCallbacks = 10;
@@ -382,8 +382,8 @@ TEST_F(RemotePlaybackTest, IsListening) {
   MockFunction* callback_function = MakeGarbageCollected<MockFunction>();
   V8RemotePlaybackAvailabilityCallback* availability_callback =
       V8RemotePlaybackAvailabilityCallback::Create(
-          MakeGarbageCollected<NewScriptFunction>(scope.GetScriptState(),
-                                                  callback_function)
+          MakeGarbageCollected<ScriptFunction>(scope.GetScriptState(),
+                                               callback_function)
               ->V8Function());
 
   // The initial call upon registering will not happen as it's posted on the

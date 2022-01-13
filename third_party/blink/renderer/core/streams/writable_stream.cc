@@ -644,10 +644,10 @@ void WritableStream::FinishErroring(ScriptState* script_state,
 
   StreamThenPromise(
       script_state->GetContext(), promise,
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ResolvePromiseFunction>(
                             stream, abort_request->GetPromise())),
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectPromiseFunction>(
                             stream, abort_request->GetPromise())));
 }

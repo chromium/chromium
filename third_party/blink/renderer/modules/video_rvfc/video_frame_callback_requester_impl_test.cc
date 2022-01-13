@@ -38,7 +38,7 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
                std::unique_ptr<VideoFramePresentationMetadata>());
 };
 
-class MockFunction : public NewScriptFunction::Callable {
+class MockFunction : public ScriptFunction::Callable {
  public:
   MockFunction() = default;
 
@@ -214,7 +214,7 @@ class VideoFrameCallbackRequesterImplTest
   V8VideoFrameRequestCallback* GetCallback(ScriptState* script_state,
                                            MockFunction* function) {
     return V8VideoFrameRequestCallback::Create(
-        MakeGarbageCollected<NewScriptFunction>(script_state, function)
+        MakeGarbageCollected<ScriptFunction>(script_state, function)
             ->V8Function());
   }
 

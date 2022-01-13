@@ -49,12 +49,12 @@ namespace {
 typedef ScriptPromise::InternalResolver Resolver;
 
 template <typename T, typename... Args>
-NewScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
-  return MakeGarbageCollected<NewScriptFunction>(
+ScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
+  return MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
 }
 
-class FunctionForScriptPromiseTest : public NewScriptFunction::Callable {
+class FunctionForScriptPromiseTest : public ScriptFunction::Callable {
  public:
   explicit FunctionForScriptPromiseTest(ScriptValue* output)
       : output_(output) {}
@@ -69,7 +69,7 @@ class FunctionForScriptPromiseTest : public NewScriptFunction::Callable {
   ScriptValue* output_;
 };
 
-class ThrowingCallable : public NewScriptFunction::Callable {
+class ThrowingCallable : public ScriptFunction::Callable {
  public:
  private:
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
@@ -79,7 +79,7 @@ class ThrowingCallable : public NewScriptFunction::Callable {
   }
 };
 
-class NotReached : public NewScriptFunction::Callable {
+class NotReached : public ScriptFunction::Callable {
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     ADD_FAILURE() << "This function should not be called.";
     return ScriptValue();
@@ -96,7 +96,7 @@ class ScriptValueHolder final : public GarbageCollected<ScriptValueHolder> {
   ScriptValue value_;
 };
 
-class CapturingCallable final : public NewScriptFunction::Callable {
+class CapturingCallable final : public ScriptFunction::Callable {
  public:
   explicit CapturingCallable(ScriptValueHolder* holder) : holder_(holder) {}
   ScriptValue Call(ScriptState*, ScriptValue value) override {

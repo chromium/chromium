@@ -23,7 +23,7 @@
 namespace blink {
 
 class ReadableStreamBytesConsumer::Fulfilled final
-    : public NewScriptFunction::Callable {
+    : public ScriptFunction::Callable {
  public:
   explicit Fulfilled(ReadableStreamBytesConsumer* consumer)
       : consumer_(consumer) {}
@@ -59,7 +59,7 @@ class ReadableStreamBytesConsumer::Fulfilled final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(consumer_);
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -67,7 +67,7 @@ class ReadableStreamBytesConsumer::Fulfilled final
 };
 
 class ReadableStreamBytesConsumer::Rejected final
-    : public NewScriptFunction::Callable {
+    : public ScriptFunction::Callable {
  public:
   explicit Rejected(ReadableStreamBytesConsumer* consumer)
       : consumer_(consumer) {}
@@ -79,7 +79,7 @@ class ReadableStreamBytesConsumer::Rejected final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(consumer_);
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -133,9 +133,9 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
       script_promise = ScriptPromise::Reject(script_state_, exception_state);
 
     script_promise
-        .Then(MakeGarbageCollected<NewScriptFunction>(
+        .Then(MakeGarbageCollected<ScriptFunction>(
                   script_state_, MakeGarbageCollected<Fulfilled>(this)),
-              MakeGarbageCollected<NewScriptFunction>(
+              MakeGarbageCollected<ScriptFunction>(
                   script_state_, MakeGarbageCollected<Rejected>(this)))
         .MarkAsHandled();
   }

@@ -20,10 +20,10 @@ static const V8PrivateProperty::SymbolKey
     kByteLengthQueuingStrategySizeFunction;
 
 class ByteLengthQueuingStrategySizeFunction final
-    : public NewScriptFunction::Callable {
+    : public ScriptFunction::Callable {
  public:
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    auto* self = MakeGarbageCollected<NewScriptFunction>(
+    auto* self = MakeGarbageCollected<ScriptFunction>(
         script_state,
         MakeGarbageCollected<ByteLengthQueuingStrategySizeFunction>());
 

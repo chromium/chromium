@@ -381,7 +381,7 @@ class TransformStream::DefaultSinkWriteAlgorithm final
       return StreamThenPromise(
           script_state->GetContext(),
           backpressure_change_promise->V8Promise(script_state->GetIsolate()),
-          MakeGarbageCollected<NewScriptFunction>(
+          MakeGarbageCollected<ScriptFunction>(
               script_state, MakeGarbageCollected<ResponseFunction>(
                                 script_state, stream_, chunk)));
     }
@@ -524,9 +524,9 @@ class TransformStream::DefaultSinkCloseAlgorithm final
     // 5. Return the result of transforming flushPromise ...
     return StreamThenPromise(
         script_state->GetContext(), flush_promise,
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state, MakeGarbageCollected<ResolveFunction>(stream_)),
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state, MakeGarbageCollected<RejectFunction>(stream_)));
   }
 

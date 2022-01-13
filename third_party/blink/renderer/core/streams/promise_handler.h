@@ -14,7 +14,7 @@ namespace blink {
 // A variant of ScriptFunction that avoids the conversion to and from a
 // ScriptValue. Use this when the reaction doesn't need to return a value other
 // than undefined.
-class CORE_EXPORT PromiseHandler : public NewScriptFunction::Callable {
+class CORE_EXPORT PromiseHandler : public ScriptFunction::Callable {
  public:
   PromiseHandler();
 
@@ -25,7 +25,7 @@ class CORE_EXPORT PromiseHandler : public NewScriptFunction::Callable {
 
 // A variant of PromiseHandler for when the reaction does need to return a
 // value.
-class CORE_EXPORT PromiseHandlerWithValue : public NewScriptFunction::Callable {
+class CORE_EXPORT PromiseHandlerWithValue : public ScriptFunction::Callable {
  public:
   PromiseHandlerWithValue();
 
@@ -42,8 +42,8 @@ class CORE_EXPORT PromiseHandlerWithValue : public NewScriptFunction::Callable {
 CORE_EXPORT v8::Local<v8::Promise> StreamThenPromise(
     v8::Local<v8::Context>,
     v8::Local<v8::Promise>,
-    NewScriptFunction* on_fulfilled,
-    NewScriptFunction* on_rejected = nullptr);
+    ScriptFunction* on_fulfilled,
+    ScriptFunction* on_rejected = nullptr);
 
 }  // namespace blink
 

@@ -176,7 +176,7 @@ TEST(TransferableStreamsTest, SmokeTest) {
   writer->write(script_state, ScriptValue::CreateNull(scope.GetIsolate()),
                 ASSERT_NO_EXCEPTION);
 
-  class ExpectNullResponse : public NewScriptFunction::Callable {
+  class ExpectNullResponse : public ScriptFunction::Callable {
    public:
     explicit ExpectNullResponse(bool* got_response)
         : got_response_(got_response) {}
@@ -209,7 +209,7 @@ TEST(TransferableStreamsTest, SmokeTest) {
 
   // TODO(ricea): This is copy-and-pasted from transform_stream_test.cc. Put it
   // in a shared location.
-  class ExpectNotReached : public NewScriptFunction::Callable {
+  class ExpectNotReached : public ScriptFunction::Callable {
    public:
     ExpectNotReached() = default;
 
@@ -221,11 +221,11 @@ TEST(TransferableStreamsTest, SmokeTest) {
 
   bool got_response = false;
   reader->read(script_state, ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 script_state,
                 MakeGarbageCollected<ExpectNullResponse>(&got_response))
                 ->V8Function(),
-            MakeGarbageCollected<NewScriptFunction>(
+            MakeGarbageCollected<ScriptFunction>(
                 script_state, MakeGarbageCollected<ExpectNotReached>())
                 ->V8Function());
 

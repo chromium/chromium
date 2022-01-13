@@ -44,7 +44,7 @@ namespace blink {
 
 class DOMException;
 class ExceptionState;
-class NewScriptFunction;
+class ScriptFunction;
 
 // ScriptPromise is the class for representing Promise values in C++ world.
 // ScriptPromise holds a Promise.
@@ -71,8 +71,8 @@ class CORE_EXPORT ScriptPromise final {
 
   ScriptPromise Then(v8::Local<v8::Function> on_fulfilled,
                      v8::Local<v8::Function> on_rejected = {});
-  ScriptPromise Then(NewScriptFunction* on_fulfilled,
-                     NewScriptFunction* on_rejected = nullptr);
+  ScriptPromise Then(ScriptFunction* on_fulfilled,
+                     ScriptFunction* on_rejected = nullptr);
 
   bool IsObject() const { return promise_.IsObject(); }
 

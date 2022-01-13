@@ -41,7 +41,7 @@
 
 namespace blink {
 
-class NavigateReaction final : public NewScriptFunction::Callable {
+class NavigateReaction final : public ScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
   enum class ReactType { kImmediate, kTransitionWhile };
@@ -51,11 +51,11 @@ class NavigateReaction final : public NewScriptFunction::Callable {
                     AppHistoryTransition* transition,
                     AbortSignal* signal,
                     ReactType react_type) {
-    promise.Then(MakeGarbageCollected<NewScriptFunction>(
+    promise.Then(MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
                                        navigation, transition, signal,
                                        ResolveType::kFulfill, react_type)),
-                 MakeGarbageCollected<NewScriptFunction>(
+                 MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
                                        navigation, transition, signal,
                                        ResolveType::kReject, react_type)));
@@ -73,7 +73,7 @@ class NavigateReaction final : public NewScriptFunction::Callable {
         react_type_(react_type) {}
 
   void Trace(Visitor* visitor) const final {
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
     visitor->Trace(navigation_);
     visitor->Trace(transition_);
     visitor->Trace(signal_);

@@ -861,11 +861,11 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     // 10 seconds, abort payment.
     update_payment_details_timer_.StartOneShot(base::Seconds(10), FROM_HERE);
     details_promise.Then(
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state,
             MakeGarbageCollected<UpdatePaymentDetailsFunction>(
                 this, UpdatePaymentDetailsFunction::ResolveType::kFulfill)),
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state,
             MakeGarbageCollected<UpdatePaymentDetailsFunction>(
                 this, UpdatePaymentDetailsFunction::ResolveType::kReject)));

@@ -393,7 +393,7 @@ TEST(OnPaymentResponseTest, RejectInvalidAddress) {
       ->OnPaymentResponse(std::move(response));
 }
 
-class PaymentResponseFunction : public NewScriptFunction::Callable {
+class PaymentResponseFunction : public ScriptFunction::Callable {
  public:
   explicit PaymentResponseFunction(ScriptValue* out_value) : value_(out_value) {
     DCHECK(value_);
@@ -429,7 +429,7 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),
@@ -463,7 +463,7 @@ TEST(OnPaymentResponseTest, CanRequestName) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),
@@ -496,7 +496,7 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),
@@ -529,7 +529,7 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),
@@ -559,7 +559,7 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),
@@ -593,7 +593,7 @@ TEST(OnPaymentResponseTest, PhoneNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),
@@ -626,7 +626,7 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),
@@ -659,7 +659,7 @@ TEST(OnPaymentResponseTest, EmailNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<NewScriptFunction>(
+      .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
                 MakeGarbageCollected<PaymentResponseFunction>(&out_value))
                 ->V8Function(),

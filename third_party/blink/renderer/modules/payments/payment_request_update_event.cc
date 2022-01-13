@@ -63,11 +63,11 @@ void PaymentRequestUpdateEvent::updateWith(ScriptState* script_state,
   wait_for_update_ = true;
 
   promise.Then(
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state,
           MakeGarbageCollected<UpdatePaymentDetailsFunction>(
               request_, UpdatePaymentDetailsFunction::ResolveType::kFulfill)),
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state,
           MakeGarbageCollected<UpdatePaymentDetailsFunction>(
               request_, UpdatePaymentDetailsFunction::ResolveType::kReject)));

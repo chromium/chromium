@@ -3311,7 +3311,7 @@ void Internals::setShouldRevealPassword(Element* element,
 
 namespace {
 
-class AddOneFunction : public NewScriptFunction::Callable {
+class AddOneFunction : public ScriptFunction::Callable {
  public:
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     v8::Local<v8::Value> v8_value = value.V8Value();
@@ -3344,7 +3344,7 @@ ScriptPromise Internals::createRejectedPromise(ScriptState* script_state,
 
 ScriptPromise Internals::addOneToPromise(ScriptState* script_state,
                                          ScriptPromise promise) {
-  return promise.Then(MakeGarbageCollected<NewScriptFunction>(
+  return promise.Then(MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<AddOneFunction>()));
 }
 

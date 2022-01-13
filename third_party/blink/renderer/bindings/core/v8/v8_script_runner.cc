@@ -783,7 +783,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
 }
 
 class ModuleEvaluationRejectionCallback final
-    : public NewScriptFunction::Callable {
+    : public ScriptFunction::Callable {
  public:
   ModuleEvaluationRejectionCallback() = default;
 
@@ -898,7 +898,7 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
     // evaluationPromise with reason, report the exception given by reason
     // for script.</spec>
     v8::Local<v8::Function> callback_failure =
-        MakeGarbageCollected<NewScriptFunction>(
+        MakeGarbageCollected<ScriptFunction>(
             script_state,
             MakeGarbageCollected<ModuleEvaluationRejectionCallback>())
             ->V8Function();

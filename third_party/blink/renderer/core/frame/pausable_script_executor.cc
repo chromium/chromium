@@ -49,7 +49,7 @@ class PromiseAggregator : public GarbageCollected<PromiseAggregator> {
 
  private:
   // A helper class that handles a result from a single promise value.
-  class OnSettled : public NewScriptFunction::Callable {
+  class OnSettled : public ScriptFunction::Callable {
    public:
     OnSettled(PromiseAggregator* aggregator,
               wtf_size_t index,
@@ -61,11 +61,11 @@ class PromiseAggregator : public GarbageCollected<PromiseAggregator> {
     OnSettled& operator=(const OnSettled&) = delete;
     ~OnSettled() override = default;
 
-    static NewScriptFunction* New(ScriptState* script_state,
-                                  PromiseAggregator* aggregator,
-                                  wtf_size_t index,
-                                  bool was_fulfilled) {
-      return MakeGarbageCollected<NewScriptFunction>(
+    static ScriptFunction* New(ScriptState* script_state,
+                               PromiseAggregator* aggregator,
+                               wtf_size_t index,
+                               bool was_fulfilled) {
+      return MakeGarbageCollected<ScriptFunction>(
           script_state,
           MakeGarbageCollected<OnSettled>(aggregator, index, was_fulfilled));
     }
@@ -87,7 +87,7 @@ class PromiseAggregator : public GarbageCollected<PromiseAggregator> {
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(aggregator_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
    private:

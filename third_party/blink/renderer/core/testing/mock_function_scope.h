@@ -28,7 +28,7 @@ class MockFunctionScope {
   v8::Local<v8::Function> ExpectNoCall();
 
  private:
-  class MockFunction : public NewScriptFunction::Callable {
+  class MockFunction : public ScriptFunction::Callable {
    public:
     MockFunction();
     // TODO(http://crbug.com/1159794): add other convenience methods that allow

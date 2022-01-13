@@ -188,7 +188,7 @@ TEST(ProfilerGroupTest, OverflowSamplingInterval) {
 }
 
 TEST(ProfilerGroupTest, Bug1119865) {
-  class ExpectNoCallFunction : public NewScriptFunction::Callable {
+  class ExpectNoCallFunction : public ScriptFunction::Callable {
    public:
     ScriptValue Call(ScriptState*, ScriptValue) override {
       EXPECT_FALSE(true)
@@ -209,7 +209,7 @@ TEST(ProfilerGroupTest, Bug1119865) {
       scope.GetScriptState(), *init_options, base::TimeTicks(),
       scope.GetExceptionState());
 
-  auto* function = MakeGarbageCollected<NewScriptFunction>(
+  auto* function = MakeGarbageCollected<ScriptFunction>(
       scope.GetScriptState(), MakeGarbageCollected<ExpectNoCallFunction>());
   profiler->stop(scope.GetScriptState()).Then(function);
 }

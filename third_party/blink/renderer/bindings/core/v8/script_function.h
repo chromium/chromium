@@ -42,11 +42,11 @@
 
 namespace blink {
 
-// A `NewScriptFunction` represents a function that can be called from scripts.
+// A `ScriptFunction` represents a function that can be called from scripts.
 // You can define a subclass of `Callable` and put arbitrary logic by
 // overriding `Call` or `CallRaw` methods.
-class CORE_EXPORT NewScriptFunction final
-    : public GarbageCollected<NewScriptFunction> {
+class CORE_EXPORT ScriptFunction final
+    : public GarbageCollected<ScriptFunction> {
  public:
   class CORE_EXPORT Callable : public GarbageCollected<Callable> {
    public:
@@ -82,7 +82,7 @@ class CORE_EXPORT NewScriptFunction final
     const ScriptValue value_;
   };
 
-  NewScriptFunction(ScriptState* script_state, Callable* callable)
+  ScriptFunction(ScriptState* script_state, Callable* callable)
       : script_state_(script_state),
         function_(script_state->GetIsolate(),
                   BindToV8Function(script_state, callable)) {}

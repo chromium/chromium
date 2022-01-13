@@ -15,7 +15,7 @@
 
 namespace blink {
 
-class ScriptPromiseTester::ThenFunction : public NewScriptFunction::Callable {
+class ScriptPromiseTester::ThenFunction : public ScriptFunction::Callable {
  public:
   ThenFunction(base::WeakPtr<ScriptPromiseTester> owner,
                ScriptPromiseTester::State target_state)
@@ -43,10 +43,10 @@ ScriptPromiseTester::ScriptPromiseTester(ScriptState* script_state,
     : script_state_(script_state) {
   DCHECK(script_state);
   script_promise.Then(
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ThenFunction>(
                             weak_factory_.GetWeakPtr(), State::kFulfilled)),
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ThenFunction>(
                             weak_factory_.GetWeakPtr(), State::kRejected)));
 }

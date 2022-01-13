@@ -94,13 +94,13 @@ TEST(StreamPromiseResolverTest, ResolveDoesNothingInsideResolve) {
   //     runMicrotasks();
   //   }
   // }
-  class ThenGetter final : public NewScriptFunction::Callable {
+  class ThenGetter final : public ScriptFunction::Callable {
    public:
     explicit ThenGetter(StreamPromiseResolver* promise) : promise_(promise) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(promise_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
     void CallRaw(ScriptState* script_state,
@@ -117,7 +117,7 @@ TEST(StreamPromiseResolverTest, ResolveDoesNothingInsideResolve) {
 
   auto value = v8::Object::New(isolate);
   v8::PropertyDescriptor property_descriptor(
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           scope.GetScriptState(), MakeGarbageCollected<ThenGetter>(promise))
           ->V8Function(),
       v8::Undefined(isolate));

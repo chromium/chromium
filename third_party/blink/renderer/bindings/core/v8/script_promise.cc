@@ -72,7 +72,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
   }
 
  private:
-  class AdapterFunction : public NewScriptFunction::Callable {
+  class AdapterFunction : public ScriptFunction::Callable {
    public:
     enum ResolveType {
       kFulfilled,
@@ -86,7 +86,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(handler_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
     ScriptValue Call(ScriptState*, ScriptValue value) override {
@@ -106,14 +106,14 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
 
   v8::Local<v8::Function> CreateFulfillFunction(ScriptState* script_state,
                                                 wtf_size_t index) {
-    return MakeGarbageCollected<NewScriptFunction>(
+    return MakeGarbageCollected<ScriptFunction>(
                script_state, MakeGarbageCollected<AdapterFunction>(
                                  AdapterFunction::kFulfilled, index, this))
         ->V8Function();
   }
 
   v8::Local<v8::Function> CreateRejectFunction(ScriptState* script_state) {
-    return MakeGarbageCollected<NewScriptFunction>(
+    return MakeGarbageCollected<ScriptFunction>(
                script_state, MakeGarbageCollected<AdapterFunction>(
                                  AdapterFunction::kRejected, 0, this))
         ->V8Function();
@@ -261,8 +261,8 @@ ScriptPromise ScriptPromise::Then(v8::Local<v8::Function> on_fulfilled,
   return ScriptPromise(script_state_, result_promise);
 }
 
-ScriptPromise ScriptPromise::Then(NewScriptFunction* on_fulfilled,
-                                  NewScriptFunction* on_rejected) {
+ScriptPromise ScriptPromise::Then(ScriptFunction* on_fulfilled,
+                                  ScriptFunction* on_rejected) {
   const v8::Local<v8::Function> empty;
   return Then(on_fulfilled ? on_fulfilled->V8Function() : empty,
               on_rejected ? on_rejected->V8Function() : empty);

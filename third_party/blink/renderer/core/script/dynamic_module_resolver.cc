@@ -43,14 +43,14 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
 };
 
 // Abstract callback for modules resolution.
-class ModuleResolutionCallback : public NewScriptFunction::Callable {
+class ModuleResolutionCallback : public ScriptFunction::Callable {
  public:
   explicit ModuleResolutionCallback(ScriptPromiseResolver* promise_resolver)
       : promise_resolver_(promise_resolver) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(promise_resolver_);
-    NewScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  protected:
@@ -154,10 +154,10 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
       // FinishDynamicImport(referencingScriptOrModule, specifier,
       // promiseCapability, promise).</spec>
       ScriptPromise promise = result.GetPromise(script_state);
-      auto* callback_success = MakeGarbageCollected<NewScriptFunction>(
+      auto* callback_success = MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ModuleResolutionSuccessCallback>(
                             promise_resolver_, module_script));
-      auto* callback_failure = MakeGarbageCollected<NewScriptFunction>(
+      auto* callback_failure = MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ModuleResolutionFailureCallback>(
                             promise_resolver_));
       promise.Then(callback_success, callback_failure);
