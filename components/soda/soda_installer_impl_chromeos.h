@@ -54,8 +54,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
 
   // These functions are the InstallCallbacks for DlcserviceClient::Install().
   void OnSodaInstalled(
+      const base::Time start_time,
       const chromeos::DlcserviceClient::InstallResult& install_result);
   void OnLanguageInstalled(
+      const LanguageCode language_code,
+      const base::Time start_time,
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
   // These functions are the ProgressCallbacks for DlcserviceClient::Install().

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,6 +19,15 @@
 namespace speech {
 
 const char kUsEnglishLocale[] = "en-US";
+
+const char kSodaBinaryInstallationResult[] =
+    "SodaInstaller.BinaryInstallationResult";
+
+const char kSodaBinaryInstallationSuccessTimeTaken[] =
+    "SodaInstaller.BinaryInstallationSuccessTime";
+
+const char kSodaBinaryInstallationFailureTimeTaken[] =
+    "SodaInstaller.BinaryInstallationFailureTime";
 
 #ifdef OS_WIN
 constexpr base::FilePath::CharType kSodaBinaryRelativePath[] =
@@ -180,6 +190,30 @@ int GetLanguageDisplayName(const std::string& language_name) {
     return language_config.value().display_name;
   }
   return 0;
+}
+
+const std::string GetInstallationSuccessTimeMetricForLanguagePack(
+    const LanguageCode& language_code) {
+  auto config = GetLanguageComponentConfig(language_code);
+  DCHECK(config && config->language_name);
+  return base::StrCat({"SodaInstaller.Language.", config->language_name,
+                       ".InstallationSuccessTime"});
+}
+
+const std::string GetInstallationFailureTimeMetricForLanguagePack(
+    const LanguageCode& language_code) {
+  auto config = GetLanguageComponentConfig(language_code);
+  DCHECK(config && config->language_name);
+  return base::StrCat({"SodaInstaller.Language.", config->language_name,
+                       ".InstallationFailureTime"});
+}
+
+const std::string GetInstallationResultMetricForLanguagePack(
+    const LanguageCode& language_code) {
+  auto config = GetLanguageComponentConfig(language_code);
+  DCHECK(config && config->language_name);
+  return base::StrCat({"SodaInstaller.Language.", config->language_name,
+                       ".InstallationResult"});
 }
 
 }  // namespace speech

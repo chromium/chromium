@@ -14,6 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
@@ -80,7 +81,7 @@ void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&component_updater::SodaComponentInstallerPolicy::
                          UpdateSodaComponentOnDemand));
-
+  soda_binary_install_start_time_ = base::Time::Now();
   if (!component_updater_observation_.IsObservingSource(
           g_browser_process->component_updater())) {
     component_updater_observation_.Observe(
@@ -99,6 +100,8 @@ void SodaInstallerImpl::InstallLanguage(const std::string& language,
       g_browser_process->component_updater(), language, global_prefs,
       base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
                      weak_factory_.GetWeakPtr()));
+
+  language_pack_install_start_time_[locale] = base::Time::Now();
 
   if (!component_updater_observation_.IsObservingSource(
           g_browser_process->component_updater())) {
@@ -174,6 +177,21 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
       if (language_code != LanguageCode::kNone) {
         language_pack_progress_.erase(language_code);
         NotifyOnSodaLanguagePackError(language_code);
+
+        base::UmaHistogramTimes(
+            GetInstallationFailureTimeMetricForLanguagePack(language_code),
+            base::Time::Now() -
+                language_pack_install_start_time_[language_code]);
+
+        base::UmaHistogramBoolean(
+            GetInstallationResultMetricForLanguagePack(language_code), false);
+
+      } else {
+        base::UmaHistogramTimes(
+            kSodaBinaryInstallationFailureTimeTaken,
+            base::Time::Now() - soda_binary_install_start_time_);
+
+        base::UmaHistogramBoolean(kSodaBinaryInstallationResult, false);
       }
 
       NotifyOnSodaError();
@@ -192,6 +210,10 @@ void SodaInstallerImpl::OnSodaBinaryInstalled() {
   if (IsAnyLanguagePackInstalled()) {
     NotifyOnSodaInstalled();
   }
+
+  base::UmaHistogramTimes(kSodaBinaryInstallationSuccessTimeTaken,
+                          base::Time::Now() - soda_binary_install_start_time_);
+  base::UmaHistogramBoolean(kSodaBinaryInstallationResult, true);
 }
 
 void SodaInstallerImpl::OnSodaLanguagePackInstalled(
@@ -203,6 +225,12 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
   if (soda_binary_installed_) {
     NotifyOnSodaInstalled();
   }
+
+  base::UmaHistogramTimes(
+      GetInstallationSuccessTimeMetricForLanguagePack(language_code),
+      base::Time::Now() - language_pack_install_start_time_[language_code]);
+  base::UmaHistogramBoolean(
+      GetInstallationResultMetricForLanguagePack(language_code), true);
 }
 
 }  // namespace speech

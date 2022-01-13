@@ -16,6 +16,11 @@ namespace speech {
 
 extern const char kUsEnglishLocale[];
 
+// Metrics names for keeping track of SODA installation.
+extern const char kSodaBinaryInstallationResult[];
+extern const char kSodaBinaryInstallationSuccessTimeTaken[];
+extern const char kSodaBinaryInstallationFailureTimeTaken[];
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class LanguageCode {
@@ -158,6 +163,21 @@ std::string GetLanguageName(LanguageCode language_code);
 LanguageCode GetLanguageCode(const std::string& language_name);
 
 int GetLanguageDisplayName(const std::string& language_name);
+
+// Returns the `SodaInstaller.Language.{language}.InstallationSuccessTime` uma
+// metric string for the language code.
+const std::string GetInstallationSuccessTimeMetricForLanguagePack(
+    const LanguageCode& language_code);
+
+// Returns the `SodaInstaller.Language.{language}.InstallationFailureTime` uma
+// metric string for the language code.
+const std::string GetInstallationFailureTimeMetricForLanguagePack(
+    const LanguageCode& language_code);
+
+// Returns the `SodaInstaller.Language.{language}.InstallationResult` uma
+// metric string for the language code..
+const std::string GetInstallationResultMetricForLanguagePack(
+    const LanguageCode& language_code);
 
 }  // namespace speech
 

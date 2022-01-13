@@ -28,6 +28,15 @@ chromium-metrics-reviews@google.com.
                uniques"/>
 </variants>
 
+<variants name="SodaLanguageCode">
+  <variant name="de-DE" summary="German language code"/>
+  <variant name="en-US" summary="English language code"/>
+  <variant name="es-ES" summary="Spanish language code"/>
+  <variant name="fr-FR" summary="French language code"/>
+  <variant name="it-IT" summary="Italian language code"/>
+  <variant name="ja-JP" summary="Japanese language code"/>
+</variants>
+
 <variants name="SwitchAccessMenuAction">
   <variant name="ActionRecorder"
       summary="Switch Access Menu Action: Action Recorder"/>
@@ -1975,6 +1984,90 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the amount of time a user spent on a Reader Mode Page.
   </summary>
+</histogram>
+
+<histogram name="SodaInstaller.BinaryInstallationFailureTime" units="ms"
+    expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to get to SODA binary installation error. This is recorded once when
+    SODA installation attempt fails.
+  </summary>
+</histogram>
+
+<histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
+    expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records whether
+    SODA binary installation succeeded. This is recorded once when SODA
+    installation attempt finishes with either success or failure.
+  </summary>
+</histogram>
+
+<histogram name="SodaInstaller.BinaryInstallationSuccessTime" units="ms"
+    expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to successfully install SODA binary. This is recorded once when SODA
+    installation attempt succeedes.
+  </summary>
+</histogram>
+
+<histogram
+    name="SodaInstaller.Language.{SodaLanguageCode}.InstallationFailureTime"
+    units="ms" expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to get to SODA language pack installation error. This is recorded once
+    when SODA language pack installation attempt fails.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
+<histogram name="SodaInstaller.Language.{SodaLanguageCode}.InstallationResult"
+    enum="BooleanSuccess" expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records whether
+    SODA language pack installation succeeded or not. This is recorded once when
+    SODA language pack installation attempt finishes with either success or
+    failure.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
+<histogram
+    name="SodaInstaller.Language.{SodaLanguageCode}.InstallationSuccessTime"
+    units="ms" expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to successfully install SODA language pack. This is recorded once when
+    SODA language pack installation succeedes.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
 </histogram>
 
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"

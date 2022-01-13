@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
@@ -54,7 +55,7 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
   chromeos::DlcserviceClient::Get()->Install(
       kSodaDlcName,
       base::BindOnce(&SodaInstallerImplChromeOS::OnSodaInstalled,
-                     base::Unretained(this)),
+                     base::Unretained(this), base::Time::Now()),
       base::BindRepeating(&SodaInstallerImplChromeOS::OnSodaProgress,
                           base::Unretained(this)));
 }
@@ -80,7 +81,8 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
   chromeos::DlcserviceClient::Get()->Install(
       kSodaEnglishUsDlcName,
       base::BindOnce(&SodaInstallerImplChromeOS::OnLanguageInstalled,
-                     base::Unretained(this)),
+                     base::Unretained(this), LanguageCode::kEnUs,
+                     base::Time::Now()),
       base::BindRepeating(&SodaInstallerImplChromeOS::OnLanguageProgress,
                           base::Unretained(this)));
 }
@@ -118,6 +120,7 @@ void SodaInstallerImplChromeOS::SetLanguagePath(base::FilePath new_path) {
 }
 
 void SodaInstallerImplChromeOS::OnSodaInstalled(
+    const base::Time start_time,
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   is_soda_downloading_ = false;
   if (install_result.error == dlcservice::kErrorNone) {
@@ -126,27 +129,49 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
     if (IsLanguageInstalled(LanguageCode::kEnUs)) {
       NotifyOnSodaInstalled();
     }
+
+    base::UmaHistogramTimes(kSodaBinaryInstallationSuccessTimeTaken,
+                            base::Time::Now() - start_time);
   } else {
     soda_binary_installed_ = false;
     soda_progress_ = 0.0;
     NotifyOnSodaError();
+    base::UmaHistogramTimes(kSodaBinaryInstallationFailureTimeTaken,
+                            base::Time::Now() - start_time);
   }
+
+  base::UmaHistogramBoolean(kSodaBinaryInstallationResult,
+                            install_result.error == dlcservice::kErrorNone);
 }
 
 void SodaInstallerImplChromeOS::OnLanguageInstalled(
+    const LanguageCode language_code,
+    const base::Time start_time,
     const chromeos::DlcserviceClient::InstallResult& install_result) {
-  language_pack_progress_.erase(LanguageCode::kEnUs);
+  language_pack_progress_.erase(language_code);
   if (install_result.error == dlcservice::kErrorNone) {
-    installed_languages_.insert(LanguageCode::kEnUs);
+    installed_languages_.insert(language_code);
     SetLanguagePath(base::FilePath(install_result.root_path));
     if (soda_binary_installed_) {
       NotifyOnSodaInstalled();
     }
+    base::UmaHistogramTimes(
+        GetInstallationSuccessTimeMetricForLanguagePack(language_code),
+        base::Time::Now() - start_time);
+
   } else {
-    // TODO: Notify the observer of the specific language pack that failed to
-    // install. ChromeOS currently only supports the en-US language pack.
-    NotifyOnSodaLanguagePackError(LanguageCode::kEnUs);
+    // TODO: Notify the observer of the specific language pack that failed
+    // to install. ChromeOS currently only supports the en-US language pack.
+    NotifyOnSodaLanguagePackError(language_code);
+
+    base::UmaHistogramTimes(
+        GetInstallationFailureTimeMetricForLanguagePack(language_code),
+        base::Time::Now() - start_time);
   }
+
+  base::UmaHistogramBoolean(
+      GetInstallationResultMetricForLanguagePack(language_code),
+      install_result.error == dlcservice::kErrorNone);
 }
 
 void SodaInstallerImplChromeOS::OnSodaProgress(double progress) {
