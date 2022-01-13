@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#include "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -94,5 +94,5 @@ void AttachBrowserAgents(Browser* browser) {
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
-  ios::GetChromeBrowserProvider().AttachBrowserAgents(browser);
+  provider::AttachBrowserAgents(browser);
 }

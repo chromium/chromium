@@ -13,6 +13,7 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/metrics",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/web/public",

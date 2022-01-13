@@ -81,7 +81,7 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/web/features.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#include "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/common/web_view_creation_util.h"
@@ -1045,8 +1045,7 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     command_line->AppendSwitch(switches::kDisableThirdPartyKeyboardWorkaround);
   }
 
-  ios::GetChromeBrowserProvider().AppendSwitchesFromExperimentalSettings(
-      defaults, command_line);
+  provider::AppendSwitchesFromExperimentalSettings(defaults, command_line);
 }
 
 void MonitorExperimentalSettingsChanges() {

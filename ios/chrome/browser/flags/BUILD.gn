@@ -68,7 +68,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
     "//ios/chrome/browser/web:feature_flags",
-    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/common:web_view_creation_util",

@@ -13,6 +13,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/test/testing_application_context.h"
 #include "ios/components/webui/web_ui_url_constants.h"
+#import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/web/public/web_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +40,8 @@ class IOSChromeUnitTestSuiteInitializer
   ~IOSChromeUnitTestSuiteInitializer() override {}
 
   void OnTestStart(const testing::TestInfo& test_info) override {
+    provider::Initialize();
+
     chrome_browser_provider_ = ios::CreateChromeBrowserProvider();
     ios::ChromeBrowserProvider* previous_provider =
         ios::SetChromeBrowserProvider(chrome_browser_provider_.get());

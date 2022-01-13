@@ -88,6 +88,7 @@ source_set("startup") {
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web",
     "//ios/web/public/init",
   ]
