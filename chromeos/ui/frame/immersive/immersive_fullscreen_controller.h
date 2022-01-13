@@ -103,8 +103,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // fullscreen being enabled / disabled. If acquiring the lock causes a reveal,
   // the top-of-window views will animate according to |animate_reveal|. The
   // caller takes ownership of the returned lock.
-  ImmersiveRevealedLock* GetRevealedLock(AnimateReveal animate_reveal)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ImmersiveRevealedLock* GetRevealedLock(
+      AnimateReveal animate_reveal);
 
   views::Widget* widget() { return widget_; }
   views::View* top_container() { return top_container_; }

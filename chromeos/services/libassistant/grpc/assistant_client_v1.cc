@@ -98,7 +98,7 @@ OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
   return request;
 }
 
-assistant_client::InternalOptions* WARN_UNUSED_RESULT CreateInternalOptions(
+[[nodiscard]] assistant_client::InternalOptions* CreateInternalOptions(
     assistant_client::AssistantManagerInternal* assistant_manager_internal,
     const std::string& locale,
     bool spoken_feedback_enabled,

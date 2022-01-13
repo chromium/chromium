@@ -114,7 +114,7 @@ class TestObserver : public PowerManagerClient::Observer {
   }
 
   // Runs |block_suspend_token_|.
-  bool UnblockSuspend() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool UnblockSuspend() {
     if (block_suspend_token_.is_empty())
       return false;
 
