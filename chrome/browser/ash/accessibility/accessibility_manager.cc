@@ -963,7 +963,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
         // If the SODA language isn't installed yet, update the preference to
         // ensure the nudge gets shown for this locale when installation
         // completes.
-        DictionaryPrefUpdateDeprecated update(
+        DictionaryPrefUpdate update(
             pref_service, prefs::kAccessibilityDictationLocaleOfflineNudge);
         update.Get()->SetBoolKey(dictation_locale, false);
       }
@@ -1010,8 +1010,8 @@ void AccessibilityManager::ShowDictationLanguageUpgradedNudge(
   // for this particular locale.
   AccessibilityController::Get()->ShowDictationLanguageUpgradedNudge(
       dictation_locale, g_browser_process->GetApplicationLocale());
-  DictionaryPrefUpdateDeprecated update(
-      profile_->GetPrefs(), prefs::kAccessibilityDictationLocaleOfflineNudge);
+  DictionaryPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kAccessibilityDictationLocaleOfflineNudge);
   update.Get()->SetBoolKey(dictation_locale, true);
 }
 
@@ -1960,8 +1960,8 @@ void AccessibilityManager::SetCaretBoundsObserverForTest(
 void AccessibilityManager::SetSwitchAccessKeysForTest(
     const std::set<int>& action_keys,
     const std::string& pref_name) {
-  DictionaryPrefUpdateDeprecated pref_update(profile_->GetPrefs(), pref_name);
-  base::ListValue devices;
+  DictionaryPrefUpdate pref_update(profile_->GetPrefs(), pref_name);
+  base::Value devices(base::Value::Type::LIST);
   devices.Append(kSwitchAccessInternalDevice);
   devices.Append(kSwitchAccessUsbDevice);
   devices.Append(kSwitchAccessBluetoothDevice);
