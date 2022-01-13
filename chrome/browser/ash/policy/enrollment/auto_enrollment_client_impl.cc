@@ -61,7 +61,7 @@ int NextPowerOf2(int64_t value) {
 }
 
 // Sets or clears a value in a dictionary.
-void UpdateDict(base::DictionaryValue* dict,
+void UpdateDict(base::Value* dict,
                 const char* pref_path,
                 bool set_or_clear,
                 std::unique_ptr<base::Value> value) {
@@ -1324,8 +1324,7 @@ bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
   StateDownloadMessageProcessor::ParsedResponse parsed_response =
       std::move(parsed_response_opt.value());
   {
-    DictionaryPrefUpdateDeprecated dict(local_state_,
-                                        prefs::kServerBackedDeviceState);
+    DictionaryPrefUpdate dict(local_state_, prefs::kServerBackedDeviceState);
     UpdateDict(dict.Get(), kDeviceStateManagementDomain,
                parsed_response.management_domain.has_value(),
                std::make_unique<base::Value>(
