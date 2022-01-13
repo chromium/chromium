@@ -274,20 +274,20 @@ const net::NetworkTrafficAnnotationTag kNavigationPreloadTrafficAnnotation =
         "be done by disabling cookie and site data under Settings, Content "
         "Settings, Cookies."
       chrome_policy {
-        URLBlacklist {
-          URLBlacklist: { entries: '*' }
+        URLBlocklist {
+          URLBlocklist: { entries: '*' }
         }
       }
       chrome_policy {
-        URLWhitelist {
-          URLWhitelist { }
+        URLAllowlist {
+          URLAllowlist { }
         }
       }
     }
     comments:
       "Chrome would be unable to use service workers if this feature were "
       "disabled, which could result in a degraded experience for websites that "
-      "register a service worker. Using either URLBlacklist or URLWhitelist "
+      "register a service worker. Using either URLBlocklist or URLAllowlist "
       "policies (or a combination of both) limits the scope of these requests."
 )");
 

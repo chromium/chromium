@@ -70,13 +70,13 @@ const net::NetworkTrafficAnnotationTag kWorkerScriptLoadTrafficAnnotation =
         cookies_store: "user"
         setting: "This request can be prevented by disabling JavaScript."
         chrome_policy {
-          URLBlacklist {
-            URLBlacklist: { entries: '*' }
+          URLBlocklist {
+            URLBlocklist: { entries: '*' }
           }
         }
         chrome_policy {
-          URLWhitelist {
-            URLWhitelist { }
+          URLAllowlist {
+            URLAllowlist { }
           }
         }
       }

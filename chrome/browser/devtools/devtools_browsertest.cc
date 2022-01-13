@@ -1514,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   dir->WriteManifest(extensions::DictionaryBuilder()
                          .Set("name", "Devtools Panel")
                          .Set("version", "1")
-                         // Whitelist the script we stuff into the 'blob:' URL:
+                         // Allow the script we stuff into the 'blob:' URL:
                          .Set("content_security_policy",
                               "script-src 'self' "
                               "'sha256-uv9gxBEOFchPzak3TK6O39RdKxJeZvfha9zOHGam"
@@ -1846,7 +1846,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   CloseDevToolsWindow();
 }
 
-// Tests that whitelisted unhandled shortcuts are forwarded from inspected page
+// Tests that allowed unhandled shortcuts are forwarded from inspected page
 // into devtools frontend
 IN_PROC_BROWSER_TEST_F(DevToolsTest, testKeyEventUnhandled) {
   OpenDevToolsWindow("about:blank", true);
@@ -2655,13 +2655,13 @@ class DevToolsPolicyTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlackListedDevTools) {
-  base::ListValue blacklist;
-  blacklist.Append("devtools://*");
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlockedDevTools) {
+  base::ListValue blocklist;
+  blocklist.Append("devtools://*");
   policy::PolicyMap policies;
-  policies.Set(policy::key::kURLBlacklist, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               blacklist.Clone(), nullptr);
+               blocklist.Clone(), nullptr);
   provider_.UpdateChromePolicy(policies);
 
   WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();

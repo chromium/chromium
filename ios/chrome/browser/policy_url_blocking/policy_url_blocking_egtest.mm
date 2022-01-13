@@ -38,7 +38,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 }
 
-// Tests the URLBlocklist and URLWhitelist enterprise policies.
+// Tests the URLBlocklist and URLAllowlist enterprise policies.
 @interface PolicyURLBlockingTestCase : ChromeTestCase
 @end
 

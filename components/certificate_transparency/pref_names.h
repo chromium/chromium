@@ -17,11 +17,11 @@ namespace prefs {
 COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
 void RegisterPrefs(PrefRegistrySimple* registry);
 
-// The set of hosts (as URLBlacklist-syntax filters) for which Certificate
+// The set of hosts (as URLBlocklist-syntax filters) for which Certificate
 // Transparency is required to be present.
 COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) extern const char kCTRequiredHosts[];
 
-// The set of hosts (as URLBlacklist-syntax filters) for which Certificate
+// The set of hosts (as URLBlocklist-syntax filters) for which Certificate
 // Transparency information is allowed to be absent, even if it would
 // otherwise be required (e.g. as part of security policy).
 COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) extern const char kCTExcludedHosts[];

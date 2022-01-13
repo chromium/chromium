@@ -2226,7 +2226,7 @@ const char kCipherSuiteBlacklist[] = "ssl.cipher_suites.blacklist";
 
 // List of strings specifying which hosts are allowed to have H2 connections
 // coalesced when client certs are also used. This follows rules similar to
-// the URLBlacklist format for hostnames: a pattern with a leading dot (e.g.
+// the URLBlocklist format for hostnames: a pattern with a leading dot (e.g.
 // ".example.net") matches exactly the hostname following the dot (i.e. only
 // "example.net"), and a pattern with no leading dot (e.g. "example.com")
 // matches that hostname and all subdomains.

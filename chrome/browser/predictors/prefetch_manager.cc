@@ -59,19 +59,19 @@ const net::NetworkTrafficAnnotationTag kPrefetchTrafficAnnotation =
         "C) Disable 'Make searches and browsing better' under Settings > "
         "   Sync and Google services > Make searches and browsing better"
       chrome_policy {
-        URLBlacklist {
-          URLBlacklist: { entries: '*' }
+        URLBlocklist {
+          URLBlocklist: { entries: '*' }
         }
       }
       chrome_policy {
-        URLWhitelist {
-          URLWhitelist { }
+        URLAllowlist {
+          URLAllowlist { }
         }
       }
     }
     comments:
       "This feature can be safely disabled, but enabling it may result in "
-      "faster page loads. Using either URLBlacklist or URLWhitelist policies "
+      "faster page loads. Using either URLBlocklist or URLAllowlist policies "
       "(or a combination of both) limits the scope of these requests."
 )");
 

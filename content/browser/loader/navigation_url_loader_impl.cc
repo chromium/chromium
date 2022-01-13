@@ -186,19 +186,19 @@ const net::NetworkTrafficAnnotationTag kNavigationUrlLoaderTrafficAnnotation =
         cookies_store: "user"
         setting: "This feature cannot be disabled."
         chrome_policy {
-          URLBlacklist {
-            URLBlacklist: { entries: '*' }
+          URLBlocklist {
+            URLBlocklist: { entries: '*' }
           }
         }
         chrome_policy {
-          URLWhitelist {
-            URLWhitelist { }
+          URLAllowlist {
+            URLAllowlist { }
           }
         }
       }
       comments:
         "Chrome would be unable to navigate to websites without this type of "
-        "request. Using either URLBlacklist or URLWhitelist policies (or a "
+        "request. Using either URLBlocklist or URLAllowlist policies (or a "
         "combination of both) limits the scope of these requests."
       )");
 
