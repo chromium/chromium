@@ -83,10 +83,9 @@ void RecentTabsPagePrefs::SetForeignSessionCollapsed(
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.
   PrefService* prefs = profile_->GetPrefs();
-  DictionaryPrefUpdateDeprecated update(prefs,
-                                        prefs::kNtpCollapsedForeignSessions);
+  DictionaryPrefUpdate update(prefs, prefs::kNtpCollapsedForeignSessions);
   if (is_collapsed)
-    update.Get()->SetBoolean(ConvertJavaStringToUTF8(env, session_tag), true);
+    update.Get()->SetBoolKey(ConvertJavaStringToUTF8(env, session_tag), true);
   else
     update.Get()->RemoveKey(ConvertJavaStringToUTF8(env, session_tag));
 }
