@@ -293,10 +293,6 @@ void MetricReportingManager::InitCrosHealthdInfoCollector(
 }
 
 void MetricReportingManager::InitNetworkCollectors() {
-  if (!base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
-    return;
-  }
-
   auto https_latency_sampler = delegate_->CreateHttpsLatencySampler();
   auto network_telemetry_sampler =
       std::make_unique<NetworkTelemetrySampler>(https_latency_sampler.get());
@@ -310,6 +306,10 @@ void MetricReportingManager::InitNetworkCollectors() {
       kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
       GetDefaulCollectionRate(kDefaultNetworkTelemetryCollectionRate));
+
+  if (!base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
+    return;
+  }
   // HttpsLatency events.
   CreatePeriodicEventCollector(
       std::move(https_latency_sampler),

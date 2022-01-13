@@ -132,6 +132,11 @@ struct NetworkHealthReportingTestCase {
   int expected_flush_per_period;
 };
 
+constexpr char kWifiPath[] = "wifi/path1";
+constexpr char kProfilePath[] = "/profile/path";
+constexpr char kInterfaceName[] = "wlan0";
+constexpr char kServicePath[] = "service/path";
+
 constexpr int kNetworkHealthRateMs = 60000;
 
 class NetworkHealthReportingTest
@@ -159,8 +164,6 @@ class NetworkHealthReportingTest
         ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
         kNetworkHealthRateMs);
 
-    const std::string kWifiPath = "wifi/path1";
-    const std::string kProfilePath = "/profile/path";
     network_handler_test_helper_.profile_test()->AddProfile(kProfilePath,
                                                             "user_hash");
     auto* const device_client = network_handler_test_helper_.device_test();
@@ -169,11 +172,20 @@ class NetworkHealthReportingTest
 
     device_client->ClearDevices();
     service_client->ClearServices();
-    device_client->AddDevice(kWifiPath, shill::kTypeEthernet, "ethernet");
-    service_client->AddService(kWifiPath, "guid", "name", shill::kTypeWifi,
-                               shill::kStateOnline,
+    device_client->AddDevice(kWifiPath, shill::kTypeEthernet, kInterfaceName);
+    device_client->SetDeviceProperty(kWifiPath, shill::kInterfaceProperty,
+                                     base::Value(kInterfaceName),
+                                     /*notify_changed=*/true);
+    device_client->SetDeviceProperty(kWifiPath, shill::kInterfaceProperty,
+                                     base::Value(kInterfaceName),
+                                     /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
+    service_client->AddService(kServicePath, "guid", "network_name",
+                               shill::kTypeWifi, shill::kStateOnline,
                                /*is_visible=*/true);
-    service_client->SetServiceProperty(kWifiPath, shill::kProfileProperty,
+    service_client->SetServiceProperty(kServicePath, shill::kDeviceProperty,
+                                       base::Value(kWifiPath));
+    service_client->SetServiceProperty(kServicePath, shill::kProfileProperty,
                                        base::Value(kProfilePath));
     base::RunLoop().RunUntilIdle();
   }
@@ -203,7 +215,7 @@ class NetworkHealthReportingTest
                                                              0);
     auto wireless_interface_info =
         chromeos::cros_healthd::mojom::WirelessInterfaceInfo::New(
-            "path1", false, std::move(wireless_link_info));
+            kInterfaceName, false, std::move(wireless_link_info));
     network_interfaces.push_back(
         chromeos::cros_healthd::mojom::NetworkInterfaceInfo::
             NewWirelessInterfaceInfo(std::move(wireless_interface_info)));
@@ -372,7 +384,7 @@ INSTANTIATE_TEST_SUITE_P(
           /*telemetry_policy_enabled=*/true,
           /*latency_verdict=*/RoutineVerdict::PROBLEM,
           /*expected_info_count=*/0,
-          /*expected_telemetry_count=*/0, /*expected_event_count=*/0,
+          /*expected_telemetry_count=*/1, /*expected_event_count=*/0,
           /*expected_flush_per_period=*/1},
          {"Deprovisioned", /*is_feature_enabled=*/true,
           /*is_deprovisioned=*/true,

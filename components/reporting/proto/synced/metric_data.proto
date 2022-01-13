@@ -87,8 +87,9 @@ message NetworkTelemetry {
   optional string gateway = 6;
   // Network connection type.
   optional NetworkType type = 7;
-  // Access point address.
-  optional string access_point_address = 8;
+
+  reserved 8;
+
   // Transmission bit rate measured in Mbps.
   optional int64 tx_bit_rate_mbps = 9;
   // Receiving bit rate measured in Mbps.
