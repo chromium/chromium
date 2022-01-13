@@ -669,6 +669,7 @@ void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   CHECK_NE(to_index, kNoTab);
+  to_index = ConstrainMoveIndex(to_index, false /* pinned tab */);
 
   gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
   DCHECK_GT(tabs_in_group.length(), 0u);
@@ -2011,6 +2012,7 @@ void TabStripModel::MoveWebContentsAtImpl(int index,
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
 
   CHECK_LT(index, static_cast<int>(contents_data_.size()));
+  CHECK_LT(to_position, static_cast<int>(contents_data_.size()));
   std::unique_ptr<WebContentsData> moved_data =
       std::move(contents_data_[index]);
   WebContents* web_contents = moved_data->web_contents();
