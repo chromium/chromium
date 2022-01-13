@@ -9,7 +9,6 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '/common/icons.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';

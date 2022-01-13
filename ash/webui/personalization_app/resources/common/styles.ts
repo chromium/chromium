@@ -4,12 +4,7 @@
 
 /**
  * @fileoverview Common styles for polymer components in both trusted and
- * untrusted code. Polymer must be imported before this file. This file cannot
- * import Polymer itself because trusted and untrusted code access polymer at
- * different paths.
- *
- * NOTE: this file cannot be migrated to typescript because the import problem
- * above.
+ * untrusted code.
  */
 
 // Force tsc to consider this file a module.

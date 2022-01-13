@@ -4,12 +4,6 @@
 
 /**
  * @fileoverview Icons specific to personalization app.
- * This file is run in both trusted and untrusted code, and therefore
- * cannot import polymer and iron-iconset-svg itself. Any consumer should
- * import necessary dependencies before this file.
- *
- * NOTE: this file cannot be migrated to typescript because the import problem
- * above.
  *
  * These icons should have transparent fill color to adapt to its container's
  * light/dark theme.
@@ -18,8 +12,7 @@
  * @see https://github.com/PolymerElements/iron-iconset-svg/blob/v3.0.1/demo/svg-sample-icons.js
  */
 
-// Force tsc to consider this file a module.
-export {};
+import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 const template = document.createElement('template');
 template.innerHTML = `{__html_template__}`;

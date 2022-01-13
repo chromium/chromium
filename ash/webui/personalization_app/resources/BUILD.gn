@@ -53,8 +53,8 @@ static_js_files = [
 ]
 
 polymer_js_files = [
-  "common/icons.js",
-  "common/styles.js",
+  "common/icons.ts",
+  "common/styles.ts",
 
   "trusted/ambient/ambient_subpage_element.ts",
   "trusted/personalization_main_element.ts",

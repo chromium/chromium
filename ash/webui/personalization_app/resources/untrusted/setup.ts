@@ -10,7 +10,6 @@
 // Import necessary built in modules before ../common files. This will
 // guarantee that polymer and certain polymer elements are loaded first.
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../common/icons.js';
 import '../common/styles.js';
