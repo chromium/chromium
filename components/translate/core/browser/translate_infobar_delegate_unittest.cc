@@ -197,8 +197,8 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
                                             testing::accept_languages_prefs);
   ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
       .WillByDefault(Return(&accept_languages));
-  ListPrefUpdateDeprecated update(pref_service_.get(),
-                                  translate::prefs::kBlockedLanguages);
+  ListPrefUpdate update(pref_service_.get(),
+                        translate::prefs::kBlockedLanguages);
   update->Append(kSourceLanguage);
   pref_service_->SetString(language::prefs::kAcceptLanguages, kSourceLanguage);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -214,7 +214,7 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
 }
 
 TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
-  DictionaryPrefUpdateDeprecated update_translate_accepted_count(
+  DictionaryPrefUpdate update_translate_accepted_count(
       pref_service_.get(), TranslatePrefs::kPrefTranslateAcceptedCount);
   base::Value* update_translate_accepted_dict =
       update_translate_accepted_count.Get();
@@ -248,7 +248,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
 }
 
 TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
-  DictionaryPrefUpdateDeprecated update_translate_accepted_count(
+  DictionaryPrefUpdate update_translate_accepted_count(
       pref_service_.get(), TranslatePrefs::kPrefTranslateAcceptedCount);
   base::Value* update_translate_accepted_dict =
       update_translate_accepted_count.Get();
@@ -304,7 +304,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
   ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
       .WillByDefault(Return(&accept_languages));
 
-  DictionaryPrefUpdateDeprecated update_translate_denied_count(
+  DictionaryPrefUpdate update_translate_denied_count(
       pref_service_.get(), TranslatePrefs::kPrefTranslateDeniedCount);
   base::Value* update_translate_denied_dict =
       update_translate_denied_count.Get();
