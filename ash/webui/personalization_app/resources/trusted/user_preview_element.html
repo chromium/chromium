@@ -1,8 +1,21 @@
-<style></style>
+<style>
+  #imageContainer {
+    position: relative;
+  }
+
+  ::slotted(cr-icon-button) {
+    bottom: 0;
+    position: absolute;
+    right: 0;
+  }
+</style>
 <div id="container">
   <template is="dom-if" if="[[info_]]">
     <p id="name">[[info_.name]]</p>
     <p id="email">[[info_.email]]</p>
-    <img id="avatar" src="[[info_.avatar.url]]">
+    <div id="imageContainer">
+      <img id="avatar" src="[[info_.avatar.url]]">
+      <slot></slot>
+    </div>
   </template>
 </div>

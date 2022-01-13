@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {Events, EventType, untrustedOrigin} from '../../common/constants.js';
 import {IFrameApi} from '../iframe_api.js';
-import {PersonalizationRouter} from '../personalization_router_element.js';
+import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {selectWallpaper} from './wallpaper_controller.js';
@@ -32,10 +32,10 @@ export function onMessageReceived(event: MessageEvent) {
       PersonalizationRouter.instance().selectCollection(selectedCollection);
       break;
     case EventType.SELECT_GOOGLE_PHOTOS_COLLECTION:
-      PersonalizationRouter.instance().selectGooglePhotosCollection();
+      PersonalizationRouter.instance().goToRoute(Paths.GooglePhotosCollection);
       break;
     case EventType.SELECT_LOCAL_COLLECTION:
-      PersonalizationRouter.instance().selectLocalCollection();
+      PersonalizationRouter.instance().goToRoute(Paths.LocalCollection);
       break;
     case EventType.SELECT_IMAGE:
       const collectionId = PersonalizationRouter.instance().collectionId;

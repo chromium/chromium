@@ -1,7 +1,10 @@
 <style></style>
 <div id="container">
   <h1>Personalization</h1>
-  <user-preview></user-preview>
+  <user-preview>
+    <cr-icon-button id="userSubpageLink" iron-icon="personalization:pencil"
+        on-click="onClickUserSubpageLink_"></cr-icon-button>
+  </user-preview>
   <wallpaper-preview></wallpaper-preview>
   <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
     <personalization-theme></personalization-theme>

@@ -16,12 +16,16 @@ import {WallpaperCollection} from './personalization_app.mojom-webui.js';
 
 export enum Paths {
   Ambient = '/ambient',
-  User = '/user',
   CollectionImages = '/wallpaper/collection',
   Collections = '/wallpaper',
   GooglePhotosCollection = '/wallpaper/google-photos',
   LocalCollection = '/wallpaper/local',
   Root = '/',
+  User = '/user',
+}
+
+function isPersonalizationHubEnabled(): boolean {
+  return loadTimeData.getBoolean('isPersonalizationHubEnabled');
 }
 
 export class PersonalizationRouter extends PolymerElement {
@@ -87,32 +91,19 @@ export class PersonalizationRouter extends PolymerElement {
    */
   selectCollection(collection: WallpaperCollection) {
     document.title = collection.name;
-    this.setProperties(
-        {path_: Paths.CollectionImages, queryParams_: {id: collection.id}});
+    this.goToRoute(Paths.CollectionImages, {id: collection.id});
   }
 
   /**
    * Navigate to a specific album in the Google Photos collection page.
    */
   selectGooglePhotosAlbum(album: WallpaperCollection) {
-    this.setProperties({
-      path_: Paths.GooglePhotosCollection,
-      queryParams_: {googlePhotosAlbumId: album.id}
-    });
+    this.goToRoute(
+        Paths.GooglePhotosCollection, {googlePhotosAlbumId: album.id});
   }
 
-  /**
-   * Navigate to the Google Photos collection page.
-   */
-  selectGooglePhotosCollection() {
-    this.setProperties({path_: Paths.GooglePhotosCollection, query_: ''});
-  }
-
-  /**
-   * Navigate to the local collection page.
-   */
-  selectLocalCollection() {
-    this.setProperties({path_: Paths.LocalCollection, query_: ''});
+  goToRoute(path: Paths, queryParams: Object = {}) {
+    this.setProperties({path_: path, queryParams_: queryParams});
   }
 
   private shouldShowCollections_(path: string): boolean {
@@ -139,8 +130,7 @@ export class PersonalizationRouter extends PolymerElement {
   }
 
   private shouldShowRootPage_(path: string|null): boolean {
-    return loadTimeData.getBoolean('isPersonalizationHubEnabled') &&
-        path === Paths.Root;
+    return isPersonalizationHubEnabled() && path === Paths.Root;
   }
 
   private shouldShowAmbientSubpage_(path: string|null): boolean {
