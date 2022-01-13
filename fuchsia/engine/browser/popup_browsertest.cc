@@ -109,8 +109,8 @@ class PopupTest : public FrameImplTestBaseWithServer {
     popup_listener_.GetAndAckNextPopup(&popup_frame_, &popup_info);
     EXPECT_EQ(popup_info.initial_url(), popup_child_url);
 
-    popup_frame_->SetNavigationEventListener(
-        popup_nav_listener_binding_.NewBinding());
+    popup_frame_->SetNavigationEventListener2(
+        popup_nav_listener_binding_.NewBinding(), /*flags=*/{});
 
     return popup_child_url;
   }
@@ -143,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(PopupTest, PopupWindowRedirect) {
   EXPECT_EQ(popup_info.initial_url(), popup_child_url);
 
   // Verify that the popup eventually redirects to "title1.html".
-  popup_frame_->SetNavigationEventListener(
-      popup_nav_listener_binding_.NewBinding());
+  popup_frame_->SetNavigationEventListener2(
+      popup_nav_listener_binding_.NewBinding(), /*flags=*/{});
   popup_nav_listener_.RunUntilUrlAndTitleEquals(title1_url, kPage1Title);
 }
 

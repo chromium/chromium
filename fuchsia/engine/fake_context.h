@@ -44,6 +44,9 @@ class FakeFrame : public fuchsia::web::testing::Frame_TestBase {
   void SetNavigationEventListener(
       fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener)
       override;
+  void SetNavigationEventListener2(
+      fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
+      fuchsia::web::NavigationEventListenerFlags flags) override;
 
   // fuchsia::web::testing::Frame_TestBase implementation.
   void NotImplemented_(const std::string& name) override;

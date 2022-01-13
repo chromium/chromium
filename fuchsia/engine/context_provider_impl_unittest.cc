@@ -356,7 +356,8 @@ class ContextProviderImplTest : public base::MultiProcessTest {
     CapturingNavigationStateObserver change_listener(run_loop.QuitClosure());
     fidl::Binding<fuchsia::web::NavigationEventListener>
         change_listener_binding(&change_listener);
-    frame_ptr->SetNavigationEventListener(change_listener_binding.NewBinding());
+    frame_ptr->SetNavigationEventListener2(change_listener_binding.NewBinding(),
+                                           /*flags=*/{});
     run_loop.Run();
 
     ASSERT_TRUE(change_listener.captured_state()->has_url());

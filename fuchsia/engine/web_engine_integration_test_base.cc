@@ -200,6 +200,6 @@ void WebEngineIntegrationTestBase::CreateNavigationListener() {
   navigation_listener_binding_ =
       std::make_unique<fidl::Binding<fuchsia::web::NavigationEventListener>>(
           navigation_listener_.get());
-  frame_->SetNavigationEventListener(
-      navigation_listener_binding_->NewBinding());
+  frame_->SetNavigationEventListener2(
+      navigation_listener_binding_->NewBinding(), /*flags=*/{});
 }
