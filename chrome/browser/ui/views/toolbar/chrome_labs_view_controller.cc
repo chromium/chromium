@@ -187,15 +187,14 @@ bool ChromeLabsViewController::ShouldLabShowNewBadge(Profile* profile,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DictionaryPrefUpdateDeprecated update(
+  DictionaryPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
-  DictionaryPrefUpdateDeprecated update(
-      g_browser_process->local_state(),
-      chrome_labs_prefs::kChromeLabsNewBadgeDict);
+  DictionaryPrefUpdate update(g_browser_process->local_state(),
+                              chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
-  base::DictionaryValue* new_badge_prefs = update.Get();
+  base::Value* new_badge_prefs = update.Get();
 
   DCHECK(new_badge_prefs->FindIntKey(lab.internal_name));
   int start_day = *new_badge_prefs->FindIntKey(lab.internal_name);
@@ -204,7 +203,7 @@ bool ChromeLabsViewController::ShouldLabShowNewBadge(Profile* profile,
     // epoch (1970-01-01). This value is the first day the user sees the new
     // experiment in Chrome Labs and will be used to determine whether or not to
     // show the new badge.
-    new_badge_prefs->SetInteger(lab.internal_name, GetCurrentDay());
+    new_badge_prefs->SetIntKey(lab.internal_name, GetCurrentDay());
     return true;
   }
   int days_elapsed = GetCurrentDay() - start_day;

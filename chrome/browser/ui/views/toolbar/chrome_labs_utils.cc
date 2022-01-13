@@ -50,12 +50,11 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
 void UpdateChromeLabsNewBadgePrefs(Profile* profile,
                                    const ChromeLabsBubbleViewModel* model) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DictionaryPrefUpdateDeprecated update(
+  DictionaryPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
-  DictionaryPrefUpdateDeprecated update(
-      g_browser_process->local_state(),
-      chrome_labs_prefs::kChromeLabsNewBadgeDict);
+  DictionaryPrefUpdate update(g_browser_process->local_state(),
+                              chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
   base::Value* new_badge_prefs = update.Get();
