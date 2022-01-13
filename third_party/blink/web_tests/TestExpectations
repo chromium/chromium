@@ -4550,9 +4550,6 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-002.html
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-003.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-mbp-overflow-004.html [ Failure ]
 
-### Tests failing with SVGTextNG enabled:
-crbug.com/1179585 svg/custom/visibility-collapse.html [ Failure ]
-
 crbug.com/1236992 svg/dom/SVGListPropertyTearOff-gccrash.html [ Failure Pass ]
 
 # [css-animations]
