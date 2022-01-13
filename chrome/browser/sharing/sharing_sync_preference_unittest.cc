@@ -64,7 +64,7 @@ class SharingSyncPreferenceTest : public testing::Test {
 
     enabled_features.Append(feature);
 
-    DictionaryPrefUpdateDeprecated local_sharing_info_update(
+    DictionaryPrefUpdate local_sharing_info_update(
         &prefs_, prefs::kSharingLocalSharingInfo);
     local_sharing_info_update->SetKey(kSharingInfoEnabledFeatures,
                                       std::move(enabled_features));
