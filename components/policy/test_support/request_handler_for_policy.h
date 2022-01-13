@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_POLICY_TEST_SUPPORT_REQUEST_HANDLER_FOR_POLICY_H_
 #define COMPONENTS_POLICY_TEST_SUPPORT_REQUEST_HANDLER_FOR_POLICY_H_
 
-#include "components/policy/test_support/embedded_policy_test_server.h"
-
 #include <string>
 
 #include "components/policy/test_support/client_storage.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
 
 namespace enterprise_management {
+class DevicePolicyResponse;
+class PolicyFetchRequest;
 class PolicyFetchResponse;
 }  // namespace enterprise_management
 
@@ -41,6 +42,16 @@ class RequestHandlerForPolicy
       const enterprise_management::PolicyFetchRequest& fetch_request,
       const ClientStorage::ClientInfo& client,
       enterprise_management::PolicyFetchResponse* fetch_response,
+      std::string* error_msg);
+
+  // Add to |response| the policies associated with |client_info| for extension
+  // policy type in |fetch_request|. Returns true is request is well-formed, or
+  // false otherwise (in which case, |error_msg| is set with the corresponding
+  // error message).
+  bool ProcessCloudPolicyForExtensions(
+      const enterprise_management::PolicyFetchRequest& fetch_request,
+      const ClientStorage::ClientInfo& client_info,
+      enterprise_management::DevicePolicyResponse* response,
       std::string* error_msg);
 };
 
