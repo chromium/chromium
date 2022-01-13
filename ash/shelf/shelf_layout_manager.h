@@ -288,9 +288,9 @@ class ASH_EXPORT ShelfLayoutManager
 
   bool is_shelf_auto_hidden() const { return state_.IsShelfAutoHidden(); }
 
-  void LockAutoHideState(bool lock_auto_hide_state) {
-    is_auto_hide_state_locked_ = lock_auto_hide_state;
-  }
+  // Locks or unlocks the state of shelf auto-hide. On unlock, the auto-hide
+  // state will be recomputed.
+  void LockAutoHideState(bool lock_auto_hide_state);
 
   ShelfAutoHideBehavior auto_hide_behavior() const {
     return shelf_->auto_hide_behavior();

@@ -60,6 +60,9 @@ enum ShelfAutoHideState {
   SHELF_AUTO_HIDE_HIDDEN,
 };
 
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
+                                           ShelfAutoHideState state);
+
 enum ShelfVisibilityState {
   // Always visible.
   SHELF_VISIBLE,

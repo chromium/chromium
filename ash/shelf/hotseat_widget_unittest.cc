@@ -122,6 +122,9 @@ class HotseatWidgetTest
     return shelf_auto_hide_behavior_;
   }
   bool is_assistant_enabled() const { return is_assistant_enabled_; }
+  bool navigation_buttons_shown_in_tablet_mode() const {
+    return navigation_buttons_shown_in_tablet_mode_;
+  }
   AssistantTestApi* assistant_test_api() { return assistant_test_api_.get(); }
 
   void ShowShelfAndActivateAssistant() {
@@ -322,14 +325,15 @@ class HotseatTransitionAnimationObserver
   HotseatTransitionAnimator* hotseat_transition_animator_;
 };
 
-// Used to test the Hotseat, ScrollabeShelf, and DenseShelf features.
+// Used to test the Hotseat, ScrollableShelf, and DenseShelf features.
 INSTANTIATE_TEST_SUITE_P(
     All,
     HotseatWidgetTest,
-    testing::Combine(testing::Values(ShelfAutoHideBehavior::kNever,
-                                     ShelfAutoHideBehavior::kAlways),
-                     testing::Bool(),
-                     testing::Bool()));
+    testing::Combine(
+        testing::Values(ShelfAutoHideBehavior::kNever,
+                        ShelfAutoHideBehavior::kAlways),
+        /*is_assistant_enabled*/ testing::Bool(),
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
 
 TEST_P(HotseatWidgetTest, LongPressHomeWithoutAppWindow) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
@@ -374,6 +378,10 @@ TEST_P(HotseatWidgetTest, LongPressHomeWithAppWindow) {
     // |ShowShelfAndActivateAssistant()| will bring up shelf so it will trigger
     // one hotseat state change.
     expected_state.push_back(HotseatState::kExtended);
+    // Launching the assistant from a shelf button on an autohidden shelf will
+    // hide the shelf at the end of the operation.
+    if (is_assistant_enabled() && navigation_buttons_shown_in_tablet_mode())
+      expected_state.push_back(HotseatState::kHidden);
   }
   watcher.CheckEqual(expected_state);
 }

@@ -239,6 +239,7 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
       shelf_layout_manager->LockAutoHideState(true);
     } else if (event->type() == ui::ET_TOUCH_RELEASED ||
                event->type() == ui::ET_TOUCH_CANCELLED) {
+      // Unlock auto hide (and eventually recompute auto hide state).
       shelf_layout_manager->LockAutoHideState(false);
     }
   }

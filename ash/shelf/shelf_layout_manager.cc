@@ -1080,6 +1080,8 @@ void ShelfLayoutManager::OnAppListVisibilityWillChange(bool shown,
 
 void ShelfLayoutManager::OnAppListVisibilityChanged(bool shown,
                                                     int64_t display_id) {
+  DVLOG(1) << __PRETTY_FUNCTION__ << " shown " << shown << " display "
+           << display_id;
   // Shell may be under destruction.
   if (!shelf_widget_ || !shelf_widget_->GetNativeWindow())
     return;
@@ -1192,6 +1194,19 @@ void ShelfLayoutManager::OnDeskSwitchAnimationFinished() {
 
 float ShelfLayoutManager::GetOpacity() const {
   return target_opacity_;
+}
+
+void ShelfLayoutManager::LockAutoHideState(bool lock_auto_hide_state) {
+  if (is_auto_hide_state_locked_ == lock_auto_hide_state)
+    return;
+  is_auto_hide_state_locked_ = lock_auto_hide_state;
+  // If unlocking, recompute the current state, but do it after the current
+  // event is processed.
+  if (!is_auto_hide_state_locked_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ShelfLayoutManager::UpdateAutoHideState,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void ShelfLayoutManager::OnShelfConfigUpdated() {

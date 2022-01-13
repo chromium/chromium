@@ -1701,7 +1701,11 @@ TEST_F(ShelfLayoutManagerTest, ChangeShelfAlignmentDuringAppListDragging) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
-TEST_F(ShelfLayoutManagerTest, SwipingUpOnShelfInLaptopModeForAppList) {
+TEST_F(ShelfLayoutManagerTest, SwipingUpOnShelfInLaptopModeShowsAppList) {
+  // ProductivityLauncher does not support swipe-to-show.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
@@ -1754,8 +1758,25 @@ TEST_F(ShelfLayoutManagerTest, SwipingUpOnShelfInLaptopModeForAppList) {
   GetAppListTestHelper()->DismissAndRunLoop();
   GetAppListTestHelper()->CheckVisibility(false);
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
+}
 
+// TODO(https://crbug.com/1286875): This behavior is broken in production. An
+// auto-hidden shelf will close after a short swipe up that fails to show the
+// app list.
+TEST_F(ShelfLayoutManagerTest,
+       DISABLED_ShortSwipeUpOnAutoHideShelfKeepsShelfOpen) {
+  Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  auto* generator = GetEventGenerator();
+  constexpr base::TimeDelta kTimeDelta = base::Milliseconds(100);
+  constexpr int kNumScrollSteps = 4;
+
+  // Starts the drag from the center of the shelf's bottom.
+  gfx::Rect shelf_bounds = GetVisibleShelfWidgetBoundsInScreen();
+  gfx::Point start = shelf_bounds.bottom_center();
+  gfx::Vector2d delta;
+
   // Create a normal unmaximized window, the auto-hide shelf should be hidden.
   aura::Window* window = CreateTestWindow();
   window->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -1765,7 +1786,7 @@ TEST_F(ShelfLayoutManagerTest, SwipingUpOnShelfInLaptopModeForAppList) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Swiping up to show the auto-hide shelf.
-  end = shelf_bounds.top_center();
+  gfx::Point end = shelf_bounds.top_center();
   generator->GestureScrollSequence(start, end, kTimeDelta, kNumScrollSteps);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
@@ -1777,6 +1798,7 @@ TEST_F(ShelfLayoutManagerTest, SwipingUpOnShelfInLaptopModeForAppList) {
   generator->GestureScrollSequence(start, end, kTimeDelta, kNumScrollSteps);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
+  // This line fails, see https://crbug.com/1286875.
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 

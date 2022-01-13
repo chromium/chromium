@@ -3763,10 +3763,7 @@ TEST_P(AppListPresenterTest, ShowInInvalidDisplay) {
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
 }
 
-// Tests that tap the auto-hide shelf with app list opened should dismiss the
-// app list but keep shelf visible.
-// TODO(crbug.com/1273162): Fix for ProductivityLauncher.
-TEST_F(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
+TEST_F(AppListPresenterTest, TapAppListThenSystemTrayShowsAutoHiddenShelf) {
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
@@ -3789,13 +3786,22 @@ TEST_F(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   // Tap to dismiss the app list and the auto-hide shelf.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureTapAt(gfx::Point(0, 0));
+  GetEventGenerator()->GestureTapAt(gfx::Point(0, 0));
   EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
   GetAppListTestHelper()->CheckVisibility(false);
+}
 
-  // Show the AppList again.
+TEST_F(AppListPresenterTest, TapAppListThenShelfHidesAutoHiddenShelf) {
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  // Create a normal unmaximized window; the shelf should be hidden.
+  std::unique_ptr<views::Widget> window = CreateTestWidget();
+  window->SetBounds(gfx::Rect(0, 0, 100, 100));
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Show the AppList.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -3812,8 +3818,9 @@ TEST_F(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
 
   // Test that tapping the auto-hidden shelf dismisses the app list when tapping
   // part of the shelf that does not contain the apps.
-  generator->GestureTapAt(shelf_view->GetBoundsInScreen().left_center() +
-                          gfx::Vector2d(10, 0));
+  GetEventGenerator()->GestureTapAt(
+      shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(10, 0));
+  base::RunLoop().RunUntilIdle();  // Wait for autohide to be recomputed.
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 

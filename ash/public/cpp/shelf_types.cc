@@ -17,6 +17,15 @@ constexpr char kDelimiter[] = "|";
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, ShelfAutoHideState state) {
+  switch (state) {
+    case SHELF_AUTO_HIDE_SHOWN:
+      return out << "SHOWN";
+    case SHELF_AUTO_HIDE_HIDDEN:
+      return out << "HIDDEN";
+  }
+}
+
 std::ostream& operator<<(std::ostream& out, ShelfBackgroundType type) {
   switch (type) {
     case ShelfBackgroundType::kDefaultBg:
