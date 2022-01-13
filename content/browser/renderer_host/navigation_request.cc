@@ -4907,15 +4907,12 @@ net::Error NavigationRequest::CheckCSPDirectives(
     }
   }
 
-  // [frame-src] or [fenced-frame-src]
+  // [frame-src]
   if (parent_policies &&
       !IsAllowedByCSPDirective(
           parent_policies->content_security_policies, &parent_context,
-          frame_tree_node_->IsFencedFrameRoot()
-              ? network::mojom::CSPDirectiveName::FencedFrameSrc
-              : network::mojom::CSPDirectiveName::FrameSrc,
-          has_followed_redirect, url_upgraded_after_redirect, is_response_check,
-          disposition)) {
+          network::mojom::CSPDirectiveName::FrameSrc, has_followed_redirect,
+          url_upgraded_after_redirect, is_response_check, disposition)) {
     error = net::ERR_BLOCKED_BY_CSP;
   }
 
@@ -4942,21 +4939,16 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   const PolicyContainerPolicies* parent_policies =
       policy_container_navigation_bundle_->ParentPolicies();
   DCHECK(!parent == !parent_policies);
-  bool set_parent_for_nested_frame_tree =
-      !parent &&
-      (frame_tree_node()->current_frame_host()->InsidePortal() ||
-       frame_tree_node()->IsFencedFrameRoot()) &&
-      frame_tree_node()->render_manager()->GetOuterDelegateNode();
-  if (set_parent_for_nested_frame_tree) {
+  if (!parent && frame_tree_node()->current_frame_host()->InsidePortal() &&
+      frame_tree_node()->render_manager()->GetOuterDelegateNode()) {
     parent = frame_tree_node()
                  ->render_manager()
                  ->GetOuterDelegateNode()
                  ->current_frame_host()
                  ->GetParent();
-    // TODO(antoniosartori): If we want to keep checking frame-src for portals
-    // or fenced frames, consider storing a snapshot of the parent policies in
-    // the `policy_container_navigation_bundle_` at the beginning of the
-    // navigation.
+    // TODO(antoniosartori): If we want to keep checking frame-src for portals,
+    // consider storing a snapshot of the parent policies in the
+    // `policy_container_navigation_bundle_` at the beginning of the navigation.
     parent_policies = &parent->policy_container_host()->policies();
   }
 

@@ -559,7 +559,6 @@ TEST_F(ContentSecurityPolicyTest, DirectiveType) {
       {CSPDirectiveName::ChildSrc, "child-src"},
       {CSPDirectiveName::ConnectSrc, "connect-src"},
       {CSPDirectiveName::DefaultSrc, "default-src"},
-      {CSPDirectiveName::FencedFrameSrc, "fenced-frame-src"},
       {CSPDirectiveName::FrameAncestors, "frame-ancestors"},
       {CSPDirectiveName::FrameSrc, "frame-src"},
       {CSPDirectiveName::FontSrc, "font-src"},
@@ -1182,7 +1181,7 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
       CSPDirectiveName::ManifestSrc,   CSPDirectiveName::MediaSrc,
       CSPDirectiveName::ObjectSrc,     CSPDirectiveName::PrefetchSrc,
       CSPDirectiveName::ScriptSrcElem, CSPDirectiveName::StyleSrcElem,
-      CSPDirectiveName::WorkerSrc,     CSPDirectiveName::FencedFrameSrc};
+      CSPDirectiveName::WorkerSrc};
   for (auto type : types_to_test) {
     EXPECT_TRUE(
         csp->AllowFromSource(type, example_url, example_url,

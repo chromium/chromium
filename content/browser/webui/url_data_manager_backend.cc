@@ -169,7 +169,6 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
         network::mojom::CSPDirectiveName::ChildSrc,
         network::mojom::CSPDirectiveName::ConnectSrc,
         network::mojom::CSPDirectiveName::DefaultSrc,
-        network::mojom::CSPDirectiveName::FencedFrameSrc,
         network::mojom::CSPDirectiveName::FormAction,
         network::mojom::CSPDirectiveName::FrameSrc,
         network::mojom::CSPDirectiveName::ImgSrc,

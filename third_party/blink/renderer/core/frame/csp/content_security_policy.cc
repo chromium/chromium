@@ -837,8 +837,7 @@ static String StripURLForUseInReport(const SecurityOrigin* security_origin,
       security_origin->CanRequest(url) ||
       (redirect_status == RedirectStatus::kNoRedirect &&
        effective_type != CSPDirectiveName::FrameSrc &&
-       effective_type != CSPDirectiveName::ObjectSrc &&
-       effective_type != CSPDirectiveName::FencedFrameSrc);
+       effective_type != CSPDirectiveName::ObjectSrc);
 
   if (!can_safely_expose_url)
     return SecurityOrigin::Create(url)->ToString();
@@ -1015,13 +1014,14 @@ void ContentSecurityPolicy::ReportViolation(
     absl::optional<base::UnguessableToken> issue_id) {
   DCHECK(violation_type == kURLViolation || blocked_url.IsEmpty());
 
-  // TODO(crbug.com/1279745): Remove/clarify what this block is about.
+  // TODO(lukasza): Support sending reports from OOPIFs -
+  // https://crbug.com/611232 (or move CSP child-src and frame-src checks to the
+  // browser process - see https://crbug.com/376522).
   if (!delegate_ && !context_frame) {
     DCHECK(effective_type == CSPDirectiveName::ChildSrc ||
            effective_type == CSPDirectiveName::FrameSrc ||
            effective_type == CSPDirectiveName::TrustedTypes ||
-           effective_type == CSPDirectiveName::RequireTrustedTypesFor ||
-           effective_type == CSPDirectiveName::FencedFrameSrc);
+           effective_type == CSPDirectiveName::RequireTrustedTypesFor);
     return;
   }
   DCHECK(
@@ -1258,8 +1258,6 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "connect-src";
     case CSPDirectiveName::DefaultSrc:
       return "default-src";
-    case CSPDirectiveName::FencedFrameSrc:
-      return "fenced-frame-src";
     case CSPDirectiveName::FontSrc:
       return "font-src";
     case CSPDirectiveName::FormAction:
@@ -1329,8 +1327,6 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::ConnectSrc;
   if (name == "default-src")
     return CSPDirectiveName::DefaultSrc;
-  if (name == "fenced-frame-src")
-    return CSPDirectiveName::FencedFrameSrc;
   if (name == "font-src")
     return CSPDirectiveName::FontSrc;
   if (name == "form-action")
