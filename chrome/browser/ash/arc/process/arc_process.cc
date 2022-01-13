@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -16,8 +17,15 @@ using mojom::ProcessState;
 
 namespace {
 
-constexpr char kCloudDpcrocessName[] =
+constexpr const char kCloudDpcrocessName[] =
     "com.google.android.apps.work.clouddpc.arc";
+
+constexpr const char* kGmsCoreProtectedServices[] = {
+    "com.google.process.gservices",
+    "com.google.android.gms",
+    "com.google.android.gms.persistent",
+    "com.google.android.gms.unstable",
+};
 
 bool IsImportantState(ProcessState state) {
   switch (state) {
@@ -97,13 +105,15 @@ ArcProcess::ArcProcess(ArcProcess&& other) = default;
 ArcProcess& ArcProcess::operator=(ArcProcess&& other) = default;
 
 bool ArcProcess::IsImportant() const {
-  return IsImportantState(process_state()) || IsArcProtected();
+  return IsImportantState(process_state()) || IsArcProtected() ||
+         IsGmsCoreProtected();
 }
 
 bool ArcProcess::IsPersistent() const {
   // Protect PERSISTENT, PERSISTENT_UI, our HOME and custom set of ARC processes
   // since they should have lower priority to be killed.
-  return IsPersistentState(process_state()) || IsArcProtected();
+  return IsPersistentState(process_state()) || IsArcProtected() ||
+         IsGmsCoreProtected();
 }
 
 bool ArcProcess::IsCached() const {
@@ -116,6 +126,17 @@ bool ArcProcess::IsBackgroundProtected() const {
 
 bool ArcProcess::IsArcProtected() const {
   return process_name() == kCloudDpcrocessName;
+}
+
+bool ArcProcess::IsGmsCoreProtected() const {
+  if (!base::FeatureList::IsEnabled(arc::kGmsCoreLowMemoryKillerProtection))
+    return false;
+
+  for (const char* service : kGmsCoreProtectedServices) {
+    if (process_name() == service)
+      return true;
+  }
+  return false;
 }
 
 std::ostream& operator<<(std::ostream& out, const ArcProcess& arc_process) {

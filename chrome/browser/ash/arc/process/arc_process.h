@@ -73,6 +73,10 @@ class ArcProcess {
   // Returns true if this is ARC protected process which we don't allow to kill.
   bool IsArcProtected() const;
 
+  // Returns true if this is key GMS Core or related service which we don't
+  // allow to kill.
+  bool IsGmsCoreProtected() const;
+
   base::ProcessId nspid_;
   base::ProcessId pid_;
   std::string process_name_;
