@@ -77,6 +77,10 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
     NSArray<NSLayoutConstraint*>* turnOffInstructionViewConstraints;
 @property(nonatomic, strong) UINavigationBar* navigationBar;
 @property(nonatomic, strong) UINavigationBarAppearance* defaultAppearance;
+
+// Whether the image is currently being calculated; used to prevent infinite
+// recursions caused by |viewDidLayoutSubviews|.
+@property(nonatomic, assign) BOOL calculatingImageSize;
 @end
 
 @interface PasswordsInOtherAppsViewController () <
@@ -287,10 +291,6 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // Rescale image here as on iPad the view height isn't correctly set during
-  // -viewDidLoad.
-  self.imageView.image = [self createOrUpdateImage:self.imageView.image];
-
   if (self.navigationController &&
       [self.navigationController
           isKindOfClass:[SettingsNavigationController class]]) {
@@ -318,6 +318,20 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
     self.navigationBar.shadowImage = [[UIImage alloc] init];
     self.navigationBar.translucent = YES;
   }
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  // Prevents potential recursive calls to |viewDidLayoutSubviews|.
+  if (self.calculatingImageSize) {
+    return;
+  }
+  // Rescale image here as on iPad the view height isn't correctly set before
+  // subviews are laid out.
+  self.calculatingImageSize = YES;
+  self.imageView.image = [self createOrUpdateImage:self.imageView.image];
+  self.calculatingImageSize = NO;
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
