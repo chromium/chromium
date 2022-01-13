@@ -91,7 +91,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       isDeviceConnected_: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: 'computeIsDeviceConnected_(pageState_)',
+        computed: 'computeIsDeviceConnected_(device_.*)',
       },
 
       /** @private */
@@ -138,10 +138,11 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     super.currentRouteChanged(route, opt_oldRoute);
 
     if (route !== this.route_) {
-      this.deviceId_ = '';
-      this.pageState_ = PageState.DISCONNECTED;
       return;
     }
+
+    this.deviceId_ = '';
+    this.pageState_ = PageState.DISCONNECTED;
 
     const queryParams = Router.getInstance().getQueryParameters();
     const deviceId = queryParams.get('id') || '';
@@ -179,7 +180,11 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @private
    */
   computeIsDeviceConnected_() {
-    return this.pageState_ === PageState.CONNECTED;
+    if (!this.device_) {
+      return false;
+    }
+    return this.device_.deviceProperties.connectionState ===
+        mojom.DeviceConnectionState.kConnected;
   }
 
   /**
@@ -187,9 +192,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @private
    */
   getBluetoothStateIcon_() {
-    return this.pageState_ === PageState.CONNECTED ?
-        'os-settings:bluetooth-connected' :
-        'os-settings:bluetooth-disabled';
+    return this.isDeviceConnected_ ? 'os-settings:bluetooth-connected' :
+                                     'os-settings:bluetooth-disabled';
   }
 
   /**

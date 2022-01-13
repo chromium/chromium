@@ -99,7 +99,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         bluetoothConfig.appendToPairedDeviceList([device1]);
         await flushAsync();
 
-        const params = new URLSearchParams();
+        let params = new URLSearchParams();
         params.append('id', id);
         settings.Router.getInstance().navigateTo(
             settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
@@ -113,8 +113,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         await flushAsync();
         assertTrue(!!getConnectionFailedText());
 
-        settings.Router.getInstance().navigateToPreviousRoute();
-        await windowPopstatePromise;
+        params = new URLSearchParams();
+        params.append('id', id);
+        settings.Router.getInstance().navigateTo(
+            settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+        await flushAsync();
         assertFalse(!!getConnectionFailedText());
       });
 
@@ -183,12 +186,13 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!getChangeMouseSettings());
     assertFalse(!!getChangeKeyboardSettings());
 
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     params.append('id', '12//345&6789');
     settings.Router.getInstance().navigateTo(
         settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
 
     await flushAsync();
+    assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     assertTrue(!!getChangeMouseSettings());
     assertFalse(!!getChangeKeyboardSettings());
     assertEquals(
@@ -211,6 +215,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     settings.Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
 
+    assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     // Check that |#changeMouseSettings| has been focused.
     assertEquals(
         getChangeMouseSettings(),
@@ -218,12 +223,6 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
     device1.deviceProperties.deviceType = mojom.DeviceType.kKeyboard;
     bluetoothConfig.updatePairedDevice(device1);
-    await flushAsync();
-
-    params = new URLSearchParams();
-    params.append('id', '12//345&6789');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
 
     await flushAsync();
     assertFalse(!!getChangeMouseSettings());
@@ -244,6 +243,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     settings.Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
 
+    assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     // Check that |#changeKeyboardSettings| has been focused.
     assertEquals(
         getChangeKeyboardSettings(),
