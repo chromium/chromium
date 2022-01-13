@@ -138,7 +138,7 @@ std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
   arguments.push_back(std::make_unique<base::Value>(function_name));
   auto baked_argument_list = std::make_unique<base::ListValue>();
   for (const auto& arg : test_func_args)
-    baked_argument_list->Append(arg.CreateDeepCopy());
+    baked_argument_list->Append(arg.Clone());
   arguments.push_back(std::move(baked_argument_list));
 
   std::vector<const base::Value*> ptr_vector;
