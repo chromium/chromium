@@ -9072,7 +9072,9 @@
                 "mac",
                 "chromeos",
                 "chromeos_lacros",
-                "linux"
+                "linux",
+                "android",
+                "android_weblayer"
             ],
             "experiments": [
                 {
