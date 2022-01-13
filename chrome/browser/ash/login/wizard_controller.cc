@@ -391,6 +391,10 @@ WizardController::WizardController(WizardContext* wizard_context)
   if (GetOobeUI()) {
     // could be null in unit tests.
     screen_manager_->Init(CreateScreens());
+    // OOBE UI can be recreated in case of CrossOriginOpenerPolicyByDefault.
+    // TODO(crbug.com/1100879): Remove this logic after WebUI split is done,
+    // as screens should work with late binding/early unbinding in that case.
+    oobe_ui_observation_.Observe(GetOobeUI());
   }
 }
 
@@ -458,6 +462,12 @@ void WizardController::Init(OobeScreenId first_screen) {
   }
 
   AdvanceToScreenAfterHIDDetection(first_screen);
+}
+
+void WizardController::OnDestroyingOobeUI() {
+  // Reset screens, they should not access handlers anymore.
+  screen_manager_->Shutdown();
+  oobe_ui_observation_.Reset();
 }
 
 void WizardController::AdvanceToScreenAfterHIDDetection(

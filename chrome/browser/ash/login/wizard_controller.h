@@ -12,11 +12,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
@@ -56,6 +58,7 @@
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -77,7 +80,7 @@ class NetworkStateHelper;
 
 // Class that manages control flow between wizard screens. Wizard controller
 // interacts with screen controllers to move the user between screens.
-class WizardController {
+class WizardController : public OobeUI::Observer {
  public:
   class ScreenObserver : public base::CheckedObserver {
    public:
@@ -96,7 +99,7 @@ class WizardController {
   WizardController(const WizardController&) = delete;
   WizardController& operator=(const WizardController&) = delete;
 
-  ~WizardController();
+  ~WizardController() override;
 
   // Returns the default wizard controller if it has been created. This is a
   // helper for LoginDisplayHost::default_host()->GetWizardController();
@@ -230,6 +233,10 @@ class WizardController {
 
   void AddObserver(ScreenObserver* obs);
   void RemoveObserver(ScreenObserver* obs);
+
+  // OobeUI::Observer
+  void OnCurrentScreenChanged(OobeScreenId, OobeScreenId) override {}
+  void OnDestroyingOobeUI() override;
 
  private:
   // Create BaseScreen instances. These are owned by `screen_manager_`.
@@ -512,6 +519,8 @@ class WizardController {
   base::OnceClosure on_timezone_resolved_for_testing_;
 
   bool is_initialized_ = false;
+
+  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
 
   base::ObserverList<ScreenObserver> screen_observers_;
 

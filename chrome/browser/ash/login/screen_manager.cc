@@ -22,7 +22,7 @@ void ScreenManager::Init(std::vector<std::unique_ptr<BaseScreen>> screens) {
 
 BaseScreen* ScreenManager::GetScreen(OobeScreenId screen) {
   auto iter = screens_.find(screen);
-  DCHECK(iter != screens_.end()) << "Failed to find screen " << screen;
+  CHECK(iter != screens_.end()) << "Failed to find screen " << screen;
   return iter->second.get();
 }
 
@@ -39,6 +39,10 @@ void ScreenManager::SetScreenForTesting(std::unique_ptr<BaseScreen> value) {
 
 void ScreenManager::DeleteScreenForTesting(OobeScreenId screen) {
   screens_[screen] = nullptr;
+}
+
+void ScreenManager::Shutdown() {
+  screens_.clear();
 }
 
 }  // namespace ash
