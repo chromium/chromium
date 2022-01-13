@@ -88,18 +88,10 @@ base::FilePath ResourceBundle::GetLocaleFilePath(
 
 gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Check to see if the image is already in the cache.
-  auto found = images_.find(resource_id);
-  if (found != images_.end()) {
-    if (!found->second.HasRepresentation(gfx::Image::kImageRepCocoa)) {
-      DLOG(WARNING)
-          << "ResourceBundle::GetNativeImageNamed() is returning a"
-          << " cached gfx::Image that isn't backed by an NSImage. The image"
-          << " will be converted, rather than going through the NSImage loader."
-          << " resource_id = " << resource_id;
-    }
+  if (auto found = images_.find(resource_id); found != images_.end())
     return found->second;
-  }
 
   gfx::Image image;
   if (delegate_)
@@ -107,9 +99,9 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
 
   if (image.IsEmpty()) {
     base::scoped_nsobject<NSImage> ns_image;
-    for (size_t i = 0; i < data_packs_.size(); ++i) {
+    for (const auto& data_pack : data_packs_) {
       scoped_refptr<base::RefCountedStaticMemory> data(
-          data_packs_[i]->GetStaticMemory(resource_id));
+          data_pack->GetStaticMemory(resource_id));
       if (!data.get())
         continue;
 
