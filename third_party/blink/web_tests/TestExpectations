@@ -1523,9 +1523,6 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/vertical-rl.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.html [ Skip ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/width-overflow.html [ Failure ]
 
-### Textarea NG
-crbug.com/1140307 accessibility/inline-text-textarea.html [ Failure ]
-
 ### TablesNG
 # crbug.com/958381
 
