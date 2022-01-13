@@ -482,15 +482,6 @@ void CaptureModeController::EnableAudioRecording(bool enable_audio_recording) {
     return;
 
   enable_audio_recording_ = enable_audio_recording;
-
-  // TODO(conniekxu): remove all code below for this function once feature
-  // 'ImprovedScreenCaptureSettings' is fully launched.
-  // Return directly if |kImprovedScreenCaptureSettings| is enabled because for
-  // the new CaptureMode settings we don't have microphone toggle button.
-  if (features::AreImprovedScreenCaptureSettingsEnabled())
-    return;
-  DCHECK(capture_mode_session_);
-  capture_mode_session_->OnMicrophoneChanged(enable_audio_recording_);
 }
 
 void CaptureModeController::Start(CaptureModeEntryType entry_type) {

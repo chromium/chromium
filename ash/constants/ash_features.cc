@@ -779,10 +779,6 @@ const base::Feature kImeStylusHandwriting{"StylusHandwriting",
 const base::Feature kImprovedDesksKeyboardShortcuts{
     "ImprovedDesksKeyboardShortcuts", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disable the improved screen capture settings.
-const base::Feature kImprovedScreenCaptureSettings{
-    "ImprovedScreenCaptureSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1370,10 +1366,6 @@ bool AreDesksTemplatesEnabled() {
 
 bool AreDesksTrackpadSwipeImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kEnableDesksTrackpadSwipeImprovements);
-}
-
-bool AreImprovedScreenCaptureSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kImprovedScreenCaptureSettings);
 }
 
 bool DoWindowsFollowCursor() {

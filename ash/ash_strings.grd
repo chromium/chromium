@@ -4030,9 +4030,6 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS" desc="Tooltip of the settings button.">
         Settings
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_MICROPHONE" desc="The capture label message for toggling microphone recording, found in the settings menu.">
-        Record microphone
-      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT" desc="The label of the audio input menu group header in capture mode settings.">
         Audio input
       </message>

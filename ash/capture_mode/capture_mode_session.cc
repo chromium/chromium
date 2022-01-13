@@ -7,7 +7,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/capture_mode/capture_label_view.h"
-#include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -672,7 +671,6 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
 
   if (!shown) {
     capture_mode_settings_widget_.reset();
-    capture_mode_advanced_settings_view_ = nullptr;
     capture_mode_settings_view_ = nullptr;
     // After closing CaptureMode settings view, show CaptureLabel view if it has
     // been hidden.
@@ -684,26 +682,17 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
   if (!capture_mode_settings_widget_) {
     auto* parent = GetParentContainer(current_root_);
     capture_mode_settings_widget_ = std::make_unique<views::Widget>();
-    if (features::AreImprovedScreenCaptureSettingsEnabled()) {
-      MaybeDismissUserNudgeForever();
+    MaybeDismissUserNudgeForever();
 
-      capture_mode_settings_widget_->Init(CreateWidgetParams(
-          parent,
-          CaptureModeAdvancedSettingsView::GetBounds(capture_mode_bar_view_),
-          "CaptureModeSettingsWidget"));
-      capture_mode_advanced_settings_view_ =
-          capture_mode_settings_widget_->SetContentsView(
-              std::make_unique<CaptureModeAdvancedSettingsView>(
-                  this, is_in_projector_mode_));
-      OnCaptureFolderMayHaveChanged();
-    } else {
-      capture_mode_settings_widget_->Init(CreateWidgetParams(
-          parent, CaptureModeSettingsView::GetBounds(capture_mode_bar_view_),
-          "CaptureModeSettingsWidget"));
-      capture_mode_settings_view_ =
-          capture_mode_settings_widget_->SetContentsView(
-              std::make_unique<CaptureModeSettingsView>(is_in_projector_mode_));
-    }
+    capture_mode_settings_widget_->Init(CreateWidgetParams(
+        parent, CaptureModeSettingsView::GetBounds(capture_mode_bar_view_),
+        "CaptureModeSettingsWidget"));
+    capture_mode_settings_view_ =
+        capture_mode_settings_widget_->SetContentsView(
+            std::make_unique<CaptureModeSettingsView>(this,
+                                                      is_in_projector_mode_));
+    OnCaptureFolderMayHaveChanged();
+
     parent->layer()->StackAtTop(capture_mode_settings_widget_->GetLayer());
     focus_cycler_->OnSettingsMenuWidgetCreated();
 
@@ -718,11 +707,6 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SETTINGS_A11Y_TITLE));
     capture_mode_settings_widget_->Show();
   }
-}
-
-void CaptureModeSession::OnMicrophoneChanged(bool microphone_enabled) {
-  DCHECK(capture_mode_settings_view_);
-  capture_mode_settings_view_->OnMicrophoneChanged(microphone_enabled);
 }
 
 void CaptureModeSession::ReportSessionHistograms() {
@@ -794,20 +778,18 @@ void CaptureModeSession::OnCaptureFolderMayHaveChanged() {
   if (!capture_mode_settings_widget_)
     return;
 
-  DCHECK(capture_mode_advanced_settings_view_);
-  capture_mode_advanced_settings_view_->OnCaptureFolderMayHaveChanged();
-  capture_mode_settings_widget_->SetBounds(
-      CaptureModeAdvancedSettingsView::GetBounds(
-          capture_mode_bar_view_, capture_mode_advanced_settings_view_));
+  DCHECK(capture_mode_settings_view_);
+  capture_mode_settings_view_->OnCaptureFolderMayHaveChanged();
+  capture_mode_settings_widget_->SetBounds(CaptureModeSettingsView::GetBounds(
+      capture_mode_bar_view_, capture_mode_settings_view_));
 }
 
 void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
   if (!capture_mode_settings_widget_)
     return;
 
-  DCHECK(capture_mode_advanced_settings_view_);
-  capture_mode_advanced_settings_view_
-      ->OnDefaultCaptureFolderSelectionChanged();
+  DCHECK(capture_mode_settings_view_);
+  capture_mode_settings_view_->OnDefaultCaptureFolderSelectionChanged();
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
@@ -1166,9 +1148,6 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
 
 void CaptureModeSession::MaybeCreateUserNudge() {
   user_nudge_controller_.reset();
-
-  if (!features::AreImprovedScreenCaptureSettingsEnabled())
-    return;
 
   if (is_in_projector_mode_)
     return;

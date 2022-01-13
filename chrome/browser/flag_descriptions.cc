@@ -4857,11 +4857,6 @@ const char kLimitShelfItemsToActiveDeskDescription[] =
     "Limits items on the shelf to the ones associated with windows on the "
     "active desk";
 
-const char kImprovedScreenCaptureSettingsName[] =
-    "Advanced screen capture settings";
-const char kImprovedScreenCaptureSettingsDescription[] =
-    "Enable the advanced settings view for screen capture mode";
-
 const char kListAllDisplayModesName[] = "List all display modes";
 const char kListAllDisplayModesDescription[] =
     "Enables listing all external displays' modes in the display settings.";

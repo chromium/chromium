@@ -32,7 +32,6 @@ class Canvas;
 
 namespace ash {
 
-class CaptureModeAdvancedSettingsView;
 class CaptureModeBarView;
 class CaptureModeController;
 class CaptureModeSessionFocusCycler;
@@ -123,9 +122,6 @@ class ASH_EXPORT CaptureModeSession
   // Called when the settings menu is toggled.
   void SetSettingsMenuShown(bool shown);
 
-  // Called when the record microphone setting is toggled.
-  void OnMicrophoneChanged(bool microphone_enabled);
-
   // Called when the user performs a capture. Records histograms related to this
   // session.
   void ReportSessionHistograms();
@@ -186,7 +182,7 @@ class ASH_EXPORT CaptureModeSession
   void HighlightWindowForTab(aura::Window* window);
 
  private:
-  friend class CaptureModeAdvancedSettingsTestApi;
+  friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
   friend class CaptureModeTestApi;
@@ -473,12 +469,6 @@ class ASH_EXPORT CaptureModeSession
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
-
-  // This is guarded by the |ImprovedScreenCaptureSettings| feature flag.
-  // TODO(conniekxu): remove it when the work of capture mode new settings
-  // is done.
-  CaptureModeAdvancedSettingsView* capture_mode_advanced_settings_view_ =
-      nullptr;
 
   // This helps indicating whether located events should be handled by the
   // capture mode settings menu view or the capture mode Pre-EventHandler. When

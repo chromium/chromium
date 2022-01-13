@@ -415,15 +415,11 @@ IN_PROC_BROWSER_TEST_F(
   loop.Run();
 }
 
-class AdvancedSettingsCaptureModeBrowserTest
-    : public extensions::ExtensionBrowserTest {
+class CaptureModeSettingsBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  AdvancedSettingsCaptureModeBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kImprovedScreenCaptureSettings);
-  }
+  CaptureModeSettingsBrowserTest() {}
 
-  ~AdvancedSettingsCaptureModeBrowserTest() override = default;
+  ~CaptureModeSettingsBrowserTest() override = default;
 
   // extensions::ExtensionBrowserTest:
   void SetUpOnMainThread() override {
@@ -438,7 +434,7 @@ class AdvancedSettingsCaptureModeBrowserTest
 
 // Tests that the capture mode folder selection dialog window gets parented
 // correctly when a browser window is available.
-IN_PROC_BROWSER_TEST_F(AdvancedSettingsCaptureModeBrowserTest,
+IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
                        FolderSelectionDialogParentedCorrectly) {
   ASSERT_TRUE(browser());
   ash::CaptureModeTestApi test_api;

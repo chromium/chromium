@@ -2784,9 +2784,6 @@ extern const char kLacrosSupportDescription[];
 extern const char kLimitShelfItemsToActiveDeskName[];
 extern const char kLimitShelfItemsToActiveDeskDescription[];
 
-extern const char kImprovedScreenCaptureSettingsName[];
-extern const char kImprovedScreenCaptureSettingsDescription[];
-
 extern const char kListAllDisplayModesName[];
 extern const char kListAllDisplayModesDescription[];
 

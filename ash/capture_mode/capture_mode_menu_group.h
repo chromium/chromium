@@ -94,7 +94,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   std::u16string GetOptionLabelForTesting(int option_id) const;
 
  private:
-  friend class CaptureModeAdvancedSettingsTestApi;
+  friend class CaptureModeSettingsTestApi;
 
   // Returns the option whose ID is |option_id|, and nullptr if no such option
   // exists.
@@ -104,7 +104,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // clicked/pressed button, and unselect any previously selected button.
   void HandleOptionClick(int option_id);
 
-  // CaptureModeAdvancedSettingsView is the |delegate_| here. It's owned by
+  // CaptureModeSettingsView is the |delegate_| here. It's owned by
   // its views hierarchy.
   const Delegate* const delegate_;
 

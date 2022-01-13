@@ -9,12 +9,10 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/capture_mode/capture_label_view.h"
-#include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/capture_mode/capture_mode_settings_entry_view.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
@@ -464,17 +462,10 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     }
     case FocusGroup::kSettingsMenu: {
-      if (features::AreImprovedScreenCaptureSettingsEnabled()) {
-        CaptureModeAdvancedSettingsView* advanced_settings_view =
-            session_->capture_mode_advanced_settings_view_;
-        DCHECK(advanced_settings_view);
-        items = advanced_settings_view->GetHighlightableItems();
-      } else {
-        CaptureModeSettingsView* settings_view =
-            session_->capture_mode_settings_view_;
-        DCHECK(settings_view);
-        items = {settings_view->microphone_view()};
-      }
+      CaptureModeSettingsView* settings_view =
+          session_->capture_mode_settings_view_;
+      DCHECK(settings_view);
+      items = settings_view->GetHighlightableItems();
       break;
     }
   }
