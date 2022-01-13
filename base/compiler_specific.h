@@ -240,9 +240,6 @@
 #define HAS_FEATURE(FEATURE) 0
 #endif
 
-// Macro for telling -Wimplicit-fallthrough that a fallthrough is intentional.
-#define FALLTHROUGH [[fallthrough]]
-
 #if defined(COMPILER_GCC)
 #define PRETTY_FUNCTION __PRETTY_FUNCTION__
 #elif defined(COMPILER_MSVC)
