@@ -109,8 +109,19 @@
 }
 
 - (void)webViewDidClose:(WKWebView*)webView {
-  if (self.webStateImpl && self.webStateImpl->HasOpener())
-    self.webStateImpl->CloseWebState();
+  if (self.webStateImpl && self.webStateImpl->HasOpener()) {
+    __weak __typeof(self) weakSelf = self;
+    // -webViewDidClose will typically trigger another webState to activate,
+    // which may in turn also close. To prevent reentrant modificationre in
+    // WebStateList, trigger a PostTask here.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
+          if (webStateImpl) {
+            webStateImpl->CloseWebState();
+          }
+        }));
+  }
 }
 
 - (void)webView:(WKWebView*)webView
