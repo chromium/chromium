@@ -32,10 +32,10 @@ bool IsSessionRestoreInProgress(SyncSessionsClient* sessions_client) {
   DCHECK(sessions_client);
   SyncedWindowDelegatesGetter* synced_window_getter =
       sessions_client->GetSyncedWindowDelegatesGetter();
-  SyncedWindowDelegatesGetter::SyncedWindowDelegateMap windows =
+  SyncedWindowDelegatesGetter::SyncedWindowDelegateMap window_delegates =
       synced_window_getter->GetSyncedWindowDelegates();
-  for (const auto& window_iter_pair : windows) {
-    if (window_iter_pair.second->IsSessionRestoreInProgress()) {
+  for (const auto& [window_id, window_delegate] : window_delegates) {
+    if (window_delegate->IsSessionRestoreInProgress()) {
       return true;
     }
   }
@@ -55,9 +55,8 @@ bool IsWindowSyncable(const SyncedWindowDelegate& window_delegate) {
 // tabs are currently open. This means that there is tab data that will be
 // restored later, but we cannot access it.
 bool ScanForTabbedWindow(SyncedWindowDelegatesGetter* delegates_getter) {
-  for (const auto& window_iter_pair :
+  for (const auto& [window_id, window_delegate] :
        delegates_getter->GetSyncedWindowDelegates()) {
-    const SyncedWindowDelegate* window_delegate = window_iter_pair.second;
     if (window_delegate->IsTypeNormal() && IsWindowSyncable(*window_delegate)) {
       return true;
     }
@@ -150,7 +149,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
   SyncedSession* current_session =
       session_tracker_->GetSession(current_session_tag_);
 
-  SyncedWindowDelegatesGetter::SyncedWindowDelegateMap windows =
+  SyncedWindowDelegatesGetter::SyncedWindowDelegateMap window_delegates =
       sessions_client_->GetSyncedWindowDelegatesGetter()
           ->GetSyncedWindowDelegates();
 
@@ -168,8 +167,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
              << " windows from previous session.";
   }
 
-  for (auto& window_iter_pair : windows) {
-    const SyncedWindowDelegate* window_delegate = window_iter_pair.second;
+  for (auto& [unused, window_delegate] : window_delegates) {
     // Make sure the window is viewable and is not about to be closed. The
     // viewable window check is necessary because, for example, when a browser
     // is closed the destructor is not necessarily run immediately. This means
@@ -184,6 +182,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
       continue;
     }
 
+    // TODO(crbug.com/1286934): Can we use the `unused` variable above instead?
     SessionID window_id = window_delegate->GetSessionId();
     DVLOG(1) << "Associating window " << window_id.id() << " with "
              << window_delegate->GetTabCount() << " tabs.";

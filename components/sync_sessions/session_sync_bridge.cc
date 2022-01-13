@@ -440,10 +440,9 @@ void SessionSyncBridge::ResubmitLocalSession() {
       CreateSessionStoreWriteBatch();
   std::unique_ptr<syncer::DataBatch> read_batch = store_->GetAllSessionData();
   while (read_batch->HasNext()) {
-    syncer::KeyAndData key_and_data = read_batch->Next();
-    if (store_->StorageKeyMatchesLocalSession(key_and_data.first)) {
-      change_processor()->Put(key_and_data.first,
-                              std::move(key_and_data.second),
+    auto [key, data] = read_batch->Next();
+    if (store_->StorageKeyMatchesLocalSession(key)) {
+      change_processor()->Put(key, std::move(data),
                               write_batch->GetMetadataChangeList());
     }
   }

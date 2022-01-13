@@ -343,8 +343,8 @@ std::map<std::string, sync_pb::EntitySpecifics> DataBatchToSpecificsMap(
     std::unique_ptr<DataBatch> batch) {
   std::map<std::string, sync_pb::EntitySpecifics> storage_key_to_specifics;
   while (batch && batch->HasNext()) {
-    const syncer::KeyAndData& pair = batch->Next();
-    storage_key_to_specifics[pair.first] = pair.second->specifics;
+    const auto& [key, data] = batch->Next();
+    storage_key_to_specifics[key] = data->specifics;
   }
   return storage_key_to_specifics;
 }

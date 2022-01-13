@@ -95,9 +95,9 @@ class SyncedSessionTrackerTest : public testing::Test {
     // Now traverse the SyncedSession tree to verify the mapped tabs all match
     // up.
     int mapped_tab_count = 0;
-    for (auto& window_pair : session->synced_session.windows) {
-      mapped_tab_count += window_pair.second->wrapped_window.tabs.size();
-      for (auto& tab : window_pair.second->wrapped_window.tabs) {
+    for (auto& [window_id, window] : session->synced_session.windows) {
+      mapped_tab_count += window->wrapped_window.tabs.size();
+      for (auto& tab : window->wrapped_window.tabs) {
         const auto tab_map_it = session->synced_tab_map.find(tab->tab_id);
         if (tab_map_it == session->synced_tab_map.end()) {
           return AssertionFailure() << "Tab ID " << tab->tab_id.id()
@@ -113,21 +113,19 @@ class SyncedSessionTrackerTest : public testing::Test {
 
     // Wrap up by verifying all unmapped tabs are tracked.
     int unmapped_tab_count = session->unmapped_tabs.size();
-    for (const auto& tab_pair : session->unmapped_tabs) {
-      if (tab_pair.first != tab_pair.second->tab_id) {
-        return AssertionFailure()
-               << "Unmapped tab " << tab_pair.second->tab_id.id()
-               << " associated with wrong tab " << tab_pair.first;
+    for (const auto& [id, tab] : session->unmapped_tabs) {
+      if (id != tab->tab_id) {
+        return AssertionFailure() << "Unmapped tab " << tab->tab_id.id()
+                                  << " associated with wrong tab " << id;
       }
-      const auto tab_map_it =
-          session->synced_tab_map.find(tab_pair.second->tab_id);
+      const auto tab_map_it = session->synced_tab_map.find(tab->tab_id);
       if (tab_map_it == session->synced_tab_map.end()) {
-        return AssertionFailure() << "Unmapped tab " << tab_pair.second->tab_id
+        return AssertionFailure() << "Unmapped tab " << tab->tab_id
                                   << " has no corresponding synced tab entry";
       }
-      if (tab_map_it->second != tab_pair.second.get()) {
+      if (tab_map_it->second != tab.get()) {
         return AssertionFailure()
-               << "Unmapped tab " << tab_pair.second->tab_id.id()
+               << "Unmapped tab " << tab->tab_id.id()
                << " does not match synced tab map " << tab_map_it->second;
       }
     }

@@ -275,11 +275,9 @@ void DeduplicateValidUpdatesByGUID(
                      base::GUIDHash>
       guid_to_update;
 
-  for (auto& parent_guid_and_updates : *updates_per_parent_guid) {
-    std::list<UpdateResponseData>* updates = &parent_guid_and_updates.second;
-
-    auto updates_iter = updates->begin();
-    while (updates_iter != updates->end()) {
+  for (auto& [parent_guid, updates] : *updates_per_parent_guid) {
+    auto updates_iter = updates.begin();
+    while (updates_iter != updates.end()) {
       const UpdateResponseData& update = *updates_iter;
       DCHECK(!update.entity.is_deleted());
       DCHECK(update.entity.server_defined_unique_tag.empty());
@@ -308,11 +306,11 @@ void DeduplicateValidUpdatesByGUID(
 
       if (CompareDuplicateUpdates(/*next_update=*/update,
                                   /*previous_update=*/duplicate_update)) {
-        updates->erase(it_and_success.first->second);
+        updates.erase(it_and_success.first->second);
         guid_to_update[guid_in_specifics] = updates_iter;
         ++updates_iter;
       } else {
-        updates_iter = updates->erase(updates_iter);
+        updates_iter = updates.erase(updates_iter);
       }
     }
   }
@@ -544,9 +542,8 @@ BookmarkModelMerger::BookmarkModelMerger(
   DCHECK(favicon_service);
 
   int num_updates_in_forest = 0;
-  for (const auto& tree_tag_and_root : remote_forest_) {
-    num_updates_in_forest +=
-        1 + CountRemoteTreeNodeDescendantsForUma(tree_tag_and_root.second);
+  for (const auto& [server_defined_unique_tag, root] : remote_forest_) {
+    num_updates_in_forest += 1 + CountRemoteTreeNodeDescendantsForUma(root);
   }
   base::UmaHistogramCounts100000(
       "Sync.BookmarkModelMerger.ReachableInputUpdates", num_updates_in_forest);
@@ -576,9 +573,7 @@ void BookmarkModelMerger::Merge() {
   // to perform the primary match. If there are multiple match candidates it
   // selects the first one.
   // Associate permanent folders.
-  for (const auto& tree_tag_and_root : remote_forest_) {
-    const std::string& server_defined_unique_tag = tree_tag_and_root.first;
-
+  for (const auto& [server_defined_unique_tag, root] : remote_forest_) {
     DCHECK(!server_defined_unique_tag.empty());
 
     const bookmarks::BookmarkNode* permanent_folder =
@@ -599,7 +594,7 @@ void BookmarkModelMerger::Merge() {
               GetPermanentFolderGUIDForServerDefinedUniqueTag(
                   server_defined_unique_tag));
     MergeSubtree(/*local_subtree_root=*/permanent_folder,
-                 /*remote_node=*/tree_tag_and_root.second);
+                 /*remote_node=*/root);
   }
 
   if (base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks)) {
@@ -646,9 +641,9 @@ BookmarkModelMerger::RemoteForest BookmarkModelMerger::BuildRemoteForest(
 
   // All remaining entries in |updates_per_parent_guid| must be unreachable from
   // permanent entities, since otherwise they would have been moved away.
-  for (const auto& parent_guid_and_updates :
+  for (const auto& [parent_guid, updates] :
        grouped_updates.updates_per_parent_guid) {
-    for (const UpdateResponseData& update : parent_guid_and_updates.second) {
+    for (const UpdateResponseData& update : updates) {
       if (update.entity.specifics.has_bookmark()) {
         LogProblematicBookmark(RemoteBookmarkUpdateError::kMissingParentEntity);
         tracker_for_recording_ignored_updates
@@ -683,9 +678,8 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
   // Build a temporary lookup table for remote GUIDs.
   std::unordered_map<base::GUID, const RemoteTreeNode*, base::GUIDHash>
       guid_to_remote_node_map;
-  for (const auto& tree_tag_and_root : remote_forest) {
-    tree_tag_and_root.second.EmplaceSelfAndDescendantsByGUID(
-        &guid_to_remote_node_map);
+  for (const auto& [server_defined_unique_tag, root] : remote_forest) {
+    root.EmplaceSelfAndDescendantsByGUID(&guid_to_remote_node_map);
   }
 
   // Iterate through all local bookmarks to find matches by GUID.

@@ -493,8 +493,8 @@ void DeviceInfoSyncBridge::GetData(StorageKeyList storage_keys,
 
 void DeviceInfoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto batch = std::make_unique<MutableDataBatch>();
-  for (const auto& kv : all_data_) {
-    batch->Put(kv.first, CopyToEntityData(*kv.second));
+  for (const auto& [cache_guid, specifics] : all_data_) {
+    batch->Put(cache_guid, CopyToEntityData(*specifics));
   }
   std::move(callback).Run(std::move(batch));
 }
@@ -556,9 +556,9 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
 std::vector<std::unique_ptr<DeviceInfo>>
 DeviceInfoSyncBridge::GetAllDeviceInfo() const {
   std::vector<std::unique_ptr<DeviceInfo>> list;
-  for (const auto& id_and_specifics : all_data_) {
-    if (IsChromeClient(*id_and_specifics.second)) {
-      list.push_back(SpecificsToModel(*id_and_specifics.second));
+  for (const auto& [cache_guid, specifics] : all_data_) {
+    if (IsChromeClient(*specifics)) {
+      list.push_back(SpecificsToModel(*specifics));
     }
   }
   return list;
@@ -856,36 +856,36 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
   std::map<sync_pb::SyncEnums_DeviceType, std::multimap<base::Time, int>>
       relevant_events;
 
-  for (const auto& pair : all_data_) {
-    if (!IsChromeClient(*pair.second)) {
+  for (const auto& [cache_guid, specifics] : all_data_) {
+    if (!IsChromeClient(*specifics)) {
       continue;
     }
 
-    if (DeviceInfoUtil::IsActive(GetLastUpdateTime(*pair.second), now)) {
-      base::Time begin = change_processor()->GetEntityCreationTime(pair.first);
+    if (DeviceInfoUtil::IsActive(GetLastUpdateTime(*specifics), now)) {
+      base::Time begin = change_processor()->GetEntityCreationTime(cache_guid);
       base::Time end =
-          change_processor()->GetEntityModificationTime(pair.first);
+          change_processor()->GetEntityModificationTime(cache_guid);
       // Begin/end timestamps are received from other devices without local
       // sanitizing, so potentially the timestamps could be malformed, and the
       // modification time may predate the creation time.
       if (begin > end) {
         continue;
       }
-      relevant_events[pair.second->device_type()].emplace(begin, 1);
-      relevant_events[pair.second->device_type()].emplace(end, -1);
+      relevant_events[specifics->device_type()].emplace(begin, 1);
+      relevant_events[specifics->device_type()].emplace(end, -1);
     }
   }
 
   std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type;
-  for (const auto& type_and_events : relevant_events) {
+  for (const auto& [type, events] : relevant_events) {
     int max_overlapping = 0;
     int overlapping = 0;
-    for (const auto& event : type_and_events.second) {
-      overlapping += event.second;
+    for (const auto& [time, value] : events) {
+      overlapping += value;
       DCHECK_LE(0, overlapping);
       max_overlapping = std::max(max_overlapping, overlapping);
     }
-    device_count_by_type[type_and_events.first] = max_overlapping;
+    device_count_by_type[type] = max_overlapping;
     DCHECK_EQ(overlapping, 0);
   }
 
@@ -898,10 +898,9 @@ void DeviceInfoSyncBridge::ExpireOldEntries() {
   std::unordered_set<std::string> cache_guids_to_expire;
   // Just collecting cache guids to expire to avoid modifying |all_data_| via
   // DeleteSpecifics() while iterating over it.
-  for (const auto& pair : all_data_) {
-    const std::string& cache_guid = pair.first;
+  for (const auto& [cache_guid, specifics] : all_data_) {
     if (cache_guid != local_cache_guid_ &&
-        GetLastUpdateTime(*pair.second) < expiration_threshold) {
+        GetLastUpdateTime(*specifics) < expiration_threshold) {
       cache_guids_to_expire.insert(cache_guid);
     }
   }

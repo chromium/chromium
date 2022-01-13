@@ -191,7 +191,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
 
   // SyncedWindowDelegatesGetter overrides.
   SyncedWindowDelegateMap GetSyncedWindowDelegates() override;
-  const SyncedWindowDelegate* FindById(SessionID id) override;
+  const SyncedWindowDelegate* FindById(SessionID session_id) override;
 
  private:
   class DummyRouter : public LocalSessionEventRouter {

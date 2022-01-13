@@ -465,11 +465,10 @@ BookmarkRemoteUpdatesHandler::ReorderValidUpdates(
   std::set<base::GUID> roots;
   std::unordered_map<base::GUID, std::vector<base::GUID>, base::GUIDHash>
       parent_to_children;
-  for (const auto& pair : guid_to_updates) {
-    const syncer::EntityData& update_entity = pair.second->entity;
-    base::GUID parent_guid = GetParentGUIDInUpdate(update_entity);
+  for (const auto& [guid, update] : guid_to_updates) {
+    base::GUID parent_guid = GetParentGUIDInUpdate(update->entity);
     base::GUID child_guid =
-        base::GUID::ParseLowercase(update_entity.specifics.bookmark().guid());
+        base::GUID::ParseLowercase(update->entity.specifics.bookmark().guid());
     DCHECK(child_guid.is_valid());
 
     parent_to_children[parent_guid].emplace_back(std::move(child_guid));

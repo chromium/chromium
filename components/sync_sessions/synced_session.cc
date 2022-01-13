@@ -353,9 +353,9 @@ SyncedSession::~SyncedSession() = default;
 
 sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
   sync_pb::SessionHeader header;
-  for (const auto& window_pair : windows) {
+  for (const auto& [window_id, window] : windows) {
     sync_pb::SessionWindow* w = header.add_window();
-    w->CopyFrom(window_pair.second->ToSessionWindowProto());
+    w->CopyFrom(window->ToSessionWindowProto());
   }
   header.set_client_name(session_name);
   header.set_device_type(device_type);

@@ -342,6 +342,8 @@ base::Value PrefModelAssociator::MergeDictionaryValues(
   base::Value result = to_value.Clone();
 
   for (auto it : from_value.DictItems()) {
+    // It's not clear whether using a C++17 structured binding here would cause
+    // a copy of the value or not, so in doubt unpack the old way.
     const base::Value* from_key_value = &it.second;
     base::Value* to_key_value = result.FindKey(it.first);
     if (to_key_value) {

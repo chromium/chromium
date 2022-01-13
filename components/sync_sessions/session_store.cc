@@ -421,10 +421,7 @@ SessionStore::SessionStore(
 
   bool found_local_header = false;
 
-  for (auto& storage_key_and_specifics : initial_data) {
-    const std::string& storage_key = storage_key_and_specifics.first;
-    SessionSpecifics& specifics = storage_key_and_specifics.second;
-
+  for (auto& [storage_key, specifics] : initial_data) {
     // The store should not contain invalid data, but as a precaution we filter
     // out anyway in case the persisted data is corrupted.
     if (!AreValidSpecifics(specifics)) {

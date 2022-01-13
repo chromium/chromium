@@ -427,10 +427,10 @@ TestSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
 }
 
 const SyncedWindowDelegate* TestSyncedWindowDelegatesGetter::FindById(
-    SessionID id) {
-  for (auto window_iter_pair : delegates_) {
-    if (window_iter_pair.second->GetSessionId() == id)
-      return window_iter_pair.second;
+    SessionID session_id) {
+  for (const auto& [window_id, delegate] : delegates_) {
+    if (delegate->GetSessionId() == session_id)
+      return delegate;
   }
   return nullptr;
 }

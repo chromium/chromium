@@ -73,11 +73,11 @@ sync_pb::SessionSpecifics MakeSessionHeaderSpecifics(
     const std::map<int, std::vector<int>>& window_id_to_tabs) {
   sync_pb::SessionSpecifics session_header;
   session_header.set_session_tag(kSessionTag);
-  for (const auto& window_and_tabs : window_id_to_tabs) {
+  for (const auto& [window_id, tabs] : window_id_to_tabs) {
     sync_pb::SessionWindow* mutable_window =
         session_header.mutable_header()->add_window();
-    mutable_window->set_window_id(window_and_tabs.first);
-    for (int tab_id : window_and_tabs.second) {
+    mutable_window->set_window_id(window_id);
+    for (int tab_id : tabs) {
       mutable_window->add_tab(tab_id);
     }
   }

@@ -398,20 +398,19 @@ SyncedBookmarkTracker::BuildBookmarkModelMetadata() const {
         *max_version_among_ignored_updates_due_to_missing_parent_);
   }
 
-  for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
-       sync_id_to_entities_map_) {
-    DCHECK(pair.second) << " for ID " << pair.first;
-    DCHECK(pair.second->metadata()) << " for ID " << pair.first;
-    if (pair.second->metadata()->is_deleted()) {
+  for (const auto& [sync_id, entity] : sync_id_to_entities_map_) {
+    DCHECK(entity) << " for ID " << sync_id;
+    DCHECK(entity->metadata()) << " for ID " << sync_id;
+    if (entity->metadata()->is_deleted()) {
       // Deletions will be added later because they need to maintain the same
       // order as in |ordered_local_tombstones_|.
       continue;
     }
-    DCHECK(pair.second->bookmark_node());
+    DCHECK(entity->bookmark_node());
     sync_pb::BookmarkMetadata* bookmark_metadata =
         model_metadata.add_bookmarks_metadata();
-    bookmark_metadata->set_id(pair.second->bookmark_node()->id());
-    *bookmark_metadata->mutable_metadata() = *pair.second->metadata();
+    bookmark_metadata->set_id(entity->bookmark_node()->id());
+    *bookmark_metadata->mutable_metadata() = *entity->metadata();
   }
   // Add pending deletions.
   for (const Entity* tombstone_entity : ordered_local_tombstones_) {
@@ -427,9 +426,7 @@ SyncedBookmarkTracker::BuildBookmarkModelMetadata() const {
 }
 
 bool SyncedBookmarkTracker::HasLocalChanges() const {
-  for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
-       sync_id_to_entities_map_) {
-    Entity* entity = pair.second.get();
+  for (const auto& [sync_id, entity] : sync_id_to_entities_map_) {
     if (entity->IsUnsynced()) {
       return true;
     }
@@ -440,9 +437,8 @@ bool SyncedBookmarkTracker::HasLocalChanges() const {
 std::vector<const SyncedBookmarkTracker::Entity*>
 SyncedBookmarkTracker::GetAllEntities() const {
   std::vector<const SyncedBookmarkTracker::Entity*> entities;
-  for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
-       sync_id_to_entities_map_) {
-    entities.push_back(pair.second.get());
+  for (const auto& [sync_id, entity] : sync_id_to_entities_map_) {
+    entities.push_back(entity.get());
   }
   return entities;
 }
@@ -452,16 +448,14 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges(size_t max_entries) const {
   std::vector<const SyncedBookmarkTracker::Entity*> entities_with_local_changes;
   // Entities with local non deletions should be sorted such that parent
   // creation/update comes before child creation/update.
-  for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
-       sync_id_to_entities_map_) {
-    Entity* entity = pair.second.get();
+  for (const auto& [sync_id, entity] : sync_id_to_entities_map_) {
     if (entity->metadata()->is_deleted()) {
       // Deletions are stored sorted in |ordered_local_tombstones_| and will be
       // added later.
       continue;
     }
     if (entity->IsUnsynced()) {
-      entities_with_local_changes.push_back(entity);
+      entities_with_local_changes.push_back(entity.get());
     }
   }
   std::vector<const SyncedBookmarkTracker::Entity*> ordered_local_changes =
@@ -689,16 +683,14 @@ bool SyncedBookmarkTracker::ReuploadBookmarksOnLoadIfNeeded() {
       !base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks)) {
     return false;
   }
-  for (const auto& sync_id_and_entity : sync_id_to_entities_map_) {
-    const SyncedBookmarkTracker::Entity* entity =
-        sync_id_and_entity.second.get();
+  for (const auto& [sync_id, entity] : sync_id_to_entities_map_) {
     if (entity->IsUnsynced() || entity->metadata()->is_deleted()) {
       continue;
     }
     if (entity->bookmark_node()->is_permanent_node()) {
       continue;
     }
-    IncrementSequenceNumber(entity);
+    IncrementSequenceNumber(entity.get());
   }
   SetBookmarksReuploaded();
   return true;
