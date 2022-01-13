@@ -142,7 +142,8 @@ export class FirmwareUpdateDialogElement extends
 
     this.installController_.addObserver(
         this.updateProgressObserverReceiver_.$.bindNewPipeAndPassRemote());
-    this.installController_.beginUpdate();
+    this.installController_.beginUpdate(
+        this.update.deviceId, this.update.filepath);
   }
 
   /**

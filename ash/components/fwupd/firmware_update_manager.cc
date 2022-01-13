@@ -18,6 +18,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -83,10 +84,8 @@ const char kCachePath[] = "cache";
 const char kCabFileExtension[] = ".cab";
 const char kFirmwareMirrorPrefix[] =
     "https://storage.googleapis.com/chromeos-localmirror/lvfs/";
-
-const char kSampleFirmwareUpgrade[] =
-    "c15a0df7386812781d1f376fe54729e64f69b2a8a6c4b580914d4f6740e4fcc3-HP-USBC_"
-    "DOCK_G5-V1.0.13.0.cab";
+const char kAllowedFilepathChars[] =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-._";
 
 FirmwareUpdateManager* g_instance = nullptr;
 
@@ -99,12 +98,6 @@ base::ScopedFD OpenFileAndGetFileDescriptor(base::FilePath download_path) {
   }
 
   return base::ScopedFD(dest_file.TakePlatformFile());
-}
-
-// TODO(jimmyxgong): Stub function, implement when firmware version ID is
-// available.
-std::string GetFilenameFromDevice(const std::string& device_id, int release) {
-  return device_id + std::string(kCabFileExtension);
 }
 
 bool CreateDirIfNotExists(const base::FilePath& path) {
@@ -191,6 +184,17 @@ firmware_update::mojom::UpdateState GetUpdateState(FwupdStatus fwupd_status) {
   }
 }
 
+bool IsValidFirmwarePatchFile(const base::FilePath& filepath) {
+  // Check if the extension is .cab.
+  std::string extension = filepath.Extension();
+  if (extension != kCabFileExtension) {
+    return false;
+  }
+
+  // Check for invalid characters in filepath.
+  return base::ContainsOnlyChars(filepath.value(), kAllowedFilepathChars);
+}
+
 }  // namespace
 
 FirmwareUpdateManager::FirmwareUpdateManager()
@@ -271,7 +275,7 @@ void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
 // file. This needs to update to fetch the update file from a server and
 // download it to the local cache.
 void FirmwareUpdateManager::StartInstall(const std::string& device_id,
-                                         int release,
+                                         const base::FilePath& filepath,
                                          base::OnceCallback<void()> callback) {
   base::FilePath root_dir;
   CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
@@ -282,7 +286,7 @@ void FirmwareUpdateManager::StartInstall(const std::string& device_id,
   base::OnceClosure dir_created_callback =
       base::BindOnce(&FirmwareUpdateManager::CreateLocalPatchFile,
                      weak_ptr_factory_.GetWeakPtr(), cache_path, device_id,
-                     release, std::move(callback));
+                     filepath, std::move(callback));
 
   task_runner_->PostTaskAndReply(
       FROM_HERE,
@@ -300,10 +304,9 @@ void FirmwareUpdateManager::StartInstall(const std::string& device_id,
 void FirmwareUpdateManager::CreateLocalPatchFile(
     const base::FilePath& cache_path,
     const std::string& device_id,
-    int release,
+    const base::FilePath& filepath,
     base::OnceCallback<void()> callback) {
-  const base::FilePath patch_path =
-      cache_path.Append(GetFilenameFromDevice(device_id, release));
+  const base::FilePath patch_path = cache_path.Append(filepath.value());
 
   // Create the patch file.
   task_runner_->PostTaskAndReplyWithResult(
@@ -323,19 +326,19 @@ void FirmwareUpdateManager::CreateLocalPatchFile(
           patch_path),
       base::BindOnce(&FirmwareUpdateManager::DownloadFileToInternal,
                      weak_ptr_factory_.GetWeakPtr(), patch_path, device_id,
-                     std::move(callback)));
+                     filepath, std::move(callback)));
 }
 
 void FirmwareUpdateManager::DownloadFileToInternal(
     const base::FilePath& patch_path,
     const std::string& device_id,
+    const base::FilePath& filepath,
     base::OnceCallback<void()> callback,
     bool write_file_success) {
   if (!write_file_success) {
     return;
   }
-  const std::string url =
-      std::string(kFirmwareMirrorPrefix) + std::string(kSampleFirmwareUpgrade);
+  const std::string url = std::string(kFirmwareMirrorPrefix) + filepath.value();
   GURL download_url(fake_url_for_testing_.empty() ? url
                                                   : fake_url_for_testing_);
 
@@ -482,11 +485,17 @@ void FirmwareUpdateManager::OnPropertiesChangedResponse(
           percentage, GetUpdateState(status)));
 }
 
-void FirmwareUpdateManager::BeginUpdate() {
+void FirmwareUpdateManager::BeginUpdate(const std::string& device_id,
+                                        const base::FilePath& filepath) {
   DCHECK(!inflight_update_id_.empty());
-  // TODO(michaelcheco): Update |StartInstall| to accept the filename.
-  StartInstall(inflight_update_id_, /**release=*/0,
-               /**callback=*/base::DoNothing());
+  DCHECK(inflight_update_id_ == device_id);
+  DCHECK(!filepath.empty());
+
+  if (!IsValidFirmwarePatchFile(filepath)) {
+    return;
+  }
+
+  StartInstall(device_id, filepath, /**callback=*/base::DoNothing());
 }
 
 void FirmwareUpdateManager::AddObserver(

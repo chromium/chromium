@@ -91,7 +91,7 @@ interface UpdateProvider {
 interface InstallController {
   // Responsible for calling |FirmwareUpdateManager::StartInstall| to start
   // the update.
-  BeginUpdate();
+  BeginUpdate(string device_id, mojo_base.mojom.FilePath filepath);
   // Registers an observer that will be notified of changes to
   // the inflight update's progress.
   AddObserver(pending_remote<UpdateProgressObserver> observer);

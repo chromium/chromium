@@ -51,7 +51,7 @@ export function fakeUpdateControllerTest() {
         });
 
     controller.addObserver(updateProgressObserverRemote);
-    controller.beginUpdate();
+    controller.beginUpdate(deviceId, /*filepath*/ {path: 'test1.cab'});
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
     assertFalse(controller.isUpdateInProgress());

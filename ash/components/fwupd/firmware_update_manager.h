@@ -50,7 +50,8 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
                         PrepareForUpdateCallback callback) override;
 
   // firmware_update::mojom::InstallController
-  void BeginUpdate() override;
+  void BeginUpdate(const std::string& device_id,
+                   const base::FilePath& filepath) override;
 
   void AddObserver(
       mojo::PendingRemote<firmware_update::mojom::UpdateProgressObserver>
@@ -80,7 +81,7 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // TODO(jimmyxgong): This should override the mojo api interface.
   // Download and prepare the install file for a specific device.
   void StartInstall(const std::string& device_id,
-                    int release,
+                    const base::FilePath& filepath,
                     base::OnceCallback<void()> callback);
 
   void BindInterface(
@@ -110,11 +111,12 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
   void CreateLocalPatchFile(const base::FilePath& cache_path,
                             const std::string& device_id,
-                            int release,
+                            const base::FilePath& filepath,
                             base::OnceCallback<void()> callback);
 
   void DownloadFileToInternal(const base::FilePath& patch_path,
                               const std::string& device_id,
+                              const base::FilePath& filepath,
                               base::OnceCallback<void()> callback,
                               bool write_file_success);
 
