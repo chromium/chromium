@@ -1115,7 +1115,7 @@
     "name": "deprecate-alt-click",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 97
+    "expiry_milestone": 105
   },
   {
     "name": "deprecate-low-usage-codecs",
