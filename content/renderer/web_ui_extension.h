@@ -7,12 +7,6 @@
 
 #include <string>
 
-#include "gin/converter.h"
-
-namespace base {
-class TimeTicks;
-}
-
 namespace blink {
 class WebLocalFrame;
 }
