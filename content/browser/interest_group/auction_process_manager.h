@@ -138,6 +138,9 @@ class CONTENT_EXPORT AuctionProcessManager {
   size_t GetPendingSellerRequestsForTesting() const {
     return pending_seller_request_queue_.size();
   }
+  size_t GetBidderProcessCountForTesting() const {
+    return bidder_processes_.size();
+  }
   size_t GetSellerProcessCountForTesting() const {
     return seller_processes_.size();
   }

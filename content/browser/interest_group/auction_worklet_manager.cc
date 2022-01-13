@@ -25,6 +25,7 @@
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -54,6 +55,11 @@ class AuctionWorkletManager::WorkletOwner
     handles_.RemoveObserver(handle);
   }
 
+  auction_worklet::mojom::BidderWorklet* bidder_worklet() {
+    DCHECK(bidder_worklet_);
+    return bidder_worklet_.get();
+  }
+
   auction_worklet::mojom::SellerWorklet* seller_worklet() {
     DCHECK(seller_worklet_);
     return seller_worklet_.get();
@@ -63,7 +69,9 @@ class AuctionWorkletManager::WorkletOwner
 
   // Whether or not a worklet has been created. Once a worklet has been created,
   // always returns true, even after disconnect or error.
-  bool worklet_created() const { return seller_worklet_.is_bound(); }
+  bool worklet_created() const {
+    return bidder_worklet_.is_bound() || seller_worklet_.is_bound();
+  }
 
  private:
   friend class base::RefCounted<WorkletOwner>;
@@ -103,6 +111,7 @@ class AuctionWorkletManager::WorkletOwner
   base::ObserverList<WorkletHandle, /*check_empty=*/true> handles_;
 
   std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy_;
+  mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet_;
   mojo::Remote<auction_worklet::mojom::SellerWorklet> seller_worklet_;
   // This must be destroyed before the worklet it's passed, since it hangs on to
   // a raw pointer to it.
@@ -114,9 +123,6 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
     WorkletInfo worklet_info)
     : worklet_manager_(worklet_manager),
       worklet_info_(std::move(worklet_info)) {
-  // Only seller worklets are currently supported.
-  DCHECK_EQ(worklet_info_.type, WorkletType::kSeller);
-
   if (worklet_manager_->auction_process_manager()->RequestWorkletService(
           worklet_info_.type, url::Origin::Create(worklet_info_.script_url),
           &process_handle_,
@@ -139,6 +145,9 @@ void AuctionWorkletManager::WorkletOwner::WorkletNoLongerUsable() {
 }
 
 void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
+  DCHECK(!bidder_worklet_.is_bound());
+  DCHECK(!seller_worklet_.is_bound());
+
   Delegate* delegate = worklet_manager_->delegate();
   mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
   url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
@@ -148,19 +157,42 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                           base::Unretained(delegate)),
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
-      /*is_for_seller_=*/true, delegate->GetClientSecurityState(),
-      worklet_info_.script_url, /*wasm_url=*/absl::nullopt,
-      /*trusted_signals_base_url=*/worklet_info_.signals_url);
-  mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
-      worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
-  worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
-      delegate->GetFrame(), worklet_info_.script_url, seller_worklet_.get()));
-  process_handle_.GetService()->LoadSellerWorklet(
-      std::move(worklet_receiver), worklet_debug_->should_pause_on_start(),
-      std::move(url_loader_factory), worklet_info_.script_url,
-      worklet_info_.signals_url, worklet_manager_->top_window_origin());
-  seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
-      &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
+      /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
+      delegate->GetClientSecurityState(), worklet_info_.script_url,
+      worklet_info_.wasm_url, worklet_info_.signals_url);
+
+  switch (worklet_info_.type) {
+    case WorkletType::kBidder: {
+      mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+          worklet_receiver = bidder_worklet_.BindNewPipeAndPassReceiver();
+      worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
+          delegate->GetFrame(), worklet_info_.script_url,
+          bidder_worklet_.get()));
+      process_handle_.GetService()->LoadBidderWorklet(
+          std::move(worklet_receiver), worklet_debug_->should_pause_on_start(),
+          std::move(url_loader_factory), worklet_info_.script_url,
+          worklet_info_.wasm_url, worklet_info_.signals_url,
+          worklet_manager_->top_window_origin());
+      bidder_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
+          &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
+      break;
+    }
+
+    case WorkletType::kSeller: {
+      mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
+          worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
+      worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
+          delegate->GetFrame(), worklet_info_.script_url,
+          seller_worklet_.get()));
+      process_handle_.GetService()->LoadSellerWorklet(
+          std::move(worklet_receiver), worklet_debug_->should_pause_on_start(),
+          std::move(url_loader_factory), worklet_info_.script_url,
+          worklet_info_.signals_url, worklet_manager_->top_window_origin());
+      seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
+          &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
+      break;
+    }
+  }
 
   for (auto& handle : handles_) {
     handle.OnWorkletAvailable();
@@ -195,6 +227,13 @@ void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
 
 AuctionWorkletManager::WorkletHandle::~WorkletHandle() {
   worklet_owner_->UnregisterHandle(this);
+}
+
+auction_worklet::mojom::BidderWorklet*
+AuctionWorkletManager::WorkletHandle::GetBidderWorklet() {
+  DCHECK_EQ(WorkletType::kBidder, worklet_owner_->worklet_info().type);
+  DCHECK(worklet_owner_->bidder_worklet());
+  return worklet_owner_->bidder_worklet();
 }
 
 auction_worklet::mojom::SellerWorklet*
@@ -252,8 +291,26 @@ AuctionWorkletManager::~AuctionWorkletManager() = default;
 
 bool AuctionWorkletManager::WorkletInfo::WorkletInfo::operator<(
     const WorkletInfo& other) const {
-  return std::tie(type, script_url, signals_url) <
-         std::tie(other.type, other.script_url, other.signals_url);
+  return std::tie(type, script_url, wasm_url, signals_url) <
+         std::tie(other.type, other.script_url, other.wasm_url,
+                  other.signals_url);
+}
+
+bool AuctionWorkletManager::RequestBidderWorklet(
+    const GURL& bidding_logic_url,
+    const absl::optional<GURL>& wasm_url,
+    const absl::optional<GURL>& trusted_bidding_signals_url,
+    base::OnceClosure worklet_available_callback,
+    FatalErrorCallback fatal_error_callback,
+    std::unique_ptr<WorkletHandle>& out_worklet_handle) {
+  DCHECK(!out_worklet_handle);
+
+  WorkletInfo worklet_info(WorkletType::kBidder,
+                           /*script_url=*/bidding_logic_url, wasm_url,
+                           /*signals_url=*/trusted_bidding_signals_url);
+  return RequestWorkletInternal(
+      std::move(worklet_info), std::move(worklet_available_callback),
+      std::move(fatal_error_callback), out_worklet_handle);
 }
 
 bool AuctionWorkletManager::RequestSellerWorklet(
@@ -266,6 +323,7 @@ bool AuctionWorkletManager::RequestSellerWorklet(
 
   WorkletInfo worklet_info(WorkletType::kSeller,
                            /*script_url=*/decision_logic_url,
+                           /*wasm_url=*/absl::nullopt,
                            /*signals_url=*/trusted_scoring_signals_url);
   return RequestWorkletInternal(
       std::move(worklet_info), std::move(worklet_available_callback),
@@ -275,8 +333,12 @@ bool AuctionWorkletManager::RequestSellerWorklet(
 AuctionWorkletManager::WorkletInfo::WorkletInfo(
     WorkletType type,
     const GURL& script_url,
+    const absl::optional<GURL>& wasm_url,
     const absl::optional<GURL>& signals_url)
-    : type(type), script_url(script_url), signals_url(signals_url) {}
+    : type(type),
+      script_url(script_url),
+      wasm_url(wasm_url),
+      signals_url(signals_url) {}
 
 AuctionWorkletManager::WorkletInfo::WorkletInfo(const WorkletInfo&) = default;
 AuctionWorkletManager::WorkletInfo::WorkletInfo(WorkletInfo&&) = default;

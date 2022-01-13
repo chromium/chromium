@@ -16,17 +16,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
-#include "mojo/public/cpp/bindings/connection_error_callback.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -34,8 +28,6 @@
 
 namespace content {
 
-class AuctionURLLoaderFactoryProxy;
-class DebuggableAuctionWorklet;
 class InterestGroupManager;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
@@ -160,9 +152,8 @@ class CONTENT_EXPORT AuctionRunner {
       // worklet to get a process.
       kLoadingWorkletsAndOnSellerProcess,
 
-      // Waiting for the AuctionProcessManager to provide a process usable for
-      // this particular bidder worklet.
-      kWaitingForProcess,
+      // Waiting for the AuctionWorkletManager to provide a BidderWorklet.
+      kWaitingForWorklet,
 
       // Loading the bidder worklet script / trusted data and generating the
       // bid.
@@ -191,23 +182,13 @@ class CONTENT_EXPORT AuctionRunner {
     BidState(BidState&) = delete;
     BidState& operator=(BidState&) = delete;
 
-    // Convenient function to destroy `bidder_worklet`, `bidder_worklet_debug`,
-    // and `process_handle`.
-    // Safe to call if they're already null.
-    void ClosePipes();
-
     State state = State::kLoadingWorkletsAndOnSellerProcess;
 
     StorageInterestGroup bidder;
 
-    // URLLoaderFactory proxy class configured only to load the URLs the bidder
-    // needs.
-    std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory;
+    // Holds a reference to the BidderWorklet, once created.
+    std::unique_ptr<AuctionWorkletManager::WorkletHandle> worklet_handle;
 
-    std::unique_ptr<AuctionProcessManager::ProcessHandle> process_handle;
-
-    mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet;
-    std::unique_ptr<DebuggableAuctionWorklet> bidder_worklet_debug;
     auction_worklet::mojom::BidderWorkletBidPtr bid_result;
     // Points to the InterestGroupAd within `bidder` that won the auction. Only
     // nullptr when `bid_result` is also nullptr.
@@ -249,14 +230,22 @@ class CONTENT_EXPORT AuctionRunner {
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors);
 
-  // Invoked whenever the AuctionProcessManager has provided a process for a
-  // bidder worklet. Starts loading the corresponding worklet and generating a
-  // bid.
-  void OnBidderWorkletProcessReceived(BidState* bid_state);
+  // Invoked whenever the AuctionWorkletManager has provided a BidderWorket for
+  // the bidder identified by `bid_state`. Starts generating a bid.
+  void OnBidderWorkletReceived(BidState* bid_state);
 
-  void OnBidderWorkletDisconnected(BidState* state,
-                                   uint32_t custom_reason,
-                                   const std::string& description);
+  // Called when the `bid_state` BidderWorklet crashes or fails to load, and
+  // `bid_state` is in state kGeneratingBid. Fails the GenerateBid() call and
+  // releases the worklet handle, as the callback passed to the GenerateBid Mojo
+  // call will not be invoked after this method is.
+  void OnBidderWorkletGenerateBidFatalError(
+      BidState* bid_state,
+      AuctionWorkletManager::FatalErrorType fatal_error_type,
+      const std::vector<std::string>& errors);
+
+  // Called once a bid has been generated, or has failed to be generated.
+  // Releases the BidderWorklet handle and instructs the SellerWorklet to start
+  // scoring the bid, if there is one.
   void OnGenerateBidComplete(BidState* state,
                              auction_worklet::mojom::BidderWorkletBidPtr bid,
                              const std::vector<std::string>& errors);
@@ -293,10 +282,11 @@ class CONTENT_EXPORT AuctionRunner {
   void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
 
-  // Called when the BidderWorklet that won an auction is disconnected during
-  // the ReportWin() call.
-  void WinningBidderWorkletDisconnected(uint32_t custom_reason,
-                                        const std::string& description);
+  // Called when the BidderWorklet that won an auction has an out-of-band fatal
+  // error during the ReportWin() call.
+  void OnWinningBidderWorkletFatalError(
+      AuctionWorkletManager::FatalErrorType fatal_error_type,
+      const std::vector<std::string>& errors);
 
   // Completes the auction, invoking `callback_` and preventing any future
   // calls into `this` by closing mojo pipes and disposing of weak pointers. The
@@ -310,11 +300,13 @@ class CONTENT_EXPORT AuctionRunner {
   // Logs the result of the auction to UMA.
   void RecordResult(AuctionResult result) const;
 
-  // Loads a bidder worklet for `bid_state`, setting the provided disconnect
-  // handler.
-  void LoadBidderWorklet(
-      BidState& bid_state,
-      mojo::ConnectionErrorWithReasonCallback disconnect_handler);
+  // Requests a WorkletHandle for the interest group identified by `bid_state`,
+  // using the provided callbacks. Returns true if a worklet was received
+  // synchronously.
+  bool RequestBidderWorklet(BidState& bid_state,
+                            base::OnceClosure worklet_available_callback,
+                            AuctionWorkletManager::FatalErrorCallback
+                                fatal_error_callback) WARN_UNUSED_RESULT;
 
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<AuctionWorkletManager::Delegate>

@@ -16,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -103,10 +104,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
     WorkletHandle& operator=(const WorkletHandle&) = delete;
     ~WorkletHandle() override;
 
-    // Retrieves the SellerWorklet Mojo interface for the requested worklet.
-    // Once the worklet is created, will never return null. Even in the case of
-    // process crash or load error, it will return an interface with a broken
-    // pipe.
+    // Retrieves the corresponding Worklet Mojo interface for the requested
+    // worklet. Only the method corresponding to the worklet type `this` was
+    // created with my be invoked. Once the worklet is created, will never
+    // return null. Even in the case of process crash or load error, it will
+    // return an interface with a broken pipe.
     //
     // Note that calls in the returned Mojo worklet cannot currently be
     // cancelled, so calls should always use weak pointers. Since there's no way
@@ -115,6 +117,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // pointers are probably not strictly necessary, since everything is torn
     // down before Mojo has a chance to invoke callbacks, but using weak
     // pointers still seems the safest thing to do).
+    auction_worklet::mojom::BidderWorklet* GetBidderWorklet();
     auction_worklet::mojom::SellerWorklet* GetSellerWorklet();
 
    private:
@@ -153,10 +156,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
   AuctionWorkletManager& operator=(const AuctionWorkletManager&) = delete;
   ~AuctionWorkletManager();
 
-  // Requests a SellerWorklet with the specified properties. The top frame
-  // origin and debugging information is obtained from the RenderFrameHost the
-  // AuctionWorkletManager is scoped to on construction, so they're not taken as
-  // parameters.
+  // Requests a worklet with the specified properties. The top frame origin and
+  // debugging information are obtained from the Delegate's RenderFrameHost.
   //
   // The AuctionWorkletManager will handle requesting a process, hooking up
   // DevTools, and merging requests with the same parameters so they can share a
@@ -171,9 +172,15 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // `fatal_error_callback` is invoked in the case of a fatal error. It may be
   // invoked any time after the worklet is available (after returning true or
   // after `worklet_available_callback` has been invoked), before the
-  // WorkletHandle is destroyed. It is called to indicate the seller worklet
-  // failed to load, or the seller worklet crashed, both of which only happen
-  // after a worklet has been provided to the caller.
+  // WorkletHandle is destroyed. It is called to indicate the worklet failed to
+  // load or crashed.
+  bool RequestBidderWorklet(
+      const GURL& bidding_logic_url,
+      const absl::optional<GURL>& wasm_url,
+      const absl::optional<GURL>& trusted_bidding_signals_url,
+      base::OnceClosure worklet_available_callback,
+      FatalErrorCallback fatal_error_callback,
+      std::unique_ptr<WorkletHandle>& out_worklet_handle) WARN_UNUSED_RESULT;
   bool RequestSellerWorklet(
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
@@ -188,6 +195,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
   struct WorkletInfo {
     WorkletInfo(WorkletType type,
                 const GURL& script_url,
+                const absl::optional<GURL>& wasm_url,
                 const absl::optional<GURL>& signals_url);
     WorkletInfo(const WorkletInfo&);
     WorkletInfo(WorkletInfo&&);
@@ -195,6 +203,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
     WorkletType type;
     GURL script_url;
+    absl::optional<GURL> wasm_url;
     absl::optional<GURL> signals_url;
 
     bool operator<(const WorkletInfo& other) const;
