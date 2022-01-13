@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/guid.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -23,6 +27,7 @@
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -149,6 +154,18 @@ class SingleClientBookmarksSyncTestWithEnabledClientTags : public SyncTest {
       : SyncTest(SINGLE_CLIENT) {
     features_override_.InitAndEnableFeature(
         switches::kSyncUseClientTagForBookmarkCommits);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledThrottling()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndEnableFeature(
+        switches::kSyncExtensionTypesThrottling);
   }
 
  private:
@@ -1714,6 +1731,81 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledClientTags,
             syncer::ClientTagHash::FromUnhashed(
                 syncer::BOOKMARKS, folder->guid().AsLowercaseString())
                 .value());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
+                       DepleteQuota) {
+  ASSERT_TRUE(SetupClients());
+  // Add enough bookmarks to deplete quota in the initial cycle.
+  const BookmarkNode* folder = AddFolder(
+      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
+  // Default number of entities per message on the client are 25, thus the quota
+  // is fully depleted in 25*101 messages.
+  for (int i = 0; i < 2525; i++) {
+    AddURL(kSingleProfileIndex, folder, 0, base::StringPrintf("url %u", i),
+           GURL(base::StringPrintf("http://mail.google.com/%u", i)));
+  }
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                  GetFakeServer())
+                  .Wait());
+
+  base::HistogramTester histogram_tester;
+
+  // Adding another entity does not trigger an update (long nudge delay).
+  std::string client_title = "Foo";
+  AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
+            client_title);
+
+  // The quota is depleted for the last commit -- gets recorded in a histogram.
+  // Make sure the histogram gets propagated from the sync engine sequence.
+  base::StatisticsRecorder::ImportProvidedHistograms();
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeCommitWithDepletedQuota",
+                   ModelTypeHistogramValue(syncer::BOOKMARKS)));
+  // TODO(crbug.com/1145138): Add further tests that configure the long delay
+  // and thus test that it takes longer to commit this entity but it gets
+  // committed, eventually.
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
+                       DoNotDepleteQuota) {
+  ASSERT_TRUE(SetupClients());
+  // Add not enough bookmarks to deplete quota in the initial cycle.
+  const BookmarkNode* folder = AddFolder(
+      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
+  // Default number of entities per message on the client are 25, thus the quota
+  // would get almost depleted in 25*100 messages. Leave a bit of headroom for
+  // the entities getting distributed in more commit messages (as there are
+  // other data types to commit).
+  for (int i = 0; i < 2000; i++) {
+    AddURL(kSingleProfileIndex, folder, 0, base::StringPrintf("url %u", i),
+           GURL(base::StringPrintf("http://mail.google.com/%u", i)));
+  }
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                  GetFakeServer())
+                  .Wait());
+
+  base::HistogramTester histogram_tester;
+
+  // Adding another entity does again trigger an update (normal nudge delay).
+  std::string client_title = "Foo";
+  AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
+            client_title);
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                  GetFakeServer())
+                  .Wait());
+
+  // Make sure the histogram gets propagated from the sync engine sequence.
+  base::StatisticsRecorder::ImportProvidedHistograms();
+  // There is no record in the depleted quota histogram.
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }
 
 }  // namespace

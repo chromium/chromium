@@ -76,6 +76,14 @@ bool NudgeTracker::IsRetryRequired() const {
   return current_retry_time_ <= sync_cycle_start_time_;
 }
 
+void NudgeTracker::RecordSuccessfulCommitMessage(ModelTypeSet types) {
+  for (ModelType type : types) {
+    TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    tracker_it->second->RecordSuccessfulCommitMessage();
+  }
+}
+
 void NudgeTracker::RecordSuccessfulSyncCycle(ModelTypeSet types) {
   // If a retry was required, we've just serviced it.  Unset the flag.
   if (IsRetryRequired()) {

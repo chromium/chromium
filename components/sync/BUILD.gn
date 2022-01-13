@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "engine/cancelation_signal_unittest.cc",
     "engine/commit_contribution_impl_unittest.cc",
     "engine/commit_processor_unittest.cc",
+    "engine/cycle/commit_quota_unittest.cc",
     "engine/cycle/nudge_tracker_unittest.cc",
     "engine/cycle/status_controller_unittest.cc",
     "engine/cycle/sync_cycle_snapshot_unittest.cc",

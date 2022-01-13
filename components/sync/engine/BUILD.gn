@@ -26,6 +26,8 @@ static_library("engine") {
     "commit_util.cc",
     "commit_util.h",
     "configure_reason.h",
+    "cycle/commit_quota.cc",
+    "cycle/commit_quota.h",
     "cycle/data_type_tracker.cc",
     "cycle/data_type_tracker.h",
     "cycle/debug_info_getter.h",

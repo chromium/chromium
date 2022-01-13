@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -16,6 +19,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
@@ -44,6 +48,18 @@ class SingleClientUserEventsSyncTest : public SyncTest {
                                     expected_specifics)
         .Wait();
   }
+};
+
+class SingleClientUserEventsSyncTestWithEnabledThrottling
+    : public SingleClientUserEventsSyncTest {
+ public:
+  SingleClientUserEventsSyncTestWithEnabledThrottling() {
+    features_override_.InitAndEnableFeature(
+        switches::kSyncExtensionTypesThrottling);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
@@ -228,6 +244,42 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
 
   // No event should get synced up.
   EXPECT_TRUE(ExpectUserEvents({}));
+}
+
+// This is an analogy to SingleClientBookmarksSyncTest.DepleteQuota, tested on
+// a datatype that has no quota restrictions.
+IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTestWithEnabledThrottling,
+                       NoQuotaApplied) {
+  ASSERT_TRUE(SetupSync());
+  // Add enough user events that would deplete quota in the initial cycle.
+  syncer::UserEventService* event_service =
+      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+
+  std::vector<UserEventSpecifics> expected_specifics;
+  base::Time zero;
+  // Default number of entities per message on the client are 25, thus the quota
+  // would be fully depleted in 25*101 messages.
+  for (int i = 0; i < 2525; i++) {
+    const UserEventSpecifics specifics =
+        CreateTestEvent(zero + base::Milliseconds(i));
+    event_service->RecordUserEvent(specifics);
+    expected_specifics.push_back(specifics);
+  }
+  EXPECT_TRUE(ExpectUserEvents(expected_specifics));
+
+  base::HistogramTester histogram_tester;
+
+  // Adding another entity again triggers sync immediately (as there's no
+  // quota).
+  const UserEventSpecifics specifics = CreateTestEvent(zero + base::Seconds(3));
+  event_service->RecordUserEvent(specifics);
+  expected_specifics.push_back(specifics);
+  EXPECT_TRUE(ExpectUserEvents(expected_specifics));
+
+  // Make sure the histogram gets propagated from the sync engine sequence.
+  base::StatisticsRecorder::ImportProvidedHistograms();
+  // There is no record in the depleted quota histogram.
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }
 
 }  // namespace

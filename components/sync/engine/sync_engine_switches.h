@@ -15,6 +15,8 @@ extern const base::Feature kSyncResetPollIntervalOnStart;
 extern const base::Feature kIgnoreSyncEncryptionKeysLongMissing;
 extern const base::FeatureParam<int> kMinGuResponsesToIgnoreKey;
 
+extern const base::Feature kSyncExtensionTypesThrottling;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_SWITCHES_H_

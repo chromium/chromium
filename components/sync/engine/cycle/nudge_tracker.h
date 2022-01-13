@@ -52,6 +52,10 @@ class NudgeTracker {
   // information on how this flag is maintained.
   bool IsRetryRequired() const;
 
+  // Tells this class that a commit message has been sent (note that each sync
+  // cycle may include an arbitrary number of commit messages).
+  void RecordSuccessfulCommitMessage(ModelTypeSet types);
+
   // Tells this class that all required update fetching or committing has
   // completed successfully, as the result of a "normal" sync cycle.
   void RecordSuccessfulSyncCycle(ModelTypeSet types);

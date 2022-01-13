@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"
+#include "components/sync/engine/cycle/commit_quota.h"
 
 namespace sync_pb {
 class DataTypeProgressMarker;
@@ -72,6 +73,11 @@ class DataTypeTracker {
   // Takes note that the conflict happended for this type, need to sync to
   // resolve conflict locally.
   void RecordCommitConflict();
+
+  // Records that a commit message has been sent (note that each commit message
+  // may include multiple entities of this data type and each sync cycle may
+  // include an arbitrary number of commit messages).
+  void RecordSuccessfulCommitMessage();
 
   // Records that a sync cycle has been performed successfully.
   // Generally, this means that all local changes have been committed and all
@@ -163,6 +169,8 @@ class DataTypeTracker {
  private:
   friend class SyncSchedulerImplTest;
 
+  const ModelType type_;
+
   // Number of local change nudges received for this type since the last
   // successful sync cycle.
   int local_nudge_count_;
@@ -201,6 +209,10 @@ class DataTypeTracker {
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.
   base::TimeDelta local_change_nudge_delay_;
+
+  // Quota for commits (used only for data types that can be committed by
+  // extensions).
+  std::unique_ptr<CommitQuota> quota_;
 };
 
 }  // namespace syncer

@@ -20,4 +20,11 @@ const base::Feature kIgnoreSyncEncryptionKeysLongMissing{
 const base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
     &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 50};
 
+// Causes the sync engine to count a quota for commits of data types that can
+// be committed by extension JS API. If the quota is depleted, an extra long
+// nudge delay is applied to that data type. As a result, more changes are
+// likely to get combined into one commit message.
+const base::Feature kSyncExtensionTypesThrottling{
+    "SyncExtensionTypesThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace switches

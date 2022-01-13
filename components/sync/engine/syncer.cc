@@ -169,6 +169,8 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
     if (error.value() != SyncerError::SYNCER_OK) {
       return error;
     }
+    nudge_tracker->RecordSuccessfulCommitMessage(
+        commit->GetContributingDataTypes());
   }
 
   return SyncerError(SyncerError::SYNCER_OK);

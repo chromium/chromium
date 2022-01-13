@@ -903,6 +903,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.ModelTypeCommitWithDepletedQuota" enum="SyncModelTypes"
+    expires_after="2022-07-04">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded once per local change that gets scheduled for committing with an
+    extra long nudge delay. This happens if and only if the commit quota for
+    this data type for this user is depleted. Quota is tracked (and this metric
+    gets recorded) only for data types that can be committed via JS API of
+    extensions.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ModelTypeConfigurationTime.Ephemeral{SyncModelType}"
     units="ms" expires_after="2022-03-06">
   <owner>jkrcal@chromium.org</owner>

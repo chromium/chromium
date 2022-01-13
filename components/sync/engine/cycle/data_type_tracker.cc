@@ -5,12 +5,15 @@
 #include "components/sync/engine/cycle/data_type_tracker.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/sync/engine/polling_constants.h"
+#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace syncer {
@@ -26,8 +29,13 @@ constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
     base::Seconds(11);
+constexpr base::TimeDelta kDepletedQuotaNudgeDelayForExtensionTypes =
+    base::Seconds(100);
 
 const size_t kDefaultMaxPayloadsPerType = 10;
+
+constexpr base::TimeDelta kRefillIntervalForExtensionTypes = base::Seconds(100);
+constexpr int kInitialQuotaForExtensionTypes = 100;
 
 base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
   switch (model_type) {
@@ -87,6 +95,54 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
   }
 }
 
+bool CanGetCommitsFromExtensions(ModelType model_type) {
+  switch (model_type) {
+    case BOOKMARKS:
+    case EXTENSION_SETTINGS:
+    case APP_SETTINGS:
+      // Only for the types above, extensions can trigger a commit via a js API.
+      return true;
+    case AUTOFILL:
+    case USER_EVENTS:
+    case SESSIONS:
+    case PREFERENCES:
+    case SHARING_MESSAGE:
+    case PASSWORDS:
+    case AUTOFILL_PROFILE:
+    case AUTOFILL_WALLET_DATA:
+    case AUTOFILL_WALLET_METADATA:
+    case AUTOFILL_WALLET_OFFER:
+    case THEMES:
+    case TYPED_URLS:
+    case EXTENSIONS:
+    case SEARCH_ENGINES:
+    case APPS:
+    case HISTORY_DELETE_DIRECTIVES:
+    case DICTIONARY:
+    case DEVICE_INFO:
+    case PRIORITY_PREFERENCES:
+    case SUPERVISED_USER_SETTINGS:
+    case APP_LIST:
+    case ARC_PACKAGE:
+    case PRINTERS:
+    case READING_LIST:
+    case USER_CONSENTS:
+    case SEND_TAB_TO_SELF:
+    case SECURITY_EVENTS:
+    case WIFI_CONFIGURATIONS:
+    case WEB_APPS:
+    case OS_PREFERENCES:
+    case OS_PRIORITY_PREFERENCES:
+    case WORKSPACE_DESK:
+    case NIGORI:
+    case PROXY_TABS:
+      return false;
+    case UNSPECIFIED:
+      NOTREACHED();
+      return false;
+  }
+}
+
 }  // namespace
 
 WaitInterval::WaitInterval() : mode(BlockingMode::kUnknown) {}
@@ -97,7 +153,8 @@ WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
 WaitInterval::~WaitInterval() = default;
 
 DataTypeTracker::DataTypeTracker(ModelType type)
-    : local_nudge_count_(0),
+    : type_(type),
+      local_nudge_count_(0),
       local_refresh_request_count_(0),
       payload_buffer_size_(kDefaultMaxPayloadsPerType),
       initial_sync_required_(false),
@@ -105,6 +162,12 @@ DataTypeTracker::DataTypeTracker(ModelType type)
       local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)) {
   // Sanity check the hardcode value for kMinLocalChangeNudgeDelay.
   DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
+
+  if (CanGetCommitsFromExtensions(type) &&
+      base::FeatureList::IsEnabled(switches::kSyncExtensionTypesThrottling)) {
+    quota_ = std::make_unique<CommitQuota>(kInitialQuotaForExtensionTypes,
+                                           kRefillIntervalForExtensionTypes);
+  }
 }
 
 DataTypeTracker::~DataTypeTracker() = default;
@@ -180,6 +243,12 @@ void DataTypeTracker::RecordInitialSyncRequired() {
 
 void DataTypeTracker::RecordCommitConflict() {
   sync_required_to_resolve_conflict_ = true;
+}
+
+void DataTypeTracker::RecordSuccessfulCommitMessage() {
+  if (quota_) {
+    quota_->ConsumeToken();
+  }
 }
 
 void DataTypeTracker::RecordSuccessfulSyncCycle() {
@@ -370,6 +439,11 @@ void DataTypeTracker::UpdateLocalChangeNudgeDelay(base::TimeDelta delay) {
 }
 
 base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay() const {
+  if (quota_ && !quota_->HasTokensAvailable()) {
+    base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
+                                  ModelTypeHistogramValue(type_));
+    return kDepletedQuotaNudgeDelayForExtensionTypes;
+  }
   return local_change_nudge_delay_;
 }
 
