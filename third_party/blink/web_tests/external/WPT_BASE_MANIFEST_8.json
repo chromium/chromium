@@ -64012,6 +64012,19 @@
       ]
      },
      "text": {
+      "bidi-flag-emoji-02.html": [
+       "d6c92b903c6655670e7d38b279a245eda4c428e9",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/bidi-flag-emoji-02-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "bidi-flag-emoji.html": [
        "a184db265942723a7728030390cedf2eccaa15f2",
        [
@@ -117643,6 +117656,32 @@
        ]
       ]
      },
+     "grid-with-content-dynamic-display-001.html": [
+      "e9f121b000202f00e81aff0debd3d4b799d616b9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "grid-with-content-dynamic-display-002.html": [
+      "02f536344d86f9572bcf2a095dcdcc4cb56181fa",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "grid-with-dynamic-img.html": [
       "ff7d2b8069c74e43ec10e72d4709c661e7874d97",
       [
@@ -238894,6 +238933,10 @@
        "53463b38f4154029f9fadf7c337119f9828f57b4",
        []
       ],
+      "bidi-flag-emoji-02-ref.html": [
+       "f1ea3145d3a0824c96727d337d1dcf2c89070832",
+       []
+      ],
       "bidi-flag-emoji-ref.html": [
        "84585a264fd30383a5b60839185b1151b08c6bd0",
        []
@@ -277182,8 +277225,8 @@
      "71a19de6904fd6fc6ef706a21a08168d65f87158",
      []
     ],
-    "open-consume-activation.https.html.headers": [
-     "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
+    "direct-sockets-disabled-by-permissions-policy.https.sub.html.headers": [
+     "ba6f09f55b393880aadf79a41d9220313ed294c8",
      []
     ],
     "open-without-user-gesture.https.html.headers": [
@@ -288434,7 +288477,7 @@
       ],
       "resources": {
        "common.js": [
-        "86de148321d15b38a52cf1a0562de617e1633327",
+        "e11e2307defd6e4bba7006e2add47e7aad965a6f",
         []
        ],
        "serviceworker-partitioning-helper.js": [
@@ -302536,7 +302579,7 @@
     ]
    },
    "lint.ignore": [
-    "8078f2622c5ab831a2afb428505f9f03bb79fc7f",
+    "b9973747dc6ca675b335a0d01350d214c71503ca",
     []
    ],
    "loading": {
@@ -309127,6 +309170,10 @@
      ],
      "mock-barcodedetection.js.headers": [
       "6c61a34a4ec2e75096db0eb9f7748b142f0db7bb",
+      []
+     ],
+     "mock-direct-sockets.js": [
+      "caab177b9869d88aa00bafc55ca5f36725449bd2",
       []
      ],
      "mock-facedetection.js": [
@@ -386498,8 +386545,8 @@
     ]
    },
    "direct-sockets": {
-    "open-consume-activation.https.html": [
-     "6cbf017712b197886fb2d8d620927ee03506f6d4",
+    "direct-sockets-disabled-by-permissions-policy.https.sub.html": [
+     "03760e795027cc2c63257ca56f3256c31c74d637",
      [
       null,
       {
@@ -442149,6 +442196,36 @@
         }
        ]
       ],
+      "broadcast-channel.tentative.window.js": [
+       "255a71920992328cf3e3b504a2a20aeda8b45f6f",
+       [
+        "html/cross-origin-embedder-policy/anonymous-iframe/broadcast-channel.tentative.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "../credentialless/resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "cookie-store.tentative.https.window.js": [
        "60a856c7584681d20d12b72dcd951cd4fd43e2a1",
        [
@@ -442272,6 +442349,36 @@
         }
        ]
       ],
+      "session-storage.tentative.https.window.js": [
+       "418e17f018373af23b807963f45fa3a57b87b947",
+       [
+        "html/cross-origin-embedder-policy/anonymous-iframe/session-storage.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "../credentialless/resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "sharedworker-partitioning.tentative.https.window.js": [
        "a6eb551759d865059064fcfa43fdd6519a6b05f1",
        [
@@ -442281,6 +442388,36 @@
           [
            "script",
            "/common/utils.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "web-lock.tentative.https.window.js": [
+       "fad21dfec9b901c6c48be3d28c22825bf43d37b2",
+       [
+        "html/cross-origin-embedder-policy/anonymous-iframe/web-lock.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "../credentialless/resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
           ]
          ]
         }
