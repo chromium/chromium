@@ -257,8 +257,7 @@ class DeepScanningRequestTest : public testing::Test {
   }
 
   void AddUrlToProfilePrefList(const char* pref_name, const GURL& url) {
-    ListPrefUpdateDeprecated(profile_->GetPrefs(), pref_name)
-        ->Append(url.host());
+    ListPrefUpdate(profile_->GetPrefs(), pref_name)->Append(url.host());
   }
 
   void SetFeatures(const std::vector<base::Feature>& enabled,

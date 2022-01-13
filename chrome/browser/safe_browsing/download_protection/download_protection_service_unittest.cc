@@ -601,8 +601,8 @@ class DownloadProtectionServiceTestBase
   }
 
   void AddDomainToEnterpriseAllowlist(const std::string& domain) {
-    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                    prefs::kSafeBrowsingAllowlistDomains);
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kSafeBrowsingAllowlistDomains);
     update.Get()->Append(domain);
   }
 
