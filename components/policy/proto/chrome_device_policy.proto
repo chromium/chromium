@@ -2036,4 +2036,5 @@ message ChromeDeviceSettingsProto {
       131;
   optional DeviceKeylockerForStorageEncryptionEnabledProto
       keylocker_for_storage_encryption_enabled = 132;
+  optional BooleanPolicyProto device_run_automatic_cleanup_on_login = 133;
 }

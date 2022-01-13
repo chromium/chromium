@@ -934,6 +934,7 @@
         'DeviceShowNumericKeyboardForPassword',
         'DeviceFamilyLinkAccountsAllowed',
         'DeviceLoginScreenPromptOnMultipleMatchingCertificates',
+        'DeviceRunAutomaticCleanupOnLogin',
       ],
     },
     {
@@ -29286,7 +29287,37 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
        If the policy value changes, existing <ph name="DM_CRYPT">dm-crypt</ph> user homes will be accessed using the encryption implementation configured by the policy because the <ph name="AES_ALGORITHM_NAME">AES</ph> implementations are compatible.
        If the policy is disabled or not set, user storage encryption for <ph name="DM_CRYPT">dm-crypt</ph> user homes will default to using <ph name="AES_NI_NAME">AESNI</ph>.''',
-    }
+    },
+    {
+      'name': 'DeviceRunAutomaticCleanupOnLogin',
+      'owners': ['vsavu@google.com'],
+      'type': 'main',
+      'schema': {'type': 'boolean', },
+      'tags': [],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Run automatic disk cleanup during login',
+        },
+        {
+          'value': False,
+          'caption': 'Do not run automatic disk cleanup during login',
+        },
+      ],
+      'device_only': True,
+      'default': False,
+      'supported_on': ['chrome_os:99-'],
+      'id': 940,
+      'caption': '''Control automatic cleanup during login''',
+      'example_value': True,
+      'desc': '''When this policy is set to true, automatic cleanup is executed during login to ensure enough free disk space is available.
+      Cleanup will only run when strictly necessary, but will still impact the login time.
+      Setting the policy to false (the default) ensures the login time is not affected.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -29754,6 +29785,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'ChromadToCloudMigrationEnabled': 'chromad_to_cloud_migration_enabled.value',
     'DeviceLoginScreenWebUILazyLoading': 'login_web_ui_lazy_loading.enabled',
     'DeviceKeylockerForStorageEncryptionEnabled': 'keylocker_for_storage_encryption_enabled.enabled',
+    'DeviceRunAutomaticCleanupOnLogin': 'device_run_automatic_cleanup_on_login.value',
   },
   'policy_atomic_group_definitions': [
     {
@@ -30263,6 +30295,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 939,
+  'highest_id_currently_used': 940,
   'highest_atomic_group_id_currently_used': 41
 }
