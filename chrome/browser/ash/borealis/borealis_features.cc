@@ -39,7 +39,7 @@ BorealisFeatures::BorealisFeatures(Profile* profile) : profile_(profile) {}
 bool BorealisFeatures::IsAllowed() {
   AllowStatus reason = GetAllowanceForProfile(profile_);
   if (reason != AllowStatus::kAllowed) {
-    LOG(ERROR) << "Borealis is not allowed: " << reason;
+    VLOG(1) << "Borealis is not allowed: " << reason;
     return false;
   }
   return true;
