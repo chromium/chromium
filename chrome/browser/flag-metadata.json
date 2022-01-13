@@ -4019,7 +4019,7 @@
   {
     "name": "new-shortcut-mapping",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com", "cros-peripherals@google.com"],
-    "expiry_milestone": 98
+    "expiry_milestone": 105
   },
   {
     "name": "new-usb-backend",
