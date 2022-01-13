@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_convolve_matrix_element.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_turbulence_element.h"
 
 namespace blink {
 
@@ -169,6 +170,111 @@ ComponentTransferFilterOperation* ResolveComponentTransfer(
       GetComponentTransferFunction("funcB", dict, exception_state),
       GetComponentTransferFunction("funcA", dict, exception_state));
 }
+
+// https://drafts.fxtf.org/filter-effects/#feTurbulenceElement
+TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
+                                             ExceptionState& exception_state) {
+  // Default values for all parameters per spec.
+  float base_frequency_x = 0;
+  float base_frequency_y = 0;
+  float seed = 1;
+  int num_octaves = 1;
+  SVGStitchOptions stitch_tiles = kSvgStitchtypeNostitch;
+  TurbulenceType type = FETURBULENCE_TYPE_TURBULENCE;
+
+  // For checking the presence of keys.
+  NonThrowableExceptionState no_throw;
+
+  // baseFrequency can be either a number or a list of numbers.
+  if (dict.HasProperty("baseFrequency", no_throw)) {
+    // Try first to get baseFrequency as an array.
+    absl::optional<Vector<float>> base_frequency_array =
+        dict.Get<IDLSequence<IDLFloat>>("baseFrequency", exception_state);
+    // Clear the exception if it exists in order to try again as a float
+    exception_state.ClearException();
+    // An array size of one is parse-able as a float.
+    if (base_frequency_array.has_value() && base_frequency_array->size() == 2) {
+      base_frequency_x = base_frequency_array.value()[0];
+      base_frequency_y = base_frequency_array.value()[1];
+    } else {
+      // Otherwise, see if it the input can be interpreted as a float.
+      absl::optional<float> base_frequency_float =
+          dict.Get<IDLFloat>("baseFrequency", exception_state);
+      if (exception_state.HadException() || !base_frequency_float.has_value()) {
+        exception_state.ThrowTypeError(
+            "Failed to construct turbulence filter, \"baseFrequency\" must be "
+            "a number or list of two numbers.");
+        return nullptr;
+      }
+      base_frequency_x = base_frequency_float.value();
+      base_frequency_y = base_frequency_float.value();
+    }
+    if (base_frequency_x < 0 || base_frequency_y < 0) {
+      exception_state.ThrowTypeError(
+          "Failed to construct turbulence filter, negative values for "
+          "\"baseFrequency\" are unsupported.");
+      return nullptr;
+    }
+  }
+
+  if (dict.HasProperty("seed", no_throw)) {
+    absl::optional<float> seed_input =
+        dict.Get<IDLFloat>("seed", exception_state);
+    if (exception_state.HadException() || !seed_input.has_value()) {
+      exception_state.ThrowTypeError(
+          "Failed to construct turbulence filter, \"seed\" must be a number.");
+      return nullptr;
+    }
+    seed = seed_input.value();
+  }
+
+  if (dict.HasProperty("numOctaves", no_throw)) {
+    // Get numOctaves as a float and then cast to int so that we throw for
+    // inputs like undefined, NaN and Infinity.
+    absl::optional<float> num_octaves_input =
+        dict.Get<IDLFloat>("numOctaves", exception_state);
+    if (exception_state.HadException() || !num_octaves_input.has_value() ||
+        num_octaves_input.value() < 0) {
+      exception_state.ThrowTypeError(
+          "Failed to construct turbulence filter, \"numOctaves\" must be a "
+          "positive number.");
+      return nullptr;
+    }
+    num_octaves = static_cast<int>(num_octaves_input.value());
+  }
+
+  if (dict.HasProperty("stitchTiles", no_throw)) {
+    absl::optional<String> stitch_tiles_input =
+        dict.Get<IDLString>("stitchTiles", exception_state);
+    if (exception_state.HadException() || !stitch_tiles_input.has_value() ||
+        (stitch_tiles = static_cast<SVGStitchOptions>(
+             GetEnumerationMap<SVGStitchOptions>().ValueFromName(
+                 stitch_tiles_input.value()))) == 0) {
+      exception_state.ThrowTypeError(
+          "Failed to construct turbulence filter, \"stitchTiles\" must be "
+          "either \"stitch\" or \"noStitch\".");
+      return nullptr;
+    }
+  }
+
+  if (dict.HasProperty("type", no_throw)) {
+    absl::optional<String> type_input =
+        dict.Get<IDLString>("type", exception_state);
+    if (exception_state.HadException() || !type_input.has_value() ||
+        (type = static_cast<TurbulenceType>(
+             GetEnumerationMap<TurbulenceType>().ValueFromName(
+                 type_input.value()))) == 0) {
+      exception_state.ThrowTypeError(
+          "Failed to construct turbulence filter, \"type\" must be either "
+          "\"turbulence\" or \"fractalNoise\".");
+      return nullptr;
+    }
+  }
+
+  return MakeGarbageCollected<TurbulenceFilterOperation>(
+      type, base_frequency_x, base_frequency_y, num_octaves, seed,
+      stitch_tiles == kSvgStitchtypeStitch ? true : false);
+}
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
@@ -222,6 +328,12 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       if (auto* component_transfer_operation =
               ResolveComponentTransfer(filter_dict, exception_state)) {
         operations.Operations().push_back(component_transfer_operation);
+      }
+    }
+    if (name == "turbulence") {
+      if (auto* turbulence_operation =
+              ResolveTurbulence(filter_dict, exception_state)) {
+        operations.Operations().push_back(turbulence_operation);
       }
     }
   }

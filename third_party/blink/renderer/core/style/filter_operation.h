@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
+#include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -65,6 +66,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
     kColorMatrix,
     kComponentTransfer,
     kConvolveMatrix,
+    kTurbulence,
     kNone
   };
 
@@ -82,6 +84,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
       case kBlur:
       case kDropShadow:
       case kColorMatrix:
+      case kTurbulence:
         return true;
       case kReference:
       case kComponentTransfer:
@@ -446,6 +449,57 @@ template <>
 struct DowncastTraits<ComponentTransferFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
     return op.GetType() == FilterOperation::kComponentTransfer;
+  }
+};
+
+class CORE_EXPORT TurbulenceFilterOperation : public FilterOperation {
+ public:
+  TurbulenceFilterOperation(TurbulenceType type,
+                            float base_frequency_x,
+                            float base_frequency_y,
+                            int num_octaves,
+                            float seed,
+                            bool stitch_tiles)
+      : FilterOperation(kTurbulence),
+        type_(type),
+        base_frequency_x_(base_frequency_x),
+        base_frequency_y_(base_frequency_y),
+        num_octaves_(num_octaves),
+        seed_(seed),
+        stitch_tiles_(stitch_tiles) {}
+
+  TurbulenceType Type() const { return type_; }
+  float BaseFrequencyX() const { return base_frequency_x_; }
+  float BaseFrequencyY() const { return base_frequency_y_; }
+  int NumOctaves() const { return num_octaves_; }
+  float Seed() const { return seed_; }
+  bool StitchTiles() const { return stitch_tiles_; }
+
+ private:
+  bool operator==(const FilterOperation& o) const override {
+    if (!IsSameType(o))
+      return false;
+    const TurbulenceFilterOperation* other =
+        static_cast<const TurbulenceFilterOperation*>(&o);
+    return (type_ == other->type_ &&
+            base_frequency_x_ == other->base_frequency_x_ &&
+            base_frequency_y_ == other->base_frequency_y_ &&
+            num_octaves_ == other->num_octaves_ && seed_ == other->seed_ &&
+            stitch_tiles_ == other->stitch_tiles_);
+  }
+
+  TurbulenceType type_;
+  float base_frequency_x_;
+  float base_frequency_y_;
+  int num_octaves_;
+  float seed_;
+  bool stitch_tiles_;
+};
+
+template <>
+struct DowncastTraits<TurbulenceFilterOperation> {
+  static bool AllowFrom(const FilterOperation& op) {
+    return op.GetType() == FilterOperation::kTurbulence;
   }
 };
 

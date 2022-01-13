@@ -85,6 +85,7 @@ static void CountFilterUse(FilterOperation::OperationType operation_type,
     case FilterOperation::kBoxReflect:
     case FilterOperation::kConvolveMatrix:
     case FilterOperation::kComponentTransfer:
+    case FilterOperation::kTurbulence:
       NOTREACHED();
       return;
     case FilterOperation::kReference:

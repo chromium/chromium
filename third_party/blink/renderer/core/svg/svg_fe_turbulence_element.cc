@@ -30,7 +30,7 @@
 namespace blink {
 
 template <>
-const SVGEnumerationMap& GetEnumerationMap<SVGStitchOptions>() {
+CORE_EXPORT const SVGEnumerationMap& GetEnumerationMap<SVGStitchOptions>() {
   static const SVGEnumerationMap::Entry enum_items[] = {
       {kSvgStitchtypeStitch, "stitch"}, {kSvgStitchtypeNostitch, "noStitch"},
   };
@@ -39,7 +39,7 @@ const SVGEnumerationMap& GetEnumerationMap<SVGStitchOptions>() {
 }
 
 template <>
-const SVGEnumerationMap& GetEnumerationMap<TurbulenceType>() {
+CORE_EXPORT const SVGEnumerationMap& GetEnumerationMap<TurbulenceType>() {
   static const SVGEnumerationMap::Entry enum_items[] = {
       {FETURBULENCE_TYPE_FRACTALNOISE, "fractalNoise"},
       {FETURBULENCE_TYPE_TURBULENCE, "turbulence"},
