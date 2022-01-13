@@ -133,8 +133,7 @@ void SetPreferencesFromJson(Profile* profile, const std::string& json) {
   absl::optional<base::Value> parsed = base::JSONReader::Read(json);
   if (!parsed || !parsed->is_dict())
     return;
-  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
-                                        prefs::kDevToolsPreferences);
+  DictionaryPrefUpdate update(profile->GetPrefs(), prefs::kDevToolsPreferences);
   for (auto dict_value : parsed->DictItems()) {
     if (!dict_value.second.is_string())
       continue;
@@ -1658,7 +1657,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
            ->FindKey(kDevToolsApp)) {
     // Ensure there is always a default size so that
     // BrowserFrame::InitBrowserFrame can retrieve it later.
-    DictionaryPrefUpdateDeprecated update(prefs, prefs::kAppWindowPlacement);
+    DictionaryPrefUpdate update(prefs, prefs::kAppWindowPlacement);
     base::Value* wp_prefs = update.Get();
     base::Value dev_tools_defaults(base::Value::Type::DICTIONARY);
     dev_tools_defaults.SetIntKey("left", 100);
