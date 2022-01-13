@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_new_script_fetcher.h"
 
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_new_script_loader.h"
@@ -102,6 +103,11 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
   // used by ServiceWorkerMainResourceLoader for navigations handled by this
   // service worker.
   uint32_t options = network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
+
+  // Notify to DevTools that the request for fetching the service worker script
+  // is about to start. It fires `Network.onRequestWillBeSent` event.
+  devtools_instrumentation::OnServiceWorkerMainScriptRequestWillBeSent(
+      requesting_frame_id_, version_->reporting_source(), request);
 
   mojo::MakeSelfOwnedReceiver(
       ServiceWorkerNewScriptLoader::CreateAndStart(

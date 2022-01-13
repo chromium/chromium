@@ -292,6 +292,10 @@ void OnWebTransportHandshakeFailed(
 void OnServiceWorkerMainScriptFetchingFailed(
     const GlobalRenderFrameHostId& requesting_frame_id,
     const std::string& error);
+void OnServiceWorkerMainScriptRequestWillBeSent(
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const base::UnguessableToken& token,
+    const network::ResourceRequest& request);
 
 // Fires `Network.onLoadingFailed` event for a dedicated worker main script.
 // Used for PlzDedicatedWorker.

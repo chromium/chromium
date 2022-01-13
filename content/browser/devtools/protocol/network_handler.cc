@@ -2153,14 +2153,24 @@ void NetworkHandler::RequestSent(
     request_object->SetTrustTokenParams(
         BuildTrustTokenParams(*request_info.trust_token_params));
   }
+
+  std::string resource_type = Network::ResourceTypeEnum::Other;
+  if (request_info.resource_type ==
+          static_cast<int>(blink::mojom::ResourceType::kWorker) ||
+      request_info.resource_type ==
+          static_cast<int>(blink::mojom::ResourceType::kSharedWorker) ||
+      request_info.resource_type ==
+          static_cast<int>(blink::mojom::ResourceType::kServiceWorker)) {
+    resource_type = Network::ResourceTypeEnum::Script;
+  }
+
   // TODO(crbug.com/1261605): Populate redirect_emitted_extra_info instead of
   // just returning false.
   frontend_->RequestWillBeSent(
       request_id, loader_id, url_without_fragment, std::move(request_object),
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
       std::move(initiator), /*redirect_emitted_extra_info=*/false,
-      std::unique_ptr<Network::Response>(),
-      std::string(Network::ResourceTypeEnum::Other),
+      std::unique_ptr<Network::Response>(), resource_type,
       Maybe<std::string>() /* frame_id */, request_info.has_user_gesture);
 }
 

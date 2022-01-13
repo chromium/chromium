@@ -6,7 +6,6 @@
 
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -49,18 +48,11 @@ void WorkerMainScriptLoader::Start(
   resource_load_observer_ = resource_load_observer;
   fetch_context_ = fetch_context;
   client_ = client;
-
   resource_load_info_notifier_wrapper_ =
       fetch_context->CreateResourceLoadInfoNotifierWrapper();
 
   // TODO(crbug.com/929370): Support CSP check to post violation reports for
   // worker top-level scripts, if off-the-main-thread fetch is enabled.
-
-  ResourceRequest resource_request(initial_request_);
-  resource_load_observer_->WillSendRequest(
-      resource_request,
-      /*redirect_response=*/ResourceResponse(), ResourceType::kScript,
-      resource_loader_options_, RenderBlockingBehavior::kNonBlocking);
 
   resource_load_info_notifier_wrapper_->NotifyResourceLoadInitiated(
       request_id_, initial_request_url_, initial_request_.HttpMethod().Latin1(),
@@ -81,6 +73,7 @@ void WorkerMainScriptLoader::Start(
   resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
       std::move(response_head), PreviewsTypes::kPreviewsUnspecified);
 
+  ResourceRequest resource_request(initial_request_);
   resource_load_observer_->DidReceiveResponse(
       initial_request_.InspectorId(), resource_request, resource_response_,
       /*resource=*/nullptr,
@@ -327,9 +320,6 @@ void WorkerMainScriptLoader::HandleRedirections(
     WebURLLoader::PopulateURLResponse(
         WebURL(last_request_url_), *redirect_response, &response,
         redirect_response->ssl_info.has_value(), request_id_);
-    resource_load_observer_->WillSendRequest(
-        *new_request, response.ToResourceResponse(), ResourceType::kScript,
-        resource_loader_options_, RenderBlockingBehavior::kNonBlocking);
     resource_load_info_notifier_wrapper_->NotifyResourceRedirectReceived(
         redirect_info, std::move(redirect_response));
   }

@@ -1245,6 +1245,34 @@ void OnServiceWorkerMainScriptFetchingFailed(
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 }
 
+void OnServiceWorkerMainScriptRequestWillBeSent(
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const base::UnguessableToken& token,
+    const network::ResourceRequest& request) {
+  // Currently, `requesting_frame_id` is invalid when payment apps and
+  // extensions register a service worker. See the callers of
+  // ServiceWorkerContextWrapper::RegisterServiceWorker().
+  if (!requesting_frame_id)
+    return;
+
+  RenderFrameHostImpl* requesting_frame =
+      RenderFrameHostImpl::FromID(requesting_frame_id);
+  if (!requesting_frame)
+    return;
+
+  FrameTreeNode* ftn = requesting_frame->frame_tree_node();
+  DCHECK(ftn);
+
+  auto timestamp = base::TimeTicks::Now();
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
+  DispatchToAgents(
+      ftn, &protocol::NetworkHandler::RequestSent, token.ToString(),
+      /*loader_id=*/"", request.headers, *request_info,
+      protocol::Network::Initiator::TypeEnum::Other, ftn->current_url(),
+      /*initiator_devtools_request_id=*/"", timestamp);
+}
+
 void OnWorkerMainScriptLoadingFailed(
     const GURL& url,
     const base::UnguessableToken& worker_token,
@@ -1284,7 +1312,7 @@ void OnWorkerMainScriptRequestWillBeSent(
   DispatchToAgents(
       ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
       /*loader_id=*/"", request.headers, *request_info,
-      protocol::Network::Initiator::TypeEnum::Script, ftn->current_url(),
+      protocol::Network::Initiator::TypeEnum::Other, ftn->current_url(),
       /*initiator_devtools_request_id*/ "", timestamp);
 }
 
