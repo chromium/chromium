@@ -28,14 +28,19 @@ class EventCapturer : public ui::EventHandler {
   std::vector<std::unique_ptr<ui::TouchEvent>>& touch_events() {
     return touch_events_;
   }
+  std::vector<std::unique_ptr<ui::MouseEvent>>& mouse_events() {
+    return mouse_events_;
+  }
 
  private:
   // EventHandler overrides:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
 
   std::vector<std::unique_ptr<ui::KeyEvent>> key_events_;
   std::vector<std::unique_ptr<ui::TouchEvent>> touch_events_;
+  std::vector<std::unique_ptr<ui::MouseEvent>> mouse_events_;
 };
 }  // namespace test
 }  // namespace input_overlay

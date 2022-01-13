@@ -8,16 +8,80 @@
 
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_move_mouse.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
 #include "ui/aura/window.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
 namespace arc {
+namespace input_overlay {
+namespace {
+// Strings for parsing actions.
+constexpr char kTapAction[] = "tap";
+constexpr char kKeyboard[] = "keyboard";
+constexpr char kMoveAction[] = "move";
+constexpr char kMouse[] = "mouse";
+constexpr char kMouseLock[] = "mouse_lock";
+// Mask for interesting modifiers.
+const int kInterestingFlagsMask =
+    ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+
+// Parse Json to different types of actions.
+std::vector<std::unique_ptr<Action>> ParseJsonToActions(
+    aura::Window* window,
+    const base::Value& root) {
+  std::vector<std::unique_ptr<Action>> actions;
+
+  // Parse tap actions if they exist.
+  const base::Value* tap_act_val = root.FindKey(kTapAction);
+  if (tap_act_val) {
+    const base::Value* keyboard_act_list = tap_act_val->FindListKey(kKeyboard);
+    if (keyboard_act_list && keyboard_act_list->is_list()) {
+      for (const base::Value& val : keyboard_act_list->GetList()) {
+        std::unique_ptr<Action> action = std::make_unique<ActionTapKey>(window);
+        bool succeed = action->ParseFromJson(val);
+        if (succeed)
+          actions.emplace_back(std::move(action));
+      }
+    }
+  }
+
+  // Parse move actions if they exist.
+  const base::Value* move_act_val = root.FindKey(kMoveAction);
+  if (move_act_val) {
+    const base::Value* keyboard_act_list = move_act_val->FindListKey(kKeyboard);
+    if (keyboard_act_list && keyboard_act_list->is_list()) {
+      for (const base::Value& val : keyboard_act_list->GetList()) {
+        std::unique_ptr<Action> action =
+            std::make_unique<ActionMoveKey>(window);
+        bool succeed = action->ParseFromJson(val);
+        if (succeed)
+          actions.emplace_back(std::move(action));
+      }
+    }
+    const auto* mouse_act_list = move_act_val->FindListKey(kMouse);
+    if (mouse_act_list && mouse_act_list->is_list()) {
+      for (const auto& val : mouse_act_list->GetList()) {
+        auto action = std::make_unique<ActionMoveMouse>(window);
+        bool succeed = action->ParseFromJson(val);
+        if (succeed)
+          actions.emplace_back(std::move(action));
+      }
+    }
+  }
+
+  // TODO(cuicuiruan): parse more actions.
+  return actions;
+}
+}  // namespace
+
 // Calculate the window content bounds (excluding caption if it exists) in the
 // root window.
-gfx::RectF input_overlay::CalculateWindowContentBounds(aura::Window* window) {
+gfx::RectF CalculateWindowContentBounds(aura::Window* window) {
   DCHECK(window);
   auto* widget = views::Widget::GetWidgetForNativeView(window);
   DCHECK(widget->non_client_view());
@@ -29,6 +93,33 @@ gfx::RectF input_overlay::CalculateWindowContentBounds(aura::Window* window) {
   return bounds;
 }
 
+class TouchInjector::MouseLock {
+ public:
+  MouseLock(TouchInjector* owner, ui::DomCode key, int modifiers)
+      : owner_(owner),
+        key_(key),
+        modifiers_(modifiers & kInterestingFlagsMask) {}
+  ~MouseLock() = default;
+  bool Process(const ui::Event& event) {
+    if (!event.IsKeyEvent())
+      return false;
+    auto* key_event = event.AsKeyEvent();
+    if (key_ == key_event->code() &&
+        modifiers_ == (key_event->flags() & kInterestingFlagsMask)) {
+      if (key_event->type() == ui::ET_KEY_PRESSED) {
+        owner_->FlipMouseLockFlag();
+      }
+      return true;
+    }
+    return false;
+  }
+
+ private:
+  TouchInjector* const owner_;
+  ui::DomCode key_;
+  int modifiers_;
+};
+
 TouchInjector::TouchInjector(aura::Window* top_level_window)
     : target_window_(top_level_window) {}
 
@@ -37,11 +128,12 @@ TouchInjector::~TouchInjector() {
 }
 
 void TouchInjector::ParseActions(const base::Value& root) {
+  ParseMouseLock(root);
   auto parsed_actions = ParseJsonToActions(target_window_, root);
-  if (!parsed_actions)
-    return;
-  std::move(parsed_actions->begin(), parsed_actions->end(),
-            std::back_inserter(actions_));
+  if (!parsed_actions.empty()) {
+    std::move(parsed_actions.begin(), parsed_actions.end(),
+              std::back_inserter(actions_));
+  }
 }
 
 void TouchInjector::NotifyTextInputState(bool active) {
@@ -65,12 +157,27 @@ void TouchInjector::UnRegisterEventRewriter() {
 
 void TouchInjector::DispatchTouchCancelEvent() {
   for (auto& action : actions_) {
-    auto cancel = action->GetTouchCancelEvent();
+    auto cancel = action->GetTouchCanceledEvent();
     if (!cancel)
       continue;
     if (SendEventFinally(continuation_, &*cancel).dispatcher_destroyed) {
       VLOG(0) << "Undispatched event due to destroyed dispatcher for canceling "
                  "touch event.";
+    }
+  }
+}
+
+void TouchInjector::DispatchTouchReleaseEventOnMouseUnLock() {
+  for (auto& action : actions_) {
+    if (action->require_mouse_locked()) {
+      auto release = action->GetTouchReleasedEvent();
+      if (!release)
+        continue;
+      if (SendEventFinally(continuation_, &*release).dispatcher_destroyed) {
+        VLOG(0)
+            << "Undispatched event due to destroyed dispatcher for releasing "
+               "touch event when unlocking mouse.";
+      }
     }
   }
 }
@@ -84,6 +191,20 @@ void TouchInjector::SendTouchMoveEvent(
   }
 }
 
+void TouchInjector::ParseMouseLock(const base::Value& value) {
+  auto* mouse_lock = value.FindKey(kMouseLock);
+  if (!mouse_lock)
+    return;
+  auto key = ParseKeyboardKey(*mouse_lock, kMouseLock);
+  if (!key)
+    return;
+  mouse_lock_ = std::make_unique<MouseLock>(this, key->first, key->second);
+}
+
+void TouchInjector::FlipMouseLockFlag() {
+  is_mouse_locked_ = !is_mouse_locked_;
+}
+
 ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::Event& event,
     const ui::EventRewriter::Continuation continuation) {
@@ -91,11 +212,17 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   if (text_input_active_)
     return SendEvent(continuation, &event);
 
-  auto bounds = input_overlay::CalculateWindowContentBounds(target_window_);
+  if (mouse_lock_ && mouse_lock_->Process(event)) {
+    if (!is_mouse_locked_)
+      DispatchTouchReleaseEventOnMouseUnLock();
+    return DiscardEvent(continuation);
+  }
 
+  auto bounds = CalculateWindowContentBounds(target_window_);
   std::list<ui::TouchEvent> touch_events;
   for (auto& action : actions_) {
-    bool rewritten = action->RewriteEvent(event, touch_events, bounds);
+    bool rewritten =
+        action->RewriteEvent(event, bounds, is_mouse_locked_, touch_events);
     if (!rewritten)
       continue;
     if (touch_events.empty())
@@ -111,11 +238,17 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
           base::BindOnce(&TouchInjector::SendTouchMoveEvent,
                          weak_ptr_factory_.GetWeakPtr(), continuation,
                          touch_events.back()),
-          input_overlay::kSendTouchMoveDelay);
+          kSendTouchMoveDelay);
       return SendEventFinally(continuation, &touch_events.front());
     }
   }
+
+  // Discard other mouse events if the mouse is locked.
+  if (is_mouse_locked_ && event.IsMouseEvent())
+    return DiscardEvent(continuation);
+
   return SendEvent(continuation, &event);
 }
 
+}  // namespace input_overlay
 }  // namespace arc

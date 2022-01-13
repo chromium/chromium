@@ -19,6 +19,8 @@
 namespace arc {
 namespace input_overlay {
 
+// Parse position from Json.
+std::unique_ptr<Position> ParsePosition(const base::Value& value);
 // Log events for debugging.
 void LogEvent(const ui::Event& event);
 void LogTouchEvents(const std::list<ui::TouchEvent>& events);
@@ -26,6 +28,14 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events);
 // Will replace it with showing the result of dom_key / keyboard key depending
 // on different keyboard layout.
 std::string GetDisplayText(const std::string& dom_code_string);
+// Json format:
+// {
+//    "key": "KeyA",
+//    "modifiers": [""] // optional: "ctrl", "shift", "alt".
+// }
+absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
+    const base::Value& value,
+    const base::StringPiece key_name);
 
 // This is the base touch action which converts other events to touch
 // events for input overlay.
@@ -44,8 +54,9 @@ class Action {
   //    No need to rewrite the event, so call SendEvent with original event.
   // |content_bounds| is the window bounds excluding caption.
   virtual bool RewriteEvent(const ui::Event& origin,
-                            std::list<ui::TouchEvent>& touch_events,
-                            const gfx::RectF& content_bounds) = 0;
+                            const gfx::RectF& content_bounds,
+                            const bool is_mouse_locked,
+                            std::list<ui::TouchEvent>& touch_events) = 0;
   // Get the UI location in the content view.
   virtual gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) = 0;
   virtual std::unique_ptr<ActionLabel> CreateView(
@@ -55,13 +66,15 @@ class Action {
   const std::vector<std::unique_ptr<Position>>& locations() const {
     return locations_;
   }
+  bool require_mouse_locked() const { return require_mouse_locked_; }
   const aura::Window* target_window() const { return target_window_; }
   int current_position_index() const { return current_position_index_; }
   const absl::optional<int> touch_id() const { return touch_id_; }
 
   // Cancel event when the focus is leave or window is destroyed and the touch
   // event is still not released.
-  absl::optional<ui::TouchEvent> GetTouchCancelEvent();
+  absl::optional<ui::TouchEvent> GetTouchCanceledEvent();
+  absl::optional<ui::TouchEvent> GetTouchReleasedEvent();
   // TODO (b/200210666): Can remove this after the bug is fixed.
   bool IsKeyAlreadyPressed(ui::DomCode code) const;
 
@@ -71,14 +84,18 @@ class Action {
   absl::optional<gfx::PointF> CalculateTouchPosition(
       const gfx::RectF& content_bounds);
   bool IsRepeatedKeyEvent(const ui::KeyEvent& key_event);
-  void OnTouchReleased();
-  void OnTouchCancelled();
+  virtual void OnTouchReleased();
+  virtual void OnTouchCancelled();
 
   // name_ is basically for debugging and not visible to users.
   std::string name_;
   // Location take turns for each key press if there are more than
   // one location.
   std::vector<std::unique_ptr<Position>> locations_;
+  // If |require_mouse_locked_| == true, the action takes effect when the mouse
+  // is locked. Once the mouse is unlocked, the active actions which need mouse
+  // lock will be released.
+  bool require_mouse_locked_ = false;
 
   aura::Window* target_window_;
   absl::optional<int> touch_id_;

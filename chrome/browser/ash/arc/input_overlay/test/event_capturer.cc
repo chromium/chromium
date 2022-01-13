@@ -13,6 +13,7 @@ EventCapturer::~EventCapturer() = default;
 void EventCapturer::Clear() {
   key_events_.clear();
   touch_events_.clear();
+  mouse_events_.clear();
 }
 
 void EventCapturer::OnKeyEvent(ui::KeyEvent* event) {
@@ -22,6 +23,11 @@ void EventCapturer::OnKeyEvent(ui::KeyEvent* event) {
 void EventCapturer::OnTouchEvent(ui::TouchEvent* event) {
   touch_events_.emplace_back(std::make_unique<ui::TouchEvent>(*event));
 }
+
+void EventCapturer::OnMouseEvent(ui::MouseEvent* event) {
+  mouse_events_.emplace_back(std::make_unique<ui::MouseEvent>(*event));
+}
+
 }  // namespace test
 }  // namespace input_overlay
 }  // namespace arc

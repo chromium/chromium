@@ -9,6 +9,7 @@
 #include "components/exo/shell_surface_util.h"
 
 namespace arc {
+namespace input_overlay {
 
 class DisplayOverlayController::InputMappingView : public views::View {
  public:
@@ -112,4 +113,5 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
                             : nullptr;
 }
 
+}  // namespace input_overlay
 }  // namespace arc

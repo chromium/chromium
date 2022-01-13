@@ -26,8 +26,6 @@ constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
 
 gfx::RectF CalculateWindowContentBounds(aura::Window* window);
 
-}  // namespace input_overlay
-
 // TouchInjector includes all the touch actions related to the specific window
 // and performs as a bridge between the ArcInputOverlayManager and the touch
 // actions. It implements EventRewriter to transform input events to touch
@@ -43,6 +41,9 @@ class TouchInjector : public ui::EventRewriter {
   const std::vector<std::unique_ptr<input_overlay::Action>>& actions() const {
     return actions_;
   }
+  bool is_mouse_locked() const { return is_mouse_locked_; }
+
+  void FlipMouseLockFlag();
 
   // Parse Json to actions.
   // Json value format:
@@ -71,12 +72,20 @@ class TouchInjector : public ui::EventRewriter {
       const Continuation continuation) override;
 
  private:
+  class MouseLock;
+
   // If the window is destroying or focusing out, releasing the active touch
   // event.
   void DispatchTouchCancelEvent();
-
-  void SendTouchMoveEvent(const ui::EventRewriter::Continuation,
+  void SendTouchMoveEvent(const ui::EventRewriter::Continuation continuation,
                           const ui::TouchEvent& event);
+  void DispatchTouchReleaseEventOnMouseUnLock();
+  // Json format:
+  // "mouse_lock": {
+  //   "key": "KeyA",
+  //   "modifier": [""]
+  // }
+  void ParseMouseLock(const base::Value& value);
 
   aura::Window* target_window_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;
@@ -86,11 +95,15 @@ class TouchInjector : public ui::EventRewriter {
                           &ui::EventSource::AddEventRewriter,
                           &ui::EventSource::RemoveEventRewriter>
       observation_{this};
+  std::unique_ptr<MouseLock> mouse_lock_;
   bool text_input_active_ = false;
+  // The mouse is unlocked by default.
+  bool is_mouse_locked_ = false;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };
 
+}  // namespace input_overlay
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_

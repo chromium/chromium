@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/dependent_position.h"
 
-#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "base/logging.h"
 
 namespace arc {
 namespace input_overlay {

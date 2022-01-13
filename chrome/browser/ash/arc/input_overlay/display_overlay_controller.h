@@ -11,6 +11,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace arc {
+namespace input_overlay {
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog.
 class DisplayOverlayController {
@@ -41,6 +42,7 @@ class DisplayOverlayController {
   InputMappingView* input_mapping_view_ = nullptr;
 };
 
+}  // namespace input_overlay
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_

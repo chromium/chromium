@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
-#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -15,10 +14,6 @@
 
 namespace arc {
 namespace input_overlay {
-namespace {
-// Key strings in Json file.
-constexpr char kKey[] = "key";
-}  // namespace
 
 ActionTapKey::ActionTapKey(aura::Window* window) : Action(window) {}
 
@@ -31,24 +26,19 @@ bool ActionTapKey::ParseFromJson(const base::Value& value) {
                << "}.";
     return false;
   }
-  const std::string* key = value.FindStringKey(kKey);
+  auto key = ParseKeyboardKey(value, name_);
   if (!key) {
-    LOG(ERROR) << "Require key code for tap key action {" << name_ << "}.";
+    LOG(ERROR) << "No/invalid key code for key tap action {" << name_ << "}.";
     return false;
   }
-  key_ = ui::KeycodeConverter::CodeStringToDomCode(*key);
-  if (key_ == ui::DomCode::NONE) {
-    LOG(ERROR) << "Tap key code is invalid for tap key action {" << name_
-               << "}. It should be similar to {KeyA}, but got {" << *key
-               << "}.";
-    return false;
-  }
+  key_ = key->first;
   return true;
 }
 
 bool ActionTapKey::RewriteEvent(const ui::Event& origin,
-                                std::list<ui::TouchEvent>& touch_events,
-                                const gfx::RectF& content_bounds) {
+                                const gfx::RectF& content_bounds,
+                                const bool is_mouse_locked,
+                                std::list<ui::TouchEvent>& touch_events) {
   if (!origin.IsKeyEvent())
     return false;
   LogEvent(origin);

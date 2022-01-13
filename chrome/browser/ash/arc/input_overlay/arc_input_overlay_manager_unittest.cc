@@ -39,7 +39,7 @@ class ArcInputOverlayManagerTest : public exo::test::ExoTestBase {
         .size();
   }
 
-  TouchInjector* GetTouchInjector(aura::Window* window) {
+  input_overlay::TouchInjector* GetTouchInjector(aura::Window* window) {
     auto it =
         arc_test_input_overlay_manager_->input_overlay_enabled_windows_.find(
             window);
@@ -58,7 +58,7 @@ class ArcInputOverlayManagerTest : public exo::test::ExoTestBase {
     return arc_test_input_overlay_manager_->key_event_source_rewriter_.get();
   }
 
-  DisplayOverlayController* GetDisplayOverlayController() {
+  input_overlay::DisplayOverlayController* GetDisplayOverlayController() {
     return arc_test_input_overlay_manager_->display_overlay_controller_.get();
   }
 

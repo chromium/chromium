@@ -107,8 +107,8 @@ void ArcInputOverlayManager::ReadData(const std::string& package_name,
     return;
 
   base::Value& root = result.value.value();
-  std::unique_ptr<TouchInjector> injector =
-      std::make_unique<TouchInjector>(top_level_window);
+  std::unique_ptr<input_overlay::TouchInjector> injector =
+      std::make_unique<input_overlay::TouchInjector>(top_level_window);
   injector->ParseActions(root);
   input_overlay_enabled_windows_.emplace(top_level_window, std::move(injector));
 }
@@ -181,7 +181,8 @@ void ArcInputOverlayManager::AddDisplayOverlayController() {
   auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
   DCHECK(it != input_overlay_enabled_windows_.end());
   display_overlay_controller_ =
-      std::make_unique<DisplayOverlayController>(it->second.get());
+      std::make_unique<input_overlay::DisplayOverlayController>(
+          it->second.get());
 }
 
 void ArcInputOverlayManager::RemoveDisplayOverlayController() {

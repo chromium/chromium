@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
+namespace input_overlay {
 namespace {
 
 constexpr const char kValidJson[] =
@@ -79,5 +80,5 @@ TEST_F(DisplayOverlayControllerTest, TestWindowBoundsChange) {
   auto updated_bounds = controller_->GetInputMappingViewBoundsForTesting();
   EXPECT_NE(original_bounds, updated_bounds);
 }
-
+}  // namespace input_overlay
 }  // namespace arc

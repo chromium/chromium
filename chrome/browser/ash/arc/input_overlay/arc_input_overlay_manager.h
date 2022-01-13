@@ -80,7 +80,7 @@ class ArcInputOverlayManager : public KeyedService,
   base::ScopedObservation<aura::client::FocusClient,
                           aura::client::FocusChangeObserver>
       focus_observation_{this};
-  base::flat_map<aura::Window*, std::unique_ptr<TouchInjector>>
+  base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
       input_overlay_enabled_windows_;
   bool is_text_input_active_ = false;
   ui::InputMethod* input_method_ = nullptr;
@@ -89,7 +89,8 @@ class ArcInputOverlayManager : public KeyedService,
   // each time.
   aura::Window* registered_top_level_window_ = nullptr;
   std::unique_ptr<KeyEventSourceRewriter> key_event_source_rewriter_;
-  std::unique_ptr<DisplayOverlayController> display_overlay_controller_;
+  std::unique_ptr<input_overlay::DisplayOverlayController>
+      display_overlay_controller_;
 
   void ReadData(const std::string& package_name,
                 aura::Window* top_level_window);
