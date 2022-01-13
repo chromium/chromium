@@ -326,6 +326,7 @@ class MockRuntime {
     'light-estimation': vrMojom.XRSessionFeature.LIGHT_ESTIMATION,
     'anchors': vrMojom.XRSessionFeature.ANCHORS,
     'depth-sensing': vrMojom.XRSessionFeature.DEPTH,
+    'secondary-views': vrMojom.XRSessionFeature.SECONDARY_VIEWS,
   };
 
   static _sessionModeToMojoMap = {
@@ -436,25 +437,34 @@ class MockRuntime {
     // This appropriately handles if the coordinates are null
     this.setBoundsGeometry(fakeDeviceInit.boundsCoordinates);
 
-    this.setViews(fakeDeviceInit.views);
+    this.setViews(fakeDeviceInit.views, fakeDeviceInit.secondaryViews);
 
     // Need to support webVR which doesn't have a notion of features
     this._setFeatures(fakeDeviceInit.supportedFeatures || []);
   }
 
   // WebXR Test API
-  setViews(views) {
-    if (views) {
-      this.displayInfo_.views = [];
-      this.viewOffsets_ = [];
-      for (let i = 0; i < views.length; i++) {
-        this.displayInfo_.views[i] = this._getView(views[i]);
-        this.viewOffsets_[i] = composeGFXTransform(views[i].viewOffset);
-      }
+  setViews(primaryViews, secondaryViews) {
+    this.primaryViews_ = [];
+    this.secondaryViews_ = [];
+    let xOffset = 0;
+    if (primaryViews) {
+      this.primaryViews_ = [];
+      xOffset = this._setViews(primaryViews, xOffset, this.primaryViews_);
+    }
 
-      if (this.sessionClient_) {
-        this.sessionClient_.onChanged(this.displayInfo_);
-      }
+    if (secondaryViews) {
+      this.secondaryViews_ = [];
+      this._setViews(secondaryViews, xOffset, this.secondaryViews_);
+    }
+
+    // Do not include secondary views here because they are only exposed to
+    // WebXR if requested by the session. getFrameData() will send back the
+    // secondary views when enabled.
+    this.displayInfo_.views = this.primaryViews_;
+
+    if (this.sessionClient_) {
+      this.sessionClient_.onChanged(this.displayInfo_);
     }
   }
 
@@ -701,6 +711,15 @@ class MockRuntime {
     }
   }
 
+  _setViews(deviceViews, xOffset, views) {
+    for (let i = 0; i < deviceViews.length; i++) {
+      views[i] = this._getView(deviceViews[i], xOffset);
+      xOffset += deviceViews[i].resolution.width;
+    }
+
+    return xOffset;
+  }
+
   _onStageParametersUpdated() {
     // Indicate for the frame loop that the stage parameters have been updated.
     this.stageParametersId_++;
@@ -739,7 +758,7 @@ class MockRuntime {
           position: [-0.032, 0, 0],
           orientation: [0, 0, 0, 1]
         })),
-        viewport: { width: viewport_size, height: viewport_size }
+        viewport: { x: 0, y: 0, width: viewport_size, height: viewport_size }
       },
       {
         eye: vrMojom.XREye.kRight,
@@ -753,14 +772,14 @@ class MockRuntime {
           position: [0.032, 0, 0],
           orientation: [0, 0, 0, 1]
         })),
-        viewport: { width: viewport_size, height: viewport_size }
+        viewport: { x: viewport_size, y: 0, width: viewport_size, height: viewport_size }
       }]
     };
   }
 
   // This function converts between the matrix provided by the WebXR test API
   // and the internal data representation.
-  _getView(fakeXRViewInit) {
+  _getView(fakeXRViewInit, xOffset) {
     let fov = null;
 
     if (fakeXRViewInit.fieldOfView) {
@@ -811,9 +830,13 @@ class MockRuntime {
       fieldOfView: fov,
       mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform(fakeXRViewInit.viewOffset)),
       viewport: {
+        x: xOffset,
+        y: 0,
         width: fakeXRViewInit.resolution.width,
         height: fakeXRViewInit.resolution.height
-      }
+      },
+      isFirstPersonObserver: fakeXRViewInit.isFirstPersonObserver ? true : false,
+      viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset)
     };
   }
 
@@ -882,14 +905,23 @@ class MockRuntime {
           }
         }
 
-        let views = this.displayInfo_.views;
-        for (let i = 0; i < views.length; i++) {
-          views[i].mojoFromView = this._getMojoFromViewerWithOffset(this.viewOffsets_[i]);
+        let frame_views = this.primaryViews_;
+        for (let i = 0; i < this.primaryViews_.length; i++) {
+          this.primaryViews_[i].mojoFromView =
+            this._getMojoFromViewerWithOffset(this.primaryViews_[i].viewOffset);
+        }
+        if (this.enabledFeatures_.includes(vrMojom.XRSessionFeature.SECONDARY_VIEWS)) {
+          for (let i = 0; i < this.secondaryViews_.length; i++) {
+            this.secondaryViews_[i].mojoFromView =
+              this._getMojoFromViewerWithOffset(this.secondaryViews_[i].viewOffset);
+          }
+
+          frame_views = frame_views.concat(this.secondaryViews_);
         }
 
         const frameData = {
           mojoFromViewer: this.pose_,
-          views: views,
+          views: frame_views,
           mojoSpaceReset: mojo_space_reset,
           inputState: input_state,
           timeDelta: {

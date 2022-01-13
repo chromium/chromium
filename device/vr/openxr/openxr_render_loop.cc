@@ -54,7 +54,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
   gpu::MailboxHolder mailbox_holder;
-  if (XR_FAILED(openxr_->BeginFrame(&texture, &mailbox_holder))) {
+  if (XR_FAILED(openxr_->BeginFrame(texture, mailbox_holder))) {
     return frame_data;
   }
 
@@ -132,13 +132,13 @@ void OpenXrRenderLoop::StartRuntime(
 
   texture_helper_.SetUseBGRA(true);
   LUID luid;
-  if (XR_FAILED(openxr->GetLuid(&luid, extension_helper_)) ||
+  if (XR_FAILED(openxr->GetLuid(extension_helper_, luid)) ||
       !texture_helper_.SetAdapterLUID(luid) ||
       !texture_helper_.EnsureInitialized() ||
-      XR_FAILED(openxr->InitSession(texture_helper_.GetDevice(),
-                                    extension_helper_,
-                                    std::move(on_session_ended_callback),
-                                    std::move(on_visibility_state_changed)))) {
+      XR_FAILED(openxr->InitSession(
+          enabled_features_, texture_helper_.GetDevice(), extension_helper_,
+          std::move(on_session_ended_callback),
+          std::move(on_visibility_state_changed)))) {
     texture_helper_.Reset();
     return std::move(start_runtime_callback).Run(false);
   }
@@ -165,29 +165,25 @@ void OpenXrRenderLoop::StopRuntime() {
 void OpenXrRenderLoop::EnableSupportedFeatures(
     const std::vector<device::mojom::XRSessionFeature>& required_features,
     const std::vector<device::mojom::XRSessionFeature>& optional_features) {
-  const bool anchors_supported =
-      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
-          XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-  const bool hand_input_supported =
-      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
-          kMSFTHandInteractionExtensionName);
-  const bool hittest_supported =
-      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
-          XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
+  const OpenXrExtensionEnumeration* extension_enumeration =
+      extension_helper_.ExtensionEnumeration();
 
   // Filter out features that are requested but not supported
   auto openxr_extension_enabled_filter =
-      [anchors_supported, hand_input_supported,
-       hittest_supported](device::mojom::XRSessionFeature feature) {
-        if (feature == device::mojom::XRSessionFeature::ANCHORS &&
-            !anchors_supported) {
-          return false;
-        } else if (feature == device::mojom::XRSessionFeature::HAND_INPUT &&
-                   !hand_input_supported) {
-          return false;
-        } else if (feature == device::mojom::XRSessionFeature::HIT_TEST &&
-                   !hittest_supported) {
-          return false;
+      [extension_enumeration](device::mojom::XRSessionFeature feature) {
+        if (feature == device::mojom::XRSessionFeature::ANCHORS) {
+          return extension_enumeration->ExtensionSupported(
+              XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+        } else if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
+          return extension_enumeration->ExtensionSupported(
+              kMSFTHandInteractionExtensionName);
+        } else if (feature == device::mojom::XRSessionFeature::HIT_TEST) {
+          return extension_enumeration->ExtensionSupported(
+              XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
+        } else if (feature ==
+                   device::mojom::XRSessionFeature::SECONDARY_VIEWS) {
+          return extension_enumeration->ExtensionSupported(
+              XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
         }
         return true;
       };
@@ -328,21 +324,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
 
 void OpenXrRenderLoop::SendInitialDisplayInfo() {
   mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
-
-  const std::vector<XrViewConfigurationView>& view_configs =
-      openxr_->GetViewConfigs();
-  DCHECK_EQ(view_configs.size(), OpenXrApiWrapper::kNumViews);
-  display_info->views.resize(OpenXrApiWrapper::kNumViews);
-
-  for (size_t i = 0; i < OpenXrApiWrapper::kNumViews; i++) {
-    display_info->views[i] = mojom::XRView::New();
-    auto* view = display_info->views[i].get();
-
-    view->eye = OpenXrApiWrapper::GetEyeFromIndex(i);
-    view->viewport = gfx::Size(view_configs[i].recommendedImageRectWidth,
-                               view_configs[i].recommendedImageRectHeight);
-    view->field_of_view = mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
-  }
+  display_info->views = openxr_->GetDefaultViews();
 
   main_thread_task_runner_->PostTask(
       FROM_HERE,
@@ -352,7 +334,7 @@ void OpenXrRenderLoop::SendInitialDisplayInfo() {
 void OpenXrRenderLoop::UpdateStageParameters() {
   XrExtent2Df stage_bounds;
   gfx::Transform local_from_stage;
-  if (openxr_->GetStageParameters(&stage_bounds, &local_from_stage)) {
+  if (openxr_->GetStageParameters(stage_bounds, local_from_stage)) {
     mojom::VRStageParametersPtr stage_parameters =
         mojom::VRStageParameters::New();
     // mojo_from_local is identity, as is stage_from_floor, so we can directly
@@ -500,6 +482,10 @@ void OpenXrRenderLoop::OnContextLost() {
   // the observer right away.
   context_provider_->RemoveObserver(this);
 
+  if (openxr_) {
+    openxr_->OnContextProviderLost();
+  }
+
   // Destroying the context provider in the OpenXrRenderLoop::OnContextLost
   // callback leads to UAF deep inside the GpuChannel callback code. To avoid
   // UAF, post a task to ourselves which does the real context lost work. Pass
@@ -547,7 +533,7 @@ void OpenXrRenderLoop::OnContextProviderCreated(
   }
 
   if (openxr_) {
-    openxr_->CreateSharedMailboxes(context_provider.get());
+    openxr_->OnContextProviderCreated(context_provider);
   }
 
   context_provider->AddObserver(this);

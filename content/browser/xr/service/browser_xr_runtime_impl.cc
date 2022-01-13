@@ -103,10 +103,14 @@ device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
   int kMinSize = 2;
   // DCHECK on debug builds to catch legitimate large sizes, but clamp on
   // release builds to ensure valid state.
-  DCHECK_LT(view->viewport.width(), kMaxSize);
-  DCHECK_LT(view->viewport.height(), kMaxSize);
+  DCHECK_LT(view->viewport.width() + view->viewport.x(), kMaxSize);
+  DCHECK_LT(view->viewport.height() + view->viewport.y(), kMaxSize);
+  DCHECK_GT(view->viewport.width() + view->viewport.x(), kMinSize);
+  DCHECK_GT(view->viewport.height() + view->viewport.y(), kMinSize);
   ret->viewport =
-      gfx::Size(base::clamp(view->viewport.width(), kMinSize, kMaxSize),
+      gfx::Rect(base::clamp(view->viewport.x(), 0, kMaxSize),
+                base::clamp(view->viewport.y(), 0, kMaxSize),
+                base::clamp(view->viewport.width(), kMinSize, kMaxSize),
                 base::clamp(view->viewport.height(), kMinSize, kMaxSize));
   return ret;
 }

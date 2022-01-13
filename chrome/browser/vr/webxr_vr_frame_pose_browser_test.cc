@@ -20,7 +20,7 @@ namespace {
 const float kIPD = 0.2f;
 
 struct Frame {
-  device_test::mojom::SubmittedFrameDataPtr submitted;
+  std::vector<device_test::mojom::SubmittedFrameDataPtr> submitted;
   device_test::mojom::PoseFrameDataPtr pose;
   device_test::mojom::DeviceConfigPtr config;
 };
@@ -28,7 +28,7 @@ struct Frame {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      device_test::mojom::SubmittedFrameDataPtr frame_data,
+      std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
@@ -86,9 +86,12 @@ unsigned int ParseColorFrameId(const device_test::mojom::ColorPtr& color) {
 }
 
 void MyXRMock::OnFrameSubmitted(
-    device_test::mojom::SubmittedFrameDataPtr frame_data,
+    std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
-  unsigned int frame_id = ParseColorFrameId(frame_data->color);
+  // Since we clear the entire context to a single color, every view in the
+  // frame has the same color (see onImmersiveXRFrameCallback in
+  // test_webxr_poses.html).
+  unsigned int frame_id = ParseColorFrameId(frame_data[0]->color);
   DLOG(ERROR) << "Frame Submitted: " << num_frames_submitted_ << " "
               << frame_id;
   submitted_frames.push_back({std::move(frame_data),
@@ -200,41 +203,43 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
   std::set<unsigned int> seen_right;
   unsigned int max_frame_id = 0;
   for (const auto& frame : my_mock.submitted_frames) {
-    const device_test::mojom::SubmittedFrameDataPtr& data = frame.submitted;
+    for (const auto& data : frame.submitted) {
+      // The test page encodes the frame id as the clear color.
+      unsigned int frame_id = ParseColorFrameId(data->color);
 
-    // The test page encodes the frame id as the clear color.
-    unsigned int frame_id = ParseColorFrameId(data->color);
+      // Validate that each frame is only seen once for each eye.
+      DLOG(ERROR) << "Frame id: " << frame_id;
+      if (data->eye == device_test::mojom::Eye::LEFT) {
+        ASSERT_TRUE(seen_left.find(frame_id) == seen_left.end())
+            << "Frame for left eye submitted more than once";
+        seen_left.insert(frame_id);
+      } else if (data->eye == device_test::mojom::Eye::RIGHT) {
+        ASSERT_TRUE(seen_right.find(frame_id) == seen_right.end())
+            << "Frame for right eye submitted more than once";
+        seen_right.insert(frame_id);
+      } else {
+        NOTREACHED();
+      }
 
-    // Validate that each frame is only seen once for each eye.
-    DLOG(ERROR) << "Frame id: " << frame_id;
-    if (data->eye == device_test::mojom::Eye::LEFT) {
-      ASSERT_TRUE(seen_left.find(frame_id) == seen_left.end())
-          << "Frame for left eye submitted more than once";
-      seen_left.insert(frame_id);
-    } else {
-      ASSERT_TRUE(seen_right.find(frame_id) == seen_right.end())
-          << "Frame for right eye submitted more than once";
-      seen_right.insert(frame_id);
+      // Validate that frames arrive in order.
+      ASSERT_TRUE(frame_id >= max_frame_id) << "Frame received out of order";
+      max_frame_id = frame_id;
+
+      // Validate that the JavaScript-side cache of frames contains our
+      // submitted frame.
+      ASSERT_TRUE(t->RunJavaScriptAndExtractBoolOrFail(
+          base::StringPrintf("checkFrameOccurred(%d)", frame_id)))
+          << "JavaScript-side frame cache does not contain submitted frame";
+
+      // Validate that the JavaScript-side cache of frames has the correct pose.
+      ASSERT_TRUE(t->RunJavaScriptAndExtractBoolOrFail(base::StringPrintf(
+          "checkFramePose(%d, %s)", frame_id, GetPoseAsString(frame).c_str())))
+          << "JavaScript-side frame cache has incorrect pose";
+
+      ASSERT_TRUE(t->RunJavaScriptAndExtractBoolOrFail(base::StringPrintf(
+          "checkFrameLeftEyeIPD(%d, %f)", frame_id, kIPD / 2)))
+          << "JavaScript-side frame cache has incorrect eye position";
     }
-
-    // Validate that frames arrive in order.
-    ASSERT_TRUE(frame_id >= max_frame_id) << "Frame received out of order";
-    max_frame_id = std::max(frame_id, max_frame_id);
-
-    // Validate that the JavaScript-side cache of frames contains our submitted
-    // frame.
-    ASSERT_TRUE(t->RunJavaScriptAndExtractBoolOrFail(
-        base::StringPrintf("checkFrameOccurred(%d)", frame_id)))
-        << "JavaScript-side frame cache does not contain submitted frame";
-
-    // Validate that the JavaScript-side cache of frames has the correct pose.
-    ASSERT_TRUE(t->RunJavaScriptAndExtractBoolOrFail(base::StringPrintf(
-        "checkFramePose(%d, %s)", frame_id, GetPoseAsString(frame).c_str())))
-        << "JavaScript-side frame cache has incorrect pose";
-
-    ASSERT_TRUE(t->RunJavaScriptAndExtractBoolOrFail(
-        base::StringPrintf("checkFrameLeftEyeIPD(%d, %f)", frame_id, kIPD / 2)))
-        << "JavaScript-side frame cache has incorrect eye position";
   }
 
   // Tell JavaScript that it is done with the test.

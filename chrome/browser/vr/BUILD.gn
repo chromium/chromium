@@ -648,6 +648,7 @@ if (!is_android) {
         "webxr_vr_permission_browser_test.cc",
         "webxr_vr_permission_request_browser_test.cc",
         "webxr_vr_pixel_browser_test.cc",
+        "webxr_vr_secondary_views_browser_test.cc",
         "webxr_vr_tab_browser_test.cc",
         "webxr_vr_transition_browser_test.cc",
       ]
