@@ -340,10 +340,6 @@ if (use_system_harfbuzz) {
       defines += [ "HAVE_PTHREAD" ]
     }
 
-    if (is_mac) {
-      defines += [ "HAVE_XLOCALE_H" ]
-    }
-
     if (enable_paint_preview) {
       # Paint Previews make use of CFF subsetting. However, enabling this is
       # expensive for binary size so only compile it when Paint Previews are
