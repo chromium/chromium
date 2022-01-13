@@ -51,6 +51,29 @@ bool ShouldExecuteModifyOperationsOnShadowBackend(PrefService* prefs,
 
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
+struct LoginsResultImpl {
+  using ResultType = LoginsResult;
+  using ElementsType = LoginsResult;
+
+  static LoginsResult* GetElements(LoginsResult& logins) { return &logins; }
+
+  static std::unique_ptr<PasswordForm> Clone(
+      const std::unique_ptr<PasswordForm>& login) {
+    return std::make_unique<PasswordForm>(*login);
+  }
+
+  static bool IsLess(const std::unique_ptr<PasswordForm>& lhs,
+                     const std::unique_ptr<PasswordForm>& rhs) {
+    return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
+  }
+
+  static bool HaveInconsistentPasswords(
+      const std::unique_ptr<PasswordForm>& lhs,
+      const std::unique_ptr<PasswordForm>& rhs) {
+    return lhs->password_value != rhs->password_value;
+  }
+};
+
 struct LoginsResultOrErrorImpl {
   using ResultType = LoginsResultOrError;
   using ElementsType = LoginsResult;
@@ -323,9 +346,24 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  main_backend_->FillMatchingLoginsAsync(std::move(callback), include_psl,
-                                         forms);
-  // TODO(crbug.com/1229655): Request shadow_backend_ and compare results.
+  auto handler =
+      base::MakeRefCounted<ShadowTrafficMetricsRecorder<LoginsResultImpl>>(
+          MethodName("FillMatchingLoginsAsync"));
+  main_backend_->FillMatchingLoginsAsync(
+      base::BindOnce(
+          &ShadowTrafficMetricsRecorder<LoginsResultImpl>::RecordMainResult,
+          handler)
+          .Then(std::move(callback)),
+      include_psl, forms);
+
+  if (ShouldExecuteReadOperationsOnShadowBackend(
+          is_syncing_passwords_callback_.Run())) {
+    shadow_backend_->FillMatchingLoginsAsync(
+        base::BindOnce(
+            &ShadowTrafficMetricsRecorder<LoginsResultImpl>::RecordShadowResult,
+            handler),
+        include_psl, forms);
+  }
 }
 
 void PasswordStoreProxyBackend::AddLoginAsync(

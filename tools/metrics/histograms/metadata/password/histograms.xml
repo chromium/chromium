@@ -2398,6 +2398,8 @@ chromium-metrics-reviews@google.com.
     asynchronous job for {Function} has returned.
   </summary>
   <token key="Function">
+    <variant name="FillMatchingLoginsAsync"
+        summary="FillMatchingLoginsAsync()"/>
     <variant name="GetAllLoginsAsync" summary="GetAllLoginsAsync()"/>
     <variant name="GetAutofillableLoginsAsync"
         summary="GetAutofillableLoginsAsync()"/>

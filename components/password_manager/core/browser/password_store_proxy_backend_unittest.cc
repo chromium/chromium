@@ -158,10 +158,7 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
         std::move(reply).Run(CreateTestLogins());
       })));
   EXPECT_CALL(is_syncing_passwords_callback_, Run).WillRepeatedly(Return(true));
-  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
-        std::move(reply).Run(CreateTestLogins());
-      })));
+  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync);
   proxy_backend().GetAllLoginsAsync(mock_reply.Get());
 }
 
@@ -175,6 +172,8 @@ TEST_F(PasswordStoreProxyBackendTest,
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
+  EXPECT_CALL(is_syncing_passwords_callback_, Run).WillRepeatedly(Return(true));
+  EXPECT_CALL(shadow_backend(), GetAutofillableLoginsAsync);
   proxy_backend().GetAutofillableLoginsAsync(mock_reply.Get());
 }
 
@@ -188,6 +187,8 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToFillMatchingLoginsAsync) {
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
+  EXPECT_CALL(is_syncing_passwords_callback_, Run).WillRepeatedly(Return(true));
+  EXPECT_CALL(shadow_backend(), FillMatchingLoginsAsync);
   proxy_backend().FillMatchingLoginsAsync(mock_reply.Get(),
                                           /*include_psl=*/false,
                                           std::vector<PasswordFormDigest>());
@@ -352,6 +353,18 @@ TEST_F(PasswordStoreProxyBackendTest,
   EXPECT_CALL(main_backend(), GetAutofillableLoginsAsync);
   EXPECT_CALL(shadow_backend(), GetAutofillableLoginsAsync).Times(0);
   proxy_backend().GetAutofillableLoginsAsync(/*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowFillMatchingLoginsAsyncWhenSyncDisabled) {
+  EXPECT_CALL(is_syncing_passwords_callback_, Run)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), FillMatchingLoginsAsync);
+  EXPECT_CALL(shadow_backend(), FillMatchingLoginsAsync).Times(0);
+  proxy_backend().FillMatchingLoginsAsync(/*callback=*/base::DoNothing(),
+                                          /*include_psl=*/false,
+                                          std::vector<PasswordFormDigest>());
 }
 
 TEST_F(PasswordStoreProxyBackendTest, NoShadowAddLoginAsyncWhenSyncEnabled) {
