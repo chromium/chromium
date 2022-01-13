@@ -182,8 +182,8 @@ void ProfileResetter::ResetDefaultSearchEngine() {
     if (search_engines) {
       // This Chrome distribution channel provides a custom search engine. We
       // must reset to it.
-      ListPrefUpdateDeprecated update(prefs, prefs::kSearchProviderOverrides);
-      update->Swap(search_engines.get());
+      ListPrefUpdate update(prefs, prefs::kSearchProviderOverrides);
+      *update = std::move(*search_engines);
     }
 
     template_url_service_->RepairPrepopulatedSearchEngines();
@@ -300,9 +300,10 @@ void ProfileResetter::ResetStartupPages() {
   DCHECK(prefs);
   std::unique_ptr<base::ListValue> url_list(
       master_settings_->GetUrlsToRestoreOnStartup());
-  if (url_list)
-    ListPrefUpdateDeprecated(prefs, prefs::kURLsToRestoreOnStartup)
-        ->Swap(url_list.get());
+  if (url_list) {
+    *ListPrefUpdate(prefs, prefs::kURLsToRestoreOnStartup) =
+        std::move(*url_list);
+  }
 
   int restore_on_startup;
   if (master_settings_->GetRestoreOnStartup(&restore_on_startup))
