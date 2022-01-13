@@ -32,9 +32,15 @@ class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
   void PostMainMessageLoopRun() override;
 
  private:
+  class UseGraphicalPresenter;
   class ViewProviderRouter;
 
   std::unique_ptr<base::ProcessLifecycle> lifecycle_;
+
+  // Initialized if GraphicalPresenter is to be used to show top-level windows.
+  std::unique_ptr<UseGraphicalPresenter> use_graphical_presenter_;
+
+  // TODO(crbug.com/1284806): Remove this once ViewProvider is deprecated.
   std::unique_ptr<ViewProviderRouter> view_provider_;
 };
 

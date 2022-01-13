@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chrome_browser_main_parts_fuchsia.h"
 
+#include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/app/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
@@ -79,12 +80,8 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
     ui::fuchsia::SetScenicViewPresenter(base::BindRepeating(
         &ViewProviderScenic::PresentView, base::Unretained(this)));
 
-    scenic_.set_error_handler([](zx_status_t status) {
-      ZX_LOG(ERROR, status) << " Scenic lost.";
-      // Terminate here so that e.g. a Scenic crash results in the browser
-      // immediately terminating, without generating a cascading crash report.
-      base::Process::TerminateCurrentProcessImmediately(1);
-    });
+    scenic_.set_error_handler(base::LogFidlErrorAndExitProcess(
+        FROM_HERE, "fuchsia.ui.scenic.Scenic"));
     scenic_session_.set_event_handler(
         fit::bind_member(this, &ViewProviderScenic::OnScenicEvents));
   }
@@ -254,12 +251,8 @@ class ViewProviderFlatland : public fuchsia::ui::app::ViewProvider {
     ui::fuchsia::SetFlatlandViewPresenter(base::BindRepeating(
         &ViewProviderFlatland::PresentView, base::Unretained(this)));
 
-    flatland_.set_error_handler([](zx_status_t status) {
-      ZX_LOG(ERROR, status) << " Flatland server disconnected.";
-      // Terminate here so that e.g. a Scenic crash results in the browser
-      // immediately terminating, without generating a cascading crash report.
-      base::Process::TerminateCurrentProcessImmediately(1);
-    });
+    flatland_.set_error_handler(
+        base::LogFidlErrorAndExitProcess(FROM_HERE, "Flatland"));
     flatland_->SetDebugName("ChromeBrowserMainPartsFuchsia");
     flatland_.events().OnError =
         [](fuchsia::ui::composition::FlatlandError error) {
@@ -486,6 +479,49 @@ constexpr fuchsia::ui::composition::TransformId
 
 }  // namespace
 
+// Helper class that configures Ozone to use GraphicalPresenter to display a new
+// View for each new top-level window.
+class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
+ public:
+  UseGraphicalPresenter() {
+    ui::fuchsia::SetScenicViewPresenter(base::BindRepeating(
+        &UseGraphicalPresenter::PresentScenicView, base::Unretained(this)));
+    ui::fuchsia::SetFlatlandViewPresenter(base::BindRepeating(
+        &UseGraphicalPresenter::PresentFlatlandView, base::Unretained(this)));
+
+    base::ComponentContextForProcess()->svc()->Connect(
+        graphical_presenter_.NewRequest());
+    graphical_presenter_.set_error_handler(base::LogFidlErrorAndExitProcess(
+        FROM_HERE, "fuchsia.element.GraphicalPresenter"));
+  }
+  ~UseGraphicalPresenter() = default;
+
+  UseGraphicalPresenter(const UseGraphicalPresenter&) = delete;
+  UseGraphicalPresenter& operator=(const UseGraphicalPresenter&) = delete;
+
+ private:
+  void PresentScenicView(fuchsia::ui::views::ViewHolderToken view_holder_token,
+                         fuchsia::ui::views::ViewRef view_ref) {
+    fuchsia::element::ViewSpec view_spec;
+    view_spec.set_view_holder_token(std::move(view_holder_token));
+    view_spec.set_view_ref(std::move(view_ref));
+    graphical_presenter_->PresentView(std::move(view_spec), nullptr, nullptr,
+                                      [](auto result) {});
+  }
+
+  void PresentFlatlandView(
+      fuchsia::ui::views::ViewportCreationToken viewport_creation_token) {
+    auto view_ref_pair = scenic::ViewRefPair::New();
+    fuchsia::element::ViewSpec view_spec;
+    view_spec.set_viewport_creation_token(std::move(viewport_creation_token));
+    view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
+    graphical_presenter_->PresentView(std::move(view_spec), nullptr, nullptr,
+                                      [](auto result) {});
+  }
+
+  fuchsia::element::GraphicalPresenterPtr graphical_presenter_;
+};
+
 // ViewProviderRouter ----------------------------------------------------------
 
 // ViewProvider implementation that delegates calls to the correct Ozone
@@ -567,10 +603,17 @@ int ChromeBrowserMainPartsFuchsia::PreEarlyInitialization() {
 }
 
 int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
-  // Register the ViewProvider API.
-  view_provider_ = std::make_unique<ViewProviderRouter>(
-      std::make_unique<ViewProviderScenic>(),
-      std::make_unique<ViewProviderFlatland>());
+  const char kUseGraphicalPresenter[] = "use-graphical-presenter";
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kUseGraphicalPresenter)) {
+    // Configure Ozone to create top-level Views via GraphicalPresenter.
+    use_graphical_presenter_ = std::make_unique<UseGraphicalPresenter>();
+  } else {
+    // Register the ViewProvider API.
+    view_provider_ = std::make_unique<ViewProviderRouter>(
+        std::make_unique<ViewProviderScenic>(),
+        std::make_unique<ViewProviderFlatland>());
+  }
 
   zx_status_t status =
       base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();

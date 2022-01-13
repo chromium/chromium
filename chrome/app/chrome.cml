@@ -4,7 +4,8 @@
         runner: "elf",
         binary: "chrome",
         args: [
-          "--enable-features=Vulkan,CanvasOopRasterization"
+            "--use-graphical-presenter",
+            "--enable-features=Vulkan,CanvasOopRasterization"
         ],
     },
     capabilities: [
@@ -34,6 +35,7 @@
         {
             protocol: [
                 "fuchsia.device.NameProvider",
+                "fuchsia.element.GraphicalPresenter",
                 "fuchsia.fonts.Provider",
                 "fuchsia.input.virtualkeyboard.ControllerCreator",
                 "fuchsia.intl.PropertyProvider",

@@ -15,6 +15,7 @@
     ],
     "services": [
       "fuchsia.device.NameProvider",
+      "fuchsia.element.GraphicalPresenter",
       "fuchsia.fonts.Provider",
       "fuchsia.input.virtualkeyboard.ControllerCreator",
       "fuchsia.intl.PropertyProvider",
