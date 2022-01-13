@@ -1544,12 +1544,12 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   local_state->SetString(prefs::kProfileLastUsed, profile_name1);
 
   // Set the last used profiles.
-  ListPrefUpdateDeprecated update(local_state, prefs::kProfilesLastActive);
-  base::ListValue* initial_last_active_profile_list = update.Get();
+  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  base::Value* initial_last_active_profile_list = update.Get();
   initial_last_active_profile_list->Append(
-      std::make_unique<base::Value>(path1.BaseName().MaybeAsASCII()));
+      base::Value(path1.BaseName().MaybeAsASCII()));
   initial_last_active_profile_list->Append(
-      std::make_unique<base::Value>(path2.BaseName().MaybeAsASCII()));
+      base::Value(path2.BaseName().MaybeAsASCII()));
 
   profile_manager->CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
@@ -1615,12 +1615,12 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_name);
 
   // Set the last used profiles.
-  ListPrefUpdateDeprecated update(local_state, prefs::kProfilesLastActive);
-  base::ListValue* initial_last_active_profile_list = update.Get();
+  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  base::Value* initial_last_active_profile_list = update.Get();
   initial_last_active_profile_list->Append(
-      std::make_unique<base::Value>(guest_path.BaseName().MaybeAsASCII()));
+      base::Value(guest_path.BaseName().MaybeAsASCII()));
   initial_last_active_profile_list->Append(
-      std::make_unique<base::Value>(path.BaseName().MaybeAsASCII()));
+      base::Value(path.BaseName().MaybeAsASCII()));
 
   profile_manager->CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();

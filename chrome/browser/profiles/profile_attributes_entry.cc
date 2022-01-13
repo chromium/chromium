@@ -778,8 +778,8 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
 
   {
     // Bundle the changes in a single update.
-    DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
-    base::DictionaryValue* attributes_dict = update.Get();
+    DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+    base::Value* attributes_dict = update.Get();
     base::Value* entry = attributes_dict->FindDictKey(storage_key_);
     if (!entry) {
       entry = attributes_dict->SetKey(
@@ -990,8 +990,8 @@ bool ProfileAttributesEntry::SetValue(const char* key, base::Value value) {
   if (old_value && *old_value == value)
     return false;
 
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes_dict = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value* attributes_dict = update.Get();
   base::Value* entry = attributes_dict->FindDictKey(storage_key_);
   if (!entry) {
     entry = attributes_dict->SetKey(storage_key_,
@@ -1006,8 +1006,8 @@ bool ProfileAttributesEntry::ClearValue(const char* key) {
   if (!old_value)
     return false;
 
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes_dict = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value* attributes_dict = update.Get();
   base::Value* entry = attributes_dict->FindDictKey(storage_key_);
   DCHECK(entry);
   entry->RemoveKey(key);

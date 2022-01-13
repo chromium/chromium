@@ -267,8 +267,8 @@ ProfileAttributesStorage::ProfileAttributesStorage(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       user_data_dir_(user_data_dir) {
   // Populate the attributes storage.
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value* attributes = update.Get();
   for (auto kv : attributes->DictItems()) {
     base::Value& info = kv.second;
     std::string* name = info.FindStringKey(ProfileAttributesEntry::kNameKey);
@@ -343,8 +343,8 @@ void ProfileAttributesStorage::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
   std::string key = StorageKeyFromProfilePath(params.profile_path);
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value* attributes = update.Get();
 
   base::Value info(base::Value::Type::DICTIONARY);
   info.SetStringKey(ProfileAttributesEntry::kNameKey, params.profile_name);
@@ -426,8 +426,8 @@ void ProfileAttributesStorage::RemoveProfile(
   for (auto& observer : observer_list_)
     observer.OnProfileWillBeRemoved(profile_path);
 
-  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes = update.Get();
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value* attributes = update.Get();
   std::string key = StorageKeyFromProfilePath(profile_path);
   attributes->RemoveKey(key);
   profile_attributes_entries_.erase(profile_path.value());
