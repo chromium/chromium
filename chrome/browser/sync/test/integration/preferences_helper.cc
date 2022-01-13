@@ -60,8 +60,8 @@ void ClearPref(int index, const char* pref_name) {
 void ChangeListPref(int index,
                     const char* pref_name,
                     const base::ListValue& new_value) {
-  ListPrefUpdateDeprecated update(GetPrefs(index), pref_name);
-  base::ListValue* list = update.Get();
+  ListPrefUpdate update(GetPrefs(index), pref_name);
+  base::Value* list = update.Get();
   for (const auto& it : new_value.GetList()) {
     list->Append(it.Clone());
   }

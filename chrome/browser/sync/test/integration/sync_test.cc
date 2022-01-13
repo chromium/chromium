@@ -775,7 +775,7 @@ void SyncTest::SetUpInvalidations(int index) {
       // real clients, those are stored upon subscription with the
       // per-user-topic server. The pref name is defined in
       // per_user_topic_subscription_manager.cc.
-      DictionaryPrefUpdateDeprecated update(
+      DictionaryPrefUpdate update(
           GetProfile(index)->GetPrefs(),
           "invalidation.per_sender_registered_for_invalidation");
       update->SetKey(kInvalidationGCMSenderId,
@@ -791,11 +791,11 @@ void SyncTest::SetUpInvalidations(int index) {
                      base::Value("/private/" + notification_type +
                                  "-topic_server_user_id"));
       }
-      DictionaryPrefUpdateDeprecated update_client_id(
+      DictionaryPrefUpdate update_client_id(
           GetProfile(index)->GetPrefs(),
           invalidation::prefs::kInvalidationClientIDCache);
 
-      update_client_id->SetString(kInvalidationGCMSenderId, client_id);
+      update_client_id->SetStringKey(kInvalidationGCMSenderId, client_id);
       break;
     }
     case SERVER_TYPE_UNDECIDED:
