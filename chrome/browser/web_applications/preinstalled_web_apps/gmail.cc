@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -17,11 +18,11 @@ ExternalInstallOptions GetConfigForGmail() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://mail.google.com/mail/installwebapp?usp=chrome_default"),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       /*user_display_mode=*/DisplayMode::kStandalone,
 #else
       /*user_display_mode=*/DisplayMode::kBrowser,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};

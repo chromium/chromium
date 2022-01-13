@@ -46,7 +46,7 @@ class PreinstalledWebAppInstallFeaturesTest
           {}, {kMigrateDefaultChromeAppToWebAppsGSuite,
                kMigrateDefaultChromeAppToWebAppsNonGSuite});
     }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     if (MigrateManaged()) {
       managed_migration_.InitAndEnableFeature(
           kAllowDefaultWebAppMigrationForChromeOsManagedUsers);
@@ -54,7 +54,7 @@ class PreinstalledWebAppInstallFeaturesTest
       managed_migration_.InitAndDisableFeature(
           kAllowDefaultWebAppMigrationForChromeOsManagedUsers);
     }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   ~PreinstalledWebAppInstallFeaturesTest() override = default;
@@ -103,11 +103,11 @@ class PreinstalledWebAppInstallFeaturesTest
 TEST_P(PreinstalledWebAppInstallFeaturesTest, MigrationEnabled) {
   ExpectMigrationEnabled(
       /*unmanaged_expectation=*/MigrateBase(),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       /*managed_expectation=*/MigrateBase() && MigrateManaged()
 #else
       /*managed_expectation=*/MigrateBase()
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   );
 }
 

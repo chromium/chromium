@@ -19,9 +19,9 @@
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/web_applications/web_app_shortcut_linux.h"
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace base {
 class TaskRunner;
@@ -40,14 +40,14 @@ struct ScopedShortcutOverrideForTesting {
   ScopedShortcutOverrideForTesting(const ScopedShortcutOverrideForTesting&) =
       delete;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ScopedTempDir desktop;
   base::ScopedTempDir application_menu;
   base::ScopedTempDir quick_launch;
   base::ScopedTempDir startup;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::ScopedTempDir chrome_apps_folder;
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   base::ScopedTempDir desktop;
 #endif
 };
@@ -89,9 +89,9 @@ struct ShortcutInfo {
   std::set<std::string> file_handler_extensions;
   std::set<std::string> file_handler_mime_types;
   std::set<std::string> protocol_handlers;
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   std::set<DesktopActionInfo> actions;
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // An app is multi-profile if there is a single shortcut and single app shim
   // for all profiles. The app itself has a profile switcher that may be used

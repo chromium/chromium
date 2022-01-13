@@ -23,8 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
@@ -118,8 +118,8 @@ AppId InstallWebApp(Profile* profile,
   return app_id;
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 AppId InstallWebAppWithUrlHandlers(
     Profile* profile,
     const GURL& start_url,

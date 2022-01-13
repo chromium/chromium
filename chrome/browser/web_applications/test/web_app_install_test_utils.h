@@ -16,8 +16,8 @@
 #include "chrome/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #endif
 
@@ -50,8 +50,8 @@ AppId InstallWebApp(Profile* profile,
                     webapps::WebappInstallSource install_source =
                         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 // Install a web app with url_handlers then register it with the
 // UrlHandlerManager. This is sufficient for testing URL matching and launch
 // at startup.

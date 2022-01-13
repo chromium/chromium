@@ -9,7 +9,7 @@
 
 namespace web_app {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 // This block defines stub implementations of OS specific methods for
 // uninstallation command. Currently, only Windows has their own implementation.

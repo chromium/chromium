@@ -31,7 +31,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/icon_util.h"
 #endif
 
@@ -41,20 +41,20 @@ namespace web_app {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const int kDesiredIconSizesForShortcut[] = {16, 32, 128, 256, 512};
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Linux supports icons of any size. FreeDesktop Icon Theme Specification states
 // that "Minimally you should install a 48x48 icon in the hicolor theme."
 const int kDesiredIconSizesForShortcut[] = {16, 32, 48, 128, 256, 512};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const int* kDesiredIconSizesForShortcut = IconUtil::kIconDimensions;
 #else
 const int kDesiredIconSizesForShortcut[] = {32};
 #endif
 
 size_t GetNumDesiredIconSizesForShortcut() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return IconUtil::kNumIconDimensions;
 #else
   return base::size(kDesiredIconSizesForShortcut);
@@ -118,9 +118,9 @@ ScopedShortcutOverrideForTesting::ScopedShortcutOverrideForTesting() = default;
 ScopedShortcutOverrideForTesting::~ScopedShortcutOverrideForTesting() {
   DCHECK(GetMutableShortcutOverrideForTesting().has_value());  // IN-TEST
   std::vector<base::ScopedTempDir*> directories;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   directories = {&desktop, &application_menu, &quick_launch, &startup};
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   directories = {&chrome_apps_folder};
   // Checks and cleans up possible hidden files in directories.
   std::vector<std::string> hidden_files{"Icon\r", ".localized"};
@@ -133,7 +133,7 @@ ScopedShortcutOverrideForTesting::~ScopedShortcutOverrideForTesting() {
       }
     }
   }
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   directories = {&desktop};
 #endif
   for (base::ScopedTempDir* dir : directories) {
@@ -160,7 +160,7 @@ std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
   // Initialize all directories used. The success & the DCHECK are separated to
   // ensure that these function calls occur on release builds.
   if (!base_path.empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     bool success =
         scoped_override->desktop.CreateUniqueTempDirUnderPath(base_path);
     DCHECK(success);
@@ -172,18 +172,18 @@ std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
     DCHECK(success);
     success = scoped_override->startup.CreateUniqueTempDirUnderPath(base_path);
     DCHECK(success);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     bool success =
         scoped_override->chrome_apps_folder.CreateUniqueTempDirUnderPath(
             base_path);
     DCHECK(success);
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
     bool success =
         scoped_override->desktop.CreateUniqueTempDirUnderPath(base_path);
     DCHECK(success);
 #endif
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     bool success = scoped_override->desktop.CreateUniqueTempDir();
     DCHECK(success);
     success = scoped_override->application_menu.CreateUniqueTempDir();
@@ -192,10 +192,10 @@ std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
     DCHECK(success);
     success = scoped_override->startup.CreateUniqueTempDir();
     DCHECK(success);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     bool success = scoped_override->chrome_apps_folder.CreateUniqueTempDir();
     DCHECK(success);
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
     bool success = scoped_override->desktop.CreateUniqueTempDir();
     DCHECK(success);
 #endif
@@ -234,10 +234,10 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
   std::string port(url.has_port() ? url.port() : "80");
   std::string scheme_port(scheme + "_" + port);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath::StringType host_path(base::UTF8ToWide(host));
   base::FilePath::StringType scheme_port_path(base::UTF8ToWide(scheme_port));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath::StringType host_path(host);
   base::FilePath::StringType scheme_port_path(scheme_port);
 #else
@@ -335,7 +335,7 @@ scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner() {
       base::MayBlock(), base::TaskPriority::USER_VISIBLE,
       base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::ThreadPool::CreateCOMSTATaskRunner(
       traits, base::SingleThreadTaskRunnerThreadMode::SHARED);
 #else
@@ -349,7 +349,7 @@ base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
                                                   shortcut_info.url);
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // Multi-profile shortcuts exist only on macOS.
   NOTREACHED();
