@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -55,8 +54,8 @@ class ExternalConnector {
   // until it intends to unregister. By the time |callback| is executed, a new
   // attempt at connecting will be started, and this object is valid. Note that
   // some prior messages may be lost.
-  virtual base::CallbackListSubscription AddConnectionErrorCallback(
-      base::RepeatingClosure callback) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual base::CallbackListSubscription
+  AddConnectionErrorCallback(base::RepeatingClosure callback) = 0;
 
   // Registers a service that other Mojo processes/services can bind to. Others
   // can call BindInterface(|service_name|, interface_name) to bind to this
