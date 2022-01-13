@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link IncognitoNotificationServiceImpl}. */
 public class IncognitoNotificationService extends SplitCompatIntentService {
     private static final String TAG = "incognito_notification";
+
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl";
+
     public IncognitoNotificationService() {
-        super(SplitCompatUtils.getIdentifierName(
-                      "org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl"),
-                TAG);
+        super(IMPL_CLASS_NAME, TAG);
     }
 }

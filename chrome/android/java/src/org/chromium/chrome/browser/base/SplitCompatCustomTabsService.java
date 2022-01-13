@@ -13,6 +13,8 @@ import android.os.IBinder;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.BundleUtils;
+
 import java.util.List;
 
 /**
@@ -29,8 +31,8 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
 
     @Override
     protected void attachBaseContext(Context context) {
-        context = SplitCompatUtils.createChromeContext(context);
-        mImpl = (Impl) SplitCompatUtils.newInstance(context, mServiceClassName);
+        context = SplitCompatApplication.createChromeContext(context);
+        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
         mImpl.setService(this);
         super.attachBaseContext(context);
     }

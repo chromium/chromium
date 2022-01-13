@@ -55,6 +55,7 @@ import org.chromium.ui.base.ResourceBundle;
  * {@link SplitChromeApplication}.
  */
 public class SplitCompatApplication extends Application {
+    public static final String CHROME_SPLIT_NAME = "chrome";
     private static final String TAG = "SplitCompatApp";
     private static final String COMMAND_LINE_FILE = "chrome-command-line";
     private static final String ATTACH_BASE_CONTEXT_EVENT = "ChromeApplication.attachBaseContext";
@@ -208,8 +209,8 @@ public class SplitCompatApplication extends Application {
             PureJavaExceptionHandler.installHandler(() -> {
                 // ChromePureJavaExceptionReporter may be in the chrome module, so load by
                 // reflection from there.
-                return (JavaExceptionReporter) SplitCompatUtils.newInstance(
-                        SplitCompatUtils.createChromeContext(ContextUtils.getApplicationContext()),
+                return (JavaExceptionReporter) BundleUtils.newInstance(
+                        createChromeContext(ContextUtils.getApplicationContext()),
                         "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
             });
         }
@@ -263,6 +264,14 @@ public class SplitCompatApplication extends Application {
 
     public static boolean isBrowserProcess() {
         return !ContextUtils.getProcessName().contains(":");
+    }
+
+    /** Creates a context which can be used to load code and resources in the chrome split. */
+    public static Context createChromeContext(Context base) {
+        if (!BundleUtils.isIsolatedSplitInstalled(base, CHROME_SPLIT_NAME)) {
+            return base;
+        }
+        return BundleUtils.createIsolatedSplitContext(base, CHROME_SPLIT_NAME);
     }
 
     private void maybeInitProcessType() {

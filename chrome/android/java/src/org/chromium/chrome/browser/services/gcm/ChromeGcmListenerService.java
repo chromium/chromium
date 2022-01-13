@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.services.gcm;
 
 import android.annotation.SuppressLint;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatGcmListenerService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /**
  * See {@link ChromeGcmListenerServiceImpl}.
@@ -15,8 +15,11 @@ import org.chromium.chrome.browser.base.SplitCompatUtils;
  */
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class ChromeGcmListenerService extends SplitCompatGcmListenerService {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.services.gcm.ChromeGcmListenerServiceImpl";
+
     public ChromeGcmListenerService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.services.gcm.ChromeGcmListenerServiceImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }

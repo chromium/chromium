@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.provider;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatContentProvider;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link ChromeBrowserProviderImpl}. */
 public class ChromeBrowserProvider extends SplitCompatContentProvider {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.provider.ChromeBrowserProviderImpl";
+
     public ChromeBrowserProvider() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.provider.ChromeBrowserProviderImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }

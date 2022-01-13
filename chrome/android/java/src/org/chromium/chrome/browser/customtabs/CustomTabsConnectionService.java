@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatCustomTabsService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link CustomTabsConnectionServiceImpl}. */
 public class CustomTabsConnectionService extends SplitCompatCustomTabsService {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.customtabs.CustomTabsConnectionServiceImpl";
+
     public CustomTabsConnectionService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.customtabs.CustomTabsConnectionServiceImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }

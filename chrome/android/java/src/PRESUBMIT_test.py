@@ -176,26 +176,26 @@ class CheckCompatibleAlertDialogBuilder(unittest.TestCase):
         mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
 
-class CheckSplitCompatUtilsIdentifierName(unittest.TestCase):
-  """Test the _CheckSplitCompatUtilsIdentifierName presubmit check."""
+class CheckBundleUtilsIdentifierName(unittest.TestCase):
+  """Test the _CheckBundleUtilsIdentifierName presubmit check."""
 
   def testFailure(self):
     """
-    SplitCompatUtils.getIdentifierName() without a String literal is flagged.
+    BundleUtils.getIdentifierName() without a String literal is flagged.
     """
     mock_input = MockInputApi()
     mock_input.files = [
         MockFile('path/One.java',
                  [
-                  'SplitCompatUtils.getIdentifierName(foo)',
+                  'BundleUtils.getIdentifierName(foo)',
                   'A new line to make sure there is no duplicate error.']),
         MockFile('path/Two.java',
-                 ['SplitCompatUtils.getIdentifierName(    foo)']),
+                 ['BundleUtils.getIdentifierName(    foo)']),
         MockFile('path/Three.java',
-                 ['SplitCompatUtils.getIdentifierName(',
+                 ['BundleUtils.getIdentifierName(',
                   '     bar)']),
     ]
-    errors = PRESUBMIT._CheckSplitCompatUtilsIdentifierName(
+    errors = PRESUBMIT._CheckBundleUtilsIdentifierName(
         mock_input, MockOutputApi())
     self.assertEqual(1, len(errors))
     self.assertEqual(3, len(errors[0].items))
@@ -205,24 +205,24 @@ class CheckSplitCompatUtilsIdentifierName(unittest.TestCase):
 
   def testSuccess(self):
     """
-    Examples of when SplitCompatUtils.getIdentifierName() should not be flagged.
+    Examples of when BundleUtils.getIdentifierName() should not be flagged.
     """
     mock_input = MockInputApi()
     mock_input.files = [
         MockFile('path/One.java',
                  [
-                  'SplitCompatUtils.getIdentifierName("foo")',
+                  'BundleUtils.getIdentifierName("foo")',
                   'A new line.']),
         MockFile('path/Two.java',
-                 ['SplitCompatUtils.getIdentifierName(    "foo")']),
+                 ['BundleUtils.getIdentifierName(    "foo")']),
         MockFile('path/Three.java',
-                 ['SplitCompatUtils.getIdentifierName(',
+                 ['BundleUtils.getIdentifierName(',
                   '    "bar")']),
         MockFile('path/Four.java',
-                 ['  super(SplitCompatUtils.getIdentifierName(',
+                 ['  super(BundleUtils.getIdentifierName(',
                   '"bar"))']),
     ]
-    errors = PRESUBMIT._CheckSplitCompatUtilsIdentifierName(
+    errors = PRESUBMIT._CheckBundleUtilsIdentifierName(
         mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
 

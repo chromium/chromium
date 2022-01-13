@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.base;
 
-import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -17,6 +15,7 @@ import android.os.SystemClock;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**
@@ -30,14 +29,17 @@ import org.chromium.base.metrics.RecordHistogram;
 public class SplitChromeApplication extends SplitCompatApplication {
     private static final String TAG = "SplitChromeApp";
 
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.ChromeApplicationImpl";
+
     @SuppressLint("StaticFieldLeak")
     private static SplitPreloader sSplitPreloader;
 
     private String mChromeApplicationClassName;
 
     public SplitChromeApplication() {
-        this(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.ChromeApplicationImpl"));
+        this(IMPL_CLASS_NAME);
     }
 
     public SplitChromeApplication(String chromeApplicationClassName) {
@@ -58,9 +60,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
                 DexFixer.setHasIsolatedSplits(true);
             }
             setImplSupplier(() -> {
-                Context chromeContext = SplitCompatUtils.createChromeContext(this);
-                return (Impl) SplitCompatUtils.newInstance(
-                        chromeContext, mChromeApplicationClassName);
+                Context chromeContext = createChromeContext(this);
+                return (Impl) BundleUtils.newInstance(chromeContext, mChromeApplicationClassName);
             });
         } else {
             setImplSupplier(() -> createNonBrowserApplication());

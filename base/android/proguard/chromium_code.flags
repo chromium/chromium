@@ -99,7 +99,8 @@
     public static **[] values();
 }
 
+# TODO(b/214263216): Re-enable this once R8 is fixed.
 # Mark members annotated with IdentifierNameString as identifier name strings
--identifiernamestring class * {
-    @org.chromium.base.annotations.IdentifierNameString *;
-}
+# -identifiernamestring class * {
+#     @org.chromium.base.annotations.IdentifierNameString *;
+# }

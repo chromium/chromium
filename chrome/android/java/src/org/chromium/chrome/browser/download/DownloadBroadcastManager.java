@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.download;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link DownloadBroadcastManagerImpl}. */
 public class DownloadBroadcastManager extends SplitCompatService {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.download.DownloadBroadcastManagerImpl";
+
     public DownloadBroadcastManager() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.download.DownloadBroadcastManagerImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }

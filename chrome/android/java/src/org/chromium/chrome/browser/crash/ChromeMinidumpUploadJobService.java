@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.crash;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatMinidumpUploadJobService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link ChromeMinidumpUploadJobServiceImpl}. */
 public class ChromeMinidumpUploadJobService extends SplitCompatMinidumpUploadJobService {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobServiceImpl";
+
     public ChromeMinidumpUploadJobService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobServiceImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }

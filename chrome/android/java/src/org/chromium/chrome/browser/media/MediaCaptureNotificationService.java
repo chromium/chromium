@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.media;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link MediaCaptureNotificationServiceImpl}. */
 public class MediaCaptureNotificationService extends SplitCompatService {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl";
+
     public MediaCaptureNotificationService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }

@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.prerender;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link ChromePrerenderServiceImpl}. */
 public class ChromePrerenderService extends SplitCompatService {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.prerender.ChromePrerenderServiceImpl";
+
     public ChromePrerenderService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.prerender.ChromePrerenderServiceImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }

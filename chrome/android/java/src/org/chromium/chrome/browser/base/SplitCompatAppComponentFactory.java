@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.base;
 
-import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
+import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
@@ -64,9 +65,8 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
 
         ClassLoader baseClassLoader = SplitCompatAppComponentFactory.class.getClassLoader();
         ClassLoader chromeClassLoader = appContext.getClassLoader();
-        if (!cl.equals(chromeClassLoader)
-                && !SplitCompatUtils.canLoadClass(baseClassLoader, className)
-                && SplitCompatUtils.canLoadClass(chromeClassLoader, className)) {
+        if (!cl.equals(chromeClassLoader) && !BundleUtils.canLoadClass(baseClassLoader, className)
+                && BundleUtils.canLoadClass(chromeClassLoader, className)) {
             Log.w(TAG, "Mismatched ClassLoaders between Application and component: %s", className);
             return chromeClassLoader;
         }

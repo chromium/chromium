@@ -31,7 +31,7 @@ NEW_ALERTDIALOG_BUILDER_RE = re.compile(
     r'\bnew\sAlertDialog\.Builder\b')
 
 SPLIT_COMPAT_UTILS_IMPL_NAME_RE = re.compile(
-    r'\bSplitCompatUtils\.getIdentifierName\(\s*[^\s"]')
+    r'\bBundleUtils\.getIdentifierName\(\s*[^\s"]')
 
 COMMENT_RE = re.compile(r'^\s*(//|/\*|\*)')
 
@@ -54,7 +54,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckNotificationConstructors(input_api, output_api))
   result.extend(_CheckAlertDialogBuilder(input_api, output_api))
   result.extend(_CheckCompatibleAlertDialogBuilder(input_api, output_api))
-  result.extend(_CheckSplitCompatUtilsIdentifierName(input_api, output_api))
+  result.extend(_CheckBundleUtilsIdentifierName(input_api, output_api))
   # Add more checks here
   return result
 
@@ -182,10 +182,10 @@ def _CheckCompatibleAlertDialogBuilder(input_api, output_api):
                                NEW_COMPATIBLE_ALERTDIALOG_BUILDER_RE)
 
 
-def _CheckSplitCompatUtilsIdentifierName(input_api, output_api):
+def _CheckBundleUtilsIdentifierName(input_api, output_api):
   error_msg = '''
-  SplitCompatUtils.getIdentifierName() not check failed:
-  SplitCompatUtils.getIdentifierName() must be called with a String literal,
+  BundleUtils.getIdentifierName() not check failed:
+  BundleUtils.getIdentifierName() must be called with a String literal,
   otherwise R8 may not correctly obfuscate the class name passed in.
   '''
   return _CheckReIgnoreComment(input_api, output_api, error_msg, [],

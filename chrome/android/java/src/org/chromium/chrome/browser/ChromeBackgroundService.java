@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatGcmTaskService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link ChromeBackgroundServiceImpl}. */
 public class ChromeBackgroundService extends SplitCompatGcmTaskService {
+    @IdentifierNameString
+    private static final String IMPL_CLASS_NAME =
+            "org.chromium.chrome.browser.ChromeBackgroundServiceImpl";
+
     public ChromeBackgroundService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.ChromeBackgroundServiceImpl"));
+        super(IMPL_CLASS_NAME);
     }
 }
