@@ -58,10 +58,10 @@ function convertMojoTimeToJS(mojoTime) {
  * @return {boolean}
  */
 function isToday(date) {
-  const today_date = new Date();
-  return date.getDate() === today_date.getDate() &&
-      date.getMonth() === today_date.getMonth() &&
-      date.getFullYear() === today_date.getFullYear();
+  const todayDate = new Date();
+  return date.getDate() === todayDate.getDate() &&
+      date.getMonth() === todayDate.getMonth() &&
+      date.getFullYear() === todayDate.getFullYear();
 }
 
 /**
@@ -451,16 +451,16 @@ Polymer({
    * @private
    */
   getFileIcon_(fileName) {
-    const file_extension = getFileExtensionIconName(fileName);
+    const fileExtension = getFileExtensionIconName(fileName);
     // It's valid for a file to have '.' in its name and not be its extension.
     // If this is the case and we don't have a non-generic file icon, attempt to
     // see if this is a Google file.
-    if (file_extension && file_extension !== GENERIC_FILE_EXTENSION_ICON) {
-      return file_extension;
+    if (fileExtension && fileExtension !== GENERIC_FILE_EXTENSION_ICON) {
+      return fileExtension;
     }
-    const gfile_extension = getGFileIconName(fileName);
-    if (gfile_extension) {
-      return gfile_extension;
+    const gfileExtension = getGFileIconName(fileName);
+    if (gfileExtension) {
+      return gfileExtension;
     }
 
     return GENERIC_FILE_EXTENSION_ICON;
