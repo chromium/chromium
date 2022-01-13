@@ -73,12 +73,15 @@ class OverlayWindowViews : public content::OverlayWindow,
   bool IsVisible() const override;
   void OnNativeFocus() override;
   void OnNativeBlur() override;
+  void OnNativeWidgetDestroying() override;
   void OnNativeWidgetDestroyed() override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnNativeWidgetMove() override;
   void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override;
   void OnNativeWidgetWorkspaceChanged() override;
+  void OnNativeWidgetAddedToCompositor() override;
+  void OnNativeWidgetRemovingFromCompositor() override;
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

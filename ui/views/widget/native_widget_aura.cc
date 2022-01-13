@@ -1007,6 +1007,15 @@ void NativeWidgetAura::OnResizeLoopEnded(aura::Window* window) {
   delegate_->OnNativeWidgetEndUserBoundsChange();
 }
 
+void NativeWidgetAura::OnWindowAddedToRootWindow(aura::Window* window) {
+  delegate_->OnNativeWidgetAddedToCompositor();
+}
+
+void NativeWidgetAura::OnWindowRemovingFromRootWindow(aura::Window* window,
+                                                      aura::Window* new_root) {
+  delegate_->OnNativeWidgetRemovingFromCompositor();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetAura, ui::EventHandler implementation:
 

@@ -1447,6 +1447,10 @@ void Widget::OnNativeWidgetEndUserBoundsChange() {
   widget_delegate_->OnWindowEndUserBoundsChange();
 }
 
+void Widget::OnNativeWidgetAddedToCompositor() {}
+
+void Widget::OnNativeWidgetRemovingFromCompositor() {}
+
 bool Widget::HasFocusManager() const {
   return !!focus_manager_.get();
 }

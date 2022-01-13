@@ -106,6 +106,12 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   virtual void OnNativeWidgetBeginUserBoundsChange() = 0;
   virtual void OnNativeWidgetEndUserBoundsChange() = 0;
 
+  // Called when the NativeWidget is added and/or being removed from a
+  // Compositor. On some platforms the Compositor never changes, and these
+  // functions are never called.
+  virtual void OnNativeWidgetAddedToCompositor() = 0;
+  virtual void OnNativeWidgetRemovingFromCompositor() = 0;
+
   // Returns true if the delegate has a FocusManager.
   virtual bool HasFocusManager() const = 0;
 

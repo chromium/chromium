@@ -1016,6 +1016,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void OnNativeWidgetWindowShowStateChanged() override;
   void OnNativeWidgetBeginUserBoundsChange() override;
   void OnNativeWidgetEndUserBoundsChange() override;
+  void OnNativeWidgetAddedToCompositor() override;
+  void OnNativeWidgetRemovingFromCompositor() override;
   bool HasFocusManager() const override;
   void OnNativeWidgetPaint(const ui::PaintContext& context) override;
   int GetNonClientComponent(const gfx::Point& point) override;
