@@ -350,7 +350,10 @@ void MessageView::OnSlideStarted() {
 
 void MessageView::OnSlideChanged(bool in_progress) {
   for (auto& observer : observers_) {
-    observer.OnSlideChanged(notification_id_);
+    if (in_progress)
+      observer.OnSlideChanged(notification_id_);
+    else
+      observer.OnSlideEnded(notification_id_);
   }
 }
 

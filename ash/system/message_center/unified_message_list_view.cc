@@ -145,6 +145,9 @@ class UnifiedMessageListView::MessageViewContainer
     control_view_->UpdateCornerRadius(top_radius, bottom_radius);
   }
 
+  // Reset rounding the corner of the view. This is called when we end a slide.
+  void ResetCornerRadius() { message_view_->UpdateCornerRadius(0, 0); }
+
   // Collapses the notification if its state haven't changed manually by a user.
   void Collapse() {
     if (!message_view_->IsManuallyExpandedOrCollapsed())
@@ -255,6 +258,45 @@ class UnifiedMessageListView::MessageViewContainer
   // MessageView::Observer:
   void OnSlideChanged(const std::string& notification_id) override {
     control_view_->UpdateButtonsVisibility();
+
+    if (!features::IsNotificationsRefreshEnabled() ||
+        notification_id != GetNotificationId() ||
+        message_view_->GetSlideAmount() == 0 || !need_update_corner_radius_)
+      return;
+
+    need_update_corner_radius_ = false;
+
+    message_view_->UpdateCornerRadius(kBubbleCornerRadius, kBubbleCornerRadius);
+
+    // Also update `above_view_`'s bottom and `below_view_`'s top corner radius
+    // when sliding.
+    int index = list_view_->GetIndexOf(this);
+    auto list_child_views = list_view_->children();
+
+    above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
+    if (above_view_)
+      above_view_->message_view()->UpdateCornerRadius(0, kBubbleCornerRadius);
+
+    below_view_ = (index == static_cast<int>(list_child_views.size()) - 1)
+                      ? nullptr
+                      : AsMVC(list_child_views[index + 1]);
+    if (below_view_)
+      below_view_->message_view()->UpdateCornerRadius(kBubbleCornerRadius, 0);
+  }
+
+  void OnSlideEnded(const std::string& notification_id) override {
+    if (!features::IsNotificationsRefreshEnabled() ||
+        notification_id != GetNotificationId())
+      return;
+
+    // Reset the corner radius of views to their normal state.
+    ResetCornerRadius();
+    if (above_view_ && !above_view_->is_slid_out())
+      above_view_->ResetCornerRadius();
+    if (below_view_ && !below_view_->is_slid_out())
+      below_view_->ResetCornerRadius();
+
+    need_update_corner_radius_ = true;
   }
 
   void OnPreSlideOut(const std::string& notification_id) override {
@@ -322,6 +364,15 @@ class UnifiedMessageListView::MessageViewContainer
 
   // Set to flag the view as requiring an expand or collapse animation.
   bool needs_bounds_animation_ = false;
+
+  // The views directly above or below this view in the list. Used to update
+  // corner radius when sliding.
+  MessageViewContainer* above_view_ = nullptr;
+  MessageViewContainer* below_view_ = nullptr;
+
+  // `need_update_corner_radius_` indicates that we need to update the corner
+  // radius of the view when sliding.
+  bool need_update_corner_radius_ = true;
 
   MessageView* const message_view_;
   UnifiedMessageListView* const list_view_;

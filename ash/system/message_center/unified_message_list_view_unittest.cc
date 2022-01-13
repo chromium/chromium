@@ -51,12 +51,21 @@ class TestNotificationView : public message_center::NotificationView {
                                                              bottom_radius);
   }
 
+  float GetSlideAmount() const override {
+    return slide_amount_.value_or(
+        message_center::NotificationViewBase::GetSlideAmount());
+  }
+
   int top_radius() const { return top_radius_; }
   int bottom_radius() const { return bottom_radius_; }
+
+  void set_slide_amount(float slide_amount) { slide_amount_ = slide_amount; }
 
  private:
   int top_radius_ = 0;
   int bottom_radius_ = 0;
+
+  absl::optional<float> slide_amount_;
 };
 
 class TestUnifiedMessageListView : public UnifiedMessageListView {
@@ -739,6 +748,13 @@ class RefreshedUnifiedMessageListView : public UnifiedMessageListViewTest {
     UnifiedMessageListViewTest::SetUp();
   }
 
+  // Start sliding the message view at the given index in the list.
+  void StartSliding(size_t index) {
+    auto* message_view = GetMessageViewAt(index);
+    message_view->set_slide_amount(1);
+    message_view->OnSlideChanged(/*in_progress=*/true);
+  }
+
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
@@ -984,6 +1000,83 @@ TEST_F(RefreshedUnifiedMessageListView, MoveDuringCollapseNoAnimation) {
   EXPECT_GT(
       pre_collapse_size.height(),
       to_be_collapsed_message_view_container->GetPreferredSize().height());
+}
+
+TEST_F(RefreshedUnifiedMessageListView, SlideNotification) {
+  // Show message list with four notifications.
+  auto id0 = AddNotification();
+  auto id1 = AddNotification();
+  auto id2 = AddNotification();
+  auto id3 = AddNotification();
+  CreateMessageListView();
+
+  // At first, there should be no rounded corners for any notification.
+  for (int i = 0; i <= 3; i++) {
+    EXPECT_EQ(0, GetMessageViewAt(i)->top_radius());
+    EXPECT_EQ(0, GetMessageViewAt(i)->bottom_radius());
+  }
+
+  // Start sliding notification 2 away.
+  StartSliding(2);
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->bottom_radius());
+
+  // Notification 1's bottom corner and notification 3's top corner should also
+  // be rounded.
+  EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(3)->top_radius());
+  EXPECT_EQ(0, GetMessageViewAt(3)->bottom_radius());
+
+  // Notification 0 should not change.
+  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
+
+  // Slide out notification 2, the 3 notifications left should have no rounded
+  // corner after slide out done.
+  MessageCenter::Get()->RemoveNotification(id2, /*by_user=*/true);
+  FinishSlideOutAnimation();
+  AnimateUntilIdle();
+
+  for (int i = 0; i <= 2; i++) {
+    EXPECT_EQ(0, GetMessageViewAt(i)->top_radius());
+    EXPECT_EQ(0, GetMessageViewAt(i)->bottom_radius());
+  }
+
+  // Test with notification 1. Same behavior should happen.
+  StartSliding(1);
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(0, GetMessageViewAt(2)->bottom_radius());
+
+  // Cancel the slide. Everything goes back to normal.
+  GetMessageViewAt(1)->OnSlideChanged(/*in_progress=*/false);
+  for (int i = 0; i <= 2; i++) {
+    EXPECT_EQ(0, GetMessageViewAt(i)->top_radius());
+    EXPECT_EQ(0, GetMessageViewAt(i)->bottom_radius());
+  }
+
+  // Test with the top notification.
+  StartSliding(0);
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(0, GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(0, GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(0, GetMessageViewAt(2)->bottom_radius());
+  GetMessageViewAt(0)->OnSlideChanged(/*in_progress=*/false);
+
+  // Test with the bottom notification.
+  StartSliding(2);
+  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->bottom_radius());
+  GetMessageViewAt(2)->OnSlideChanged(/*in_progress=*/false);
 }
 
 }  // namespace ash

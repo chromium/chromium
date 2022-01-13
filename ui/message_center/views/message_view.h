@@ -52,6 +52,7 @@ class MESSAGE_CENTER_EXPORT MessageView
    public:
     virtual void OnSlideStarted(const std::string& notification_id) {}
     virtual void OnSlideChanged(const std::string& notification_id) {}
+    virtual void OnSlideEnded(const std::string& notification_id) {}
     virtual void OnPreSlideOut(const std::string& notification_id) {}
     virtual void OnSlideOut(const std::string& notification_id) {}
     virtual void OnCloseButtonPressed(const std::string& notification_id) {}
@@ -161,7 +162,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   Mode GetMode() const;
 
   // Gets the current horizontal scroll offset of the view by slide gesture.
-  float GetSlideAmount() const;
+  virtual float GetSlideAmount() const;
 
   // Set "setting" mode. This overrides "pinned" mode. See the comment of
   // MessageView::Mode enum for detail.
