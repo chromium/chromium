@@ -112,8 +112,7 @@ void PersistedData::SetDateLastDataHelper(
     base::OnceClosure callback,
     const std::set<std::string>& active_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DictionaryPrefUpdateDeprecated update(pref_service_,
-                                        kPersistedDataPreference);
+  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
   for (const auto& id : ids) {
     base::Value* app_key = GetOrCreateAppKey(id, update.Get());
     app_key->SetIntKey("dlrc", datenum);
@@ -150,8 +149,7 @@ void PersistedData::SetString(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return;
-  DictionaryPrefUpdateDeprecated update(pref_service_,
-                                        kPersistedDataPreference);
+  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
   GetOrCreateAppKey(id, update.Get())->SetStringKey(key, value);
 }
 
