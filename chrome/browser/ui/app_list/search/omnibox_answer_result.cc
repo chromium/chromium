@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox_answer_result.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
@@ -82,7 +83,9 @@ OmniboxAnswerResult::OmniboxAnswerResult(
     match_.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
     autocomplete_controller_->SetMatchDestinationURL(&match_);
   }
-  SetDisplayType(DisplayType::kList);
+  SetDisplayType(ash::features::IsProductivityLauncherEnabled()
+                     ? DisplayType::kAnswerCard
+                     : DisplayType::kList);
   SetResultType(ResultType::kOmnibox);
   SetCategory(Category::kSearchAndAssistant);
   set_id(kOmniboxAnswerSchema + match_.stripped_destination_url.spec());

@@ -4,20 +4,42 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/answer_ranker.h"
 
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+
 namespace app_list {
 
 AnswerRanker::AnswerRanker() = default;
 AnswerRanker::~AnswerRanker() = default;
 
-void AnswerRanker::Start(const std::u16string& query,
-                         ResultsMap& results,
-                         CategoriesList& categories) {
-  // TODO(crbug.com/1275408): WIP.
-}
-
 void AnswerRanker::UpdateResultRanks(ResultsMap& results,
                                      ProviderType provider) {
-  // TODO(crbug.com/1275408): WIP.
+  if (provider != ProviderType::kOmnibox)
+    return;
+
+  const auto it = results.find(provider);
+  DCHECK(it != results.end());
+
+  ChromeSearchResult* top_answer = nullptr;
+  double top_score;
+  for (const auto& result : it->second) {
+    if (result->display_type() != ash::SearchResultDisplayType::kAnswerCard)
+      continue;
+
+    // Compare this result to the existing answer, if any, and hide the one with
+    // lower score.
+    const double score = result->relevance();
+    if (!top_answer) {
+      top_answer = result.get();
+      top_score = score;
+    } else if (score > top_score) {
+      top_answer->scoring().filter = true;
+      top_answer = result.get();
+      top_score = score;
+    } else {
+      result->scoring().filter = true;
+    }
+  }
 }
 
 }  // namespace app_list

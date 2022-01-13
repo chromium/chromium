@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 
+#include "chrome/browser/ui/app_list/search/ranking/answer_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_category_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_result_ranker.h"
@@ -37,6 +38,7 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
 
   // Result post-processing.
   AddRanker(std::make_unique<TopMatchRanker>());
+  AddRanker(std::make_unique<AnswerRanker>());
   AddRanker(std::make_unique<FilteringRanker>());
 
   // Result removal.

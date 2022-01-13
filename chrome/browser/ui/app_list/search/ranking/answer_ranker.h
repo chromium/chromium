@@ -10,8 +10,8 @@
 
 namespace app_list {
 
-// A ranker that selects at most one result to be an Answer card. It will modify
-// the DisplayType of the selected answer only.
+// A ranker that selects at most one result to be an Answer card. This ranker
+// also hides any Omnibox answers that are not selected.
 class AnswerRanker : public Ranker {
  public:
   AnswerRanker();
@@ -21,9 +21,6 @@ class AnswerRanker : public Ranker {
   AnswerRanker& operator=(const AnswerRanker&) = delete;
 
   // Ranker:
-  void Start(const std::u16string& query,
-             ResultsMap& results,
-             CategoriesList& categories) override;
   void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
 };
 
