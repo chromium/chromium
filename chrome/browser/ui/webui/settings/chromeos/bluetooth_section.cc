@@ -122,31 +122,6 @@ const std::vector<SearchConcept>& GetBluetoothPairedSearchConcepts() {
   return *tags;
 }
 
-std::vector<mojom::Setting> GetBluetoothDevicesSubpageSettings() {
-  std::vector<mojom::Setting> bluetooth_devices_settings{
-      mojom::Setting::kBluetoothOnOff, mojom::Setting::kBluetoothPairDevice};
-
-  if (!chromeos::features::IsBluetoothRevampEnabled()) {
-    bluetooth_devices_settings.insert(
-        bluetooth_devices_settings.end(),
-        {mojom::Setting::kBluetoothConnectToDevice,
-         mojom::Setting::kBluetoothDisconnectFromDevice,
-         mojom::Setting::kBluetoothUnpairDevice});
-  }
-
-  return bluetooth_devices_settings;
-}
-
-std::vector<mojom::Setting> GetBluetoothDeviceDetailSubpageSettings() {
-  if (!chromeos::features::IsBluetoothRevampEnabled())
-    return std::vector<mojom::Setting>{};
-
-  return std::vector<mojom::Setting>{
-      mojom::Setting::kBluetoothConnectToDevice,
-      mojom::Setting::kBluetoothDisconnectFromDevice,
-      mojom::Setting::kBluetoothUnpairDevice};
-}
-
 }  // namespace
 
 BluetoothSection::BluetoothSection(Profile* profile,
@@ -388,20 +363,28 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultIcon::kBluetooth,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kBluetoothDevicesSubpagePath);
-
+  static constexpr mojom::Setting kBluetoothDevicesSettings[] = {
+      mojom::Setting::kBluetoothOnOff,
+      mojom::Setting::kBluetoothPairDevice,
+      mojom::Setting::kBluetoothUnpairDevice,
+  };
+  static constexpr mojom::Setting kBluetoothDevicesSettingsLegacy[] = {
+      mojom::Setting::kBluetoothConnectToDevice,
+      mojom::Setting::kBluetoothDisconnectFromDevice,
+  };
   RegisterNestedSettingBulk(mojom::Subpage::kBluetoothDevices,
-                            GetBluetoothDevicesSubpageSettings(), generator);
+                            kBluetoothDevicesSettings, generator);
   generator->RegisterTopLevelAltSetting(mojom::Setting::kBluetoothOnOff);
-
   generator->RegisterNestedSubpage(IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS,
                                    mojom::Subpage::kBluetoothDeviceDetail,
                                    mojom::Subpage::kBluetoothDevices,
                                    mojom::SearchResultIcon::kBluetooth,
                                    mojom::SearchResultDefaultRank::kMedium,
                                    mojom::kBluetoothDeviceDetailSubpagePath);
-  RegisterNestedSettingBulk(mojom::Subpage::kBluetoothDeviceDetail,
-                            GetBluetoothDeviceDetailSubpageSettings(),
-                            generator);
+  RegisterNestedSettingBulk(ash::features::IsBluetoothRevampEnabled()
+                                ? mojom::Subpage::kBluetoothDeviceDetail
+                                : mojom::Subpage::kBluetoothDevices,
+                            kBluetoothDevicesSettingsLegacy, generator);
 }
 
 void BluetoothSection::AdapterPresentChanged(device::BluetoothAdapter* adapter,
@@ -461,6 +444,14 @@ void BluetoothSection::UpdateSearchTags() {
   updater.AddSearchTags(GetBluetoothOnSearchConcepts());
 
   // TODO(crbug/1257312): Add Fast Pair search concepts.
+
+  // Always include the option to pair devices, but skip any device-specific
+  // search options since we have no way to determine which device the user is
+  // interested in.
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    updater.AddSearchTags(GetBluetoothPairableSearchConcepts());
+    return;
+  }
 
   // Filter devices so that only those shown in the UI are returned. Note that
   // passing |max_devices| of 0 indicates that there is no maximum.
