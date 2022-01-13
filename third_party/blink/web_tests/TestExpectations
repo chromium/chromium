@@ -5663,7 +5663,7 @@ crbug.com/1008483 [ Mac10.14 ] virtual/backface-visibility-interop/external/wpt/
 crbug.com/1008483 [ Mac10.15 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform3d-sorting-004.html [ Pass ]
 crbug.com/1008483 [ Mac11 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform3d-sorting-004.html [ Pass ]
 crbug.com/1008483 [ Win ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform3d-sorting-004.html [ Pass ]
-crbug.com/1008483 virtual/backface-visibility-interop/compositing/overflow/scroll-parent-with-non-stacking-context-composited-ancestor.html [ Failure Crash ]
+crbug.com/1008483 virtual/backface-visibility-interop/compositing/overflow/scroll-parent-with-non-stacking-context-composited-ancestor.html [ Failure ]
 crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/stacking-context-lost.html [ Failure ]
 crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/multicol/multicol-as-paint-container.html [ Failure ]
 

@@ -33,8 +33,10 @@
     },
     {
       "name": "Scroll corner of LayoutNGBlockFlow DIV class='scroller'",
-      "position": [8, 293],
-      "bounds": [300, 44]
+      "position": [285, 285],
+      "bounds": [15, 15],
+      "contentsOpaque": true,
+      "transform": 1
     }
   ],
   "transforms": [

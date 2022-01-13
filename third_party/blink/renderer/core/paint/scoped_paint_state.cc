@@ -31,9 +31,8 @@ ScopedPaintState::ScopedPaintState(
   if (painting_legacy_table_part_in_ancestor_layer) {
     DCHECK(object.IsTableCellLegacy() || object.IsLegacyTableRow() ||
            object.IsLegacyTableSection());
-  } else if (paint_info.phase == PaintPhase::kOverlayOverflowControls ||
-             (object.HasLayer() &&
-              To<LayoutBoxModelObject>(object).HasSelfPaintingLayer())) {
+  } else if (object.HasLayer() &&
+             To<LayoutBoxModelObject>(object).Layer()->IsSelfPaintingLayer()) {
     // PaintLayerPainter already adjusted for PaintOffsetTranslation for
     // PaintContainer.
     return;

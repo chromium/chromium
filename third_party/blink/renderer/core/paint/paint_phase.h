@@ -43,7 +43,7 @@ namespace blink {
 //  4. Foreground phase: all inlines are fully painted. Atomic inline elements
 //     will get all 4 non-backplate phases invoked on them during this phase,
 //     as if they were stacking contexts (see
-//     ObjectPainter::PaintAllPhasesAtomically()).
+//     ObjectPainter::paintAllPhasesAtomically()).
 //  5. Outline phase: outlines are painted over the foreground.
 
 enum class PaintPhase {
@@ -61,7 +61,7 @@ enum class PaintPhase {
   kSelfBlockBackgroundOnly,
   // Paint backgrounds of non-self-painting descendants only. The painter should
   // call each non-self-painting child's paint method by passing
-  // PaintInfo::ForDescendants() which converts kDescendantBlockBackgroundsOnly
+  // paintInfo.forDescendants() which converts kDescendantBlockBackgroundsOnly
   // to kBlockBackground.
   kDescendantBlockBackgroundsOnly,
 
@@ -87,7 +87,7 @@ enum class PaintPhase {
   kSelfOutlineOnly,
   // Paint outlines of non-self-painting descendants only. The painter should
   // call each non-self-painting child's paint method by passing
-  // PaintInfo::ForDescendants() which converts kDescendantOutlinesOnly to
+  // paintInfo.forDescendants() which converts kDescendantOutlinesOnly to
   // kOutline.
   kDescendantOutlinesOnly,
 
@@ -99,7 +99,7 @@ enum class PaintPhase {
 
   kMax = kMask,
   // These values must be kept in sync with DisplayItem::Type and
-  // DisplayItem::TypeAsDebugString().
+  // DisplayItem::typeAsDebugString().
 };
 
 inline bool ShouldPaintSelfBlockBackground(PaintPhase phase) {

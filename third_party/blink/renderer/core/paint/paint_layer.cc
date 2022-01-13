@@ -2363,7 +2363,8 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
 }
 
 bool PaintLayer::ShouldBeSelfPaintingLayer() const {
-  return GetLayoutObject().LayerTypeRequired() == kNormalPaintLayer;
+  return GetLayoutObject().LayerTypeRequired() == kNormalPaintLayer ||
+         (scrollable_area_ && scrollable_area_->HasOverlayOverflowControls());
 }
 
 void PaintLayer::UpdateSelfPaintingLayer() {
