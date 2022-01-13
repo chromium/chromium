@@ -41,4 +41,15 @@ public interface WebSettingsBoundaryInterface {
     void setForceDarkBehavior(@ForceDarkBehavior int forceDarkBehavior);
     @ForceDarkBehavior
     int getForceDarkBehavior();
+
+    @Retention(RetentionPolicy.SOURCE)
+    @interface WebAuthnSupport {
+        int NONE = 0;
+        int APP = 1;
+        int BROWSER = 2;
+    }
+
+    void setWebAuthnSupport(@WebAuthnSupport int support);
+    @WebAuthnSupport
+    int getWebAuthnSupport();
 }

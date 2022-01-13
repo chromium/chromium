@@ -109,4 +109,15 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
         }
         return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
     }
+
+    @Override
+    public void setWebAuthnSupport(int support) {
+        // Currently a no-op while this functionality is built out.
+    }
+
+    @Override
+    public int getWebAuthnSupport() {
+        // Currently a no-op while this functionality is built out.
+        return WebAuthnSupport.NONE;
+    }
 }
