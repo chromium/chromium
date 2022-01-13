@@ -496,7 +496,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperGooglePhotosIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperPerDesk;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWebApkGenerator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWebUITabStripTabDragIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -2514,9 +2514,6 @@ extern const char kDnsProxyEnableDOHDescription[];
 extern const char kEnableHostnameSettingName[];
 extern const char kEnableHostnameSettingDescription[];
 
-extern const char kEnableGeneratedWebApksName[];
-extern const char kEnableGeneratedWebApksDescription[];
-
 extern const char kEnableGesturePropertiesDBusServiceName[];
 extern const char kEnableGesturePropertiesDBusServiceDescription[];
 

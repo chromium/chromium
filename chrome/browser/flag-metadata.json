@@ -2042,11 +2042,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "enable-generated-webapks",
-    "owners": [ "tsergeant@chromium.org" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "enable-generic-sensor-extra-classes",
     "owners": [ "reillyg@chromium.org", "raphael.kubo.da.costa@intel.com" ],
     "expiry_milestone": 100

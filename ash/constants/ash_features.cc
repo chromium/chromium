@@ -1304,10 +1304,6 @@ const base::Feature kWallpaperGooglePhotosIntegration{
 const base::Feature kWallpaperPerDesk{"WallpaperPerDesk",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Generates WebAPKs representing installed PWAs and installs them inside ARC.
-const base::Feature kWebApkGenerator{"WebApkGenerator",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables special handling of Chrome tab drags from a WebUI tab strip.
 // These will be treated similarly to a window drag, showing split view
 // indicators in tablet mode, etc. The functionality is behind a flag right now

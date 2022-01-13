@@ -4395,11 +4395,6 @@ const char kEnableHostnameSettingDescription[] =
     "Enables the ability to set the Chrome OS hostname, the name of the device "
     "that is exposed to the local network";
 
-const char kEnableGeneratedWebApksName[] = "Generated WebAPKs";
-const char kEnableGeneratedWebApksDescription[] =
-    "When enabled, generates and installs a WebAPK inside ARC for each "
-    "installed and eligible PWA.";
-
 const char kEnableGesturePropertiesDBusServiceName[] =
     "Enable gesture properties D-Bus service";
 const char kEnableGesturePropertiesDBusServiceDescription[] =

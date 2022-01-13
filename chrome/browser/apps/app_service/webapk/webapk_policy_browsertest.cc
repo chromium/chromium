@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_test_server.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -42,7 +41,6 @@ absl::optional<arc::ArcFeatures> GetArcFeatures() {
 class WebApkPolicyBrowserTest : public policy::PolicyTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kWebApkGenerator);
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
@@ -77,7 +75,6 @@ class WebApkPolicyBrowserTest : public policy::PolicyTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
   base::RepeatingCallback<absl::optional<arc::ArcFeatures>()>
       arc_features_getter_;

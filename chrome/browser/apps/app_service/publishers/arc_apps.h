@@ -77,6 +77,8 @@ class ArcApps : public KeyedService,
     return arc_icon_once_loader_;
   }
 
+  WebApkManager* GetWebApkManagerForTesting() { return web_apk_manager_.get(); }
+
  private:
   friend class ArcAppsFactory;
   friend class PublisherTest;

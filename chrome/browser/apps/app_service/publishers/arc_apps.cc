@@ -16,7 +16,6 @@
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -547,8 +546,7 @@ void ArcApps::Initialize() {
     instance_registry_observation_.Observe(instance_registry);
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kWebApkGenerator) &&
-      web_app::AreWebAppsEnabled(profile_)) {
+  if (web_app::AreWebAppsEnabled(profile_)) {
     web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile_);
   }
 
