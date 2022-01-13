@@ -45,6 +45,14 @@ export const fakeInstallationProgress = [
   {percentage: 100, state: UpdateState.kSuccess},
 ];
 
+/** @type {!Array<!InstallationProgress>} */
+export const fakeInstallationProgressFailure = [
+  {percentage: 33, state: UpdateState.kUpdating},
+  {percentage: 66, state: UpdateState.kUpdating},
+  {percentage: 100, state: UpdateState.kRestarting},
+  {percentage: 100, state: UpdateState.kFailed},
+];
+
 /** @type {!FirmwareUpdate} */
 export const fakeFirmwareUpdate = {
   deviceId: '1',

@@ -206,8 +206,8 @@ export class FirmwareUpdateDialogElement extends
    * @return {boolean}
    */
   isUpdateDone_() {
-    // TODO(michaelcheco): Handle failed state.
-    return this.installationProgress.state === UpdateState.kSuccess;
+    return this.installationProgress.state === UpdateState.kSuccess ||
+        this.installationProgress.state === UpdateState.kFailed;
   }
 
   /**
@@ -229,6 +229,12 @@ export class FirmwareUpdateDialogElement extends
             this.i18n('restartingTitleText', mojoString16ToString(deviceName)),
         body: this.i18n('restartingBodyText'),
         footer: this.i18n('restartingFooterText'),
+      },
+      [UpdateState.kFailed]: {
+        title: this.i18n(
+            'updateFailedTitleText', mojoString16ToString(deviceName)),
+        body: this.i18n('updateFailedBodyText'),
+        footer: '',
       },
       [UpdateState.kSuccess]: {
         title: this.i18n('deviceUpToDate', mojoString16ToString(deviceName)),
@@ -253,7 +259,7 @@ export class FirmwareUpdateDialogElement extends
     }
 
     if (this.isUpdateDone_()) {
-      return this.createDialogContentObj_(UpdateState.kSuccess);
+      return this.createDialogContentObj_(this.installationProgress.state);
     }
     return initialDialogContent;
   }

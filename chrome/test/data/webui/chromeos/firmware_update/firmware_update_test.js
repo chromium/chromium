@@ -132,4 +132,28 @@ export function firmwareUpdateAppTest() {
             mojoString16ToString(fakeFirmwareUpdate.deviceName)} is up to date`,
         getUpdateDialogTitle().innerText.trim());
   });
+
+  test('UpdateFailed', async () => {
+    await flushTasks();
+    // Open dialog for firmware update. The third fake update in the list
+    // will fail.
+    getUpdateCards()[2].shadowRoot.querySelector(`#updateButton`).click();
+    // Process |OnStateChanged| and |OnProgressChanged| calls.
+    await flushTasks();
+    await flushTasks();
+    assertEquals(UpdateState.kUpdating, getUpdateState());
+    const fakeFirmwareUpdate = getFirmwareUpdateFromDialog();
+    assertEquals(
+        `Updating ${mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
+        getUpdateDialogTitle().innerText.trim());
+    // Allow firmware update to complete.
+    await controller.getUpdateCompletedPromiseForTesting();
+    await flushTasks();
+    assertEquals(UpdateState.kFailed, getUpdateState());
+    assertTrue(getUpdateDialog().open);
+    assertEquals(
+        `Failed to update ${
+            mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
+        getUpdateDialogTitle().innerText.trim());
+  });
 }

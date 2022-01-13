@@ -6,7 +6,7 @@ import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {fakeFirmwareUpdates, fakeInstallationProgress} from './fake_data.js';
+import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';
 import {FakeUpdateProviderInterface, FirmwareUpdate, InstallationProgress, InstallControllerInterface, UpdateProgressObserver, UpdateProviderInterface, UpdateState} from './firmware_update_types.js';
 import {getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
@@ -55,7 +55,8 @@ export class FakeUpdateController {
     this.startUpdatePromise_ =
         this.observeWithArg_(ON_PROGRESS_CHANGED, this.deviceId_, (update) => {
           remote.onStatusChanged(update);
-          if (update.state === UpdateState.kSuccess) {
+          if (update.state === UpdateState.kSuccess ||
+              update.state === UpdateState.kFailed) {
             this.isUpdateInProgress_ = false;
             this.completedFirmwareUpdates_.add(this.deviceId_);
             this.updateDeviceList_();
@@ -106,7 +107,13 @@ export class FakeUpdateController {
     this.observables_.registerObservableWithArg(ON_PROGRESS_CHANGED);
     // Set up fake installation progress data for each fake firmware update.
     fakeFirmwareUpdates.flat().forEach(({deviceId}) => {
-      this.setFakeInstallationProgress(deviceId, fakeInstallationProgress);
+      // Use the third fake firmware update to mock a failed installalation.
+      if (deviceId === '3') {
+        this.setFakeInstallationProgress(
+            deviceId, fakeInstallationProgressFailure);
+      } else {
+        this.setFakeInstallationProgress(deviceId, fakeInstallationProgress);
+      }
     });
   }
 
