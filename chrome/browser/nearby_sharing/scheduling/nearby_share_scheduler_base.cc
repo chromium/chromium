@@ -176,20 +176,20 @@ bool NearbyShareSchedulerBase::HasPendingImmediateRequest() const {
 
 void NearbyShareSchedulerBase::SetLastAttemptTime(
     base::Time last_attempt_time) {
-  DictionaryPrefUpdateDeprecated(pref_service_, pref_name_)
+  DictionaryPrefUpdate(pref_service_, pref_name_)
       .Get()
       ->SetKey(kLastAttemptTimeKeyName, base::TimeToValue(last_attempt_time));
 }
 
 void NearbyShareSchedulerBase::SetLastSuccessTime(
     base::Time last_success_time) {
-  DictionaryPrefUpdateDeprecated(pref_service_, pref_name_)
+  DictionaryPrefUpdate(pref_service_, pref_name_)
       .Get()
       ->SetKey(kLastSuccessTimeKeyName, base::TimeToValue(last_success_time));
 }
 
 void NearbyShareSchedulerBase::SetNumConsecutiveFailures(size_t num_failures) {
-  DictionaryPrefUpdateDeprecated(pref_service_, pref_name_)
+  DictionaryPrefUpdate(pref_service_, pref_name_)
       .Get()
       ->SetStringKey(kNumConsecutiveFailuresKeyName,
                      base::NumberToString(num_failures));
@@ -197,7 +197,7 @@ void NearbyShareSchedulerBase::SetNumConsecutiveFailures(size_t num_failures) {
 
 void NearbyShareSchedulerBase::SetHasPendingImmediateRequest(
     bool has_pending_immediate_request) {
-  DictionaryPrefUpdateDeprecated(pref_service_, pref_name_)
+  DictionaryPrefUpdate(pref_service_, pref_name_)
       .Get()
       ->SetBoolKey(kHasPendingImmediateRequestKeyName,
                    has_pending_immediate_request);
@@ -205,7 +205,7 @@ void NearbyShareSchedulerBase::SetHasPendingImmediateRequest(
 
 void NearbyShareSchedulerBase::SetIsWaitingForResult(
     bool is_waiting_for_result) {
-  DictionaryPrefUpdateDeprecated(pref_service_, pref_name_)
+  DictionaryPrefUpdate(pref_service_, pref_name_)
       .Get()
       ->SetBoolKey(kIsWaitingForResultKeyName, is_waiting_for_result);
 }
