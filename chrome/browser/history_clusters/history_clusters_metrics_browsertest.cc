@@ -83,8 +83,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   EXPECT_EQ(0u, entries.size());
 }
 
-// Flaky on Win and Linux. http://crbug.com/1282122
-#if defined(OS_WIN) || defined(OS_LINUX)
+// Flaky on Win, Linux and Mac. http://crbug.com/1282122
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
 #define MAYBE_DirectNavigationNoInteraction \
   DISABLED_DirectNavigationNoInteraction
 #else
@@ -114,8 +114,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
-// TODO(crbug.com/1282087): Flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+// TODO(crbug.com/1282087): Flaky on Linux, Windows and Mac.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_DirectNavigationWithQuery DISABLED_DirectNavigationWithQuery
 #else
 #define MAYBE_DirectNavigationWithQuery DirectNavigationWithQuery
