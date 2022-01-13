@@ -96,9 +96,17 @@ class ASH_EXPORT AppListTestApi {
   // sorting order when triggered.
   views::View* GetBubbleReorderUndoButton();
 
+  // Returns the fullscreen app list's undo button that reverts the temporary
+  // sorting order when triggered.
+  views::View* GetFullscreenReorderUndoButton();
+
   // Returns the visibility of the app list bubble's undo toast where the undo
   // button is located.
   bool GetBubbleReorderUndoToastVisibility() const;
+
+  // Returns the visibility of the fullscreen app list's undo toast where the
+  // undo button is located.
+  bool GetFullscreenReorderUndoToastVisibility() const;
 
   // Registers a callback that runs when all the animations scheduled to show or
   // hide the folder view complete.

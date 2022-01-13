@@ -331,6 +331,8 @@ bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
 
 void AppListBubblePresenter::OnTemporarySortOrderChanged(
     const absl::optional<AppListSortOrder>& new_order) {
+  if (!bubble_view_)
+    return;
   bubble_view_->apps_page()->OnTemporarySortOrderChanged(new_order);
 }
 

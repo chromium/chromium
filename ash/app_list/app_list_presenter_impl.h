@@ -105,6 +105,10 @@ class ASH_EXPORT AppListPresenterImpl
                             AppListShowSource show_source,
                             base::TimeTicks event_time_stamp);
 
+  // Called when the app list temporary sort order changes.
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order);
+
   // Returns current visibility of the app list. Deprecated, use
   // |IsAtLeastPartiallyVisible| instead.
   bool IsVisibleDeprecated() const;

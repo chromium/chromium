@@ -11,6 +11,9 @@
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/style/system_toast_style.h"
 #include "base/strings/strcat.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -34,7 +37,14 @@ constexpr char16_t kToastDismissText[] = u"Redo";
 }  // namespace
 
 AppListReorderUndoContainerView::AppListReorderUndoContainerView() {
-  SetUseDefaultFillLayout(true);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetDefault(views::kFlexBehaviorKey,
+                  views::FlexSpecification(
+                      views::MinimumFlexSizeRule::kPreferred,
+                      views::MaximumFlexSizeRule::kScaleToMaximum));
 }
 
 AppListReorderUndoContainerView::~AppListReorderUndoContainerView() {

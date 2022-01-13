@@ -83,6 +83,16 @@ AppListReorderUndoContainerView* GetReorderUndoContainerViewFromBubble() {
   return GetAppListBubbleView()->apps_page()->reorder_undo_container_for_test();
 }
 
+AppListReorderUndoContainerView*
+GetReorderUndoContainerViewFromFullscreenAppList() {
+  DCHECK(features::IsLauncherAppSortEnabled());
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view()
+      ->reorder_undo_container_for_test();
+}
+
 // WindowAddedWaiter -----------------------------------------------------------
 
 // Waits until a child window is added to a container window.
@@ -276,8 +286,18 @@ views::View* AppListTestApi::GetBubbleReorderUndoButton() {
       ->GetToastDismissButtonForTest();
 }
 
+views::View* AppListTestApi::GetFullscreenReorderUndoButton() {
+  return GetReorderUndoContainerViewFromFullscreenAppList()
+      ->GetToastDismissButtonForTest();
+}
+
 bool AppListTestApi::GetBubbleReorderUndoToastVisibility() const {
   return GetReorderUndoContainerViewFromBubble()->is_toast_visible_for_test();
+}
+
+bool AppListTestApi::GetFullscreenReorderUndoToastVisibility() const {
+  return GetReorderUndoContainerViewFromFullscreenAppList()
+      ->is_toast_visible_for_test();
 }
 
 void AppListTestApi::SetFolderViewAnimationCallback(

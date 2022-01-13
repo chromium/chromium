@@ -24,6 +24,7 @@
 namespace ash {
 
 class ApplicationDragAndDropHost;
+class AppListReorderUndoContainerView;
 class AppListFolderItem;
 class AppListFolderView;
 class ContentsView;
@@ -166,6 +167,11 @@ class ASH_EXPORT AppsContainerView
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
 
+  // Called when the app list temporary sort order changes. If `new_order` is
+  // null, the temporary sort order is cleared.
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order);
+
   ContinueSectionView* GetContinueSection();
   RecentAppsView* GetRecentApps();
   views::View* GetSeparatorView();
@@ -178,11 +184,12 @@ class ASH_EXPORT AppsContainerView
 
   views::View* scrollable_container_for_test() { return scrollable_container_; }
 
-  views::View* sort_button_container_for_test() {
-    return sort_button_container_;
-  }
   SuggestionChipContainerView* suggestion_chip_container_view_for_test() {
     return suggestion_chip_container_view_;
+  }
+
+  AppListReorderUndoContainerView* reorder_undo_container_for_test() {
+    return reorder_undo_container_;
   }
 
   // Updates recent apps from app list model.
@@ -291,11 +298,11 @@ class ASH_EXPORT AppsContainerView
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
   ContinueContainer* continue_container_ = nullptr;
+  AppListReorderUndoContainerView* reorder_undo_container_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;
   FolderBackgroundView* folder_background_view_ = nullptr;
-  views::View* sort_button_container_ = nullptr;
 
   ShowState show_state_ = SHOW_NONE;
 

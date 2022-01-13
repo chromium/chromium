@@ -405,8 +405,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 }
 
 // Verifies that clicking at the reorder undo toast should revert the temporary
-// sorting order.
-IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySorting) {
+// sorting order in bubble launcher.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingClamshell) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
@@ -443,4 +443,142 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySorting) {
 
   // The toast should be hidden.
   EXPECT_FALSE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
+}
+
+// Verifies that clicking at the reorder undo toast should revert the temporary
+// sorting order in tablet mode.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitUntilAppListAnimationIdle();
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
+                                   MenuType::kAppListNonFolderItemMenu);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Ensure that the reorder undo toast's bounds update.
+  app_list_test_api_.GetTopLevelAppsGridView()
+      ->GetWidget()
+      ->LayoutRootViewIfNecessary();
+
+  // The toast should be visible.
+  EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+
+  // Mouse click at the undo button.
+  views::View* reorder_undo_toast_button =
+      app_list_test_api_.GetFullscreenReorderUndoButton();
+  event_generator_->MoveMouseTo(
+      reorder_undo_toast_button->GetBoundsInScreen().CenterPoint());
+  event_generator_->ClickLeftButton();
+
+  // Verify that the default app order is recovered.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  // The toast should be hidden.
+  EXPECT_FALSE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, TransitionToTabletCommitsSort) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
+                                   MenuType::kAppListNonFolderItemMenu);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Ensure that the reorder undo toast's bounds update.
+  app_list_test_api_.GetTopLevelAppsGridView()
+      ->GetWidget()
+      ->LayoutRootViewIfNecessary();
+
+  // The toast should be visible.
+  EXPECT_TRUE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
+
+  // Transition to tablet mode - verify that the fullscreen launcher does not
+  // have undo toast, and that the order of apps is still sorted.
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitUntilAppListAnimationIdle();
+  EXPECT_FALSE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Transition back to clamshell, and verify the bubble launcher undo toast is
+  // now hidden.
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  EXPECT_FALSE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+}
+
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       TransitionToClamshellCommitsSort) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitUntilAppListAnimationIdle();
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
+                                   MenuType::kAppListNonFolderItemMenu);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Ensure that the reorder undo toast's bounds update.
+  app_list_test_api_.GetTopLevelAppsGridView()
+      ->GetWidget()
+      ->LayoutRootViewIfNecessary();
+
+  // The toast should be visible.
+  EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+
+  // Transition to clamshell mode - verify that the bubble launcher does not
+  // have undo toast, and that the order of apps is still sorted.
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  EXPECT_FALSE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Transition back to tablet mode, and verify the fullscreen launcher undo
+  // toast is now hidden.
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitUntilAppListAnimationIdle();
+
+  EXPECT_FALSE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 }

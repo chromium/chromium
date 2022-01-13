@@ -523,11 +523,8 @@ void AppListControllerImpl::OnTemporarySortOrderChanged(
   DCHECK(features::IsProductivityLauncherEnabled());
   DCHECK(features::IsLauncherAppSortEnabled());
 
-  // Adapt to the new sorting order in clamshell mode.
-  if (!IsTabletMode()) {
-    DCHECK(bubble_presenter_);
-    bubble_presenter_->OnTemporarySortOrderChanged(new_order);
-  }
+  bubble_presenter_->OnTemporarySortOrderChanged(new_order);
+  fullscreen_presenter_->OnTemporarySortOrderChanged(new_order);
 }
 
 ShelfAction AppListControllerImpl::ToggleAppList(
