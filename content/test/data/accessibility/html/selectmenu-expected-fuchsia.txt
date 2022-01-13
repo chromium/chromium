@@ -3,7 +3,7 @@ UNKNOWN focusable
 ++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
-++++++++++UNKNOWN focusable label='Option 1' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
 ++++++++++++UNKNOWN actions='{DEFAULT}'
 ++++++++++++++STATIC_TEXT label='Option 1'
 ++++++++++++++++UNKNOWN label='Option 1'
@@ -12,7 +12,7 @@ UNKNOWN focusable
 ++++++++++UNKNOWN hidden
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
-++++++++++UNKNOWN label='Custom selectmenu button' actions='{DEFAULT}'
+++++++++++UNKNOWN actions='{DEFAULT}' value='Custom selectmenu button'
 ++++++++++++STATIC_TEXT label='Custom selectmenu button'
 ++++++++++++++UNKNOWN label='Custom selectmenu button'
 ++++++++UNKNOWN hidden
