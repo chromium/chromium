@@ -12,7 +12,6 @@
 #include "build/buildflag.h"
 #include "chromecast/browser/display_configurator_observer.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
@@ -36,7 +35,6 @@ class ViewsDelegate;
 
 namespace chromecast {
 class CastFeatureUpdateObserver;
-class CastSystemMemoryPressureEvaluatorAdjuster;
 class CastWebService;
 class DisplaySettingsManager;
 class ServiceConnector;
@@ -159,12 +157,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // Tracks all media pipeline backends.
   std::unique_ptr<media::MediaPipelineBackendManager>
       media_pipeline_backend_manager_;
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-  std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
-      memory_pressure_monitor_;
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-  CastSystemMemoryPressureEvaluatorAdjuster*
-      cast_system_memory_pressure_evaluator_adjuster_;
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionsClient> extensions_client_;

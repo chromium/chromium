@@ -17,6 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -71,6 +72,7 @@
 #include "chromecast/ui/display_settings_manager_impl.h"
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -411,8 +413,7 @@ CastBrowserMainParts::CastBrowserMainParts(
       parameters_(std::move(parameters)),
       cast_content_browser_client_(cast_content_browser_client),
       media_caps_(std::make_unique<media::MediaCapsImpl>()),
-      metrics_helper_(std::make_unique<metrics::MetricsHelperImpl>()),
-      cast_system_memory_pressure_evaluator_adjuster_(nullptr) {
+      metrics_helper_(std::make_unique<metrics::MetricsHelperImpl>()) {
   DCHECK(cast_content_browser_client);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   AddDefaultCommandLineSwitches(command_line);
@@ -576,15 +577,17 @@ void CastBrowserMainParts::PostCreateThreads() {
 
 int CastBrowserMainParts::PreMainMessageLoopRun() {
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-  memory_pressure_monitor_.reset(
-      new memory_pressure::MultiSourceMemoryPressureMonitor());
-  auto cast_system_memory_pressure_evaluator =
-      std::make_unique<CastSystemMemoryPressureEvaluator>(
-          memory_pressure_monitor_->CreateVoter());
-  cast_system_memory_pressure_evaluator_adjuster_ =
-      cast_system_memory_pressure_evaluator.get();
-  memory_pressure_monitor_->SetSystemEvaluator(
-      std::move(cast_system_memory_pressure_evaluator));
+  // static_cast is safe because this is the only implementation of
+  // MemoryPressureMonitor.
+  auto* monitor =
+      static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
+          base::MemoryPressureMonitor::Get());
+  // |monitor| may be nullptr in browser tests.
+  if (monitor) {
+    monitor->SetSystemEvaluator(
+        std::make_unique<CastSystemMemoryPressureEvaluator>(
+            monitor->CreateVoter()));
+  }
 
   // base::Unretained() is safe because the browser client will outlive any
   // component in the browser; this factory method will not be called after
@@ -710,8 +713,7 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
 
   cast_browser_process_->SetCastService(
       cast_browser_process_->browser_client()->CreateCastService(
-          cast_browser_process_->browser_context(),
-          cast_system_memory_pressure_evaluator_adjuster_,
+          cast_browser_process_->browser_context(), nullptr,
           cast_browser_process_->pref_service(), video_plane_controller_.get(),
           window_manager_.get(), web_service_.get(),
           display_settings_manager_.get(),
