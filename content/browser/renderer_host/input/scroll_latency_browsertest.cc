@@ -210,7 +210,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 };
 
 // Disabled due to flakiness https://crbug.com/1163246.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_MultipleWheelScroll DISABLED_MultipleWheelScroll
 #else
 #define MAYBE_MultipleWheelScroll MultipleWheelScroll
