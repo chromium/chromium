@@ -336,19 +336,19 @@ used when committed.
 ### Accessibility
 *   [Accessibility Overview](accessibility/overview.md) - Overview of
     accessibility concerns and approaches in Chromium.
-*   [Accessibility Tests](accessibility/tests.md) - Where to find
+*   [Accessibility Tests](accessibility/browser/tests.md) - Where to find
     accessibility-related tests in the codebase.
-*   [ChromeVox on Chrome OS](accessibility/chromevox.md) - Enabling spoken
+*   [ChromeVox on Chrome OS](accessibility/os/chromevox.md) - Enabling spoken
     feedback (ChromeVox) on Chrome OS.
-*   [ChromeVox on Desktop Linux](accessibility/chromevox_on_desktop_linux.md) -
+*   [ChromeVox on Desktop Linux](accessibility/os/chromevox_on_desktop_linux.md) -
     Enabling spoken feedback (ChromeVox) on desktop Linux.
-*   [Offscreen, Invisible and Size](accessibility/offscreen.md) - How Chrome
+*   [Offscreen, Invisible and Size](accessibility/browser/offscreen.md) - How Chrome
     defines offscreen, invisible and size in the accessibility tree.
-*   [Text to Speech](accessibility/tts.md) - Overview of text to speech in
+*   [Text to Speech](accessibility/browser/tts.md) - Overview of text to speech in
     Chrome and Chrome OS.
-*   [BRLTTY in Chrome OS](accessibility/brltty.md) - Chrome OS integration with
+*   [BRLTTY in Chrome OS](accessibility/os/brltty.md) - Chrome OS integration with
     BRLTTY to support refreshable braille displays
-*   [PATTS on Chrome OS](accessibility/patts.md) - Notes on the PATTS speech
+*   [PATTS on Chrome OS](accessibility/os/patts.md) - Notes on the PATTS speech
     synthesis engine used on Chrome OS
 *   [VoiceOver](ios/voiceover.md) - Using Apple's VoiceOver feature with
     Chromium on iOS.
