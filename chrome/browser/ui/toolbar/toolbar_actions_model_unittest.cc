@@ -140,19 +140,17 @@ class ToolbarActionsModelUnitTest
   void TearDown() override;
 
   // Adds or removes the given |extension| and verify success.
-  testing::AssertionResult AddExtension(
-      const scoped_refptr<const extensions::Extension>& extension)
-      WARN_UNUSED_RESULT;
-  testing::AssertionResult RemoveExtension(
-      const scoped_refptr<const extensions::Extension>& extension)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] testing::AssertionResult AddExtension(
+      const scoped_refptr<const extensions::Extension>& extension);
+  [[nodiscard]] testing::AssertionResult RemoveExtension(
+      const scoped_refptr<const extensions::Extension>& extension);
 
   // Adds three extensions, all with browser actions.
-  testing::AssertionResult AddBrowserActionExtensions() WARN_UNUSED_RESULT;
+  [[nodiscard]] testing::AssertionResult AddBrowserActionExtensions();
 
   // Adds three extensions, one each for browser action, page action, and no
   // action, and are added in that order.
-  testing::AssertionResult AddActionExtensions() WARN_UNUSED_RESULT;
+  [[nodiscard]] testing::AssertionResult AddActionExtensions();
 
   // Returns true if the |toobar_model_| has an action with the given |id|.
   bool ModelHasActionForId(const std::string& id) const;

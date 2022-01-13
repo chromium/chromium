@@ -354,7 +354,7 @@ class RemoveHistoryTester {
   RemoveHistoryTester(const RemoveHistoryTester&) = delete;
   RemoveHistoryTester& operator=(const RemoveHistoryTester&) = delete;
 
-  bool Init(Profile* profile) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Init(Profile* profile) {
     history_service_ = HistoryServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
     if (!history_service_)
@@ -398,7 +398,7 @@ class RemoveFaviconTester {
   RemoveFaviconTester(const RemoveFaviconTester&) = delete;
   RemoveFaviconTester& operator=(const RemoveFaviconTester&) = delete;
 
-  bool Init(Profile* profile) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Init(Profile* profile) {
     // Create the history service if it has not been created yet.
     history_service_ = HistoryServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);

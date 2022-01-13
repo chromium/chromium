@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/browser/notification_observer.h"
@@ -24,18 +23,18 @@ namespace extensions_helper {
 
 // Returns true iff profiles with indices |index1| and |index2| have the same
 // extensions.
-bool HasSameExtensions(int index1, int index2) WARN_UNUSED_RESULT;
+[[nodiscard]] bool HasSameExtensions(int index1, int index2);
 
 // Returns true iff the profile with index |index| has the same extensions
 // as the verifier.
-bool HasSameExtensionsAsVerifier(int index) WARN_UNUSED_RESULT;
+[[nodiscard]] bool HasSameExtensionsAsVerifier(int index);
 
 // Returns true iff all existing profiles have the same extensions
 // as the verifier.
-bool AllProfilesHaveSameExtensionsAsVerifier() WARN_UNUSED_RESULT;
+[[nodiscard]] bool AllProfilesHaveSameExtensionsAsVerifier();
 
 // Returns true iff all existing profiles have the same extensions.
-bool AllProfilesHaveSameExtensions() WARN_UNUSED_RESULT;
+[[nodiscard]] bool AllProfilesHaveSameExtensions();
 
 // Installs the extension for the given index to |profile|, and returns the
 // extension ID of the new extension.

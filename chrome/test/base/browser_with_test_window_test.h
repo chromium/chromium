@@ -127,7 +127,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
   Browser* browser() const { return browser_.get(); }
   void set_browser(Browser* browser) { browser_.reset(browser); }
-  Browser* release_browser() WARN_UNUSED_RESULT { return browser_.release(); }
+  [[nodiscard]] Browser* release_browser() { return browser_.release(); }
 
   TestingProfile* profile() const { return profile_; }
 
@@ -143,7 +143,7 @@ class BrowserWithTestWindowTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
-  BrowserWindow* release_browser_window() WARN_UNUSED_RESULT {
+  [[nodiscard]] BrowserWindow* release_browser_window() {
     return window_.release();
   }
 

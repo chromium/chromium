@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_BRIDGE_IMPL_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
@@ -60,20 +59,20 @@ class PasswordStoreAndroidBackendBridgeImpl
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
-  JobId GetAllLogins(password_manager::PasswordStoreOperationTarget target)
-      override WARN_UNUSED_RESULT;
-  JobId GetAutofillableLogins() override WARN_UNUSED_RESULT;
-  JobId GetLoginsForSignonRealm(const std::string& signon_realm) override
-      WARN_UNUSED_RESULT;
-  JobId AddLogin(const password_manager::PasswordForm& form) override
-      WARN_UNUSED_RESULT;
-  JobId UpdateLogin(const password_manager::PasswordForm& form) override
-      WARN_UNUSED_RESULT;
-  JobId RemoveLogin(const password_manager::PasswordForm& form,
-                    password_manager::PasswordStoreOperationTarget target)
-      override WARN_UNUSED_RESULT;
+  [[nodiscard]] JobId GetAllLogins(
+      password_manager::PasswordStoreOperationTarget target) override;
+  [[nodiscard]] JobId GetAutofillableLogins() override;
+  [[nodiscard]] JobId GetLoginsForSignonRealm(
+      const std::string& signon_realm) override;
+  [[nodiscard]] JobId AddLogin(
+      const password_manager::PasswordForm& form) override;
+  [[nodiscard]] JobId UpdateLogin(
+      const password_manager::PasswordForm& form) override;
+  [[nodiscard]] JobId RemoveLogin(
+      const password_manager::PasswordForm& form,
+      password_manager::PasswordStoreOperationTarget target) override;
 
-  JobId GetNextJobId() WARN_UNUSED_RESULT;
+  [[nodiscard]] JobId GetNextJobId();
 
   // This member stores the unique ID last used for an API request.
   JobId last_job_id_{0};

@@ -129,8 +129,8 @@ class MockImmersiveModeController : public ImmersiveModeController {
       const gfx::Size& top_container_size) const override {
     return 0;
   }
-  ImmersiveRevealedLock* GetRevealedLock(AnimateReveal animate_reveal) override
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] ImmersiveRevealedLock* GetRevealedLock(
+      AnimateReveal animate_reveal) override {
     return nullptr;
   }
   void OnFindBarVisibleBoundsChanged(

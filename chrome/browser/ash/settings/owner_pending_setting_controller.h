@@ -60,8 +60,8 @@ class OwnerPendingSettingController
   absl::optional<base::Value> GetValue() const;
 
   // Add an observer |callback| for changes to the setting.
-  base::CallbackListSubscription AddObserver(
-      const base::RepeatingClosure& callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddObserver(
+      const base::RepeatingClosure& callback);
 
   // Called once ownership is taken, |service| is the service of the user taking
   // ownership.

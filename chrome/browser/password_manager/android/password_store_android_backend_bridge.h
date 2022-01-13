@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "chrome/browser/password_manager/android/password_store_operation_target.h"
@@ -62,38 +61,38 @@ class PasswordStoreAndroidBackendBridge {
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
   // job with the returned JobId succeeds.
-  virtual JobId GetAllLogins(PasswordStoreOperationTarget target)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual JobId GetAllLogins(
+      PasswordStoreOperationTarget target) = 0;
 
   // Triggers an asynchronous request to retrieve all autofillable
   // (non-blocklisted) passwords. The registered `Consumer` is notified with
   // `OnCompleteWithLogins` when the job with the returned JobId succeeds.
-  virtual JobId GetAutofillableLogins() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual JobId GetAutofillableLogins() = 0;
 
   // Triggers an asynchronous request to retrieve stored passwords with
   // matching |signon_realm|. The returned results must be validated (e.g
   // matching "sample.com" also returns logins for "not-sample.com").
   // The registered `Consumer` is notified with `OnCompleteWithLogins` when the
   // job with the returned JobId succeeds.
-  virtual JobId GetLoginsForSignonRealm(const std::string& signon_realm)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual JobId GetLoginsForSignonRealm(
+      const std::string& signon_realm) = 0;
 
   // Triggers an asynchronous request to add |form| to store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
   // job with the returned JobId succeeds.
-  virtual JobId AddLogin(const PasswordForm& form) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual JobId AddLogin(const PasswordForm& form) = 0;
 
   // Triggers an asynchronous request to update |form| in store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
   // job with the returned JobId succeeds.
-  virtual JobId UpdateLogin(const PasswordForm& form) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual JobId UpdateLogin(const PasswordForm& form) = 0;
 
   // Triggers an asynchronous request to remove |form| from store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
   // job with the returned JobId succeeds.
-  virtual JobId RemoveLogin(const PasswordForm& form,
-                            PasswordStoreOperationTarget target)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual JobId RemoveLogin(
+      const PasswordForm& form,
+      PasswordStoreOperationTarget target) = 0;
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.

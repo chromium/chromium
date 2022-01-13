@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
@@ -441,8 +440,8 @@ class NotificationPlatformBridgeWinImpl
     }
   }
 
-  mswr::ComPtr<winui::Notifications::IToastNotificationHistory>
-  GetIToastNotificationHistory() const WARN_UNUSED_RESULT {
+  [[nodiscard]] mswr::ComPtr<winui::Notifications::IToastNotificationHistory>
+  GetIToastNotificationHistory() const {
     mswr::ComPtr<winui::Notifications::IToastNotificationManagerStatics>
         toast_manager;
     HRESULT hr = CreateActivationFactory(

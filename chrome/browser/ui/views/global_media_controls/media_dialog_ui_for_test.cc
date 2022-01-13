@@ -68,7 +68,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
   void OnMediaButtonEnabled() override {}
   void OnMediaButtonDisabled() override {}
 
-  WARN_UNUSED_RESULT bool WaitForDialogOpened() {
+  [[nodiscard]] bool WaitForDialogOpened() {
     if (MediaDialogView::IsShowing())
       return true;
     waiting_for_dialog_opened_ = true;
@@ -76,7 +76,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     return MediaDialogView::IsShowing();
   }
 
-  WARN_UNUSED_RESULT bool WaitForButtonShown() {
+  [[nodiscard]] bool WaitForButtonShown() {
     if (button_->GetVisible())
       return true;
     waiting_for_button_shown_ = true;
@@ -84,7 +84,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     return button_->GetVisible();
   }
 
-  WARN_UNUSED_RESULT bool WaitForButtonHidden() {
+  [[nodiscard]] bool WaitForButtonHidden() {
     if (!button_->GetVisible())
       return true;
     waiting_for_button_hidden_ = true;

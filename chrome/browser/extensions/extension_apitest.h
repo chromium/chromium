@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -66,25 +65,25 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Loads the extension with |extension_name| and default RunOptions and
   // LoadOptions.
-  bool RunExtensionTest(const char* extension_name) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RunExtensionTest(const char* extension_name);
 
-  bool RunExtensionTest(const char* extension_name,
-                        const RunOptions& run_options) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RunExtensionTest(const char* extension_name,
+                                      const RunOptions& run_options);
 
-  bool RunExtensionTest(const char* extension_name,
-                        const RunOptions& run_options,
-                        const LoadOptions& load_options) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RunExtensionTest(const char* extension_name,
+                                      const RunOptions& run_options,
+                                      const LoadOptions& load_options);
 
-  bool RunExtensionTest(const base::FilePath& extension_path,
-                        const RunOptions& run_options,
-                        const LoadOptions& load_options) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RunExtensionTest(const base::FilePath& extension_path,
+                                      const RunOptions& run_options,
+                                      const LoadOptions& load_options);
 
   // Opens the given |url| and waits for the next result from the
   // chrome.test API. If |open_in_incognito| is true, the URL is opened
   // in an off-the-record browser profile. This API is different from
   // RunExtensionTest as it doesn't load an extension.
-  bool OpenTestURL(const GURL& url,
-                   bool open_in_incognito = false) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool OpenTestURL(const GURL& url,
+                                 bool open_in_incognito = false);
 
   // Start the test server, and store details of its state. Those details
   // will be available to JavaScript tests using chrome.test.getConfig().

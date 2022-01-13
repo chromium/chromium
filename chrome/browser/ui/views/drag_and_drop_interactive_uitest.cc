@@ -471,7 +471,7 @@ class DOMDragEventWaiter {
   // and properties that |found_event| is expected to have.
   //
   // Returns true upon success.  It is okay if |response| is null.
-  bool WaitForNextMatchingEvent(std::string* found_event) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WaitForNextMatchingEvent(std::string* found_event) {
     std::string candidate_event;
     bool got_right_event_type = false;
     bool got_right_window_name = false;

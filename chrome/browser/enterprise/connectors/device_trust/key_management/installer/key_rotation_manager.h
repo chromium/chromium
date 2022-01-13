@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-
 class GURL;
 
 namespace enterprise_connectors {
@@ -52,10 +50,10 @@ class KeyRotationManager {
   // complete successfully or fail (after some retrying).  This function is
   // not meant to be called from the chrome browser but from a background
   // utility process that does not block the user in the browser.
-  virtual bool RotateWithAdminRights(const GURL& dm_server_url,
-                                     const std::string& dm_token,
-                                     const std::string& nonce)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool RotateWithAdminRights(
+      const GURL& dm_server_url,
+      const std::string& dm_token,
+      const std::string& nonce) = 0;
 };
 
 }  // namespace enterprise_connectors

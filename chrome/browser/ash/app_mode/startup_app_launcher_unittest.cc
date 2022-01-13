@@ -13,7 +13,6 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -426,15 +425,14 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     startup_launch_delegate_.ClearLaunchStateChanges();
   }
 
-  AssertionResult DownloadPrimaryApp(
-      const TestKioskExtensionBuilder& app_builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult DownloadPrimaryApp(
+      const TestKioskExtensionBuilder& app_builder) {
     return DownloadPrimaryApp(app_builder.extension_id(),
                               app_builder.version());
   }
 
-  AssertionResult DownloadPrimaryApp(const std::string& app_id,
-                                     const std::string& version)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult DownloadPrimaryApp(const std::string& app_id,
+                                                   const std::string& version) {
     if (!external_cache_)
       return AssertionFailure() << "External cache not initialized";
 
@@ -449,8 +447,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     return AssertionSuccess();
   }
 
-  AssertionResult FinishPrimaryAppInstall(
-      const TestKioskExtensionBuilder& app_builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult FinishPrimaryAppInstall(
+      const TestKioskExtensionBuilder& app_builder) {
     const std::string& id = app_builder.extension_id();
     if (!external_apps_loader_handler_->pending_crx_files().count(id))
       return AssertionFailure() << "App install not peding: " << id;
@@ -465,8 +463,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     return AssertionSuccess();
   }
 
-  AssertionResult DownloadAndInstallPrimaryApp(
-      const TestKioskExtensionBuilder& app_builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult DownloadAndInstallPrimaryApp(
+      const TestKioskExtensionBuilder& app_builder) {
     AssertionResult download_result = DownloadPrimaryApp(app_builder);
     if (!download_result)
       return download_result;
@@ -478,8 +476,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     return AssertionSuccess();
   }
 
-  AssertionResult FinishSecondaryExtensionInstall(
-      const TestKioskExtensionBuilder& builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult FinishSecondaryExtensionInstall(
+      const TestKioskExtensionBuilder& builder) {
     const std::string& id = builder.extension_id();
     if (!external_apps_loader_handler_->pending_update_urls().count(id)) {
       return AssertionFailure()

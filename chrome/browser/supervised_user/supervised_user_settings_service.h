@@ -99,13 +99,13 @@ class SupervisedUserSettingsService : public KeyedService,
 
   // Adds a callback to be called when supervised user settings are initially
   // available, or when they change.
-  base::CallbackListSubscription SubscribeForSettingsChange(
-      const SettingsCallback& callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription SubscribeForSettingsChange(
+      const SettingsCallback& callback);
 
   // Subscribes to be notified when a new website is remotely approved for this
   // user.
-  base::CallbackListSubscription SubscribeForNewWebsiteApproval(
-      const WebsiteApprovalCallback& callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription SubscribeForNewWebsiteApproval(
+      const WebsiteApprovalCallback& callback);
 
   // Subscribe for a notification when the keyed service is shut down. The
   // subscription can be destroyed to unsubscribe.

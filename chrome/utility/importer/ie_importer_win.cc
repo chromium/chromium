@@ -160,11 +160,11 @@ struct IEOrderBookmarkComparator {
 // non-gcc compatible manner (-Wgcc-compat). So even though gcc isn't used to
 // build on Windows, declare some prototypes anyway to satisfy Clang's gcc
 // compatibility warnings.
-bool ParseFavoritesOrderBlob(const Importer* importer,
-                             const std::vector<uint8_t>& blob,
-                             const base::FilePath& path,
-                             std::map<base::FilePath, uint32_t>* sort_index)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool ParseFavoritesOrderBlob(
+    const Importer* importer,
+    const std::vector<uint8_t>& blob,
+    const base::FilePath& path,
+    std::map<base::FilePath, uint32_t>* sort_index);
 bool ParseFavoritesOrderBlob(const Importer* importer,
                              const std::vector<uint8_t>& blob,
                              const base::FilePath& path,
@@ -212,11 +212,11 @@ bool ParseFavoritesOrderBlob(const Importer* importer,
   return true;
 }
 
-bool ParseFavoritesOrderRegistryTree(
+[[nodiscard]] bool ParseFavoritesOrderRegistryTree(
     const Importer* importer,
     const base::win::RegKey& key,
     const base::FilePath& path,
-    std::map<base::FilePath, uint32_t>* sort_index) WARN_UNUSED_RESULT;
+    std::map<base::FilePath, uint32_t>* sort_index);
 bool ParseFavoritesOrderRegistryTree(
     const Importer* importer,
     const base::win::RegKey& key,
@@ -249,9 +249,9 @@ bool ParseFavoritesOrderRegistryTree(
   return true;
 }
 
-bool ParseFavoritesOrderInfo(const Importer* importer,
-                             std::map<base::FilePath, uint32_t>* sort_index)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool ParseFavoritesOrderInfo(
+    const Importer* importer,
+    std::map<base::FilePath, uint32_t>* sort_index);
 bool ParseFavoritesOrderInfo(const Importer* importer,
                              std::map<base::FilePath, uint32_t>* sort_index) {
   std::wstring key_path(importer::GetIEFavoritesOrderKey());

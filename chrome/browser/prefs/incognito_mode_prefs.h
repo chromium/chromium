@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PREFS_INCOGNITO_MODE_PREFS_H_
 #define CHROME_BROWSER_PREFS_INCOGNITO_MODE_PREFS_H_
 
-#include "base/compiler_specific.h"
-
 class PrefService;
 class Profile;
 
@@ -73,7 +71,7 @@ class IncognitoModePrefs {
   // method evaluates and caches if the platform controls have been enabled on
   // the first call, which must be on the UI thread when IO and blocking are
   // allowed. Subsequent calls may be from any thread.
-  static bool ArePlatformParentalControlsEnabled() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool ArePlatformParentalControlsEnabled();
 
  private:
   // Specifies whether parental controls should be checked. See comment below.

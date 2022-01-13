@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -259,10 +258,10 @@ class SyncTest : public PlatformBrowserTest {
   virtual bool UseVerifier();
 
   // Initializes sync clients and profiles but does not sync any of them.
-  virtual bool SetupClients() WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool SetupClients();
 
   // Initializes sync clients and profiles if required and syncs each of them.
-  virtual bool SetupSync() WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool SetupSync();
 
   // This is similar to click the reset button on chrome.google.com/sync.
   // Only takes effect when running with external servers.

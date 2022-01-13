@@ -40,16 +40,16 @@ class MediaDialogUiForTest {
   // Waits for the GMC toolbar icon to become visible, usually in response to
   // some action like starting media playback.  Returns true if the toolbar icon
   // is visible after waiting, or false after a timeout.
-  WARN_UNUSED_RESULT bool WaitForToolbarIconShown();
+  [[nodiscard]] bool WaitForToolbarIconShown();
 
   // Waits for the GMC toolbar icon to be hidden.  Returns true if the toolbar
   // icon is hidden after waiting, or false after a timeout.
-  WARN_UNUSED_RESULT bool WaitForToolbarIconHidden();
+  [[nodiscard]] bool WaitForToolbarIconHidden();
 
   // Waits for the GMC dialog to be open, usually in response to the toolbar
   // icon being clicked using ClickToolbarIcon().  Returns true if the dialog is
   // open after waiting, or false after a timeout.
-  WARN_UNUSED_RESULT bool WaitForDialogOpened();
+  [[nodiscard]] bool WaitForDialogOpened();
 
   bool IsDialogVisible();
   void WaitForDialogToContainText(const std::u16string& text);

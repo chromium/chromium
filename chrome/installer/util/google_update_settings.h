@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -101,8 +100,8 @@ class GoogleUpdateSettings {
   // the out parameter |stats_consent_default|. This function returns true if
   // the default state is known and false otherwise. If false the out param
   // will not be set.
-  static bool GetCollectStatsConsentDefault(bool* stats_consent_default)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool GetCollectStatsConsentDefault(
+      bool* stats_consent_default);
 #endif
 
   // Returns the metrics client info backed up in the registry. nullptr

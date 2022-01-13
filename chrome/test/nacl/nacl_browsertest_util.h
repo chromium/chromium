@@ -31,12 +31,11 @@ class StructuredMessageHandler : public content::TestMessageHandler {
 
  protected:
   // The structured message is missing an expected field.
-  MessageResponse MissingField(
-      const std::string& type,
-      const std::string& field) WARN_UNUSED_RESULT;
+  [[nodiscard]] MessageResponse MissingField(const std::string& type,
+                                             const std::string& field);
 
   // Something went wrong while decoding the message.
-  MessageResponse InternalError(const std::string& reason) WARN_UNUSED_RESULT;
+  [[nodiscard]] MessageResponse InternalError(const std::string& reason);
 };
 
 // A simple structured message handler for tests that load nexes.

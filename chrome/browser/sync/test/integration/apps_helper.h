@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -32,7 +31,7 @@ bool HasSameApps(Profile* profile1, Profile* profile2);
 
 // Returns true iff all existing profiles have the same apps (hosted,
 // legacy packaged and platform).
-bool AllProfilesHaveSameApps() WARN_UNUSED_RESULT;
+[[nodiscard]] bool AllProfilesHaveSameApps();
 
 // Installs the hosted app for the given index to |profile|, and returns the
 // extension ID of the new app.

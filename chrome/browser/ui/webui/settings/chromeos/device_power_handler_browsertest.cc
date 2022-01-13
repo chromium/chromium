@@ -107,7 +107,7 @@ class PowerHandlerTest : public InProcessBrowserTest {
 
   // Returns a JSON representation of the contents of the last message sent to
   // WebUI about settings being changed.
-  std::string GetLastSettingsChangedMessage() WARN_UNUSED_RESULT {
+  [[nodiscard]] std::string GetLastSettingsChangedMessage() {
     for (auto it = web_ui_.call_data().rbegin();
          it != web_ui_.call_data().rend(); ++it) {
       const content::TestWebUI::CallData* data = it->get();

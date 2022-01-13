@@ -45,7 +45,7 @@ class AccessibilityPrivateApiTest
         ::features::kExperimentalAccessibilityDictationCommands);
   }
 
-  bool RunSubtest(const char* subtest) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool RunSubtest(const char* subtest) {
     return RunExtensionTest("accessibility_private", {.custom_arg = subtest});
   }
 

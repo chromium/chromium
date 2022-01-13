@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -50,8 +49,8 @@ class TabDragContext {
       std::unique_ptr<TabDragController> controller) = 0;
 
   // Releases ownership of the current TabDragController.
-  virtual std::unique_ptr<TabDragController> ReleaseDragController()
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual std::unique_ptr<TabDragController>
+  ReleaseDragController() = 0;
 
   // Set a callback to be called with the controller upon assignment by
   // OwnDragController(controller). Allows tests to get the TabDragController

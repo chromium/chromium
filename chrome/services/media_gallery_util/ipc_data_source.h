@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
@@ -39,7 +38,7 @@ class IPCDataSource : public media::DataSource {
             int size,
             uint8_t* destination,
             ReadCB callback) override;
-  bool GetSize(int64_t* size_out) override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetSize(int64_t* size_out) override;
   bool IsStreaming() override;
   void SetBitrate(int bitrate) override;
 

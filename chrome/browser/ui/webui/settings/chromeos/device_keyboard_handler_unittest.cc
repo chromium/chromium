@@ -49,12 +49,12 @@ class KeyboardHandlerTest : public testing::Test {
   // Updates out-params from the last message sent to WebUI about a change to
   // which keys should be shown. False is returned if the message was invalid or
   // not found.
-  bool GetLastShowKeysChangedMessage(bool* has_caps_lock_out,
-                                     bool* has_external_meta_key_out,
-                                     bool* has_apple_command_key_out,
-                                     bool* has_internal_search_out,
-                                     bool* has_assistant_key_out)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool GetLastShowKeysChangedMessage(
+      bool* has_caps_lock_out,
+      bool* has_external_meta_key_out,
+      bool* has_apple_command_key_out,
+      bool* has_internal_search_out,
+      bool* has_assistant_key_out) {
     for (auto it = web_ui_.call_data().rbegin();
          it != web_ui_.call_data().rend(); ++it) {
       const content::TestWebUI::CallData* data = it->get();

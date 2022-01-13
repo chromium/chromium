@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
@@ -99,9 +98,8 @@ namespace {
 // through all ancestors seeing if any of them is of class "hidden". Since it
 // relies on the hidden class used by network error pages, not suitable for
 // general use.
-bool WARN_UNUSED_RESULT
-IsDisplayingText(content::RenderFrameHost* render_frame_host,
-                 const std::string& text) {
+[[nodiscard]] bool IsDisplayingText(content::RenderFrameHost* render_frame_host,
+                                    const std::string& text) {
   // clang-format off
   std::string command = base::StringPrintf(R"(
     function isNodeVisible(node) {
@@ -120,8 +118,7 @@ IsDisplayingText(content::RenderFrameHost* render_frame_host,
   return content::EvalJs(render_frame_host, command).ExtractBool();
 }
 
-bool WARN_UNUSED_RESULT IsDisplayingText(Browser* browser,
-                                         const std::string& text) {
+[[nodiscard]] bool IsDisplayingText(Browser* browser, const std::string& text) {
   return IsDisplayingText(
       browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame(), text);
 }
@@ -134,7 +131,7 @@ void ToggleHelpBox(Browser* browser) {
 }
 
 // Returns true if the diagnostics link suggestion is displayed.
-bool WARN_UNUSED_RESULT IsDisplayingDiagnosticsLink(Browser* browser) {
+[[nodiscard]] bool IsDisplayingDiagnosticsLink(Browser* browser) {
   std::string command = base::StringPrintf(
       "var diagnose_link = document.getElementById('diagnose-link');"
       "diagnose_link != null;");

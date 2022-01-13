@@ -68,19 +68,19 @@ scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile);
 
 // Used to verify that the boolean preference with name |pref_name| has the
 // same value across all profiles.
-bool BooleanPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool BooleanPrefMatches(const char* pref_name);
 
 // Used to verify that the integer preference with name |pref_name| has the
 // same value across all profiles.
-bool IntegerPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool IntegerPrefMatches(const char* pref_name);
 
 // Used to verify that the string preference with name |pref_name| has the
 // same value across all profiles.
-bool StringPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool StringPrefMatches(const char* pref_name);
 
 // Used to verify that the list preference with name |pref_name| has the
 // same value across all profiles.
-bool ListPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ListPrefMatches(const char* pref_name);
 
 // Returns a server-side preference in FakeServer for |pref_name| or nullopt if
 // no preference exists.

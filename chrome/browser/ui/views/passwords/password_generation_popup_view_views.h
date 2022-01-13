@@ -29,11 +29,11 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
       const PasswordGenerationPopupViewViews&) = delete;
 
   // PasswordGenerationPopupView implementation
-  bool Show() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Show() override;
   void Hide() override;
   void UpdateState() override;
   void UpdatePasswordValue() override;
-  bool UpdateBoundsAndRedrawPopup() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
 
  private:

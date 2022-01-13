@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 
 namespace base {
 namespace trace_event {
@@ -31,7 +30,7 @@ namespace tracing {
 //
 // See base/trace_event/trace_event.h for documentation of included and excluded
 // category_patterns.
-bool BeginTracing(const std::string& category_patterns) WARN_UNUSED_RESULT;
+[[nodiscard]] bool BeginTracing(const std::string& category_patterns);
 
 // Called from UI thread.
 // Begin tracing specified category_patterns on the browser.
@@ -41,17 +40,17 @@ bool BeginTracing(const std::string& category_patterns) WARN_UNUSED_RESULT;
 // |start_tracing_done_callback| will be called back.
 //
 // See base/trace_event/trace_config.h for documentation of configurations.
-bool BeginTracingWithTraceConfig(
-    const base::trace_event::TraceConfig& trace_config) WARN_UNUSED_RESULT;
+[[nodiscard]] bool BeginTracingWithTraceConfig(
+    const base::trace_event::TraceConfig& trace_config);
 
 using StartTracingDoneCallback = base::OnceClosure;
-bool BeginTracingWithTraceConfig(
+[[nodiscard]] bool BeginTracingWithTraceConfig(
     const base::trace_event::TraceConfig& trace_config,
-    StartTracingDoneCallback start_tracing_done_callback) WARN_UNUSED_RESULT;
+    StartTracingDoneCallback start_tracing_done_callback);
 
 // Called from UI thread.
 // End trace and collect the trace output as a json string.
-bool EndTracing(std::string* json_trace_output) WARN_UNUSED_RESULT;
+[[nodiscard]] bool EndTracing(std::string* json_trace_output);
 
 }  // namespace tracing
 

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 
 namespace base {
@@ -36,11 +35,10 @@ void RemoveCommandLineSwitch(const base::CommandLine& in_command_line,
                              base::CommandLine* out_command_line);
 
 // Creates and overrides the current process' user data dir.
-bool CreateUserDataDir(base::ScopedTempDir* temp_dir) WARN_UNUSED_RESULT;
+[[nodiscard]] bool CreateUserDataDir(base::ScopedTempDir* temp_dir);
 
 // Overrides the current process' user data dir.
-bool OverrideUserDataDir(const base::FilePath& user_data_dir)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool OverrideUserDataDir(const base::FilePath& user_data_dir);
 
 }  // namespace test_launcher_utils
 

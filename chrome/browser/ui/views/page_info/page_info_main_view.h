@@ -78,11 +78,11 @@ class PageInfoMainView : public views::View,
 
   // Creates a view with vertical box layout that will used a container for
   // other views.
-  std::unique_ptr<views::View> CreateContainerView() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<views::View> CreateContainerView();
 
   // Creates bubble header view for this page, contains the title and the close
   // button.
-  std::unique_ptr<views::View> CreateBubbleHeaderView() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<views::View> CreateBubbleHeaderView();
 
   // Posts a task to HandleMoreInfoRequestAsync() below.
   void HandleMoreInfoRequest(views::View* source);
@@ -99,8 +99,8 @@ class PageInfoMainView : public views::View,
 
   // Creates 'About this site' section which contains a button that opens a
   // subpage and two separators.
-  std::unique_ptr<views::View> CreateAboutThisSiteSection(
-      const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteSection(
+      const page_info::proto::SiteInfo& info);
 
   raw_ptr<PageInfo> presenter_;
 

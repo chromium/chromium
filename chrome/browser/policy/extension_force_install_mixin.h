@@ -9,7 +9,6 @@
 #include <map>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -142,11 +141,11 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // |extension_id| - if non-null, will be set to the installed extension ID.
   // |extension_version| - if non-null, will be set to the installed extension
   // version.
-  bool ForceInstallFromCrx(const base::FilePath& crx_path,
-                           WaitMode wait_mode,
-                           extensions::ExtensionId* extension_id = nullptr,
-                           base::Version* extension_version = nullptr)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ForceInstallFromCrx(
+      const base::FilePath& crx_path,
+      WaitMode wait_mode,
+      extensions::ExtensionId* extension_id = nullptr,
+      base::Version* extension_version = nullptr);
   // Force-installs the extension from the given source directory (which should
   // contain the manifest.json file and all other files of the extension).
   // Under the hood, packs the directory into a CRX file and serves it like
@@ -156,30 +155,29 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // |extension_id| - if non-null, will be set to the installed extension ID.
   // |extension_version| - if non-null, will be set to the installed extension
   // version.
-  bool ForceInstallFromSourceDir(
+  [[nodiscard]] bool ForceInstallFromSourceDir(
       const base::FilePath& extension_dir_path,
       const absl::optional<base::FilePath>& pem_path,
       WaitMode wait_mode,
       extensions::ExtensionId* extension_id = nullptr,
-      base::Version* extension_version = nullptr) WARN_UNUSED_RESULT;
+      base::Version* extension_version = nullptr);
 
   // Updates the served extension to the new version from |crx_path|. It's
   // expected that a ForceInstallFromCrx() call was done previously for this
   // extension.
   // |extension_version| - if non-null, will be set to the CRX'es version.
-  bool UpdateFromCrx(const base::FilePath& crx_path,
-                     UpdateWaitMode wait_mode,
-                     base::Version* extension_version = nullptr)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateFromCrx(const base::FilePath& crx_path,
+                                   UpdateWaitMode wait_mode,
+                                   base::Version* extension_version = nullptr);
   // Updates the served |extension_id| extension to the new version from
   // |extension_dir_path|. It's expected that a ForceInstallFromSourceDir() call
   // was done previously for this extension.
   // |extension_version| - if non-null, will be set to the extension's version.
-  bool UpdateFromSourceDir(const base::FilePath& extension_dir_path,
-                           const extensions::ExtensionId& extension_id,
-                           UpdateWaitMode wait_mode,
-                           base::Version* extension_version = nullptr)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateFromSourceDir(
+      const base::FilePath& extension_dir_path,
+      const extensions::ExtensionId& extension_id,
+      UpdateWaitMode wait_mode,
+      base::Version* extension_version = nullptr);
 
   // Returns the extension, or null if it's not installed yet.
   const extensions::Extension* GetInstalledExtension(

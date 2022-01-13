@@ -78,7 +78,7 @@ class BrowserDeactivationWaiter : public BrowserListObserver {
 
 // Brings the native window for |browser| to the foreground and waits until the
 // browser is active.
-bool BringBrowserWindowToFront(const Browser* browser) WARN_UNUSED_RESULT;
+[[nodiscard]] bool BringBrowserWindowToFront(const Browser* browser);
 
 // Returns true if the View is focused.
 bool IsViewFocused(const Browser* browser, ViewID vid);
@@ -98,34 +98,34 @@ void FocusView(const Browser* browser, ViewID vid);
 void HideNativeWindow(gfx::NativeWindow window);
 
 // Show and focus a native window. Returns true on success.
-bool ShowAndFocusNativeWindow(gfx::NativeWindow window) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ShowAndFocusNativeWindow(gfx::NativeWindow window);
 
 // Sends a key press, blocking until the key press is received or the test times
 // out. This uses ui_controls::SendKeyPress, see it for details. Returns true
 // if the event was successfully sent and received.
-bool SendKeyPressSync(const Browser* browser,
-                      ui::KeyboardCode key,
-                      bool control,
-                      bool shift,
-                      bool alt,
-                      bool command) WARN_UNUSED_RESULT;
+[[nodiscard]] bool SendKeyPressSync(const Browser* browser,
+                                    ui::KeyboardCode key,
+                                    bool control,
+                                    bool shift,
+                                    bool alt,
+                                    bool command);
 
 // Sends a key press, blocking until the key press is received or the test times
 // out. This uses ui_controls::SendKeyPress, see it for details. Returns true
 // if the event was successfully sent and received.
-bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
-                              ui::KeyboardCode key,
-                              bool control,
-                              bool shift,
-                              bool alt,
-                              bool command) WARN_UNUSED_RESULT;
+[[nodiscard]] bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
+                                            ui::KeyboardCode key,
+                                            bool control,
+                                            bool shift,
+                                            bool alt,
+                                            bool command);
 
 // Sends a move event blocking until received. Returns true if the event was
 // successfully received. This uses ui_controls::SendMouse***NotifyWhenDone,
 // see it for details.
-bool SendMouseMoveSync(const gfx::Point& location) WARN_UNUSED_RESULT;
-bool SendMouseEventsSync(ui_controls::MouseButton type,
-                         int button_state) WARN_UNUSED_RESULT;
+[[nodiscard]] bool SendMouseMoveSync(const gfx::Point& location);
+[[nodiscard]] bool SendMouseEventsSync(ui_controls::MouseButton type,
+                                       int button_state);
 
 // A combination of SendMouseMove to the middle of the view followed by
 // SendMouseEvents. Only exposed for toolkit-views.

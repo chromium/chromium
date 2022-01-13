@@ -42,17 +42,16 @@ extern const char kDefaultBillingAddressID[];
 extern const char kDefaultCreditCardCloudTokenDataID[];
 
 // Used to access the personal data manager within a particular sync profile.
-autofill::PersonalDataManager* GetPersonalDataManager(int index)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] autofill::PersonalDataManager* GetPersonalDataManager(int index);
 
 // Used to access the web data service within a particular sync profile.
-scoped_refptr<autofill::AutofillWebDataService> GetProfileWebDataService(
-    int index) WARN_UNUSED_RESULT;
+[[nodiscard]] scoped_refptr<autofill::AutofillWebDataService>
+GetProfileWebDataService(int index);
 
 // Used to access the account-scoped web data service within a particular sync
 // profile.
-scoped_refptr<autofill::AutofillWebDataService> GetAccountWebDataService(
-    int index) WARN_UNUSED_RESULT;
+[[nodiscard]] scoped_refptr<autofill::AutofillWebDataService>
+GetAccountWebDataService(int index);
 
 void SetServerCreditCards(
     int profile,

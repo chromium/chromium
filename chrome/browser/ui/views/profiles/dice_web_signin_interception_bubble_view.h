@@ -9,7 +9,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
@@ -36,13 +35,13 @@ class DiceWebSigninInterceptionBubbleView
   // Warning: the bubble is closed when the handle is destroyed ; it is the
   // responsibility of the caller to keep the handle alive until the bubble
   // should be closed.
-  static std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  [[nodiscard]] static std::unique_ptr<
+      ScopedDiceWebSigninInterceptionBubbleHandle>
   CreateBubble(Profile* profile,
                views::View* anchor_view,
                const DiceWebSigninInterceptor::Delegate::BubbleParameters&
                    bubble_parameters,
-               base::OnceCallback<void(SigninInterceptionResult)> callback)
-      WARN_UNUSED_RESULT;
+               base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   // Record metrics about the result of the signin interception.
   static void RecordInterceptionResult(

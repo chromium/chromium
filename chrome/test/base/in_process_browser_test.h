@@ -215,7 +215,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // If a test wishes to set up some initial non-empty state in the user data
   // directory before the browser starts up, it can do so here. Returns true if
   // successful.
-  virtual bool SetUpUserDataDirectory() WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
   // Initializes the display::Screen instance.
   virtual void SetScreenInstance() {}

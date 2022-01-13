@@ -253,8 +253,8 @@ class WebNavigationApiTestWithContextType
       const WebNavigationApiTestWithContextType&) = delete;
 
  protected:
-  bool RunTest(const char* name,
-               bool allow_in_incognito = false) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool RunTest(const char* name,
+                             bool allow_in_incognito = false) {
     return RunExtensionTest(name, {},
                             {.allow_in_incognito = allow_in_incognito});
   }

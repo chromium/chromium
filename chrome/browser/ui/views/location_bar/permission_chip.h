@@ -93,7 +93,7 @@ class PermissionChip : public views::AccessiblePaneView,
 
  protected:
   // Returns a newly-created permission prompt bubble.
-  virtual views::View* CreateBubble() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual views::View* CreateBubble() = 0;
 
   permissions::PermissionPrompt::Delegate* delegate() const {
     return delegate_;

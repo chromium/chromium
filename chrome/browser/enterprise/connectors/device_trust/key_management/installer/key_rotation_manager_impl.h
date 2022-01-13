@@ -37,10 +37,9 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   ~KeyRotationManagerImpl() override;
 
   // KeyRotationManager:
-  bool RotateWithAdminRights(const GURL& dm_server_url,
-                             const std::string& dm_token,
-                             const std::string& nonce) override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RotateWithAdminRights(const GURL& dm_server_url,
+                                           const std::string& dm_token,
+                                           const std::string& nonce) override;
 
  private:
   // Builds the protobuf message needed to tell DM server about the new public

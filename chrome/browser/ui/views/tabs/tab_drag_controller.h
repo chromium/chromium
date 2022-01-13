@@ -300,8 +300,7 @@ class TabDragController : public views::WidgetObserver {
 
   // Invoked once a drag has started to determine the appropriate context to
   // drag to (which may be the currently attached one).
-  Liveness ContinueDragging(const gfx::Point& point_in_screen)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] Liveness ContinueDragging(const gfx::Point& point_in_screen);
 
   // Transitions dragging from |attached_context_| to |target_context|.
   // |target_context| is NULL if the mouse is not over a valid tab strip.  See
@@ -485,9 +484,9 @@ class TabDragController : public views::WidgetObserver {
 
   // Returns the NativeWindow in |window| at the specified point. If
   // |exclude_dragged_view| is true, then the dragged view is not considered.
-  Liveness GetLocalProcessWindow(const gfx::Point& screen_point,
-                                 bool exclude_dragged_view,
-                                 gfx::NativeWindow* window) WARN_UNUSED_RESULT;
+  [[nodiscard]] Liveness GetLocalProcessWindow(const gfx::Point& screen_point,
+                                               bool exclude_dragged_view,
+                                               gfx::NativeWindow* window);
 
   // Sets the dragging info for the current dragged context. On Chrome OS, the
   // dragging info include two window properties: one is to indicate if the

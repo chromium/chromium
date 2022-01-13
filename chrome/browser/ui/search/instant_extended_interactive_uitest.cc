@@ -70,7 +70,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
         SetupInstant(browser()->profile(), base_url, ntp_url));
   }
 
-  bool UpdateSearchState(content::WebContents* contents) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool UpdateSearchState(content::WebContents* contents) {
     return GetIntFromJS(contents, "onMostVisitedChangedCalls",
                         &on_most_visited_change_calls_) &&
            GetIntFromJS(contents, "mostVisitedItemsCount",

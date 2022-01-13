@@ -561,10 +561,10 @@ class NetworkContextConfigurationBrowserTest
   // |header_value_out| to the value of the specified response header. Returns
   // false if the request fails. If non-null, uses |request| to make the
   // request, after setting its |url| value.
-  bool FetchHeaderEcho(const std::string& header_name,
-                       std::string* header_value_out,
-                       std::unique_ptr<network::ResourceRequest> request =
-                           nullptr) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool FetchHeaderEcho(
+      const std::string& header_name,
+      std::string* header_value_out,
+      std::unique_ptr<network::ResourceRequest> request = nullptr) {
     if (!request)
       request = std::make_unique<network::ResourceRequest>();
     request->url = embedded_test_server()->GetURL(

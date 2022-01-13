@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -22,24 +21,24 @@ class ThemeService;
 namespace themes_helper {
 
 // Gets the unique ID of the custom theme with the given index.
-std::string GetCustomTheme(int index) WARN_UNUSED_RESULT;
+[[nodiscard]] std::string GetCustomTheme(int index);
 
 // Gets the ID of |profile|'s theme.
-std::string GetThemeID(Profile* profile) WARN_UNUSED_RESULT;
+[[nodiscard]] std::string GetThemeID(Profile* profile);
 
 // Returns true iff |profile| is using a custom theme.
-bool UsingCustomTheme(Profile* profile) WARN_UNUSED_RESULT;
+[[nodiscard]] bool UsingCustomTheme(Profile* profile);
 
 // Returns true iff |profile| is using the default theme.
-bool UsingDefaultTheme(Profile* profile) WARN_UNUSED_RESULT;
+[[nodiscard]] bool UsingDefaultTheme(Profile* profile);
 
 // Returns true iff |profile| is using the system theme.
-bool UsingSystemTheme(Profile* profile) WARN_UNUSED_RESULT;
+[[nodiscard]] bool UsingSystemTheme(Profile* profile);
 
 // Returns true iff a theme with the given ID is pending install in
 // |profile|.
-bool ThemeIsPendingInstall(Profile* profile,
-                           const std::string& id) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ThemeIsPendingInstall(Profile* profile,
+                                         const std::string& id);
 
 // Sets |profile| to use the custom theme with the given index.
 void UseCustomTheme(Profile* profile, int index);

@@ -24,8 +24,8 @@ class PageInfoAboutThisSiteContentView : public views::View, public PageInfoUI {
   ~PageInfoAboutThisSiteContentView() override;
 
  private:
-  std::unique_ptr<views::View> CreateSourceLabel(
-      const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<views::View> CreateSourceLabel(
+      const page_info::proto::SiteInfo& info);
   void SourceLinkClicked(const ui::Event& event);
 
   raw_ptr<PageInfo> presenter_;
