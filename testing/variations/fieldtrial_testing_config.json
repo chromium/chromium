@@ -966,27 +966,6 @@
             ]
         }
     ],
-    "AutocompleteFilterForMeaningfulNames": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutocompleteFilterForMeaningfulNames"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAcrossIframes": [
         {
             "platforms": [
@@ -3379,6 +3358,26 @@
                     "name": "Enabled",
                     "disable_features": [
                         "UseGles2ForOopR"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DisableHttpDiskCache": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableHttpDiskCache"
                     ]
                 }
             ]

@@ -141,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
                                 &expected_cache_path);
   expected_cache_path = expected_cache_path.Append(chrome::kCacheDirname);
   base::ScopedAllowBlockingForTesting allow_blocking;
-  EXPECT_TRUE(base::PathExists(expected_cache_path));
+  EXPECT_NE(base::FeatureList::IsEnabled(features::kDisableHttpDiskCache),
+            base::PathExists(expected_cache_path));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
@@ -465,12 +466,18 @@ IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, All) {
 // Test subclass that adds switches::kDiskCacheDir and switches::kDiskCacheSize
 // to the command line, to make sure they're respected.
 class ProfileNetworkContextServiceDiskCacheBrowsertest
-    : public ProfileNetworkContextServiceBrowsertest {
+    : public ProfileNetworkContextServiceBrowsertest,
+      public testing::WithParamInterface<bool> {
  public:
   const int64_t kCacheSize = 7;
 
   ProfileNetworkContextServiceDiskCacheBrowsertest() {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kDisableHttpDiskCache);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kDisableHttpDiskCache);
+    }
   }
 
   ~ProfileNetworkContextServiceDiskCacheBrowsertest() override {}
@@ -486,10 +493,11 @@ class ProfileNetworkContextServiceDiskCacheBrowsertest
 
  private:
   base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Makes sure switches::kDiskCacheDir is hooked up correctly.
-IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
+IN_PROC_BROWSER_TEST_P(ProfileNetworkContextServiceDiskCacheBrowsertest,
                        DiskCacheLocation) {
   // Make sure command line switch is hooked up to the pref.
   ASSERT_EQ(TempPath(), g_browser_process->local_state()->GetFilePath(
@@ -516,11 +524,12 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
           .Append(browser()->profile()->GetBaseName())
           .Append(chrome::kCacheDirname);
   base::ScopedAllowBlockingForTesting allow_blocking;
-  EXPECT_TRUE(base::PathExists(expected_cache_path));
+  EXPECT_NE(base::FeatureList::IsEnabled(features::kDisableHttpDiskCache),
+            base::PathExists(expected_cache_path));
 }
 
 // Makes sure switches::kDiskCacheSize is hooked up correctly.
-IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
+IN_PROC_BROWSER_TEST_P(ProfileNetworkContextServiceDiskCacheBrowsertest,
                        DiskCacheSize) {
   // Make sure command line switch is hooked up to the pref.
   ASSERT_EQ(kCacheSize, g_browser_process->local_state()->GetInteger(
@@ -538,8 +547,16 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
   profile_network_context_service->ConfigureNetworkContextParams(
       /*in_memory=*/false, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);
-  EXPECT_EQ(kCacheSize, network_context_params.http_cache_max_size);
+  if (base::FeatureList::IsEnabled(features::kDisableHttpDiskCache)) {
+    EXPECT_EQ(0, network_context_params.http_cache_max_size);
+  } else {
+    EXPECT_EQ(kCacheSize, network_context_params.http_cache_max_size);
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProfileNetworkContextServiceDiskCacheBrowsertest,
+                         testing::Values(true, false));
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 namespace {
