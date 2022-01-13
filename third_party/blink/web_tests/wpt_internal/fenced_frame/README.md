@@ -27,20 +27,22 @@ messages have a unique key associated with them so that documents that want to
 receive messages can poll the server for a given message that can be identified
 by a unique key.
 
+**NB: any file that passes messages must run in a secure context (HTTPS).**
+
 Let's see an example of sending a message to the server that a fenced frame will
 receive and respond to.
 
 **outer-page.js:**
 ```js
 promise_test(async () => {
-  const important_message_key = KEYS["important_message"];
+  const important_message_key = stringToStashKey("important_message");
   const important_value = "Hello";
   writeValueToServer(important_message_key, important_value);
 
   // Now that the message has been sent to the fenced frame, let's wait for its
   // ACK, so that we don't exit the test before the fenced frame gets the
   // message.
-  const fenced_frame_ack_key = KEYS["fenced_frame_ack"];
+  const fenced_frame_ack_key = stringToStashKey("fenced_frame_ack");
   const response_from_fenced_frame = await
       nextValueFromServer(fenced_frame_ack_key);
   assert_equals(response_from_fenced_frame, "Hello to you too",
@@ -52,10 +54,10 @@ promise_test(async () => {
 
 ```js
 async function init() { // Needed in order to use top-level await.
-  const important_message_key = KEYS["important_message"];
+  const important_message_key = stringToStashKey("important_message");
   const greeting_from_embedder = await nextValueFromServer(important_message_key);
 
-  const fenced_frame_ack_key = KEYS["fenced_frame_ack"];
+  const fenced_frame_ack_key = stringToStashKey("fenced_frame_ack");
   if (greeting_from_embedder == "Hello") {
     // Message that we received was expected.
     writeValueToServer(fenced_frame_ack_key, "Hello to you too");
@@ -70,15 +72,13 @@ init();
 ```
 
 When you write a new web platform test, it will likely involve passing a _new_
-message like the messages above, to and from the fenced frame. In that case,
-please add a new key to the `KEYS` object in
-[resources/utils.js](third_party/blink/web_tests/wpt_internal/fenced_frame/resources/utils.js)
-and see the documentation there for why. You may have to add a new _pair_ of
-keys as well, so that when one document writes a message associated with one
-unique key, it can listen for an ACK from the receiving document, so that it
-doesn't write over the message again before the receiving document actually
-reads it. **No two tests should ever use the same key to communicate information
-to and from a fenced frame**, as this will cause server-side race conditions.
+message like the messages above, to and from the fenced frame. Keep in mind
+that you may have to use a _pair_ of keys, so that when one document writes a
+message associated with one unique key, it can listen for an ACK from the
+receiving document, so that it doesn't write over the message again before the
+receiving document actually reads it. **No two tests should ever use the same
+key to communicate information to and from a fenced frame**, as this will cause
+server-side race conditions.
 
 For a good test example, see
 [window-parent.html](window-parent.html).
