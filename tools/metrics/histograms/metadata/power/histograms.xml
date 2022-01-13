@@ -330,7 +330,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency" units="50 MHz"
-    expires_after="2022-05-08">
+    expires_after="2022-07-11">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -897,7 +897,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.IOPMPowerSource.SamplingEventDelta" units="ms"
-    expires_after="2022-03-01">
+    expires_after="2022-07-11">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

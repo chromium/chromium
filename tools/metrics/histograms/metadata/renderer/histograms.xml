@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.Shaping.FCP" units="ms"
-    expires_after="2022-04-18">
+    expires_after="2022-07-11">
   <owner>tkent@chromium.org</owner>
   <owner>kojii@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeBlinkCaptureDuration"
-    units="ms" expires_after="2022-05-08">
+    units="ms" expires_after="2022-07-11">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>

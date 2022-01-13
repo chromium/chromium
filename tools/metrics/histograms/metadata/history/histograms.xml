@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.FailedTasksChrome"
-    enum="ChromeBrowsingDataRemoverTasks" expires_after="2022-04-17">
+    enum="ChromeBrowsingDataRemoverTasks" expires_after="2022-07-11">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -498,7 +498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount"
-    units="count" expires_after="M101">
+    units="count" expires_after="2022-07-11">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordsCount"
-    units="count" expires_after="M101">
+    units="count" expires_after="2022-07-11">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount"
-    units="count" expires_after="M101">
+    units="count" expires_after="2022-07-11">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -545,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordsCount"
-    units="count" expires_after="M101">
+    units="count" expires_after="2022-07-11">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>

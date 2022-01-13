@@ -393,7 +393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2022-05-08">
+    units="dBFS (negated)" expires_after="2022-07-11">
   <owner>peah@chromium.org</owner>
   <summary>
     This histogram reports the average RMS of the signal in the output of
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2022-05-08">
+    units="dBFS (negated)" expires_after="2022-07-11">
   <owner>peah@chromium.org</owner>
   <summary>
     This histogram reports the peak RMS of the signal in the output of WebRTC's

@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Debugger.UserIsInDeveloperMode"
-    enum="InDeveloperMode" expires_after="2022-03-04">
+    enum="InDeveloperMode" expires_after="2022-07-11">
   <owner>ghazale@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -759,7 +759,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DevTools.UserIsInDeveloperMode"
-    enum="InDeveloperMode" expires_after="2022-03-04">
+    enum="InDeveloperMode" expires_after="2022-07-11">
   <owner>ghazale@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1126,7 +1126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionDisabledRemotely2"
-    enum="ExtensionUpdateCheckDataKey" expires_after="2022-05-08">
+    enum="ExtensionUpdateCheckDataKey" expires_after="2022-07-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

@@ -567,7 +567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ShareTargetUpdate.DynamicUpdateResult"
-    enum="ShareTargetUpdateResult" expires_after="M102">
+    enum="ShareTargetUpdateResult" expires_after="2022-07-11">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>

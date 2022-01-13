@@ -1978,7 +1978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
-    expires_after="2022-05-10">
+    expires_after="2022-07-11">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1988,7 +1988,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
-    enum="TextToSpeechFromExtensionAPI" expires_after="2022-05-10">
+    enum="TextToSpeechFromExtensionAPI" expires_after="2022-07-11">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>

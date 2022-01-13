@@ -808,7 +808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.RequestTypeOnError" enum="SyncRequestType"
-    expires_after="2022-04-30">
+    expires_after="2022-07-11">
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>

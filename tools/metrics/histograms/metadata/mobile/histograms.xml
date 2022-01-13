@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.CanonicalURLResult" enum="CanonicalURLResult"
-    expires_after="M102">
+    expires_after="2022-07-11">
   <owner>pkl@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
-    expires_after="2022-05-11">
+    expires_after="2022-07-11">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>

@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.HibernationEvents" enum="CanvasHibernationEvent"
-    expires_after="2022-05-08">
+    expires_after="2022-07-11">
   <owner>fserb@chromium.org</owner>
   <summary>
     Records the occurrence of events related to 2D canvas GPU resource
@@ -2695,7 +2695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.PrePaint.UpdateTime" units="microseconds"
-    expires_after="2022-05-08">
+    expires_after="2022-07-11">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -3106,7 +3106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeUserCancel" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-07-11">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -3514,7 +3514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.V8.InitPerIsolateData" units="microseconds"
-    expires_after="2022-05-08">
+    expires_after="2022-07-11">
   <owner>sky@chromium.org</owner>
   <owner>yukishiino@chromium.org</owner>
   <summary>
