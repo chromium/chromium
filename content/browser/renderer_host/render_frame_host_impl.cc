@@ -8881,10 +8881,10 @@ FrameTreeNode* RenderFrameHostImpl::GetSibling(int relative_offset) const {
       continue;
     }
 
-    if (i + relative_offset < 0 ||
-        i + relative_offset >= parent_->child_count()) {
+    if (relative_offset < 0 && base::checked_cast<size_t>(-relative_offset) > i)
       return nullptr;
-    }
+    if (i + relative_offset >= parent_->child_count())
+      return nullptr;
     return parent_->child_at(i + relative_offset);
   }
 
