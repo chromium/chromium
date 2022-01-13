@@ -412,12 +412,11 @@ static_assert(
     "SuperPageSnapshot must stay relatively small to be allocated on stack");
 
 SuperPageSnapshot::SuperPageSnapshot(uintptr_t super_page) {
-  using Root = PartitionRoot<ThreadSafe>;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
   auto* extent_entry = PartitionSuperPageToExtent<ThreadSafe>(super_page);
 
-  typename Root::ScopedGuard lock(extent_entry->root->lock_);
+  ::partition_alloc::ScopedGuard lock(extent_entry->root->lock_);
 
   const size_t nonempty_slot_spans =
       extent_entry->number_of_nonempty_slot_spans;
@@ -1436,7 +1435,7 @@ void PCScanInternal::RegisterScannableRoot(Root* root) {
   // Avoid nesting locks and store super_pages in a temporary vector.
   SuperPages super_pages;
   {
-    typename Root::ScopedGuard guard(root->lock_);
+    ::partition_alloc::ScopedGuard guard(root->lock_);
     PA_CHECK(root->IsQuarantineAllowed());
     if (root->IsScanEnabled())
       return;
@@ -1458,7 +1457,7 @@ void PCScanInternal::RegisterNonScannableRoot(Root* root) {
   // Avoid nesting locks and store super_pages in a temporary vector.
   SuperPages super_pages;
   {
-    typename Root::ScopedGuard guard(root->lock_);
+    ::partition_alloc::ScopedGuard guard(root->lock_);
     PA_CHECK(root->IsQuarantineAllowed());
     PA_CHECK(!root->IsScanEnabled());
     if (root->IsQuarantineEnabled())

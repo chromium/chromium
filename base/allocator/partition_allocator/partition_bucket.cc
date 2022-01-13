@@ -164,6 +164,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     int flags,
     size_t raw_size,
     size_t slot_span_alignment) {
+  using ::partition_alloc::internal::ScopedUnlockGuard;
+
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             bits::IsPowerOfTwo(slot_span_alignment));
 
@@ -196,7 +198,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // on this path. The only downside is possibly endless recursion if the OOM
     // handler allocates and fails to use UncheckedMalloc() or equivalent, but
     // that's violating the contract of base::TerminateBecauseOutOfMemory().
-    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+    ScopedUnlockGuard unlock{root->lock_};
     PartitionExcessiveAllocationSize(raw_size);
   }
 
@@ -221,7 +223,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // thread cache, but as a simple example the buffer partition in blink is
     // frequently used for large allocations (e.g. ArrayBuffer), and frequent,
     // small ones (e.g. WTF::String), and does not have a thread cache.
-    ScopedUnlockGuard<thread_safe> scoped_unlock{root->lock_};
+    ScopedUnlockGuard scoped_unlock{root->lock_};
 
     const size_t slot_size =
         PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
@@ -593,7 +595,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
       return 0;
 
     // Didn't manage to get a new uncommitted super page -> address space issue.
-    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+    ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};
     PartitionOutOfMemoryMappingFailure(root, kSuperPageSize);
   }
 
@@ -1020,7 +1022,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     if (flags & PartitionAllocReturnNull)
       return 0;
     // See comment in PartitionDirectMap() for unlocking.
-    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+    ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};
     root->OutOfMemory(raw_size);
     IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }

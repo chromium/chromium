@@ -10,24 +10,23 @@
 #include "base/rand_util.h"
 
 namespace base {
-
 namespace partition_alloc {
 class RandomGenerator {
  public:
   constexpr RandomGenerator() {}
 
   uint32_t RandomValue() {
-    internal::ScopedGuard<true> guard(lock_);
+    ::partition_alloc::ScopedGuard guard(lock_);
     return GetGenerator()->RandUint32();
   }
 
   void SeedForTesting(uint64_t seed) {
-    internal::ScopedGuard<true> guard(lock_);
+    ::partition_alloc::ScopedGuard guard(lock_);
     GetGenerator()->ReseedForTesting(seed);
   }
 
  private:
-  internal::PartitionLock lock_ = {};
+  ::partition_alloc::Lock lock_ = {};
   bool initialized_ GUARDED_BY(lock_) = false;
   union {
     base::InsecureRandomGenerator instance_ GUARDED_BY(lock_);

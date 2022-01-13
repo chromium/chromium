@@ -201,7 +201,6 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   using SuperPageExtentEntry =
       internal::PartitionSuperPageExtentEntry<thread_safe>;
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
-  using ScopedGuard = internal::ScopedGuard<thread_safe>;
   using PCScan = internal::PCScan;
 
   // Start of read-mostly flags.
@@ -264,7 +263,8 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
-  internal::MaybeLock<thread_safe> lock_;
+  static_assert(thread_safe, "Only the thread-safe root is supported.");
+  ::partition_alloc::Lock lock_;
 
   Bucket buckets[kNumBuckets] = {};
   Bucket sentinel_bucket;
@@ -469,7 +469,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // improves performance by performing fewer system calls, at the cost of more
   // memory usage.
   void EnableLargeEmptySlotSpanRing() {
-    ScopedGuard locker{lock_};
+    ::partition_alloc::ScopedGuard locker{lock_};
     global_empty_slot_span_ring_size = kMaxFreeableSpans;
   }
 
@@ -1240,7 +1240,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(uintptr_t slot_start,
   // Do not move the store above inside the locked section.
   __asm__ __volatile__("" : : "r"(slot_start) : "memory");
 
-  ScopedGuard guard{lock_};
+  ::partition_alloc::ScopedGuard guard{lock_};
   FreeInSlotSpan(slot_start, slot_span);
 }
 
@@ -1258,7 +1258,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeBatch(
   // The passed freelist is likely to be just built up, which means that the
   // corresponding pages were faulted in (without acquiring the lock). So there
   // is no need to touch pages manually here before the lock.
-  ScopedGuard guard{lock_};
+  ::partition_alloc::ScopedGuard guard{lock_};
   total_size_of_allocated_bytes -=
       (slot_span->GetSlotSizeForBookkeeping() * size);
   slot_span->AppendFreeList(head, tail, size);
@@ -1404,7 +1404,7 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
 #if defined(PA_COMMIT_CHARGE_IS_LIMITED)
   if (UNLIKELY(!ok)) {
     {
-      ScopedGuard guard(lock_);
+      ::partition_alloc::ScopedGuard guard(lock_);
       DecommitEmptySlotSpans();
     }
     ok = TryRecommitSystemPages(ptr, length, PageReadWriteTagged,
@@ -1710,7 +1710,7 @@ PartitionRoot<thread_safe>::RawAlloc(Bucket* bucket,
                                      size_t slot_span_alignment,
                                      size_t* usable_size,
                                      bool* is_already_zeroed) {
-  internal::ScopedGuard<thread_safe> guard{lock_};
+  ::partition_alloc::ScopedGuard guard{lock_};
   return AllocFromBucket(bucket, flags, raw_size, slot_span_alignment,
                          usable_size, is_already_zeroed);
 }

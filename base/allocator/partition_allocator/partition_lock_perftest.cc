@@ -12,12 +12,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc {
+
 namespace {
 
 constexpr int kWarmupRuns = 1;
-constexpr TimeDelta kTimeLimit = Seconds(1);
+constexpr base::TimeDelta kTimeLimit = base::Seconds(1);
 constexpr int kTimeCheckInterval = 100000;
 
 constexpr char kMetricPrefixLock[] = "PartitionLock.";
@@ -33,9 +33,9 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
   return reporter;
 }
 
-class Spin : public PlatformThread::Delegate {
+class Spin : public base::PlatformThread::Delegate {
  public:
-  Spin(MaybeLock<true>* lock, uint32_t* data)
+  Spin(Lock* lock, uint32_t* data)
       : lock_(lock), data_(data), should_stop_(false) {}
   ~Spin() override = default;
 
@@ -45,14 +45,14 @@ class Spin : public PlatformThread::Delegate {
     // results.
     uint32_t count = 0;
     while (!should_stop_.load(std::memory_order_relaxed)) {
-      lock_->Lock();
+      lock_->Acquire();
       count++;
-      lock_->Unlock();
+      lock_->Release();
     }
 
-    lock_->Lock();
+    lock_->Acquire();
     (*data_) += count;
-    lock_->Unlock();
+    lock_->Release();
   }
 
   // Called from another thread to stop the loop.
@@ -60,7 +60,7 @@ class Spin : public PlatformThread::Delegate {
   int started_count() const { return started_count_; }
 
  private:
-  MaybeLock<true>* lock_;
+  Lock* lock_;
   uint32_t* data_ GUARDED_BY(lock_);
   std::atomic<bool> should_stop_;
   std::atomic<int> started_count_{0};
@@ -69,7 +69,7 @@ class Spin : public PlatformThread::Delegate {
 }  // namespace
 
 TEST(PartitionLockPerfTest, Simple) {
-  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   ALLOW_UNUSED_TYPE uint32_t data = 0;
 
   Lock lock;
@@ -89,33 +89,33 @@ TEST(PartitionLockPerfTest, Simple) {
 TEST(PartitionLockPerfTest, WithCompetingThreads) {
   uint32_t data = 0;
 
-  MaybeLock<true> lock;
+  Lock lock;
 
   // Starts a competing thread executing the same loop as this thread.
   Spin thread_main(&lock, &data);
-  std::vector<PlatformThreadHandle> thread_handles;
+  std::vector<base::PlatformThreadHandle> thread_handles;
   constexpr int kThreads = 4;
 
   for (int i = 0; i < kThreads; i++) {
-    PlatformThreadHandle thread_handle;
-    ASSERT_TRUE(PlatformThread::Create(0, &thread_main, &thread_handle));
+    base::PlatformThreadHandle thread_handle;
+    ASSERT_TRUE(base::PlatformThread::Create(0, &thread_main, &thread_handle));
     thread_handles.push_back(thread_handle);
   }
   // Wait for all the threads to start.
   while (thread_main.started_count() != kThreads) {
   }
 
-  LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
-    lock.Lock();
+    lock.Acquire();
     data += 1;
-    lock.Unlock();
+    lock.Release();
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
 
   thread_main.Stop();
   for (int i = 0; i < kThreads; i++) {
-    PlatformThread::Join(thread_handles[i]);
+    base::PlatformThread::Join(thread_handles[i]);
   }
 
   auto reporter = SetUpReporter(kStoryWithCompetingThread);
@@ -123,5 +123,4 @@ TEST(PartitionLockPerfTest, WithCompetingThreads) {
   reporter.AddResult(kMetricLockUnlockLatency, 1e9 / timer.LapsPerSecond());
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc

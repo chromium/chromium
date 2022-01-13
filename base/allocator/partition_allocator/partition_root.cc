@@ -50,25 +50,25 @@ namespace {
 // design.
 void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
   auto* regular_root = internal::PartitionAllocMalloc::Allocator();
-  regular_root->lock_.Lock();
+  regular_root->lock_.Acquire();
 
   auto* original_root = internal::PartitionAllocMalloc::OriginalAllocator();
   if (original_root)
-    original_root->lock_.Lock();
+    original_root->lock_.Acquire();
 
   auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
   if (aligned_root != regular_root)
-    aligned_root->lock_.Lock();
+    aligned_root->lock_.Acquire();
 
   if (auto* nonscannable_root =
           internal::NonScannableAllocator::Instance().root())
-    nonscannable_root->lock_.Lock();
+    nonscannable_root->lock_.Acquire();
 
   if (auto* nonquarantinable_root =
           internal::NonQuarantinableAllocator::Instance().root())
-    nonquarantinable_root->lock_.Lock();
+    nonquarantinable_root->lock_.Acquire();
 
-  internal::ThreadCacheRegistry::GetLock().Lock();
+  internal::ThreadCacheRegistry::GetLock().Acquire();
 }
 
 template <typename T>
@@ -78,7 +78,7 @@ void UnlockOrReinit(T& lock, bool in_child) NO_THREAD_SAFETY_ANALYSIS {
   if (in_child)
     lock.Reinit();
   else
-    lock.Unlock();
+    lock.Release();
 }
 
 void ReleaseLocks(bool in_child) NO_THREAD_SAFETY_ANALYSIS {
@@ -547,7 +547,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
              (SystemPageSize() == (size_t{1} << 14)));
 #endif
 
-    ScopedGuard guard{lock_};
+    ::partition_alloc::ScopedGuard guard{lock_};
     if (initialized)
       return;
 
@@ -675,7 +675,7 @@ PartitionRoot<thread_safe>::~PartitionRoot() {
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
 #if defined(PA_THREAD_CACHE_SUPPORTED)
-  ScopedGuard guard{lock_};
+  ::partition_alloc::ScopedGuard guard{lock_};
   PA_CHECK(!with_thread_cache);
   // By the time we get there, there may be multiple threads created in the
   // process. Since `with_thread_cache` is accessed without a lock, it can
@@ -894,7 +894,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
     bool success = false;
     bool tried_in_place_for_direct_map = false;
     {
-      internal::ScopedGuard<thread_safe> guard{old_root->lock_};
+      ::partition_alloc::ScopedGuard guard{old_root->lock_};
       // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
       PA_DCHECK(IsValidSlotSpan(slot_span));
       old_usable_size = slot_span->GetUsableSize(old_root);
@@ -940,7 +940,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   {
-    ScopedGuard guard{lock_};
+    ::partition_alloc::ScopedGuard guard{lock_};
     // Avoid purging if there is PCScan task currently scheduled. Since pcscan
     // takes snapshot of all allocated pages, decommitting pages here (even
     // under the lock) is racy.
@@ -1017,7 +1017,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
   // Collect data with the lock held, cannot allocate or call third-party code
   // below.
   {
-    ScopedGuard guard{lock_};
+    ::partition_alloc::ScopedGuard guard{lock_};
     PA_DCHECK(total_size_of_allocated_bytes <= max_size_of_allocated_bytes);
 
     stats.total_mmapped_bytes =
@@ -1115,7 +1115,7 @@ void PartitionRoot<thread_safe>::DeleteForTesting(
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::ResetBookkeepingForTesting() {
-  ScopedGuard guard{lock_};
+  ::partition_alloc::ScopedGuard guard{lock_};
   max_size_of_allocated_bytes = total_size_of_allocated_bytes;
   max_size_of_committed_pages.store(total_size_of_committed_pages);
 }
@@ -1167,12 +1167,6 @@ uintptr_t PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
 
 template struct BASE_EXPORT PartitionRoot<internal::ThreadSafe>;
 
-static_assert(sizeof(PartitionRoot<internal::ThreadSafe>) ==
-                  sizeof(PartitionRoot<internal::NotThreadSafe>),
-              "Layouts should match");
-static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, buckets) ==
-                  offsetof(PartitionRoot<internal::NotThreadSafe>, buckets),
-              "Layouts should match");
 static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, sentinel_bucket) ==
                   offsetof(PartitionRoot<internal::ThreadSafe>, buckets) +
                       kNumBuckets *

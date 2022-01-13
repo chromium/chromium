@@ -330,7 +330,6 @@ class BASE_EXPORT ThreadCache {
     Bucket();
   };
   static_assert(sizeof(Bucket) <= 2 * sizeof(void*), "Keep Bucket small.");
-  enum class Mode { kNormal, kPurge, kNotifyRegistry };
 
   explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
   static void Delete(void* thread_cache_ptr);

@@ -34,6 +34,8 @@ void UnmapNow(uintptr_t reservation_start,
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionDirectUnmap(
     SlotSpanMetadata<thread_safe>* slot_span) {
+  using ::partition_alloc::internal::ScopedUnlockGuard;
+
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   root->lock_.AssertAcquired();
   auto* extent = PartitionDirectMapExtent<thread_safe>::FromSlotSpan(slot_span);
@@ -74,7 +76,7 @@ ALWAYS_INLINE void PartitionDirectUnmap(
   // second one may not find enough space in the GigaCage, and fail. This is
   // expected to be very rare though, and likely preferable to holding the lock
   // while releasing the address space.
-  ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+  ScopedUnlockGuard unlock{root->lock_};
   ScopedSyscallTimer<thread_safe> timer{root};
   UnmapNow(reservation_start, reservation_size, root->ChoosePool());
 }

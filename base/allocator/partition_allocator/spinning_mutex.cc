@@ -38,8 +38,7 @@
 
 #endif  // !defined(PA_HAS_FAST_MUTEX)
 
-namespace base {
-namespace internal {
+namespace partition_alloc {
 
 void SpinningMutex::Reinit() {
 #if !defined(OS_APPLE)
@@ -148,12 +147,11 @@ void SpinningMutex::LockSlowSpinLock() {
       // thread that is unavailable to finish its work because of higher
       // priority threads spinning here. Sleeping should ensure that they make
       // progress.
-      PlatformThread::Sleep(Milliseconds(1));
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
   } while (!TrySpinLock());
 }
 
 #endif  // defined(PA_HAS_FAST_MUTEX)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc

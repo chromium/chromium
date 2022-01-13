@@ -15,53 +15,11 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
-
-template <bool thread_safe>
-class LOCKABLE MaybeLock {
+namespace partition_alloc {
+class LOCKABLE Lock {
  public:
-  void Lock() EXCLUSIVE_LOCK_FUNCTION() {}
-  void Unlock() UNLOCK_FUNCTION() {}
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {}
-  // Re-initializes the lock. Only to be used after fork() in child processes.
-  // Marked UNLOCK_FUNCTION() as a lock starts unlocked, even though it's called
-  // from a NO_THREAD_SAFETY_ANALYSIS context.
-  void Reinit() UNLOCK_FUNCTION();
-};
-
-template <bool thread_safe>
-class SCOPED_LOCKABLE ScopedGuard {
- public:
-  explicit ScopedGuard(MaybeLock<thread_safe>& lock)
-      EXCLUSIVE_LOCK_FUNCTION(lock)
-      : lock_(lock) {
-    lock_.Lock();
-  }
-  ~ScopedGuard() UNLOCK_FUNCTION() { lock_.Unlock(); }
-
- private:
-  MaybeLock<thread_safe>& lock_;
-};
-
-template <bool thread_safe>
-class SCOPED_LOCKABLE ScopedUnlockGuard {
- public:
-  explicit ScopedUnlockGuard(MaybeLock<thread_safe>& lock) UNLOCK_FUNCTION(lock)
-      : lock_(lock) {
-    lock_.Unlock();
-  }
-  ~ScopedUnlockGuard() EXCLUSIVE_LOCK_FUNCTION() { lock_.Lock(); }
-
- private:
-  MaybeLock<thread_safe>& lock_;
-};
-
-template <>
-class LOCKABLE MaybeLock<true> {
- public:
-  constexpr MaybeLock() = default;
-  void Lock() EXCLUSIVE_LOCK_FUNCTION() {
+  inline constexpr Lock();
+  void Acquire() EXCLUSIVE_LOCK_FUNCTION() {
 #if DCHECK_IS_ON()
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
     // instance, a DCHECK() triggers in external code (such as
@@ -70,7 +28,7 @@ class LOCKABLE MaybeLock<true> {
     // recursion.
     //
     // To avoid that, crash quickly when the code becomes reentrant.
-    PlatformThreadRef current_thread = PlatformThread::CurrentRef();
+    base::PlatformThreadRef current_thread = base::PlatformThread::CurrentRef();
     if (!lock_.Try()) {
       // The lock wasn't free when we tried to acquire it. This can be because
       // another thread or *this* thread was holding it.
@@ -98,9 +56,10 @@ class LOCKABLE MaybeLock<true> {
 #endif
   }
 
-  void Unlock() UNLOCK_FUNCTION() {
+  void Release() UNLOCK_FUNCTION() {
 #if DCHECK_IS_ON()
-    owning_thread_ref_.store(PlatformThreadRef(), std::memory_order_release);
+    owning_thread_ref_.store(base::PlatformThreadRef(),
+                             std::memory_order_release);
 #endif
     lock_.Release();
   }
@@ -108,14 +67,15 @@ class LOCKABLE MaybeLock<true> {
     lock_.AssertAcquired();
 #if DCHECK_IS_ON()
     PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
-              PlatformThread::CurrentRef());
+              base::PlatformThread::CurrentRef());
 #endif
   }
 
   void Reinit() UNLOCK_FUNCTION() {
     lock_.AssertAcquired();
 #if DCHECK_IS_ON()
-    owning_thread_ref_.store(PlatformThreadRef(), std::memory_order_release);
+    owning_thread_ref_.store(base::PlatformThreadRef(),
+                             std::memory_order_release);
 #endif
     lock_.Reinit();
   }
@@ -126,31 +86,51 @@ class LOCKABLE MaybeLock<true> {
 #if DCHECK_IS_ON()
   // Should in theory be protected by |lock_|, but we need to read it to detect
   // recursive lock acquisition (and thus, the allocator becoming reentrant).
-  std::atomic<PlatformThreadRef> owning_thread_ref_{};
+  std::atomic<base::PlatformThreadRef> owning_thread_ref_{};
 #endif
 };
-// We want PartitionRoot to not have a global destructor, so this should not
-// have one.
-static_assert(std::is_trivially_destructible<MaybeLock<true>>::value, "");
 
-template <>
-class LOCKABLE MaybeLock<false> {
+class SCOPED_LOCKABLE ScopedGuard {
  public:
-  void Lock() EXCLUSIVE_LOCK_FUNCTION() {}
-  void Unlock() UNLOCK_FUNCTION() {}
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {}
-  void Reinit() UNLOCK_FUNCTION() {}
+  explicit ScopedGuard(Lock& lock) EXCLUSIVE_LOCK_FUNCTION(lock) : lock_(lock) {
+    lock_.Acquire();
+  }
+  ~ScopedGuard() UNLOCK_FUNCTION() { lock_.Release(); }
 
-  char padding_[sizeof(MaybeLock<true>)];
+ private:
+  Lock& lock_;
 };
 
-static_assert(
-    sizeof(MaybeLock<true>) == sizeof(MaybeLock<false>),
-    "Sizes should be equal to ensure identical layout of PartitionRoot");
+namespace internal {
 
-using PartitionLock = MaybeLock<true>;
-using PartitionAutoLock = ScopedGuard<true>;
+class SCOPED_LOCKABLE ScopedUnlockGuard {
+ public:
+  explicit ScopedUnlockGuard(Lock& lock) UNLOCK_FUNCTION(lock) : lock_(lock) {
+    lock_.Release();
+  }
+  ~ScopedUnlockGuard() EXCLUSIVE_LOCK_FUNCTION() { lock_.Acquire(); }
+
+ private:
+  Lock& lock_;
+};
+
+}  // namespace internal
+
+constexpr Lock::Lock() = default;
+
+// We want PartitionRoot to not have a global destructor, so this should not
+// have one.
+static_assert(std::is_trivially_destructible<Lock>::value, "");
+
+}  // namespace partition_alloc
+
+namespace base {
+namespace internal {
+
+using PartitionLock = ::partition_alloc::Lock;
+using PartitionAutoLock = ::partition_alloc::ScopedGuard;
 
 }  // namespace internal
 }  // namespace base
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_LOCK_H_

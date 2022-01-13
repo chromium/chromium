@@ -59,8 +59,7 @@ PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
 #include <lib/sync/mutex.h>
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc {
 
 // The behavior of this class depends on whether PA_HAS_FAST_MUTEX is defined.
 // 1. When it is defined:
@@ -331,7 +330,6 @@ ALWAYS_INLINE void SpinningMutex::LockSlow() {
 
 #endif  // defined(PA_HAS_FAST_MUTEX)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_MUTEX_H_
