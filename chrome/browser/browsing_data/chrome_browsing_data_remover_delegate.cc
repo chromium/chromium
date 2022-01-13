@@ -691,6 +691,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, delete_begin,
         delete_end, website_settings_filter);
 
+    if (auto* privacy_sandbox_settings =
+            PrivacySandboxSettingsFactory::GetForProfile(profile_)) {
+      privacy_sandbox_settings->ClearFledgeJoiningAllowedSettings(delete_begin_,
+                                                                  delete_end_);
+    }
+
 #if !defined(OS_ANDROID)
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetDefaultForBrowserContext(profile_);

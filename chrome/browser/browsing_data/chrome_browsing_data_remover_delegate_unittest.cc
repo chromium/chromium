@@ -52,6 +52,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
@@ -113,6 +114,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/site_isolation/pref_names.h"
@@ -2572,6 +2574,55 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
             http_auth_cache->Lookup(
                 kSchemeHostPort, net::HttpAuth::AUTH_SERVER, kTestRealm,
                 net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey()));
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFledgeJoinSettings) {
+  auto* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(GetProfile());
+
+  const std::string etld_one = "example.com";
+  base::Time setting_time_one = base::Time::Now();
+  privacy_sandbox_settings->SetFledgeJoiningAllowed(etld_one, false);
+  task_environment()->AdvanceClock(base::Days(1));
+
+  const std::string etld_two = "another-example.com";
+  base::Time setting_time_two = base::Time::Now();
+  privacy_sandbox_settings->SetFledgeJoiningAllowed(etld_two, false);
+  task_environment()->AdvanceClock(base::Days(1));
+
+  const std::string etld_three = "different-example.com";
+  base::Time setting_time_three = base::Time::Now();
+  privacy_sandbox_settings->SetFledgeJoiningAllowed(etld_three, false);
+
+  EXPECT_FALSE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://www.example.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://another-example.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://different-example.com"))));
+
+  // Apply a deletion targeting the second setting.
+  BlockUntilBrowsingDataRemoved(setting_time_two - base::Seconds(1),
+                                setting_time_two + base::Seconds(1),
+                                constants::DATA_TYPE_CONTENT_SETTINGS, false);
+
+  EXPECT_FALSE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://www.example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://another-example.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://different-example.com"))));
+
+  // Apply a deletion targeting the remaining settings.
+  BlockUntilBrowsingDataRemoved(setting_time_one, setting_time_three,
+                                constants::DATA_TYPE_CONTENT_SETTINGS, false);
+
+  EXPECT_TRUE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://www.example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://another-example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://different-example.com"))));
 }
 
 class ChromeBrowsingDataRemoverDelegateBlockPromptsTest
