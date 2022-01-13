@@ -110,11 +110,11 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
-    DictionaryPrefUpdateDeprecated update(browser()->profile()->GetPrefs(),
-                                          plugin_vm::prefs::kPluginVmImage);
-    base::DictionaryValue* plugin_vm_image = update.Get();
-    plugin_vm_image->SetKey("url", base::Value(url));
-    plugin_vm_image->SetKey("hash", base::Value(hash));
+    DictionaryPrefUpdate update(browser()->profile()->GetPrefs(),
+                                plugin_vm::prefs::kPluginVmImage);
+    base::Value* plugin_vm_image = update.Get();
+    plugin_vm_image->SetStringKey("url", url);
+    plugin_vm_image->SetStringKey("hash", hash);
   }
 
   void WaitForSetupToFinish() {
