@@ -41,6 +41,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_fenced_frame_url_mapping_result_observer.h"

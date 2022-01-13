@@ -98,7 +98,14 @@ class BidderWorkletTest : public testing::Test {
     v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
   }
 
-  ~BidderWorkletTest() override { task_environment_.RunUntilIdle(); }
+  ~BidderWorkletTest() override {
+    // Release the V8 helper and process all pending tasks. This is to make sure
+    // there aren't any pending tasks between the V8 thread and the main thread
+    // that will result in UAFs. These lines are not necessary for any test to
+    // pass.
+    v8_helper_.reset();
+    task_environment_.RunUntilIdle();
+  }
 
   // Default values. No test actually depends on these being anything but valid,
   // but test that set these can use this to reset values to default after each

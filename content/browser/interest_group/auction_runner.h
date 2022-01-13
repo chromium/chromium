@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -25,7 +26,6 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -37,7 +37,6 @@ namespace content {
 class AuctionURLLoaderFactoryProxy;
 class DebuggableAuctionWorklet;
 class InterestGroupManager;
-class RenderFrameHostImpl;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback.
@@ -66,29 +65,6 @@ class CONTENT_EXPORT AuctionRunner {
       const absl::optional<GURL> bidder_report_url,
       const absl::optional<GURL> seller_report_url,
       std::vector<std::string> errors)>;
-
-  // Delegate class to allow dependency injection in tests. Note that all
-  // objects this returns can crash and be restarted, so passing in raw pointers
-  // would be problematic.
-  class Delegate {
-   public:
-    // Returns the URLLoaderFactory of the frame running the auction. Used to
-    // load the seller worklet in the context of the parent frame, since unlike
-    // other worklet types, it has no first party opt-in, and it's not a
-    // cross-origin leak if the parent from knows its URL, since the parent
-    // frame provided the URL in the first place.
-    virtual network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() = 0;
-
-    // Trusted URLLoaderFactory used to load bidder worklets.
-    virtual network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() = 0;
-
-    // Get containing frame. (Passed to debugging hooks).
-    virtual RenderFrameHostImpl* GetFrame() = 0;
-
-    // Returns the ClientSecurityState associated with the frame, for use in
-    // bidder worklet and signals fetches.
-    virtual network::mojom::ClientSecurityStatePtr GetClientSecurityState() = 0;
-  };
 
   // Result of an auction. Used for histograms. Only recorded for valid
   // auctions. These are used in histograms, so values of existing entries must
@@ -131,28 +107,25 @@ class CONTENT_EXPORT AuctionRunner {
   explicit AuctionRunner(const AuctionRunner&) = delete;
   AuctionRunner& operator=(const AuctionRunner&) = delete;
 
-  // Fails the auction, invoking `callback_` and preventis any future calls into
+  // Fails the auction, invoking `callback_` and prevents any future calls into
   // `this` by closing mojo pipes and disposing of weak pointers. The owner must
   // be able to safely delete `this` when the callback is invoked. May only be
   // invoked if the auction has not yet completed.
   //
   // `result` is used for logging purposes only.
   //
-  // If `error` is non-null, it will be appended to `errors_`.
+  // `errors` is appended to `errors_`.
   //
   // Public so that the owner can fail the auction on teardown, to invoke any
   // pending Mojo callbacks.
   void FailAuction(AuctionResult result,
-                   absl::optional<std::string> error = absl::nullopt);
-
-  // Called when the seller pipe is disconnected.
-  void OnSellerDisconnected(uint32_t custom_reason,
-                            const std::string& description);
+                   const std::vector<std::string>& errors = {});
 
   // Runs an entire FLEDGE auction.
   //
   // Arguments:
-  // `delegate` and `interest_group_manager` must remain valid until the
+  // `auction_worklet_manager`, `auction_worklet_manager_delegate`, and
+  // `interest_group_manager` must remain valid until the
   //  AuctionRunner is destroyed.
   //
   // `auction_config` is the configuration provided by client JavaScript in
@@ -169,7 +142,8 @@ class CONTENT_EXPORT AuctionRunner {
   // `frame_origin` is the origin running the auction (not the top frame
   // origin), used as the initiator in network requests.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
-      Delegate* delegate,
+      AuctionWorkletManager* auction_worklet_manager,
+      AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
       InterestGroupManager* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
       std::vector<url::Origin> filtered_buyers,
@@ -242,12 +216,14 @@ class CONTENT_EXPORT AuctionRunner {
     double seller_score = 0;
   };
 
-  AuctionRunner(Delegate* delegate,
-                InterestGroupManager* interest_group_manager,
-                blink::mojom::AuctionAdConfigPtr auction_config,
-                auction_worklet::mojom::BrowserSignalsPtr browser_signals,
-                const url::Origin& frame_origin,
-                RunAuctionCallback callback);
+  AuctionRunner(
+      AuctionWorkletManager* auction_worklet_manager,
+      AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
+      InterestGroupManager* interest_group_manager,
+      blink::mojom::AuctionAdConfigPtr auction_config,
+      auction_worklet::mojom::BrowserSignalsPtr browser_signals,
+      const url::Origin& frame_origin,
+      RunAuctionCallback callback);
 
   // Starts retrieving all interest groups owned by `filtered_buyers` from
   // storage. OnInterestGroupRead() will be invoked with the lookup results for
@@ -259,14 +235,19 @@ class CONTENT_EXPORT AuctionRunner {
   // StartBidding().
   void OnInterestGroupRead(std::vector<StorageInterestGroup> interest_groups);
 
-  // Request seller worklet process. No bidder processes are requested until a
-  // seller worklet process has been received.
-  void RequestSellerWorkletProcess();
+  // Requests a seller worklet from the AuctionWorkletManager. No bidder
+  // processes are requested until a seller worklet has been received.
+  void RequestSellerWorklet();
 
-  // Invoked once the AuctionProcessManager has provided a process for the
-  // seller worklet. Starts loading the seller worklet, and requests processes
-  // for all bidders.
-  void OnSellerWorkletProcessReceived();
+  // Invoked once the AuctionWorkletManager has provided a SellerWorkletHandle.
+  // Requests processes for all bidders.
+  void OnSellerWorkletReceived();
+
+  // Invoked by the SellerWorkletManager on fatal errors, at any point after a
+  // SellerWorklet has been provided. Results in auction immediately failing.
+  void OnSellerWorkletFatalError(
+      AuctionWorkletManager::FatalErrorType fatal_error_type,
+      const std::vector<std::string>& errors);
 
   // Invoked whenever the AuctionProcessManager has provided a process for a
   // bidder worklet. Starts loading the corresponding worklet and generating a
@@ -335,7 +316,9 @@ class CONTENT_EXPORT AuctionRunner {
       BidState& bid_state,
       mojo::ConnectionErrorWithReasonCallback disconnect_handler);
 
-  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
+  const raw_ptr<AuctionWorkletManager::Delegate>
+      auction_worklet_manager_delegate_;
   const raw_ptr<InterestGroupManager> interest_group_manager_;
 
   // Configuration.
@@ -380,15 +363,8 @@ class CONTENT_EXPORT AuctionRunner {
   // Number of bidders with the same score as `top_bidder`.
   size_t num_top_bidders_ = 0;
 
-  // URLLoaderFactory proxy class configured only to load the URL the seller
-  // needs.
-  std::unique_ptr<AuctionURLLoaderFactoryProxy> seller_url_loader_factory_;
-
-  // State for the scoring phase.
-  std::unique_ptr<AuctionProcessManager::ProcessHandle>
-      seller_worklet_process_handle_;
-  mojo::Remote<auction_worklet::mojom::SellerWorklet> seller_worklet_;
-  std::unique_ptr<DebuggableAuctionWorklet> seller_worklet_debug_;
+  // Holds a reference to the SellerWorklet used by the auction.
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;
 
   // Seller script reportResult() results.
   absl::optional<GURL> seller_report_url_;

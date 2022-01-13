@@ -95,7 +95,13 @@ class SellerWorkletTest : public testing::Test {
   }
 
   ~SellerWorkletTest() override {
+    // Release the V8 helper and process all pending tasks. This is to make sure
+    // there aren't any pending tasks between the V8 thread and the main thread
+    // that will result in UAFs. These lines are not necessary for any test to
+    // pass.
+    v8_helper_.reset();
     task_environment_.RunUntilIdle();
+
     // In all tests where the SellerWorklet receiver is closed before the
     // remote, the disconnect reason should be consumed and validated.
     EXPECT_FALSE(disconnect_reason_);

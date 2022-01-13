@@ -16,6 +16,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
 #include "content/browser/interest_group/auction_runner.h"
+#include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -179,8 +180,12 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
     : DocumentService(render_frame_host, std::move(receiver)),
       main_frame_origin_(
           render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
-      main_frame_url_(
-          render_frame_host->GetMainFrame()->GetLastCommittedURL()) {}
+      main_frame_url_(render_frame_host->GetMainFrame()->GetLastCommittedURL()),
+      auction_worklet_manager_(
+          &GetInterestGroupManager().auction_process_manager(),
+          GetTopWindowOrigin(),
+          origin(),
+          this) {}
 
 AdAuctionServiceImpl::~AdAuctionServiceImpl() {
   while (!auctions_.empty()) {
@@ -317,20 +322,13 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
     return;
   }
 
-  url::Origin top_frame_origin;
-  if (!render_frame_host()->GetParent()) {
-    top_frame_origin = frame_origin;
-  } else {
-    top_frame_origin =
-        render_frame_host()->GetMainFrame()->GetLastCommittedOrigin();
-  }
-
   auto browser_signals = auction_worklet::mojom::BrowserSignals::New(
-      std::move(top_frame_origin), config->seller);
+      GetTopWindowOrigin(), config->seller);
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
-      this, &GetInterestGroupManager(), std::move(config),
-      std::move(filtered_buyers), std::move(browser_signals), frame_origin,
+      &auction_worklet_manager_, this, &GetInterestGroupManager(),
+      std::move(config), std::move(filtered_buyers), std::move(browser_signals),
+      frame_origin,
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback)));
   auctions_.insert(std::move(auction));
@@ -483,6 +481,12 @@ InterestGroupManager& AdAuctionServiceImpl::GetInterestGroupManager() const {
   return *static_cast<StoragePartitionImpl*>(
               render_frame_host()->GetStoragePartition())
               ->GetInterestGroupManager();
+}
+
+url::Origin AdAuctionServiceImpl::GetTopWindowOrigin() const {
+  if (!render_frame_host()->GetParent())
+    return origin();
+  return render_frame_host()->GetMainFrame()->GetLastCommittedOrigin();
 }
 
 }  // namespace content

@@ -9,7 +9,7 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "content/browser/interest_group/auction_runner.h"
+#include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,7 +32,7 @@ class RenderFrameHostImpl;
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
     : public DocumentService<blink::mojom::AdAuctionService>,
-      public AuctionRunner::Delegate {
+      public AuctionWorkletManager::Delegate {
  public:
   // Factory method for creating an instance of this interface that is
   // bound to the lifetime of the frame or receiver (whichever is shorter).
@@ -83,19 +83,22 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   InterestGroupManager& GetInterestGroupManager() const;
 
-  // This must be above `auction_worklet_service_`, since auctions may own
-  // callbacks over the AuctionWorkletService pipe, and mojo pipes must be
-  // destroyed before any callbacks that are bound to them.
-  std::set<std::unique_ptr<AuctionRunner>, base::UniquePtrComparator> auctions_;
-
-  mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
-  mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
+  url::Origin GetTopWindowOrigin() const;
 
   // To avoid race conditions associated with top frame navigations (mentioned
   // in document_service.h), we need to save the values of the main frame
   // URL and origin in the constructor.
   const url::Origin main_frame_origin_;
   const GURL main_frame_url_;
+
+  mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
+
+  // This must be before `auctions_`, since auctions may own references to
+  // worklets it manages.
+  AuctionWorkletManager auction_worklet_manager_;
+
+  std::set<std::unique_ptr<AuctionRunner>, base::UniquePtrComparator> auctions_;
 };
 
 }  // namespace content
