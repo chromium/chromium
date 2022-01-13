@@ -508,8 +508,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, IsolatedAppProcessModel) {
 
   // Navigating the second tab out of the app should cause a process swap.
   const GURL& non_app_url(base_url.Resolve("non_app/main.html"));
-  NavigateInRenderer(browser()->tab_strip_model()->GetWebContentsAt(1),
-                     non_app_url);
+  EXPECT_TRUE(NavigateInRenderer(
+      browser()->tab_strip_model()->GetWebContentsAt(1), non_app_url));
   EXPECT_NE(process_id_1, browser()
                               ->tab_strip_model()
                               ->GetWebContentsAt(1)

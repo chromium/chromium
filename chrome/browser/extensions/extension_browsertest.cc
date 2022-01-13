@@ -798,14 +798,15 @@ void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
     *newtab_result = newtab;
 }
 
-void ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
+bool ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
                                               const GURL& url) {
   // Note: We use ExecuteScript instead of ExecJS here, because ExecuteScript
   // works on pages with a Content Security Policy.
   EXPECT_TRUE(content::ExecuteScript(
       contents, "window.location = '" + url.spec() + "';"));
-  content::WaitForLoadStop(contents);
+  bool result = content::WaitForLoadStop(contents);
   EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
+  return result;
 }
 
 ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,

@@ -315,8 +315,9 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
                   content::WebContents** newtab_result);
 
   // Simulates a page navigating itself to an URL and waits for the
-  // navigation.
-  void NavigateInRenderer(content::WebContents* contents, const GURL& url);
+  // navigation. Returns true if the navigation succeeds.
+  WARN_UNUSED_RESULT bool NavigateInRenderer(content::WebContents* contents,
+                                             const GURL& url);
 
   // Looks for an ExtensionHost whose URL has the given path component
   // (including leading slash).  Also verifies that the expected number of hosts
