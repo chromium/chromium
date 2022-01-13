@@ -395,9 +395,9 @@ StartupProfileInfo CreatePrimaryProfile(
     // Clear kProfilesLastActive since the user only wants to launch a specific
     // profile. Don't clear it if the user launched a web app, in order to not
     // break any subsequent multi-profile session restore.
-    ListPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                    prefs::kProfilesLastActive);
-    base::ListValue* profile_list = update.Get();
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          prefs::kProfilesLastActive);
+    base::Value* profile_list = update.Get();
     profile_list->ClearList();
   }
 
