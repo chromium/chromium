@@ -520,26 +520,32 @@ gfx::Rect BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
 
 gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
     bool is_rtl,
+    bool is_fullscreen,
     const gfx::Size& frame,
     int y,
-    int width,
-    int extra_padding) {
+    int width) {
+  // Browser fullscreened windows hide their window controls, so the placeholder
+  // for them should also take up no space.
+  const int placeholder_width = is_fullscreen ? 0 : width;
+
+  gfx::Rect bounds(0, y, placeholder_width, frame.height());
   if (is_rtl)
-    return gfx::Rect(frame.width() - width, y, width, frame.height());
-  else {
-    // Add extra width to caption_button_placeholder_container_overlay_ so the
-    // maximize button does not look like it is touching the border of the
-    // overlay and there is padding between the two.
-    return gfx::Rect(0, y, width + extra_padding, frame.height());
-  }
+    bounds.set_x(frame.width() - bounds.width());
+
+  return bounds;
 }
 
 void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
   const bool is_rtl = CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL();
   const gfx::Size frame(width(), GetTopInset(false));
+
+  // Pad the width of caption_button_placeholder_container so the button on the
+  // inner edge doesn't look like it's touching the overlay, but rather has a
+  // little bit of space between them.
   gfx::Rect caption_button_container_bounds = GetCaptionButtonPlaceholderBounds(
-      is_rtl, frame, 0, kFramePaddingLeft,
-      kFrameExtraPaddingForWindowControlsOverlay);
+      is_rtl, browser_view()->IsFullscreen(), frame, 0,
+      kFramePaddingLeft + kFrameExtraPaddingForWindowControlsOverlay);
+
   gfx::Rect web_app_frame_toolbar_available_bounds =
       GetWebAppFrameToolbarAvailableBounds(
           is_rtl, frame, 0, caption_button_container_bounds.width());
@@ -562,7 +568,7 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
     const int overlay_height = GetTopInset(false);
     gfx::Rect bounding_rect;
 
-    if (CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL()) {
+    if (is_rtl) {
       bounding_rect =
           gfx::Rect(caption_button_placeholder_container_->size().width() +
                         web_app_frame_toolbar()->size().width(),

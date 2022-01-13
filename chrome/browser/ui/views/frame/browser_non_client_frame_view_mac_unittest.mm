@@ -43,24 +43,36 @@ TEST(BrowserNonClientFrameViewMacTest, GetCenteredTitleBounds) {
 
 TEST(BrowserNonClientFrameViewMacTest, GetCaptionButtonPlaceholderBounds) {
   const gfx::Size frame(800, 40);
-  const int width = 75;
+  const int width = 85;  // 75 + 10 (padding)
   const int y = 0;
-  const int extra_padding = 10;
 
   const gfx::Rect ltr_bounds =
       BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-          false /* is_rtl */, frame, y, 75, extra_padding);
+          false /* is_rtl */, false /* is_fullscreen */, frame, y, width);
   const gfx::Rect expected_ltr_bounds = gfx::Rect(0, 0, 85, 40);
 
   EXPECT_EQ(ltr_bounds, expected_ltr_bounds);
 
   const gfx::Rect rtl_bounds =
       BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-          true /* is_rtl */, frame, y, width, extra_padding);
-  const gfx::Rect expected_rtl_bounds =
-      gfx::Rect(frame.width() - width, y, width, frame.height());
+          true /* is_rtl */, false /* is_fullscreen */, frame, y, width);
+  const gfx::Rect expected_rtl_bounds = gfx::Rect(715, 0, 85, 40);
 
   EXPECT_EQ(rtl_bounds, expected_rtl_bounds);
+
+  const gfx::Rect fullscreen_ltr_bounds =
+      BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
+          false /* is_rtl */, true /* is_fullscreen */, frame, y, width);
+  const gfx::Rect expected_fullscreen_ltr_bounds = gfx::Rect(0, 0, 0, 40);
+
+  EXPECT_EQ(fullscreen_ltr_bounds, expected_fullscreen_ltr_bounds);
+
+  const gfx::Rect fullscreen_rtl_bounds =
+      BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
+          true /* is_rtl */, true /* is_fullscreen */, frame, y, width);
+  const gfx::Rect expected_fullscreen_rtl_bounds = gfx::Rect(800, 0, 0, 40);
+
+  EXPECT_EQ(fullscreen_rtl_bounds, expected_fullscreen_rtl_bounds);
 }
 
 TEST(BrowserNonClientFrameViewMacTest, GetWebAppFrameToolbarAvailableBounds) {
