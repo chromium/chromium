@@ -778,7 +778,7 @@ TEST_F(PrefServiceSyncableTest, UpdatedSyncNodeUnknownPreference) {
 TEST_F(PrefServiceSyncableTest, ManagedPreferences) {
   // Make the homepage preference managed.
   base::Value managed_value("http://example.com");
-  prefs_.SetManagedPref(kStringPrefName, managed_value.CreateDeepCopy());
+  prefs_.SetManagedPref(kStringPrefName, managed_value.Clone());
 
   syncer::SyncChangeList out;
   InitWithSyncDataTakeOutput(syncer::SyncDataList(), &out);
@@ -786,7 +786,7 @@ TEST_F(PrefServiceSyncableTest, ManagedPreferences) {
 
   // Changing the homepage preference should not sync anything.
   base::Value user_value("http://chromium..com");
-  prefs_.SetUserPref(kStringPrefName, user_value.CreateDeepCopy());
+  prefs_.SetUserPref(kStringPrefName, user_value.Clone());
   EXPECT_TRUE(out.empty());
 
   // An incoming sync transaction should change the user value, not the managed
@@ -814,7 +814,7 @@ TEST_F(PrefServiceSyncableTest, DynamicManagedPreferences) {
   // Switch kHomePage to managed and set a different value.
   base::Value managed_value("http://example.com/managed");
   GetTestingPrefService()->SetManagedPref(kStringPrefName,
-                                          managed_value.CreateDeepCopy());
+                                          managed_value.Clone());
 
   // The pref value should be the one dictated by policy.
   EXPECT_TRUE(managed_value.Equals(&GetPreferenceValue(kStringPrefName)));
@@ -839,7 +839,7 @@ TEST_F(PrefServiceSyncableTest, DynamicManagedPreferencesWithSyncChange) {
   // Switch kHomePage to managed and set a different value.
   base::Value managed_value("http://example.com/managed");
   GetTestingPrefService()->SetManagedPref(kStringPrefName,
-                                          managed_value.CreateDeepCopy());
+                                          managed_value.Clone());
 
   // Change the sync value.
   base::Value sync_value("http://example.com/sync");
@@ -872,7 +872,7 @@ TEST_F(PrefServiceSyncableTest, DynamicManagedDefaultPreferences) {
   // Switch kHomePage to managed and set a different value.
   base::Value managed_value("http://example.com/managed");
   GetTestingPrefService()->SetManagedPref(kStringPrefName,
-                                          managed_value.CreateDeepCopy());
+                                          managed_value.Clone());
   // The pref value should be the one dictated by policy.
   EXPECT_TRUE(managed_value.Equals(&GetPreferenceValue(kStringPrefName)));
   EXPECT_FALSE(pref->IsDefaultValue());

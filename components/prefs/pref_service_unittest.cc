@@ -130,8 +130,7 @@ TEST(PrefServiceTest, Observers) {
   obs2.Expect(pref_name, &expected_new_pref_value2);
   // This should fire the checks in obs and obs2 but with an unchanged value
   // as the recommended value is being overridden by the user-set value.
-  prefs.SetRecommendedPref(
-      pref_name, base::Value::ToUniquePtrValue(recommended_pref_value.Clone()));
+  prefs.SetRecommendedPref(pref_name, recommended_pref_value.Clone());
   Mock::VerifyAndClearExpectations(&obs);
   Mock::VerifyAndClearExpectations(&obs2);
 
