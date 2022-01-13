@@ -78,11 +78,11 @@ source_set("sandbox_linux_unittests_sources") {
 
   sources = [
     "services/proc_util_unittest.cc",
-    "services/resource_limits_unittests.cc",
+    "services/resource_limits_unittest.cc",
     "services/scoped_process_unittest.cc",
     "services/syscall_wrappers_unittest.cc",
-    "services/thread_helpers_unittests.cc",
-    "services/yama_unittests.cc",
+    "services/thread_helpers_unittest.cc",
+    "services/yama_unittest.cc",
     "syscall_broker/broker_file_permission_unittest.cc",
     "syscall_broker/broker_process_unittest.cc",
     "syscall_broker/broker_simple_message_unittest.cc",
