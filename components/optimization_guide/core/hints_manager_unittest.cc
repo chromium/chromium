@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/hints_component_util.h"
@@ -313,8 +312,6 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     prefs::RegisterProfilePrefs(pref_service_->registry());
-    pref_service_->registry()->RegisterBooleanPref(
-        data_reduction_proxy::prefs::kDataSaverEnabled, false);
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_->registry());
 

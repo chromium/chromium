@@ -60,11 +60,6 @@ std::string PrefetchProxyProxyHeaderKey() {
   return "chrome-tunnel";
 }
 
-bool PrefetchProxyOnlyForLiteMode() {
-  return base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
-                                                 "lite_mode_only", true);
-}
-
 bool PrefetchProxyNoStatePrefetchSubresources() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              kIsolatedPrerenderEnableNSPCmdLineFlag) ||

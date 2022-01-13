@@ -7,20 +7,11 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
 namespace {
-
-bool IsUserDataSaverEnabledAndAllowedToFetchFromRemoteService(
-    bool is_off_the_record,
-    PrefService* pref_service) {
-  // Check if they are a data saver user.
-  return data_reduction_proxy::DataReductionProxySettings::
-      IsDataSaverEnabledByUser(is_off_the_record, pref_service);
-}
 
 bool IsUserConsentedToAnonymousDataCollectionAndAllowedToFetchFromRemoteService(
     PrefService* pref_service) {
@@ -53,10 +44,6 @@ bool IsUserPermittedToFetchFromRemoteOptimizationGuide(
     return false;
 
   if (features::IsRemoteFetchingExplicitlyAllowedForPerformanceInfo())
-    return true;
-
-  if (IsUserDataSaverEnabledAndAllowedToFetchFromRemoteService(
-          is_off_the_record, pref_service))
     return true;
 
   return IsUserConsentedToAnonymousDataCollectionAndAllowedToFetchFromRemoteService(

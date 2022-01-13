@@ -32,7 +32,6 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_subresource_manager.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_type.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -341,11 +340,6 @@ bool PrefetchProxyTabHelper::IsProfileEligible(Profile* profile) {
     return false;
   }
 
-  if (PrefetchProxyOnlyForLiteMode()) {
-    return data_reduction_proxy::DataReductionProxySettings::
-        IsDataSaverEnabledByUser(profile->IsOffTheRecord(),
-                                 profile->GetPrefs());
-  }
   return true;
 }
 

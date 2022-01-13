@@ -25,7 +25,6 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
@@ -138,18 +137,11 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
     tab_helper_ = std::make_unique<TestPrefetchProxyTabHelper>(web_contents());
     tab_helper_->SetURLLoaderFactory(test_shared_loader_factory_);
     tab_helper_->SetServiceWorkerContextForTest(&service_worker_context_);
-
-    SetDataSaverEnabled(true);
   }
 
   void TearDown() override {
     tab_helper_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  void SetDataSaverEnabled(bool enabled) {
-    data_reduction_proxy::DataReductionProxySettings::
-        SetDataSaverEnabledForTesting(profile()->GetPrefs(), enabled);
   }
 
   void MakeNavigationPrediction(content::WebContents* web_contents,
@@ -410,84 +402,6 @@ TEST_F(PrefetchProxyTabHelperIsolateDisabledTest, FeatureDisabled) {
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
-}
-
-class PrefetchProxyTabHelperDataSaverDisabledTest
-    : public PrefetchProxyTabHelperTestBase {
- public:
-  PrefetchProxyTabHelperDataSaverDisabledTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders,
-        {{"lite_mode_only", "true"},
-         {"ineligible_decoy_request_probability", "0"}});
-  }
-};
-
-TEST_F(PrefetchProxyTabHelperDataSaverDisabledTest,
-       DataSaverDisabled_Required) {
-  base::HistogramTester histogram_tester;
-
-  SetDataSaverEnabled(false);
-
-  NavigateSomewhere();
-  GURL doc_url("https://www.google.com/search?q=cats");
-  GURL prediction_url("https://www.cat-food.com/");
-  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
-
-  EXPECT_EQ(RequestCount(), 0);
-  EXPECT_EQ(predicted_urls_count(), 0U);
-  EXPECT_EQ(prefetch_eligible_count(), 0U);
-  EXPECT_EQ(prefetch_attempted_count(), 0U);
-  EXPECT_EQ(prefetch_successful_count(), 0U);
-  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
-  EXPECT_FALSE(navigation_to_prefetch_start().has_value());
-
-  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
-
-  Navigate(prediction_url);
-
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
-
-  EXPECT_FALSE(HasAfterSRPMetrics());
-}
-
-class PrefetchProxyTabHelperDataSaverDisabledNotRequiredTest
-    : public PrefetchProxyTabHelperTestBase {
- public:
-  PrefetchProxyTabHelperDataSaverDisabledNotRequiredTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders,
-        {{"lite_mode_only", "false"},
-         {"ineligible_decoy_request_probability", "0"}});
-  }
-};
-
-TEST_F(PrefetchProxyTabHelperDataSaverDisabledNotRequiredTest,
-       DataSaverDisabled_NotRequired) {
-  base::HistogramTester histogram_tester;
-
-  SetDataSaverEnabled(false);
-
-  NavigateSomewhere();
-  GURL doc_url("https://www.google.com/search?q=cats");
-  GURL prediction_url("https://www.cat-food.com/");
-  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
-
-  EXPECT_EQ(RequestCount(), 1);
-  EXPECT_EQ(predicted_urls_count(), 1U);
-  EXPECT_EQ(prefetch_eligible_count(), 1U);
-  EXPECT_EQ(prefetch_attempted_count(), 1U);
-  EXPECT_EQ(prefetch_successful_count(), 0U);
-  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
-  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 }
 
 class PrefetchProxyTabHelperTest : public PrefetchProxyTabHelperTestBase {

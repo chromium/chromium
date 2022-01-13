@@ -29,9 +29,6 @@ GURL PrefetchProxyProxyHost();
 // The header name used to connect to the tunnel proxy.
 std::string PrefetchProxyProxyHeaderKey();
 
-// Whether the feature is only enabled for Lite Mode users.
-bool PrefetchProxyOnlyForLiteMode();
-
 // Returns true when prefetched pages should run no state prefetch.
 bool PrefetchProxyNoStatePrefetchSubresources();
 

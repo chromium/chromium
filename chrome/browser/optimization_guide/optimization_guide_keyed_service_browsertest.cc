@@ -636,11 +636,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 }
 #endif
 
-class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
+class OptimizationGuideKeyedServicePermissionsCheckDisabledTest
     : public OptimizationGuideKeyedServiceBrowserTest {
  public:
-  OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest() = default;
-  ~OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest() override =
+  OptimizationGuideKeyedServicePermissionsCheckDisabledTest() = default;
+  ~OptimizationGuideKeyedServicePermissionsCheckDisabledTest() override =
       default;
 
   void SetUp() override {
@@ -659,7 +659,9 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
   void SetUpCommandLine(base::CommandLine* cmd) override {
     OptimizationGuideKeyedServiceBrowserTest::SetUpCommandLine(cmd);
 
-    cmd->AppendSwitch("enable-spdy-proxy-auth");
+    cmd->AppendSwitch(optimization_guide::switches::
+                          kDisableCheckingUserPermissionsForTesting);
+
     // Add switch to avoid racing navigations in the test.
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableFetchingHintsAtNavigationStartForTesting);
@@ -670,7 +672,7 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    OptimizationGuideKeyedServicePermissionsCheckDisabledTest,
     RemoteFetchingAllowed) {
   // ChromeOS has multiple profiles and optimization guide currently does not
   // run on non-Android.
@@ -683,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    OptimizationGuideKeyedServicePermissionsCheckDisabledTest,
     IncognitoCanStillReadFromComponentHints) {
   // Wait until initialization logic finishes running and component pushed to
   // both incognito and regular browsers.
@@ -714,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    OptimizationGuideKeyedServicePermissionsCheckDisabledTest,
     IncognitoStillProcessesBloomFilter) {
   PushHintsComponentAndWaitForCompletion();
 

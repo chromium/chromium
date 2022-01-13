@@ -195,7 +195,6 @@ static_library("core") {
   deps = [
     ":bloomfilter",
     "//base",
-    "//components/data_reduction_proxy/core/browser",
     "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
@@ -323,8 +322,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/data_reduction_proxy/core/browser",
-    "//components/data_reduction_proxy/core/common",
     "//components/leveldb_proto:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
