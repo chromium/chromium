@@ -738,9 +738,9 @@ pid_t ForkWithFlags(unsigned long flags, pid_t* ptid, pid_t* ctid) {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Since we use clone() directly, it does not call any pthread_aftork()
-  // callbacks, we explicitly clear tid cache here (normally this call is
+  // callbacks, we explicitly invalidate tid cache here (normally this call is
   // done as pthread_aftork() callback).  See crbug.com/902514.
-  base::internal::ClearTidCache();
+  base::internal::InvalidateTidCache();
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   return 0;

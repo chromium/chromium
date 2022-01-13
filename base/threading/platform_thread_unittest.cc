@@ -30,6 +30,14 @@
 #include "base/time/time.h"
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include <pthread.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
+
 namespace base {
 
 // Trivial tests that thread runs and doesn't crash on create, join, or detach -
@@ -569,6 +577,77 @@ INSTANTIATE_TEST_SUITE_P(
 
 }  // namespace
 
-#endif
+#endif  // defined(OS_APPLE)
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+namespace {
+
+bool IsTidCacheCorrect() {
+  return PlatformThread::CurrentId() == syscall(__NR_gettid);
+}
+
+void* CheckTidCacheCorrectWrapper(void*) {
+  CHECK(IsTidCacheCorrect());
+  return nullptr;
+}
+
+void CreatePthreadToCheckCache() {
+  pthread_t thread_id;
+  pthread_create(&thread_id, nullptr, CheckTidCacheCorrectWrapper, nullptr);
+  pthread_join(thread_id, nullptr);
+}
+
+// This test must use raw pthreads and fork() to avoid calls from //base to
+// PlatformThread::CurrentId(), as the ordering of calls is important to the
+// test.
+void TestTidCacheCorrect(bool main_thread_accesses_cache_first) {
+  EXPECT_TRUE(IsTidCacheCorrect());
+
+  CreatePthreadToCheckCache();
+
+  // Now fork a process and make sure the TID cache gets correctly updated on
+  // both its main thread and a child thread.
+  pid_t child_pid = fork();
+  ASSERT_GE(child_pid, 0);
+
+  if (child_pid == 0) {
+    // In the child.
+    if (main_thread_accesses_cache_first) {
+      if (!IsTidCacheCorrect())
+        _exit(1);
+    }
+
+    // Access the TID cache on another thread and make sure the cached value is
+    // correct.
+    CreatePthreadToCheckCache();
+
+    if (!main_thread_accesses_cache_first) {
+      // Make sure the main thread's cache is correct even though another thread
+      // accessed the cache first.
+      if (!IsTidCacheCorrect())
+        _exit(1);
+    }
+
+    _exit(0);
+  }
+
+  int status;
+  ASSERT_EQ(waitpid(child_pid, &status, 0), child_pid);
+  ASSERT_TRUE(WIFEXITED(status));
+  ASSERT_EQ(WEXITSTATUS(status), 0);
+}
+
+TEST(PlatformThreadTidCacheTest, MainThreadFirst) {
+  TestTidCacheCorrect(true);
+}
+
+TEST(PlatformThreadTidCacheTest, MainThreadSecond) {
+  TestTidCacheCorrect(false);
+}
+
+}  // namespace
+
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace base

@@ -33,6 +33,7 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <sys/syscall.h>
+#include <atomic>
 #endif
 
 #if defined(OS_FUCHSIA)
@@ -159,19 +160,32 @@ bool CreateThread(size_t stack_size,
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 // Store the thread ids in local storage since calling the SWI can be
-// expensive and PlatformThread::CurrentId is used liberally. Clear
-// the stored value after a fork() because forking changes the thread
-// id. Forking without going through fork() (e.g. clone()) is not
-// supported, but there is no known usage. Using thread_local is
-// fine here (despite being banned) since it is going to be allowed
-// but is blocked on a clang bug for Mac (https://crbug.com/829078)
-// and we can't use ThreadLocalStorage because of re-entrancy due to
-// CHECK/DCHECKs.
+// expensive and PlatformThread::CurrentId is used liberally.
 thread_local pid_t g_thread_id = -1;
+
+// A boolean value that indicates that the value stored in |g_thread_id| on the
+// main thread is invalid, because it hasn't been updated since the process
+// forked.
+//
+// This used to work by setting |g_thread_id| to -1 in a pthread_atfork handler.
+// However, when a multithreaded process forks, it is only allowed to call
+// async-signal-safe functions until it calls an exec() syscall. However,
+// accessing TLS may allocate (see crbug.com/1275748), which is not
+// async-signal-safe and therefore causes deadlocks, corruption, and crashes.
+//
+// It's Atomic to placate TSAN.
+std::atomic<bool> g_main_thread_tid_cache_valid = false;
+
+// Tracks whether the current thread is the main thread, and therefore whether
+// |g_main_thread_tid_cache_valid| is relevant for the current thread. This is
+// also updated by PlatformThread::CurrentId().
+thread_local bool g_is_main_thread = true;
 
 class InitAtFork {
  public:
-  InitAtFork() { pthread_atfork(nullptr, nullptr, internal::ClearTidCache); }
+  InitAtFork() {
+    pthread_atfork(nullptr, nullptr, internal::InvalidateTidCache);
+  }
 };
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -182,8 +196,8 @@ class InitAtFork {
 
 namespace internal {
 
-void ClearTidCache() {
-  g_thread_id = -1;
+void InvalidateTidCache() {
+  g_main_thread_tid_cache_valid.store(false, std::memory_order_relaxed);
 }
 
 }  // namespace internal
@@ -198,13 +212,28 @@ PlatformThreadId PlatformThread::CurrentId() {
   return pthread_mach_thread_np(pthread_self());
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   static InitAtFork init_at_fork;
-  if (g_thread_id == -1) {
+  if (g_thread_id == -1 ||
+      (g_is_main_thread &&
+       !g_main_thread_tid_cache_valid.load(std::memory_order_relaxed))) {
+    // Update the cached tid.
     g_thread_id = syscall(__NR_gettid);
+    // If this is the main thread, we can mark the tid_cache as valid.
+    // Otherwise, stop the current thread from always entering this slow path.
+    if (g_thread_id == getpid()) {
+      g_main_thread_tid_cache_valid.store(true, std::memory_order_relaxed);
+    } else {
+      g_is_main_thread = false;
+    }
   } else {
-    DCHECK_EQ(g_thread_id, syscall(__NR_gettid))
-        << "Thread id stored in TLS is different from thread id returned by "
-           "the system. It is likely that the process was forked without going "
-           "through fork().";
+#if DCHECK_IS_ON()
+    if (g_thread_id != syscall(__NR_gettid)) {
+      RAW_LOG(
+          FATAL,
+          "Thread id stored in TLS is different from thread id returned by "
+          "the system. It is likely that the process was forked without going "
+          "through fork().");
+    }
+#endif
   }
   return g_thread_id;
 #elif defined(OS_ANDROID)
