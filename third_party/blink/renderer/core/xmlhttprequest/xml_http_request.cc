@@ -1718,6 +1718,7 @@ void XMLHttpRequest::DidFinishLoading(uint64_t identifier) {
 
 void XMLHttpRequest::DidFinishLoadingInternal() {
   if (response_document_parser_) {
+    DCHECK(response_document_);
     // |DocumentParser::finish()| tells the parser that we have reached end of
     // the data.  When using |HTMLDocumentParser|, which works asynchronously,
     // we do not have the complete document just after the
