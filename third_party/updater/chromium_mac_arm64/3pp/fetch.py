@@ -10,6 +10,10 @@ import os
 import sys
 import six.moves.urllib.request
 
+# MIN_VERSION is the earliest working version of the updater for self-update
+# testing. If a backwards-incompatible change to the updater is made, it may be
+# necessary to increase the version.
+MIN_VERSION = 958589
 
 def get_platform():
     return 'Mac_Arm'
@@ -71,7 +75,7 @@ def lastDatum(platform):
             'chromium-browser-snapshots/o/Mac%2FLAST_CHANGE?alt=media').read())
     min_datum = latest - 3000
     min_datum -= min_datum % 10000
-    return find(platform, min_datum, latest)
+    return max(MIN_VERSION, find(platform, min_datum, latest))
 
 
 def print_latest():
