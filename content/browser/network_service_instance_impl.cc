@@ -177,7 +177,6 @@ const base::Feature kNetworkServiceDedicatedThread {
 
 base::Thread& GetNetworkServiceDedicatedThread() {
   static base::NoDestructor<base::Thread> thread{"NetworkService"};
-  DCHECK(base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread));
   return *thread;
 }
 
@@ -547,7 +546,11 @@ scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunnerStorage() {
 void CreateInProcessNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-  if (base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread)) {
+  // If it's specified to run a separate thread for the in-process network
+  // service, or if the IO thread isn't initialized because we're in Android's
+  // minimal browser mode, then use a dedicated thread.
+  if (base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread) ||
+      !BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();

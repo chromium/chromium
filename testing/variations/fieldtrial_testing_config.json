@@ -5410,6 +5410,23 @@
             ]
         }
     ],
+    "NetworkServiceDedicatedThread": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "NetworkServiceDedicatedThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoWakeUpsForCanceledTasks": [
         {
             "platforms": [
