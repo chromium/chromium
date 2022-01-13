@@ -387,9 +387,12 @@ std::unique_ptr<NetworkService> NetworkService::Create(
   return std::make_unique<NetworkService>(nullptr, std::move(receiver));
 }
 
+// static
 std::unique_ptr<NetworkService> NetworkService::CreateForTesting() {
-  return std::make_unique<NetworkService>(
+  auto network_service = std::make_unique<NetworkService>(
       std::make_unique<service_manager::BinderRegistry>());
+  network_service->InitMockNetworkChangeNotifierForTesting();  // IN-TEST
+  return network_service;
 }
 
 void NetworkService::RegisterNetworkContext(NetworkContext* network_context) {
@@ -792,6 +795,11 @@ NetworkService::CreateHttpAuthHandlerFactory(NetworkContext* network_context) {
       base::BindRepeating(&CreateAuthSystem, network_context)
 #endif
   );
+}
+
+void NetworkService::InitMockNetworkChangeNotifierForTesting() {
+  mock_network_change_notifier_ =
+      net::NetworkChangeNotifier::CreateMockIfNeeded();
 }
 
 void NetworkService::DestroyNetworkContexts() {

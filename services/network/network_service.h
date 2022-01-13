@@ -57,6 +57,7 @@ class FileNetLogObserver;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
 class LoggingNetworkChangeObserver;
+class NetworkChangeNotifier;
 class NetworkQualityEstimator;
 class URLRequestContext;
 }  // namespace net
@@ -275,6 +276,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
  private:
   class DelayedDohProbeActivator;
 
+  void InitMockNetworkChangeNotifierForTesting();
+
   void DestroyNetworkContexts();
 
   // Called by a NetworkContext when its mojo pipe is closed. Deletes the
@@ -383,6 +386,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // that renderer process (the renderer will proxy requests from PPAPI - such
   // requests should have their initiator origin within the set stored here).
   std::map<int, std::set<url::Origin>> plugin_origins_;
+
+  // This is used only in tests. It avoids leaky SystemDnsConfigChangeNotifiers
+  // leaking stale listeners between tests.
+  std::unique_ptr<net::NetworkChangeNotifier> mock_network_change_notifier_;
 };
 
 }  // namespace network
