@@ -1415,8 +1415,7 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
         if (pair.first->GetPrioritisationType() ==
                 MainThreadTaskQueue::QueueTraits::PrioritisationType::
                     kCompositor &&
-            pair.first->GetTaskQueue()
-                ->HasTaskToRunImmediatelyOrReadyDelayedTask())
+            pair.first->HasTaskToRunImmediatelyOrReadyDelayedTask())
           return true;
       }
       return main_thread_only().blocking_input_expected_soon;
@@ -2227,11 +2226,11 @@ void MainThreadSchedulerImpl::SetTopLevelBlameContext(
   //
   // TODO(altimin): automatically enter top-level for all task queues associated
   // with renderer scheduler which do not have a corresponding frame.
-  control_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
-  DefaultTaskQueue()->GetTaskQueue()->SetBlameContext(blame_context);
-  compositor_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
+  control_task_queue_->SetBlameContext(blame_context);
+  DefaultTaskQueue()->SetBlameContext(blame_context);
+  compositor_task_queue_->SetBlameContext(blame_context);
   idle_helper_.IdleTaskRunner()->SetBlameContext(blame_context);
-  v8_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
+  v8_task_queue_->SetBlameContext(blame_context);
 }
 
 void MainThreadSchedulerImpl::AddRAILModeObserver(RAILModeObserver* observer) {

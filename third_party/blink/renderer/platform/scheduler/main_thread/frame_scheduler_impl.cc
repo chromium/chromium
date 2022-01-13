@@ -211,7 +211,7 @@ void CleanUpQueue(MainThreadTaskQueue* queue) {
 
   queue->DetachFromMainThreadScheduler();
   DCHECK(!queue->GetFrameScheduler());
-  queue->GetTaskQueue()->SetBlameContext(nullptr);
+  queue->SetBlameContext(nullptr);
 }
 
 }  // namespace
@@ -567,7 +567,7 @@ FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandleImpl() {
     scoped_refptr<MainThreadTaskQueue> task_queue =
         frame_task_queue_controller_->NewResourceLoadingTaskQueue();
     resource_loading_task_queue_priorities_.insert(
-        task_queue, task_queue->GetTaskQueue()->GetQueuePriority());
+        task_queue, task_queue->GetQueuePriority());
     return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(task_queue);
   }
 
@@ -788,8 +788,7 @@ void FrameSchedulerImpl::SetShouldReportPostedTasksWhenDisabled(
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
     auto* task_queue = task_queue_and_voter.first;
     if (task_queue->CanBeFrozen()) {
-      task_queue->GetTaskQueue()->SetShouldReportPostedTasksWhenDisabled(
-          should_report);
+      task_queue->SetShouldReportPostedTasksWhenDisabled(should_report);
     }
   }
 }
@@ -1181,7 +1180,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     base::sequence_manager::TaskQueue::QueueEnabledVoter* voter) {
   DCHECK(parent_page_scheduler_);
 
-  task_queue->GetTaskQueue()->SetBlameContext(blame_context_);
+  task_queue->SetBlameContext(blame_context_);
   UpdateQueuePolicy(task_queue, voter);
 
   if (task_queue->CanBeThrottled()) {

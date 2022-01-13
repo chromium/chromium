@@ -489,6 +489,18 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   bool IsQueueEnabled() const { return task_queue_->IsQueueEnabled(); }
   bool IsEmpty() const { return task_queue_->IsEmpty(); }
 
+  bool HasTaskToRunImmediatelyOrReadyDelayedTask() const {
+    return task_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask();
+  }
+
+  void SetBlameContext(base::trace_event::BlameContext* blame_context) {
+    task_queue_->SetBlameContext(blame_context);
+  }
+
+  void SetShouldReportPostedTasksWhenDisabled(bool should_report) {
+    task_queue_->SetShouldReportPostedTasksWhenDisabled(should_report);
+  }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
