@@ -167,6 +167,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_codesearch",
+    use_python3 = True,
 )
 
 build_recipe(
