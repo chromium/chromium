@@ -11,6 +11,7 @@
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -49,20 +50,17 @@ NTSTATUS SignedPolicy::CreateSectionAction(
     const ClientInfo& client_info,
     const base::win::ScopedHandle& local_file_handle,
     HANDLE* target_section_handle) {
-  NtCreateSectionFunction NtCreateSection = nullptr;
-  ResolveNTFunctionPtr("NtCreateSection", &NtCreateSection);
-
   // The only action supported is ASK_BROKER which means create the requested
   // section as specified.
   if (ASK_BROKER != eval_result)
     return false;
 
   HANDLE local_section_handle = nullptr;
-  NTSTATUS status = NtCreateSection(&local_section_handle,
-                                    SECTION_QUERY | SECTION_MAP_WRITE |
-                                        SECTION_MAP_READ | SECTION_MAP_EXECUTE,
-                                    nullptr, 0, PAGE_EXECUTE, SEC_IMAGE,
-                                    local_file_handle.Get());
+  NTSTATUS status = GetNtExports()->CreateSection(
+      &local_section_handle,
+      SECTION_QUERY | SECTION_MAP_WRITE | SECTION_MAP_READ |
+          SECTION_MAP_EXECUTE,
+      nullptr, 0, PAGE_EXECUTE, SEC_IMAGE, local_file_handle.Get());
   if (!local_section_handle)
     return status;
 

@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace {
@@ -29,8 +30,6 @@ bool InitStringUnicode(const wchar_t* source,
 }  // namespace
 
 namespace sandbox {
-
-SANDBOX_INTERCEPT NtExports g_nt;
 
 // Note: The opcodes are implemented as functions (as opposed to classes derived
 // from PolicyOpcode) because you should not add more member variables to the
@@ -275,7 +274,7 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
   // Advance the source string to the last successfully evaluated position
   // according to the match context.
   source_str = &source_str[context->position];
-  int source_len = static_cast<int>(g_nt.wcslen(source_str));
+  int source_len = static_cast<int>(GetNtExports()->wcslen(source_str));
 
   if (0 == source_len) {
     // If we reached the end of the source string there is nothing we can
@@ -320,8 +319,8 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
         !InitStringUnicode(source_str, match_len, &source_ustr))
       return EVAL_ERROR;
 
-    if (0 == g_nt.RtlCompareUnicodeString(&match_ustr, &source_ustr,
-                                          case_sensitive)) {
+    if (0 == GetNtExports()->RtlCompareUnicodeString(&match_ustr, &source_ustr,
+                                                     case_sensitive)) {
       // Match! update the match context.
       context->position += start_position + match_len;
       return EVAL_TRUE;
@@ -336,8 +335,8 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
       return EVAL_ERROR;
 
     do {
-      if (0 == g_nt.RtlCompareUnicodeString(&match_ustr, &source_ustr,
-                                            case_sensitive)) {
+      if (0 == GetNtExports()->RtlCompareUnicodeString(
+                   &match_ustr, &source_ustr, case_sensitive)) {
         // Match! update the match context.
         context->position += (source_ustr.Buffer - source_str) + match_len;
         return EVAL_TRUE;

@@ -18,8 +18,6 @@
 
 namespace sandbox {
 
-SANDBOX_INTERCEPT NtExports g_nt;
-
 // Hooks NtOpenThread and proxy the call to the broker if it's trying to
 // open a thread in the same process.
 NTSTATUS WINAPI TargetNtOpenThread(NtOpenThreadFunction orig_OpenThread,

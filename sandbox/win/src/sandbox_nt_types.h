@@ -10,18 +10,31 @@
 namespace sandbox {
 
 struct NtExports {
+  bool                                   Initialized;
   NtAllocateVirtualMemoryFunction        AllocateVirtualMemory;
+  NtCreateDirectoryObjectFunction        CreateDirectoryObject;
+  NtCreateFileFunction                   CreateFile;
+  NtCreateSectionFunction                CreateSection;
   NtCloseFunction                        Close;
   NtDuplicateObjectFunction              DuplicateObject;
   NtFreeVirtualMemoryFunction            FreeVirtualMemory;
   NtMapViewOfSectionFunction             MapViewOfSection;
+  NtOpenFileFunction                     OpenFile;
+  NtOpenThreadFunction                   OpenThread;
+  NtOpenProcessFunction                  OpenProcess;
+  NtOpenProcessTokenFunction             OpenProcessToken;
+  NtOpenProcessTokenExFunction           OpenProcessTokenEx;
   NtProtectVirtualMemoryFunction         ProtectVirtualMemory;
+  NtQueryAttributesFileFunction          QueryAttributesFile;
+  NtQueryFullAttributesFileFunction      QueryFullAttributesFile;
   NtQueryInformationProcessFunction      QueryInformationProcess;
   NtQueryObjectFunction                  QueryObject;
   NtQuerySectionFunction                 QuerySection;
   NtQueryVirtualMemoryFunction           QueryVirtualMemory;
-  NtUnmapViewOfSectionFunction           UnmapViewOfSection;
+  NtSetInformationFileFunction           SetInformationFile;
+  NtSetInformationProcessFunction        SetInformationProcess;
   NtSignalAndWaitForSingleObjectFunction SignalAndWaitForSingleObject;
+  NtUnmapViewOfSectionFunction           UnmapViewOfSection;
   NtWaitForSingleObjectFunction          WaitForSingleObject;
   RtlAllocateHeapFunction                RtlAllocateHeap;
   RtlAnsiStringToUnicodeStringFunction   RtlAnsiStringToUnicodeString;
@@ -30,6 +43,7 @@ struct NtExports {
   RtlCreateUserThreadFunction            RtlCreateUserThread;
   RtlDestroyHeapFunction                 RtlDestroyHeap;
   RtlFreeHeapFunction                    RtlFreeHeap;
+  RtlNtStatusToDosErrorFunction          RtlNtStatusToDosError;
   _strnicmpFunction                      _strnicmp;
   strlenFunction                         strlen;
   wcslenFunction                         wcslen;

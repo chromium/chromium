@@ -16,6 +16,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/integration_tests/hooking_dll.h"
@@ -482,17 +483,11 @@ SBOX_TESTS_COMMAND int CheckDep(int argc, wchar_t** argv) {
       return SBOX_TEST_SECOND_ERROR;
 
   } else {
-    NtQueryInformationProcessFunction query_information_process = nullptr;
-    ResolveNTFunctionPtr("NtQueryInformationProcess",
-                         &query_information_process);
-    if (!query_information_process)
-      return SBOX_TEST_NOT_FOUND;
-
     ULONG size = 0;
     ULONG dep_flags = 0;
-    if (!SUCCEEDED(query_information_process(::GetCurrentProcess(),
-                                             ProcessExecuteFlags, &dep_flags,
-                                             sizeof(dep_flags), &size))) {
+    if (!SUCCEEDED(GetNtExports()->QueryInformationProcess(
+            ::GetCurrentProcess(), ProcessExecuteFlags, &dep_flags,
+            sizeof(dep_flags), &size))) {
       return SBOX_TEST_THIRD_ERROR;
     }
 

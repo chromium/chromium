@@ -9,36 +9,13 @@
 
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#define INIT_GLOBAL_RTL(member)                                             \
-  g_nt.member =                                                             \
-      reinterpret_cast<member##Function>(::GetProcAddress(ntdll, #member)); \
-  if (!g_nt.member)                                                         \
-  return false
 
 namespace sandbox {
 
 const size_t kOpcodeMemory = 1024;
-
-SANDBOX_INTERCEPT NtExports g_nt;
-
-bool SetupNtdllImports() {
-  HMODULE ntdll = ::GetModuleHandle(kNtdllName);
-
-  INIT_GLOBAL_RTL(RtlAllocateHeap);
-  INIT_GLOBAL_RTL(RtlAnsiStringToUnicodeString);
-  INIT_GLOBAL_RTL(RtlCompareUnicodeString);
-  INIT_GLOBAL_RTL(RtlCreateHeap);
-  INIT_GLOBAL_RTL(RtlDestroyHeap);
-  INIT_GLOBAL_RTL(RtlFreeHeap);
-  INIT_GLOBAL_RTL(_strnicmp);
-  INIT_GLOBAL_RTL(strlen);
-  INIT_GLOBAL_RTL(wcslen);
-
-  return true;
-}
 
 TEST(PolicyEngineTest, ParameterSetTest) {
   void* pv1 = reinterpret_cast<void*>(0x477EAA5);
@@ -151,7 +128,6 @@ TEST(PolicyEngineTest, OpcodeMakerCase1) {
 }
 
 TEST(PolicyEngineTest, OpcodeMakerCase2) {
-  SetupNtdllImports();
   // Testing that the opcode maker does not overrun the
   // supplied buffer. It should only be able to make 'count' opcodes.
   // The difference with the previous test is that this opcodes allocate
@@ -236,8 +212,6 @@ TEST(PolicyEngineTest, LogicalOpcodes) {
 }
 
 TEST(PolicyEngineTest, WCharOpcodes1) {
-  SetupNtdllImports();
-
   const wchar_t* txt1 = L"the quick fox jumps over the lazy dog";
   const wchar_t txt2[] = L"the quick";
   const wchar_t txt3[] = L" fox jumps";
@@ -324,8 +298,6 @@ TEST(PolicyEngineTest, WCharOpcodes1) {
 }
 
 TEST(PolicyEngineTest, WCharOpcodes2) {
-  SetupNtdllImports();
-
   const wchar_t* path1 = L"c:\\documents and settings\\Microsoft\\BLAH.txt";
   const wchar_t txt1[] = L"Settings\\microsoft";
   ParameterSet pp_tc1 = ParamPickerMake(path1);

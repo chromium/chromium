@@ -20,6 +20,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/win/pe_image.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -152,10 +153,7 @@ void RemoveImpliedDevice(std::wstring* path) {
 bool QueryObjectInformation(HANDLE handle,
                             OBJECT_INFORMATION_CLASS info_class,
                             std::vector<char>& buffer) {
-  static NtQueryObjectFunction NtQueryObject = nullptr;
-  if (!NtQueryObject)
-    ResolveNTFunctionPtr("NtQueryObject", &NtQueryObject);
-
+  NtQueryObjectFunction NtQueryObject = sandbox::GetNtExports()->QueryObject;
   ULONG size = static_cast<ULONG>(buffer.size());
   __try {
     return NT_SUCCESS(
@@ -444,14 +442,12 @@ bool GetPathFromHandle(HANDLE handle, std::wstring* path) {
 }
 
 bool GetNtPathFromWin32Path(const std::wstring& path, std::wstring* nt_path) {
-  HANDLE file = ::CreateFileW(
+  base::win::ScopedHandle file(::CreateFileW(
       path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-      nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
-  if (file == INVALID_HANDLE_VALUE)
+      nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
+  if (!file.IsValid())
     return false;
-  bool rv = GetPathFromHandle(file, nt_path);
-  ::CloseHandle(file);
-  return rv;
+  return GetPathFromHandle(file.Get(), nt_path);
 }
 
 bool GetTypeNameFromHandle(HANDLE handle, std::wstring* type_name) {
@@ -521,20 +517,14 @@ bool CopyToChildMemory(HANDLE child,
 }
 
 DWORD GetLastErrorFromNtStatus(NTSTATUS status) {
-  RtlNtStatusToDosErrorFunction NtStatusToDosError = nullptr;
-  ResolveNTFunctionPtr("RtlNtStatusToDosError", &NtStatusToDosError);
-  return NtStatusToDosError(status);
+  return GetNtExports()->RtlNtStatusToDosError(status);
 }
 
 // This function uses the undocumented PEB ImageBaseAddress field to extract
 // the base address of the new process.
 void* GetProcessBaseAddress(HANDLE process) {
-  NtQueryInformationProcessFunction query_information_process = nullptr;
-  ResolveNTFunctionPtr("NtQueryInformationProcess", &query_information_process);
-  if (!query_information_process)
-    return nullptr;
   PROCESS_BASIC_INFORMATION process_basic_info = {};
-  NTSTATUS status = query_information_process(
+  NTSTATUS status = GetNtExports()->QueryInformationProcess(
       process, ProcessBasicInformation, &process_basic_info,
       sizeof(process_basic_info), nullptr);
   if (STATUS_SUCCESS != status)
@@ -563,11 +553,6 @@ void* GetProcessBaseAddress(HANDLE process) {
 }
 
 absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
-  NtQueryInformationProcessFunction query_information_process = nullptr;
-  ResolveNTFunctionPtr("NtQueryInformationProcess", &query_information_process);
-  if (!query_information_process)
-    return absl::nullopt;
-
   DWORD handle_count;
   if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
     return absl::nullopt;
@@ -576,7 +561,7 @@ absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
   // margin of error of an additional 1000 handles.
   std::vector<char> buffer((handle_count + 1000) * sizeof(uint32_t));
   DWORD return_length;
-  NTSTATUS status = query_information_process(
+  NTSTATUS status = GetNtExports()->QueryInformationProcess(
       ::GetCurrentProcess(), ProcessHandleTable, buffer.data(),
       static_cast<ULONG>(buffer.size()), &return_length);
 

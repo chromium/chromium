@@ -17,6 +17,7 @@
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/job.h"
 #include "sandbox/win/src/restricted_token.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/security_level.h"
 #include "sandbox/win/src/win_utils.h"
@@ -379,21 +380,18 @@ DWORD CreateLowBoxObjectDirectory(const base::win::Sid& lowbox_sid,
       base::StringPrintf(L"\\Sessions\\%d\\AppContainerNamedObjects\\%ls",
                          session_id, sid_string->c_str());
 
-  NtCreateDirectoryObjectFunction CreateObjectDirectory = nullptr;
-  ResolveNTFunctionPtr("NtCreateDirectoryObject", &CreateObjectDirectory);
-
   OBJECT_ATTRIBUTES obj_attr;
   UNICODE_STRING obj_name;
   DWORD attributes = OBJ_CASE_INSENSITIVE;
   if (open_directory)
     attributes |= OBJ_OPENIF;
 
-  sandbox::InitObjectAttribs(directory_path, attributes, nullptr, &obj_attr,
-                             &obj_name, nullptr);
+  InitObjectAttribs(directory_path, attributes, nullptr, &obj_attr, &obj_name,
+                    nullptr);
 
   HANDLE handle = nullptr;
-  NTSTATUS status =
-      CreateObjectDirectory(&handle, DIRECTORY_ALL_ACCESS, &obj_attr);
+  NTSTATUS status = GetNtExports()->CreateDirectoryObject(
+      &handle, DIRECTORY_ALL_ACCESS, &obj_attr);
 
   if (!NT_SUCCESS(status))
     return GetLastErrorFromNtStatus(status);

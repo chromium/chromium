@@ -101,6 +101,9 @@ void* GetGlobalIPCMemory();
 // Returns a pointer to the Policy shared memory.
 void* GetGlobalPolicyMemory();
 
+// Returns a reference to imported NT functions.
+const NtExports* GetNtExports();
+
 enum RequiredAccess { READ, WRITE };
 
 // Performs basic user mode buffer validation. In any case, buffers access must

@@ -16,24 +16,15 @@
 
 namespace sandbox {
 
-SANDBOX_INTERCEPT NtExports g_nt;
-
 namespace {
 
 DWORD SignalObjectAndWaitWrapper(HANDLE object_to_signal,
                                  HANDLE object_to_wait_on,
-                                 DWORD millis,
-                                 BOOL alertable) {
-  // Not running in a sandboxed process so can call directly.
-  if (!g_nt.SignalAndWaitForSingleObject)
-    return SignalObjectAndWait(object_to_signal, object_to_wait_on, millis,
-                               alertable);
-  // Don't support alertable.
-  CHECK_NT(!alertable);
+                                 DWORD millis) {
   LARGE_INTEGER timeout;
   timeout.QuadPart = millis * -10000LL;
-  NTSTATUS status = g_nt.SignalAndWaitForSingleObject(
-      object_to_signal, object_to_wait_on, alertable,
+  NTSTATUS status = GetNtExports()->SignalAndWaitForSingleObject(
+      object_to_signal, object_to_wait_on, FALSE,
       millis == INFINITE ? nullptr : &timeout);
   if (!NT_SUCCESS(status))
     return WAIT_FAILED;
@@ -41,12 +32,9 @@ DWORD SignalObjectAndWaitWrapper(HANDLE object_to_signal,
 }
 
 DWORD WaitForSingleObjectWrapper(HANDLE handle, DWORD millis) {
-  // Not running in a sandboxed process so can call directly.
-  if (!g_nt.WaitForSingleObject)
-    return WaitForSingleObject(handle, millis);
   LARGE_INTEGER timeout;
   timeout.QuadPart = millis * -10000LL;
-  NTSTATUS status = g_nt.WaitForSingleObject(
+  NTSTATUS status = GetNtExports()->WaitForSingleObject(
       handle, FALSE, millis == INFINITE ? nullptr : &timeout);
   if (!NT_SUCCESS(status))
     return WAIT_FAILED;
@@ -109,9 +97,8 @@ ResultCode SharedMemIPCClient::DoCall(CrossCallParams* params,
 
   // While the atomic signaling and waiting is not a requirement, it
   // is nice because we save a trip to kernel.
-  DWORD wait = SignalObjectAndWaitWrapper(channel[num].ping_event,
-                                          channel[num].pong_event,
-                                          kIPCWaitTimeOut1, false);
+  DWORD wait = SignalObjectAndWaitWrapper(
+      channel[num].ping_event, channel[num].pong_event, kIPCWaitTimeOut1);
   if (WAIT_TIMEOUT == wait) {
     // The server is taking too long. Enter a loop were we check if the
     // server_alive mutex has been abandoned which would signal a server crash

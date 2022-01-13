@@ -17,11 +17,8 @@
 
 namespace sandbox {
 
-bool SetupNtdllImports();
-
 // Testing that we allow opcode generation on valid string patterns.
 TEST(PolicyEngineTest, StringPatternsOK) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(pr.AddStringMatch(IF, 0, L"c:\\adobe\\ver??\\", CASE_SENSITIVE));
   EXPECT_TRUE(pr.AddStringMatch(IF, 0, L"*.tmp", CASE_SENSITIVE));
@@ -33,7 +30,6 @@ TEST(PolicyEngineTest, StringPatternsOK) {
 
 // Testing that we signal invalid string patterns.
 TEST(PolicyEngineTest, StringPatternsBAD) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_FALSE(pr.AddStringMatch(IF, 0, L"one**two", CASE_SENSITIVE));
   EXPECT_FALSE(pr.AddStringMatch(IF, 0, L"**three", CASE_SENSITIVE));
@@ -54,7 +50,6 @@ PolicyGlobal* MakePolicyMemory() {
 // The simplest test using LowLevelPolicy it should test a single opcode which
 // does a exact string comparison.
 TEST(PolicyEngineTest, SimpleStrMatch) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(
       pr.AddStringMatch(IF, 0, L"z:\\Directory\\domo.txt", CASE_INSENSITIVE));
@@ -87,7 +82,6 @@ TEST(PolicyEngineTest, SimpleStrMatch) {
 }
 
 TEST(PolicyEngineTest, SimpleIfNotStrMatch) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(pr.AddStringMatch(IF_NOT, 0, L"c:\\Microsoft\\", CASE_SENSITIVE));
 
@@ -124,7 +118,6 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatch) {
 }
 
 TEST(PolicyEngineTest, SimpleIfNotStrMatchWild1) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(
       pr.AddStringMatch(IF_NOT, 0, L"c:\\Microsoft\\*", CASE_SENSITIVE));
@@ -157,7 +150,6 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild1) {
 }
 
 TEST(PolicyEngineTest, SimpleIfNotStrMatchWild2) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(
       pr.AddStringMatch(IF_NOT, 0, L"c:\\Microsoft\\*.txt", CASE_SENSITIVE));
@@ -195,7 +187,6 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild2) {
 }
 
 TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(
       pr.AddStringMatch(IF_NOT, 0, L"c:\\Microsoft\\*", CASE_SENSITIVE));
@@ -243,7 +234,6 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
 }
 
 TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild2) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(pr.AddNumberMatch(IF, 1, 24, EQUAL));
   EXPECT_TRUE(
@@ -315,7 +305,6 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild2) {
 // Testing one single rule in one single service. The service is made to
 // resemble NtCreateFile.
 TEST(PolicyEngineTest, OneRuleTest) {
-  SetupNtdllImports();
   PolicyRule pr(ASK_BROKER);
   EXPECT_TRUE(
       pr.AddStringMatch(IF, 0, L"c:\\*Microsoft*\\*.txt", CASE_SENSITIVE));
@@ -386,7 +375,6 @@ TEST(PolicyEngineTest, OneRuleTest) {
 
 // Testing 3 rules in 3 services. Two of the services resemble File services.
 TEST(PolicyEngineTest, ThreeRulesTest) {
-  SetupNtdllImports();
   PolicyRule pr_pipe(FAKE_SUCCESS);
   EXPECT_TRUE(pr_pipe.AddStringMatch(IF, 0, L"\\\\/?/?\\Pipe\\Chrome.*",
                                      CASE_INSENSITIVE));
@@ -590,7 +578,6 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
 }
 
 TEST(PolicyEngineTest, PolicyRuleCopyConstructorTwoStrings) {
-  SetupNtdllImports();
   // Both pr_orig and pr_copy should allow hello.* but not *.txt files.
   PolicyRule pr_orig(ASK_BROKER);
   EXPECT_TRUE(pr_orig.AddStringMatch(IF, 0, L"hello.*", CASE_SENSITIVE));
@@ -633,7 +620,6 @@ TEST(PolicyEngineTest, PolicyRuleCopyConstructorTwoStrings) {
 }
 
 TEST(PolicyEngineTest, PolicyGenDoneCalledTwice) {
-  SetupNtdllImports();
   // The specific rules here are not important.
   PolicyRule pr_orig(ASK_BROKER);
   EXPECT_TRUE(pr_orig.AddStringMatch(IF, 0, L"hello.*", CASE_SENSITIVE));

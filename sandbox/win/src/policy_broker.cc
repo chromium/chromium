@@ -18,6 +18,7 @@
 #include "sandbox/win/src/process_thread_interception.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/target_process.h"
 
@@ -26,65 +27,9 @@
 
 namespace sandbox {
 
-// This is the list of all imported symbols from ntdll.dll.
-SANDBOX_INTERCEPT NtExports g_nt;
-
-#define INIT_GLOBAL_NT(member)                          \
-  g_nt.member = reinterpret_cast<Nt##member##Function>( \
-      ntdll_image.GetProcAddress("Nt" #member));        \
-  if (!g_nt.member)                                     \
-  return false
-
-#define INIT_GLOBAL_RTL(member)                                                \
-  g_nt.member =                                                                \
-      reinterpret_cast<member##Function>(ntdll_image.GetProcAddress(#member)); \
-  if (!g_nt.member)                                                            \
-  return false
-
-bool InitGlobalNt() {
-  HMODULE ntdll = ::GetModuleHandle(kNtdllName);
-  base::win::PEImage ntdll_image(ntdll);
-
-  INIT_GLOBAL_NT(AllocateVirtualMemory);
-  INIT_GLOBAL_NT(Close);
-  INIT_GLOBAL_NT(DuplicateObject);
-  INIT_GLOBAL_NT(FreeVirtualMemory);
-  INIT_GLOBAL_NT(MapViewOfSection);
-  INIT_GLOBAL_NT(ProtectVirtualMemory);
-  INIT_GLOBAL_NT(QueryInformationProcess);
-  INIT_GLOBAL_NT(QueryObject);
-  INIT_GLOBAL_NT(QuerySection);
-  INIT_GLOBAL_NT(QueryVirtualMemory);
-  INIT_GLOBAL_NT(UnmapViewOfSection);
-  INIT_GLOBAL_NT(SignalAndWaitForSingleObject);
-  INIT_GLOBAL_NT(WaitForSingleObject);
-
-  INIT_GLOBAL_RTL(RtlAllocateHeap);
-  INIT_GLOBAL_RTL(RtlAnsiStringToUnicodeString);
-  INIT_GLOBAL_RTL(RtlCompareUnicodeString);
-  INIT_GLOBAL_RTL(RtlCreateHeap);
-  INIT_GLOBAL_RTL(RtlCreateUserThread);
-  INIT_GLOBAL_RTL(RtlDestroyHeap);
-  INIT_GLOBAL_RTL(RtlFreeHeap);
-  INIT_GLOBAL_RTL(_strnicmp);
-  INIT_GLOBAL_RTL(strlen);
-  INIT_GLOBAL_RTL(wcslen);
-  INIT_GLOBAL_RTL(memcpy);
-
-  return true;
-}
-
 bool SetupNtdllImports(TargetProcess& child) {
-  if (!InitGlobalNt()) {
-    return false;
-  }
-
-#ifndef NDEBUG
-  // Verify that the structure is fully initialized.
-  for (size_t i = 0; i < sizeof(g_nt) / sizeof(void*); i++)
-    DCHECK(reinterpret_cast<char**>(&g_nt)[i]);
-#endif
-  return (SBOX_ALL_OK == child.TransferVariable("g_nt", &g_nt, sizeof(g_nt)));
+  return (SBOX_ALL_OK ==
+          child.TransferVariable("g_nt", GetNtExports(), sizeof(NtExports)));
 }
 
 #undef INIT_GLOBAL_NT

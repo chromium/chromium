@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/win/pe_image.h"
+#include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
 
@@ -40,7 +41,6 @@ inline char* AlignToBoundary(void* ptr, size_t increment) {
 // This is used for the DLL hooking code to get a valid trampoline location
 // which must be within +/- 2GiB of the base. We only consider +2GiB for now.
 void* AllocateNearTo(void* source, size_t size) {
-  using sandbox::g_nt;
   // 2GiB, maximum upper bound the allocation address must be within.
   const size_t kMaxSize = 0x80000000ULL;
   // We don't support null as a base as this would just pick an arbitrary
@@ -61,9 +61,9 @@ void* AllocateNearTo(void* source, size_t size) {
   while (base < top_address) {
     // Avoid memset inserted by -ftrivial-auto-var-init=pattern.
     STACK_UNINITIALIZED MEMORY_BASIC_INFORMATION mem_info;
-    NTSTATUS status =
-        g_nt.QueryVirtualMemory(NtCurrentProcess, base, MemoryBasicInformation,
-                                &mem_info, sizeof(mem_info), nullptr);
+    NTSTATUS status = sandbox::GetNtExports()->QueryVirtualMemory(
+        NtCurrentProcess, base, MemoryBasicInformation, &mem_info,
+        sizeof(mem_info), nullptr);
     if (!NT_SUCCESS(status))
       break;
 
@@ -72,9 +72,9 @@ void* AllocateNearTo(void* source, size_t size) {
       // Note that we need to both commit and reserve the block for the
       // allocation to succeed as per Windows virtual memory requirements.
       void* ret_base = mem_info.BaseAddress;
-      status =
-          g_nt.AllocateVirtualMemory(NtCurrentProcess, &ret_base, 0, &size,
-                                     MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+      status = sandbox::GetNtExports()->AllocateVirtualMemory(
+          NtCurrentProcess, &ret_base, 0, &size, MEM_COMMIT | MEM_RESERVE,
+          PAGE_READWRITE);
       // Shouldn't fail, but if it does we'll just continue and try next block.
       if (NT_SUCCESS(status))
         return ret_base;
@@ -89,8 +89,6 @@ void* AllocateNearTo(void* source, size_t size) {
 }
 #else   // defined(_WIN64).
 void* AllocateNearTo(void* source, size_t size) {
-  using sandbox::g_nt;
-
   // In 32-bit processes allocations below 512k are predictable, so mark
   // anything in that range as reserved and retry until we get a good address.
   const void* const kMinAddress = reinterpret_cast<void*>(512 * 1024);
@@ -100,20 +98,73 @@ void* AllocateNearTo(void* source, size_t size) {
   do {
     base = nullptr;
     actual_size = 64 * 1024;
-    ret = g_nt.AllocateVirtualMemory(NtCurrentProcess, &base, 0, &actual_size,
-                                     MEM_RESERVE, PAGE_NOACCESS);
+    ret = sandbox::GetNtExports()->AllocateVirtualMemory(
+        NtCurrentProcess, &base, 0, &actual_size, MEM_RESERVE, PAGE_NOACCESS);
     if (!NT_SUCCESS(ret))
       return nullptr;
   } while (base < kMinAddress);
 
   actual_size = size;
-  ret = g_nt.AllocateVirtualMemory(NtCurrentProcess, &base, 0, &actual_size,
-                                   MEM_COMMIT, PAGE_READWRITE);
+  ret = sandbox::GetNtExports()->AllocateVirtualMemory(
+      NtCurrentProcess, &base, 0, &actual_size, MEM_COMMIT, PAGE_READWRITE);
   if (!NT_SUCCESS(ret))
     return nullptr;
   return base;
 }
 #endif  // defined(_WIN64).
+
+template <typename T>
+void InitFunc(const base::win::PEImage& image, T& member, const char* name) {
+  member = reinterpret_cast<T>(image.GetProcAddress(name));
+  DCHECK(member);
+}
+
+#define INIT_NT(member) InitFunc(image, sandbox::g_nt.member, "Nt" #member)
+#define INIT_RTL(member) InitFunc(image, sandbox::g_nt.member, #member)
+
+void InitGlobalNt() {
+  HMODULE ntdll = ::GetModuleHandle(sandbox::kNtdllName);
+  base::win::PEImage image(ntdll);
+  INIT_NT(AllocateVirtualMemory);
+  INIT_NT(CreateDirectoryObject);
+  INIT_NT(CreateFile);
+  INIT_NT(CreateSection);
+  INIT_NT(Close);
+  INIT_NT(DuplicateObject);
+  INIT_NT(FreeVirtualMemory);
+  INIT_NT(MapViewOfSection);
+  INIT_NT(OpenFile);
+  INIT_NT(OpenThread);
+  INIT_NT(OpenProcess);
+  INIT_NT(OpenProcessToken);
+  INIT_NT(OpenProcessTokenEx);
+  INIT_NT(ProtectVirtualMemory);
+  INIT_NT(QueryAttributesFile);
+  INIT_NT(QueryFullAttributesFile);
+  INIT_NT(QueryInformationProcess);
+  INIT_NT(QueryObject);
+  INIT_NT(QuerySection);
+  INIT_NT(QueryVirtualMemory);
+  INIT_NT(SetInformationFile);
+  INIT_NT(SetInformationProcess);
+  INIT_NT(SignalAndWaitForSingleObject);
+  INIT_NT(UnmapViewOfSection);
+  INIT_NT(WaitForSingleObject);
+
+  INIT_RTL(RtlAllocateHeap);
+  INIT_RTL(RtlAnsiStringToUnicodeString);
+  INIT_RTL(RtlCompareUnicodeString);
+  INIT_RTL(RtlCreateHeap);
+  INIT_RTL(RtlCreateUserThread);
+  INIT_RTL(RtlDestroyHeap);
+  INIT_RTL(RtlFreeHeap);
+  INIT_RTL(RtlNtStatusToDosError);
+  INIT_RTL(_strnicmp);
+  INIT_RTL(strlen);
+  INIT_RTL(wcslen);
+  INIT_RTL(memcpy);
+  sandbox::g_nt.Initialized = true;
+}
 
 }  // namespace.
 
@@ -136,9 +187,9 @@ bool MapGlobalMemory() {
     void* memory = nullptr;
     SIZE_T size = 0;
     // Map the entire shared section from the start.
-    NTSTATUS ret =
-        g_nt.MapViewOfSection(g_shared_section, NtCurrentProcess, &memory, 0, 0,
-                              nullptr, &size, ViewUnmap, 0, PAGE_READWRITE);
+    NTSTATUS ret = GetNtExports()->MapViewOfSection(
+        g_shared_section, NtCurrentProcess, &memory, 0, 0, nullptr, &size,
+        ViewUnmap, 0, PAGE_READWRITE);
 
     if (!NT_SUCCESS(ret) || !memory) {
       NOTREACHED_NT();
@@ -148,7 +199,8 @@ bool MapGlobalMemory() {
     if (_InterlockedCompareExchangePointer(&g_shared_IPC_memory, memory,
                                            nullptr)) {
       // Somebody beat us to the memory setup.
-      VERIFY_SUCCESS(g_nt.UnmapViewOfSection(NtCurrentProcess, memory));
+      VERIFY_SUCCESS(
+          GetNtExports()->UnmapViewOfSection(NtCurrentProcess, memory));
     }
     DCHECK_NT(g_shared_IPC_size > 0);
     g_shared_policy_memory =
@@ -171,17 +223,24 @@ void* GetGlobalPolicyMemory() {
   return g_shared_policy_memory;
 }
 
+const NtExports* GetNtExports() {
+  if (!g_nt.Initialized)
+    InitGlobalNt();
+
+  return &g_nt;
+}
+
 bool InitHeap() {
   if (!g_heap) {
     // Create a new heap using default values for everything.
-    void* heap =
-        g_nt.RtlCreateHeap(HEAP_GROWABLE, nullptr, 0, 0, nullptr, nullptr);
+    void* heap = GetNtExports()->RtlCreateHeap(HEAP_GROWABLE, nullptr, 0, 0,
+                                               nullptr, nullptr);
     if (!heap)
       return false;
 
     if (_InterlockedCompareExchangePointer(&g_heap, heap, nullptr)) {
       // Somebody beat us to the memory setup.
-      g_nt.RtlDestroyHeap(heap);
+      GetNtExports()->RtlDestroyHeap(heap);
     }
   }
   return !!g_heap;
@@ -223,7 +282,7 @@ bool ValidParameter(void* buffer, size_t size, RequiredAccess intent) {
 NTSTATUS CopyData(void* destination, const void* source, size_t bytes) {
   NTSTATUS ret = STATUS_SUCCESS;
   __try {
-    g_nt.memcpy(destination, source, bytes);
+    GetNtExports()->memcpy(destination, source, bytes);
   } __except (EXCEPTION_EXECUTE_HANDLER) {
     ret = GetExceptionCode();
   }
@@ -281,9 +340,9 @@ NTSTATUS GetProcessId(HANDLE process, DWORD* process_id) {
   PROCESS_BASIC_INFORMATION proc_info;
   ULONG bytes_returned;
 
-  NTSTATUS ret =
-      g_nt.QueryInformationProcess(process, ProcessBasicInformation, &proc_info,
-                                   sizeof(proc_info), &bytes_returned);
+  NTSTATUS ret = GetNtExports()->QueryInformationProcess(
+      process, ProcessBasicInformation, &proc_info, sizeof(proc_info),
+      &bytes_returned);
   if (!NT_SUCCESS(ret) || sizeof(proc_info) != bytes_returned)
     return ret;
 
@@ -320,18 +379,19 @@ bool IsValidImageSection(HANDLE section,
 
   HANDLE query_section;
 
-  NTSTATUS ret =
-      g_nt.DuplicateObject(NtCurrentProcess, section, NtCurrentProcess,
-                           &query_section, SECTION_QUERY, 0, 0);
+  NTSTATUS ret = GetNtExports()->DuplicateObject(
+      NtCurrentProcess, section, NtCurrentProcess, &query_section,
+      SECTION_QUERY, 0, 0);
   if (!NT_SUCCESS(ret))
     return false;
 
   SECTION_BASIC_INFORMATION basic_info;
   SIZE_T bytes_returned;
-  ret = g_nt.QuerySection(query_section, SectionBasicInformation, &basic_info,
-                          sizeof(basic_info), &bytes_returned);
+  ret = GetNtExports()->QuerySection(query_section, SectionBasicInformation,
+                                     &basic_info, sizeof(basic_info),
+                                     &bytes_returned);
 
-  VERIFY_SUCCESS(g_nt.Close(query_section));
+  VERIFY_SUCCESS(GetNtExports()->Close(query_section));
 
   if (!NT_SUCCESS(ret) || sizeof(basic_info) != bytes_returned)
     return false;
@@ -345,8 +405,8 @@ bool IsValidImageSection(HANDLE section,
   // Avoid memset inserted by -ftrivial-auto-var-init=pattern.
   STACK_UNINITIALIZED OBJECT_BASIC_INFORMATION obj_info;
   ULONG obj_size_returned;
-  ret = g_nt.QueryObject(section, ObjectBasicInformation, &obj_info,
-                         sizeof(obj_info), &obj_size_returned);
+  ret = GetNtExports()->QueryObject(section, ObjectBasicInformation, &obj_info,
+                                    sizeof(obj_info), &obj_size_returned);
 
   if (!NT_SUCCESS(ret) || sizeof(obj_info) != obj_size_returned)
     return false;
@@ -359,7 +419,7 @@ bool IsValidImageSection(HANDLE section,
 
 UNICODE_STRING* AnsiToUnicode(const char* string) {
   ANSI_STRING ansi_string;
-  ansi_string.Length = static_cast<USHORT>(g_nt.strlen(string));
+  ansi_string.Length = static_cast<USHORT>(GetNtExports()->strlen(string));
   ansi_string.MaximumLength = ansi_string.Length + 1;
   ansi_string.Buffer = const_cast<char*>(string);
 
@@ -378,8 +438,8 @@ UNICODE_STRING* AnsiToUnicode(const char* string) {
   out_string->Buffer = reinterpret_cast<wchar_t*>(&out_string[1]);
 
   BOOLEAN alloc_destination = false;
-  NTSTATUS ret = g_nt.RtlAnsiStringToUnicodeString(out_string, &ansi_string,
-                                                   alloc_destination);
+  NTSTATUS ret = GetNtExports()->RtlAnsiStringToUnicodeString(
+      out_string, &ansi_string, alloc_destination);
   DCHECK_NT(STATUS_BUFFER_OVERFLOW != ret);
   if (!NT_SUCCESS(ret)) {
     operator delete(out_string, NT_ALLOC);
@@ -459,9 +519,9 @@ UNICODE_STRING* GetBackingFilePath(PVOID address) {
       return nullptr;
 
     SIZE_T returned_bytes;
-    NTSTATUS ret =
-        g_nt.QueryVirtualMemory(NtCurrentProcess, address, MemorySectionName,
-                                section_name, buffer_bytes, &returned_bytes);
+    NTSTATUS ret = GetNtExports()->QueryVirtualMemory(
+        NtCurrentProcess, address, MemorySectionName, section_name,
+        buffer_bytes, &returned_bytes);
 
     if (STATUS_BUFFER_OVERFLOW == ret) {
       // Retry the call with the given buffer size.
@@ -533,8 +593,8 @@ NTSTATUS AutoProtectMemory::ChangeProtection(void* address,
                                              ULONG protect) {
   DCHECK_NT(!changed_);
   SIZE_T new_bytes = bytes;
-  NTSTATUS ret = g_nt.ProtectVirtualMemory(NtCurrentProcess, &address,
-                                           &new_bytes, protect, &old_protect_);
+  NTSTATUS ret = GetNtExports()->ProtectVirtualMemory(
+      NtCurrentProcess, &address, &new_bytes, protect, &old_protect_);
   if (NT_SUCCESS(ret)) {
     changed_ = true;
     address_ = address;
@@ -552,7 +612,7 @@ NTSTATUS AutoProtectMemory::RevertProtection() {
   DCHECK_NT(bytes_);
 
   SIZE_T new_bytes = bytes_;
-  NTSTATUS ret = g_nt.ProtectVirtualMemory(
+  NTSTATUS ret = GetNtExports()->ProtectVirtualMemory(
       NtCurrentProcess, &address_, &new_bytes, old_protect_, &old_protect_);
   DCHECK_NT(NT_SUCCESS(ret));
 
@@ -604,8 +664,8 @@ bool NtGetPathFromHandle(HANDLE handle,
   OBJECT_NAME_INFORMATION* name;
   ULONG size = 0;
   // Query the name information a first time to get the size of the name.
-  NTSTATUS status = g_nt.QueryObject(handle, ObjectNameInformation,
-                                     &initial_buffer, size, &size);
+  NTSTATUS status = GetNtExports()->QueryObject(handle, ObjectNameInformation,
+                                                &initial_buffer, size, &size);
 
   if (!NT_SUCCESS(status) && status != STATUS_INFO_LENGTH_MISMATCH)
     return false;
@@ -618,7 +678,8 @@ bool NtGetPathFromHandle(HANDLE handle,
 
   // Query the name information a second time to get the name of the
   // object referenced by the handle.
-  status = g_nt.QueryObject(handle, ObjectNameInformation, name, size, &size);
+  status = GetNtExports()->QueryObject(handle, ObjectNameInformation, name,
+                                       size, &size);
 
   if (STATUS_SUCCESS != status)
     return false;
@@ -639,7 +700,8 @@ void* operator new(size_t size, sandbox::AllocationType type, void* near_to) {
   if (type == sandbox::NT_ALLOC) {
     if (sandbox::InitHeap()) {
       // Use default flags for the allocation.
-      result = sandbox::g_nt.RtlAllocateHeap(sandbox::g_heap, 0, size);
+      result =
+          sandbox::GetNtExports()->RtlAllocateHeap(sandbox::g_heap, 0, size);
     }
   } else if (type == sandbox::NT_PAGE) {
     result = AllocateNearTo(near_to, size);
@@ -657,12 +719,12 @@ void* operator new(size_t size, sandbox::AllocationType type, void* near_to) {
 void operator delete(void* memory, sandbox::AllocationType type) {
   if (type == sandbox::NT_ALLOC) {
     // Use default flags.
-    VERIFY(sandbox::g_nt.RtlFreeHeap(sandbox::g_heap, 0, memory));
+    VERIFY(sandbox::GetNtExports()->RtlFreeHeap(sandbox::g_heap, 0, memory));
   } else if (type == sandbox::NT_PAGE) {
     void* base = memory;
     SIZE_T size = 0;
-    VERIFY_SUCCESS(sandbox::g_nt.FreeVirtualMemory(NtCurrentProcess, &base,
-                                                   &size, MEM_RELEASE));
+    VERIFY_SUCCESS(sandbox::GetNtExports()->FreeVirtualMemory(
+        NtCurrentProcess, &base, &size, MEM_RELEASE));
   } else {
     NOTREACHED_NT();
   }

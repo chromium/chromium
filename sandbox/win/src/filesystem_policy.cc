@@ -15,6 +15,7 @@
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/win_utils.h"
@@ -32,14 +33,11 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
                               PVOID ea_buffer,
                               ULONG ea_length,
                               HANDLE target_process) {
-  NtCreateFileFunction NtCreateFile = nullptr;
-  ResolveNTFunctionPtr("NtCreateFile", &NtCreateFile);
-
   HANDLE local_handle = INVALID_HANDLE_VALUE;
-  NTSTATUS status =
-      NtCreateFile(&local_handle, desired_access, obj_attributes,
-                   io_status_block, nullptr, file_attributes, share_access,
-                   create_disposition, create_options, ea_buffer, ea_length);
+  NTSTATUS status = sandbox::GetNtExports()->CreateFile(
+      &local_handle, desired_access, obj_attributes, io_status_block, nullptr,
+      file_attributes, share_access, create_disposition, create_options,
+      ea_buffer, ea_length);
   if (!NT_SUCCESS(status)) {
     return status;
   }
@@ -264,16 +262,13 @@ bool FileSystemPolicy::QueryAttributesFileAction(
     return false;
   }
 
-  NtQueryAttributesFileFunction NtQueryAttributesFile = nullptr;
-  ResolveNTFunctionPtr("NtQueryAttributesFile", &NtQueryAttributesFile);
-
   UNICODE_STRING uni_name = {0};
   OBJECT_ATTRIBUTES obj_attributes = {0};
   SECURITY_QUALITY_OF_SERVICE security_qos = GetAnonymousQOS();
 
   InitObjectAttribs(file, attributes, nullptr, &obj_attributes, &uni_name,
                     IsPipe(file) ? &security_qos : nullptr);
-  *nt_status = NtQueryAttributesFile(&obj_attributes, file_info);
+  *nt_status = GetNtExports()->QueryAttributesFile(&obj_attributes, file_info);
 
   return true;
 }
@@ -291,17 +286,14 @@ bool FileSystemPolicy::QueryFullAttributesFileAction(
     *nt_status = STATUS_ACCESS_DENIED;
     return false;
   }
-
-  NtQueryFullAttributesFileFunction NtQueryFullAttributesFile = nullptr;
-  ResolveNTFunctionPtr("NtQueryFullAttributesFile", &NtQueryFullAttributesFile);
-
   UNICODE_STRING uni_name = {0};
   OBJECT_ATTRIBUTES obj_attributes = {0};
   SECURITY_QUALITY_OF_SERVICE security_qos = GetAnonymousQOS();
 
   InitObjectAttribs(file, attributes, nullptr, &obj_attributes, &uni_name,
                     IsPipe(file) ? &security_qos : nullptr);
-  *nt_status = NtQueryFullAttributesFile(&obj_attributes, file_info);
+  *nt_status =
+      GetNtExports()->QueryFullAttributesFile(&obj_attributes, file_info);
 
   return true;
 }
@@ -321,9 +313,6 @@ bool FileSystemPolicy::SetInformationFileAction(EvalResult eval_result,
     return false;
   }
 
-  NtSetInformationFileFunction NtSetInformationFile = nullptr;
-  ResolveNTFunctionPtr("NtSetInformationFile", &NtSetInformationFile);
-
   HANDLE local_handle = nullptr;
   if (!::DuplicateHandle(client_info.process, target_file_handle,
                          ::GetCurrentProcess(), &local_handle, 0, false,
@@ -336,8 +325,8 @@ bool FileSystemPolicy::SetInformationFileAction(EvalResult eval_result,
 
   FILE_INFORMATION_CLASS file_info_class =
       static_cast<FILE_INFORMATION_CLASS>(info_class);
-  *nt_status = NtSetInformationFile(local_handle, io_block, file_info, length,
-                                    file_info_class);
+  *nt_status = GetNtExports()->SetInformationFile(
+      local_handle, io_block, file_info, length, file_info_class);
 
   return true;
 }

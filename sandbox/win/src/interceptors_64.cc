@@ -17,7 +17,6 @@
 
 namespace sandbox {
 
-SANDBOX_INTERCEPT NtExports g_nt;
 SANDBOX_INTERCEPT OriginalFunctions g_originals;
 
 NTSTATUS WINAPI TargetNtMapViewOfSection64(HANDLE section,

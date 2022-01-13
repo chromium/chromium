@@ -23,15 +23,11 @@ namespace sandbox {
 namespace {
 
 TEST(SandboxNtUtil, IsSameProcessPseudoHandle) {
-  InitGlobalNt();
-
   HANDLE current_process_pseudo = GetCurrentProcess();
   EXPECT_TRUE(IsSameProcess(current_process_pseudo));
 }
 
 TEST(SandboxNtUtil, IsSameProcessNonPseudoHandle) {
-  InitGlobalNt();
-
   base::win::ScopedHandle current_process(
       OpenProcess(PROCESS_QUERY_INFORMATION, false, GetCurrentProcessId()));
   ASSERT_TRUE(current_process.IsValid());
@@ -39,8 +35,6 @@ TEST(SandboxNtUtil, IsSameProcessNonPseudoHandle) {
 }
 
 TEST(SandboxNtUtil, IsSameProcessDifferentProcess) {
-  InitGlobalNt();
-
   STARTUPINFO si = {sizeof(si)};
   PROCESS_INFORMATION pi = {};
   wchar_t notepad[] = L"notepad";
@@ -184,7 +178,6 @@ void TestExtremes() {
 // Test nearest allocator, only do this for 64 bit. We test through the exposed
 // new operator as we can't call the AllocateNearTo function directly.
 TEST(SandboxNtUtil, NearestAllocator) {
-  InitGlobalNt();
   std::vector<unique_ptr_vmem> mem_range;
   AllocateTestRange(&mem_range);
   ASSERT_LT(0U, mem_range.size());
@@ -243,8 +236,6 @@ TEST(SandboxNtUtil, ValidParameter) {
 }
 
 TEST(SandboxNtUtil, NtGetPathFromHandle) {
-  InitGlobalNt();
-
   base::FilePath exe;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));
   base::File exe_file(exe, base::File::FLAG_OPEN);
@@ -265,7 +256,6 @@ TEST(SandboxNtUtil, NtGetPathFromHandle) {
 }
 
 TEST(SandboxNtUtil, CopyNameAndAttributes) {
-  InitGlobalNt();
   OBJECT_ATTRIBUTES object_attributes;
   InitializeObjectAttributes(&object_attributes, nullptr, 0, nullptr, nullptr);
   std::unique_ptr<wchar_t, NtAllocDeleter> name;
@@ -300,5 +290,15 @@ TEST(SandboxNtUtil, CopyNameAndAttributes) {
   EXPECT_EQ(0, wcsncmp(name.get(), name_buffer, base::size(name_buffer)));
   EXPECT_EQ(L'\0', name.get()[name_len]);
 }
+
+TEST(SandboxNtUtil, GetNtExports) {
+  const NtExports* exports = GetNtExports();
+  ASSERT_TRUE(exports);
+  static_assert((sizeof(NtExports) % sizeof(void*)) == 0);
+  // Verify that the structure is fully initialized.
+  for (size_t i = 0; i < sizeof(NtExports) / sizeof(void*); i++)
+    EXPECT_TRUE(reinterpret_cast<void* const*>(exports)[i]);
+}
+
 }  // namespace
 }  // namespace sandbox

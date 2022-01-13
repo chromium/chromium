@@ -23,6 +23,7 @@
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/restricted_token_utils.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/sharedmem_ipc_server.h"
@@ -205,16 +206,17 @@ ResultCode TargetProcess::Create(
 }
 
 ResultCode TargetProcess::TransferVariable(const char* name,
-                                           void* address,
+                                           const void* address,
                                            size_t size) {
   if (!sandbox_process_info_.IsValid())
     return SBOX_ERROR_UNEXPECTED_CALL;
 
   SIZE_T written;
-  if (!::WriteProcessMemory(sandbox_process_info_.process_handle(), address,
-                            address, size, &written))
+  if (!::WriteProcessMemory(sandbox_process_info_.process_handle(),
+                            const_cast<void*>(address), address, size,
+                            &written)) {
     return SBOX_ERROR_CANNOT_WRITE_VARIABLE_VALUE;
-
+  }
   if (written != size)
     return SBOX_ERROR_INVALID_WRITE_VARIABLE_SIZE;
 
@@ -319,12 +321,9 @@ ResultCode TargetProcess::AssignLowBoxToken(
   PROCESS_ACCESS_TOKEN process_access_token = {};
   process_access_token.token = token.Get();
 
-  NtSetInformationProcess SetInformationProcess = nullptr;
-  ResolveNTFunctionPtr("NtSetInformationProcess", &SetInformationProcess);
-
-  NTSTATUS status = SetInformationProcess(
+  NTSTATUS status = GetNtExports()->SetInformationProcess(
       sandbox_process_info_.process_handle(),
-      static_cast<PROCESS_INFORMATION_CLASS>(NtProcessInformationAccessToken),
+      static_cast<PROCESSINFOCLASS>(NtProcessInformationAccessToken),
       &process_access_token, sizeof(process_access_token));
   if (!NT_SUCCESS(status)) {
     ::SetLastError(GetLastErrorFromNtStatus(status));
