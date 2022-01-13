@@ -35,11 +35,14 @@ class MockBrowserAccessibilityDelegate
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> opt_callback) override {
     last_hit_test_point_ = point_in_frame_pixels;
+    last_request_id_ = opt_request_id;
   }
 
   const absl::optional<ui::AXActionData>& last_action_data() {
     return last_action_data_;
   }
+
+  const absl::optional<int>& last_request_id() { return last_request_id_; }
 
   const absl::optional<gfx::Point>& last_hit_test_point() {
     return last_hit_test_point_;
@@ -47,6 +50,7 @@ class MockBrowserAccessibilityDelegate
 
  private:
   absl::optional<ui::AXActionData> last_action_data_;
+  absl::optional<int> last_request_id_;
   absl::optional<gfx::Point> last_hit_test_point_;
 };
 
@@ -495,8 +499,14 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
   {
     absl::optional<gfx::Point> last_target =
         mock_browser_accessibility_delegate_->last_hit_test_point();
+    ASSERT_TRUE(last_target.has_value());
     EXPECT_EQ(last_target->x(), 1);
     EXPECT_EQ(last_target->y(), 2);
+
+    absl::optional<int> last_request_id =
+        mock_browser_accessibility_delegate_->last_request_id();
+    ASSERT_TRUE(last_request_id.has_value());
+    EXPECT_EQ(*last_request_id, action_data.request_id);
   }
 
   // Fire blink event to signify the hit test result.

@@ -397,7 +397,7 @@ bool BrowserAccessibilityFuchsia::AccessibilityPerformAction(
     if (!accessibility_bridge)
       return false;
 
-    root_manager->HitTest(action_data.target_point);
+    root_manager->HitTest(action_data.target_point, action_data.request_id);
     return true;
   }
 

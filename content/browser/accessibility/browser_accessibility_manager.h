@@ -292,7 +292,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // expects hit test points in page coordinates. However, WebAXObject::HitTest
   // applies the visual viewport offset, so we want to pass that function a
   // point in frame coordinates.
-  void HitTest(const gfx::Point& frame_point) const;
+  void HitTest(const gfx::Point& frame_point, int request_id) const;
   void Increment(const BrowserAccessibility& node);
   void LoadInlineTextBoxes(const BrowserAccessibility& node);
   void ScrollToMakeVisible(

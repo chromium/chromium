@@ -557,7 +557,7 @@ bool WebContentsAccessibilityAndroid::OnHoverEvent(
   // Hover event was consumed by accessibility by now. Return true to
   // stop the event from proceeding.
   if (event.GetAction() != ui::MotionEvent::Action::HOVER_EXIT)
-    GetRootBrowserAccessibilityManager()->HitTest(point);
+    GetRootBrowserAccessibilityManager()->HitTest(point, /*request_id=*/0);
 
   if (!GetRootBrowserAccessibilityManager()->touch_passthrough_enabled())
     return true;
@@ -672,7 +672,7 @@ void WebContentsAccessibilityAndroid::HitTest(JNIEnv* env,
                                               jint y) {
   if (BrowserAccessibilityManagerAndroid* root_manager =
           GetRootBrowserAccessibilityManager())
-    root_manager->HitTest(gfx::Point(x, y));
+    root_manager->HitTest(gfx::Point(x, y), /*request_id=*/0);
 }
 
 jboolean WebContentsAccessibilityAndroid::IsEditableText(

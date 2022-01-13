@@ -1012,11 +1012,14 @@ void BrowserAccessibilityManager::ClearAccessibilityFocus(
   BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
-void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point) const {
+void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point,
+                                          int request_id) const {
   if (!delegate_)
     return;
 
-  delegate_->AccessibilityHitTest(frame_point, ax::mojom::Event::kHover, 0, {});
+  delegate_->AccessibilityHitTest(frame_point, ax::mojom::Event::kHover,
+                                  request_id,
+                                  /*opt_callback=*/{});
   BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
@@ -1691,7 +1694,7 @@ BrowserAccessibility* BrowserAccessibilityManager::CachingAsyncHitTest(
 
     // This triggers an asynchronous request to compute the true object that's
     // under the point.
-    HitTest(frame_point);
+    HitTest(frame_point, /*request_id=*/0);
 
     // Unfortunately we still have to return an answer synchronously because
     // the APIs were designed that way. The best case scenario is that the
