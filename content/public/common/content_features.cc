@@ -630,6 +630,21 @@ const base::Feature kHighPriorityBeforeUnload{
 const base::Feature kPrivacySandboxAggregationService = {
     "PrivacySandboxAggregationService", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Private Network Access checks for all types of web workers.
+//
+// This affects initial worker script fetches, fetches initiated by workers
+// themselves, and service worker update fetches.
+//
+// The exact checks run are the same as for other document subresources, and
+// depend on the state of other Private Network Access feature flags:
+//
+//  - `kBlockInsecurePrivateNetworkRequests`
+//  - `kPrivateNetworkAccessSendPreflights`
+//  - `kPrivateNetworkAccessRespectPreflightResults`
+//
+const base::Feature kPrivateNetworkAccessForWorkers = {
+    "PrivateNetworkAccessForWorkers", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
