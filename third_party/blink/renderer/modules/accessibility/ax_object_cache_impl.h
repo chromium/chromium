@@ -360,6 +360,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   // called, it will only retrieve objects that have changed since now.
   HeapVector<Member<AXObject>> GetAllObjectsWithChangedBounds();
 
+  static constexpr int kDataTableHeuristicMinRows = 20;
+
  protected:
   void PostPlatformNotification(
       AXObject* obj,

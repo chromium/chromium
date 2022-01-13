@@ -1291,7 +1291,7 @@ bool AXLayoutObject::IsDataTable() const {
   // If there are at least 20 rows, we'll call it a data table.
   HTMLTableRowsCollection* rows = table_element->rows();
   int num_rows = rows->length();
-  if (num_rows >= 20)
+  if (num_rows >= AXObjectCacheImpl::kDataTableHeuristicMinRows)
     return true;
   if (num_rows <= 0)
     return false;
