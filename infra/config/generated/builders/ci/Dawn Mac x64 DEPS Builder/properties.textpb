@@ -21,8 +21,5 @@
     ]
   },
   "builder_group": "chromium.dawn",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chrome_browser_release"
-  ]
+  "recipe": "chromium"
 }

@@ -4,6 +4,7 @@
     "ref": "refs/branch-heads/4664",
     "chrome_project": "chrome-m96",
     "branch_types": [
-        "standard"
+        "desktop-extended-stable",
+        "cros-lts"
     ]
 }
