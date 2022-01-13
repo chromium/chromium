@@ -38,6 +38,8 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   void SetUp() override;
 
   // Helper functions to set request components.
+  void SetURL(const GURL& url);
+  void SetMethod(const std::string& method);
   void SetAppType(const std::string& app_type);
   void SetDeviceIdParam(const std::string& device_id);
   void SetDeviceType(const std::string& device_type);

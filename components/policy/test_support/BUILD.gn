@@ -80,6 +80,7 @@ source_set("unittests") {
     "embedded_policy_test_server_test_base.h",
     "embedded_policy_test_server_unittest.cc",
     "failing_request_handler_unittest.cc",
+    "policy_storage_unittest.cc",
     "request_handler_for_api_authorization_unittest.cc",
     "request_handler_for_auto_enrollment_unittest.cc",
     "request_handler_for_chrome_desktop_report_unittest.cc",

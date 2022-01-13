@@ -84,10 +84,17 @@ class EmbeddedPolicyTestServer {
   void ConfigureRequestError(const std::string& request_type,
                              net::HttpStatusCode error_code);
 
+  GURL GetExternalPolicyDataURL(const std::string& policy_type,
+                                const std::string& entity_id) const;
+
  private:
   // Default request handler.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
+
+  // Request handler for external policy data.
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleExternalPolicyDataRequest(const GURL& request);
 
   net::test_server::EmbeddedTestServer http_server_;
   std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;

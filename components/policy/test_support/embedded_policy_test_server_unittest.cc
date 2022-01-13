@@ -7,7 +7,9 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/test_server_helpers.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -19,9 +21,11 @@ namespace policy {
 namespace {
 
 constexpr char kFakeDeviceId[] = "fake_device_id";
+constexpr char kFakeExtensionId[] = "fake_extension_id";
 constexpr char kFakeRequestType[] = "fake_request_type";
 constexpr char kInvalidRequestType[] = "invalid_request_type";
 constexpr char kResponseBodyYay[] = "Yay!!!";
+constexpr char kRawPolicyPayload[] = R"({"foo": "bar"})";
 
 class FakeRequestHandler : public EmbeddedPolicyTestServer::RequestHandler {
  public:
@@ -99,6 +103,32 @@ TEST_F(EmbeddedPolicyTestServerTest, HandleRequest_MissingDeviceType) {
   StartRequestAndWait();
 
   EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
+}
+
+TEST_F(EmbeddedPolicyTestServerTest, HandleRequest_ExternalPolicyData_Success) {
+  test_server()->policy_storage()->SetExternalPolicyPayload(
+      dm_protocol::kChromeExtensionPolicyType, kFakeExtensionId,
+      kRawPolicyPayload);
+  SetMethod(net::HttpRequestHeaders::kGetMethod);
+  SetURL(test_server()->GetExternalPolicyDataURL(
+      dm_protocol::kChromeExtensionPolicyType, kFakeExtensionId));
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
+  ASSERT_TRUE(HasResponseBody());
+  EXPECT_EQ(GetResponseBody(), kRawPolicyPayload);
+}
+
+TEST_F(EmbeddedPolicyTestServerTest,
+       HandleRequest_ExternalPolicyData_NoPayload) {
+  SetMethod(net::HttpRequestHeaders::kGetMethod);
+  SetURL(test_server()->GetExternalPolicyDataURL(
+      dm_protocol::kChromeExtensionPolicyType, kFakeExtensionId));
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_NOT_FOUND);
 }
 
 }  // namespace policy

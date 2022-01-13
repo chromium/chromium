@@ -63,6 +63,23 @@ void PolicyStorage::SetPolicyPayload(const std::string& policy_type,
   policy_payloads_[GetPolicyKey(policy_type, entity_id)] = policy_payload;
 }
 
+std::string PolicyStorage::GetExternalPolicyPayload(
+    const std::string& policy_type,
+    const std::string& entity_id) {
+  std::string policy_key = GetPolicyKey(policy_type, entity_id);
+  return external_policy_payloads_.contains(policy_key)
+             ? external_policy_payloads_.at(policy_key)
+             : std::string();
+}
+
+void PolicyStorage::SetExternalPolicyPayload(
+    const std::string& policy_type,
+    const std::string& entity_id,
+    const std::string& policy_payload) {
+  external_policy_payloads_[GetPolicyKey(policy_type, entity_id)] =
+      policy_payload;
+}
+
 void PolicyStorage::SetPsmEntry(const std::string& brand_serial_id,
                                 const PolicyStorage::PsmEntry& psm_entry) {
   psm_entries_[brand_serial_id] = psm_entry;

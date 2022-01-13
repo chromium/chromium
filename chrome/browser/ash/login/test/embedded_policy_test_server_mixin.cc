@@ -21,12 +21,16 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/signature_provider.h"
+#include "crypto/sha2.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace em = enterprise_management;
 
 namespace ash {
 
@@ -120,6 +124,23 @@ void EmbeddedPolicyTestServerMixin::UpdatePolicy(
     const std::string& serialized_policy) {
   policy_test_server_->policy_storage()->SetPolicyPayload(type, entity_id,
                                                           serialized_policy);
+}
+
+void EmbeddedPolicyTestServerMixin::UpdateExternalPolicy(
+    const std::string& type,
+    const std::string& entity_id,
+    const std::string& raw_policy) {
+  // Register raw policy to be served by external endpoint.
+  policy_test_server_->policy_storage()->SetExternalPolicyPayload(
+      type, entity_id, raw_policy);
+
+  // Register proto policy with details on how to fetch the raw policy.
+  em::ExternalPolicyData external_policy_data;
+  external_policy_data.set_download_url(
+      policy_test_server_->GetExternalPolicyDataURL(type, entity_id).spec());
+  external_policy_data.set_secure_hash(crypto::SHA256HashString(raw_policy));
+  policy_test_server_->policy_storage()->SetPolicyPayload(
+      type, entity_id, external_policy_data.SerializeAsString());
 }
 
 void EmbeddedPolicyTestServerMixin::SetUpdateDeviceAttributesPermission(

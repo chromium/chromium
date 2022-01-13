@@ -28,6 +28,7 @@
 #include "components/policy/test_support/request_handler_for_remote_commands.h"
 #include "components/policy/test_support/request_handler_for_status_upload.h"
 #include "components/policy/test_support/test_server_helpers.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -39,6 +40,10 @@ using ::net::test_server::HttpResponse;
 namespace policy {
 
 namespace {
+
+const char kExternalPolicyDataPath[] = "/externalpolicydata";
+const char kExternalPolicyTypeParam[] = "policy_type";
+const char kExternalEntityIdParam[] = "entity_id";
 
 std::unique_ptr<HttpResponse> LogStatusAndReturn(
     GURL url,
@@ -131,10 +136,24 @@ void EmbeddedPolicyTestServer::ConfigureRequestError(
       client_storage_.get(), policy_storage_.get(), request_type, error_code));
 }
 
+GURL EmbeddedPolicyTestServer::GetExternalPolicyDataURL(
+    const std::string& policy_type,
+    const std::string& entity_id) const {
+  GURL url = http_server_.GetURL(kExternalPolicyDataPath);
+  url = net::AppendOrReplaceQueryParameter(url, kExternalPolicyTypeParam,
+                                           policy_type);
+  url = net::AppendOrReplaceQueryParameter(url, kExternalEntityIdParam,
+                                           entity_id);
+  return url;
+}
+
 std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
     const HttpRequest& request) {
   GURL url = request.GetURL();
   DLOG(INFO) << "Request URL: " << url;
+
+  if (url.path() == kExternalPolicyDataPath)
+    return HandleExternalPolicyDataRequest(url);
 
   std::string request_type = KeyValueFromUrl(url, dm_protocol::kParamRequest);
   auto it = request_handlers_.find(request_type);
@@ -151,6 +170,24 @@ std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
   }
 
   return LogStatusAndReturn(url, it->second->HandleRequest(request));
+}
+
+std::unique_ptr<HttpResponse>
+EmbeddedPolicyTestServer::HandleExternalPolicyDataRequest(const GURL& url) {
+  DCHECK_EQ(url.path(), kExternalPolicyDataPath);
+  std::string policy_type = KeyValueFromUrl(url, kExternalPolicyTypeParam);
+  std::string entity_id = KeyValueFromUrl(url, kExternalEntityIdParam);
+  std::string policy_payload =
+      policy_storage_->GetExternalPolicyPayload(policy_type, entity_id);
+  std::unique_ptr<HttpResponse> response;
+  if (policy_payload.empty()) {
+    response = CreateHttpResponse(
+        net::HTTP_NOT_FOUND,
+        "No external policy payload for specified policy type and entity ID");
+  } else {
+    response = CreateHttpResponse(net::HTTP_OK, policy_payload);
+  }
+  return LogStatusAndReturn(url, std::move(response));
 }
 
 }  // namespace policy

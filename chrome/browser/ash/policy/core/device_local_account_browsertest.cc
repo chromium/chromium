@@ -53,8 +53,8 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -502,9 +502,9 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
 
   void UploadDeviceLocalAccountPolicy() {
     BuildDeviceLocalAccountPolicy();
-    ASSERT_TRUE(local_policy_mixin_.server()->UpdatePolicy(
+    policy_test_server_mixin_.UpdatePolicy(
         dm_protocol::kChromePublicAccountPolicyType, kAccountId1,
-        device_local_account_policy_.payload().SerializeAsString()));
+        device_local_account_policy_.payload().SerializeAsString());
   }
 
   void UploadAndInstallDeviceLocalAccountPolicy() {
@@ -545,7 +545,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     DeviceLocalAccountTestHelper::AddPublicSession(&proto, username);
     RefreshDevicePolicy();
-    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
+    policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 
   void SetManagedSessionsEnabled(bool managed_sessions_enabled) {
@@ -562,7 +562,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     device_local_accounts->set_auto_login_id(kAccountId1);
     device_local_accounts->set_auto_login_delay(0);
     RefreshDevicePolicy();
-    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
+    policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 
   void CheckPublicSessionPresent(const AccountId& account_id) {
@@ -583,7 +583,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     LocalStateValueWaiter(prefs::kSystemTimezoneAutomaticDetectionPolicy,
                           base::Value(policy))
         .Wait();
-    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
+    policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 
   base::FilePath GetExtensionCacheDirectoryForAccountID(
@@ -739,7 +739,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   std::unique_ptr<base::RunLoop> local_state_changed_run_loop_;
 
   UserPolicyBuilder device_local_account_policy_;
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
   content::WebContents* contents_;
 
@@ -964,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, AccountListChange) {
   account1->set_type(
       em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
 
-  local_policy_mixin_.UpdateDevicePolicy(policy);
+  policy_test_server_mixin_.UpdateDevicePolicy(policy);
   g_browser_process->policy_service()->RefreshPolicies(base::OnceClosure());
 
   // Make sure the second device-local account disappears.
@@ -2128,13 +2128,13 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
   // Note that the policy for the device-local account will be fetched before
   // the session is started, so the policy for the app must be installed before
   // the first device policy fetch.
-  ASSERT_TRUE(local_policy_mixin_.server()->UpdatePolicyData(
+  policy_test_server_mixin_.UpdateExternalPolicy(
       dm_protocol::kChromeExtensionPolicyType, kShowManagedStorageID,
       "{"
       "  \"string\": {"
       "    \"Value\": \"policy test value one\""
       "  }"
-      "}"));
+      "}");
 
   // Install and refresh the device policy now. This will also fetch the initial
   // user policy for the device-local account now.
@@ -2177,13 +2177,13 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
             *policy_service->GetPolicies(ns).GetValue("string"));
 
   // Now update the policy at the server.
-  ASSERT_TRUE(local_policy_mixin_.server()->UpdatePolicyData(
+  policy_test_server_mixin_.UpdateExternalPolicy(
       dm_protocol::kChromeExtensionPolicyType, kShowManagedStorageID,
       "{"
       "  \"string\": {"
       "    \"Value\": \"policy test value two\""
       "  }"
-      "}"));
+      "}");
 
   // And issue a policy refresh.
   {
@@ -2229,7 +2229,7 @@ class DeviceLocalAccountWarnings : public DeviceLocalAccountTest {
         proto.mutable_managed_guest_session_privacy_warnings();
     managed_sessions_warnings->set_enabled(false);
     RefreshDevicePolicy();
-    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
+    policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 };
 
