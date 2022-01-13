@@ -64,7 +64,9 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
         }
       });
   // TODO(crbug.com/1253318): Ensure this works with multiple screens.
-  target->SetBounds(gfx::Rect(x, y, width, height));
+  if (target) {
+    target->SetBounds(gfx::Rect(x, y, width, height));
+  }
 }
 
 }  // namespace ash
