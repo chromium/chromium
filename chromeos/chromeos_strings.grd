@@ -2551,6 +2551,16 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FIRMWARE_VERSION_TEXT" desc="Label for the update's version.">
         Version <ph name="VERSION">$1<ex>3.0.2</ex></ph>
       </message>
+      <!-- TODO(michaelcheco): Update strings after UX review. -->
+      <message translateable="false" name="IDS_FIRMWARE_RESTARTING_TITLE_TEXT" desc="Label for showing that a device is being restarted.">
+        Restarting <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_RESTARTING_BODY_TEXT" desc="Label for communicating information about what actions a user can take during a device restart.">
+        Your device is restarting, you can minimize window but do not unplug your device. This may take a few minutes.
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
+        Restarting ...
+      </message>
 
       <!-- Quick Answers -->
       <message name="IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">

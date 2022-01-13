@@ -35,11 +35,11 @@
       [[dialogContent.title]]
     </div>
     <div slot="body" class="firmware-dialog-body-font">
-      <div>
+      <div id="updateDialogBody">
         [[dialogContent.body]]
       </div>
     </div>
-    <div slot="footer" hidden$="[[!isUpdateInProgress_(installationProgress.state)]]">
+    <div slot="footer" hidden$="[[!shouldShowProgressBar_(installationProgress.state)]]">
       <label id="progress" class="firmware-dialog-installing-font">
         [[dialogContent.footer]]
       </label>
@@ -49,7 +49,7 @@
       </paper-progress>
     </div>
     <div slot="button-container"
-        hidden$="[[isUpdateInProgress_(installationProgress.state)]]">
+        hidden$="[[!isUpdateDone_(installationProgress.state)]]">
       <cr-button class="action-button"
           on-click="closeDialog_"
           id="updateDoneButton">

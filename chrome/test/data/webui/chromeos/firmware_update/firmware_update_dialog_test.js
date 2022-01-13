@@ -5,6 +5,8 @@
 import {fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
 import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {FirmwareUpdate, UpdateState} from 'chrome://accessory-update/firmware_update_types.js';
+import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -71,5 +73,33 @@ export function firmwareUpdateDialogTest() {
     await clickDoneButton();
     assertFalse(
         !!updateDialogElement.shadowRoot.querySelector('#updateDialog'));
+  });
+
+  test('DeviceRestarting', async () => {
+    // Start update.
+    await setInstallationProgress(1, UpdateState.kUpdating);
+    assertTrue(
+        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+
+    // Dialog remains open while the device is restarting.
+    await setInstallationProgress(70, UpdateState.kRestarting);
+    assertTrue(
+        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+
+    // Correct text is shown.
+    assertEquals(
+        updateDialogElement.shadowRoot.querySelector('#updateDialogTitle')
+            .textContent.trim(),
+        loadTimeData.getStringF(
+            'restartingTitleText',
+            mojoString16ToString(updateDialogElement.update.deviceName)));
+    assertEquals(
+        updateDialogElement.shadowRoot.querySelector('#updateDialogBody')
+            .textContent.trim(),
+        loadTimeData.getString('restartingBodyText'));
+    assertEquals(
+        updateDialogElement.shadowRoot.querySelector('#progress')
+            .textContent.trim(),
+        loadTimeData.getString('restartingFooterText'));
   });
 }

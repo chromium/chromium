@@ -49,7 +49,9 @@ js_library("firmware_update_dialog_test") {
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
