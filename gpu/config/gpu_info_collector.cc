@@ -24,7 +24,6 @@
 #include "skia/buildflags.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 #include "third_party/skia/include/core/SkGraphics.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -143,24 +142,6 @@ int StringContainsName(const std::string& str,
     }
   }
   return -1;
-}
-
-bool SupportsOOPRaster(const gl::GLVersionInfo& gl_info) {
-  const bool use_version_es2 = false;
-  sk_sp<const GrGLInterface> gl_interface(
-      gl::init::CreateGrGLInterface(gl_info, use_version_es2));
-  if (!gl_interface) {
-    return false;
-  }
-
-  sk_sp<GrDirectContext> gr_context =
-      GrDirectContext::MakeGL(std::move(gl_interface));
-  if (gr_context) {
-    // TODO(backer): Stash this GrContext for future use. For now, destroy.
-    return true;
-  }
-
-  return false;
 }
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
@@ -435,10 +416,6 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
         GL_RESET_NOTIFICATION_STRATEGY_ARB,
         reinterpret_cast<GLint*>(&gpu_info->gl_reset_notification_strategy));
   }
-
-  // Unconditionally check oop raster status regardless of preferences
-  // so that finch trials can turn it on.
-  gpu_info->oop_rasterization_supported = SupportsOOPRaster(gl_info);
 
   // TODO(kbr): remove once the destruction of a current context automatically
   // clears the current context.

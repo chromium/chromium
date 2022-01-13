@@ -392,7 +392,6 @@ GpuServiceImpl::GpuServiceImpl(
         (is_native_vulkan && is_native_gl) ? &gpu_info : nullptr);
     if (vulkan_context_provider_) {
       // If Vulkan is supported, then OOP-R is supported.
-      gpu_info_.oop_rasterization_supported = true;
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
           gpu::kGpuFeatureStatusEnabled;
     } else {
@@ -405,7 +404,6 @@ GpuServiceImpl::GpuServiceImpl(
   if (gpu_preferences_.gr_context_type == gpu::GrContextType::kDawn) {
     dawn_context_provider_ = DawnContextProvider::Create();
     if (dawn_context_provider_) {
-      gpu_info_.oop_rasterization_supported = true;
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
           gpu::kGpuFeatureStatusEnabled;
     } else {

@@ -203,11 +203,6 @@ GpuFeatureStatus GetOopRasterizationFeatureStatus(
   if (status != kGpuFeatureStatusEnabled)
     return status;
 
-  // If we can't create a GrContext for whatever reason, don't enable oop
-  // rasterization.
-  if (!gpu_info.oop_rasterization_supported)
-    return kGpuFeatureStatusDisabled;
-
   if (gpu_preferences.disable_oop_rasterization)
     return kGpuFeatureStatusDisabled;
 

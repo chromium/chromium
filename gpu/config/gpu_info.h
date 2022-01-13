@@ -413,8 +413,6 @@ struct GPU_EXPORT GPUInfo {
   ImageDecodeAcceleratorSupportedProfiles
       image_decode_accelerator_supported_profiles;
 
-  bool oop_rasterization_supported;
-
   bool subpixel_font_rendering;
 
   uint32_t visibility_callback_call_count = 0;

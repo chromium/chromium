@@ -406,10 +406,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.image_decode_accelerator_supported_profiles;
   }
 
-  static bool oop_rasterization_supported(const gpu::GPUInfo& input) {
-    return input.oop_rasterization_supported;
-  }
-
   static bool subpixel_font_rendering(const gpu::GPUInfo& input) {
     return input.subpixel_font_rendering;
   }

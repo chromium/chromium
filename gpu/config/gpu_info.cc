@@ -224,7 +224,6 @@ GPUInfo::GPUInfo()
       macos_specific_texture_target(gpu::GetPlatformSpecificTextureTarget()),
 #endif  // OS_MAC
       jpeg_decode_accelerator_supported(false),
-      oop_rasterization_supported(false),
       subpixel_font_rendering(true) {
 }
 
@@ -316,7 +315,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     ImageDecodeAcceleratorSupportedProfiles
         image_decode_accelerator_supported_profiles;
 
-    bool oop_rasterization_supported;
     bool subpixel_font_rendering;
     uint32_t visibility_callback_call_count;
 
@@ -394,7 +392,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
       jpeg_decode_accelerator_supported);
   for (const auto& profile : image_decode_accelerator_supported_profiles)
     EnumerateImageDecodeAcceleratorSupportedProfile(profile, enumerator);
-  enumerator->AddBool("oopRasterizationSupported", oop_rasterization_supported);
   enumerator->AddBool("subpixelFontRendering", subpixel_font_rendering);
   enumerator->AddInt("visibilityCallbackCallCount",
                      visibility_callback_call_count);

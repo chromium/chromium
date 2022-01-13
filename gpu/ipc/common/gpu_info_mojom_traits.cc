@@ -394,7 +394,6 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   out->jpeg_decode_accelerator_supported =
       data.jpeg_decode_accelerator_supported();
 
-  out->oop_rasterization_supported = data.oop_rasterization_supported();
   out->subpixel_font_rendering = data.subpixel_font_rendering();
   out->visibility_callback_call_count = data.visibility_callback_call_count();
 
