@@ -323,7 +323,7 @@
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-femu': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
-      'fuchsia-fyi-x64-asan': 'asan_bot_fuchsia',
+      'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-x64-rel': 'release_bot_fuchsia',
       'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
@@ -1661,10 +1661,6 @@
       'arm64', 'official_optimize_goma',
     ],
 
-    'asan_bot_fuchsia': [
-      'asan', 'release_bot', 'fuchsia',
-    ],
-
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release': [
       'asan', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release_bot',
     ],
@@ -1695,6 +1691,10 @@
 
     'asan_fuzzer_v8_heap_release_bot_hybrid': [
       'asan', 'fuzzer', 'v8_heap', 'release_bot', 'hybrid',
+    ],
+
+    'asan_lsan_bot_fuchsia': [
+      'asan', 'lsan', 'release_bot', 'fuchsia',
     ],
 
     'asan_v8_heap_debug_bot_hybrid': [
