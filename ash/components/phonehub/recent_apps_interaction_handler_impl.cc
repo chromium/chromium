@@ -6,6 +6,7 @@
 
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "base/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -14,6 +15,11 @@ namespace phonehub {
 
 using ::chromeos::multidevice_setup::mojom::Feature;
 using ::chromeos::multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::HostStatus;
+using HostStatusWithDevice =
+    ::chromeos::multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice;
+using FeatureStatesMap =
+    ::chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap;
 
 const size_t kMaxMostRecentApps = 5;
 
@@ -130,9 +136,14 @@ void RecentAppsInteractionHandlerImpl::SaveRecentAppMetadataListToPref() {
 }
 
 void RecentAppsInteractionHandlerImpl::OnFeatureStatesChanged(
-    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
-        feature_states_map) {
+    const FeatureStatesMap& feature_states_map) {
   ComputeAndUpdateUiState();
+}
+
+void RecentAppsInteractionHandlerImpl::OnHostStatusChanged(
+    const HostStatusWithDevice& host_device_with_status) {
+  if (host_device_with_status.first != HostStatus::kHostVerified)
+    ClearRecentAppMetadataListAndPref();
 }
 
 void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
@@ -148,6 +159,11 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
                     : RecentAppsUiState::ITEMS_VISIBLE;
   }
   NotifyRecentAppsViewUiStateUpdated();
+}
+
+void RecentAppsInteractionHandlerImpl::ClearRecentAppMetadataListAndPref() {
+  recent_app_metadata_list_.clear();
+  pref_service_->ClearPref(prefs::kRecentAppsHistory);
 }
 
 }  // namespace phonehub

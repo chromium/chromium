@@ -47,6 +47,9 @@ class RecentAppsInteractionHandlerImpl
   void OnFeatureStatesChanged(
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
+  void OnHostStatusChanged(
+      const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
+          host_device_with_status) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RecentAppsInteractionHandlerTest, RecentAppsUpdated);
@@ -54,6 +57,7 @@ class RecentAppsInteractionHandlerImpl
   void LoadRecentAppMetadataListFromPrefIfNeed();
   void SaveRecentAppMetadataListToPref();
   void ComputeAndUpdateUiState();
+  void ClearRecentAppMetadataListAndPref();
 
   // Whether this class has finished loading |recent_app_metadata_list_| from
   // pref.
