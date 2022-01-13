@@ -623,6 +623,8 @@ void AppsGridView::EndDrag(bool cancel) {
   if (!drag_item_)
     return;
 
+  AppListItem* drag_item = drag_item_;
+
   // Whether an icon was actually dragged (and not just clicked).
   const bool was_dragging = IsDragging();
 
@@ -630,13 +632,9 @@ void AppsGridView::EndDrag(bool cancel) {
   const bool landed_in_drag_and_drop_host =
       forward_events_to_drag_and_drop_host_;
 
-  // The drag ended by reparenting in a folder.
-  bool reparented_into_folder = false;
-
-  // This is the folder view to drop an item into. Cache the |drag_view_|'s item
-  // and its bounds for later use in folder dropping animation.
-  AppListItemView* folder_item_view = nullptr;
-  AppListItem* drag_item = drag_item_;
+  // The ID of the folder to which the item gets dropped. It will get set when
+  // the item is moved to a folder.
+  std::string target_folder_id;
 
   if (forward_events_to_drag_and_drop_host_) {
     DCHECK(!IsDraggingForReparentInRootLevelGridView());
@@ -676,9 +674,13 @@ void AppsGridView::EndDrag(bool cancel) {
       UpdateDropTargetRegion();
       if (drop_target_region_ == ON_ITEM && DraggedItemCanEnterFolder() &&
           DropTargetIsValidFolder()) {
-        MaybeCreateFolderDroppingAccessibilityEvent();
-        folder_item_view = MoveItemToFolder(drag_item_, drop_target_);
-        reparented_into_folder = true;
+        if (MoveItemToFolder(drag_item_, drop_target_, kMoveByDragIntoFolder,
+                             &target_folder_id)) {
+          MaybeCreateFolderDroppingAccessibilityEvent();
+          // If move to folder created a folder, layout the grid to ensure the
+          // created folder's bounds are correct.
+          Layout();
+        }
       } else if (IsValidReorderTargetIndex(drop_target_)) {
         // Ensure reorder event has already been announced by the end of drag.
         MaybeCreateDragReorderAccessibilityEvent();
@@ -697,11 +699,6 @@ void AppsGridView::EndDrag(bool cancel) {
     gfx::Rect bounds = view_model_.ideal_bounds(i);
     drag_view_->SetBoundsRect(bounds);
     drag_view_hider_.reset();
-  }
-
-  if (folder_item_view) {
-    folder_icon_item_hider_ = std::make_unique<FolderIconItemHider>(
-        static_cast<AppListFolderItem*>(folder_item_view->item()), drag_item);
   }
 
   SetAsFolderDroppingTarget(drop_target_, false);
@@ -739,8 +736,15 @@ void AppsGridView::EndDrag(bool cancel) {
   if (was_dragging)
     SetFocusAfterEndDrag();  // Maybe focus the search box.
 
-  AnimateDragIconToTargetPosition(reparented_into_folder, drag_item,
-                                  folder_item_view);
+  AnimateDragIconToTargetPosition(drag_item, target_folder_id);
+}
+
+AppListItemView* AppsGridView::GetItemViewForItem(const std::string& item_id) {
+  const AppListItem* const item = item_list_->FindItem(item_id);
+  if (!item)
+    return nullptr;
+
+  return GetItemViewAt(GetModelIndexOfItem(item));
 }
 
 AppListItemView* AppsGridView::GetItemViewAt(int index) const {
@@ -1327,18 +1331,21 @@ bool AppsGridView::DragPointIsOverItem(const gfx::Point& point) {
 }
 
 void AppsGridView::AnimateDragIconToTargetPosition(
-    bool dropping_into_folder,
     AppListItem* drag_item,
-    AppListItemView* target_folder_view) {
+    const std::string& target_folder_id) {
   // If drag icon proxy had not been created, just reshow the drag view.
   if (!drag_icon_proxy_) {
     OnDragIconDropDone();
     return;
   }
 
+  AppListItemView* target_folder_view =
+      !target_folder_id.empty() ? GetItemViewForItem(target_folder_id)
+                                : nullptr;
+
   // Calculate target item bounds.
   gfx::Rect drag_icon_drop_bounds;
-  if (!dropping_into_folder) {
+  if (target_folder_id.empty()) {
     // Find the view for drag item, and use its ideal bounds to calculate target
     // drop bounds.
     for (int i = 0; i < view_model_.view_size(); ++i) {
@@ -1367,6 +1374,12 @@ void AppsGridView::AnimateDragIconToTargetPosition(
   if (drag_icon_drop_bounds.IsEmpty()) {
     OnDragIconDropDone();
     return;
+  }
+
+  if (target_folder_view) {
+    DCHECK(target_folder_view->is_folder());
+    folder_icon_item_hider_ = std::make_unique<FolderIconItemHider>(
+        static_cast<AppListFolderItem*>(target_folder_view->item()), drag_item);
   }
 
   drag_icon_drop_bounds =
@@ -1570,14 +1583,16 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
   const std::u16string target_view_title = target_view->title()->GetText();
   const bool target_view_is_folder = target_view->is_folder();
 
-  AppListItemView* folder_item =
-      MoveItemToFolder(selected_view_->item(), target_index);
-  a11y_announcer_->AnnounceKeyboardFoldering(
-      moving_view_title, target_view_title, target_view_is_folder);
-  Layout();
-  DCHECK(folder_item->is_folder());
-  folder_item->RequestFocus();
-  RecordAppMovingTypeMetrics(kMoveByKeyboardIntoFolder);
+  std::string folder_id;
+  if (MoveItemToFolder(selected_view_->item(), target_index,
+                       kMoveByKeyboardIntoFolder, &folder_id)) {
+    a11y_announcer_->AnnounceKeyboardFoldering(
+        moving_view_title, target_view_title, target_view_is_folder);
+    Layout();
+    AppListItemView* folder_view = GetItemViewForItem(folder_id);
+    if (folder_view)
+      folder_view->RequestFocus();
+  }
 }
 
 bool AppsGridView::CanMoveSelectedToTargetForKeyboardFoldering(
@@ -1697,27 +1712,34 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
 
   drag_icon_proxy_ = std::move(drag_icon_proxy);
 
+  AppListItem* drag_item = drag_item_;
+
   DCHECK(IsDraggingForReparentInRootLevelGridView());
   bool cancel_reparent = cancel_drag || drop_target_region_ == NO_TARGET;
 
-  // This is the folder view to drop an item into. Cache the |drag_view_|'s item
-  // and its bounds for later use in folder dropping animation.
-  AppListItemView* folder_item_view =
-      cancel_reparent ? original_parent_item_view : nullptr;
-  AppListItem* drag_item = drag_item_;
+  // The ID of the folder to which the item gets dropped. It will get set when
+  // the item is moved to a folder. It will be set the to original folder ID if
+  // reparent is canceled.
+  std::string target_folder_id;
+
+  // Cache the original item folder id, as model updates may destroy the
+  // original folder item.
+  const std::string original_folder_id =
+      original_parent_item_view->item()->id();
 
   if (!events_forwarded_to_drag_drop_host && !cancel_reparent) {
     UpdateDropTargetRegion();
     if (drop_target_region_ == ON_ITEM && DropTargetIsValidFolder() &&
         DraggedItemCanEnterFolder()) {
-      cancel_reparent = !ReparentItemToAnotherFolder(drag_item, drop_target_);
-      // Announce folder dropping event before end of drag of reparented item.
-      MaybeCreateFolderDroppingAccessibilityEvent();
-      if (!cancel_reparent) {
-        folder_item_view =
-            GetViewDisplayedAtSlotOnCurrentPage(drop_target_.slot);
+      if (MoveItemToFolder(drag_item, drop_target_, kMoveIntoAnotherFolder,
+                           &target_folder_id)) {
+        // Announce folder dropping event before end of drag of reparented item.
+        MaybeCreateFolderDroppingAccessibilityEvent();
+        // If move to folder created a folder, layout the grid to ensure the
+        // created folder's bounds are correct.
+        Layout();
       } else {
-        folder_item_view = original_parent_item_view;
+        cancel_reparent = true;
       }
     } else if (drop_target_region_ != NO_TARGET &&
                IsValidReorderTargetIndex(drop_target_)) {
@@ -1731,13 +1753,10 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
     }
   }
 
-  SetAsFolderDroppingTarget(drop_target_, false);
+  if (cancel_reparent)
+    target_folder_id = original_folder_id;
 
-  // Hide the drag item icon from the target folder icon.
-  if (folder_item_view) {
-    folder_icon_item_hider_ = std::make_unique<FolderIconItemHider>(
-        static_cast<AppListFolderItem*>(folder_item_view->item()), drag_item);
-  }
+  SetAsFolderDroppingTarget(drop_target_, false);
 
   UpdatePaging();
   ClearDragState();
@@ -1755,9 +1774,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   BeginHideCurrentGhostImageView();
   SetFocusAfterEndDrag();  // Maybe focus the search box.
 
-  AnimateDragIconToTargetPosition(
-      /*dropping_into_folder=*/cancel_reparent || folder_item_view, drag_item,
-      folder_item_view);
+  AnimateDragIconToTargetPosition(drag_item, target_folder_id);
 }
 
 void AppsGridView::EndDragForReparentInHiddenFolderGridView() {
@@ -1969,43 +1986,35 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
   }
 }
 
-AppListItemView* AppsGridView::MoveItemToFolder(AppListItem* item,
-                                                const GridIndex& target) {
-  const std::string& source_item_id = item->id();
+bool AppsGridView::MoveItemToFolder(AppListItem* item,
+                                    const GridIndex& target,
+                                    AppListAppMovingType move_type,
+                                    std::string* folder_id) {
+  const std::string source_item_id = item->id();
+  const std::string source_folder_id = item->folder_id();
+
   AppListItemView* target_view =
       GetViewDisplayedAtSlotOnCurrentPage(target.slot);
   DCHECK(target_view);
-  const std::string& target_view_item_id = target_view->item()->id();
+  const std::string target_view_item_id = target_view->item()->id();
 
-  // Check that the item is not being dropped onto itself; this should not
-  // happen, but it can if something allows multiple views to share an
-  // item (e.g., if a folder drop does not clean up properly).
-  DCHECK_NE(source_item_id, target_view_item_id);
-
-  const bool is_dragged_view = drag_item_ == item;
-  // Make change to data model.
-  std::string folder_item_id;
+  // An app is being reparented to its original folder. Just cancel the
+  // reparent.
+  if (target_view_item_id == source_folder_id)
+    return false;
 
   {
     ScopedModelUpdate update(this);
-    folder_item_id = model_->MergeItems(target_view_item_id, source_item_id);
+    *folder_id = model_->MergeItems(target_view_item_id, source_item_id);
   }
 
-  if (folder_item_id.empty()) {
+  if (folder_id->empty()) {
     LOG(ERROR) << "Unable to merge into item id: " << target_view_item_id;
-    return nullptr;
+    return false;
   }
 
-  const AppListItem* const folder_item = item_list_->FindItem(folder_item_id);
-  if (!folder_item) {
-    LOG(ERROR) << "Unable to find target folder item " << folder_item_id;
-    return nullptr;
-  }
-
-  if (is_dragged_view)
-    RecordAppMovingTypeMetrics(kMoveByDragIntoFolder);
-
-  return GetItemViewAt(GetModelIndexOfItem(folder_item));
+  RecordAppMovingTypeMetrics(move_type);
+  return true;
 }
 
 void AppsGridView::ReparentItemForReorder(AppListItem* item,
@@ -2036,39 +2045,6 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
     if (moving_to_new_page)
       EnsurePageBreakBeforeItem(item_id);
   }
-}
-
-bool AppsGridView::ReparentItemToAnotherFolder(AppListItem* item,
-                                               const GridIndex& target) {
-  DCHECK(IsDraggingForReparentInRootLevelGridView());
-
-  AppListItemView* target_view =
-      GetViewDisplayedAtSlotOnCurrentPage(target.slot);
-  if (!target_view)
-    return false;
-
-  CHECK(item->IsInFolder());
-  const std::string source_folder_id = item->folder_id();
-
-  AppListItem* target_item = target_view->item();
-
-  // An app is being reparented to its original folder. Just cancel the
-  // reparent.
-  if (target_item->id() == item->folder_id())
-    return false;
-
-  {
-    ScopedModelUpdate update(this);
-    const std::string target_id_after_merge =
-        model_->MergeItems(target_item->id(), item->id());
-    if (target_id_after_merge.empty()) {
-      LOG(ERROR) << "Unable to reparent to item id: " << target_item->id();
-      return false;
-    }
-  }
-
-  RecordAppMovingTypeMetrics(kMoveIntoAnotherFolder);
-  return true;
 }
 
 void AppsGridView::CancelContextMenusOnCurrentPage() {

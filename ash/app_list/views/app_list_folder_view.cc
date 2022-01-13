@@ -1114,14 +1114,18 @@ void AppListFolderView::DispatchEndDragEventForReparent(
     bool cancel_drag,
     std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
   folder_item_->NotifyOfDraggedItem(nullptr);
-  root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
-      folder_item_view_, events_forwarded_to_drag_drop_host, cancel_drag,
-      std::move(drag_icon_proxy));
   folder_controller_->ReparentDragEnded();
+
+  // Cache `folder_item_view_`, as it will get reset in `HideViewImmediately()`.
+  AppListItemView* const folder_item_view = folder_item_view_;
 
   // The view was not hidden in order to keeping receiving mouse events. Hide it
   // now as the reparenting ended.
   HideViewImmediately();
+
+  root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
+      folder_item_view, events_forwarded_to_drag_drop_host, cancel_drag,
+      std::move(drag_icon_proxy));
 }
 
 void AppListFolderView::HideViewImmediately() {
@@ -1164,6 +1168,8 @@ void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
   folder_controller_->ReparentFolderItemTransit(folder_item_);
   root_apps_grid_view_->HandleKeyboardReparent(reparented_view,
                                                folder_item_view_, key_code);
+  folder_controller_->ReparentDragEnded();
+  HideViewImmediately();
 }
 
 bool AppListFolderView::IsPointWithinPageFlipBuffer(

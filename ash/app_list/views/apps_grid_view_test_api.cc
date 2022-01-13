@@ -154,5 +154,11 @@ gfx::Rect AppsGridViewTestApi::GetDragIconBoundsInAppsGridView() {
   return gfx::Rect(icon_origin, icon_bounds_in_screen.size());
 }
 
+ui::Layer* AppsGridViewTestApi::GetDragIconLayer() {
+  if (!view_->drag_icon_proxy_)
+    return nullptr;
+  return view_->drag_icon_proxy_->GetImageLayerForTesting();
+}
+
 }  // namespace test
 }  // namespace ash

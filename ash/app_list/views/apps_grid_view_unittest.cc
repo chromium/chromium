@@ -1547,6 +1547,27 @@ TEST_P(AppsGridViewDragTest, MouseDragSecondItemIntoFolder) {
   EXPECT_EQ(folder_item->id(), item_2->folder_id());
 }
 
+TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToFolder) {
+  model_->CreateAndPopulateFolderWithApps(2);
+  model_->PopulateApps(1);
+  UpdateLayout();
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
+                                     apps_grid_view_);
+
+  // Dragging item_2 to the folder adds Item_2 to the folder.
+  gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+  EndDrag(apps_grid_view_, false /*cancel*/);
+
+  ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
+  ASSERT_TRUE(drag_icon_layer);
+  EXPECT_TRUE(drag_icon_layer->GetAnimator()->is_animating());
+}
+
 TEST_P(AppsGridViewClamshellTest, CheckFolderWithMultiplePagesContents) {
   // Creates a folder item.
   const size_t kTotalItems = kMaxItemsPerFolderPage;
@@ -1611,6 +1632,132 @@ TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
   EXPECT_EQ(kTotalItems - 1, folder_item->ChildItemCount());
 }
 
+TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragOutOfFolder) {
+  model_->CreateAndPopulateFolderWithApps(5);
+  test_api_->Update();
+  test_api_->PressItemAt(0);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Drag the first folder child out of the folder.
+  AppListItemView* drag_view = InitiateDragForItemAtCurrentPageAt(
+      AppsGridView::MOUSE, 0, 0, folder_apps_grid_view());
+  gfx::Point empty_space =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(0, drag_view->height()
+                    /*padding to completely exit folder view*/);
+  UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
+             10 /*steps*/);
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Calculate the coordinates for the drop point. Note that we we are dropping
+  // into the app list view not the folder view. The (0,1) spot is empty.
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             5 /*steps*/);
+  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+
+  ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
+  ASSERT_TRUE(drag_icon_layer);
+  EXPECT_TRUE(drag_icon_layer->GetAnimator()->is_animating());
+}
+
+TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToAnotherFolder) {
+  model_->CreateAndPopulateFolderWithApps(5);
+  model_->CreateAndPopulateFolderWithApps(5);
+  test_api_->Update();
+  test_api_->PressItemAt(0);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Drag the first folder child out of the folder.
+  AppListItemView* drag_view = InitiateDragForItemAtCurrentPageAt(
+      AppsGridView::MOUSE, 0, 0, folder_apps_grid_view());
+  gfx::Point empty_space =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(0, drag_view->height()
+                    /*padding to completely exit folder view*/);
+  UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
+             10 /*steps*/);
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Calculate the coordinates for the drop point.
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             5 /*steps*/);
+  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+
+  ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
+  ASSERT_TRUE(drag_icon_layer);
+  EXPECT_TRUE(drag_icon_layer->GetAnimator()->is_animating());
+}
+
+TEST_P(AppsGridViewDragTest,
+       DragIconAnimatesAfterDragThatDeletesOriginalFolder) {
+  model_->PopulateApps(2);
+  model_->CreateSingleItemFolder("folder_id", "item_id");
+  test_api_->Update();
+  test_api_->PressItemAt(2);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Drag the only folder child out of the folder.
+  AppListItemView* drag_view = InitiateDragForItemAtCurrentPageAt(
+      AppsGridView::MOUSE, 0, 0, folder_apps_grid_view());
+  gfx::Point empty_space =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(0, drag_view->height()
+                    /*padding to completely exit folder view*/);
+  UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
+             10 /*steps*/);
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Calculate the coordinates for the drop point. Note that we we are dropping
+  // into the app list view not the folder view. The (0,3) spot is empty.
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 3).CenterPoint();
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             5 /*steps*/);
+  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+
+  ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
+  ASSERT_TRUE(drag_icon_layer);
+  EXPECT_TRUE(drag_icon_layer->GetAnimator()->is_animating());
+}
+
+TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterReorderDrag) {
+  model_->PopulateApps(3);
+  test_api_->Update();
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Drag the first item to an empty slot in the grid.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+                                     apps_grid_view_);
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 3).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, drop_point, apps_grid_view_, 5 /*steps*/);
+  EndDrag(apps_grid_view_, false /*cancel*/);
+
+  ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
+  ASSERT_TRUE(drag_icon_layer);
+  EXPECT_TRUE(drag_icon_layer->GetAnimator()->is_animating());
+}
+
 TEST_F(AppsGridViewNonBubbleTest, SwitchPageFolderItem) {
   // ProductivityLauncher does not use paged folders.
   ASSERT_FALSE(features::IsProductivityLauncherEnabled());
@@ -1640,7 +1787,6 @@ TEST_P(AppsGridViewDragNonBubbleTest, MouseDragItemOutOfFolderSecondPage) {
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
   test_api_->PressItemAt(0);
-  AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
   // Switch to second page.
   AnimateFolderViewPageFlip(1);
   // Drag the first folder child on the second page out of the folder.

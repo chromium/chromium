@@ -13,6 +13,10 @@ namespace gfx {
 class Rect;
 }
 
+namespace ui {
+class Layer;
+}
+
 namespace views {
 class View;
 }
@@ -74,6 +78,9 @@ class AppsGridViewTestApi {
   // Returns the drag icon proxy view's bounds in the apps grid coordinates.
   // Returns empty bounds if the icon proxy has not been created.
   gfx::Rect GetDragIconBoundsInAppsGridView();
+
+  // Returns the layer used by the app drag icon proxy.
+  ui::Layer* GetDragIconLayer();
 
   AppListItemList* GetItemList() { return view_->item_list_; }
 

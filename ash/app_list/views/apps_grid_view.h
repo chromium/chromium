@@ -204,6 +204,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns true if a touch or click lies between two occupied tiles.
   bool EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event);
 
+  // Returns the item view of the item with the provided item ID.
+  // Returns nullptr if there is no such item.
+  AppListItemView* GetItemViewForItem(const std::string& item_id);
+
   // Returns the item view of the item at |index|, or nullptr if there is no
   // view at |index|.
   AppListItemView* GetItemViewAt(int index) const;
@@ -610,21 +614,19 @@ class ASH_EXPORT AppsGridView : public views::View,
   void MoveItemInModel(AppListItem* item, const GridIndex& target);
 
   // Updates `model_` to move `item` into a folder containing item located at
-  // `target` slot. Returns the preexisting or created folder view as a result
-  // of the move, or nullptr if the move fails.
-  AppListItemView* MoveItemToFolder(AppListItem* item, const GridIndex& target);
+  // `target` slot. Returns whether the move operation succeeded.
+  // On success, `folder_id` will be set to the ID of the folder to which the
+  // item was moved. This may be a folder that was created by the move, or a
+  // preexisting folder.
+  bool MoveItemToFolder(AppListItem* item,
+                        const GridIndex& target,
+                        AppListAppMovingType move_type,
+                        std::string* folder_id);
 
   // Updates data model for re-parenting a folder item to a new position in top
   // level item list. The view model is will get updated in response to the data
   // model changes.
   void ReparentItemForReorder(AppListItem* item, const GridIndex& target);
-
-  // Updates both data model for re-parenting a folder item
-  // to anther folder target. The view model will get updated in response to the
-  // data model changes.
-  // Returns whether the reparent succeeded.
-  bool ReparentItemToAnotherFolder(AppListItem* item_view,
-                                   const GridIndex& target);
 
   // Removes the AppListItemView at |index| in |view_model_|, removes it from
   // view structure as well and deletes it.
@@ -651,14 +653,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Animates `drag_icon_proxy_` to drop it into appropriate target bounds in
   // the apps grid when the item drag ends. Expects `drag_icon_proxy_` to be
   // set.
-  // `dropping_into_folder` - Whether the drag item icon should be dropped
-  // into a folder view.
   // `drag_item` - The dragged item.
-  // `target_folder_view` - If the item needs to be dropped into a folder, the
-  // target folder view.
-  void AnimateDragIconToTargetPosition(bool dropping_into_folder,
-                                       AppListItem* drag_item,
-                                       AppListItemView* target_folder_view);
+  // `target_folder_id` - If the item needs to be dropped into a folder, the
+  // target folder ID.
+  void AnimateDragIconToTargetPosition(AppListItem* drag_item,
+                                       const std::string& target_folder_id);
 
   // Called when the `drag_icon_proxy_` animation started by
   // `AnimateDragIconToTargetPosition()` finishes. It resets `drag_icon_proxy_`
