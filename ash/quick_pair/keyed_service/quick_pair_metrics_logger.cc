@@ -7,6 +7,7 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
+#include "ash/quick_pair/common/logging.h"
 #include "base/containers/contains.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
@@ -28,6 +29,8 @@ QuickPairMetricsLogger::QuickPairMetricsLogger(
       retroactive_pairing_detector);
   pairer_broker_observation_.Observe(pairer_broker);
   ui_broker_observation_.Observe(ui_broker);
+
+  QP_LOG(ERROR) << feature_usage_metrics_logger_->IsAccessible().value();
 }
 
 QuickPairMetricsLogger::~QuickPairMetricsLogger() = default;

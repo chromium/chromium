@@ -52,6 +52,11 @@ class MediatorTest : public testing::Test {
   void SetUp() override {
     adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    ON_CALL(*adapter_, IsPresent()).WillByDefault(testing::Return(true));
+    ON_CALL(*adapter_, GetLowEnergyScanSessionHardwareOffloadingStatus())
+        .WillByDefault(testing::Return(
+            device::BluetoothAdapter::
+                LowEnergyScanSessionHardwareOffloadingStatus::kSupported));
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
 
     std::unique_ptr<FeatureStatusTracker> tracker =

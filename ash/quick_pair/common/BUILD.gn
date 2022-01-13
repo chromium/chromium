@@ -86,6 +86,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/components/feature_usage",
     "//components/prefs:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
 }

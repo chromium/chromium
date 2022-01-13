@@ -107,6 +107,14 @@ class FakeMetricBluetoothAdapter
                                                         new_paired_status);
   }
 
+  bool IsPresent() const override { return true; }
+
+  device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override {
+    return device::BluetoothAdapter::
+        LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
+  }
+
  private:
   ~FakeMetricBluetoothAdapter() = default;
 };
