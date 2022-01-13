@@ -408,7 +408,7 @@ void LockScreenItemStorage::OnItemRegistered(std::unique_ptr<DataItem> item,
                                                     std::move(item));
 
   {
-    DictionaryPrefUpdateDeprecated update(local_state_, kLockScreenDataPrefKey);
+    DictionaryPrefUpdate update(local_state_, kLockScreenDataPrefKey);
     update->SetPath({user_id_, extension_id, kExtensionItemCountPrefKey},
                     base::Value(static_cast<int>(
                         data_item_cache_[extension_id].data_items.size())));
@@ -468,7 +468,7 @@ void LockScreenItemStorage::OnItemDeleted(const std::string& extension_id,
 
   data_item_cache_[extension_id].data_items.erase(item_id);
   {
-    DictionaryPrefUpdateDeprecated update(local_state_, kLockScreenDataPrefKey);
+    DictionaryPrefUpdate update(local_state_, kLockScreenDataPrefKey);
     update->SetPath({user_id_, extension_id, kExtensionItemCountPrefKey},
                     base::Value(static_cast<int>(
                         data_item_cache_[extension_id].data_items.size())));
@@ -562,7 +562,7 @@ void LockScreenItemStorage::OnGotExtensionItems(
   }
 
   {
-    DictionaryPrefUpdateDeprecated update(local_state_, kLockScreenDataPrefKey);
+    DictionaryPrefUpdate update(local_state_, kLockScreenDataPrefKey);
     base::Value info(base::Value::Type::DICTIONARY);
     info.SetKey(kExtensionItemCountPrefKey,
                 base::Value(static_cast<int>(data->second.data_items.size())));
@@ -670,7 +670,7 @@ void LockScreenItemStorage::ClearExtensionData(const std::string& id) {
 void LockScreenItemStorage::RemoveExtensionFromLocalState(
     const std::string& id) {
   {
-    DictionaryPrefUpdateDeprecated update(local_state_, kLockScreenDataPrefKey);
+    DictionaryPrefUpdate update(local_state_, kLockScreenDataPrefKey);
     update->RemovePath(base::StrCat({user_id_, ".", id}));
   }
 

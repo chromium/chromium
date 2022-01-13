@@ -606,8 +606,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
       ASSERT_TRUE(state.storage_version == 1 || state.storage_version == 2)
           << "Failed to init local state " << state.extension_id;
 
-      DictionaryPrefUpdateDeprecated update(&local_state_,
-                                            "lockScreenDataItems");
+      DictionaryPrefUpdate update(&local_state_, "lockScreenDataItems");
       if (state.storage_version == 1) {
         update->SetPath({kTestUserIdHash, state.extension_id},
                         base::Value(state.item_count));
