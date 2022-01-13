@@ -14,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -45,10 +44,10 @@
 #include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 
 using sync_preferences::TestingPrefServiceSyncable;
 
@@ -923,7 +922,7 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
 TEST_P(WebAppPolicyManagerTest, DisableWebApps) {
   policy_manager().Start();
   base::RunLoop().RunUntilIdle();
@@ -955,7 +954,7 @@ TEST_P(WebAppPolicyManagerTest, DisableWebApps) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 
 TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   if (ShouldSkipPWASpecificTest())

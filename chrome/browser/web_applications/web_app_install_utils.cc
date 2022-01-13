@@ -46,7 +46,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #endif
 
@@ -744,7 +744,7 @@ void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
   webapps::InstallableManager::CreateForWebContents(web_contents);
   SecurityStateTabHelper::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
 #endif
 }
@@ -753,7 +753,7 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
                               Source::Type source_uninstalling,
                               OsIntegrationManager& os_integration_manager,
                               InstallOsHooksCallback callback) {
-#if BUILDFLAG(IS_WIN)
+#if defined(OS_WIN)
   // |web_app| object will remove target |source_uninstalling| type.
   // If the remaining source types and they happen to be user
   // uninstallable, then it should register OsSettings.
@@ -777,7 +777,7 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
 void MaybeUnregisterOsUninstall(const WebApp* web_app,
                                 Source::Type source_installing,
                                 OsIntegrationManager& os_integration_manager) {
-#if BUILDFLAG(IS_WIN)
+#if defined(OS_WIN)
   // |web_app| object will add target |source_installing| type.
   // If the old source types are user installable, but new type is not, then
   // it should unregister OsSettings.

@@ -161,7 +161,7 @@ std::string GetProfileCategoryForLogging(Profile* profile) {
 }
 
 bool IsChromeOsDataMandatory() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   return true;
 #else
   return false;
@@ -304,7 +304,7 @@ void PersistFileHandlersUserChoice(Profile* profile,
   if (allowed) {
     std::move(update_finished_callback).Run();
   } else {
-#if BUILDFLAG(IS_MAC)
+#if defined(OS_MAC)
     // On Mac, the file handlers are encoded in the app shortcut. First
     // unregister the file handlers (verifying that it finishes synchronously),
     // then update the shortcut.

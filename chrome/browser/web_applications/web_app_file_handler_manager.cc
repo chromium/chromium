@@ -83,7 +83,7 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
     return;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if defined(OS_MAC)
   // File handler registration is done via shortcuts creation on MacOS,
   // WebAppShortcutManager::BuildShortcutInfoForWebApp collects file handler
   // information to shortcut_info->file_handler_extensions, then used by MacOS
@@ -124,7 +124,7 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
   // |DeleteSharedAppShims| is called in
   // |OsIntegrationManager::UninstallOsHooks|, file handlers are also
   // unregistered.
-#if BUILDFLAG(IS_MAC)
+#if defined(OS_MAC)
   // When updating file handlers, |callback| here triggers the registering of
   // the new file handlers. It is therefore important that |callback| not be
   // dropped on the floor.

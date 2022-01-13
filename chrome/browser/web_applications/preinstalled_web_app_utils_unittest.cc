@@ -180,7 +180,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+#if defined(OS_WIN)
 #define MAYBE_OfflineManifestValid DISABLED_OfflineManifestValid
 #else
 #define MAYBE_OfflineManifestValid OfflineManifestValid
@@ -292,7 +292,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestScope) {
 }
 
 // TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+#if defined(OS_WIN)
 #define MAYBE_OfflineManifestDisplay DISABLED_OfflineManifestDisplay
 #else
 #define MAYBE_OfflineManifestDisplay OfflineManifestDisplay

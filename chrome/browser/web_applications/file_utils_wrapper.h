@@ -13,9 +13,9 @@
 
 // Include this to avoid conflicts with CreateDirectory Win macro.
 // It converts CreateDirectory into CreateDirectoryW.
-#if BUILDFLAG(IS_WIN)
+#if defined(OS_WIN)
 #include "base/win/windows_types.h"
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // defined(OS_WIN)
 
 namespace base {
 class FilePath;

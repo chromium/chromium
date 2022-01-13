@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
@@ -36,12 +35,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 
 namespace web_app {
 
@@ -148,14 +147,14 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
 }
 
 void WebAppPolicyManager::OnDisableListPolicyChanged() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   PopulateDisabledWebAppsIdsLists();
   std::vector<web_app::AppId> app_ids = app_registrar_->GetAppIds();
   for (const auto& id : app_ids) {
     const bool is_disabled = base::Contains(disabled_web_apps_, id);
     sync_bridge_->SetAppIsDisabled(id, is_disabled);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 const std::set<SystemAppType>& WebAppPolicyManager::GetDisabledSystemWebApps()
@@ -172,7 +171,7 @@ bool WebAppPolicyManager::IsWebAppInDisabledList(const AppId& app_id) const {
 }
 
 bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state)  // Sometimes it's not available in tests.
     return false;
@@ -181,7 +180,7 @@ bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
       local_state->GetString(policy::policy_prefs::kSystemFeaturesDisableMode);
   if (disabled_mode == policy::kHiddenDisableMode)
     return true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
   return false;
 }
 
@@ -403,7 +402,7 @@ void WebAppPolicyManager::SetRefreshPolicySettingsCompletedCallbackForTesting(
 void WebAppPolicyManager::MaybeOverrideManifest(
     content::RenderFrameHost* frame_host,
     blink::mojom::ManifestPtr& manifest) {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   if (!manifest)
     return;
   const webapps::PreRedirectionURLObserver* const pre_redirect =
@@ -495,7 +494,7 @@ void WebAppPolicyManager::CustomManifestValues::SetIcon(
 }
 
 void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state) {  // Sometimes it's not available in tests.
     return;
@@ -513,19 +512,19 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
   // Make sure we get the right disabled mode in case it was changed before
   // policy registration.
   OnDisableModePolicyChanged();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 void WebAppPolicyManager::OnDisableModePolicyChanged() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   sync_bridge_->UpdateAppsDisableMode();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   disabled_system_apps_.clear();
   disabled_web_apps_.clear();
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state)  // Sometimes it's not available in tests.
     return;
@@ -562,7 +561,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       disabled_web_apps_.insert(app_id.value());
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 }  // namespace web_app

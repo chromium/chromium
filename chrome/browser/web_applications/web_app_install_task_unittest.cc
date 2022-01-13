@@ -21,7 +21,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
@@ -1895,12 +1894,12 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
   EXPECT_EQ(app_id, install_result.app_id);
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   // OS integration is always enabled in ChromeOS
   EXPECT_EQ(1u, fake_os_integration_manager().num_create_file_handlers_calls());
 #else
   EXPECT_EQ(0u, fake_os_integration_manager().num_create_file_handlers_calls());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 TEST_F(WebAppInstallTaskTestWithFileHandlers,
@@ -1940,12 +1939,12 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
       CreateManifest(url), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
   EXPECT_EQ(app_id, install_result.app_id);
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   // OS integration is always enabled in ChromeOS
   EXPECT_EQ(1u, fake_os_integration_manager().num_create_file_handlers_calls());
 #else
   EXPECT_EQ(0u, fake_os_integration_manager().num_create_file_handlers_calls());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 
   ResetInstallTask();
 
@@ -1959,12 +1958,12 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
       UpdateWebAppFromInfo(app_id, std::move(app_info));
   EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, update_result.code);
   EXPECT_EQ(app_id, update_result.app_id);
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   // OS integration is always enabled in ChromeOS
   EXPECT_EQ(1u, fake_os_integration_manager().num_update_file_handlers_calls());
 #else
   EXPECT_EQ(0u, fake_os_integration_manager().num_update_file_handlers_calls());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 }  // namespace web_app
