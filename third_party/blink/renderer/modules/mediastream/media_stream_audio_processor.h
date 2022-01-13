@@ -58,13 +58,12 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   MediaStreamAudioProcessor(
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       const media::AudioProcessingSettings& settings,
+      const media::AudioParameters& capture_data_source_params,
       scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source);
 
   MediaStreamAudioProcessor(const MediaStreamAudioProcessor&) = delete;
   MediaStreamAudioProcessor& operator=(const MediaStreamAudioProcessor&) =
       delete;
-
-  void OnCaptureFormatChanged(const media::AudioParameters& input_format);
 
   // Processes and delivers capture audio,
   // See media::AudioProcessor::ProcessCapturedAudio for API details.

@@ -190,12 +190,13 @@ class AudioProcessorCaptureFifo {
 AudioProcessor::AudioProcessor(
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
     LogCallback log_callback,
-    const AudioProcessingSettings& settings)
+    const AudioProcessingSettings& settings,
+    const media::AudioParameters& input_format)
     : settings_(settings),
       webrtc_audio_processing_(
           media::CreateWebRtcAudioProcessingModule(settings)),
       log_callback_(std::move(log_callback)),
-      playout_delay_(base::TimeDelta()),
+      input_format_(input_format),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       audio_delay_stats_reporter_(kBuffersPerSecond) {
@@ -205,17 +206,12 @@ AudioProcessor::AudioProcessor(
   SendLogMessage(base::StringPrintf(
       "%s({multi_channel_capture_processing=%s})", __func__,
       settings_.multi_channel_capture_processing ? "true" : "false"));
+  InitializeCaptureFifo(input_format);
 }
 
 AudioProcessor::~AudioProcessor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   OnStopDump();
-}
-
-void AudioProcessor::OnCaptureFormatChanged(
-    const media::AudioParameters& input_format) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  InitializeCaptureFifo(input_format);
 }
 
 void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
@@ -372,8 +368,6 @@ void AudioProcessor::InitializeCaptureFifo(
   SendLogMessage(
       base::StringPrintf("%s({input_format=[%s]})", __func__,
                          input_format.AsHumanReadableString().c_str()));
-
-  input_format_ = input_format;
 
   // TODO(crbug/881275): For now, we assume fixed parameters for the output when
   // audio processing is enabled, to match the previous behavior. We should

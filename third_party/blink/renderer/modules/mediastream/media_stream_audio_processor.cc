@@ -23,12 +23,14 @@ namespace blink {
 MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
     const media::AudioProcessingSettings& settings,
+    const media::AudioParameters& capture_data_source_params,
     scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source)
     : audio_processor_(std::move(deliver_processed_audio_callback),
                        /*log_callback=*/
                        ConvertToBaseRepeatingCallback(
                            CrossThreadBindRepeating(&WebRtcLogMessage)),
-                       settings),
+                       settings,
+                       capture_data_source_params),
       playout_data_source_(std::move(playout_data_source)),
       main_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
       aec_dump_agent_impl_(AecDumpAgentImpl::Create(this)),
@@ -49,17 +51,6 @@ MediaStreamAudioProcessor::~MediaStreamAudioProcessor() {
   // then remove the hack in WebRtcAudioSink::Adapter.
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   Stop();
-}
-
-void MediaStreamAudioProcessor::OnCaptureFormatChanged(
-    const media::AudioParameters& input_format) {
-  DCHECK(main_thread_runner_->BelongsToCurrentThread());
-
-  audio_processor_.OnCaptureFormatChanged(input_format);
-
-  // Reset the |capture_thread_checker_| since the capture data will come from
-  // a new capture thread.
-  DETACH_FROM_THREAD(capture_thread_checker_);
 }
 
 void MediaStreamAudioProcessor::ProcessCapturedAudio(

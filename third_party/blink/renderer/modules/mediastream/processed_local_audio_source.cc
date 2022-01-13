@@ -431,8 +431,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   media_stream_audio_processor_ =
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
           std::move(processing_callback), audio_processing_settings,
-          rtc_audio_device);
-  media_stream_audio_processor_->OnCaptureFormatChanged(audio_capture_params);
+          audio_capture_params, rtc_audio_device);
 
   SetFormat(media_stream_audio_processor_->OutputFormat());
 

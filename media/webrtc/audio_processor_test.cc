@@ -210,9 +210,8 @@ TEST_P(AudioProcessorTestMultichannel, MAYBE_WithAudioProcessing) {
   AudioProcessingSettings settings{.multi_channel_capture_processing =
                                        use_multichannel_processing};
   AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), settings);
+                                 LogCallbackForTesting(), settings, params_);
   EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
-  audio_processor.OnCaptureFormatChanged(params_);
   VerifyDefaultComponents(audio_processor);
 
   const int expected_output_channels =
@@ -228,9 +227,8 @@ TEST_F(AudioProcessorTest, TurnOffDefaultConstraints) {
   // Turn off the default settings and pass it to AudioProcessor.
   DisableDefaultSettings(settings);
   AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), settings);
+                                 LogCallbackForTesting(), settings, params_);
   EXPECT_FALSE(audio_processor.has_webrtc_audio_processing());
-  audio_processor.OnCaptureFormatChanged(params_);
 
   ProcessDataAndVerifyFormat(audio_processor, mock_capture_callback_,
                              params_.sample_rate(), params_.channels(),
@@ -247,9 +245,6 @@ TEST_P(AudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
   const bool use_multichannel_processing = GetParam();
   AudioProcessingSettings settings{.multi_channel_capture_processing =
                                        use_multichannel_processing};
-  AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), settings);
-  EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
 
   static const int kSupportedSampleRates[] = {
     8000,
@@ -269,7 +264,9 @@ TEST_P(AudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
     media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                   media::CHANNEL_LAYOUT_STEREO, sample_rate,
                                   buffer_size);
-    audio_processor.OnCaptureFormatChanged(params);
+    AudioProcessor audio_processor(mock_capture_callback_.Get(),
+                                   LogCallbackForTesting(), settings, params);
+    EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
     VerifyDefaultComponents(audio_processor);
 
     int expected_sample_rate =
@@ -296,7 +293,7 @@ TEST_F(AudioProcessorTest, StartStopAecDump) {
                                              &temp_file_path));
   {
     AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings);
+                                   LogCallbackForTesting(), settings, params_);
 
     // Start and stop recording.
     audio_processor.OnStartDump(base::File(
@@ -331,7 +328,7 @@ TEST_F(AudioProcessorTest, StartAecDumpDuringOngoingAecDump) {
                                              &temp_file_path_b));
   {
     AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings);
+                                   LogCallbackForTesting(), settings, params_);
 
     // Start a recording.
     audio_processor.OnStartDump(base::File(
@@ -394,9 +391,9 @@ TEST_P(AudioProcessorTestMultichannel, TestStereoAudio) {
     // Turn on the stereo channels mirroring.
     settings.stereo_mirroring = true;
     AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings);
+                                   LogCallbackForTesting(), settings,
+                                   source_params);
     EXPECT_EQ(audio_processor.has_webrtc_audio_processing(), use_apm);
-    audio_processor.OnCaptureFormatChanged(source_params);
     // There's no sense in continuing if this fails.
     ASSERT_EQ(2, audio_processor.OutputFormat().channels());
 
@@ -456,14 +453,12 @@ TEST_P(AudioProcessorTestMultichannel, MAYBE_TestWithKeyboardMicChannel) {
   const bool use_multichannel_processing = GetParam();
   AudioProcessingSettings settings{.multi_channel_capture_processing =
                                        use_multichannel_processing};
-  AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), settings);
-  EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
-
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC,
                                 48000, 480);
-  audio_processor.OnCaptureFormatChanged(params);
+  AudioProcessor audio_processor(mock_capture_callback_.Get(),
+                                 LogCallbackForTesting(), settings, params);
+  EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
 
   const int expected_output_channels =
       use_multichannel_processing ? params_.channels() : 1;
@@ -478,16 +473,15 @@ TEST_P(AudioProcessorTestMultichannel, MAYBE_TestWithKeyboardMicChannel) {
 // enabled.
 TEST_F(AudioProcessorTest, DiscreteChannelLayout) {
   AudioProcessingSettings settings;
-  AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), settings);
-  EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
 
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_DISCRETE, 48000, 480);
   // Test both 1 and 2 discrete channels.
   for (int channels = 1; channels <= 2; ++channels) {
     params.set_channels_for_discrete(channels);
-    audio_processor.OnCaptureFormatChanged(params);
+    AudioProcessor audio_processor(mock_capture_callback_.Get(),
+                                   LogCallbackForTesting(), settings, params);
+    EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
   }
 }
 
@@ -501,15 +495,13 @@ TEST(AudioProcessorCallbackTest,
      ProcessedAudioIsDeliveredAsSoonAsPossibleWithShortBuffers) {
   MockProcessedCaptureCallback mock_capture_callback;
   AudioProcessingSettings settings;
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings);
-  ASSERT_TRUE(audio_processor.has_webrtc_audio_processing());
-
   // Set buffer size to 4 ms.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 4 / 1000);
-  audio_processor.OnCaptureFormatChanged(params);
+  AudioProcessor audio_processor(mock_capture_callback.Get(),
+                                 LogCallbackForTesting(), settings, params);
+  ASSERT_TRUE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
@@ -552,15 +544,13 @@ TEST(AudioProcessorCallbackTest,
      ProcessedAudioIsDeliveredAsSoonAsPossibleWithLongBuffers) {
   MockProcessedCaptureCallback mock_capture_callback;
   AudioProcessingSettings settings;
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings);
-  ASSERT_TRUE(audio_processor.has_webrtc_audio_processing());
-
   // Set buffer size to 35 ms.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 35 / 1000);
-  audio_processor.OnCaptureFormatChanged(params);
+  AudioProcessor audio_processor(mock_capture_callback.Get(),
+                                 LogCallbackForTesting(), settings, params);
+  ASSERT_TRUE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
@@ -593,15 +583,13 @@ TEST(AudioProcessorCallbackTest,
   MockProcessedCaptureCallback mock_capture_callback;
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings);
-  ASSERT_FALSE(audio_processor.has_webrtc_audio_processing());
-
   // Set buffer size to 4 ms.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 4 / 1000);
-  audio_processor.OnCaptureFormatChanged(params);
+  AudioProcessor audio_processor(mock_capture_callback.Get(),
+                                 LogCallbackForTesting(), settings, params);
+  ASSERT_FALSE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
@@ -631,15 +619,13 @@ TEST(AudioProcessorCallbackTest,
   MockProcessedCaptureCallback mock_capture_callback;
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings);
-  ASSERT_FALSE(audio_processor.has_webrtc_audio_processing());
-
   // Set buffer size to 35 ms.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 35 / 1000);
-  audio_processor.OnCaptureFormatChanged(params);
+  AudioProcessor audio_processor(mock_capture_callback.Get(),
+                                 LogCallbackForTesting(), settings, params);
+  ASSERT_FALSE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params.channels(), params.frames_per_buffer());
@@ -664,28 +650,29 @@ TEST(AudioProcessorCallbackTest,
                                        1.0, false);
 }
 
-TEST(AudioProcessorRequiresPlayoutReferenceTest,
-     TrueWhenEchoCancellationIsEnabled) {
+TEST_F(AudioProcessorTest,
+       RequiresPlayoutReferenceWhenEchoCancellationIsEnabled) {
   MockProcessedCaptureCallback mock_capture_callback;
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
   settings.echo_cancellation = true;
   AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings);
+                                 LogCallbackForTesting(), settings, params_);
   EXPECT_TRUE(audio_processor.RequiresPlayoutReference());
 }
 
-TEST(AudioProcessorRequiresPlayoutReferenceTest, TrueWhenGainControlIsEnabled) {
+TEST_F(AudioProcessorTest, RequiresPlayoutReferenceWhenGainControlIsEnabled) {
   MockProcessedCaptureCallback mock_capture_callback;
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
   settings.automatic_gain_control = true;
   AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings);
+                                 LogCallbackForTesting(), settings, params_);
   EXPECT_TRUE(audio_processor.RequiresPlayoutReference());
 }
 
-TEST(AudioProcessorRequiresPlayoutReferenceTest, FalseWhenAecAndAgcIsDisabled) {
+TEST_F(AudioProcessorTest,
+       DoesNotRequirePlayoutReferenceWhenAecAndAgcIsDisabled) {
   MockProcessedCaptureCallback mock_capture_callback;
   AudioProcessingSettings settings;
   // Disable effects that need the playout signal.
@@ -699,7 +686,7 @@ TEST(AudioProcessorRequiresPlayoutReferenceTest, FalseWhenAecAndAgcIsDisabled) {
   settings.stereo_mirroring = true;
   settings.force_apm_creation = true;
   AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings);
+                                 LogCallbackForTesting(), settings, params_);
   EXPECT_FALSE(audio_processor.RequiresPlayoutReference());
 }
 
