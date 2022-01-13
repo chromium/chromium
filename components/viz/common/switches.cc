@@ -96,7 +96,8 @@ absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
 
 int GetDocumentTransitionSlowDownFactor() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kDocumentTransitionSlowdownFactor))
+  if (!command_line ||
+      !command_line->HasSwitch(kDocumentTransitionSlowdownFactor))
     return 1;
 
   auto factor_str =
