@@ -806,6 +806,10 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
+  // Drop effect.
+  if (_node->HasHtmlAttribute("aria-dropeffect"))
+    [axAttributes addObject:NSAccessibilityDropEffectsAttribute];
+
   if (ui::SupportsRequired(role)) {
     [axAttributes addObject:NSAccessibilityRequiredAttributeChrome];
   }
@@ -1070,6 +1074,17 @@ bool IsAXSetter(SEL selector) {
     return base::SysUTF8ToNSString(id);
 
   return @"";
+}
+
+- (NSString*)AXDropEffects {
+  if (![self instanceActive])
+    return nil;
+
+  std::string dropEffects;
+  if (_node->GetHtmlAttribute("aria-dropeffect", &dropEffects))
+    return base::SysUTF8ToNSString(dropEffects);
+
+  return nil;
 }
 
 - (NSNumber*)AXHasPopup {

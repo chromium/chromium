@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <set>
+#include <type_traits>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
@@ -437,6 +438,13 @@ bool AXNodeData::GetStringListAttribute(
   return false;
 }
 
+bool AXNodeData::HasHtmlAttribute(const char* attribute) const {
+  std::string value;
+  if (!GetHtmlAttribute(attribute, &value))
+    return false;
+  return true;
+}
+
 bool AXNodeData::GetHtmlAttribute(const char* attribute,
                                   std::string* value) const {
   for (const std::pair<std::string, std::string>& html_attribute :
@@ -447,7 +455,6 @@ bool AXNodeData::GetHtmlAttribute(const char* attribute,
       return true;
     }
   }
-
   return false;
 }
 

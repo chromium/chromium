@@ -1307,6 +1307,10 @@ bool BrowserAccessibility::GetStringListAttribute(
   return node_->GetStringListAttribute(attribute, value);
 }
 
+bool BrowserAccessibility::HasHtmlAttribute(const char* attribute) const {
+  return node_->HasHtmlAttribute(attribute);
+}
+
 const BrowserAccessibility::HtmlAttributes&
 BrowserAccessibility::GetHtmlAttributes() const {
   return node()->GetHtmlAttributes();

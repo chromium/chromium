@@ -158,6 +158,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool GetStringListAttribute(
       ax::mojom::StringListAttribute attribute,
       std::vector<std::string>* value) const = 0;
+  virtual bool HasHtmlAttribute(const char* attribute) const = 0;
   virtual const base::StringPairs& GetHtmlAttributes() const = 0;
   virtual bool GetHtmlAttribute(const char* attribute,
                                 std::string* value) const = 0;

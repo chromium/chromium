@@ -174,6 +174,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
 
+  bool HasHtmlAttribute(const char* attribute) const;
   const base::StringPairs& GetHtmlAttributes() const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;
   bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;

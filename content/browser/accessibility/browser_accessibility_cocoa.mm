@@ -66,7 +66,6 @@ static_assert(
 namespace {
 
 // Private WebKit accessibility attributes.
-NSString* const NSAccessibilityDropEffectsAttribute = @"AXDropEffects";
 NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
 NSString* const NSAccessibilityElementBusyAttribute = @"AXElementBusy";
@@ -698,7 +697,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityDisclosedByRowAttribute, @"disclosedByRow"},
       {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
       {NSAccessibilityDisclosedRowsAttribute, @"disclosedRows"},
-      {NSAccessibilityDropEffectsAttribute, @"dropEffects"},
       {NSAccessibilityEditableAncestorAttribute, @"editableAncestor"},
       {NSAccessibilityElementBusyAttribute, @"elementBusy"},
       {NSAccessibilityEnabledAttribute, @"enabled"},
@@ -1006,17 +1004,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return nil;
 
   // The rows that are considered inside this row.
-  return nil;
-}
-
-- (NSString*)dropEffects {
-  if (![self instanceActive])
-    return nil;
-
-  std::string dropEffects;
-  if (_owner->GetHtmlAttribute("aria-dropeffect", &dropEffects))
-    return base::SysUTF8ToNSString(dropEffects);
-
   return nil;
 }
 
@@ -3035,10 +3022,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       // NSAccessibilityValueAutofillTypeAttribute
     ]];
   }
-
-  std::string dropEffect;
-  if (_owner->GetHtmlAttribute("aria-dropeffect", &dropEffect))
-    [ret addObject:NSAccessibilityDropEffectsAttribute];
 
   std::string grabbed;
   if (_owner->GetHtmlAttribute("aria-grabbed", &grabbed))

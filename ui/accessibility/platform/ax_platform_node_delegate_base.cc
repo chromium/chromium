@@ -170,6 +170,10 @@ bool AXPlatformNodeDelegateBase::GetStringListAttribute(
   return GetData().GetStringListAttribute(attribute, value);
 }
 
+bool AXPlatformNodeDelegateBase::HasHtmlAttribute(const char* attribute) const {
+  return GetData().HasHtmlAttribute(attribute);
+}
+
 const base::StringPairs& AXPlatformNodeDelegateBase::GetHtmlAttributes() const {
   return GetData().html_attributes;
 }

@@ -128,7 +128,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) id disclosedByRow;
 @property(nonatomic, readonly) NSNumber* disclosureLevel;
 @property(nonatomic, readonly) id disclosedRows;
-@property(nonatomic, readonly) NSString* dropEffects;
 // Returns the object at the root of the current edit field, if any.
 @property(nonatomic, readonly) id editableAncestor;
 @property(nonatomic, readonly) NSNumber* enabled;

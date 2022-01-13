@@ -384,6 +384,9 @@ class AX_EXPORT AXNode final {
   const base::StringPairs& GetHtmlAttributes() const {
     return data().html_attributes;
   }
+  bool HasHtmlAttribute(const char* attribute) const {
+    return data().HasHtmlAttribute(attribute);
+  }
   bool GetHtmlAttribute(const char* attribute, std::string* value) const {
     return data().GetHtmlAttribute(attribute, value);
   }
