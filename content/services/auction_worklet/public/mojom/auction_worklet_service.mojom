@@ -81,6 +81,10 @@ interface AuctionWorkletService {
   // hooks (which make script fetches act as if they were made from the parent
   // frame) restrict sharing to auctions within a single RenderFrame.
   //
+  // On load error, the worklet will close its pipe with a reason string. The
+  // reason string, and worklet errors messages more generally, are considered
+  // privileged and should not be passed to renderer processes.
+  //
   // Arguments:
   // `seller_worklet` The pipe to communicate with the SellerWorklet. Closing
   //  the pipe will abort any in-progress loads destroy the worklet. The
@@ -102,21 +106,11 @@ interface AuctionWorkletService {
   //  auction, if there is one.
   //
   // `top_window_origin` The origin of the top-level window running the auction.
-  //
-  // Returns:
-  // `success` is true if the worklet was successfully loaded.
-  //
-  // `errors` The various error messages to be used for debugging. These are too
-  //  sensitive for the renderer to see. There may be errors even when the
-  //  worklet is successfully loaded, and there may be no errors when the load
-  //  fails.
   LoadSellerWorklet(
       pending_receiver<SellerWorklet> seller_worklet,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       url.mojom.Url script_source_url,
       url.mojom.Url? trusted_scoring_signals_url,
-      url.mojom.Origin top_window_origin) => (
-          bool success,
-          array<string> errors);
+      url.mojom.Origin top_window_origin);
 };

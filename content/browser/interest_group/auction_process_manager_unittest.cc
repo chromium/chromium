@@ -66,8 +66,7 @@ class TestAuctionProcessManager
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
       const GURL& script_source_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
-      const url::Origin& top_window_origin,
-      LoadSellerWorkletCallback callback) override {
+      const url::Origin& top_window_origin) override {
     NOTREACHED();
   }
 

@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -143,6 +145,10 @@ class CONTENT_EXPORT AuctionRunner {
   void FailAuction(AuctionResult result,
                    absl::optional<std::string> error = absl::nullopt);
 
+  // Called when the seller pipe is disconnected.
+  void OnSellerDisconnected(uint32_t custom_reason,
+                            const std::string& description);
+
   // Runs an entire FLEDGE auction.
   //
   // Arguments:
@@ -276,8 +282,6 @@ class CONTENT_EXPORT AuctionRunner {
 
   // True if all bid results and the seller script load are complete.
   bool AllBidsScored() const { return outstanding_bids_ == 0; }
-  void OnSellerWorkletLoaded(bool load_result,
-                             const std::vector<std::string>& errors);
 
   // Calls into the seller asynchronously to score the passed in bid.
   void ScoreBid(BidState* state);
@@ -385,11 +389,6 @@ class CONTENT_EXPORT AuctionRunner {
       seller_worklet_process_handle_;
   mojo::Remote<auction_worklet::mojom::SellerWorklet> seller_worklet_;
   std::unique_ptr<DebuggableAuctionWorklet> seller_worklet_debug_;
-
-  // This is true if the seller script has been loaded successfully --- if the
-  // load failed, the entire process is aborted since there is nothing useful
-  // that can be done.
-  bool seller_loaded_ = false;
 
   // Seller script reportResult() results.
   absl::optional<GURL> seller_report_url_;

@@ -127,9 +127,7 @@ SellerWorklet::SellerWorklet(
         pending_url_loader_factory,
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
-    const url::Origin& top_window_origin,
-    mojom::AuctionWorkletService::LoadSellerWorkletCallback
-        load_worklet_callback)
+    const url::Origin& top_window_origin)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(std::move(v8_helper)),
       debug_id_(
@@ -146,10 +144,8 @@ SellerWorklet::SellerWorklet(
                     *trusted_scoring_signals_url,
                     v8_helper_.get())
               : nullptr),
-      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
-      load_worklet_callback_(std::move(load_worklet_callback)) {
+      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  DCHECK(load_worklet_callback_);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper_, debug_id_, decision_logic_url, top_window_origin,
@@ -163,10 +159,6 @@ SellerWorklet::SellerWorklet(
 
 SellerWorklet::~SellerWorklet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (load_worklet_callback_) {
-    std::move(load_worklet_callback_)
-        .Run(false /* success */, std::vector<std::string>() /* errors */);
-  }
   debug_id_->AbortDebuggerPauses();
 }
 
@@ -201,6 +193,8 @@ void SellerWorklet::ScoreAd(
       browser_signal_bidding_duration_msecs;
   score_ad_task->callback = std::move(callback);
 
+  // If `trusted_signals_request_manager_` exists, there's a trusted scoring
+  // signals URL which needs to be fetched before the auction can be run.
   if (trusted_signals_request_manager_) {
     score_ad_task->trusted_scoring_signals_request =
         trusted_signals_request_manager_->RequestScoringSignals(
@@ -211,8 +205,7 @@ void SellerWorklet::ScoreAd(
     return;
   }
 
-  OnTrustedScoringSignalsDownloaded(score_ad_task, /*result=*/nullptr,
-                                    /*error_msg=*/absl::nullopt);
+  ScoreAdIfReady(score_ad_task);
 }
 
 void SellerWorklet::SendPendingSignalsRequests() {
@@ -228,6 +221,7 @@ void SellerWorklet::ReportResult(
     double browser_signal_desirability,
     ReportResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  CHECK(IsCodeReady());
 
   v8_runner_->PostTask(
       FROM_HERE,
@@ -529,21 +523,30 @@ void SellerWorklet::Start() {
 void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
                                        absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  DCHECK(load_worklet_callback_);
   worklet_loader_.reset();
 
+  // On failure, delete `this`, as it can't do anything without a loaded script.
   bool success = worklet_script.success();
-  if (success) {
-    v8_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
-                                  base::Unretained(v8_state_.get()),
-                                  std::move(worklet_script)));
+  if (!success) {
+    std::move(close_pipe_callback_)
+        .Run(error_msg ? error_msg.value() : std::string());
+    // `this` should be deleted at this point.
+    return;
   }
 
-  std::vector<std::string> errors;
-  if (error_msg)
-    errors.emplace_back(std::move(error_msg).value());
-  std::move(load_worklet_callback_).Run(success, errors);
+  // The error message, if any, will be appended to all invoked ScoreAd() and
+  // ReportResult() callbacks.
+  load_script_error_msg_ = std::move(error_msg);
+
+  v8_runner_->PostTask(FROM_HERE,
+                       base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
+                                      base::Unretained(v8_state_.get()),
+                                      std::move(worklet_script)));
+
+  for (auto score_ad_task = score_ad_tasks_.begin();
+       score_ad_task != score_ad_tasks_.end(); ++score_ad_task) {
+    ScoreAdIfReady(score_ad_task);
+  }
 }
 
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(
@@ -553,15 +556,26 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
+  task->trusted_bidding_signals_result = std::move(result);
   // Clean up single-use object, now that it has done its job.
   task->trusted_scoring_signals_request.reset();
+
+  ScoreAdIfReady(task);
+}
+
+void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  if (task->trusted_scoring_signals_request || !IsCodeReady())
+    return;
 
   v8_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
           task->ad_metadata_json, task->bid,
-          std::move(task->shareable_auction_config), std::move(result),
+          std::move(task->shareable_auction_config),
+          std::move(task->trusted_bidding_signals_result),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_ad_components),
@@ -576,6 +590,8 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
+  if (load_script_error_msg_)
+    errors.insert(errors.begin(), load_script_error_msg_.value());
   if (task->trusted_scoring_signals_error_msg)
     errors.insert(errors.begin(), *task->trusted_scoring_signals_error_msg);
 
@@ -589,8 +605,16 @@ void SellerWorklet::DeliverReportResultCallbackOnUserThread(
     absl::optional<GURL> report_url,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  if (load_script_error_msg_)
+    errors.insert(errors.begin(), load_script_error_msg_.value());
+
   std::move(callback).Run(std::move(signals_for_winner), std::move(report_url),
                           std::move(errors));
+}
+
+bool SellerWorklet::IsCodeReady() const {
+  return (!paused_ && !worklet_loader_);
 }
 
 }  // namespace auction_worklet

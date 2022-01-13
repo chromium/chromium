@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/auction_runner.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -172,6 +174,20 @@ void AuctionRunner::FailAuction(AuctionResult result,
                            absl::nullopt, errors_);
 }
 
+void AuctionRunner::OnSellerDisconnected(uint32_t custom_reason,
+                                         const std::string& description) {
+  // If there's no error description, the seller worklet crashed.
+  if (description.empty()) {
+    FailAuction(AuctionResult::kSellerWorkletCrashed,
+                {base::StrCat({auction_config_->decision_logic_url.spec(),
+                               " crashed."})});
+    return;
+  }
+
+  // Otherwise, it's a load failure.
+  FailAuction(AuctionResult::kSellerWorkletLoadFailed, description);
+}
+
 void AuctionRunner::ReadInterestGroups(
     std::vector<url::Origin> filtered_buyers) {
   num_pending_buyers_ = filtered_buyers.size();
@@ -268,14 +284,10 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
       seller_worklet_debug_->should_pause_on_start(),
       std::move(url_loader_factory), seller_url,
       auction_config_->trusted_scoring_signals_url,
-      browser_signals_->top_frame_origin,
-      base::BindOnce(&AuctionRunner::OnSellerWorkletLoaded,
-                     base::Unretained(this)));
+      browser_signals_->top_frame_origin);
   // Fail auction if the seller worklet pipe is disconnected.
-  seller_worklet_.set_disconnect_handler(
-      base::BindOnce(&AuctionRunner::FailAuction, base::Unretained(this),
-                     AuctionResult::kSellerWorkletCrashed,
-                     base::StrCat({seller_url.spec(), " crashed."})));
+  seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
+      &AuctionRunner::OnSellerDisconnected, base::Unretained(this)));
 
   // Request processes for all bidder worklets.
   for (auto& bid_state : bid_states_) {
@@ -375,37 +387,10 @@ void AuctionRunner::OnGenerateBidComplete(
 
   state->bid_result = std::move(bid);
   state->state = BidState::State::kWaitingOnSellerWorkletLoad;
-  if (seller_loaded_)
-    ScoreBid(state);
-}
-
-void AuctionRunner::OnSellerWorkletLoaded(
-    bool load_result,
-    const std::vector<std::string>& errors) {
-  errors_.insert(errors_.end(), errors.begin(), errors.end());
-
-  if (!load_result) {
-    // Failed to load the seller/auction script --- nothing useful can be
-    // done, so abort, possibly cancelling other fetches, so we don't waste
-    // time.
-    FailAuction(AuctionResult::kSellerWorkletLoadFailed);
-    return;
-  }
-
-  seller_loaded_ = true;
-  // Start scoring any bids that were waiting on the seller worklet to load.
-  for (BidState& state : bid_states_) {
-    // Bids can be complete at this point (if no bid was offered, or on
-    // error), but they can't be scoring a bid.
-    DCHECK_NE(state.state, BidState::State::kSellerScoringBid);
-
-    if (state.state == BidState::State::kWaitingOnSellerWorkletLoad)
-      ScoreBid(&state);
-  }
+  ScoreBid(state);
 }
 
 void AuctionRunner::ScoreBid(BidState* state) {
-  DCHECK(seller_loaded_);
   DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
   DCHECK_GT(outstanding_bids_, 0);
   DCHECK_EQ(state->state, BidState::State::kWaitingOnSellerWorkletLoad);

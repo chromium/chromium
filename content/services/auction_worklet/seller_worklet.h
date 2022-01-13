@@ -42,22 +42,33 @@ namespace auction_worklet {
 // seller worklet's Javascript.
 class SellerWorklet : public mojom::SellerWorklet {
  public:
-  // Starts loading the worklet script on construction. Callback will be invoked
-  // asynchronously once the data has been fetched or an error has occurred.
+  // Deletes the worklet immediately and resets the SellerWorklet's Mojo pipe
+  // with the provided description. See mojo::Receiver::ResetWithReason().
+  using ClosePipeCallback =
+      base::OnceCallback<void(const std::string& description)>;
+
+  // Starts loading the worklet script on construction.
   SellerWorklet(scoped_refptr<AuctionV8Helper> v8_helper,
                 bool pause_for_debugger_on_start,
                 mojo::PendingRemote<network::mojom::URLLoaderFactory>
                     pending_url_loader_factory,
                 const GURL& decision_logic_url,
                 const absl::optional<GURL>& trusted_scoring_signals_url,
-                const url::Origin& top_window_origin,
-                mojom::AuctionWorkletService::LoadSellerWorkletCallback
-                    load_worklet_callback);
+                const url::Origin& top_window_origin);
 
   explicit SellerWorklet(const SellerWorklet&) = delete;
   SellerWorklet& operator=(const SellerWorklet&) = delete;
 
   ~SellerWorklet() override;
+
+  // Sets the callback to be invoked on errors which require closing the pipe.
+  // Callback will also immediately delete `this`. Not an argument to
+  // constructor because the Mojo ReceiverId needs to be bound to the callback,
+  // but can only get that after creating the worklet. Must be called
+  // immediately after creating a SellerWorklet.
+  void set_close_pipe_callback(ClosePipeCallback close_pipe_callback) {
+    close_pipe_callback_ = std::move(close_pipe_callback);
+  }
 
   int context_group_id_for_testing() const;
 
@@ -107,6 +118,7 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_scoring_signals_request;
+    scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result;
 
     // Error message from downloading trusted scoring signals, if any. Prepended
     // to errors passed to the ScoreAdCallback.
@@ -205,6 +217,11 @@ class SellerWorklet : public mojom::SellerWorklet {
       scoped_refptr<TrustedSignals::Result> result,
       absl::optional<std::string> error_msg);
 
+  // Checks if the script has been loaded successfully, and the
+  // TrustedSignals load has finished, if needed (successfully or not). If so,
+  // calls scoreAd().
+  void ScoreAdIfReady(ScoreAdTaskList::iterator task);
+
   void DeliverScoreAdCallbackOnUserThread(ScoreAdTaskList::iterator task,
                                           double score,
                                           std::vector<std::string> errors);
@@ -214,6 +231,9 @@ class SellerWorklet : public mojom::SellerWorklet {
       absl::optional<std::string> signals_for_winner,
       absl::optional<GURL> report_url,
       std::vector<std::string> errors);
+
+  // Returns true if unpaused and the script has loaded.
+  bool IsCodeReady() const;
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
@@ -236,14 +256,17 @@ class SellerWorklet : public mojom::SellerWorklet {
   // std::vector.
   ScoreAdTaskList score_ad_tasks_;
 
+  // Deleted once load has completed.
   std::unique_ptr<WorkletLoader> worklet_loader_;
 
   // Lives on `v8_runner_`. Since it's deleted there, tasks can be safely
   // posted from main thread to it with an Unretained pointer.
   std::unique_ptr<V8State, base::OnTaskRunnerDeleter> v8_state_;
 
-  mojom::AuctionWorkletService::LoadSellerWorkletCallback
-      load_worklet_callback_;
+  ClosePipeCallback close_pipe_callback_;
+
+  // Error that occurred while loading the worklet script, if any.
+  absl::optional<std::string> load_script_error_msg_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 

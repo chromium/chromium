@@ -56,15 +56,26 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
         pending_url_loader_factory,
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
-    const url::Origin& top_window_origin,
-    LoadSellerWorkletCallback load_seller_worklet_callback) {
-  seller_worklets_.Add(
-      std::make_unique<SellerWorklet>(
-          auction_v8_helper_, pause_for_debugger_on_start,
-          std::move(pending_url_loader_factory), decision_logic_url,
-          trusted_scoring_signals_url, top_window_origin,
-          std::move(load_seller_worklet_callback)),
-      std::move(seller_worklet_receiver));
+    const url::Origin& top_window_origin) {
+  auto seller_worklet = std::make_unique<SellerWorklet>(
+      auction_v8_helper_, pause_for_debugger_on_start,
+      std::move(pending_url_loader_factory), decision_logic_url,
+      trusted_scoring_signals_url, top_window_origin);
+  auto* seller_worklet_ptr = seller_worklet.get();
+
+  mojo::ReceiverId receiver_id = seller_worklets_.Add(
+      std::move(seller_worklet), std::move(seller_worklet_receiver));
+
+  seller_worklet_ptr->set_close_pipe_callback(
+      base::BindOnce(&AuctionWorkletServiceImpl::DisconnectSellerWorklet,
+                     base::Unretained(this), receiver_id));
+}
+
+void AuctionWorkletServiceImpl::DisconnectSellerWorklet(
+    mojo::ReceiverId receiver_id,
+    const std::string& reason) {
+  seller_worklets_.RemoveWithReason(receiver_id, /*custom_reason_code=*/0,
+                                    reason);
 }
 
 void AuctionWorkletServiceImpl::DisconnectBidderWorklet(

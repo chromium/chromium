@@ -58,10 +58,11 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
           pending_url_loader_factory,
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
-      const url::Origin& top_window_origin,
-      LoadSellerWorkletCallback load_seller_worklet_callback) override;
+      const url::Origin& top_window_origin) override;
 
  private:
+  void DisconnectSellerWorklet(mojo::ReceiverId receiver_id,
+                               const std::string& reason);
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
 
