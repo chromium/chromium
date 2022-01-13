@@ -80,7 +80,7 @@ void SetExpirableTokenIfNeeded(PrefService* const pref_service) {
   if (media::MediaDrmBridge::IsPerApplicationProvisioningSupported())
     return;
 
-  DictionaryPrefUpdateDeprecated update(pref_service, kMediaDrmOriginIds);
+  DictionaryPrefUpdate update(pref_service, kMediaDrmOriginIds);
   auto* origin_id_dict = update.Get();
   origin_id_dict->SetKey(
       kExpirableToken, base::TimeToValue(base::Time::Now() + kExpirationDelta));
@@ -152,7 +152,7 @@ int CountAvailableOriginIds(const base::Value* origin_id_dict) {
 base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
   DVLOG(3) << __func__;
 
-  DictionaryPrefUpdateDeprecated update(pref_service, kMediaDrmOriginIds);
+  DictionaryPrefUpdate update(pref_service, kMediaDrmOriginIds);
   auto* origin_id_dict = update.Get();
   DCHECK(origin_id_dict->is_dict());
 
@@ -383,7 +383,7 @@ void MediaDrmOriginIdManager::PreProvisionIfNecessary() {
 
   // On devices that need to, check that the user has recently requested
   // an origin ID. If not, then skip pre-provisioning on those devices.
-  DictionaryPrefUpdateDeprecated update(pref_service_, kMediaDrmOriginIds);
+  DictionaryPrefUpdate update(pref_service_, kMediaDrmOriginIds);
   if (!CanPreProvision(update.Get())) {
     // Disable any network monitoring, if it exists.
     network_observer_.reset();
@@ -511,7 +511,7 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
              origin_id);
     pending_provisioned_origin_id_cbs_.pop();
   } else {
-    DictionaryPrefUpdateDeprecated update(pref_service_, kMediaDrmOriginIds);
+    DictionaryPrefUpdate update(pref_service_, kMediaDrmOriginIds);
     AddOriginId(update.Get(), origin_id.value());
 
     // If we already have enough pre-provisioned origin IDs, we're done.

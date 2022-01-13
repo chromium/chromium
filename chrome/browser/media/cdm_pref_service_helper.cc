@@ -174,7 +174,7 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
     const base::RepeatingCallback<bool(const GURL&)>& filter) {
   DVLOG(1) << __func__ << " From [" << start << ", " << end << "]";
 
-  DictionaryPrefUpdateDeprecated update(user_prefs, prefs::kMediaCdmOriginData);
+  DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
 
   std::vector<std::string> origins_to_delete;
   for (auto key_value : update->DictItems()) {
@@ -244,9 +244,8 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   // Create an new entry or overwrite the existing one in case we weren't able
   // to get a valid origin ID from `FromDictValue()`.
   if (!cdm_pref_data) {
-    DictionaryPrefUpdateDeprecated update(user_prefs,
-                                          prefs::kMediaCdmOriginData);
-    base::DictionaryValue* update_dict = update.Get();
+    DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
+    base::Value* update_dict = update.Get();
 
     cdm_pref_data = std::make_unique<CdmPrefData>(
         base::UnguessableToken::Create(), base::Time::Now());
@@ -269,8 +268,8 @@ void CdmPrefServiceHelper::SetCdmClientToken(
   const std::string serialized_cdm_origin = cdm_origin.Serialize();
   DCHECK(!serialized_cdm_origin.empty());
 
-  DictionaryPrefUpdateDeprecated update(user_prefs, prefs::kMediaCdmOriginData);
-  base::DictionaryValue* dict = update.Get();
+  DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
+  base::Value* dict = update.Get();
 
   base::Value* dict_value =
       dict->FindKeyOfType(serialized_cdm_origin, base::Value::Type::DICTIONARY);
