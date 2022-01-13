@@ -17,7 +17,7 @@
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -125,14 +125,14 @@ SecurityKeyIpcClientTest::SecurityKeyIpcClientTest()
 SecurityKeyIpcClientTest::~SecurityKeyIpcClientTest() = default;
 
 void SecurityKeyIpcClientTest::SetUp() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD session_id = 0;
   // If we are on Windows, then we need to set the correct session ID or the
   // IPC connection will not be created successfully.
   ASSERT_TRUE(ProcessIdToSessionId(GetCurrentProcessId(), &session_id));
   session_id_ = session_id;
   security_key_ipc_client_.SetExpectedIpcServerSessionIdForTest(session_id_);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void SecurityKeyIpcClientTest::OperationComplete(bool failed) {
@@ -338,7 +338,7 @@ TEST_F(SecurityKeyIpcClientTest, NonExistentIpcServerChannel) {
   ASSERT_TRUE(operation_failed_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(SecurityKeyIpcClientTest, SecurityKeyIpcServerRunningInWrongSession) {
   // Set the expected session Id to a different session than we are running in.
   security_key_ipc_client_.SetExpectedIpcServerSessionIdForTest(session_id_ +
@@ -359,6 +359,6 @@ TEST_F(SecurityKeyIpcClientTest, SecurityKeyIpcClientRunningInWrongSession) {
   EstablishConnection(/*expect_error=*/true);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

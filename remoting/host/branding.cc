@@ -15,7 +15,7 @@ namespace {
 // The actual location of the files is ultimately determined by the service
 // daemon and native messaging host - these defaults are only used in case the
 // command-line switches are absent.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #ifdef OFFICIAL_BUILD
 const base::FilePath::CharType kConfigDir[] =
     FILE_PATH_LITERAL("Google\\Chrome Remote Desktop");
@@ -23,7 +23,7 @@ const base::FilePath::CharType kConfigDir[] =
 const base::FilePath::CharType kConfigDir[] =
     FILE_PATH_LITERAL("Chromoting");
 #endif
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 const base::FilePath::CharType kConfigDir[] =
     FILE_PATH_LITERAL("Chrome Remote Desktop");
 #else
@@ -35,16 +35,16 @@ const base::FilePath::CharType kConfigDir[] =
 
 namespace remoting {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const wchar_t kWindowsServiceName[] = L"chromoting";
 #endif
 
 base::FilePath GetConfigDir() {
   base::FilePath app_data_dir;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::PathService::Get(base::DIR_COMMON_APP_DATA, &app_data_dir);
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   base::PathService::Get(base::DIR_APP_DATA, &app_data_dir);
 #else
   base::PathService::Get(base::DIR_HOME, &app_data_dir);

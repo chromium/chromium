@@ -14,7 +14,7 @@
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "remoting/host/win/acl_util.h"
@@ -24,7 +24,7 @@ namespace remoting {
 
 namespace {
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 constexpr char kChromeRemoteDesktopSessionEnvVar[] =
     "CHROME_REMOTE_DESKTOP_SESSION";
 #endif
@@ -47,7 +47,7 @@ ChromotingHostServicesClient::~ChromotingHostServicesClient() {
 // static
 bool ChromotingHostServicesClient::Initialize() {
   DCHECK(!g_initialized);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The ChromotingHostServices server runs under the LocalService account,
   // which normally isn't allowed to query process info like session ID of a
   // process running under a different account, so we add an ACL to allow it.
@@ -104,7 +104,7 @@ bool ChromotingHostServicesClient::EnsureSessionServicesBinding() {
   if (session_services_remote_.is_bound()) {
     return true;
   }
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   if (!environment_->HasVar(kChromeRemoteDesktopSessionEnvVar)) {
     LOG(WARNING) << "Current desktop environment is not remotable.";
     return false;

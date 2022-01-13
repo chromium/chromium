@@ -35,14 +35,14 @@ extern const char kProcessTypeRdpDesktopSession[];
 extern const char kProcessTypeEvaluateCapability[];
 extern const char kProcessTypeFileChooser[];
 extern const char kProcessTypeUrlForwarderConfigurator[];
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 extern const char kProcessTypeXSessionChooser[];
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 extern const char kEvaluateCapabilitySwitchName[];
 
 // Values for kEvaluateCapabilitySwitchName.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Executes EvaluateD3D() function.
 extern const char kEvaluateD3D[];
 // Executes Evaluate3dDisplayMode() function.
@@ -65,7 +65,7 @@ extern const char kOutputSwitchName[];
 // processes.
 extern const char kMojoPipeToken[];
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // NativeMessagingHost switch to check for required OS permissions and request
 // them if necessary.
 extern const char kCheckPermissionSwitchName[];

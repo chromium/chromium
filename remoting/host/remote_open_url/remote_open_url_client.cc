@@ -15,9 +15,9 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "remoting/host/remote_open_url/remote_open_url_client_delegate_linux.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "remoting/host/remote_open_url/remote_open_url_client_delegate_win.h"
 #endif
 
@@ -28,9 +28,9 @@ namespace {
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 
 std::unique_ptr<RemoteOpenUrlClient::Delegate> CreateDelegate() {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   return std::make_unique<RemoteOpenUrlClientDelegateLinux>();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return std::make_unique<RemoteOpenUrlClientDelegateWin>();
 #else
   NOTREACHED();

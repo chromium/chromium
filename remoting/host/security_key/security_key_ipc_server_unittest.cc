@@ -22,7 +22,7 @@
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -94,10 +94,10 @@ class SecurityKeyIpcServerTest : public testing::Test,
 
 SecurityKeyIpcServerTest::SecurityKeyIpcServerTest()
     : run_loop_(new base::RunLoop()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(ProcessIdToSessionId(
       GetCurrentProcessId(), reinterpret_cast<DWORD*>(&peer_session_id_)));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   security_key_ipc_server_ = remoting::SecurityKeyIpcServer::Create(
       kTestConnectionId, this, base::Milliseconds(kInitialConnectTimeoutMs),
@@ -351,7 +351,7 @@ TEST_F(SecurityKeyIpcServerTest,
 }
 
 // Flaky on mac, https://crbug.com/936583
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_NoSecurityKeyRequestTimeout DISABLED_NoSecurityKeyRequestTimeout
 #else
 #define MAYBE_NoSecurityKeyRequestTimeout NoSecurityKeyRequestTimeout
@@ -460,7 +460,7 @@ TEST_F(SecurityKeyIpcServerTest, SendResponseTimeout) {
 // because the channel shutdown is a series of asynchronous tasks posted on the
 // IO thread, and there is not a way to synchronize it with the test main
 // thread.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   // Test that servers correctly close pending OS connections on
   // |server_name|. If multiple servers do remain, the client may happen to
@@ -511,9 +511,9 @@ TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   // Typically the client will be the one to close the connection.
   fake_ipc_client.CloseIpcConnection();
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(SecurityKeyIpcServerTest, IpcConnectionFailsFromInvalidSession) {
   // Change the expected session ID to not match the current session.
   peer_session_id_++;
@@ -532,6 +532,6 @@ TEST_F(SecurityKeyIpcServerTest, IpcConnectionFailsFromInvalidSession) {
   RunPendingTasks();
   ASSERT_FALSE(fake_ipc_client.ipc_channel_connected());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

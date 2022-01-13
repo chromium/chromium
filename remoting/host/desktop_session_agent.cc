@@ -49,7 +49,7 @@
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/memory/writable_shared_memory_region.h"
@@ -67,7 +67,7 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
   static std::unique_ptr<SharedMemoryImpl>
   Create(size_t size, int id, base::OnceClosure on_deleted_callback) {
     webrtc::SharedMemory::Handle handle = webrtc::SharedMemory::kInvalidHandle;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // webrtc::ScreenCapturer uses webrtc::SharedMemory::handle() only on
     // windows. This handle must be writable. A WritableSharedMemoryRegion is
     // created, and then it is converted to read-only.  On the windows platform,
@@ -119,7 +119,7 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
                    base::OnceClosure on_deleted_callback)
       : SharedMemory(mapping.memory(), mapping.size(), handle, id),
         on_deleted_callback_(std::move(on_deleted_callback))
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         ,
         writable_handle_(handle)
 #endif
@@ -131,7 +131,7 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
   base::OnceClosure on_deleted_callback_;
   base::ReadOnlySharedMemoryRegion region_;
   base::WritableSharedMemoryMapping mapping_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Owns the handle passed to the base class which is used by
   // webrtc::ScreenCapturer.
   base::win::ScopedHandle writable_handle_;
@@ -410,11 +410,11 @@ void DesktopSessionAgent::OnStartSessionAgent(
   remote_input_filter_ =
       std::make_unique<RemoteInputFilter>(input_tracker_.get());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // LocalInputMonitorWin filters out an echo of the injected input before it
   // reaches |remote_input_filter_|.
   remote_input_filter_->SetExpectLocalEcho(false);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Start the input injector.
   std::unique_ptr<protocol::ClipboardStub> clipboard_stub(

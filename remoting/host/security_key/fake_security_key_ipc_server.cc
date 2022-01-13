@@ -88,7 +88,7 @@ bool FakeSecurityKeyIpcServer::CreateChannel(
     base::TimeDelta request_timeout) {
   mojo::NamedPlatformChannel::Options options;
   options.server_name = server_name;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.enforce_uniqueness = false;
 #endif
   mojo::NamedPlatformChannel channel(options);

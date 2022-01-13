@@ -10,7 +10,7 @@ namespace remoting {
 
 const char kRemoteOpenUrlDataChannelName[] = "remote-open-url";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 #if defined(OFFICIAL_BUILD)
 const wchar_t kUrlForwarderProgId[] = L"ChromeRemoteDesktopUrlForwarder";

@@ -75,7 +75,7 @@ void ValidateHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ASSERT_EQ(is_googler, request->has_hostname());
 #else
   ASSERT_FALSE(request->has_hostname());

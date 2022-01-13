@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "remoting/base/user_settings_win.h"
 #endif
 
@@ -19,7 +19,7 @@ UserSettings::UserSettings() = default;
 UserSettings::~UserSettings() = default;
 
 UserSettings* UserSettings::GetInstance() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static base::NoDestructor<UserSettingsWin> instance;
   return instance.get();
 #else

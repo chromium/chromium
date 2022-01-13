@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <guiddef.h>
 #endif
 
@@ -22,7 +22,7 @@ namespace remoting {
 #define HOST_LOG LOG(INFO)
 #define HOST_DLOG DLOG(INFO)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // {2db51ca1-4fd8-4b88-b5a2-fb8606b66b02}
 constexpr GUID kRemotingHostLogProviderGuid = {
     0x2db51ca1,

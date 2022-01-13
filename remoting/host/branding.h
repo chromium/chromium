@@ -10,7 +10,7 @@
 
 namespace remoting {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows chromoting service name.
 extern const wchar_t kWindowsServiceName[];
 #endif

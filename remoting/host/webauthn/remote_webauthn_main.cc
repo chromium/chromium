@@ -21,9 +21,9 @@
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -46,10 +46,10 @@ int RemoteWebAuthnMain(int argc, char** argv) {
   base::File read_file;
   base::File write_file;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   read_file = base::File(STDIN_FILENO);
   write_file = base::File(STDOUT_FILENO);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // GetStdHandle() returns pseudo-handles for stdin and stdout even if
   // the hosting executable specifies "Windows" subsystem. However the
   // returned handles are invalid in that case unless standard input and
@@ -75,9 +75,9 @@ int RemoteWebAuthnMain(int argc, char** argv) {
   auto channel = std::make_unique<PipeMessagingChannel>(std::move(read_file),
                                                         std::move(write_file));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   PipeMessagingChannel::ReopenStdinStdout();
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   auto native_messaging_host =
       std::make_unique<RemoteWebAuthnNativeMessagingHost>(task_runner);

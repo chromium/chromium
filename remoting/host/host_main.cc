@@ -28,31 +28,31 @@
 #include "remoting/host/setup/me2me_native_messaging_host.h"
 #include "remoting/host/usage_stats_consent.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <commctrl.h>
 #include <shellapi.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
 // Known entry points.
 int HostProcessMain();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int DaemonProcessMain();
 int DesktopProcessMain();
 int FileChooserMain();
 int RdpDesktopSessionMain();
 int UrlForwarderConfiguratorMain();
-#endif  // defined(OS_WIN)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 int XSessionChooserMain();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -63,15 +63,15 @@ const char kUsageMessage[] =
     "\n"
     "Options:\n"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
     "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
     "Linux.\n"
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     "  --list-audio-devices     - List all audio devices and their device "
     "UID.\n"
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
     "  --console                - Runs the daemon interactively.\n"
     "  --elevate=<binary>       - Runs <binary> elevated.\n"
@@ -85,7 +85,7 @@ void Usage(const base::FilePath& program_name) {
   printf(kUsageMessage, program_name.MaybeAsASCII().c_str());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Runs the binary specified by the command line, elevated.
 int RunElevated() {
@@ -132,7 +132,7 @@ int RunElevated() {
   return kSuccessExitCode;
 }
 
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 // Select the entry point corresponding to the process type.
 MainRoutineFn SelectMainRoutine(const std::string& process_type) {
@@ -140,7 +140,7 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
 
   if (process_type == kProcessTypeHost) {
     main_routine = &HostProcessMain;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   } else if (process_type == kProcessTypeDaemon) {
     main_routine = &DaemonProcessMain;
   } else if (process_type == kProcessTypeDesktop) {
@@ -151,11 +151,11 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
     main_routine = &RdpDesktopSessionMain;
   } else if (process_type == kProcessTypeUrlForwarderConfigurator) {
     main_routine = &UrlForwarderConfiguratorMain;
-#endif  // defined(OS_WIN)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   } else if (process_type == kProcessTypeXSessionChooser) {
     main_routine = &XSessionChooserMain;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
 
   return main_routine;
@@ -164,7 +164,7 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
 }  // namespace
 
 int HostMain(int argc, char** argv) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Needed so we don't leak objects when threads are created.
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
@@ -185,11 +185,11 @@ int HostMain(int argc, char** argv) {
     return kSuccessExitCode;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(kElevateSwitchName)) {
     return RunElevated();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Assume the host process by default.
   std::string process_type = kProcessTypeHost;
@@ -222,13 +222,13 @@ int HostMain(int argc, char** argv) {
   }
 #endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Register and initialize common controls.
   INITCOMMONCONTROLSEX info;
   info.dwSize = sizeof(info);
   info.dwICC = ICC_STANDARD_CLASSES;
   InitCommonControlsEx(&info);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   MainRoutineFn main_routine = SelectMainRoutine(process_type);
   if (!main_routine) {

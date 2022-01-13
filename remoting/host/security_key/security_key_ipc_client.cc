@@ -16,7 +16,7 @@
 #include "ipc/ipc_listener.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Windows.h>
 #endif
 
@@ -104,7 +104,7 @@ bool SecurityKeyIpcClient::OnMessageReceived(const IPC::Message& message) {
 void SecurityKeyIpcClient::OnChannelConnected(int32_t peer_pid) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD peer_session_id;
   if (!ProcessIdToSessionId(peer_pid, &peer_session_id)) {
     PLOG(ERROR) << "ProcessIdToSessionId failed";
@@ -119,7 +119,7 @@ void SecurityKeyIpcClient::OnChannelConnected(int32_t peer_pid) {
     std::move(connection_error_callback_).Run();
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::move(connected_callback_).Run();
 }

@@ -27,14 +27,14 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/types.h>
 #include <unistd.h>
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -76,7 +76,7 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += protocol::kFileTransferCapability;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   capabilities += " ";
   capabilities += protocol::kSendAttentionSequenceAction;
 
@@ -85,7 +85,7 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += " ";
     capabilities += protocol::kLockWorkstationAction;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (desktop_environment_options().enable_remote_open_url() &&
       IsRemoteOpenUrlSupported()) {
@@ -143,9 +143,9 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
 
   // Otherwise, if the session is shared with the local user start monitoring
   // the local input and create the in-session UI.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool want_user_interface = false;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   // Don't try to display any UI on top of the system's login screen as this
   // is rejected by the Window Server on OS X 10.7.4, and prevents the
   // capturer from working (http://crbug.com/140984).
@@ -167,7 +167,7 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
         client_session_control);
 
     // Create the disconnect window.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     disconnect_window_ =
         HostWindow::CreateAutoHidingDisconnectWindow(LocalInputMonitor::Create(
             caller_task_runner(), input_task_runner(), ui_task_runner()));

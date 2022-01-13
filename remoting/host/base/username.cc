@@ -9,16 +9,16 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace remoting {
 
 std::string GetUsername() {
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   long buf_size = sysconf(_SC_GETPW_R_SIZE_MAX);
   if (buf_size <= 0)
     return std::string();
@@ -31,7 +31,7 @@ std::string GetUsername() {
 #else
   NOTIMPLEMENTED();
   return std::string();
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace remoting

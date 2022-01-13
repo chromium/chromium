@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
-#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/client/chromoting_client_runtime.h"
+
+#include "base/run_loop.h"
+#include "build/build_config.h"
+#include "remoting/base/auto_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 // A simple test that starts and stop the runtime. This tests the runtime
 // operates properly and all threads and message loops are valid.

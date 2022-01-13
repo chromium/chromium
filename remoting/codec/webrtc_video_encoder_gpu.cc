@@ -31,7 +31,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -51,7 +51,7 @@ constexpr int kH264MinimumTargetBitrateKbpsPerMegapixel = 1800;
 
 gpu::GpuPreferences CreateGpuPreferences() {
   gpu::GpuPreferences gpu_preferences;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu_preferences.enable_media_foundation_vea_on_windows7 = true;
 #endif
   return gpu_preferences;
@@ -130,7 +130,7 @@ class WebrtcVideoEncoderGpu::Core
 
   void RunAnyPendingEncode();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This object is required by Chromium to ensure proper init/uninit of COM on
   // this thread.  The guidance is to match the lifetime of this object to the
   // lifetime of the thread if possible.
@@ -340,7 +340,7 @@ void WebrtcVideoEncoderGpu::Core::NotifyError(
 void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!scoped_com_initializer_) {
     scoped_com_initializer_ =
         std::make_unique<base::win::ScopedCOMInitializer>();
@@ -397,7 +397,7 @@ std::unique_ptr<WebrtcVideoEncoder> WebrtcVideoEncoderGpu::CreateForH264() {
 // static
 bool WebrtcVideoEncoderGpu::IsSupportedByH264(
     const WebrtcVideoEncoderSelector::Profile& profile) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This object is required by Chromium to ensure proper init/uninit of COM on
   // this thread.  The guidance is to match the lifetime of this object to the
   // lifetime of the thread if possible.  Since we are still experimenting with

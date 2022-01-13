@@ -135,13 +135,13 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
 
   bool needs_elevation_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Controls the lifetime of the elevated native messaging host process.
   std::unique_ptr<ElevatedNativeMessagingHost> elevated_host_;
 
   // Handle of the parent window.
   intptr_t parent_window_handle_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<extensions::NativeMessageHost::Client> client_;
   std::unique_ptr<ChromotingHostContext> host_context_;

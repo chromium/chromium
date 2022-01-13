@@ -11,9 +11,10 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "remoting/base/telemetry_log_writer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
 #endif  // OS_ANDROID
 
@@ -114,7 +115,7 @@ void ClientTelemetryLogger::LogStatistics(
 
 void ClientTelemetryLogger::PrintLogStatistics(
     const protocol::PerformanceTracker& perf_tracker) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   __android_log_print(
       ANDROID_LOG_INFO, "stats",
 #else

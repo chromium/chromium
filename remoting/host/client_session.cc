@@ -88,11 +88,11 @@ ClientSession::ClientSession(
   extension_manager_ =
       std::make_unique<HostExtensionSessionManager>(extensions, this);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // LocalInputMonitorWin filters out an echo of the injected input before it
   // reaches |remote_input_filter_|.
   remote_input_filter_.SetExpectLocalEcho(false);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 ClientSession::~ClientSession() {
@@ -702,7 +702,7 @@ void ClientSession::SetMouseClampingFilter(const DisplaySize& size) {
       break;
 
     case protocol::SessionConfig::Protocol::WEBRTC: {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
       mouse_clamping_filter_.set_input_size(size.WidthAsPixels(),
                                             size.HeightAsPixels());
 #else
@@ -711,7 +711,7 @@ void ClientSession::SetMouseClampingFilter(const DisplaySize& size) {
       // TODO(sergeyu): Fix InputInjector implementations to use DIPs as well.
       mouse_clamping_filter_.set_input_size(size.WidthAsDips(),
                                             size.HeightAsDips());
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
     }
   }
 }
@@ -826,7 +826,7 @@ void ClientSession::OnDesktopDisplayChanged(
   // display configuration supports capturing the entire desktop.
   LOG(INFO) << "    Webrtc desktop size " << default_webrtc_desktop_size_;
   if (show_display_id_ == webrtc::kInvalidScreenId) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // On MacOS, there are situations where webrtc cannot capture the entire
     // desktop (e.g, when there are displays with different DPIs). We detect
     // this situation by comparing the full desktop size (calculated above
@@ -844,7 +844,7 @@ void ClientSession::OnDesktopDisplayChanged(
 #else
     // Windows/Linux can capture full desktop if multiple displays.
     can_capture_full_desktop_ = true;
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
   }
 
   // Generate and send VideoLayout message.

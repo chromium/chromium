@@ -482,7 +482,7 @@ TEST_P(ConnectionTest, RejectConnection) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Disconnect DISABLED_Disconnect
 #else
 #define MAYBE_Disconnect Disconnect
@@ -499,7 +499,7 @@ TEST_P(ConnectionTest, MAYBE_Disconnect) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Control DISABLED_Control
 #else
 #define MAYBE_Control Control
@@ -523,7 +523,7 @@ TEST_P(ConnectionTest, MAYBE_Control) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Events DISABLED_Events
 #else
 #define MAYBE_Events Events
@@ -547,7 +547,7 @@ TEST_P(ConnectionTest, MAYBE_Events) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Video DISABLED_Video
 #else
 #define MAYBE_Video Video
@@ -566,7 +566,7 @@ TEST_P(ConnectionTest, MAYBE_Video) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_VideoWithSlowSignaling DISABLED_VideoWithSlowSignaling
 #else
 #define MAYBE_VideoWithSlowSignaling VideoWithSlowSignaling
@@ -588,7 +588,7 @@ TEST_P(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DestroyOnIncomingMessage DISABLED_DestroyOnIncomingMessage
 #else
 #define MAYBE_DestroyOnIncomingMessage DestroyOnIncomingMessage
@@ -669,9 +669,9 @@ TEST_P(ConnectionTest, DISABLED_VideoStats) {
 
 // Slow/fails on Linux ASan/TSan (crbug.com/1045344) and flaky on Mac
 // (crbug.com/1237376).
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&                   \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&               \
         (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)) || \
-    defined(OS_MAC)
+    BUILDFLAG(IS_MAC)
 #define MAYBE_Audio DISABLED_Audio
 #else
 #define MAYBE_Audio Audio

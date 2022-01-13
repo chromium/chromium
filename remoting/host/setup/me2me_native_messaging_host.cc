@@ -31,15 +31,15 @@
 #include "remoting/host/pin_hash.h"
 #include "remoting/protocol/pairing_registry.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/elevated_native_messaging_host.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const int kElevatedHostTimeoutSeconds = 300;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // redirect_uri to use when authenticating service accounts (service account
 // codes are obtained "out-of-band", i.e., not through an OAuth redirect).
@@ -50,9 +50,9 @@ const char* kSupportedFeatures[] = {
     "pairingRegistry",
     "oauthClient",
     "getRefreshTokenFromAuthCode",
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     "it2mePermissionCheck",
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 };
 
 // Helper to extract the "config" part of a message as a DictionaryValue.
@@ -79,7 +79,7 @@ Me2MeNativeMessagingHost::Me2MeNativeMessagingHost(
     scoped_refptr<protocol::PairingRegistry> pairing_registry,
     std::unique_ptr<OAuthClient> oauth_client)
     : needs_elevation_(needs_elevation),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       parent_window_handle_(parent_window_handle),
 #endif
       host_context_(std::move(host_context)),
@@ -582,7 +582,7 @@ void Me2MeNativeMessagingHost::OnError(const std::string& error_message) {
   client_->CloseChannel(std::string());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 Me2MeNativeMessagingHost::DelegationResult
 Me2MeNativeMessagingHost::DelegateToElevatedHost(
@@ -613,7 +613,7 @@ Me2MeNativeMessagingHost::DelegateToElevatedHost(
   }
 }
 
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 
 Me2MeNativeMessagingHost::DelegationResult
 Me2MeNativeMessagingHost::DelegateToElevatedHost(
@@ -622,6 +622,6 @@ Me2MeNativeMessagingHost::DelegateToElevatedHost(
   return DELEGATION_FAILED;
 }
 
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

@@ -517,7 +517,7 @@ TEST_P(MisspelledPolicyTest, WarningLogged) {
 
   ON_CALL(mock_log, Log(_, _, _, _, _)).WillByDefault(testing::Return(true));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The PolicyWatcher on Windows tries to open a handle to the Chrome policy
   // registry key on Windows which fails on the Chromium bots. The warning that
   // gets logged cases the subsequent log assertion to fail so this check was
@@ -589,7 +589,7 @@ TEST_F(PolicyWatcherTest, RemoteAssistanceUiAccess) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
               OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This setting only affects Windows, it is ignored on other platforms so the
   // 2 SetPolicies calls won't result in any calls to OnPolicyUpdate.
   EXPECT_CALL(mock_policy_callback_,
@@ -597,7 +597,7 @@ TEST_F(PolicyWatcherTest, RemoteAssistanceUiAccess) {
   EXPECT_CALL(
       mock_policy_callback_,
       OnPolicyUpdatePtr(IsPolicies(&remote_assistance_uiaccess_false_)));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   SetPolicies(empty_);
   StartWatching();
@@ -640,7 +640,7 @@ TEST_F(PolicyWatcherTest, MatchUsername) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
               OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   EXPECT_CALL(mock_policy_callback_,
               OnPolicyUpdatePtr(IsPolicies(&username_true_)));
   EXPECT_CALL(mock_policy_callback_,
@@ -716,7 +716,7 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
        i.Advance()) {
     expected_schema[i.key()] = i.value().type();
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // RemoteAccessHostMatchUsername is marked in policy_templates.json as not
   // supported on Windows and therefore is (by design) excluded from the schema.
   expected_schema.erase(key::kRemoteAccessHostMatchUsername);
@@ -730,7 +730,7 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
   expected_schema.erase(key::kRemoteAccessHostTokenValidationUrl);
   expected_schema.erase(key::kRemoteAccessHostTokenValidationCertificateIssuer);
   expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
-#else  // !defined(OS_WIN)
+#else  // !BUILDFLAG(IS_WIN)
   // RemoteAssistanceHostAllowUiAccess does not exist on non-Windows platforms.
   expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
 #endif

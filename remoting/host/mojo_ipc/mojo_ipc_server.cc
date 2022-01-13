@@ -16,10 +16,10 @@
 #include "build/build_config.h"
 #include "remoting/host/mojo_ipc/mojo_server_endpoint_connector.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/stringprintf.h"
 #include "base/win/win_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -34,7 +34,7 @@ mojo::PlatformChannelServerEndpoint CreateServerEndpointOnIoSequence(
   mojo::NamedPlatformChannel::Options options;
   options.server_name = server_name;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.enforce_uniqueness = false;
   // Create a named pipe owned by the current user (the LocalService account
   // (SID: S-1-5-19) when running in the network process) which is available to
@@ -47,7 +47,7 @@ mojo::PlatformChannelServerEndpoint CreateServerEndpointOnIoSequence(
   }
   options.security_descriptor = base::StringPrintf(
       L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   mojo::NamedPlatformChannel channel(options);
   return channel.TakeServerEndpoint();

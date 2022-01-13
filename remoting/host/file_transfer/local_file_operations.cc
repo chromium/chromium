@@ -45,7 +45,7 @@ remoting::protocol::FileTransfer_Error_Type FileErrorToResponseErrorType(
 }
 
 scoped_refptr<base::SequencedTaskRunner> CreateFileTaskRunner() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, we use user impersonation to write files as the currently
   // logged-in user, while the process as a whole runs as SYSTEM. Since user
   // impersonation is per-thread on Windows, we need a dedicated thread to

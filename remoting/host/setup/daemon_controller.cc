@@ -27,7 +27,7 @@ DaemonController::DaemonController(std::unique_ptr<Delegate> delegate)
       delegate_(std::move(delegate)) {
   // Launch the delegate thread.
   delegate_thread_ = std::make_unique<AutoThread>(kDaemonControllerThreadName);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   delegate_thread_->SetComInitType(AutoThread::COM_INIT_STA);
   delegate_task_runner_ =
       delegate_thread_->StartWithType(base::MessagePumpType::UI);

@@ -600,11 +600,11 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // The OS echoes the injected event back.
   client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
                                        ui::ET_MOUSE_MOVED);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   // This one should get throught as well.
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(200, 201));

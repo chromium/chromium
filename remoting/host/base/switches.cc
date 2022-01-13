@@ -23,13 +23,13 @@ const char kProcessTypeEvaluateCapability[] = "evaluate_capability";
 const char kProcessTypeFileChooser[] = "file_chooser";
 const char kProcessTypeUrlForwarderConfigurator[] =
     "url_forwarder_configurator";
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kProcessTypeXSessionChooser[] = "xsession_chooser";
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 const char kEvaluateCapabilitySwitchName[] = "evaluate-type";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kEvaluateD3D[] = "d3d-support";
 const char kEvaluate3dDisplayMode[] = "3d-display-mode";
 const char kSetUpUrlForwarderSwitchName[] = "setup";
@@ -42,7 +42,7 @@ const char kOutputSwitchName[] = "output";
 
 const char kMojoPipeToken[] = "mojo-pipe-token";
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 const char kCheckPermissionSwitchName[] = "check-permission";
 const char kCheckAccessibilityPermissionSwitchName[] =
     "check-accessibility-permission";

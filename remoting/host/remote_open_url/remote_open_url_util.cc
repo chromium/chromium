@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "base/win/windows_version.h"
@@ -15,7 +15,7 @@
 
 namespace remoting {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 #if defined(OFFICIAL_BUILD)
 const wchar_t kUrlForwarderRegisteredAppName[] =
@@ -30,9 +30,9 @@ const wchar_t kRegisteredApplicationsKeyName[] =
 #endif  // defined (OS_WIN)
 
 bool IsRemoteOpenUrlSupported() {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // The modern default apps settings dialog is only available to Windows 8+.
   // Given older Windows versions are EOL, we only advertise the feature on
   // Windows 8+.

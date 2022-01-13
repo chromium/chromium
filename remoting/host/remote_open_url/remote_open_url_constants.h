@@ -11,7 +11,7 @@ namespace remoting {
 
 extern const char kRemoteOpenUrlDataChannelName[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // The ProgID of the URL forwarder.
 extern const wchar_t kUrlForwarderProgId[];

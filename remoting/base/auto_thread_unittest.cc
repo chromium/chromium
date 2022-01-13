@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <objbase.h>
 #endif
 
@@ -33,7 +33,7 @@ void PostSetFlagTask(
   task_runner->PostTask(FROM_HERE, base::BindOnce(&SetFlagTask, success));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void CheckComAptTypeTask(APTTYPE* apt_type_out, HRESULT* hresult) {
   typedef HRESULT (WINAPI * CoGetApartmentTypeFunc)
       (APTTYPE*, APTTYPEQUALIFIER*);
@@ -136,7 +136,7 @@ TEST_F(AutoThreadTest, ThreadDependency) {
   EXPECT_TRUE(success);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(AutoThreadTest, ThreadWithComMta) {
   scoped_refptr<base::TaskRunner> task_runner =
       AutoThread::CreateWithLoopAndComInitTypes(kThreadName, main_task_runner_,
@@ -178,6 +178,6 @@ TEST_F(AutoThreadTest, ThreadWithComSta) {
   // COM activity in this test process, so allow both types here.
   EXPECT_TRUE(apt_type == APTTYPE_MAINSTA || apt_type == APTTYPE_STA);
 }
-#endif // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

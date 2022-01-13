@@ -27,11 +27,11 @@ const char kHostConfigSwitchName[] = "host-config";
 const base::FilePath::CharType kDefaultHostConfigFile[] =
     FILE_PATH_LITERAL("host.json");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Maximum number of times to try reading the configuration file before
 // reporting an error.
 const int kMaxRetries = 3;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 class ConfigFileWatcherImpl
     : public base::RefCountedThreadSafe<ConfigFileWatcherImpl> {
@@ -203,7 +203,7 @@ void ConfigFileWatcherImpl::ReloadConfig() {
 
   std::string config;
   if (!base::ReadFileToString(config_path_, &config)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // EACCESS may indicate a locking or sharing violation. Retry a few times
     // before reporting an error.
     if (errno == EACCES && retries_ < kMaxRetries) {
@@ -213,7 +213,7 @@ void ConfigFileWatcherImpl::ReloadConfig() {
       config_updated_timer_->Reset();
       return;
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     PLOG(ERROR) << "Failed to read '" << config_path_.value() << "'";
 

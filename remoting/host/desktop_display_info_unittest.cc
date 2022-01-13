@@ -82,13 +82,13 @@ TEST_F(DesktopDisplayInfoTest, DualDisplayLeft) {
   AddDisplay(0, 0, 500, 400);
   AddDisplay(-300, 0, 300, 200);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
   VerifyDisplayOffset(FROM_HERE, 1, -300, 0);
 #else
   VerifyDisplayOffset(FROM_HERE, 0, 300, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 0, 0);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 // +---------o------------+
@@ -100,13 +100,13 @@ TEST_F(DesktopDisplayInfoTest, DualDisplayLeft_ReverseOrder) {
   AddDisplay(-300, 0, 300, 200);
   AddDisplay(0, 0, 500, 400);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   VerifyDisplayOffset(FROM_HERE, 0, -300, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 0, 0);
 #else
   VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 300, 0);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 // +---------o------------+
@@ -119,7 +119,7 @@ TEST_F(DesktopDisplayInfoTest, TripleDisplayMiddle) {
   AddDisplay(0, 0, 500, 400);  // Default display.
   AddDisplay(500, 50, 400, 350);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   VerifyDisplayOffset(FROM_HERE, 0, -300, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 0, 0);
   VerifyDisplayOffset(FROM_HERE, 2, 500, 50);
@@ -127,7 +127,7 @@ TEST_F(DesktopDisplayInfoTest, TripleDisplayMiddle) {
   VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 300, 0);
   VerifyDisplayOffset(FROM_HERE, 2, 800, 50);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 //  x         o-----------+            - 0
@@ -144,7 +144,7 @@ TEST_F(DesktopDisplayInfoTest, Multimon3) {
   AddDisplay(300, 400, 600, 450);
   AddDisplay(-300, 350, 300, 200);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   VerifyDisplayOffset(FROM_HERE, 0, 0, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 300, 400);
   VerifyDisplayOffset(FROM_HERE, 2, -300, 350);
@@ -152,7 +152,7 @@ TEST_F(DesktopDisplayInfoTest, Multimon3) {
   VerifyDisplayOffset(FROM_HERE, 0, 300, 0);
   VerifyDisplayOffset(FROM_HERE, 1, 600, 400);
   VerifyDisplayOffset(FROM_HERE, 2, 0, 350);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 //  x                     +-------+               -- -50
@@ -181,7 +181,7 @@ TEST_F(DesktopDisplayInfoTest, Multimon7) {
   AddDisplay(70, 100, 65, 20);
   AddDisplay(0, 0, 80, 55);  // Default display.
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Relative to display 6.
   VerifyDisplayOffset(FROM_HERE, 0, 80, -10);
   VerifyDisplayOffset(FROM_HERE, 1, 60, -50);
@@ -198,7 +198,7 @@ TEST_F(DesktopDisplayInfoTest, Multimon7) {
   VerifyDisplayOffset(FROM_HERE, 4, 30, 30);
   VerifyDisplayOffset(FROM_HERE, 5, 140, 150);
   VerifyDisplayOffset(FROM_HERE, 6, 70, 50);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 }  // namespace remoting

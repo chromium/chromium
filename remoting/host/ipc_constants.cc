@@ -16,7 +16,7 @@ namespace remoting {
 
 namespace {
 
-#if !defined(NDEBUG) && defined(OS_LINUX)
+#if !defined(NDEBUG) && BUILDFLAG(IS_LINUX)
 // Use a different IPC name for Linux debug builds so that we can run the host
 // directly from out/Debug without interfering with the production host that
 // might also be running.
@@ -45,9 +45,9 @@ bool GetInstalledBinaryPath(const base::FilePath::StringType& binary,
 
   base::FilePath path = dir_path.Append(binary);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   path = path.ReplaceExtension(FILE_PATH_LITERAL("exe"));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   *full_path = path;
   return true;

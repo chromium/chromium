@@ -39,17 +39,17 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/process/process_info.h"
 #include "base/win/registry.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
 
 #include <windows.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include <glib-object.h>
@@ -70,10 +70,10 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
   remoting::InitHostLogging();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Needed so we don't leak objects when threads are created.
   base::mac::ScopedNSAutoreleasePool pool;
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // g_type_init will be deprecated in 2.36. 2.35 is the development
@@ -111,7 +111,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   scoped_refptr<DaemonController> daemon_controller =
       DaemonController::Create();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (command_line->HasSwitch(kCheckPermissionSwitchName)) {
     int exit_code;
     daemon_controller->CheckPermission(
@@ -128,7 +128,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
     run_loop.Run();
     return exit_code;
   }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // Pass handle of the native view to the controller so that the UAC prompts
   // are focused properly.
@@ -146,7 +146,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   base::File write_file;
   bool needs_elevation = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   needs_elevation = !base::IsCurrentProcessElevated();
 
   if (command_line->HasSwitch(kElevateSwitchName)) {
@@ -200,7 +200,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
     SetStdHandle(STD_INPUT_HANDLE, nullptr);
     SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
   }
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   // The files will be automatically closed.
   read_file = base::File(STDIN_FILENO);
   write_file = base::File(STDOUT_FILENO);
@@ -221,7 +221,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   // Create the pairing registry.
   scoped_refptr<PairingRegistry> pairing_registry;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::RegKey root;
   LONG result = root.Open(HKEY_LOCAL_MACHINE, kPairingRegistryKeyName,
                           KEY_READ);
@@ -262,10 +262,10 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
   pairing_registry =
       new PairingRegistry(io_thread.task_runner(), std::move(delegate));
-#else  // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
   pairing_registry =
       CreatePairingRegistry(io_thread.task_runner());
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   std::unique_ptr<NativeMessagingPipe> native_messaging_pipe(
       new NativeMessagingPipe());
@@ -274,9 +274,9 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   std::unique_ptr<extensions::NativeMessagingChannel> channel(
       new PipeMessagingChannel(std::move(read_file), std::move(write_file)));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   PipeMessagingChannel::ReopenStdinStdout();
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(

@@ -25,7 +25,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
 
@@ -135,7 +135,7 @@ uint32_t BasicDesktopEnvironment::GetDesktopSessionId() const {
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
 BasicDesktopEnvironment::CreateComposingVideoCapturer() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining())
     return nullptr;
@@ -176,7 +176,7 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
   watchdog.Arm();
   desktop_capture_options().x_display()->IgnoreXServerGrabs();
   watchdog.Disarm();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   options_.desktop_capture_options()->set_allow_directx_capturer(
       IsD3DAvailable());
 #endif

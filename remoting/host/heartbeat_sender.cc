@@ -33,7 +33,7 @@
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 
 // Needed for GetComputerNameExW/ComputerNameDnsFullyQualified.
@@ -111,9 +111,9 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 std::string GetHostname() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag
 // switch of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return net::GetHostName();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   wchar_t buffer[MAX_PATH] = {0};
   DWORD size = MAX_PATH;
   if (!::GetComputerNameExW(ComputerNameDnsFullyQualified, buffer, &size)) {

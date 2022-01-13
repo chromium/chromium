@@ -213,7 +213,7 @@ class IceTransportTest : public testing::Test {
 };
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DataStream DISABLED_DataStream
 #else
 #define MAYBE_DataStream DataStream
@@ -237,7 +237,7 @@ TEST_F(IceTransportTest, MAYBE_DataStream) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MuxDataStream DISABLED_MuxDataStream
 #else
 #define MAYBE_MuxDataStream MuxDataStream
@@ -261,7 +261,7 @@ TEST_F(IceTransportTest, MAYBE_MuxDataStream) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FailedChannelAuth DISABLED_FailedChannelAuth
 #else
 #define MAYBE_FailedChannelAuth FailedChannelAuth
@@ -341,7 +341,7 @@ TEST_F(IceTransportTest, TestCancelChannelCreation) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TestDelayedSignaling DISABLED_TestDelayedSignaling
 #else
 #define MAYBE_TestDelayedSignaling TestDelayedSignaling

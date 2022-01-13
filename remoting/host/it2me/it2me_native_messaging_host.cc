@@ -43,12 +43,12 @@
 #include "remoting/signaling/xmpp_log_to_server.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 
 #include "remoting/host/win/elevated_native_messaging_host.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -56,12 +56,12 @@ using protocol::ErrorCode;
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kBaseHostBinaryName[] =
     FILE_PATH_LITERAL("remote_assistance_host.exe");
 const base::FilePath::CharType kElevatedHostBinaryName[] =
     FILE_PATH_LITERAL("remote_assistance_host_uiaccess.exe");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr char kAnonymousUserName[] = "anonymous_user";
 
@@ -204,7 +204,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Requests that the support host is launched with UiAccess on Windows.
   // This value, in conjuction with the platform policy, is used to determine
   // if an elevated host should be used.
@@ -562,7 +562,7 @@ void It2MeNativeMessagingHost::OnPolicyUpdate(
 absl::optional<bool>
 It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   DCHECK(policy_received_);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::DictionaryValue> platform_policies =
       policy_watcher_->GetPlatformPolicies();
   if (platform_policies) {
@@ -575,7 +575,7 @@ It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
       return value;
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   return absl::nullopt;
 }
@@ -641,7 +641,7 @@ std::string It2MeNativeMessagingHost::ExtractAccessToken(
   return auth_service_with_token.substr(strlen(kOAuth2ServicePrefix));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 bool It2MeNativeMessagingHost::DelegateToElevatedHost(
     std::unique_ptr<base::DictionaryValue> message) {
@@ -672,7 +672,7 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
   return false;
 }
 
-#else  // !defined(OS_WIN)
+#else  // !BUILDFLAG(IS_WIN)
 
 bool It2MeNativeMessagingHost::DelegateToElevatedHost(
     std::unique_ptr<base::DictionaryValue> message) {
@@ -680,6 +680,6 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
   return false;
 }
 
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

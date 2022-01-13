@@ -21,7 +21,7 @@
 #include "remoting/client/notification/version_range.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/locale_utils.h"
 #endif
 
@@ -29,9 +29,9 @@ namespace remoting {
 
 namespace {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 constexpr char kCurrentPlatform[] = "IOS";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 constexpr char kCurrentPlatform[] = "ANDROID";
 #else
 constexpr char kCurrentPlatform[] = "UNKNOWN";
@@ -208,7 +208,7 @@ NotificationClient::NotificationClient(
           kCurrentPlatform,
           kCurrentVersion,
           base::SysInfo::OperatingSystemVersion(),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
           // GetApplicationLocale() returns empty string on Android since we
           // don't pack any .pak file into the apk, so we need to get the locale
           // string directly.

@@ -22,13 +22,13 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/client_session_details.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -74,7 +74,7 @@ bool SecurityKeyIpcServerImpl::CreateChannel(
 
   mojo::NamedPlatformChannel::Options options;
   options.server_name = server_name;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.enforce_uniqueness = false;
   // Create a named pipe owned by the current user (the LocalService account
   // (SID: S-1-5-19) when running in the network process) which is available to
@@ -87,7 +87,7 @@ bool SecurityKeyIpcServerImpl::CreateChannel(
   options.security_descriptor = base::StringPrintf(
       L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   mojo::NamedPlatformChannel channel(options);
 
   mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
@@ -140,7 +140,7 @@ bool SecurityKeyIpcServerImpl::OnMessageReceived(const IPC::Message& message) {
 void SecurityKeyIpcServerImpl::OnChannelConnected(int32_t peer_pid) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool channel_error = false;
   DWORD peer_session_id;
   if (!ProcessIdToSessionId(peer_pid, &peer_session_id)) {
@@ -155,9 +155,9 @@ void SecurityKeyIpcServerImpl::OnChannelConnected(int32_t peer_pid) {
     OnChannelError();
     return;
   }
-#else   // !defined(OS_WIN)
+#else   // !BUILDFLAG(IS_WIN)
   CHECK_EQ(client_session_details_->desktop_session_id(), UINT32_MAX);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   if (connect_callback_) {
     std::move(connect_callback_).Run();

@@ -22,16 +22,16 @@
 #include "remoting/host/security_key/security_key_ipc_client.h"
 #include "remoting/host/security_key/security_key_message_handler.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "remoting/host/win/acl_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
 int StartRemoteSecurityKey() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!AddProcessAccessRightForWellKnownSid(
           WinLocalServiceSid, PROCESS_QUERY_LIMITED_INFORMATION)) {
     return kInitializationFailed;
@@ -54,7 +54,7 @@ int StartRemoteSecurityKey() {
   // handles as soon as we retrieve the corresponding file handles.
   SetStdHandle(STD_INPUT_HANDLE, nullptr);
   SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   // The files are automatically closed.
   base::File read_file(STDIN_FILENO);
   base::File write_file(STDOUT_FILENO);

@@ -23,12 +23,12 @@
 #include "base/values.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/threading/platform_thread.h"
 #include "base/win/scoped_handle.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -160,7 +160,7 @@ NativeMessagingReader::NativeMessagingReader(base::File file)
 NativeMessagingReader::~NativeMessagingReader() {
   read_task_runner_->DeleteSoon(FROM_HERE, core_.release());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The ReadMessage() method uses a blocking read (on all platforms) which
   // cause a deadlock if the owning thread attempts to destroy this object
   // while there is a read operation pending.
@@ -181,7 +181,7 @@ NativeMessagingReader::~NativeMessagingReader() {
       PLOG(ERROR) << "CancelSynchronousIo() failed";
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void NativeMessagingReader::Start(const MessageCallback& message_callback,

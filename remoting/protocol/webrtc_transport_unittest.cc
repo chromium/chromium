@@ -370,7 +370,7 @@ class WebrtcTransportTest : public testing::Test {
 };
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Connects DISABLED_Connects
 #else
 #define MAYBE_Connects Connects
@@ -393,7 +393,7 @@ TEST_F(WebrtcTransportTest, InvalidAuthKey) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DataStream DISABLED_DataStream
 #else
 #define MAYBE_DataStream DataStream
@@ -430,7 +430,7 @@ TEST_F(WebrtcTransportTest, MAYBE_DataStream) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DataStreamLate DISABLED_DataStreamLate
 #else
 #define MAYBE_DataStreamLate DataStreamLate
@@ -452,7 +452,7 @@ TEST_F(WebrtcTransportTest, MAYBE_DataStreamLate) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TerminateDataChannel DISABLED_TerminateDataChannel
 #else
 #define MAYBE_TerminateDataChannel TerminateDataChannel
@@ -491,7 +491,7 @@ TEST_F(WebrtcTransportTest, MAYBE_TerminateDataChannel) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ThreadJoinBlockedDuringConnectionTeardown_WatchdogFired \
   DISABLED_ThreadJoinBlockedDuringConnectionTeardown_WatchdogFired
 #else
