@@ -1011,32 +1011,7 @@ void ServiceWorkerVersion::Doom() {
   }
 }
 
-void ServiceWorkerVersion::OnMainScriptLoaded() {
-  if (!initialize_global_scope_after_main_script_loaded_)
-    return;
-  initialize_global_scope_after_main_script_loaded_ = false;
-
-  int net_error = script_cache_map()->main_script_net_error();
-  if (net_error != net::OK)
-    return;
-
-  // The subresource loaders need to be updated. Get the factories with the
-  // correct COEP value and pass it to the service worker.
-  //
-  // TODO(https://crbug.com/1039613): Update the loader factories passed to the
-  // script loader factory too.
-  DCHECK_EQ(NEW, status());
-  EmbeddedWorkerInstance::CreateFactoryBundlesResult result =
-      embedded_worker_->CreateFactoryBundles();
-  InitializeGlobalScope(std::move(result.script_bundle),
-                        std::move(result.subresource_bundle));
-}
-
-void ServiceWorkerVersion::InitializeGlobalScope(
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        script_loader_factories,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories) {
+void ServiceWorkerVersion::InitializeGlobalScope() {
   receiver_.reset();
   receiver_.Bind(service_worker_host_.InitWithNewEndpointAndPassReceiver());
 
@@ -1045,19 +1020,6 @@ void ServiceWorkerVersion::InitializeGlobalScope(
   // The registration must exist since we keep a reference to it during
   // service worker startup.
   DCHECK(registration);
-
-  if (subresource_loader_factories) {
-    // |subresource_loader_factories| is valid only when the service worker is
-    // a new worker.
-    DCHECK_EQ(NEW, status());
-
-    // |script_loader_factories| should be updated too.
-    DCHECK(script_loader_factories);
-    embedded_worker_->UpdateLoaderFactories(
-        std::move(script_loader_factories),
-        /*subresource_loader_factories=*/nullptr);
-  }
-
   DCHECK(worker_host_);
   DCHECK(service_worker_remote_);
   service_worker_remote_->InitializeGlobalScope(
@@ -1065,8 +1027,7 @@ void ServiceWorkerVersion::InitializeGlobalScope(
       worker_host_->container_host()->CreateServiceWorkerRegistrationObjectInfo(
           std::move(registration)),
       worker_host_->container_host()->CreateServiceWorkerObjectInfoToSend(this),
-      fetch_handler_existence_, std::move(subresource_loader_factories),
-      std::move(reporting_observer_receiver_));
+      fetch_handler_existence_, std::move(reporting_observer_receiver_));
 
   is_endpoint_ready_ = true;
 }

@@ -196,11 +196,6 @@ WebServiceWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
       MSG_ROUTING_NONE, std::move(task_runner));
 }
 
-mojom::blink::SubresourceLoaderUpdater*
-WebServiceWorkerFetchContextImpl::GetSubresourceLoaderUpdater() {
-  return this;
-}
-
 void WebServiceWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
     std::unique_ptr<PendingURLLoaderFactoryBundle>
         subresource_loader_factories) {

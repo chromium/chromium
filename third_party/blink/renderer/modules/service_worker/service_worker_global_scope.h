@@ -62,7 +62,6 @@ namespace blink {
 
 class ExceptionState;
 class FetchEvent;
-class PendingURLLoaderFactoryBundle;
 class RespondWithObserver;
 class RequestInit;
 class ScriptPromise;
@@ -408,8 +407,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       mojom::blink::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
       mojom::blink::FetchHandlerExistence fetch_handler_existence,
-      std::unique_ptr<PendingURLLoaderFactoryBundle>
-          subresource_loader_factories,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;
   void AbortInstallEvent(int event_id,

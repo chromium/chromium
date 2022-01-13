@@ -441,7 +441,6 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     version_ = CreateNewServiceWorkerVersion(
         wrapper()->context()->registry(), registration_.get(),
         embedded_test_server()->GetURL(worker_url), script_type);
-    version_->set_initialize_global_scope_after_main_script_loaded();
     // Make the registration findable via storage functions.
     wrapper()->context()->registry()->NotifyInstallingRegistration(
         registration_.get());

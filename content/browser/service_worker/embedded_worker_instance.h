@@ -240,18 +240,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       ContentBrowserClient::URLLoaderFactoryType factory_type,
       const std::string& devtools_worker_token);
 
-  // Creates a set of factory bundles for scripts and subresources. This must be
-  // called after the COEP value for the worker script is known.
-  struct CreateFactoryBundlesResult {
-    CreateFactoryBundlesResult();
-    ~CreateFactoryBundlesResult();
-    CreateFactoryBundlesResult(CreateFactoryBundlesResult&& other);
-
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle;
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle;
-  };
-  CreateFactoryBundlesResult CreateFactoryBundles();
-
   // Returns the unique token that has been generated to identify this worker
   // instance, and its corresponding GlobalScope in the renderer process. If the
   // service worker is not currently running, this is absl::nullopt.

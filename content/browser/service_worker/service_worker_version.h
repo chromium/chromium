@@ -62,10 +62,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace blink {
-class PendingURLLoaderFactoryBundle;
-}
-
 namespace content {
 
 class ServiceWorkerContainerHost;
@@ -468,15 +464,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
     force_bypass_cache_for_scripts_ = force_bypass_cache_for_scripts;
   }
 
-  bool initialize_global_scope_after_main_script_loaded() const {
-    return initialize_global_scope_after_main_script_loaded_;
-  }
-
-  void set_initialize_global_scope_after_main_script_loaded() {
-    DCHECK(!initialize_global_scope_after_main_script_loaded_);
-    initialize_global_scope_after_main_script_loaded_ = true;
-  }
-
   void set_main_script_load_params(
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params) {
     main_script_load_params_ = std::move(main_script_load_params);
@@ -489,12 +476,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
     outside_fetch_client_settings_object_ =
         std::move(outside_fetch_client_settings_object);
   }
-
-  // For use by EmbeddedWorkerInstance. Called when the main script loaded.
-  // This is only used for new (non-installed) workers, so that script
-  // evaluation doesn't happen in the renderer until the browser calls
-  // InitializeGlobalScope() to tell it's ready to proceed.
-  void OnMainScriptLoaded();
 
   // Returns the reason the embedded worker failed to start, using internal
   // information that may not be available to the caller. Returns
@@ -632,13 +613,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   }
 
   // Initializes the global scope of the ServiceWorker on the renderer side.
-  // This is dependant on a number of internal members and should only be called
-  // at a few select points where those members are valid.
-  void InitializeGlobalScope(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          script_loader_factories,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories);
+  void InitializeGlobalScope();
 
   // Returns true if |process_id| is a controllee process ID of this version.
   bool IsControlleeProcessID(int process_id) const;
@@ -1075,10 +1050,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // called. This allows the browser process to prevent the renderer from
   // evaluating the script immediately after the script has been loaded, until
   // the subresource loader factories are updated.
-  // TODO(crbug.com/1270772): This can probably be removed since
-  // PlzServiceWorker has landed, as it looks only used in tests. Verify and
-  // remove if that's accurate.
-  bool initialize_global_scope_after_main_script_loaded_ = false;
+  bool initialize_global_scope_after_main_script_loaded_for_testing = false;
 
   // Populated via network::mojom::URLResponseHead of the main script.
   std::unique_ptr<MainScriptResponse> main_script_response_;

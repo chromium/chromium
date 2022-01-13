@@ -73,8 +73,6 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
   TakePendingWorkerTimingReceiver(int request_id) override;
   void SetIsOfflineMode(bool) override;
 
-  mojom::blink::SubresourceLoaderUpdater* GetSubresourceLoaderUpdater();
-
   // mojom::blink::SubresourceLoaderUpdater implementation:
   void UpdateSubresourceLoaderFactories(
       std::unique_ptr<PendingURLLoaderFactoryBundle>

@@ -180,9 +180,6 @@ interface ServiceWorker {
   // ServiceWorkerGlobalScope#registration object and
   // ServiceWorkerGlobalScope#serviceWorker object. JavaScript execution of the
   // service worker does not start until this message is received.
-  // When the service worker is new and going to be registered,
-  // |subresource_loader_factories| is non-null and it should be used for all
-  // subsequent requests.
   // |reporting_observer_receiver| will be set to the worker global scope so
   // that reports queued to the remote of |reporting_observer_receiver| will
   // be notified to ReportingObservers registered with the global scope.
@@ -191,7 +188,6 @@ interface ServiceWorker {
       ServiceWorkerRegistrationObjectInfo registration_info,
       ServiceWorkerObjectInfo service_worker_info,
       FetchHandlerExistence fetch_handler_existence,
-      URLLoaderFactoryBundle? subresource_loader_factories,
       pending_receiver<ReportingObserver>? reporting_observer_receiver);
 
   // These methods dispatch InstallEvent and ActivateEvent to the
