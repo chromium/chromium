@@ -5,5 +5,6 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="ColorOverlay.Ui" parent="ColorOverlay.Ui.DayNight">
+        <item name="default_icon_color_inverse">@color/default_icon_color_dark</item>
     </style>
 </resources>

@@ -26,7 +26,7 @@
         android:layout_marginEnd="8dp"
         tools:ignore="ContentDescription"
         android:scaleType="centerInside"
-        app:tint="@macro/default_icon_color_inverse" />
+        app:tint="@color/default_icon_color_inverse" />
 
     <!-- The FrameLayout is to center the smaller LoadingView in the same space as the icon, as well
      as for providing a contentDescription for the LoadingView. -->
@@ -41,7 +41,7 @@
             android:layout_width="16sp"
             android:layout_height="16sp"
             android:layout_gravity="center"
-            android:indeterminateTint="@macro/default_icon_color_inverse" />
+            android:indeterminateTint="@color/default_icon_color_inverse" />
     </FrameLayout>
 
     <TextView

@@ -8,7 +8,7 @@ import android.content.Context;
 import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -177,9 +177,10 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
 
     void setPriceTrackingIconForEnabledState(boolean enabled) {
         mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON,
-                AppCompatResources.getDrawable(mContext,
+                ResourcesCompat.getDrawable(mContext.getResources(),
                         enabled ? R.drawable.price_tracking_enabled_filled
-                                : R.drawable.price_tracking_disabled));
+                                : R.drawable.price_tracking_disabled,
+                        /*theme=*/null));
     }
 
     void destroy() {

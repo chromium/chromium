@@ -22,9 +22,6 @@
     <!-- Same as ?attr/colorOnSurfaceInverse -->
     <color name="default_icon_color_inverse_light">@color/baseline_neutral_50</color>
     <color name="default_icon_color_inverse_dark">@color/baseline_neutral_800</color>
-    <!-- Same as ?attr/colorOnPrimary. -->
-    <color name="default_icon_color_on_accent1_light">@color/baseline_neutral_0</color>
-    <color name="default_icon_color_on_accent1_dark">@color/baseline_primary_800</color>
 
     <!-- Common text colors -->
     <!-- Same as ?attr/colorOnSurface. -->

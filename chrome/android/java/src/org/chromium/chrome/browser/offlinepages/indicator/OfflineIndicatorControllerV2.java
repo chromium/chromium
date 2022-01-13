@@ -21,7 +21,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.lang.annotation.Retention;
@@ -161,7 +160,8 @@ public class OfflineIndicatorControllerV2 {
             final int textColor = ApiCompatibilityUtils.getColor(
                     mContext.getResources(), R.color.default_text_color_inverse);
             final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);
-            final int iconTint = SemanticColorUtils.getDefaultIconColorInverse(mContext);
+            final int iconTint = ApiCompatibilityUtils.getColor(
+                    mContext.getResources(), R.color.default_icon_color_inverse);
             mStatusIndicator.updateContent(
                     mContext.getString(R.string.offline_indicator_v2_back_online_text), statusIcon,
                     backgroundColor, textColor, iconTint, mHideRunnable);
