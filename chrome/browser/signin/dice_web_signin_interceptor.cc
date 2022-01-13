@@ -783,8 +783,8 @@ std::string DiceWebSigninInterceptor::GetPersistentEmailHash(
 
 void DiceWebSigninInterceptor::RecordProfileCreationDeclined(
     const std::string& email) {
-  DictionaryPrefUpdateDeprecated update(
-      profile_->GetPrefs(), kProfileCreationInterceptionDeclinedPref);
+  DictionaryPrefUpdate update(profile_->GetPrefs(),
+                              kProfileCreationInterceptionDeclinedPref);
   std::string key = GetPersistentEmailHash(email);
   absl::optional<int> declined_count = update->FindIntKey(key);
   update->SetIntKey(key, declined_count.value_or(0) + 1);
