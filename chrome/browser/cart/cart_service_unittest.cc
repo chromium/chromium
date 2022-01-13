@@ -1898,13 +1898,13 @@ TEST_F(CartServiceCouponTest, TestCartFeatureStatusUpdate) {
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
 
   EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(false)).Times(2);
-  ListPrefUpdateDeprecated(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
       ->Append(base::Value("chrome_cart"));
-  ListPrefUpdateDeprecated(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
       ->Append(base::Value("something_unrelated"));
 
   EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(true)).Times(1);
-  ListPrefUpdateDeprecated(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
       ->EraseListValue(base::Value("chrome_cart"));
 }
 

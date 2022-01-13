@@ -946,8 +946,7 @@ void CartService::CacheUsedDiscounts(
     VLOG(1) << "Empty rule based discounts, cache nothing";
     return;
   }
-  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
-                                        prefs::kCartUsedDiscounts);
+  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kCartUsedDiscounts);
   for (auto discount_info : proto.discount_info().rule_discount_info()) {
     update->SetBoolKey(discount_info.rule_id(), true);
   }
