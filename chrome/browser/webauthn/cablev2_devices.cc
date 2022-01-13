@@ -103,7 +103,7 @@ static std::string NameForDisplay(base::StringPiece raw_name) {
 
 // DeletePairingByPublicKey erases any pairing with the given public key
 // from `list`.
-void DeletePairingByPublicKey(base::ListValue* list,
+void DeletePairingByPublicKey(base::Value* list,
                               const std::string& public_key_base64) {
   list->EraseListValueIf([&public_key_base64](const auto& value) {
     if (!value.is_dict()) {
@@ -365,7 +365,7 @@ void AddPairing(PrefService* pref_service,
   // For Incognito/Guest profiles, pairings will only last for the duration of
   // that session. While an argument could be made that it's safe to persist
   // such pairing for longer, this seems like the safe option initially.
-  ListPrefUpdateDeprecated update(pref_service, kWebAuthnCablePairingsPrefName);
+  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
 
   // Find any existing entries with the same public key and replace them. The
   // handshake protocol requires the phone to prove possession of the public
@@ -374,25 +374,24 @@ void AddPairing(PrefService* pref_service,
       base::Base64Encode(pairing->peer_public_key_x962);
   DeletePairingByPublicKey(update.Get(), public_key_base64);
 
-  auto dict = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  dict->SetKey(kPairingPrefPublicKey,
-               base::Value(std::move(public_key_base64)));
-  dict->SetKey(kPairingPrefTunnelServer,
-               base::Value(pairing->tunnel_server_domain));
-  dict->SetKey(kPairingPrefName, base::Value(std::move(name)));
-  dict->SetKey(kPairingPrefContactId,
-               base::Value(base::Base64Encode(pairing->contact_id)));
-  dict->SetKey(kPairingPrefId, base::Value(base::Base64Encode(pairing->id)));
-  dict->SetKey(kPairingPrefSecret,
-               base::Value(base::Base64Encode(pairing->secret)));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(kPairingPrefPublicKey, base::Value(std::move(public_key_base64)));
+  dict.SetKey(kPairingPrefTunnelServer,
+              base::Value(pairing->tunnel_server_domain));
+  dict.SetKey(kPairingPrefName, base::Value(std::move(name)));
+  dict.SetKey(kPairingPrefContactId,
+              base::Value(base::Base64Encode(pairing->contact_id)));
+  dict.SetKey(kPairingPrefId, base::Value(base::Base64Encode(pairing->id)));
+  dict.SetKey(kPairingPrefSecret,
+              base::Value(base::Base64Encode(pairing->secret)));
 
   base::Time::Exploded now;
   base::Time::Now().UTCExplode(&now);
-  dict->SetKey(kPairingPrefTime,
-               // RFC 3339 time format.
-               base::Value(base::StringPrintf(
-                   "%04d-%02d-%02dT%02d:%02d:%02dZ", now.year, now.month,
-                   now.day_of_month, now.hour, now.minute, now.second)));
+  dict.SetKey(kPairingPrefTime,
+              // RFC 3339 time format.
+              base::Value(base::StringPrintf(
+                  "%04d-%02d-%02dT%02d:%02d:%02dZ", now.year, now.month,
+                  now.day_of_month, now.hour, now.minute, now.second)));
 
   update->Append(std::move(dict));
 }
@@ -402,7 +401,7 @@ void AddPairing(PrefService* pref_service,
 void DeletePairingByPublicKey(
     PrefService* pref_service,
     std::array<uint8_t, device::kP256X962Length> public_key) {
-  ListPrefUpdateDeprecated update(pref_service, kWebAuthnCablePairingsPrefName);
+  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
   DeletePairingByPublicKey(update.Get(), base::Base64Encode(public_key));
 }
 
@@ -414,7 +413,7 @@ bool RenamePairing(
   const std::string name = FindUniqueName(new_name, existing_names);
   const std::string public_key_base64 = base::Base64Encode(public_key);
 
-  ListPrefUpdateDeprecated update(pref_service, kWebAuthnCablePairingsPrefName);
+  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
   base::Value::ListView list = update.Get()->GetList();
 
   for (base::Value& value : list) {
