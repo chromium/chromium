@@ -3077,13 +3077,10 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-border-image-002.https.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/web-share/share-url-invalid.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webxr/depth-sensing/cpu/depth_sensing_cpu_staleView.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-009.https.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] virtual/scroll-unification/external/wpt/dom/events/scrolling/overscroll-event-fired-to-document.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/portals/external/wpt/portals/no-portal-in-sandboxed-popup.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-002.https.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-color-adjust/inheritance.html [ Crash Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.window.html [ Timeout ]
@@ -3099,8 +3096,6 @@ crbug.com/626703 [ Mac11-arm64 ] virtual/offsetparent-old-behavior/external/wpt/
 crbug.com/626703 [ Mac11-arm64 ] wpt_internal/bluetooth/characteristic/getDescriptors/blocklisted-descriptors-not-present.https.html [ Crash Failure ]
 crbug.com/626703 [ Mac11-arm64 ] wpt_internal/css/css-transforms/raster-scale-perspective-001.html [ Crash Failure ]
 crbug.com/626703 [ Mac11-arm64 ] wpt_internal/css/selectors/focus-visible-select-001.html [ Crash Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-012.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-constructor-error.https.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-022.html [ Crash Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-treat-as-public [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/fetch.window.html [ Timeout ]
@@ -7635,8 +7630,6 @@ crbug.com/1284572 [ Linux ] virtual/threaded/http/tests/devtools/isolated-code-c
 crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Timeout ]
 
 # Sheriff 2022-01-07
-crbug.com/1285348 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/hidpi/canvas-transform.https.html [ Failure Pass ]
-crbug.com/1285350 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-011.https.html [ Failure Pass ]
 crbug.com/1285438 fast/layers/clip-rects-transformed.html [ Failure Pass ]
 crbug.com/1285431 [ Mac ] virtual/backface-visibility-interop/compositing/overflow/transform-should-update-absolute-clip-rects.html [ Crash Failure Pass ]
 crbug.com/1285437 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Pass Timeout ]
@@ -7654,3 +7647,12 @@ crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.htm
 
 # Changes to fork() on Mac causing test to crash
 crbug.com/1284401 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/create-credential.https.html [ Crash Failure ]
+
+# Flaky failures in finding the reference file on Mac
+crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-012.https.html [ Failure Pass ]
+crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-constructor-error.https.html [ Failure Pass ]
+crbug.com/1286944 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-002.https.html [ Failure Pass ]
+crbug.com/1286944 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-009.https.html [ Failure Pass ]
+crbug.com/1286944 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-border-image-002.https.html [ Failure Pass ]
+crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/hidpi/canvas-transform.https.html [ Failure Pass ]
+crbug.com/1286944 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-011.https.html [ Failure Pass ]
