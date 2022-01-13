@@ -15,7 +15,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
@@ -55,21 +54,21 @@ class CRYPTO_EXPORT HMAC {
   // this requirement is gone.  But a system crypto library may still enforce
   // this old requirement.  If the key is shorter than this recommended value,
   // Init() may fail.
-  bool Init(const unsigned char* key, size_t key_length) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Init(const unsigned char* key, size_t key_length);
 
   // Initializes this instance using |key|. Call Init
   // only once. It returns false on the second or later calls.
-  bool Init(const SymmetricKey* key) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Init(const SymmetricKey* key);
 
   // Initializes this instance using |key|. Call Init only once. It returns
   // false on the second or later calls.
-  bool Init(base::StringPiece key) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Init(base::StringPiece key) {
     return Init(base::as_bytes(base::make_span(key)));
   }
 
   // Initializes this instance using |key|. Call Init only once. It returns
   // false on the second or later calls.
-  bool Init(base::span<const uint8_t> key) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Init(base::span<const uint8_t> key) {
     return Init(key.data(), key.size());
   }
 
@@ -78,11 +77,11 @@ class CRYPTO_EXPORT HMAC {
   // returned in |digest|, which has |digest_length| bytes of storage available.
   // If |digest_length| is smaller than DigestLength(), the output will be
   // truncated. If it is larger, this method will fail.
-  bool Sign(base::StringPiece data,
-            unsigned char* digest,
-            size_t digest_length) const WARN_UNUSED_RESULT;
-  bool Sign(base::span<const uint8_t> data,
-            base::span<uint8_t> digest) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Sign(base::StringPiece data,
+                          unsigned char* digest,
+                          size_t digest_length) const;
+  [[nodiscard]] bool Sign(base::span<const uint8_t> data,
+                          base::span<uint8_t> digest) const;
 
   // Verifies that the HMAC for the message in |data| equals the HMAC provided
   // in |digest|, using the algorithm supplied to the constructor and the key
@@ -91,18 +90,17 @@ class CRYPTO_EXPORT HMAC {
   // comparisons may result in side-channel disclosures, such as timing, that
   // undermine the cryptographic integrity. |digest| must be exactly
   // |DigestLength()| bytes long.
-  bool Verify(base::StringPiece data,
-              base::StringPiece digest) const WARN_UNUSED_RESULT;
-  bool Verify(base::span<const uint8_t> data,
-              base::span<const uint8_t> digest) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Verify(base::StringPiece data,
+                            base::StringPiece digest) const;
+  [[nodiscard]] bool Verify(base::span<const uint8_t> data,
+                            base::span<const uint8_t> digest) const;
 
   // Verifies a truncated HMAC, behaving identical to Verify(), except
   // that |digest| is allowed to be smaller than |DigestLength()|.
-  bool VerifyTruncated(base::StringPiece data,
-                       base::StringPiece digest) const WARN_UNUSED_RESULT;
-  bool VerifyTruncated(base::span<const uint8_t> data,
-                       base::span<const uint8_t> digest) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool VerifyTruncated(base::StringPiece data,
+                                     base::StringPiece digest) const;
+  [[nodiscard]] bool VerifyTruncated(base::span<const uint8_t> data,
+                                     base::span<const uint8_t> digest) const;
 
  private:
   HashAlgorithm hash_alg_;
