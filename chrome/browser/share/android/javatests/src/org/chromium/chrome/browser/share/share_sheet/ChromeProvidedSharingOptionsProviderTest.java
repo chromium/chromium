@@ -119,7 +119,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         Mockito.when(mTabProvider.get()).thenReturn(mTab);
         Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
         Mockito.when(mTab.getUrl()).thenReturn(new GURL(URL));
-        Mockito.when(mWebContents.isIncognito()).thenReturn(false);
+        Mockito.when(mTab.isIncognito()).thenReturn(false);
         Mockito.doNothing().when(mBottomSheetController).hideContent(any(), anyBoolean());
 
         TrackerFactory.setTrackerForTests(mTracker);
