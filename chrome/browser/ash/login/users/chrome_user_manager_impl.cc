@@ -789,8 +789,8 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   // If ephemeral users are enabled and we are on the login screen, take this
   // opportunity to clean up by removing all regular users except the owner.
   if (GetEphemeralUsersEnabled() && !IsUserLoggedIn()) {
-    ListPrefUpdateDeprecated prefs_users_update(
-        GetLocalState(), user_manager::kRegularUsersPref);
+    ListPrefUpdate prefs_users_update(GetLocalState(),
+                                      user_manager::kRegularUsersPref);
     prefs_users_update->ClearList();
     for (user_manager::UserList::iterator it = users_.begin();
          it != users_.end();) {
@@ -956,8 +956,7 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeData(
   // TODO(tbarzic): Forward data removal request to HammerDeviceHandler,
   // instead of removing the prefs value here.
   if (GetLocalState()->FindPreference(prefs::kDetachableBaseDevices)) {
-    DictionaryPrefUpdateDeprecated update(GetLocalState(),
-                                          prefs::kDetachableBaseDevices);
+    DictionaryPrefUpdate update(GetLocalState(), prefs::kDetachableBaseDevices);
     update->RemoveKey(account_id.HasAccountIdKey()
                           ? account_id.GetAccountIdKey()
                           : account_id.GetUserEmail());
@@ -1052,7 +1051,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   // will be loaded in LoadDeviceLocalAccounts() on the next reboot regardless
   // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
   // us to clean up associated data if they disappear from policy.
-  ListPrefUpdateDeprecated prefs_device_local_accounts_update(
+  ListPrefUpdate prefs_device_local_accounts_update(
       GetLocalState(), kDeviceLocalAccountsWithSavedData);
   prefs_device_local_accounts_update->ClearList();
   for (const auto& account : device_local_accounts)
@@ -1349,16 +1348,14 @@ bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
 }
 
 void ChromeUserManagerImpl::AddReportingUser(const AccountId& account_id) {
-  ListPrefUpdateDeprecated users_update(GetLocalState(),
-                                        ::prefs::kReportingUsers);
+  ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
   base::Value email_value(account_id.GetUserEmail());
   if (!base::Contains(users_update->GetList(), email_value))
     users_update->Append(std::move(email_value));
 }
 
 void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {
-  ListPrefUpdateDeprecated users_update(GetLocalState(),
-                                        ::prefs::kReportingUsers);
+  ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
   users_update->EraseListIter(
       std::find(users_update->GetList().begin(), users_update->GetList().end(),
                 base::Value(FullyCanonicalize(account_id.GetUserEmail()))));

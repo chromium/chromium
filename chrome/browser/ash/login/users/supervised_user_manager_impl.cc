@@ -229,31 +229,30 @@ void SupervisedUserManagerImpl::SetUserStringValue(const std::string& user_id,
                                                    const char* key,
                                                    const std::string& value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  DictionaryPrefUpdate update(local_state, key);
+  update->SetStringKey(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserIntegerValue(const std::string& user_id,
                                                     const char* key,
                                                     const int value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  DictionaryPrefUpdate update(local_state, key);
+  update->SetIntKey(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserBooleanValue(const std::string& user_id,
                                                     const char* key,
                                                     const bool value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  DictionaryPrefUpdate update(local_state, key);
+  update->SetBoolKey(user_id, value);
 }
 
 void SupervisedUserManagerImpl::RemoveNonCryptohomeData(
     const std::string& user_id) {
   PrefService* prefs = g_browser_process->local_state();
-  ListPrefUpdateDeprecated prefs_new_users_update(prefs,
-                                                  kSupervisedUsersFirstRun);
+  ListPrefUpdate prefs_new_users_update(prefs, kSupervisedUsersFirstRun);
   prefs_new_users_update->EraseListValue(base::Value(user_id));
 
   CleanPref(user_id, kSupervisedUserSyncId);
@@ -270,13 +269,13 @@ void SupervisedUserManagerImpl::RemoveNonCryptohomeData(
 void SupervisedUserManagerImpl::CleanPref(const std::string& user_id,
                                           const char* key) {
   PrefService* prefs = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated dict_update(prefs, key);
+  DictionaryPrefUpdate dict_update(prefs, key);
   dict_update->RemoveKey(user_id);
 }
 
 bool SupervisedUserManagerImpl::CheckForFirstRun(const std::string& user_id) {
-  ListPrefUpdateDeprecated prefs_new_users_update(
-      g_browser_process->local_state(), kSupervisedUsersFirstRun);
+  ListPrefUpdate prefs_new_users_update(g_browser_process->local_state(),
+                                        kSupervisedUsersFirstRun);
   return prefs_new_users_update->EraseListValue(base::Value(user_id));
 }
 

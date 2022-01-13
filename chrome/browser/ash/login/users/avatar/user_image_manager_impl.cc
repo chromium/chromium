@@ -465,7 +465,7 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
     return;
   }
 
-  DictionaryPrefUpdateDeprecated update(local_state, kUserImageProperties);
+  DictionaryPrefUpdate update(local_state, kUserImageProperties);
 
   update->SetKey(account_id().GetUserEmail(), std::move(entry));
 
@@ -855,19 +855,19 @@ void UserImageManagerImpl::DownloadProfileData() {
 
 void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
     const char* prefs_dict_root) {
-  DictionaryPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                        prefs_dict_root);
-  const base::DictionaryValue* image_properties;
-  if (!update->GetDictionaryWithoutPathExpansion(account_id_.GetUserEmail(),
-                                                 &image_properties))
+  DictionaryPrefUpdate update(g_browser_process->local_state(),
+                              prefs_dict_root);
+  const base::Value* image_properties =
+      update->FindDictKey(account_id_.GetUserEmail());
+  if (!image_properties)
     return;
 
-  std::string image_path;
-  image_properties->GetString(kImagePathNodeName, &image_path);
-  if (!image_path.empty()) {
+  const std::string* image_path =
+      image_properties->FindStringKey(kImagePathNodeName);
+  if (image_path && !image_path->empty()) {
     background_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
-                                  base::FilePath(image_path)));
+                                  base::FilePath(*image_path)));
   }
   update->RemoveKey(account_id_.GetUserEmail());
 }
