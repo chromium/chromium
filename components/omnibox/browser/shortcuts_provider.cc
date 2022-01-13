@@ -370,7 +370,12 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   AutocompleteMatch match;
   match.provider = this;
   match.relevance = relevance;
-  match.deletable = true;
+
+  // https://crbug.com/1154982#c36 - When deleting history is disabled by
+  // policy, also disable deleting Shortcuts matches, because it's confusing
+  // when the X appears on the de-duplicated History and Shortcuts matches.
+  match.deletable = client_->AllowDeletingBrowserHistory();
+
   match.fill_into_edit = shortcut.match_core.fill_into_edit;
   match.destination_url = shortcut.match_core.destination_url;
   DCHECK(match.destination_url.is_valid());

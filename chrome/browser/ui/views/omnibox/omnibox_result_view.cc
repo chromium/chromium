@@ -188,11 +188,6 @@ OmniboxResultView::OmniboxResultView(
 
   const gfx::Insets child_insets(0, 0, 0, OmniboxMatchCellView::kMarginRight);
 
-  // This is intentionally not in the tab order by default, but should be if the
-  // user has full-acessibility mode on. This is because this is a tertiary
-  // priority button, which already has a Shift+Delete shortcut.
-  // TODO(tommycli): Make sure we announce the Shift+Delete capability in the
-  // accessibility node data for removable suggestions.
   remove_suggestion_button_ = suggestion_button_container->AddChildView(
       std::make_unique<OmniboxRemoveSuggestionButton>(base::BindRepeating(
           &OmniboxResultView::ButtonPressed, base::Unretained(this),
