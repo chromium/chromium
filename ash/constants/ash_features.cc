@@ -383,7 +383,7 @@ const base::Feature kDemoModeSWA{"DemoModeSWA",
 
 // Enables or disables Sync for desk templates on Chrome OS.
 const base::Feature kDeskTemplateSync{"DeskTemplateSync",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDesksTemplates{"DesksTemplates",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

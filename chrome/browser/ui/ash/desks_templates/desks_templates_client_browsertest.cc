@@ -255,7 +255,7 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{full_restore::features::kFullRestore,
                               ash::features::kDesksTemplates},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   DesksTemplatesClientTest(const DesksTemplatesClientTest&) = delete;
   DesksTemplatesClientTest& operator=(const DesksTemplatesClientTest&) = delete;
@@ -1246,7 +1246,7 @@ class DesksTemplatesClientArcTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{full_restore::features::kFullRestore,
                               ash::features::kDesksTemplates},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   DesksTemplatesClientArcTest(const DesksTemplatesClientArcTest&) = delete;
   DesksTemplatesClientArcTest& operator=(const DesksTemplatesClientArcTest&) =
@@ -1364,8 +1364,9 @@ class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
     account_id2_ = login_mixin_.users()[1].account_id;
 
     // This feature depends on full restore feature, so need to enable it.
-    scoped_feature_list_.InitAndEnableFeature(
-        full_restore::features::kFullRestore);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{full_restore::features::kFullRestore},
+        /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   ~DesksTemplatesClientMultiProfileTest() override = default;
 
