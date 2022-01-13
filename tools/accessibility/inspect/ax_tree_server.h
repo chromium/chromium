@@ -30,6 +30,9 @@ class AXTreeServer final {
   AXTreeServer(const AXTreeServer&) = delete;
   AXTreeServer& operator=(const AXTreeServer&) = delete;
 
+  // If an error occurs during initialization, set bit here.
+  bool error;
+
  private:
 #if defined(OS_WIN)
   // Only one COM initializer per thread is permitted.

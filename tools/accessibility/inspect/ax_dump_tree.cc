@@ -112,5 +112,9 @@ int main(int argc, char** argv) {
 
   auto server =
       absl::make_unique<content::AXTreeServer>(*selector, *scenario, api);
+
+  if (server->error) {
+    return 1;
+  }
   return 0;
 }
