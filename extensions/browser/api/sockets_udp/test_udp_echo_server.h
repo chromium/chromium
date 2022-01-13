@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/threading/thread.h"
 #include "net/base/host_port_pair.h"
 
@@ -32,7 +31,7 @@ class TestUdpEchoServer {
   // |host_port_pair| to the the host and port the server is listening on.
   // |host_port_pair| must not be null. Spins the current message loop while
   // waiting for the server to start.
-  bool Start(net::HostPortPair* host_port_pair) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Start(net::HostPortPair* host_port_pair);
 
  private:
   // Class that does all the work. Created on the test server's thread, but

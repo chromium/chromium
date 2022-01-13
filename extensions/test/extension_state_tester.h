@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_TEST_EXTENSION_STATE_TESTER_H_
 #define EXTENSIONS_TEST_EXTENSION_STATE_TESTER_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension_id.h"
@@ -67,29 +66,29 @@ class ExtensionStateTester {
   ~ExtensionStateTester();
 
   // Expects the extension to be enabled.
-  bool ExpectEnabled(const ExtensionId& extension_id) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExpectEnabled(const ExtensionId& extension_id);
 
   // Expects the extension to be disabled with (only) the specified `reason`.
-  bool ExpectDisabledWithSingleReason(const ExtensionId& extension_id,
-                                      disable_reason::DisableReason reason)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExpectDisabledWithSingleReason(
+      const ExtensionId& extension_id,
+      disable_reason::DisableReason reason);
 
   // Expects the extension to be disabled with exactly the specified
   // `disable_reasons`.
-  bool ExpectDisabledWithReasons(const ExtensionId& extension_id,
-                                 int disable_reasons) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExpectDisabledWithReasons(const ExtensionId& extension_id,
+                                               int disable_reasons);
 
   // Expects the extension to be blocklisted.
-  bool ExpectBlocklisted(const ExtensionId& extension_id) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExpectBlocklisted(const ExtensionId& extension_id);
 
   // Expects the extension to be terminated.
-  bool ExpectTerminated(const ExtensionId& extension_id) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExpectTerminated(const ExtensionId& extension_id);
 
  private:
   // Helper method to iterate over the registry sets, expecting the extension
   // to only be within the one indicated by `set_name`.
-  bool ExpectOnlyInSet(const ExtensionId& extension_id,
-                       const char* set_name) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExpectOnlyInSet(const ExtensionId& extension_id,
+                                     const char* set_name);
 
   const raw_ptr<ExtensionRegistry> registry_;
   const raw_ptr<ExtensionPrefs> prefs_;

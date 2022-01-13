@@ -96,8 +96,7 @@ class ExtensionApiFrameIdMap {
       int frame_id);
 
   // Retrieves the FrameData for a given RenderFrameHost id.
-  FrameData GetFrameData(content::GlobalRenderFrameHostId rfh_id)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] FrameData GetFrameData(content::GlobalRenderFrameHostId rfh_id);
 
   // Called when a render frame is deleted. Stores the FrameData for |rfh| in
   // the deleted frames map so it can still be accessed for beacon requests. The

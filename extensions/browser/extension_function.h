@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -203,7 +202,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // exactly once.
   //
   // ExtensionFunction implementations are encouraged to just implement Run.
-  virtual ResponseAction Run() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual ResponseAction Run() = 0;
 
   // Gets whether quota should be applied to this individual function
   // invocation. This is different to GetQuotaLimitHeuristics which is only
@@ -420,9 +419,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // has already executed, and only if it returned RespondLater().
   //
   // Respond to the extension immediately with |result|.
-  ResponseAction RespondNow(ResponseValue result) WARN_UNUSED_RESULT;
+  [[nodiscard]] ResponseAction RespondNow(ResponseValue result);
   // Don't respond now, but promise to call Respond(...) later.
-  ResponseAction RespondLater() WARN_UNUSED_RESULT;
+  [[nodiscard]] ResponseAction RespondLater();
   // Respond() was already called before Run() finished executing.
   //
   // Assume Run() uses some helper system that accepts callback that Respond()s.
@@ -444,13 +443,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   //   else
   //     // Asynchronously call |callback|.
   // }
-  ResponseAction AlreadyResponded() WARN_UNUSED_RESULT;
+  [[nodiscard]] ResponseAction AlreadyResponded();
 
   // This is the return value of the EXTENSION_FUNCTION_VALIDATE macro, which
   // needs to work from Run(), RunAsync(), and RunSync(). The former of those
   // has a different return type (ResponseAction) than the latter two (bool).
-  static ResponseAction ValidationFailure(ExtensionFunction* function)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static ResponseAction ValidationFailure(
+      ExtensionFunction* function);
 
   // If RespondLater() was returned from Run(), functions must at some point
   // call Respond() with |result| as their result.
