@@ -216,11 +216,11 @@ void OverviewItem::HideForDesksTemplatesGrid() {
   GetWindow()->SetProperty(kForceVisibleInMiniViewKey, true);
 
   DCHECK(item_widget_);
-  PerformFadeOutLayer(item_widget_->GetLayer());
+  item_widget_->GetLayer()->SetOpacity(0.0f);
 
   for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
     transient_child->SetProperty(kForceVisibleInMiniViewKey, true);
-    PerformFadeOutLayer(transient_child->layer());
+    transient_child->layer()->SetOpacity(0.0f);
   }
 
   item_widget_event_blocker_ =
