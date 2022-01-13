@@ -65,7 +65,7 @@ void PlatformNotificationServiceProxy::VerifyServiceWorkerScope(
   base::OnceClosure task;
 
   if (status == blink::ServiceWorkerStatusCode::kOk &&
-      registration->scope().DeprecatedGetOriginAsURL() == data.origin) {
+      registration->key().origin().GetURL() == data.origin) {
     DoDisplayNotification(data, registration->scope(), std::move(callback));
   } else {
     std::move(callback).Run(/* success= */ false, /* notification_id= */ "");
