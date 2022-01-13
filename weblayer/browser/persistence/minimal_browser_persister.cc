@@ -59,7 +59,7 @@ class MinimalPersister {
   // Returns true if all |commands| were successfully added. A return value of
   // false indicates the max size has been reached and no more commands will be
   // accepted.
-  bool AppendIfFits(SessionCommands commands) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool AppendIfFits(SessionCommands commands) {
     // The number of commands is written out as |size_type|, make sure the
     // count isn't exceeded.
     const int commands_size = CalculateSizeForCommands(commands);

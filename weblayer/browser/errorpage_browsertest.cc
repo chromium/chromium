@@ -69,8 +69,8 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
   // effects, such as the scheduling of an auto-reload timer.
   //
   // Return true if the navigation was successful, or false if it failed.
-  bool Navigate(const GURL& url, bool disable_network_error_auto_reload = false)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Navigate(const GURL& url,
+                              bool disable_network_error_auto_reload = false) {
     content::TestNavigationManager navigation(web_contents(), url);
     NavigationController::NavigateParams params;
     auto* navigation_controller = shell()->tab()->GetNavigationController();
