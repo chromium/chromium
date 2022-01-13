@@ -327,6 +327,7 @@ public class BookmarkBridge {
             mSubscriptionManager = new CommerceSubscriptionsServiceFactory()
                                            .getForLastUsedProfile()
                                            .getSubscriptionsManager();
+            mSubscriptionManager.addObserver(mSubscriptionsObserver);
         }
     }
 
