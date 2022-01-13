@@ -57,7 +57,7 @@
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #else
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -338,7 +338,7 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
   ASSERT_FALSE(manager_->core()->service());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   // Make sure user is not signed in.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
@@ -365,12 +365,12 @@ TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(IsRequestActive());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(joaodasilva): these tests rely on issuing the OAuth2 login refresh
 // token after signin. Revisit this after figuring how to handle that on
 // Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedIn) {
   // UserCloudPolicyManager should be initialized.
@@ -531,7 +531,7 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
             job_type);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UserPolicySigninServiceSignedInTest, SignOutAfterInit) {
   // UserCloudPolicyManager should be initialized.

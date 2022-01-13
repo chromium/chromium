@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, CursorHighlightEnabled) {
 }
 
 // https://crbug.com/1225510
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CaretHighlightEnabled DISABLED_CaretHighlightEnabled
 #else
 #define MAYBE_CaretHighlightEnabled CaretHighlightEnabled
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MonoAudioEnabled) {
 }
 
 // Flaky on chromeos: crbug.com/1184225
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AutoclickEnabled DISABLED_AutoclickEnabled
 #else
 #define MAYBE_AutoclickEnabled AutoclickEnabled

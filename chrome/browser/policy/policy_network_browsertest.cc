@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest,
 // Then QuicAllowed=false policy is dynamically set for both profiles.
 //
 // Disabled due to flakiness on windows: https://crbug.com/947931.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_QuicAllowedFalseAfterTwoProfilesCreated \
   DISABLED_QuicAllowedFalseAfterTwoProfilesCreated
 #else

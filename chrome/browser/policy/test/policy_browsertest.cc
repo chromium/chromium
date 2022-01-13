@@ -54,7 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "base/compiler_specific.h"
 #endif
 
@@ -85,7 +85,7 @@ bool IsWebGLEnabled(content::WebContents* contents) {
 }  // namespace
 
 // This test is flaky on Windows 10: https://crbug.com/1069558
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Disable3DAPIs DISABLED_Disable3DAPIs
 #else
 #define MAYBE_Disable3DAPIs Disable3DAPIs
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   EXPECT_TRUE(IsWebGLEnabled(contents));
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 // Times out on mac-debug.
 // TODO(crbug.com/1159423): Re-enable
 #define MAYBE_HomepageLocation DISABLED_HomepageLocation
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
             contents->GetLastCommittedURL());
 }
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // Flaky on ASAN on Mac. See https://crbug.com/674497.
 #define MAYBE_IncognitoEnabled DISABLED_IncognitoEnabled
 #else

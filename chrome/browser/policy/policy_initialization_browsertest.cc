@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -24,7 +24,7 @@
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kMockPolicyName[] = "AllowFileSelectionDialogs";
 #endif
 
@@ -75,7 +75,7 @@ class PolicyInitializationBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Set up policy value for windows platform
   void SetUpPlatformPolicyValue() {
     HKEY root = HKEY_CURRENT_USER;
@@ -96,7 +96,7 @@ class PolicyInitializationBrowserTest : public InProcessBrowserTest {
 #endif
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PolicyInitializationBrowserTest, VerifyLocalState) {
   VerifyLocalState();
 }

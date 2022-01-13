@@ -19,7 +19,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_service.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/browser/android/policy_cache_updater_android.h"
 #endif
 
@@ -169,9 +169,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
       machine_level_user_cloud_policy_manager_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<android::PolicyCacheUpdater> policy_cache_updater_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Owned by base class.
   raw_ptr<ConfigurationPolicyProvider> platform_provider_ = nullptr;

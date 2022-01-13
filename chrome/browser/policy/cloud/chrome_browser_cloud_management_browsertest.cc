@@ -59,18 +59,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_android.h"
 #else
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h"
 #include "chrome/browser/ui/browser_finder.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_mac_util.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 using testing::_;
 using testing::DoAll;
@@ -92,13 +92,13 @@ constexpr char kEnrollmentResultMetrics[] =
 const char kUnenrollmentSuccessMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 typedef ChromeBrowserCloudManagementBrowserTestDelegateAndroid
     ChromeBrowserCloudManagementBrowserTestDelegateType;
 #else
 typedef ChromeBrowserCloudManagementBrowserTestDelegateDesktop
     ChromeBrowserCloudManagementBrowserTestDelegateType;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void UpdatePolicyStorage(PolicyStorage* policy_storage) {
   em::CloudPolicySettings settings;
@@ -392,13 +392,13 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementServiceIntegrationTest,
   EXPECT_NE(token_.empty(), expect_success);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(http://crbug.com/1091438): Enable this test on Android once reporting is
 // implemented.
 #define MAYBE_ChromeDesktopReport DISABLED_ChromeDesktopReport
 #else
 #define MAYBE_ChromeDesktopReport ChromeDesktopReport
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementServiceIntegrationTest,
                        MAYBE_ChromeDesktopReport) {
   em::ChromeDesktopReportRequest chrome_desktop_report;
@@ -579,7 +579,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
 };
 
 // Consistently timing out on Windows. http://crbug.com/1025220
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementEnrollmentTest, MAYBE_Test) {
   delegate_.MaybeCheckTotalBrowserCount(1u);
 
   VerifyEnrollmentResult();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Verify the last mericis of launch is recorded in
   // applicationDidFinishNotification.
   EXPECT_EQ(1u, histogram_tester_
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementEnrollmentTest, MAYBE_Test) {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // No need to run this test with |should_display_error_message| equals true on
 // Android.
 INSTANTIATE_TEST_SUITE_P(
@@ -620,7 +620,7 @@ INSTANTIATE_TEST_SUITE_P(ChromeBrowserCloudManagementEnrollmentTest,
                          ::testing::Combine(::testing::Bool(),
                                             ::testing::Bool(),
                                             ::testing::Bool()));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class MachineLevelUserCloudPolicyPolicyFetchObserver
     : public ChromeBrowserCloudManagementControllerObserver {
@@ -715,13 +715,13 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   base::ScopedTempDir temp_dir_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on android-pie-x86-rel. https://crbug.com/1235367
 IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest,
                        DISABLED_Test) {
 #else
 IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   MachineLevelUserCloudPolicyManager* manager =
       g_browser_process->browser_policy_connector()
           ->machine_level_user_cloud_policy_manager();
@@ -802,7 +802,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(kDMToken, kInvalidDMToken, ""),
                        ::testing::Bool()));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
  public:
   MachineLevelUserCloudPolicyRobotAuthTest() : observer_(&delegate_) {
@@ -871,8 +871,8 @@ class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
 };  // namespace policy
 
 // Flaky on linux & win: https://crbug.com/1105167
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -919,6 +919,6 @@ IN_PROC_BROWSER_TEST_F(MachineLevelUserCloudPolicyRobotAuthTest, MAYBE_Test) {
   EXPECT_TRUE(
       DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy

@@ -18,7 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #else
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -86,7 +86,7 @@ UserPolicySigninServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 
 void UserPolicySigninServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   user_prefs->RegisterInt64Pref(prefs::kLastPolicyCheckTime, 0);
 #endif
 }

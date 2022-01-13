@@ -13,7 +13,7 @@
 namespace policy {
 
 void GetExpectedDefaultPolicy(PolicyMap* policy_map) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   policy_map->Set(key::kNTPContentSuggestionsEnabled, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,
                   base::Value(false), nullptr);

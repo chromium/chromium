@@ -200,7 +200,7 @@ class DeviceManagementServiceIntegrationTest
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Very flaky on ChromeOS: https://crbug.com/1262952
 #define MAYBE_Registration DISABLED_Registration
 #else
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
 }
 
 // TODO(crbug.com/1254962): flaky on Mac builders
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_PolicyFetch DISABLED_PolicyFetch
 #else
 #define MAYBE_PolicyFetch PolicyFetch
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
   run_loop.Run();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky on Mac: https://crbug.com/1254962
 #define MAYBE_Unregistration DISABLED_Unregistration
 #else
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
   run_loop.Run();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky on Mac: https://crbug.com/1254962
 #define MAYBE_AutoEnrollment DISABLED_AutoEnrollment
 #else

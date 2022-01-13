@@ -223,7 +223,7 @@ void ProfilePolicyConnector::Init(
 #endif
 
   std::vector<std::unique_ptr<PolicyMigrator>> migrators;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   migrators.push_back(
       std::make_unique<browser_switcher::BrowserSwitcherPolicyMigrator>());
 #endif

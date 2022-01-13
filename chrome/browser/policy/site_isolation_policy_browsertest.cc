@@ -93,7 +93,7 @@ class SitePerProcessPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
 
     policy::PolicyMap values;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const char* kPolicyName = policy::key::kSitePerProcessAndroid;
 #else
     const char* kPolicyName = policy::key::kSitePerProcess;
@@ -155,7 +155,7 @@ class NoOverrideSitePerProcessPolicyBrowserTest
   NoOverrideSitePerProcessPolicyBrowserTest() = default;
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     command_line->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
 #endif
   }
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(NoOverrideSitePerProcessPolicyBrowserTest, Simple) {
 // SitePerProcessPolicyBrowserTestFieldTrialTest tests should not be run on any
 // other platform.  Note that browser_tests won't run on Android until
 // https://crbug.com/611756 is fixed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class SitePerProcessPolicyBrowserTestFieldTrialTest
     : public SitePerProcessPolicyBrowserTestDisabled {
  public:
@@ -267,12 +267,12 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest, NoPolicyNoTrialsFlags) {
   // without an explicit enterprise policy).
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableSiteIsolation));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableSiteIsolationForPolicy));
   EXPECT_EQ(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
             base::FeatureList::IsEnabled(features::kSitePerProcess));
 #else
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }

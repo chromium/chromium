@@ -13,6 +13,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -38,7 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #endif
 
@@ -58,7 +59,7 @@ class PromotionalTabsEnabledPolicyTest
   PromotionalTabsEnabledPolicyTest() {
     const std::vector<base::Feature> kEnabledFeatures = {
       features::kChromeWhatsNewUI,
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
       welcome::kForceEnabled,
 #endif
     };
@@ -100,7 +101,7 @@ class PromotionalTabsEnabledPolicyTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Tests that the PromotionalTabsEnabled policy properly suppresses the welcome
 // page for browser first-runs.
 class PromotionalTabsEnabledPolicyWelcomeTest
@@ -148,7 +149,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
                       PolicyTest::BooleanPolicy::kFalse,
                       PolicyTest::BooleanPolicy::kTrue));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the PromotionalTabsEnabled policy properly suppresses the What's
 // New page.

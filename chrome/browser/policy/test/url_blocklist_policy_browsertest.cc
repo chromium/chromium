@@ -30,7 +30,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/base/window_open_disposition.h"
 #endif

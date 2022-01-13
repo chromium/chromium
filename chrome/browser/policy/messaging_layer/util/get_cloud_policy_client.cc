@@ -53,7 +53,7 @@ void GetCloudPolicyClient(CloudPolicyClientResultCb get_client_cb) {
       g_browser_process->platform_part()
           ->browser_policy_connector_ash()
           ->GetDeviceCloudPolicyManager();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Android doesn't have access to a device level CloudPolicyClient, so get the
   // PrimaryUserProfile CloudPolicyClient.
   policy::CloudPolicyManager* const cloud_policy_manager =

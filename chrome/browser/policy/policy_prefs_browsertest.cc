@@ -87,7 +87,7 @@ class PolicyPrefsTest : public PlatformBrowserTest {
   }
 
   MockConfigurationPolicyProvider* GetMockPolicyProvider() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Trying to delete the mock provider on Android leads to a cascade of
     // crashes due to ChromeBrowserPolicyConnector and ProfileImpl not being
     // deleted. Those crashes are caused by checks that ensure that observer
@@ -104,12 +104,12 @@ class PolicyPrefsTest : public PlatformBrowserTest {
     // by ChromeBrowserPolicyConnector and ProfileImpl destructors. Thus it's
     // safe to define a provider object that is deleted on scope destruction.
     return &provider_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 // Verifies that policies make their corresponding preferences become managed,

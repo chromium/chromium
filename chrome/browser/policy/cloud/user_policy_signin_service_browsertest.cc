@@ -464,7 +464,7 @@ class UserPolicySigninServiceSyncNotRequiredTest
 
 // crbug.com/1230268 not working on Lacros.
 // TODO(crbug.com/1254962): flaky on Mac builders
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_AcceptManagementDeclineSync DISABLED_AcceptManagementDeclineSync
 #else
 #define MAYBE_AcceptManagementDeclineSync AcceptManagementDeclineSync

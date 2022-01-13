@@ -87,7 +87,7 @@ DMToken GetDMToken(Profile* const profile) {
                          policy_manager->core()->client()->dm_token());
     }
   }
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
   if (dm_token.is_empty() &&
       ChromeBrowserCloudManagementController::IsEnabled()) {
     dm_token = BrowserDMTokenStorage::Get()->RetrieveDMToken();

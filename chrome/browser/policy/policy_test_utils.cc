@@ -13,6 +13,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/net/safe_search_util.h"
@@ -59,7 +60,7 @@ void PolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
   PolicyMap policy_with_defaults = policy.Clone();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_with_defaults);
 #endif
   provider_.UpdateChromePolicy(policy_with_defaults);
