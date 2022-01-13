@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/extensions/chromeos/kiosk_apps_handler.h"
+#include "chrome/browser/ui/webui/extensions/ash/kiosk_apps_handler.h"
 
 #include <stddef.h>
 
@@ -34,7 +34,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -338,4 +338,4 @@ void KioskAppsHandler::ShowError(const std::string& app_id) {
   kiosk_app_manager_->RemoveApp(app_id, owner_settings_service_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

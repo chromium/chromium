@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_CHROMEOS_KIOSK_APPS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_CHROMEOS_KIOSK_APPS_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_ASH_KIOSK_APPS_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_ASH_KIOSK_APPS_HANDLER_H_
 
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
-// TODO(https://crbug.com/1164001): move OwnerSettingsServiceAsh to forward
-// declaration when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
 class ListValue;
 }
 
-namespace chromeos {
+namespace ash {
+
+class OwnerSettingsServiceAsh;
 
 class KioskAppsHandler : public content::WebUIMessageHandler,
                          public KioskAppManagerObserver {
@@ -73,6 +72,6 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
   base::WeakPtrFactory<KioskAppsHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_CHROMEOS_KIOSK_APPS_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_ASH_KIOSK_APPS_HANDLER_H_

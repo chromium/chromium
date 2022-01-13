@@ -49,7 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ui/webui/extensions/chromeos/kiosk_apps_handler.h"
+#include "chrome/browser/ui/webui/extensions/ash/kiosk_apps_handler.h"
 #endif
 
 namespace extensions {
@@ -360,7 +360,7 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
   ManagedUIHandler::Initialize(web_ui, source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto kiosk_app_handler = std::make_unique<chromeos::KioskAppsHandler>(
+  auto kiosk_app_handler = std::make_unique<ash::KioskAppsHandler>(
       ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile));
   web_ui->AddMessageHandler(std::move(kiosk_app_handler));
 #endif
