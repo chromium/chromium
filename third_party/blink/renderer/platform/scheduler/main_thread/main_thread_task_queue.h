@@ -552,6 +552,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // The WakeUpBudgetPool for this TaskQueue, if any.
   WakeUpBudgetPool* wake_up_budget_pool_{nullptr};  // NOT OWNED
 
+  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
+      on_ipc_task_posted_callback_handle_;
+
   base::WeakPtrFactory<MainThreadTaskQueue> weak_ptr_factory_{this};
 };
 

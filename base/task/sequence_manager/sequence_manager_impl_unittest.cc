@@ -3866,8 +3866,6 @@ void SetOnTaskHandlers(scoped_refptr<TestTaskQueue> task_queue,
       [](int* counter, const Task& task, TaskQueue::TaskTiming* task_timing,
          LazyNow* lazy_now) { ++(*counter); },
       complete_counter));
-  task_queue->GetTaskQueueImpl()->SetOnTaskPostedHandler(
-      internal::TaskQueueImpl::OnTaskPostedHandler());
 }
 
 void UnsetOnTaskHandlers(scoped_refptr<TestTaskQueue> task_queue) {
@@ -3875,8 +3873,6 @@ void UnsetOnTaskHandlers(scoped_refptr<TestTaskQueue> task_queue) {
       internal::TaskQueueImpl::OnTaskStartedHandler());
   task_queue->GetTaskQueueImpl()->SetOnTaskCompletedHandler(
       internal::TaskQueueImpl::OnTaskCompletedHandler());
-  task_queue->GetTaskQueueImpl()->SetOnTaskPostedHandler(
-      internal::TaskQueueImpl::OnTaskPostedHandler());
 }
 }  // namespace
 
@@ -5355,6 +5351,41 @@ TEST_P(SequenceManagerTest, DelayedTaskOrderFromMultipleQueues) {
   RunLoop().RunUntilIdle();
 
   EXPECT_THAT(run_order, ElementsAre(1u, 2u, 3u, 4u));
+}
+
+TEST_P(SequenceManagerTest, OnTaskPostedCallbacks) {
+  int counter1 = 0;
+  int counter2 = 0;
+
+  auto queue = CreateTaskQueue();
+
+  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle> handle1 =
+      queue->AddOnTaskPostedHandler(BindRepeating(
+          [](int* counter, const Task& task) { ++(*counter); }, &counter1));
+
+  queue->task_runner()->PostTask(FROM_HERE, BindOnce(NullTask));
+  EXPECT_EQ(1, counter1);
+  EXPECT_EQ(0, counter2);
+
+  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle> handle2 =
+      queue->AddOnTaskPostedHandler(BindRepeating(
+          [](int* counter, const Task& task) { ++(*counter); }, &counter2));
+
+  queue->task_runner()->PostTask(FROM_HERE, BindOnce(NullTask));
+  EXPECT_EQ(2, counter1);
+  EXPECT_EQ(1, counter2);
+
+  handle1.reset();
+
+  queue->task_runner()->PostTask(FROM_HERE, BindOnce(NullTask));
+  EXPECT_EQ(2, counter1);
+  EXPECT_EQ(2, counter2);
+
+  handle2.reset();
+
+  queue->task_runner()->PostTask(FROM_HERE, BindOnce(NullTask));
+  EXPECT_EQ(2, counter1);
+  EXPECT_EQ(2, counter2);
 }
 
 }  // namespace internal

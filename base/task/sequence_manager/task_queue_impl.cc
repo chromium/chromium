@@ -14,10 +14,12 @@
 #include "base/containers/stack_container.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
+#include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
@@ -286,17 +288,24 @@ void TaskQueueImpl::UnregisterTaskQueue() {
   }
 
   TaskDeque immediate_incoming_queue;
+  base::flat_map<raw_ptr<OnTaskPostedCallbackHandleImpl>, OnTaskPostedHandler>
+      on_task_posted_handlers;
 
   {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     any_thread_.unregistered = true;
     immediate_incoming_queue.swap(any_thread_.immediate_incoming_queue);
+
+    for (auto& handler : any_thread_.on_task_posted_handlers)
+      handler.first->UnregisterTaskQueue();
+    any_thread_.on_task_posted_handlers.swap(on_task_posted_handlers);
   }
 
   if (main_thread_only().wake_up_queue) {
     main_thread_only().wake_up_queue->UnregisterQueue(this);
   }
 
+  main_thread_only().on_task_started_handler = OnTaskStartedHandler();
   main_thread_only().on_task_completed_handler = OnTaskCompletedHandler();
   main_thread_only().wake_up_queue = nullptr;
   main_thread_only().throttler = nullptr;
@@ -433,9 +442,10 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
         &any_thread_.immediate_incoming_queue.back(), name_);
     MaybeReportIpcTaskQueuedFromAnyThreadLocked(
         any_thread_.immediate_incoming_queue.back(), name_);
-    if (!any_thread_.on_task_posted_handler.is_null()) {
-      any_thread_.on_task_posted_handler.Run(
-          any_thread_.immediate_incoming_queue.back());
+
+    for (auto& handler : any_thread_.on_task_posted_handlers) {
+      DCHECK(!handler.second.is_null());
+      handler.second.Run(any_thread_.immediate_incoming_queue.back());
     }
 
     // If this queue was completely empty, then the SequenceManager needs to be
@@ -1336,10 +1346,23 @@ bool TaskQueueImpl::RequiresTaskTiming() const {
          !main_thread_only().on_task_completed_handler.is_null();
 }
 
-void TaskQueueImpl::SetOnTaskPostedHandler(OnTaskPostedHandler handler) {
-  DCHECK(should_notify_observers_ || handler.is_null());
+std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
+TaskQueueImpl::AddOnTaskPostedHandler(OnTaskPostedHandler handler) {
+  DCHECK(should_notify_observers_ && !handler.is_null());
   base::internal::CheckedAutoLock lock(any_thread_lock_);
-  any_thread_.on_task_posted_handler = std::move(handler);
+  std::unique_ptr<OnTaskPostedCallbackHandleImpl> handle =
+      std::make_unique<OnTaskPostedCallbackHandleImpl>(this,
+                                                       associated_thread_);
+  any_thread_.on_task_posted_handlers.insert(
+      {handle.get(), std::move(handler)});
+  return handle;
+}
+
+void TaskQueueImpl::RemoveOnTaskPostedHandler(
+    TaskQueueImpl::OnTaskPostedCallbackHandleImpl*
+        on_task_posted_callback_handle) {
+  base::internal::CheckedAutoLock lock(any_thread_lock_);
+  any_thread_.on_task_posted_handlers.erase(on_task_posted_callback_handle);
 }
 
 void TaskQueueImpl::SetTaskExecutionTraceLogger(
@@ -1548,6 +1571,21 @@ Value TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {
   for (const Task& task : queue_)
     state.Append(TaskAsValue(task, now));
   return state;
+}
+
+TaskQueueImpl::OnTaskPostedCallbackHandleImpl::OnTaskPostedCallbackHandleImpl(
+    TaskQueueImpl* task_queue_impl,
+    scoped_refptr<AssociatedThreadId> associated_thread)
+    : task_queue_impl_(task_queue_impl),
+      associated_thread_(std::move(associated_thread)) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+}
+
+TaskQueueImpl::OnTaskPostedCallbackHandleImpl::
+    ~OnTaskPostedCallbackHandleImpl() {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  if (task_queue_impl_)
+    task_queue_impl_->RemoveOnTaskPostedHandler(this);
 }
 
 }  // namespace internal

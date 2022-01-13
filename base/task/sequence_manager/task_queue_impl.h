@@ -15,8 +15,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/pending_task.h"
@@ -259,12 +262,14 @@ class BASE_EXPORT TaskQueueImpl {
                        LazyNow* lazy_now);
   bool RequiresTaskTiming() const;
 
-  // Set a callback for adding custom functionality for processing posted task.
+  // Add a callback for adding custom functionality for processing posted task.
   // Callback will be dispatched while holding a scheduler lock. As a result,
   // callback should not call scheduler APIs directly, as this can lead to
   // deadlocks. For example, PostTask should not be called directly and
-  // ScopedDeferTaskPosting::PostOrDefer should be used instead.
-  void SetOnTaskPostedHandler(OnTaskPostedHandler handler);
+  // ScopedDeferTaskPosting::PostOrDefer should be used instead. `handler` must
+  // not be a null callback.
+  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle> AddOnTaskPostedHandler(
+      OnTaskPostedHandler handler) WARN_UNUSED_RESULT;
 
   // Set a callback to fill trace event arguments associated with the task
   // execution.
@@ -361,6 +366,23 @@ class BASE_EXPORT TaskQueueImpl {
     const scoped_refptr<GuardedTaskPoster> task_poster_;
     const scoped_refptr<AssociatedThreadId> associated_thread_;
     const TaskType task_type_;
+  };
+
+  class OnTaskPostedCallbackHandleImpl
+      : public TaskQueue::OnTaskPostedCallbackHandle {
+   public:
+    OnTaskPostedCallbackHandleImpl(
+        TaskQueueImpl* task_queue_impl,
+        scoped_refptr<AssociatedThreadId> associated_thread_);
+    ~OnTaskPostedCallbackHandleImpl() override;
+
+    // Callback handles can outlive the associated TaskQueueImpl, so the
+    // reference needs to be cleared when the queue is unregistered.
+    void UnregisterTaskQueue() { task_queue_impl_ = nullptr; }
+
+   private:
+    raw_ptr<TaskQueueImpl> task_queue_impl_;
+    scoped_refptr<AssociatedThreadId> associated_thread_;
   };
 
   // A queue for holding delayed tasks before their delay has expired.
@@ -524,6 +546,9 @@ class BASE_EXPORT TaskQueueImpl {
 
   void InsertFence(Fence fence);
 
+  void RemoveOnTaskPostedHandler(
+      OnTaskPostedCallbackHandleImpl* on_task_posted_callback_handle);
+
   const char* name_;
   const raw_ptr<SequenceManagerImpl> sequence_manager_;
 
@@ -556,7 +581,8 @@ class BASE_EXPORT TaskQueueImpl {
 
     bool unregistered = false;
 
-    OnTaskPostedHandler on_task_posted_handler;
+    base::flat_map<raw_ptr<OnTaskPostedCallbackHandleImpl>, OnTaskPostedHandler>
+        on_task_posted_handlers;
 
 #if DCHECK_IS_ON()
     // A cache of |immediate_work_queue->work_queue_set_index()| which is used

@@ -181,11 +181,6 @@ void TaskQueue::ShutdownTaskQueue() {
     return;
   }
   impl_->SetBlameContext(nullptr);
-  impl_->SetOnTaskStartedHandler(
-      internal::TaskQueueImpl::OnTaskStartedHandler());
-  impl_->SetOnTaskCompletedHandler(
-      internal::TaskQueueImpl::OnTaskCompletedHandler());
-  impl_->SetOnTaskPostedHandler(internal::TaskQueueImpl::OnTaskPostedHandler());
   sequence_manager_->UnregisterTaskQueueImpl(TakeTaskQueueImpl());
 }
 
@@ -372,12 +367,13 @@ void TaskQueue::SetOnTaskCompletedHandler(OnTaskCompletedHandler handler) {
   impl_->SetOnTaskCompletedHandler(std::move(handler));
 }
 
-void TaskQueue::SetOnTaskPostedHandler(OnTaskPostedHandler handler) {
+std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
+TaskQueue::AddOnTaskPostedHandler(OnTaskPostedHandler handler) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
-    return;
+    return nullptr;
 
-  impl_->SetOnTaskPostedHandler(std::move(handler));
+  return impl_->AddOnTaskPostedHandler(std::move(handler));
 }
 
 void TaskQueue::SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) {
