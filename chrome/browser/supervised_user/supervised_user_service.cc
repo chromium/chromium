@@ -942,9 +942,9 @@ void SupervisedUserService::UpdateApprovedExtension(
     const std::string& version,
     ApprovedExtensionChange type) {
   PrefService* pref_service = GetPrefService();
-  DictionaryPrefUpdateDeprecated update(
-      pref_service, prefs::kSupervisedUserApprovedExtensions);
-  base::DictionaryValue* approved_extensions = update.Get();
+  DictionaryPrefUpdate update(pref_service,
+                              prefs::kSupervisedUserApprovedExtensions);
+  base::Value* approved_extensions = update.Get();
   DCHECK(approved_extensions)
       << "kSupervisedUserApprovedExtensions pref not found";
   bool success = false;
