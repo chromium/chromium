@@ -2399,6 +2399,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Function">
     <variant name="GetAllLoginsAsync" summary="GetAllLoginsAsync()"/>
+    <variant name="GetAutofillableLoginsAsync"
+        summary="GetAutofillableLoginsAsync()"/>
   </token>
   <token key="Metric">
     <variant name="Diff"
@@ -2433,6 +2435,12 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ModifyingFunction">
     <variant name="AddLoginAsync" summary="AddLoginAsync()"/>
+    <variant name="RemoveLoginAsync" summary="RemoveLoginAsync()"/>
+    <variant name="RemoveLoginsByURLAndTimeAsync"
+        summary="RemoveLoginsByURLAndTimeAsync()"/>
+    <variant name="RemoveLoginsCreatedBetweenAsync"
+        summary="RemoveLoginsCreatedBetweenAsync()"/>
+    <variant name="UpdateLoginAsync" summary="UpdateLoginAsync()"/>
   </token>
   <token key="Metric">
     <variant name="Diff"
