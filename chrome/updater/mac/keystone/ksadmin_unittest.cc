@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/mac/keystone/ksadmin.h"
+
+#include <map>
 #include <string>
 #include <vector>
 
@@ -48,6 +51,43 @@ TEST(KSAdminTest, PrintVersion) {
   out.clear();
   ASSERT_EQ(RunKSAdmin(&out, {"-k"}), 0);
   ASSERT_EQ(out, base::StrCat({kUpdaterVersion, "\n"}));
+}
+
+TEST(KSAdminTest, ParseCommandLine) {
+  const char* argv[] = {"ksadmin",  "--register",
+                        "-P",       "com.google.kipple",
+                        "-v",       "1.2.3.4",
+                        "--xcpath", "/Applications/GoogleKipple.app",
+                        "-u",       "https://tools.google.com/service/update2"};
+
+  std::map<std::string, std::string> arg_map =
+      ParseCommandLine(std::size(argv), argv);
+  EXPECT_EQ(arg_map.size(), size_t{5});
+  EXPECT_EQ(arg_map["register"], "");
+  EXPECT_EQ(arg_map["P"], "com.google.kipple");
+  EXPECT_EQ(arg_map["v"], "1.2.3.4");
+  EXPECT_EQ(arg_map["xcpath"], "/Applications/GoogleKipple.app");
+  EXPECT_EQ(arg_map["u"], "https://tools.google.com/service/update2");
+}
+
+TEST(KSAdminTest, ParseCommandLine_DiffByCase) {
+  const char* argv[] = {"ksadmin", "-k", "-K", "Tag"};
+
+  std::map<std::string, std::string> arg_map =
+      ParseCommandLine(std::size(argv), argv);
+  EXPECT_EQ(arg_map.size(), size_t{2});
+  EXPECT_EQ(arg_map["k"], "");
+  EXPECT_EQ(arg_map["K"], "Tag");
+}
+
+TEST(KSAdminTest, ParseCommandLine_CombinedShortOptions) {
+  const char* argv[] = {"ksadmin", "-pP", "com.google.Chrome"};
+
+  std::map<std::string, std::string> arg_map =
+      ParseCommandLine(std::size(argv), argv);
+  EXPECT_EQ(arg_map.size(), size_t{2});
+  EXPECT_EQ(arg_map["p"], "");
+  EXPECT_EQ(arg_map["P"], "com.google.Chrome");
 }
 
 }  // namespace updater

@@ -4,6 +4,6 @@
 
 #include "chrome/updater/mac/keystone/ksadmin.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, const char* argv[]) {
   return updater::KSAdminAppMain(argc, argv);
 }

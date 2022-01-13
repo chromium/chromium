@@ -641,6 +641,7 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         "//chrome/common/mac:launchd",
+        "//chrome/updater/mac:ksadmin_lib",
         "//third_party/ocmock",
       ]
 

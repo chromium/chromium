@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -41,37 +42,15 @@
 #include "chrome/updater/util.h"
 
 namespace updater {
-namespace {
-
-constexpr char kCommandDelete[] = "delete";
-constexpr char kCommandInstall[] = "install";
-constexpr char kCommandList[] = "list";
-constexpr char kCommandKsadminVersion[] = "ksadmin-version";
-constexpr char kCommandPrintTag[] = "print-tag";
-constexpr char kCommandPrintTickets[] = "print-tickets";
-constexpr char kCommandRegister[] = "register";
-constexpr char kCommandSystemStore[] = "system-store";
-constexpr char kCommandUserInitiated[] = "user-initiated";
-constexpr char kCommandUserStore[] = "user-store";
-constexpr char kCommandBrandKey[] = "brand-key";
-constexpr char kCommandBrandPath[] = "brand-path";
-constexpr char kCommandProductId[] = "productid";
-constexpr char kCommandTag[] = "tag";
-constexpr char kCommandTagKey[] = "tag-key";
-constexpr char kCommandTagPath[] = "tag-path";
-constexpr char kCommandVersion[] = "version";
-constexpr char kCommandVersionKey[] = "version-key";
-constexpr char kCommandVersionPath[] = "version-path";
-constexpr char kCommandXCPath[] = "xcpath";
 
 // base::CommandLine can't be used because it enforces that all switches are
 // lowercase, but ksadmin has case-sensitive switches. This argument parser
 // converts an argv set into a map of switch name to switch value; for example
 // `ksadmin --register --productid com.goog.chrome -v 1.2.3.4 e` to
 // `{"register": "", "productid": "com.goog.chrome", "v": "1.2.3.4", "e": ""}`.
-base::flat_map<std::string, std::string> ParseCommandLine(int argc,
-                                                          char* argv[]) {
-  base::flat_map<std::string, std::string> result;
+std::map<std::string, std::string> ParseCommandLine(int argc,
+                                                    const char* argv[]) {
+  std::map<std::string, std::string> result;
   std::string last_arg;
   for (int i = 1; i < argc; ++i) {
     std::string arg(argv[i]);
@@ -102,11 +81,34 @@ base::flat_map<std::string, std::string> ParseCommandLine(int argc,
   return result;
 }
 
+namespace {
+
+constexpr char kCommandDelete[] = "delete";
+constexpr char kCommandInstall[] = "install";
+constexpr char kCommandList[] = "list";
+constexpr char kCommandKsadminVersion[] = "ksadmin-version";
+constexpr char kCommandPrintTag[] = "print-tag";
+constexpr char kCommandPrintTickets[] = "print-tickets";
+constexpr char kCommandRegister[] = "register";
+constexpr char kCommandSystemStore[] = "system-store";
+constexpr char kCommandUserInitiated[] = "user-initiated";
+constexpr char kCommandUserStore[] = "user-store";
+constexpr char kCommandBrandKey[] = "brand-key";
+constexpr char kCommandBrandPath[] = "brand-path";
+constexpr char kCommandProductId[] = "productid";
+constexpr char kCommandTag[] = "tag";
+constexpr char kCommandTagKey[] = "tag-key";
+constexpr char kCommandTagPath[] = "tag-path";
+constexpr char kCommandVersion[] = "version";
+constexpr char kCommandVersionKey[] = "version-key";
+constexpr char kCommandVersionPath[] = "version-path";
+constexpr char kCommandXCPath[] = "xcpath";
+
 bool HasSwitch(const std::string& arg,
-               const base::flat_map<std::string, std::string>& switches) {
+               const std::map<std::string, std::string>& switches) {
   if (base::Contains(switches, arg))
     return true;
-  const static base::flat_map<std::string, std::vector<std::string>> aliases = {
+  const static std::map<std::string, std::vector<std::string>> aliases = {
       {kCommandDelete, {"d"}},        {kCommandInstall, {"i"}},
       {kCommandList, {"l"}},          {kCommandKsadminVersion, {"k"}},
       {kCommandPrintTag, {"G"}},      {kCommandPrintTickets, {"print", "p"}},
@@ -122,12 +124,11 @@ bool HasSwitch(const std::string& arg,
   return false;
 }
 
-std::string SwitchValue(
-    const std::string& arg,
-    const base::flat_map<std::string, std::string>& switches) {
+std::string SwitchValue(const std::string& arg,
+                        const std::map<std::string, std::string>& switches) {
   if (base::Contains(switches, arg))
     return switches.at(arg);
-  const static base::flat_map<std::string, std::string> aliases = {
+  const static std::map<std::string, std::string> aliases = {
       {kCommandBrandKey, "b"},    {kCommandBrandPath, "B"},
       {kCommandProductId, "P"},   {kCommandTag, "g"},
       {kCommandTagKey, "K"},      {kCommandTagPath, "H"},
@@ -147,7 +148,7 @@ std::string KeystoneTicketStorePath(UpdaterScope scope) {
       .value();
 }
 
-UpdaterScope Scope(const base::flat_map<std::string, std::string>& switches) {
+UpdaterScope Scope(const std::map<std::string, std::string>& switches) {
   if (HasSwitch(kCommandSystemStore, switches))
     return UpdaterScope::kSystem;
   if (HasSwitch(kCommandUserStore, switches))
@@ -165,7 +166,7 @@ UpdaterScope Scope(const base::flat_map<std::string, std::string>& switches) {
 
 class KSAdminApp : public App {
  public:
-  explicit KSAdminApp(const base::flat_map<std::string, std::string>& switches)
+  explicit KSAdminApp(const std::map<std::string, std::string>& switches)
       : switches_(switches),
         service_proxy_(base::MakeRefCounted<UpdateServiceProxy>(Scope())) {}
 
@@ -190,7 +191,7 @@ class KSAdminApp : public App {
 
   NSDictionary<NSString*, KSTicket*>* LoadTicketStore();
 
-  const base::flat_map<std::string, std::string> switches_;
+  const std::map<std::string, std::string> switches_;
   scoped_refptr<UpdateServiceProxy> service_proxy_;
 };
 
@@ -435,7 +436,7 @@ void KSAdminApp::FirstTaskRun() {
       Shutdown(1);
     }
   }
-  const base::flat_map<std::string, void (KSAdminApp::*)()> commands = {
+  const std::map<std::string, void (KSAdminApp::*)()> commands = {
       {kCommandDelete, &KSAdminApp::Delete},
       {kCommandInstall, &KSAdminApp::CheckForUpdates},
       {kCommandList, &KSAdminApp::CheckForUpdates},
@@ -455,10 +456,10 @@ void KSAdminApp::FirstTaskRun() {
 
 }  // namespace
 
-int KSAdminAppMain(int argc, char* argv[]) {
+int KSAdminAppMain(int argc, const char* argv[]) {
   base::AtExitManager exit_manager;
   base::CommandLine::Init(argc, argv);
-  base::flat_map<std::string, std::string> command_line =
+  std::map<std::string, std::string> command_line =
       ParseCommandLine(argc, argv);
   updater::InitLogging(Scope(command_line), FILE_PATH_LITERAL("updater.log"));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);

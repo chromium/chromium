@@ -137,19 +137,33 @@ action("browser_install_script") {
   ]
 }
 
-executable("ksadmin") {
-  output_name = "ksadmin"
+source_set("ksadmin_lib") {
   sources = [
     "keystone/ksadmin.h",
     "keystone/ksadmin.mm",
-    "keystone/ksadmin_main.cc",
   ]
 
   deps = [
     "//base",
     "//chrome/updater:base",
-    "//chrome/updater:constants_prod",
     "//chrome/updater:version_header",
+  ]
+
+  visibility = [
+    ":ksadmin",
+    "//chrome/updater:updater_test_sources",
+  ]
+}
+
+executable("ksadmin") {
+  output_name = "ksadmin"
+  sources = [ "keystone/ksadmin_main.cc" ]
+
+  public_deps = [ ":ksadmin_lib" ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:constants_prod",
   ]
 
   frameworks = [ "CoreFoundation.framework" ]
