@@ -7,7 +7,6 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
@@ -346,12 +345,12 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
 #endif  // defined(ARCH_CPU_64_BITS)
 
   NSInteger some_nsinteger;
-  FormatNSIntegerAsType* pointer_to_some_nsinteger = &some_nsinteger;
-  ALLOW_UNUSED_LOCAL(pointer_to_some_nsinteger);
+  [[maybe_unused]] FormatNSIntegerAsType* pointer_to_some_nsinteger =
+      &some_nsinteger;
 
   NSUInteger some_nsuinteger;
-  FormatNSUIntegerAsType* pointer_to_some_nsuinteger = &some_nsuinteger;
-  ALLOW_UNUSED_LOCAL(pointer_to_some_nsuinteger);
+  [[maybe_unused]] FormatNSUIntegerAsType* pointer_to_some_nsuinteger =
+      &some_nsuinteger;
 
   // Check that format specifier works correctly for NSInteger.
   const struct {

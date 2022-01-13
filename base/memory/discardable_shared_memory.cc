@@ -66,21 +66,21 @@ int64_t TimeToWireFormat(Time time);
 // Serialize to Unix time when using 4-byte wire format.
 // Note: 19 January 2038, this will cease to work.
 template <>
-Time ALLOW_UNUSED_TYPE TimeFromWireFormat<4>(int64_t value) {
+[[maybe_unused]] Time TimeFromWireFormat<4>(int64_t value) {
   return value ? Time::UnixEpoch() + Seconds(value) : Time();
 }
 template <>
-int64_t ALLOW_UNUSED_TYPE TimeToWireFormat<4>(Time time) {
+[[maybe_unused]] int64_t TimeToWireFormat<4>(Time time) {
   return time > Time::UnixEpoch() ? (time - Time::UnixEpoch()).InSeconds() : 0;
 }
 
 // Standard serialization format when using 8-byte wire format.
 template <>
-Time ALLOW_UNUSED_TYPE TimeFromWireFormat<8>(int64_t value) {
+[[maybe_unused]] Time TimeFromWireFormat<8>(int64_t value) {
   return Time::FromInternalValue(value);
 }
 template <>
-int64_t ALLOW_UNUSED_TYPE TimeToWireFormat<8>(Time time) {
+[[maybe_unused]] int64_t TimeToWireFormat<8>(Time time) {
   return time.ToInternalValue();
 }
 

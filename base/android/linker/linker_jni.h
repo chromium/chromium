@@ -44,8 +44,6 @@
 #define PLOG_ERROR(FORMAT, ...) \
   LOG_ERROR(FORMAT ": %s", ##__VA_ARGS__, strerror(errno))
 
-#define UNUSED __attribute__((unused))
-
 #if defined(ARCH_CPU_X86)
 // Dalvik JIT generated code doesn't guarantee 16-byte stack alignment on
 // x86 - use force_align_arg_pointer to realign the stack at the JNI

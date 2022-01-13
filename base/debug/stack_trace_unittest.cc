@@ -383,11 +383,10 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
   // SIGFPE being raised outside of EXPECT_EXIT.
   volatile int const nominator = 23;
   volatile int const denominator = 0;
-  volatile int result;
+  [[maybe_unused]] volatile int result;
 
   EXPECT_EXIT(result = nominator / denominator,
               ::testing::KilledBySignal(SIGFPE), "");
-  ALLOW_UNUSED_LOCAL(result);
 }
 #endif  // !defined(ARCH_CPU_ARM_FAMILY)
 

@@ -18,7 +18,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "base/third_party/nspr/prtime.h"
 #include "base/time/time_override.h"
@@ -249,14 +248,14 @@ Time Time::Midnight(bool is_local) const {
   // midnight). In this case, midnight should be defined as 01:00:00am.
   DCHECK(is_local);
   exploded.hour = 1;
-  const bool result = FromExploded(is_local, exploded, &out_time);
-// TODO(crbug.com/1263873): DCHECKs have limited coverage during automated
-// testing on CrOS and this check failed when tested on an experimental builder.
-// Testing for ARCH_CPU_ARM_FAMILY prevents regressing coverage on x86_64,
-// which is already enabled.
-// See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
+  [[maybe_unused]] const bool result =
+      FromExploded(is_local, exploded, &out_time);
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
-  ALLOW_UNUSED_LOCAL(result);
+  // TODO(crbug.com/1263873): DCHECKs have limited coverage during automated
+  // testing on CrOS and this check failed when tested on an experimental
+  // builder. Testing for ARCH_CPU_ARM_FAMILY prevents regressing coverage on
+  // x86_64, which is already enabled. See go/chrome-dcheck-on-cros or
+  // http://crbug.com/1113456 for more details.
 #else
   DCHECK(result);  // This function must not fail.
 #endif

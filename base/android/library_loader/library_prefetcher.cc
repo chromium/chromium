@@ -177,13 +177,12 @@ __attribute__((no_sanitize_address))
 void Prefetch(size_t start, size_t end) {
   unsigned char* start_ptr = reinterpret_cast<unsigned char*>(start);
   unsigned char* end_ptr = reinterpret_cast<unsigned char*>(end);
-  unsigned char dummy = 0;
+  [[maybe_unused]] unsigned char dummy = 0;
   for (unsigned char* ptr = start_ptr; ptr < end_ptr; ptr += kPageSize) {
     // Volatile is required to prevent the compiler from eliminating this
     // loop.
     dummy ^= *static_cast<volatile unsigned char*>(ptr);
   }
-  ALLOW_UNUSED_LOCAL(dummy);
 }
 
 // These values were used in the past for recording

@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/compiler_specific.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
@@ -70,7 +69,7 @@ class Spin : public base::PlatformThread::Delegate {
 
 TEST(PartitionLockPerfTest, Simple) {
   base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
-  ALLOW_UNUSED_TYPE uint32_t data = 0;
+  [[maybe_unused]] uint32_t data = 0;
 
   Lock lock;
 

@@ -11,7 +11,6 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,10 +119,8 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
             {{"brp-mode", mode.first},
              {"enabled-processes", process_set.first}});
 
-        bool brp_truly_enabled = false;
-        ALLOW_UNUSED_LOCAL(brp_truly_enabled);
-        bool brp_nondefault_behavior = false;
-        ALLOW_UNUSED_LOCAL(brp_nondefault_behavior);
+        [[maybe_unused]] bool brp_truly_enabled = false;
+        [[maybe_unused]] bool brp_nondefault_behavior = false;
         brp_expectation = "Unavailable";
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
         brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : mode.second;

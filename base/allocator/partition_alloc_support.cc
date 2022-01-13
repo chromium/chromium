@@ -220,19 +220,16 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
 
   // Whether PartitionAllocBackupRefPtr is enabled (as determined by
   // FeatureList::IsEnabled).
-  bool brp_finch_enabled = false;
-  ALLOW_UNUSED_LOCAL(brp_finch_enabled);
+  [[maybe_unused]] bool brp_finch_enabled = false;
   // Whether PartitionAllocBackupRefPtr is set up for the default behavior. The
   // default behavior is when either the Finch flag is disabled, or is enabled
   // in brp-mode=disabled (these two options are equivalent).
-  bool brp_nondefault_behavior = false;
-  ALLOW_UNUSED_LOCAL(brp_nondefault_behavior);
+  [[maybe_unused]] bool brp_nondefault_behavior = false;
   // Whether PartitionAllocBackupRefPtr is set up to enable BRP protection. It
   // requires the Finch flag to be enabled and brp-mode!=disabled*. Some modes,
   // e.g. disabled-but-3-way-split, do something (hence can't be considered the
   // default behavior), but don't enable BRP protection.
-  bool brp_truly_enabled = false;
-  ALLOW_UNUSED_LOCAL(brp_truly_enabled);
+  [[maybe_unused]] bool brp_truly_enabled = false;
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (FeatureList::IsEnabled(features::kPartitionAllocBackupRefPtr))
     brp_finch_enabled = true;
@@ -243,13 +240,12 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
                                features::BackupRefPtrMode::kEnabled)
     brp_truly_enabled = true;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-  bool pcscan_enabled =
+  [[maybe_unused]] bool pcscan_enabled =
 #if defined(PA_ALLOW_PCSCAN)
       FeatureList::IsEnabled(features::kPartitionAllocPCScanBrowserOnly);
 #else
       false;
 #endif
-  ALLOW_UNUSED_LOCAL(pcscan_enabled);
 
   std::string brp_group_name = "Unavailable";
 #if BUILDFLAG(USE_BACKUP_REF_PTR)

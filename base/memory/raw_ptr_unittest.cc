@@ -12,7 +12,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -211,7 +210,7 @@ TEST_F(RawPtrTest, BoolOpNotCast) {
   is_valid = ptr || is_valid;      // volatile, so won't be optimized
   if (ptr)
     is_valid = true;
-  ALLOW_UNUSED_TYPE bool is_not_valid = !ptr;
+  [[maybe_unused]] bool is_not_valid = !ptr;
   if (!ptr)
     is_not_valid = true;
   std::ignore = IsValidNoCast(ptr);
@@ -233,7 +232,7 @@ bool IsValidWithCast(CountingRawPtr<int> ptr) {
 // costly, so the caller has to be careful not to trigger this path.
 TEST_F(RawPtrTest, CastNotBoolOp) {
   CountingRawPtr<int> ptr = nullptr;
-  ALLOW_UNUSED_TYPE bool is_valid = ptr;
+  [[maybe_unused]] bool is_valid = ptr;
   is_valid = IsValidWithCast(ptr);
   FuncThatAcceptsBool(ptr);
   EXPECT_EQ(g_get_for_comparison_cnt, 0);

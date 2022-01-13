@@ -63,7 +63,7 @@ class Spin : public PlatformThread::Delegate {
 
 TEST(LockPerfTest, Simple) {
   LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
-  uint32_t data = 0;
+  [[maybe_unused]] uint32_t data = 0;
 
   Lock lock;
 
@@ -74,7 +74,6 @@ TEST(LockPerfTest, Simple) {
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
 
-  ALLOW_UNUSED_LOCAL(data);
   auto reporter = SetUpReporter(kStoryBaseline);
   reporter.AddResult(kMetricLockUnlockThroughput, timer.LapsPerSecond());
 }

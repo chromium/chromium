@@ -94,8 +94,7 @@ NOINLINE uintptr_t* GetStackPointer() {
 
 namespace {
 
-ALLOW_UNUSED_TYPE
-void IterateSafeStackIfNecessary(StackVisitor* visitor) {
+[[maybe_unused]] void IterateSafeStackIfNecessary(StackVisitor* visitor) {
 #if defined(__has_feature)
 #if __has_feature(safe_stack)
   // Source:
@@ -118,10 +117,10 @@ void IterateSafeStackIfNecessary(StackVisitor* visitor) {
 // should never be inlined to ensure that a possible redzone cannot contain
 // any data that needs to be scanned.
 // No ASAN support as method accesses redzones while walking the stack.
-NOINLINE NO_SANITIZE("address") ALLOW_UNUSED_TYPE
-    void IteratePointersImpl(const Stack* stack,
-                             StackVisitor* visitor,
-                             uintptr_t* stack_ptr) {
+[[maybe_unused]] NOINLINE NO_SANITIZE("address") void IteratePointersImpl(
+    const Stack* stack,
+    StackVisitor* visitor,
+    uintptr_t* stack_ptr) {
   PA_DCHECK(stack);
   PA_DCHECK(visitor);
   PA_CHECK(nullptr != stack->stack_top());

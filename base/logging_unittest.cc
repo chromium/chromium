@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
@@ -694,8 +693,8 @@ TEST_F(LoggingTest, NestedLogAssertHandlers) {
 // looking in the global namespace.
 namespace nested_test {
   class Streamable {};
-  ALLOW_UNUSED_TYPE std::ostream& operator<<(std::ostream& out,
-                                             const Streamable&) {
+  [[maybe_unused]] std::ostream& operator<<(std::ostream& out,
+                                            const Streamable&) {
     return out << "Streamable";
   }
   TEST_F(LoggingTest, StreamingWstringFindsCorrectOperator) {

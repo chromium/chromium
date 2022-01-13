@@ -85,7 +85,8 @@ TEST(SecurityTest, MAYBE_NewOverflow) {
   const size_t kArraySize = 4096;
   // We want something "dynamic" here, so that the compiler doesn't
   // immediately reject crazy arrays.
-  const size_t kDynamicArraySize = HideValueFromCompiler(kArraySize);
+  [[maybe_unused]] const size_t kDynamicArraySize =
+      HideValueFromCompiler(kArraySize);
   const size_t kMaxSizeT = std::numeric_limits<size_t>::max();
   const size_t kArraySize2 = kMaxSizeT / kArraySize + 10;
   const size_t kDynamicArraySize2 = HideValueFromCompiler(kArraySize2);
@@ -96,10 +97,9 @@ TEST(SecurityTest, MAYBE_NewOverflow) {
     char* volatile p = reinterpret_cast<char*>(array_pointer.get());
     OverflowTestsSoftExpectTrue(!p);
   }
-  // On windows, the compiler prevents static array sizes of more than
-  // 0x7fffffff (error C2148).
 #if defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
-  ALLOW_UNUSED_LOCAL(kDynamicArraySize);
+  // On Windows, the compiler prevents static array sizes of more than
+  // 0x7fffffff (error C2148).
 #else
   {
     std::unique_ptr<char[][kArraySize2]> array_pointer(

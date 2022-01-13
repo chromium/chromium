@@ -43,7 +43,7 @@ class LibraryRangeFinder {
   size_t relro_size() const { return relro_size_; }
 
   static int VisitLibraryPhdrs(dl_phdr_info* info,
-                               size_t size UNUSED,
+                               [[maybe_unused]] size_t size,
                                void* data);
 
  private:
@@ -59,7 +59,7 @@ class LibraryRangeFinder {
 // corresponding phdr(s).
 // static
 int LibraryRangeFinder::VisitLibraryPhdrs(dl_phdr_info* info,
-                                          size_t size UNUSED,
+                                          [[maybe_unused]] size_t size,
                                           void* data) {
   auto* finder = reinterpret_cast<LibraryRangeFinder*>(data);
   ElfW(Addr) lookup_address = static_cast<ElfW(Addr)>(finder->load_address());

@@ -662,7 +662,7 @@ TEST_F(PartitionAllocPCScanTest, StackScanning) {
     PCScan::NotifyThreadCreated(GetStackPointer());
     [this]() NOINLINE {
       // This writes the pointer to the stack.
-      ALLOW_UNUSED_TYPE auto* volatile stack_ref = dangling_reference;
+      [[maybe_unused]] auto* volatile stack_ref = dangling_reference;
       [this]() NOINLINE {
         // Schedule PCScan but don't scan.
         SchedulePCScan();

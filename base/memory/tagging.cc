@@ -4,7 +4,6 @@
 
 #include "base/memory/tagging.h"
 
-#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -138,7 +137,7 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m) {
 }
 
 namespace {
-ALLOW_UNUSED_TYPE static bool CheckTagRegionParameters(void* ptr, size_t sz) {
+[[maybe_unused]] static bool CheckTagRegionParameters(void* ptr, size_t sz) {
   // Check that ptr and size are correct for MTE
   uintptr_t ptr_as_uint = reinterpret_cast<uintptr_t>(ptr);
   bool ret = (ptr_as_uint % kMemTagGranuleSize == 0) &&

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -92,8 +91,7 @@ void OtherLibraryCallback(void* arg) {
   std::move(*wait_for_sample).Run();
 
   // Prevent tail call.
-  volatile int i = 0;
-  ALLOW_UNUSED_LOCAL(i);
+  [[maybe_unused]] volatile int i = 0;
 }
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
