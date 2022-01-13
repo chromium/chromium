@@ -186,9 +186,8 @@ bool CommandService::AddKeybindingPref(
           command_name != manifest_values::kBrowserActionCommandEvent &&
           command_name != manifest_values::kActionCommandEvent));
 
-  DictionaryPrefUpdateDeprecated updater(profile_->GetPrefs(),
-                                         prefs::kExtensionCommands);
-  base::DictionaryValue* bindings = updater.Get();
+  DictionaryPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
+  base::Value* bindings = updater.Get();
 
   std::string key = GetPlatformKeybindingKeyForAccelerator(accelerator,
                                                            extension_id);
@@ -213,12 +212,12 @@ bool CommandService::AddKeybindingPref(
     RemoveKeybindingPrefs(extension_id, command_name);
 
   // Set the keybinding pref.
-  auto keybinding = std::make_unique<base::DictionaryValue>();
-  keybinding->SetString(kExtension, extension_id);
-  keybinding->SetString(kCommandName, command_name);
-  keybinding->SetBoolean(kGlobal, global);
+  base::Value keybinding(base::Value::Type::DICTIONARY);
+  keybinding.SetStringKey(kExtension, extension_id);
+  keybinding.SetStringKey(kCommandName, command_name);
+  keybinding.SetBoolKey(kGlobal, global);
 
-  bindings->Set(key, std::move(keybinding));
+  bindings->SetKey(key, std::move(keybinding));
 
   // Set the was_assigned pref for the suggested key.
   std::unique_ptr<base::DictionaryValue> command_keys(
@@ -629,21 +628,19 @@ bool CommandService::IsCommandShortcutUserModified(
 
 void CommandService::RemoveKeybindingPrefs(const std::string& extension_id,
                                            const std::string& command_name) {
-  DictionaryPrefUpdateDeprecated updater(profile_->GetPrefs(),
-                                         prefs::kExtensionCommands);
-  base::DictionaryValue* bindings = updater.Get();
+  DictionaryPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
+  base::Value* bindings = updater.Get();
 
   typedef std::vector<std::string> KeysToRemove;
   KeysToRemove keys_to_remove;
   std::vector<Command> removed_commands;
-  for (base::DictionaryValue::Iterator it(*bindings); !it.IsAtEnd();
-       it.Advance()) {
+  for (const auto it : bindings->DictItems()) {
     // Removal of keybinding preference should be limited to current platform.
-    if (!IsForCurrentPlatform(it.key()))
+    if (!IsForCurrentPlatform(it.first))
       continue;
 
-    const base::DictionaryValue* item = NULL;
-    it.value().GetAsDictionary(&item);
+    const base::DictionaryValue* item = nullptr;
+    it.second.GetAsDictionary(&item);
 
     std::string extension;
     item->GetString(kExtension, &extension);
@@ -657,7 +654,7 @@ void CommandService::RemoveKeybindingPrefs(const std::string& extension_id,
         continue;
 
       removed_commands.push_back(FindCommandByName(extension_id, command));
-      keys_to_remove.push_back(it.key());
+      keys_to_remove.push_back(it.first);
     }
   }
 
