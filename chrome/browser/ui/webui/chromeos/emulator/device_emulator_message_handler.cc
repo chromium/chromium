@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
@@ -55,6 +56,17 @@ const char kPairedPropertyName[] = "Paired";
 // Wattages to use as max power for power sources.
 const double kPowerLevelHigh = 50;
 const double kPowerLevelLow = 2;
+
+bool GetString(const base::Value& dict,
+               base::StringPiece key,
+               std::string* result) {
+  CHECK(result);
+  const std::string* value = dict.FindStringKey(key);
+  if (value) {
+    *result = *value;
+  }
+  return value;
+}
 
 }  // namespace
 
@@ -310,13 +322,13 @@ void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
   const base::DictionaryValue& device_dict =
       base::Value::AsDictionaryValue(device_value);
   audio_node.is_input = device_dict.FindBoolKey("isInput").value();
-  CHECK(device_dict.GetString("deviceName", &audio_node.device_name));
-  CHECK(device_dict.GetString("type", &audio_node.type));
-  CHECK(device_dict.GetString("name", &audio_node.name));
+  CHECK(GetString(device_dict, "deviceName", &audio_node.device_name));
+  CHECK(GetString(device_dict, "type", &audio_node.type));
+  CHECK(GetString(device_dict, "name", &audio_node.name));
   audio_node.active = device_dict.FindBoolKey("active").value();
 
   std::string tmp_id;
-  CHECK(device_dict.GetString("id", &tmp_id));
+  CHECK(GetString(device_dict, "id", &tmp_id));
   CHECK(base::StringToUint64(tmp_id, &audio_node.id));
 
   chromeos::FakeCrasAudioClient::Get()->InsertAudioNodeToList(audio_node);
@@ -571,13 +583,13 @@ std::string DeviceEmulatorMessageHandler::CreateBluetoothDeviceFromListValue(
   CHECK(device_value.is_dict());
   const base::DictionaryValue& device_dict =
       base::Value::AsDictionaryValue(device_value);
-  CHECK(device_dict.GetString("path", &props.device_path));
-  CHECK(device_dict.GetString("name", &props.device_name));
-  CHECK(device_dict.GetString("alias", &props.device_alias));
-  CHECK(device_dict.GetString("address", &props.device_address));
-  CHECK(device_dict.GetString("pairingMethod", &props.pairing_method));
-  CHECK(device_dict.GetString("pairingAuthToken", &props.pairing_auth_token));
-  CHECK(device_dict.GetString("pairingAction", &props.pairing_action));
+  CHECK(GetString(device_dict, "path", &props.device_path));
+  CHECK(GetString(device_dict, "name", &props.device_name));
+  CHECK(GetString(device_dict, "alias", &props.device_alias));
+  CHECK(GetString(device_dict, "address", &props.device_address));
+  CHECK(GetString(device_dict, "pairingMethod", &props.pairing_method));
+  CHECK(GetString(device_dict, "pairingAuthToken", &props.pairing_auth_token));
+  CHECK(GetString(device_dict, "pairingAction", &props.pairing_action));
 
   absl::optional<int> class_value = device_dict.FindIntKey("classValue");
   CHECK(class_value);
