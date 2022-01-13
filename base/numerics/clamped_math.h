@@ -38,7 +38,7 @@ class ClampedNumeric {
   template <typename Src>
   constexpr ClampedNumeric(Src value)  // NOLINT(runtime/explicit)
       : value_(saturated_cast<T>(value)) {
-    static_assert(std::is_arithmetic<Src>::value, "Argument must be numeric.");
+    static_assert(UnderlyingType<Src>::is_numeric, "Argument must be numeric.");
   }
 
   // This is not an explicit constructor because we want a seamless conversion
@@ -178,8 +178,8 @@ class ClampedNumeric {
   // ClampedNumeric and POD arithmetic types.
   template <typename Src>
   struct Wrapper {
-    static constexpr Src value(Src value) {
-      return static_cast<typename UnderlyingType<Src>::type>(value);
+    static constexpr typename UnderlyingType<Src>::type value(Src value) {
+      return value;
     }
   };
 };

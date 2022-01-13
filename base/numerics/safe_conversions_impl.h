@@ -85,30 +85,18 @@ constexpr typename std::make_unsigned<T>::type SafeUnsignedAbs(T value) {
              : static_cast<UnsignedT>(value);
 }
 
-// This allows us to switch paths on known compile-time constants.
-#if defined(__clang__) || defined(__GNUC__)
-constexpr bool CanDetectCompileTimeConstant() {
-  return true;
-}
-template <typename T>
-constexpr bool IsCompileTimeConstant(const T v) {
-  return __builtin_constant_p(v);
-}
+// TODO(jschuh): Switch to std::is_constant_evaluated() once C++20 is supported.
+// Alternately, the usage could be restructured for "consteval if" in C++23.
+#define IsConstantEvaluated() (__builtin_is_constant_evaluated())
+
+// TODO(jschuh): Debug builds don't reliably propagate constants, so we restrict
+// some accelerated runtime paths to release builds until this can be forced
+// with consteval support in C++20 or C++23.
+#if defined(NDEBUG)
+constexpr bool kEnableAsmCode = true;
 #else
-constexpr bool CanDetectCompileTimeConstant() {
-  return false;
-}
-template <typename T>
-constexpr bool IsCompileTimeConstant(const T) {
-  return false;
-}
+constexpr bool kEnableAsmCode = false;
 #endif
-template <typename T>
-constexpr bool MustTreatAsConstexpr(const T v) {
-  // Either we can't detect a compile-time constant, and must always use the
-  // constexpr path, or we know we have a compile-time constant.
-  return !CanDetectCompileTimeConstant() || IsCompileTimeConstant(v);
-}
 
 // Forces a crash, like a CHECK(false). Used for numeric boundary errors.
 // Also used in a constexpr template to trigger a compilation failure on

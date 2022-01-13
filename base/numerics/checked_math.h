@@ -38,7 +38,7 @@ class CheckedNumeric {
   template <typename Src>
   constexpr CheckedNumeric(Src value)  // NOLINT(runtime/explicit)
       : state_(value) {
-    static_assert(std::is_arithmetic<Src>::value, "Argument must be numeric.");
+    static_assert(UnderlyingType<Src>::is_numeric, "Argument must be numeric.");
   }
 
   // This is not an explicit constructor because we want a seamless conversion
@@ -139,7 +139,7 @@ class CheckedNumeric {
 
   constexpr CheckedNumeric operator-() const {
     // Use an optimized code path for a known run-time variable.
-    if (!MustTreatAsConstexpr(state_.value()) && std::is_signed<T>::value &&
+    if (!IsConstantEvaluated() && std::is_signed<T>::value &&
         std::is_floating_point<T>::value) {
       return FastRuntimeNegate();
     }

@@ -331,7 +331,7 @@ struct CheckedRshOp<T,
                                             std::is_integral<U>::value>::type> {
   using result_type = T;
   template <typename V>
-  static bool Do(T x, U shift, V* result) {
+  static constexpr bool Do(T x, U shift, V* result) {
     // Use sign conversion to push negative values out of range.
     if (BASE_NUMERICS_UNLIKELY(as_unsigned(shift) >=
                                IntegerBitsPlusSign<T>::value)) {
@@ -561,7 +561,7 @@ class CheckedNumericState<T, NUMERIC_FLOATING> {
 
   constexpr bool is_valid() const {
     // Written this way because std::isfinite is not reliably constexpr.
-    return MustTreatAsConstexpr(value_)
+    return IsConstantEvaluated()
                ? value_ <= std::numeric_limits<T>::max() &&
                      value_ >= std::numeric_limits<T>::lowest()
                : std::isfinite(value_);
