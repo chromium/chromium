@@ -89,6 +89,14 @@ trust_anchors {
   filename: "edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d.pem"
   ev_policy_oids: "2.16.578.1.26.1.3.3"
 }
+
+# certSIGN ROOT CA G2
+# https://testssl-valid-evcp.certsign.ro/
+trust_anchors {
+  filename: "657cfe2fa73faa38462571f332a2363a46fce7020951710702cdfbb6eeda3305.pem"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
 # Certum Trusted Network CA
 # https://juice.certum.pl/
 trust_anchors {
@@ -232,6 +240,13 @@ trust_anchors {
   ev_policy_oids: "2.16.840.1.114028.10.1.2"
 }
 
+# Entrust Root Certification Authority - G4
+# https://validg4.entrust.net
+trust_anchors {
+  filename: "db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88.pem"
+  ev_policy_oids: "2.16.840.1.114028.10.1.2"
+}
+
 # Entrust Root Certification Authority – EC1
 # https://validec.entrust.net
 trust_anchors {
@@ -271,6 +286,13 @@ trust_anchors {
   ev_policy_oids: "1.3.6.1.4.1.4146.1.1"
 }
 
+# GLOBALTRUST 2020
+# https://testok-2020-server-qualified-ev-1.e-monitoring.at/
+trust_anchors {
+  filename: "9a296a5182d1d451a2e37f439b74daafa267523329f90f9a0d2007c334e23c9a.pem"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
 # Go Daddy Class 2 Certification Authority
 # https://www.godaddy.com/
 trust_anchors {
@@ -286,12 +308,49 @@ trust_anchors {
 
   ev_policy_oids: "2.16.840.1.114413.1.7.23.3"
 }
+
+# HARICA TLS ECC Root CA 2021
+# https://tls-ecc-valid-ev.root2021.harica.gr
+trust_anchors {
+  filename: "3f99cc474acfce4dfed58794665e478d1547739f2e780f1bb4ca9b133097d401.pem"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# HARICA TLS RSA Root CA 2021
+# https://tls-rsa-valid-ev.root2021.harica.gr
+trust_anchors {
+  filename: "d95d0e8eda79525bf9beb11b14d2100d3294985f0c62d9fabd9cd999eccb7b1d.pem"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# Hellenic Academic and Research Institutions ECC RootCA 2015
+# https://haricaeccrootca2015-valid-ev.harica.gr
+trust_anchors {
+  filename: "44b545aa8a25e65a73ca15dc27fc36d24c1cb9953a066539b11582dc487b4833.pem"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# Hellenic Academic and Research Institutions RootCA 2015
+# https://haricarootca2015-valid-ev.harica.gr
+trust_anchors {
+  filename: "a040929a02ce53b4acf4f2ffc6981ce4496f755e6d45fe0b2a692bcd52523f36.pem"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
 # Hongkong Post Root CA 3
 # https://valid-ev.ecert.gov.hk/
 trust_anchors {
   filename: "5a2fc03f0c83b090bbfa40604b0988446c7636183df9846e17101a447fb8efd6.pem"
 
   ev_policy_oids: "2.23.140.1.1"
+}
+
+# IdenTrust Commercial Root CA 1
+# https://identrust-commercial-ev-valid.identrustssl.com/
+trust_anchors {
+  filename: "5d56499be4d2e08bcfcad08a3e38723d50503bde706948e42f55603019e528ae.pem"
+  ev_policy_oids: "2.23.140.1.1"
+  ev_policy_oids: "2.16.840.1.113839.0.6.9"
 }
 
 # Izenpe.com - SHA256 root
@@ -322,6 +381,13 @@ trust_anchors {
   filename: "54455f7129c20b1447c418f997168f24c58fc5023bf5da5be2eb6e1dd8902ed5.pem"
 
   ev_policy_oids: "1.3.171.1.1.10.5.2"
+}
+
+# NetLock Arany (Class Gold) Főtanúsítvány
+# https://valid.ev.tanusitvany.hu
+trust_anchors {
+  filename: "6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98.pem"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # Network Solutions Certificate Authority
