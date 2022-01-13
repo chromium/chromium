@@ -78,8 +78,11 @@ LoginsResult LoginDatabaseAsyncHelper::GetAllLogins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrimaryKeyToFormMap key_to_form_map;
 
-  if (!login_db_ || login_db_->GetAllLogins(&key_to_form_map) !=
-                        FormRetrievalResult::kSuccess)
+  if (!login_db_)
+    return {};
+  FormRetrievalResult result = login_db_->GetAllLogins(&key_to_form_map);
+  if (result != FormRetrievalResult::kSuccess &&
+      result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData)
     return {};
 
   std::vector<std::unique_ptr<PasswordForm>> obtained_forms;

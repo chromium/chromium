@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -2167,6 +2168,86 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
       metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable, 1);
 }
 #endif  // defined(OS_MAC)
+
+#if defined(OS_MAC) || defined(OS_LINUX)
+// Test getting auto sign in logins when there are undecryptable ones
+TEST_F(LoginDatabaseUndecryptableLoginsTest, GetAutoSignInLogins) {
+  PrimaryKeyToFormMap key_to_form_map;
+
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+
+  EXPECT_FALSE(db.GetAutoSignInLogins(&key_to_form_map));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkipUndecryptablePasswords);
+
+  EXPECT_TRUE(db.GetAutoSignInLogins(&key_to_form_map));
+  EXPECT_THAT(key_to_form_map, UnorderedElementsAre(Pair(_, Pointee(form1)),
+                                                    Pair(_, Pointee(form3))));
+}
+
+// Test getting logins when there are undecryptable ones
+TEST_F(LoginDatabaseUndecryptableLoginsTest, GetLogins) {
+  auto form1 =
+      AddDummyLogin("user1", GURL("http://www.google.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("user2", GURL("http://www.google.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+  std::vector<std::unique_ptr<PasswordForm>> result;
+
+  PasswordForm form = GenerateExamplePasswordForm();
+  EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
+                            /*should_PSL_matching_apply=*/false, &result));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkipUndecryptablePasswords);
+  result.clear();
+
+  EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
+                           /*should_PSL_matching_apply=*/false, &result));
+  EXPECT_THAT(result, ElementsAre(Pointee(form1)));
+}
+
+// Test getting auto fillable logins when there are undecryptable ones
+TEST_F(LoginDatabaseUndecryptableLoginsTest, GetAutofillableLogins) {
+  std::vector<std::unique_ptr<PasswordForm>> result;
+
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/true);
+
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init());
+
+  EXPECT_FALSE(db.GetAutofillableLogins(&result));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkipUndecryptablePasswords);
+
+  EXPECT_TRUE(db.GetAutofillableLogins(&result));
+  EXPECT_THAT(result, ElementsAre(Pointee(form1)));
+}
+#endif
 
 // Test encrypted passwords are present in add change lists.
 TEST_F(LoginDatabaseTest, EncryptedPasswordAdd) {

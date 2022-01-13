@@ -331,7 +331,9 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     return syncer::ModelError(FROM_HERE,
                               "Failed to load entries from password store.");
   }
-  if (read_result == FormRetrievalResult::kEncrytionServiceFailure) {
+  if (read_result == FormRetrievalResult::kEncrytionServiceFailure ||
+      read_result ==
+          FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
     if (!ShouldRecoverPasswordsDuringMerge()) {
       metrics_util::LogPasswordSyncState(
           metrics_util::NOT_SYNCING_FAILED_DECRYPTION);

@@ -966,26 +966,45 @@ TEST_F(PasswordSyncBridgeTest,
 #if defined(OS_MAC) || defined(OS_LINUX)
 // Tests that in case ReadAllLogins() during initial merge returns encryption
 // service failure, the bridge would try to do a DB clean up.
-TEST_F(PasswordSyncBridgeTest, ShouldDeleteUndecryptableLoginsDuringMerge) {
+class PasswordSyncBridgeMergeTest
+    : public PasswordSyncBridgeTest,
+      public testing::WithParamInterface<FormRetrievalResult> {
+ protected:
+  void ShouldDeleteUndecryptableLoginsDuringMerge() {
 #if defined(OS_LINUX)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSyncUndecryptablePasswordsLinux);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kSyncUndecryptablePasswordsLinux);
 #endif
+    ON_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins())
+        .WillByDefault(Return(DatabaseCleanupResult::kSuccess));
 
-  ON_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins())
-      .WillByDefault(Return(DatabaseCleanupResult::kSuccess));
+    // We should try to read first, and simulate an encryption failure. Then,
+    // cleanup the database and try to read again which should be successful
+    // now.
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+        .WillOnce(Return(GetParam()));
+    EXPECT_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins());
+    EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+        .WillOnce(Return(FormRetrievalResult::kSuccess));
 
-  // We should try to read first, and simulate an encryption failure. Then,
-  // cleanup the database and try to read again which should be successful now.
-  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
-      .WillOnce(Return(FormRetrievalResult::kEncrytionServiceFailure))
-      .WillOnce(Return(FormRetrievalResult::kSuccess));
-  EXPECT_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins());
+    absl::optional<syncer::ModelError> error =
+        bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(), {});
+    EXPECT_FALSE(error);
+  }
+};
 
-  absl::optional<syncer::ModelError> error =
-      bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(), {});
-  EXPECT_FALSE(error);
+TEST_P(PasswordSyncBridgeMergeTest, ShouldFixWhenDatabaseEncryptionFails) {
+  ShouldDeleteUndecryptableLoginsDuringMerge();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    PasswordSyncBridgeTest,
+    PasswordSyncBridgeMergeTest,
+    testing::Values(
+        FormRetrievalResult::kEncrytionServiceFailure,
+        FormRetrievalResult::kEncryptionServiceFailureWithPartialData));
 #endif
 
 TEST_F(PasswordSyncBridgeTest,

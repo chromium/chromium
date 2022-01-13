@@ -40,6 +40,9 @@ extern const base::Feature kPasswordScriptsFetching;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kReparseServerPredictionsFollowingFormChange;
 extern const base::Feature kSecondaryServerFieldPredictions;
+#if defined(OS_MAC) || defined(OS_LINUX)
+extern const base::Feature kSkipUndecryptablePasswords;
+#endif
 extern const base::Feature kSupportForAddPasswordsInSettings;
 #if defined(OS_LINUX)
 extern const base::Feature kSyncUndecryptablePasswordsLinux;

@@ -42,6 +42,7 @@
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -658,6 +659,16 @@ PasswordForm GetFormForRemoval(sql::Statement& statement) {
 }
 #endif
 
+// Whether we should try to return the decryptable passwords while the
+// encryption service fails for some passwords.
+bool ShouldReturnPartialPasswords() {
+#if defined(OS_MAC) || defined(OS_LINUX)
+  return base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 struct LoginDatabase::PrimaryKeyAndPassword {
@@ -1213,7 +1224,9 @@ bool LoginDatabase::GetAutoSignInLogins(PrimaryKeyToFormMap* key_to_form_map) {
   sql::Statement s(
       db_.GetCachedStatement(SQL_FROM_HERE, autosignin_statement_.c_str()));
   FormRetrievalResult result = StatementToForms(&s, nullptr, key_to_form_map);
-  return result == FormRetrievalResult::kSuccess;
+  return (result == FormRetrievalResult::kSuccess ||
+          result ==
+              FormRetrievalResult::kEncryptionServiceFailureWithPartialData);
 }
 
 bool LoginDatabase::DisableAutoSignInForOrigin(const GURL& origin) {
@@ -1353,7 +1366,8 @@ bool LoginDatabase::GetLogins(
   FormRetrievalResult result = StatementToForms(
       &s, should_PSL_matching_apply || should_federated_apply ? &form : nullptr,
       &key_to_form_map);
-  if (result != FormRetrievalResult::kSuccess) {
+  if (result != FormRetrievalResult::kSuccess &&
+      result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
     return false;
   }
   for (auto& pair : key_to_form_map) {
@@ -1431,10 +1445,10 @@ bool LoginDatabase::GetAllLoginsWithBlocklistSetting(
 
   PrimaryKeyToFormMap key_to_form_map;
 
-  if (StatementToForms(&s, nullptr, &key_to_form_map) !=
-      FormRetrievalResult::kSuccess) {
+  FormRetrievalResult result = StatementToForms(&s, nullptr, &key_to_form_map);
+  if (result != FormRetrievalResult::kSuccess &&
+      result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData)
     return false;
-  }
 
   for (auto& pair : key_to_form_map) {
     forms->push_back(std::move(pair.second));
@@ -1751,6 +1765,7 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     const PasswordFormDigest* matched_form,
     PrimaryKeyToFormMap* key_to_form_map) {
   key_to_form_map->clear();
+  bool has_service_failure = false;
   while (statement->Step()) {
     auto new_form = std::make_unique<PasswordForm>();
     FillFormInStore(new_form.get());
@@ -1760,7 +1775,8 @@ FormRetrievalResult LoginDatabase::StatementToForms(
         *statement, /*decrypt_and_fill_password_value=*/true, &primary_key,
         new_form.get());
     if (result == ENCRYPTION_RESULT_SERVICE_FAILURE) {
-      return FormRetrievalResult::kEncrytionServiceFailure;
+      has_service_failure = true;
+      continue;
     }
     if (result == ENCRYPTION_RESULT_ITEM_FAILURE) {
       continue;
@@ -1786,6 +1802,13 @@ FormRetrievalResult LoginDatabase::StatementToForms(
 
   if (!statement->Succeeded()) {
     return FormRetrievalResult::kDbError;
+  }
+  if (has_service_failure &&
+      (key_to_form_map->empty() || !ShouldReturnPartialPasswords())) {
+    return FormRetrievalResult::kEncrytionServiceFailure;
+  }
+  if (has_service_failure) {
+    return FormRetrievalResult::kEncryptionServiceFailureWithPartialData;
   }
   return FormRetrievalResult::kSuccess;
 }

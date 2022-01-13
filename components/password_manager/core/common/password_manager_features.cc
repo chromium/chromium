@@ -129,6 +129,13 @@ const base::Feature kReparseServerPredictionsFollowingFormChange = {
 const base::Feature kSecondaryServerFieldPredictions = {
     "SecondaryServerFieldPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if defined(OS_MAC) || defined(OS_LINUX)
+// Displays at least the decryptable and never saved logins in the password
+// manager
+const base::Feature kSkipUndecryptablePasswords = {
+    "SkipUndecryptablePasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables the addition of passwords in Chrome Settings.
 // TODO(crbug/1226008): Remove once it's launched.
 const base::Feature kSupportForAddPasswordsInSettings = {

@@ -42,6 +42,8 @@ enum class FormRetrievalResult {
   // A service-level failure (e.g., on a platform using a keyring, the keyring
   // is temporarily unavailable).
   kEncrytionServiceFailure,
+  // A service-level failure, but some forms can be retrieved successfully.
+  kEncryptionServiceFailureWithPartialData,
 };
 
 // Error values for adding a login to the store.
