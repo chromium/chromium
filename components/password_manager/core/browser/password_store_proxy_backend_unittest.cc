@@ -288,6 +288,9 @@ TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToDisableAutoSignInForOriginsAsync) {
   base::MockCallback<base::OnceClosure> mock_reply;
   EXPECT_CALL(mock_reply, Run);
+  // This test doesn't care about the shadow backend.
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync)
+      .Times(AnyNumber());
   EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync)
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceClosure reply) { std::move(reply).Run(); })));
@@ -644,6 +647,54 @@ TEST_F(
       /*delete_begin=*/base::Time::FromTimeT(111111),
       /*delete_end=*/base::Time::FromTimeT(22222222),
       /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowDisableAutoSignInForOriginsAsyncWhenSyncEnabled) {
+  EXPECT_CALL(is_syncing_passwords_callback_, Run).WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync);
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync).Times(0);
+  proxy_backend().DisableAutoSignInForOriginsAsync(
+      base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    NoShadowDisableAutoSignInForOriginsAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  EXPECT_CALL(is_syncing_passwords_callback_, Run)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync);
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync).Times(0);
+  proxy_backend().DisableAutoSignInForOriginsAsync(
+      base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    ShadowDisableAutoSignInForOriginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+
+  EXPECT_CALL(is_syncing_passwords_callback_, Run)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync);
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync);
+  proxy_backend().DisableAutoSignInForOriginsAsync(
+      base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
 }
 
 // Holds the main and shadow backend's logins and the expected number of common

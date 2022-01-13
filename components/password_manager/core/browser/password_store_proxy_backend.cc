@@ -450,7 +450,12 @@ void PasswordStoreProxyBackend::DisableAutoSignInForOriginsAsync(
     base::OnceClosure completion) {
   main_backend_->DisableAutoSignInForOriginsAsync(origin_filter,
                                                   std::move(completion));
-  // TODO(crbug.com/1229655): Request shadow_backend_ and compare results.
+  if (ShouldExecuteModifyOperationsOnShadowBackend(
+          prefs_, is_syncing_passwords_callback_.Run())) {
+    shadow_backend_->DisableAutoSignInForOriginsAsync(
+        origin_filter,
+        /*completion=*/base::DoNothing());
+  }
 }
 
 SmartBubbleStatsStore* PasswordStoreProxyBackend::GetSmartBubbleStatsStore() {
