@@ -565,7 +565,7 @@ void SetAnalysisConnector(PrefService* prefs,
                           enterprise_connectors::AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope) {
-  ListPrefUpdateDeprecated settings_list(prefs, ConnectorPref(connector));
+  ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   DCHECK(settings_list.Get());
   if (!settings_list->GetList().empty())
     settings_list->ClearList();
@@ -581,8 +581,8 @@ void SetOnSecurityEventReporting(
     bool enabled,
     const std::set<std::string>& enabled_event_names,
     bool machine_scope) {
-  ListPrefUpdateDeprecated settings_list(
-      prefs, enterprise_connectors::kOnSecurityEventPref);
+  ListPrefUpdate settings_list(prefs,
+                               enterprise_connectors::kOnSecurityEventPref);
   DCHECK(settings_list.Get());
   if (enabled) {
     if (settings_list->GetList().empty()) {
@@ -612,7 +612,7 @@ void SetOnSecurityEventReporting(
 void ClearAnalysisConnector(
     PrefService* prefs,
     enterprise_connectors::AnalysisConnector connector) {
-  ListPrefUpdateDeprecated settings_list(prefs, ConnectorPref(connector));
+  ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   DCHECK(settings_list.Get());
   settings_list->ClearList();
   prefs->ClearPref(ConnectorScopePref(connector));
