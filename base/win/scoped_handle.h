@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
@@ -83,7 +82,7 @@ class GenericScopedHandle {
   Handle Get() const { return handle_; }
 
   // Transfers ownership away from this object.
-  Handle Take() WARN_UNUSED_RESULT {
+  [[nodiscard]] Handle Take() {
     Handle temp = handle_;
     handle_ = Traits::NullHandle();
     if (Traits::IsHandleValid(temp)) {

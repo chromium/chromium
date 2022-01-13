@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -136,7 +135,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
   // Begins a Transaction. This method cannot be called on a thread which has an
   // active TaskSource::Transaction.
-  Transaction BeginTransaction() WARN_UNUSED_RESULT;
+  [[nodiscard]] Transaction BeginTransaction();
 
   virtual ExecutionEnvironment GetExecutionEnvironment() = 0;
 
@@ -262,8 +261,7 @@ class BASE_EXPORT RegisteredTaskSource {
   // only after WillRunTask() returned RunStatus::kAllowed*. |transaction| is
   // optional and should only be provided if this operation is already part of
   // a transaction.
-  Task TakeTask(TaskSource::Transaction* transaction = nullptr)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] Task TakeTask(TaskSource::Transaction* transaction = nullptr);
 
   // Must be called after WillRunTask() or once the task was run if TakeTask()
   // was called. This resets this RegisteredTaskSource to its initial state so
@@ -275,7 +273,7 @@ class BASE_EXPORT RegisteredTaskSource {
   // Returns a task that clears this TaskSource to make it empty. |transaction|
   // is optional and should only be provided if this operation is already part
   // of a transaction.
-  Task Clear(TaskSource::Transaction* transaction = nullptr) WARN_UNUSED_RESULT;
+  [[nodiscard]] Task Clear(TaskSource::Transaction* transaction = nullptr);
 
  private:
   friend class TaskTracker;

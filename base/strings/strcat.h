@@ -8,7 +8,6 @@
 #include <initializer_list>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -59,14 +58,12 @@ namespace base {
 // for this call and generate slightly less code. This is something we can
 // explore more in the future.
 
-BASE_EXPORT std::string StrCat(span<const StringPiece> pieces)
-    WARN_UNUSED_RESULT;
-BASE_EXPORT std::u16string StrCat(span<const StringPiece16> pieces)
-    WARN_UNUSED_RESULT;
-BASE_EXPORT std::string StrCat(span<const std::string> pieces)
-    WARN_UNUSED_RESULT;
-BASE_EXPORT std::u16string StrCat(span<const std::u16string> pieces)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT std::string StrCat(span<const StringPiece> pieces);
+[[nodiscard]] BASE_EXPORT std::u16string StrCat(
+    span<const StringPiece16> pieces);
+[[nodiscard]] BASE_EXPORT std::string StrCat(span<const std::string> pieces);
+[[nodiscard]] BASE_EXPORT std::u16string StrCat(
+    span<const std::u16string> pieces);
 
 // Initializer list forwards to the array version.
 inline std::string StrCat(std::initializer_list<StringPiece> pieces) {

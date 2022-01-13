@@ -34,47 +34,47 @@ class BASE_EXPORT PickleIterator {
   // methods return true. Otherwise, false is returned to indicate that the
   // result could not be extracted. It is not possible to read from the iterator
   // after that.
-  bool ReadBool(bool* result) WARN_UNUSED_RESULT;
-  bool ReadInt(int* result) WARN_UNUSED_RESULT;
-  bool ReadLong(long* result) WARN_UNUSED_RESULT;
-  bool ReadUInt16(uint16_t* result) WARN_UNUSED_RESULT;
-  bool ReadUInt32(uint32_t* result) WARN_UNUSED_RESULT;
-  bool ReadInt64(int64_t* result) WARN_UNUSED_RESULT;
-  bool ReadUInt64(uint64_t* result) WARN_UNUSED_RESULT;
-  bool ReadFloat(float* result) WARN_UNUSED_RESULT;
-  bool ReadDouble(double* result) WARN_UNUSED_RESULT;
-  bool ReadString(std::string* result) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadBool(bool* result);
+  [[nodiscard]] bool ReadInt(int* result);
+  [[nodiscard]] bool ReadLong(long* result);
+  [[nodiscard]] bool ReadUInt16(uint16_t* result);
+  [[nodiscard]] bool ReadUInt32(uint32_t* result);
+  [[nodiscard]] bool ReadInt64(int64_t* result);
+  [[nodiscard]] bool ReadUInt64(uint64_t* result);
+  [[nodiscard]] bool ReadFloat(float* result);
+  [[nodiscard]] bool ReadDouble(double* result);
+  [[nodiscard]] bool ReadString(std::string* result);
   // The StringPiece data will only be valid for the lifetime of the message.
-  bool ReadStringPiece(StringPiece* result) WARN_UNUSED_RESULT;
-  bool ReadString16(std::u16string* result) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadStringPiece(StringPiece* result);
+  [[nodiscard]] bool ReadString16(std::u16string* result);
   // The StringPiece16 data will only be valid for the lifetime of the message.
-  bool ReadStringPiece16(StringPiece16* result) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadStringPiece16(StringPiece16* result);
 
   // A pointer to the data will be placed in |*data|, and the length will be
   // placed in |*length|. The pointer placed into |*data| points into the
   // message's buffer so it will be scoped to the lifetime of the message (or
   // until the message data is mutated). Do not keep the pointer around!
-  bool ReadData(const char** data, int* length) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadData(const char** data, int* length);
 
   // Similar, but using base::span for convenience.
-  bool ReadData(base::span<const uint8_t>* data) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadData(base::span<const uint8_t>* data);
 
   // A pointer to the data will be placed in |*data|. The caller specifies the
   // number of bytes to read, and ReadBytes will validate this length. The
   // pointer placed into |*data| points into the message's buffer so it will be
   // scoped to the lifetime of the message (or until the message data is
   // mutated). Do not keep the pointer around!
-  bool ReadBytes(const char** data, int length) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadBytes(const char** data, int length);
 
   // A safer version of ReadInt() that checks for the result not being negative.
   // Use it for reading the object sizes.
-  bool ReadLength(int* result) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool ReadLength(int* result) {
     return ReadInt(result) && *result >= 0;
   }
 
   // Skips bytes in the read buffer and returns true if there are at least
   // num_bytes available. Otherwise, does nothing and returns false.
-  bool SkipBytes(int num_bytes) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool SkipBytes(int num_bytes) {
     return !!GetReadPointerAndAdvance(num_bytes);
   }
 

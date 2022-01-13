@@ -182,8 +182,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // called from the registered thread before it's joined. Returns a null
   // closure in the case where there is no HangWatcher instance to register the
   // thread with.
-  static ScopedClosureRunner RegisterThread(ThreadType thread_type)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static ScopedClosureRunner RegisterThread(
+      ThreadType thread_type);
 
   // Choose a closure to be run at the end of each call to Monitor(). Use only
   // for testing. Reentering the HangWatcher in the closure must be done with
@@ -231,8 +231,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 
  private:
   // See comment of ::RegisterThread() for details.
-  ScopedClosureRunner RegisterThreadInternal(ThreadType thread_type)
-      LOCKS_EXCLUDED(watch_state_lock_) WARN_UNUSED_RESULT;
+  [[nodiscard]] ScopedClosureRunner RegisterThreadInternal(
+      ThreadType thread_type) LOCKS_EXCLUDED(watch_state_lock_);
 
   // Use to assert that functions are called on the monitoring thread.
   THREAD_CHECKER(hang_watcher_thread_checker_);
@@ -247,8 +247,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 #if not defined(OS_NACL)
   // Returns a ScopedCrashKeyString that sets the crash key with the time since
   // last critical memory pressure signal.
-  debug::ScopedCrashKeyString GetTimeSinceLastCriticalMemoryPressureCrashKey()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] debug::ScopedCrashKeyString
+  GetTimeSinceLastCriticalMemoryPressureCrashKey();
 #endif
 
   // Invoke base::debug::DumpWithoutCrashing() insuring that the stack frame

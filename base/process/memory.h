@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 
@@ -81,10 +80,10 @@ const DWORD kOomExceptionCode = 0xe0000008;
 // Note: You *must* use UncheckedFree() to free() the memory allocated, not
 // regular free(). This also means that this a pointer allocated below cannot be
 // passed to realloc().
-BASE_EXPORT WARN_UNUSED_RESULT bool UncheckedMalloc(size_t size, void** result);
-BASE_EXPORT WARN_UNUSED_RESULT bool UncheckedCalloc(size_t num_items,
-                                                    size_t size,
-                                                    void** result);
+[[nodiscard]] BASE_EXPORT bool UncheckedMalloc(size_t size, void** result);
+[[nodiscard]] BASE_EXPORT bool UncheckedCalloc(size_t num_items,
+                                               size_t size,
+                                               void** result);
 
 // *Must* be used to free memory allocated with base::UncheckedMalloc() and
 // base::UncheckedCalloc().

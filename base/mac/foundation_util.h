@@ -373,8 +373,8 @@ BASE_EXPORT base::ScopedCFTypeRef<CFURLRef> FilePathToCFURL(
 // Converts |range| to an NSRange, returning the new range in |range_out|.
 // Returns true if conversion was successful, false if the values of |range|
 // could not be converted to NSUIntegers.
-BASE_EXPORT bool CFRangeToNSRange(CFRange range,
-                                  NSRange* range_out) WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT bool CFRangeToNSRange(CFRange range,
+                                                NSRange* range_out);
 #endif  // defined(__OBJC__)
 
 }  // namespace base::mac

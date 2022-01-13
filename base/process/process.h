@@ -96,7 +96,7 @@ class BASE_EXPORT Process {
   // Relinquishes ownership of the handle and sets this to kNullProcessHandle.
   // The result may be a pseudo-handle, depending on the OS and value stored in
   // this.
-  ProcessHandle Release() WARN_UNUSED_RESULT;
+  [[nodiscard]] ProcessHandle Release();
 
   // Get the PID for this process.
   ProcessId Pid() const;

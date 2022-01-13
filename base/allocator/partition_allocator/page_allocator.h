@@ -104,7 +104,7 @@ BASE_EXPORT void FreePages(void* address, size_t length);
 //
 // Returns true if the permission change succeeded. In most cases you must
 // |CHECK| the result.
-BASE_EXPORT WARN_UNUSED_RESULT bool TrySetSystemPagesAccess(
+[[nodiscard]] BASE_EXPORT bool TrySetSystemPagesAccess(
     void* address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility);
@@ -200,11 +200,11 @@ BASE_EXPORT void RecommitSystemPages(
     PageAccessibilityDisposition accessibility_disposition);
 
 // Like RecommitSystemPages(), but returns false instead of crashing.
-BASE_EXPORT bool TryRecommitSystemPages(
+[[nodiscard]] BASE_EXPORT bool TryRecommitSystemPages(
     void* address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility,
-    PageAccessibilityDisposition accessibility_disposition) WARN_UNUSED_RESULT;
+    PageAccessibilityDisposition accessibility_disposition);
 
 // Discard one or more system pages starting at |address| and continuing for
 // |length| bytes. |length| must be a multiple of |SystemPageSize()|.

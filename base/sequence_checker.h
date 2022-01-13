@@ -111,7 +111,7 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
   SequenceCheckerDoNothing(const SequenceCheckerDoNothing&) = delete;
   SequenceCheckerDoNothing& operator=(const SequenceCheckerDoNothing&) = delete;
 
-  bool CalledOnValidSequence(void* = nullptr) const WARN_UNUSED_RESULT {
+  [[nodiscard]] bool CalledOnValidSequence(void* = nullptr) const {
     return true;
   }
   void DetachFromSequence() {}

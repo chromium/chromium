@@ -33,7 +33,7 @@ class TestLauncherTracer {
   int RecordProcessExecution(TimeTicks start_time, TimeDelta duration);
 
   // Dumps trace data as JSON. Returns true on success.
-  bool Dump(const FilePath& path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Dump(const FilePath& path);
 
  private:
   // Simplified version of base::TraceEvent.

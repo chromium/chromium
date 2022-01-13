@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -193,16 +192,16 @@ class FilePathWatcherTest : public testing::Test {
     return temp_dir_.GetPath().AppendASCII("FilePathWatcherTest.lnk");
   }
 
-  bool SetupWatch(const FilePath& target,
-                  FilePathWatcher* watcher,
-                  TestDelegateBase* delegate,
-                  FilePathWatcher::Type watch_type) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetupWatch(const FilePath& target,
+                                FilePathWatcher* watcher,
+                                TestDelegateBase* delegate,
+                                FilePathWatcher::Type watch_type);
 
-  bool WaitForEvents() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WaitForEvents() {
     return WaitForEventsWithTimeout(TestTimeouts::action_timeout());
   }
 
-  bool WaitForEventsWithTimeout(TimeDelta timeout) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WaitForEventsWithTimeout(TimeDelta timeout) {
     RunLoop run_loop;
     collector_->Reset(run_loop.QuitClosure());
 

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -103,7 +102,7 @@ class TestFuture {
   //
   //   ASSERT_TRUE(queue.Wait()) << "Detailed error message";
   //
-  bool WARN_UNUSED_RESULT Wait() {
+  [[nodiscard]] bool Wait() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (values_)
@@ -185,7 +184,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfSingleValue<U> = true>
-  const FirstType& WARN_UNUSED_RESULT Get() {
+  [[nodiscard]] const FirstType& Get() {
     return std::get<0>(GetTuple());
   }
 
@@ -193,7 +192,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfSingleValue<U> = true>
-  FirstType WARN_UNUSED_RESULT Take() {
+  [[nodiscard]] FirstType Take() {
     return std::get<0>(TakeTuple());
   }
 
@@ -205,7 +204,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  const std::tuple<Types...>& WARN_UNUSED_RESULT Get() {
+  [[nodiscard]] const std::tuple<Types...>& Get() {
     return GetTuple();
   }
 
@@ -213,7 +212,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  std::tuple<Types...> WARN_UNUSED_RESULT Take() {
+  [[nodiscard]] std::tuple<Types...> Take() {
     return TakeTuple();
   }
 
@@ -226,14 +225,14 @@ class TestFuture {
     SetValue(std::forward<CallbackArgumentsTypes>(values)...);
   }
 
-  const std::tuple<Types...>& WARN_UNUSED_RESULT GetTuple() {
+  [[nodiscard]] const std::tuple<Types...>& GetTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
     return values_.value();
   }
 
-  std::tuple<Types...> WARN_UNUSED_RESULT TakeTuple() {
+  [[nodiscard]] std::tuple<Types...> TakeTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";

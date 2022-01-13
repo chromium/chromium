@@ -80,8 +80,8 @@ class BASE_EXPORT MemoryMappedFile {
   // to a valid memory mapped file then this method will fail and return
   // false. If it cannot open the file, the file does not exist, or the
   // memory mapping fails, it will return false.
-  WARN_UNUSED_RESULT bool Initialize(const FilePath& file_name, Access access);
-  WARN_UNUSED_RESULT bool Initialize(const FilePath& file_name) {
+  [[nodiscard]] bool Initialize(const FilePath& file_name, Access access);
+  [[nodiscard]] bool Initialize(const FilePath& file_name) {
     return Initialize(file_name, READ_ONLY);
   }
 
@@ -90,8 +90,8 @@ class BASE_EXPORT MemoryMappedFile {
   // of |file| and closes it when done. |file| must have been opened with
   // permissions suitable for |access|. If the memory mapping fails, it will
   // return false.
-  WARN_UNUSED_RESULT bool Initialize(File file, Access access);
-  WARN_UNUSED_RESULT bool Initialize(File file) {
+  [[nodiscard]] bool Initialize(File file, Access access);
+  [[nodiscard]] bool Initialize(File file) {
     return Initialize(std::move(file), READ_ONLY);
   }
 
@@ -99,10 +99,8 @@ class BASE_EXPORT MemoryMappedFile {
   // must not be READ_CODE_IMAGE. If READ_WRITE_EXTEND is specified then
   // |region| provides the maximum size of the file. If the memory mapping
   // fails, it return false.
-  WARN_UNUSED_RESULT bool Initialize(File file,
-                                     const Region& region,
-                                     Access access);
-  WARN_UNUSED_RESULT bool Initialize(File file, const Region& region) {
+  [[nodiscard]] bool Initialize(File file, const Region& region, Access access);
+  [[nodiscard]] bool Initialize(File file, const Region& region) {
     return Initialize(std::move(file), region, READ_ONLY);
   }
 

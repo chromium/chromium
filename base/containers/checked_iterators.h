@@ -185,10 +185,10 @@ class CheckedContiguousIterator {
     return current_[rhs];
   }
 
-  static bool IsRangeMoveSafe(const CheckedContiguousIterator& from_begin,
-                              const CheckedContiguousIterator& from_end,
-                              const CheckedContiguousIterator& to)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] static bool IsRangeMoveSafe(
+      const CheckedContiguousIterator& from_begin,
+      const CheckedContiguousIterator& from_end,
+      const CheckedContiguousIterator& to) {
     if (from_end < from_begin)
       return false;
     const auto from_begin_uintptr = get_uintptr(from_begin.current_);

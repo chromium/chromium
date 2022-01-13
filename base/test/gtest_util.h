@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -100,13 +99,12 @@ std::vector<TestIdentifier> GetCompiledInTests();
 
 // Writes the list of gtest-based tests compiled into
 // current executable as a JSON file. Returns true on success.
-bool WriteCompiledInTestsToFile(const FilePath& path) WARN_UNUSED_RESULT;
+[[nodiscard]] bool WriteCompiledInTestsToFile(const FilePath& path);
 
 // Reads the list of gtest-based tests from |path| into |output|.
 // Returns true on success.
-bool ReadTestNamesFromFile(
-    const FilePath& path,
-    std::vector<TestIdentifier>* output) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ReadTestNamesFromFile(const FilePath& path,
+                                         std::vector<TestIdentifier>* output);
 
 }  // namespace base
 

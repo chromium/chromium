@@ -408,9 +408,7 @@ class span : public internal::ExtentStorage<Extent> {
   // [span.obs], span observers
   constexpr size_t size() const noexcept { return ExtentStorage::size(); }
   constexpr size_t size_bytes() const noexcept { return size() * sizeof(T); }
-  constexpr bool empty() const noexcept WARN_UNUSED_RESULT {
-    return size() == 0;
-  }
+  [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
   // [span.elem], span element access
   constexpr T& operator[](size_t idx) const noexcept {

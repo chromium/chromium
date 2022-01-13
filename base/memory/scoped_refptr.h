@@ -254,7 +254,7 @@ class TRIVIAL_ABI scoped_refptr {
 
   // Returns the owned pointer (if any), releasing ownership to the caller. The
   // caller is responsible for managing the lifetime of the reference.
-  T* release() WARN_UNUSED_RESULT;
+  [[nodiscard]] T* release();
 
   void swap(scoped_refptr& r) noexcept { std::swap(ptr_, r.ptr_); }
 

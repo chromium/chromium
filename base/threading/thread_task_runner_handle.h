@@ -6,7 +6,6 @@
 #define BASE_THREADING_THREAD_TASK_RUNNER_HANDLE_H_
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,11 +30,11 @@ namespace base {
 class BASE_EXPORT ThreadTaskRunnerHandle {
  public:
   // Gets the SingleThreadTaskRunner for the current thread.
-  static const scoped_refptr<SingleThreadTaskRunner>& Get() WARN_UNUSED_RESULT;
+  [[nodiscard]] static const scoped_refptr<SingleThreadTaskRunner>& Get();
 
   // Returns true if the SingleThreadTaskRunner is already created for
   // the current thread.
-  static bool IsSet() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsSet();
 
   // Binds |task_runner| to the current thread. |task_runner| must belong
   // to the current thread for this to succeed.

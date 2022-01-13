@@ -185,9 +185,7 @@ class BasicStringPiece {
     return std::numeric_limits<size_type>::max() / sizeof(CharT);
   }
 
-  constexpr bool empty() const noexcept WARN_UNUSED_RESULT {
-    return size() == 0;
-  }
+  [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
   constexpr void remove_prefix(size_type n) {
     // Intentional STL deviation: Bounds-check instead of UB.

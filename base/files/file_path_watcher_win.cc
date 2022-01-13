@@ -45,12 +45,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   // the directory sub trees. Returns true if no fatal error occurs. |handle|
   // will receive the handle value if |dir| is watchable, otherwise
   // INVALID_HANDLE_VALUE.
-  static bool SetupWatchHandle(const FilePath& dir,
-                               bool recursive,
-                               HANDLE* handle) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool SetupWatchHandle(const FilePath& dir,
+                                             bool recursive,
+                                             HANDLE* handle);
 
   // (Re-)Initialize the watch handle.
-  bool UpdateWatch() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateWatch();
 
   // Destroy the watch handle.
   void DestroyWatch();

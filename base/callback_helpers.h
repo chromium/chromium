@@ -17,7 +17,6 @@
 #include "base/atomicops.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 
 namespace base {
 
@@ -137,7 +136,7 @@ class BASE_EXPORT ScopedClosureRunner {
   void ReplaceClosure(OnceClosure closure);
 
   // Releases the Closure without calling.
-  OnceClosure Release() WARN_UNUSED_RESULT;
+  [[nodiscard]] OnceClosure Release();
 
  private:
   OnceClosure closure_;

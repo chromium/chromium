@@ -5,7 +5,6 @@
 #ifndef BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -203,7 +202,7 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   // becomes invalid. It's the responsibility of the caller to close the
   // handle. If the current instance is invalid, ScopedPlatformHandle will also
   // be invalid.
-  ScopedPlatformHandle PassPlatformHandle() WARN_UNUSED_RESULT;
+  [[nodiscard]] ScopedPlatformHandle PassPlatformHandle();
 
   // Returns the platform handle. The current instance keeps ownership of this
   // handle.

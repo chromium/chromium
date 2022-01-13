@@ -6,7 +6,6 @@
 #define BASE_MAC_SCOPED_TYPEREF_H_
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_policy.h"
 
 namespace base {
@@ -92,7 +91,7 @@ class ScopedTypeRef {
   // This is to be used only to take ownership of objects that are created
   // by pass-by-pointer create functions. To enforce this, require that the
   // object be reset to NULL before this may be used.
-  element_type* InitializeInto() WARN_UNUSED_RESULT {
+  [[nodiscard]] element_type* InitializeInto() {
     DCHECK(!object_);
     return &object_;
   }
@@ -128,7 +127,7 @@ class ScopedTypeRef {
   // ScopedTypeRef<>::release() is like std::unique_ptr<>::release.  It is NOT
   // a wrapper for Release().  To force a ScopedTypeRef<> object to call
   // Release(), use ScopedTypeRef<>::reset().
-  element_type release() WARN_UNUSED_RESULT {
+  [[nodiscard]] element_type release() {
     element_type temp = object_;
     object_ = Traits::InvalidValue();
     return temp;

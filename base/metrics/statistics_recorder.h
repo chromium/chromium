@@ -225,8 +225,8 @@ class BASE_EXPORT StatisticsRecorder {
   // they're created.
   //
   // This method is thread safe.
-  static std::unique_ptr<StatisticsRecorder> CreateTemporaryForTesting()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static std::unique_ptr<StatisticsRecorder>
+  CreateTemporaryForTesting();
 
   // Sets the record checker for determining if a histogram should be recorded.
   // Record checker doesn't affect any already recorded histograms, so this

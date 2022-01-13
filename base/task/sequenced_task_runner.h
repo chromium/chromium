@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -176,7 +175,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // |delay_policy|. Returns a handle that can be used to cancel the task.
   // This should not be used directly. Consider using higher level timer
   // primitives in base/timer/timer.h.
-  WARN_UNUSED_RESULT virtual DelayedTaskHandle PostCancelableDelayedTaskAt(
+  [[nodiscard]] virtual DelayedTaskHandle PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKey,
       const Location& from_here,
       OnceClosure task,

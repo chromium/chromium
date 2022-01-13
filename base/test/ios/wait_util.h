@@ -49,8 +49,8 @@ extern const NSTimeInterval kWaitForFileOperationTimeout;
 
 // Returns true when condition() becomes true, otherwise returns false after
 // |timeout|.
-bool WaitUntilConditionOrTimeout(NSTimeInterval timeout,
-                                 ConditionBlock condition) WARN_UNUSED_RESULT;
+[[nodiscard]] bool WaitUntilConditionOrTimeout(NSTimeInterval timeout,
+                                               ConditionBlock condition);
 
 // Runs |action| if non-nil. Then, until either |condition| is true or |timeout|
 // expires, repetitively runs the current NSRunLoop and the current MessageLoop

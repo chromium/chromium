@@ -16,22 +16,23 @@
 namespace base {
 
 // Return a C++ string given printf-like input.
-BASE_EXPORT std::string StringPrintf(const char* format, ...)
-    PRINTF_FORMAT(1, 2) WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT std::string StringPrintf(const char* format, ...)
+    PRINTF_FORMAT(1, 2);
 #if defined(OS_WIN)
 // Note: Unfortunately compile time checking of the format string for UTF-16
 // strings is not supported by any compiler, thus these functions should be used
 // carefully and sparingly. Also applies to SStringPrintf and StringAppendV
 // below.
-BASE_EXPORT std::wstring StringPrintf(const wchar_t* format, ...)
-    WPRINTF_FORMAT(1, 2) WARN_UNUSED_RESULT;
-BASE_EXPORT std::u16string StringPrintf(const char16_t* format, ...)
-    WPRINTF_FORMAT(1, 2) WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT std::wstring StringPrintf(const wchar_t* format, ...)
+    WPRINTF_FORMAT(1, 2);
+[[nodiscard]] BASE_EXPORT std::u16string StringPrintf(const char16_t* format,
+                                                      ...) WPRINTF_FORMAT(1, 2);
 #endif
 
 // Return a C++ string given vprintf-like input.
-BASE_EXPORT std::string StringPrintV(const char* format, va_list ap)
-    PRINTF_FORMAT(1, 0) WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT std::string StringPrintV(const char* format,
+                                                   va_list ap)
+    PRINTF_FORMAT(1, 0);
 
 // Store result into a supplied string and return it.
 BASE_EXPORT const std::string& SStringPrintf(std::string* dst,

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 
@@ -25,10 +24,8 @@ inline void StrAppend(std::wstring* dest,
   StrAppend(dest, make_span(pieces));
 }
 
-BASE_EXPORT std::wstring StrCat(span<const WStringPiece> pieces)
-    WARN_UNUSED_RESULT;
-BASE_EXPORT std::wstring StrCat(span<const std::wstring> pieces)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT std::wstring StrCat(span<const WStringPiece> pieces);
+[[nodiscard]] BASE_EXPORT std::wstring StrCat(span<const std::wstring> pieces);
 
 inline std::wstring StrCat(std::initializer_list<WStringPiece> pieces) {
   return StrCat(make_span(pieces));

@@ -136,7 +136,7 @@ class TestLauncher {
   // Runs the launcher. Must be called at most once.
   // command_line is null by default.
   // if null, uses command line for current process.
-  bool Run(CommandLine* command_line = nullptr) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Run(CommandLine* command_line = nullptr);
 
   // Launches a child process (assumed to be gtest-based binary) which runs
   // tests indicated by |test_names|.
@@ -167,7 +167,7 @@ class TestLauncher {
   }
 
  private:
-  bool Init(CommandLine* command_line) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Init(CommandLine* command_line);
 
   // Gets tests from the delegate, and converts to TestInfo objects.
   // Catches and logs uninstantiated parameterized tests.

@@ -9,7 +9,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -60,8 +59,8 @@ bool DenyFilePermission(const FilePath& path, DWORD permission);
 
 // For testing, make the file unreadable or unwritable.
 // In POSIX, this does not apply to the root user.
-bool MakeFileUnreadable(const FilePath& path) WARN_UNUSED_RESULT;
-bool MakeFileUnwritable(const FilePath& path) WARN_UNUSED_RESULT;
+[[nodiscard]] bool MakeFileUnreadable(const FilePath& path);
+[[nodiscard]] bool MakeFileUnwritable(const FilePath& path);
 
 // Saves the current permissions for a path, and restores it on destruction.
 class FilePermissionRestorer {

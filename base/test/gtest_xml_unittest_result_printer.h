@@ -34,7 +34,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   void AddLink(const std::string& name, const std::string& url);
 
   // Must be called before adding as a listener. Returns true on success.
-  bool Initialize(const FilePath& output_file_path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize(const FilePath& output_file_path);
 
   // CHECK/DCHECK failed. Print file/line and message to the xml.
   void OnAssert(const char* file,

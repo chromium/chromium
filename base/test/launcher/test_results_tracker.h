@@ -42,7 +42,7 @@ class TestResultsTracker {
 
   // Initialize the result tracker. Must be called exactly once before
   // calling any other methods. Returns true on success.
-  bool Init(const CommandLine& command_line) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Init(const CommandLine& command_line);
 
   // Called when a test iteration is starting.
   void OnTestIterationStarting();
@@ -90,9 +90,9 @@ class TestResultsTracker {
   // Saves a JSON summary of all test iterations results to |path|. Adds
   // |additional_tags| to the summary (just for this invocation). Returns
   // true on success.
-  bool SaveSummaryAsJSON(
+  [[nodiscard]] bool SaveSummaryAsJSON(
       const FilePath& path,
-      const std::vector<std::string>& additional_tags) const WARN_UNUSED_RESULT;
+      const std::vector<std::string>& additional_tags) const;
 
   // Map where keys are test result statuses, and values are sets of tests
   // which finished with that status.

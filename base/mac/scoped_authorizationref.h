@@ -8,7 +8,6 @@
 #include <Security/Authorization.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 
 // ScopedAuthorizationRef maintains ownership of an AuthorizationRef.  It is
 // patterned after the unique_ptr interface.
@@ -66,7 +65,7 @@ class BASE_EXPORT ScopedAuthorizationRef {
   // ScopedAuthorizationRef::release() is like std::unique_ptr<>::release. It is
   // NOT a wrapper for AuthorizationFree(). To force a ScopedAuthorizationRef
   // object to call AuthorizationFree(), use ScopedAuthorizationRef::reset().
-  AuthorizationRef release() WARN_UNUSED_RESULT {
+  [[nodiscard]] AuthorizationRef release() {
     AuthorizationRef temp = authorization_;
     authorization_ = NULL;
     return temp;

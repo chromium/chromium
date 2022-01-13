@@ -6,7 +6,6 @@
 #define BASE_MEMORY_DISCARDABLE_MEMORY_H_
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -50,7 +49,7 @@ class BASE_EXPORT DiscardableMemory {
   // Locks the memory so that it will not be purged by the system. Returns
   // true on success. If the return value is false then this object should be
   // destroyed and a new one should be created.
-  virtual bool Lock() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Lock() = 0;
 
   // Unlocks the memory so that it can be purged by the system. Must be called
   // after every successful lock call.

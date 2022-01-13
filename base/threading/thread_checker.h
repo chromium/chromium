@@ -6,7 +6,6 @@
 #define BASE_THREADING_THREAD_CHECKER_H_
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
@@ -117,8 +116,8 @@ class LOCKABLE ThreadCheckerDoNothing {
   ThreadCheckerDoNothing(ThreadCheckerDoNothing&& other) = default;
   ThreadCheckerDoNothing& operator=(ThreadCheckerDoNothing&& other) = default;
 
-  bool CalledOnValidThread(std::unique_ptr<void*> = nullptr) const
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool CalledOnValidThread(
+      std::unique_ptr<void*> = nullptr) const {
     return true;
   }
   void DetachFromThread() {}

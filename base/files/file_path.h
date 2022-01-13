@@ -110,7 +110,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
@@ -249,13 +248,13 @@ class BASE_EXPORT FilePath {
   // kCurrentDirectory.  If this object already refers to the root directory,
   // returns a FilePath identifying the root directory. Please note that this
   // doesn't resolve directory navigation, e.g. the result for "../a" is "..".
-  FilePath DirName() const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath DirName() const;
 
   // Returns a FilePath corresponding to the last path component of this
   // object, either a file or a directory.  If this object already refers to
   // the root directory, returns a FilePath identifying the root directory;
   // this is the only situation in which BaseName will return an absolute path.
-  FilePath BaseName() const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath BaseName() const;
 
   // Returns ".jpg" for path "C:\pics\jojo.jpg", or an empty string if the file
   // has no extension.  If non-empty, Extension() will always start with
@@ -284,7 +283,7 @@ class BASE_EXPORT FilePath {
   //
   // NOTE: this is different from the original file_util implementation which
   // returned the extension without a leading "." ("jpg" instead of ".jpg")
-  StringType Extension() const WARN_UNUSED_RESULT;
+  [[nodiscard]] StringType Extension() const;
 
   // Returns the path's file extension, as in Extension(), but will
   // never return a double extension.
@@ -293,16 +292,16 @@ class BASE_EXPORT FilePath {
   // we can rename this to Extension() and the other to something like
   // LongExtension(), defaulting to short extensions and leaving the
   // long "extensions" to logic like base::GetUniquePathNumber().
-  StringType FinalExtension() const WARN_UNUSED_RESULT;
+  [[nodiscard]] StringType FinalExtension() const;
 
   // Returns "C:\pics\jojo" for path "C:\pics\jojo.jpg"
   // NOTE: this is slightly different from the similar file_util implementation
   // which returned simply 'jojo'.
-  FilePath RemoveExtension() const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath RemoveExtension() const;
 
   // Removes the path's file extension, as in RemoveExtension(), but
   // ignores double extensions.
-  FilePath RemoveFinalExtension() const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath RemoveFinalExtension() const;
 
   // Inserts |suffix| after the file name portion of |path| but before the
   // extension.  Returns "" if BaseName() == "." or "..".
@@ -311,24 +310,22 @@ class BASE_EXPORT FilePath {
   // path == "jojo.jpg"         suffix == " (1)", returns "jojo (1).jpg"
   // path == "C:\pics\jojo"     suffix == " (1)", returns "C:\pics\jojo (1)"
   // path == "C:\pics.old\jojo" suffix == " (1)", returns "C:\pics.old\jojo (1)"
-  FilePath InsertBeforeExtension(
-      StringPieceType suffix) const WARN_UNUSED_RESULT;
-  FilePath InsertBeforeExtensionASCII(
-      StringPiece suffix) const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath InsertBeforeExtension(StringPieceType suffix) const;
+  [[nodiscard]] FilePath InsertBeforeExtensionASCII(StringPiece suffix) const;
 
   // Adds |extension| to |file_name|. Returns the current FilePath if
   // |extension| is empty. Returns "" if BaseName() == "." or "..".
-  FilePath AddExtension(StringPieceType extension) const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath AddExtension(StringPieceType extension) const;
 
   // Like above, but takes the extension as an ASCII string. See AppendASCII for
   // details on how this is handled.
-  FilePath AddExtensionASCII(StringPiece extension) const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath AddExtensionASCII(StringPiece extension) const;
 
   // Replaces the extension of |file_name| with |extension|.  If |file_name|
   // does not have an extension, then |extension| is added.  If |extension| is
   // empty, then the extension is removed from |file_name|.
   // Returns "" if BaseName() == "." or "..".
-  FilePath ReplaceExtension(StringPieceType extension) const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath ReplaceExtension(StringPieceType extension) const;
 
   // Returns true if the file path matches the specified extension. The test is
   // case insensitive. Don't forget the leading period if appropriate.
@@ -340,9 +337,9 @@ class BASE_EXPORT FilePath {
   // If this object's path is kCurrentDirectory, a new FilePath corresponding
   // only to |component| is returned.  |component| must be a relative path;
   // it is an error to pass an absolute path.
-  FilePath Append(StringPieceType component) const WARN_UNUSED_RESULT;
-  FilePath Append(const FilePath& component) const WARN_UNUSED_RESULT;
-  FilePath Append(const SafeBaseName& component) const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath Append(StringPieceType component) const;
+  [[nodiscard]] FilePath Append(const FilePath& component) const;
+  [[nodiscard]] FilePath Append(const SafeBaseName& component) const;
 
   // Although Windows StringType is std::wstring, since the encoding it uses for
   // paths is well defined, it can handle ASCII path components as well.
@@ -350,7 +347,7 @@ class BASE_EXPORT FilePath {
   // On Linux, although it can use any 8-bit encoding for paths, we assume that
   // ASCII is a valid subset, regardless of the encoding, since many operating
   // system paths will always be ASCII.
-  FilePath AppendASCII(StringPiece component) const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath AppendASCII(StringPiece component) const;
 
   // Returns true if this FilePath contains an absolute path.  On Windows, an
   // absolute path begins with either a drive letter specification followed by
@@ -363,15 +360,15 @@ class BASE_EXPORT FilePath {
   bool IsNetwork() const;
 
   // Returns true if the patch ends with a path separator character.
-  bool EndsWithSeparator() const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool EndsWithSeparator() const;
 
   // Returns a copy of this FilePath that ends with a trailing separator. If
   // the input path is empty, an empty FilePath will be returned.
-  FilePath AsEndingWithSeparator() const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath AsEndingWithSeparator() const;
 
   // Returns a copy of this FilePath that does not end with a trailing
   // separator.
-  FilePath StripTrailingSeparators() const WARN_UNUSED_RESULT;
+  [[nodiscard]] FilePath StripTrailingSeparators() const;
 
   // Returns true if this FilePath contains an attempt to reference a parent
   // directory (e.g. has a path component that is "..").

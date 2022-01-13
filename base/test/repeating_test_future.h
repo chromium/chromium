@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -108,7 +107,7 @@ class RepeatingTestFuture {
   //
   //   ASSERT_TRUE(queue.Wait()) << "Detailed error message";
   //
-  bool WARN_UNUSED_RESULT Wait() {
+  [[nodiscard]] bool Wait() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (IsEmpty())

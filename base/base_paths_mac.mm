@@ -12,7 +12,6 @@
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/bundle_locations.h"
@@ -49,8 +48,8 @@ void GetNSExecutablePath(base::FilePath* path) {
 
 // Returns true if the module for |address| is found. |path| will contain
 // the path to the module. Note that |path| may not be absolute.
-bool GetModulePathForAddress(base::FilePath* path,
-                             const void* address) WARN_UNUSED_RESULT;
+[[nodiscard]] bool GetModulePathForAddress(base::FilePath* path,
+                                           const void* address);
 
 bool GetModulePathForAddress(base::FilePath* path, const void* address) {
   Dl_info info;

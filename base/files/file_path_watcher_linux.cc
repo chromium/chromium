@@ -219,7 +219,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // Reconfigure to watch for the most specific parent directory of |target_|
   // that exists. Also calls UpdateRecursiveWatches() below. Returns true if
   // watch limit is not hit. Otherwise, returns false.
-  bool UpdateWatches() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateWatches();
 
   // Reconfigure to recursively watch |target_| and all its sub-directories.
   // - This is a no-op if the watch is not recursive.
@@ -229,12 +229,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // - Otherwise, only the directory associated with |fired_watch| and its
   //   sub-directories will be reconfigured.
   // Returns true if watch limit is not hit. Otherwise, returns false.
-  bool UpdateRecursiveWatches(InotifyReader::Watch fired_watch,
-                              bool is_dir) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateRecursiveWatches(InotifyReader::Watch fired_watch,
+                                            bool is_dir);
 
   // Enumerate recursively through |path| and add / update watches.
   // Returns true if watch limit is not hit. Otherwise, returns false.
-  bool UpdateRecursiveWatchesForPath(const FilePath& path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateRecursiveWatchesForPath(const FilePath& path);
 
   // Do internal bookkeeping to update mappings between |watch| and its
   // associated full path |path|.
@@ -246,8 +246,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // |path| is a symlink to a non-existent target. Attempt to add a watch to
   // the link target's parent directory. Update |watch_entry| on success.
   // Returns true if watch limit is not hit. Otherwise, returns false.
-  bool AddWatchForBrokenSymlink(const FilePath& path,
-                                WatchEntry* watch_entry) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddWatchForBrokenSymlink(const FilePath& path,
+                                              WatchEntry* watch_entry);
 
   bool HasValidWatchVector() const;
 
