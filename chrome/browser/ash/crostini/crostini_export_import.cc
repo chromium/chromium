@@ -428,31 +428,6 @@ void CrostiniExportImport::OnExportComplete(
 
 void CrostiniExportImport::OnExportContainerProgress(
     const ContainerId& container_id,
-    ExportContainerProgressStatus status,
-    int progress_percent,
-    uint64_t progress_speed) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
-    NOTREACHED() << container_id << " has no status_tracker to update";
-    return;
-  }
-
-  switch (status) {
-    // Rescale PACK:1-100 => 0-50.
-    case ExportContainerProgressStatus::PACK:
-      it->second->SetStatusRunning(progress_percent / 2);
-      break;
-    // Rescale DOWNLOAD:1-100 => 50-100.
-    case ExportContainerProgressStatus::DOWNLOAD:
-      it->second->SetStatusRunning(50 + progress_percent / 2);
-      break;
-    default:
-      LOG(WARNING) << "Unknown Export progress status " << int(status);
-  }
-}
-
-void CrostiniExportImport::OnExportContainerProgress(
-    const ContainerId& container_id,
     const StreamingExportStatus& status) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {

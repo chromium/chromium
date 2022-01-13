@@ -123,15 +123,6 @@ enum class UninstallPackageProgressStatus {
   UNINSTALLING,  // In progress
 };
 
-// TODO(juwa): delete this once the new version of tremplin has shipped.
-enum class ExportContainerProgressStatus {
-  // Deprecated. Has been replaced by STREAMING.
-  PACK,
-  // Deprecated. Has been replaced by STREAMING.
-  DOWNLOAD,
-  STREAMING,
-};
-
 enum class ImportContainerProgressStatus {
   UPLOAD,
   UNPACK,

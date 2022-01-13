@@ -80,14 +80,6 @@ class PendingAppListUpdatesObserver : public base::CheckedObserver {
 
 class ExportContainerProgressObserver {
  public:
-  // DEPCRECATED. A successfully started container export will continually fire
-  // progress events until the original callback from ExportLxdContainer is
-  // invoked with a status of SUCCESS or CONTAINER_EXPORT_FAILED.
-  virtual void OnExportContainerProgress(const ContainerId& container_id,
-                                         ExportContainerProgressStatus status,
-                                         int progress_percent,
-                                         uint64_t progress_speed) = 0;
-
   // A successfully started container export will continually fire progress
   // events until the original callback from ExportLxdContainer is invoked with
   // a status of SUCCESS or CONTAINER_EXPORT_FAILED.

@@ -1846,18 +1846,14 @@ TEST_F(CrostiniManagerTest, ExportContainerSuccess) {
       base::BindOnce(&ExpectCrostiniExportResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS, 123, 456));
 
-  // Send signals, PACK, DOWNLOAD, DONE.
+  // Send signals, STREAMING, DONE.
   vm_tools::cicerone::ExportLxdContainerProgressSignal signal;
   signal.set_owner_id(CryptohomeIdForProfile(profile()));
   signal.set_vm_name(kVmName);
   signal.set_container_name(kContainerName);
-  signal.set_status(vm_tools::cicerone::
-                        ExportLxdContainerProgressSignal_Status_EXPORTING_PACK);
-  fake_cicerone_client_->NotifyExportLxdContainerProgress(signal);
-
   signal.set_status(
       vm_tools::cicerone::
-          ExportLxdContainerProgressSignal_Status_EXPORTING_DOWNLOAD);
+          ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING);
   fake_cicerone_client_->NotifyExportLxdContainerProgress(signal);
 
   signal.set_status(
