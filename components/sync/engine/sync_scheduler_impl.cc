@@ -840,8 +840,9 @@ void SyncSchedulerImpl::OnReceivedCustomNudgeDelays(
   if (force_short_nudge_delay_for_test_)
     return;
 
-  for (const auto& [type, delay] : nudge_delays) {
-    nudge_tracker_.UpdateLocalChangeDelay(type, delay);
+  for (const auto& type_and_delay : nudge_delays) {
+    nudge_tracker_.UpdateLocalChangeDelay(type_and_delay.first,
+                                          type_and_delay.second);
   }
 }
 

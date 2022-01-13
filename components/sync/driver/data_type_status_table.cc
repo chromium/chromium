@@ -33,8 +33,9 @@ DataTypeStatusTable::~DataTypeStatusTable() = default;
 void DataTypeStatusTable::UpdateFailedDataTypes(const TypeErrorMap& errors) {
   DVLOG(1) << "Setting " << errors.size() << " new failed types.";
 
-  for (const auto& [model_type, error] : errors) {
-    UpdateFailedDataType(model_type, error);
+  for (const auto& model_type_and_error : errors) {
+    UpdateFailedDataType(model_type_and_error.first,
+                         model_type_and_error.second);
   }
 }
 

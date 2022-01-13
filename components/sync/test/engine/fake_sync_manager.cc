@@ -49,8 +49,9 @@ int FakeSyncManager::GetInvalidationCount(ModelType type) const {
   auto it = num_invalidations_received_.find(type);
   if (it == num_invalidations_received_.end()) {
     return 0;
+  } else {
+    return it->second;
   }
-  return it->second;
 }
 
 void FakeSyncManager::WaitForSyncThread() {

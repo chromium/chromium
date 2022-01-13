@@ -108,9 +108,9 @@ bool ModelTypeRegistry::proxy_tabs_datatype_enabled() const {
 
 ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
   ModelTypeSet result;
-  for (const auto& [type, update_handler] : update_handler_map_) {
-    if (update_handler->IsInitialSyncEnded())
-      result.Put(type);
+  for (const auto& kv : update_handler_map_) {
+    if (kv.second->IsInitialSyncEnded())
+      result.Put(kv.first);
   }
   return result;
 }

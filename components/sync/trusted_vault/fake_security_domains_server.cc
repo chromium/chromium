@@ -220,9 +220,10 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
   state_.current_epoch++;
   state_.trusted_vault_keys.push_back(new_trusted_vault_key);
   state_.constant_key_allowed = false;
-  for (auto& [member, shared_key] : state_.public_key_to_shared_keys) {
+  for (auto& member_and_shared_key : state_.public_key_to_shared_keys) {
     std::unique_ptr<SecureBoxPublicKey> member_public_key =
-        SecureBoxPublicKey::CreateByImport(ProtoStringToBytes(member));
+        SecureBoxPublicKey::CreateByImport(
+            ProtoStringToBytes(member_and_shared_key.first));
     DCHECK(member_public_key);
 
     sync_pb::SharedMemberKey new_shared_key;
@@ -233,7 +234,7 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
     AssignBytesToProtoString(
         ComputeMemberProof(*member_public_key, new_trusted_vault_key),
         new_shared_key.mutable_member_proof());
-    shared_key.push_back(new_shared_key);
+    member_and_shared_key.second.push_back(new_shared_key);
 
     sync_pb::RotationProof rotation_proof;
     rotation_proof.set_new_epoch(state_.current_epoch);
@@ -242,7 +243,8 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
             /*trusted_vault_key=*/new_trusted_vault_key,
             /*prev_trusted_vault_key=*/last_trusted_vault_key),
         rotation_proof.mutable_rotation_proof());
-    state_.public_key_to_rotation_proofs[member].push_back(rotation_proof);
+    state_.public_key_to_rotation_proofs[member_and_shared_key.first].push_back(
+        rotation_proof);
   }
 
   return new_trusted_vault_key;
@@ -276,15 +278,16 @@ FakeSecurityDomainsServer::GetAllTrustedVaultKeys() const {
 bool FakeSecurityDomainsServer::AllMembersHaveKey(
     const std::vector<uint8_t>& trusted_vault_key) const {
   base::AutoLock autolock(lock_);
-  for (const auto& [public_key, shared_keys] :
+  for (const auto& public_key_and_shared_keys :
        state_.public_key_to_shared_keys) {
     bool member_has_key = false;
 
     std::unique_ptr<SecureBoxPublicKey> member_public_key =
-        SecureBoxPublicKey::CreateByImport(ProtoStringToBytes(public_key));
+        SecureBoxPublicKey::CreateByImport(
+            ProtoStringToBytes(public_key_and_shared_keys.first));
     DCHECK(member_public_key);
 
-    for (const auto& shared_key : shared_keys) {
+    for (const auto& shared_key : public_key_and_shared_keys.second) {
       // Member has |trusted_vault_key| if there is a member proof signed by
       // |trusted_vault_key|.
       if (VerifyMemberProof(*member_public_key, trusted_vault_key,

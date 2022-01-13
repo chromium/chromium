@@ -13,7 +13,9 @@ InMemoryMetadataChangeList::~InMemoryMetadataChangeList() = default;
 
 void InMemoryMetadataChangeList::TransferChangesTo(MetadataChangeList* other) {
   DCHECK(other);
-  for (const auto& [storage_key, change] : metadata_changes_) {
+  for (const auto& pair : metadata_changes_) {
+    const std::string& storage_key = pair.first;
+    const MetadataChange& change = pair.second;
     switch (change.type) {
       case UPDATE:
         other->UpdateMetadata(storage_key, change.metadata);

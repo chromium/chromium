@@ -55,7 +55,8 @@ void ModelLoadManager::Initialize(ModelTypeSet desired_types,
 
   DVLOG(1) << "ModelLoadManager: Stopping disabled types.";
   std::map<DataTypeController*, ShutdownReason> types_to_stop;
-  for (const auto& [type, dtc] : *controllers_) {
+  for (const auto& type_and_dtc : *controllers_) {
+    DataTypeController* dtc = type_and_dtc.second.get();
     // We generally stop all data types which are not desired. When the storage
     // option changes, we need to restart all data types so that they can
     // re-wire to the correct storage.
@@ -77,7 +78,7 @@ void ModelLoadManager::Initialize(ModelTypeSet desired_types,
           configure_context_.sync_mode == SyncMode::kTransportOnly) {
         reason = ShutdownReason::STOP_SYNC_AND_KEEP_DATA;
       }
-      types_to_stop[dtc.get()] = reason;
+      types_to_stop[dtc] = reason;
     }
   }
 
@@ -88,7 +89,9 @@ void ModelLoadManager::Initialize(ModelTypeSet desired_types,
       types_to_stop.size(), base::BindOnce(&ModelLoadManager::LoadDesiredTypes,
                                            weak_ptr_factory_.GetWeakPtr()));
 
-  for (const auto& [dtc, reason] : types_to_stop) {
+  for (const auto& dtc_and_reason : types_to_stop) {
+    DataTypeController* dtc = dtc_and_reason.first;
+    const ShutdownReason reason = dtc_and_reason.second;
     DVLOG(1) << "ModelLoadManager: stop " << dtc->name() << " due to "
              << ShutdownReasonToString(reason);
     StopDatatypeImpl(SyncError(), reason, dtc, barrier_closure);
@@ -152,13 +155,13 @@ void ModelLoadManager::Stop(ShutdownReason shutdown_reason) {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Stop started data types.
-  for (const auto& [type, dtc] : *controllers_) {
+  for (const auto& type_and_dtc : *controllers_) {
+    DataTypeController* dtc = type_and_dtc.second.get();
     if (dtc->state() != DataTypeController::NOT_RUNNING &&
         dtc->state() != DataTypeController::STOPPING) {
       // We don't really wait until all datatypes have been fully stopped, which
       // is only required (and in fact waited for) when Initialize() is called.
-      StopDatatypeImpl(SyncError(), shutdown_reason, dtc.get(),
-                       base::DoNothing());
+      StopDatatypeImpl(SyncError(), shutdown_reason, dtc, base::DoNothing());
       DVLOG(1) << "ModelLoadManager: Stopped " << dtc->name();
     }
   }

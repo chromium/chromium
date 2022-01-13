@@ -170,8 +170,9 @@ int64_t SingleTypeMockServer::GetServerVersion(
   // Server versions do not necessarily start at 1 or 0.
   if (it == server_versions_.end()) {
     return 2048;
+  } else {
+    return it->second;
   }
-  return it->second;
 }
 
 void SingleTypeMockServer::SetServerVersion(const ClientTagHash& tag_hash,

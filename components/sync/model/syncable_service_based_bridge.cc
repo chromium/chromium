@@ -487,10 +487,11 @@ absl::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
   // this function is reached only if sync is starting already.
   SyncDataList initial_sync_data;
   initial_sync_data.reserve(in_memory_store_.size());
-  for (const auto& [storage_key, specifics] : in_memory_store_) {
+  for (const std::pair<const std::string, sync_pb::EntitySpecifics>& record :
+       in_memory_store_) {
     // Note that client tag hash is used as storage key too.
     initial_sync_data.push_back(SyncData::CreateRemoteData(
-        std::move(specifics), ClientTagHash::FromHashed(storage_key)));
+        std::move(record.second), ClientTagHash::FromHashed(record.first)));
   }
 
   auto error_callback =

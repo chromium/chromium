@@ -40,8 +40,8 @@ const char kErrorSiteHistogramPrefix[] = "Sync.ModelTypeErrorSite.";
 size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
   size_t count = 0u;
   std::set<std::string> client_tag_hashes;
-  for (const auto& [storage_key, metadata] : metadata_map) {
-    const std::string& client_tag_hash = metadata->client_tag_hash();
+  for (const auto& kv : metadata_map) {
+    const std::string& client_tag_hash = kv.second->client_tag_hash();
     if (client_tag_hashes.find(client_tag_hash) != client_tag_hashes.end()) {
       count++;
     }
@@ -940,7 +940,8 @@ void ClientTagBasedModelTypeProcessor::ConsumeDataBatch(
     std::unique_ptr<DataBatch> data_batch) {
   DCHECK(entity_tracker_);
   while (data_batch->HasNext()) {
-    auto [storage_key, data] = data_batch->Next();
+    KeyAndData data = data_batch->Next();
+    const std::string& storage_key = data.first;
 
     storage_keys_to_load.erase(storage_key);
     ProcessorEntity* entity =
@@ -949,7 +950,7 @@ void ClientTagBasedModelTypeProcessor::ConsumeDataBatch(
     if (entity != nullptr && entity->RequiresCommitData()) {
       // SetCommitData will update EntityData's fields with values from
       // metadata.
-      entity->SetCommitData(std::move(data));
+      entity->SetCommitData(std::move(data.second));
     }
   }
 
@@ -1112,13 +1113,14 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
   std::string type_string = ModelTypeToString(type_);
 
   while (batch->HasNext()) {
-    const auto& [storage_key, data] = batch->Next();
+    KeyAndData key_and_data = batch->Next();
+    std::unique_ptr<EntityData> data = std::move(key_and_data.second);
 
     // There is an overlap between EntityData fields from the bridge and
     // EntityMetadata fields from the processor's entity, metadata is
     // the authoritative source of truth.
     const ProcessorEntity* entity =
-        entity_tracker_->GetEntityForStorageKey(storage_key);
+        entity_tracker_->GetEntityForStorageKey(key_and_data.first);
     // |entity| could be null if there are some unapplied changes.
     if (entity != nullptr) {
       const sync_pb::EntityMetadata& metadata = entity->metadata();

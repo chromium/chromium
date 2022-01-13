@@ -115,8 +115,10 @@ class SyncServiceImplTest : public ::testing::Test {
 
     // Default includes a regular controller and a transport-mode controller.
     DataTypeController::TypeVector controllers;
-    for (const auto& [type, transport_mode_support] :
+    for (const auto& type_and_transport_mode_support :
          registered_types_and_transport_mode_support) {
+      ModelType type = type_and_transport_mode_support.first;
+      bool transport_mode_support = type_and_transport_mode_support.second;
       auto controller = std::make_unique<FakeDataTypeController>(
           type, transport_mode_support);
       // Hold a raw pointer to directly interact with the controller.

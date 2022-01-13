@@ -1215,8 +1215,9 @@ ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
   ModelTypeSet registered_types;
   // The |data_type_controllers_| are determined by command-line flags;
   // that's effectively what controls the values returned here.
-  for (const auto& [type, controller] : data_type_controllers_) {
-    registered_types.Put(type);
+  for (const std::pair<const ModelType, std::unique_ptr<DataTypeController>>&
+           type_and_controller : data_type_controllers_) {
+    registered_types.Put(type_and_controller.first);
   }
   return registered_types;
 }
@@ -1224,7 +1225,9 @@ ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
 ModelTypeSet SyncServiceImpl::GetModelTypesForTransportOnlyMode() const {
   // Collect the types from all controllers that support transport-only mode.
   ModelTypeSet allowed_types;
-  for (const auto& [type, controller] : data_type_controllers_) {
+  for (const auto& type_and_controller : data_type_controllers_) {
+    ModelType type = type_and_controller.first;
+    const DataTypeController* controller = type_and_controller.second.get();
     if (controller->ShouldRunInTransportOnlyMode()) {
       allowed_types.Put(type);
     }
@@ -1303,7 +1306,12 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging() {
   type_status_header->SetString("state", "State");
   result->Append(std::move(type_status_header));
 
-  for (const auto& [type, controller] : data_type_controllers_) {
+  for (const std::pair<const ModelType, std::unique_ptr<DataTypeController>>&
+           type_and_controller : data_type_controllers_) {
+    const ModelType type = type_and_controller.first;
+    const DataTypeController* const controller =
+        type_and_controller.second.get();
+
     auto type_status = std::make_unique<base::DictionaryValue>();
     type_status->SetString("name", ModelTypeToString(type));
 
@@ -1389,8 +1397,8 @@ void SyncServiceImpl::GetEntityCountsForDebugging(
 
   // Callbacks passed to the controllers get a non-owning reference to the
   // counts vector, which they use to push the count for their individual type.
-  for (const auto& [type, controller] : data_type_controllers_) {
-    controller->GetTypeEntitiesCount(base::BindOnce(
+  for (const auto& type_and_controller : data_type_controllers_) {
+    type_and_controller.second->GetTypeEntitiesCount(base::BindOnce(
         [](const base::RepeatingClosure& all_types_done_barrier,
            EntityCountsVector* all_types_counts_ptr,
            const TypeEntitiesCount& count) {
@@ -1607,24 +1615,23 @@ void SyncServiceImpl::GetAllNodesForDebugging(
 
   for (ModelType type : all_types) {
     const auto dtc_iter = data_type_controllers_.find(type);
-    if (dtc_iter == data_type_controllers_.end()) {
+    if (dtc_iter != data_type_controllers_.end()) {
+      if (dtc_iter->second->state() == DataTypeController::NOT_RUNNING) {
+        // In the NOT_RUNNING state it's not allowed to call GetAllNodes on the
+        // DataTypeController, so just return an empty result.
+        // This can happen e.g. if we're waiting for a custom passphrase to be
+        // entered - the data types are already considered active in this case,
+        // but their DataTypeControllers are still NOT_RUNNING.
+        helper->OnReceivedNodesForType(type,
+                                       std::make_unique<base::ListValue>());
+      } else {
+        dtc_iter->second->GetAllNodes(base::BindRepeating(
+            &GetAllNodesRequestHelper::OnReceivedNodesForType, helper));
+      }
+    } else {
       // We should have no data type controller only for Nigori.
       DCHECK_EQ(type, NIGORI);
       engine_->GetNigoriNodeForDebugging(base::BindOnce(
-          &GetAllNodesRequestHelper::OnReceivedNodesForType, helper));
-      continue;
-    }
-
-    DataTypeController* controller = dtc_iter->second.get();
-    if (controller->state() == DataTypeController::NOT_RUNNING) {
-      // In the NOT_RUNNING state it's not allowed to call GetAllNodes on the
-      // DataTypeController, so just return an empty result.
-      // This can happen e.g. if we're waiting for a custom passphrase to be
-      // entered - the data types are already considered active in this case,
-      // but their DataTypeControllers are still NOT_RUNNING.
-      helper->OnReceivedNodesForType(type, std::make_unique<base::ListValue>());
-    } else {
-      controller->GetAllNodes(base::BindRepeating(
           &GetAllNodesRequestHelper::OnReceivedNodesForType, helper));
     }
   }

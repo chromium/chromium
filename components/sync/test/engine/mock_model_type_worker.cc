@@ -351,8 +351,9 @@ int64_t MockModelTypeWorker::GetServerVersion(const ClientTagHash& tag_hash) {
   auto it = server_versions_.find(tag_hash);
   if (it == server_versions_.end()) {
     return 0;
+  } else {
+    return it->second;
   }
-  return it->second;
 }
 
 void MockModelTypeWorker::SetServerVersion(const ClientTagHash& tag_hash,
