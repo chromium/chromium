@@ -2024,13 +2024,13 @@ TEST_F(HttpServerPropertiesManagerTest, ForceHTTP11) {
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
   FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
-  std::unique_ptr<base::Value> saved_value =
-      unowned_pref_delegate->GetServerProperties()->CreateDeepCopy();
+  base::Value saved_value =
+      unowned_pref_delegate->GetServerProperties()->Clone();
   properties.reset();
 
   // Only information on kServer1 should have been saved to prefs.
   std::string preferences_json;
-  base::JSONWriter::Write(*saved_value, &preferences_json);
+  base::JSONWriter::Write(saved_value, &preferences_json);
   EXPECT_EQ(
       "{\"servers\":["
       "{\"isolation\":[],"
@@ -2059,7 +2059,7 @@ TEST_F(HttpServerPropertiesManagerTest, ForceHTTP11) {
   EXPECT_TRUE(properties->RequiresHTTP11(kServer3, NetworkIsolationKey()));
 
   // The data loads.
-  unowned_pref_delegate->InitializePrefs(*saved_value);
+  unowned_pref_delegate->InitializePrefs(saved_value);
 
   // The properties should contain a combination of the old and new data.
   EXPECT_TRUE(properties->GetSupportsSpdy(kServer1, NetworkIsolationKey()));
@@ -2211,8 +2211,8 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
   FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
-  std::unique_ptr<base::Value> saved_value =
-      unowned_pref_delegate->GetServerProperties()->CreateDeepCopy();
+  base::Value saved_value =
+      unowned_pref_delegate->GetServerProperties()->Clone();
   properties.reset();
 
   // Create a new HttpServerProperties using the value saved to prefs above.
@@ -2220,7 +2220,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
   unowned_pref_delegate = pref_delegate.get();
   properties = std::make_unique<HttpServerProperties>(
       std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
-  unowned_pref_delegate->InitializePrefs(*saved_value);
+  unowned_pref_delegate->InitializePrefs(saved_value);
 
   // The information set using kNetworkIsolationKey on the original
   // HttpServerProperties should also be set on the restored
@@ -2363,8 +2363,8 @@ TEST_F(HttpServerPropertiesManagerTest,
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
   FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
-  std::unique_ptr<base::Value> saved_value =
-      unowned_pref_delegate->GetServerProperties()->CreateDeepCopy();
+  base::Value saved_value =
+      unowned_pref_delegate->GetServerProperties()->Clone();
   properties.reset();
 
   // Create a new HttpServerProperties using the value saved to prefs above.
@@ -2372,7 +2372,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   unowned_pref_delegate = pref_delegate.get();
   properties = std::make_unique<HttpServerProperties>(
       std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
-  unowned_pref_delegate->InitializePrefs(*saved_value);
+  unowned_pref_delegate->InitializePrefs(saved_value);
 
   // Only the first of the values learned for kNetworkIsolationKey1 should have
   // been saved, and the value for kNetworkIsolationKey2 as well. The canonical
@@ -2422,7 +2422,7 @@ TEST_F(HttpServerPropertiesManagerTest,
     SCOPED_TRACE(static_cast<int>(save_network_isolation_key_mode));
 
     // Save prefs using |save_network_isolation_key_mode|.
-    std::unique_ptr<base::Value> saved_value;
+    base::Value saved_value;
     {
       // Configure the the feature.
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
@@ -2496,8 +2496,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       // Wait until the data's been written to prefs, and then create a copy of
       // the prefs data.
       FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
-      saved_value =
-          unowned_pref_delegate->GetServerProperties()->CreateDeepCopy();
+      saved_value = unowned_pref_delegate->GetServerProperties()->Clone();
     }
 
     // Now try and load the data in each of the feature modes.
@@ -2520,7 +2519,7 @@ TEST_F(HttpServerPropertiesManagerTest,
           std::make_unique<HttpServerProperties>(std::move(pref_delegate),
                                                  /*net_log=*/nullptr,
                                                  GetMockTickClock());
-      unowned_pref_delegate->InitializePrefs(*saved_value);
+      unowned_pref_delegate->InitializePrefs(saved_value);
 
       if (save_network_isolation_key_mode ==
           NetworkIsolationKeyMode::kDisabled) {
@@ -2681,7 +2680,7 @@ TEST_F(HttpServerPropertiesManagerTest,
     SCOPED_TRACE(static_cast<int>(save_network_isolation_key_mode));
 
     // Save prefs using |save_network_isolation_key_mode|.
-    std::unique_ptr<base::Value> saved_value;
+    base::Value saved_value;
     {
       // Configure the the feature.
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
@@ -2741,8 +2740,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       // Wait until the data's been written to prefs, and then create a copy of
       // the prefs data.
       FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
-      saved_value =
-          unowned_pref_delegate->GetServerProperties()->CreateDeepCopy();
+      saved_value = unowned_pref_delegate->GetServerProperties()->Clone();
     }
 
     // Now try and load the data in each of the feature modes.
@@ -2765,7 +2763,7 @@ TEST_F(HttpServerPropertiesManagerTest,
           std::make_unique<HttpServerProperties>(std::move(pref_delegate),
                                                  /*net_log=*/nullptr,
                                                  GetMockTickClock());
-      unowned_pref_delegate->InitializePrefs(*saved_value);
+      unowned_pref_delegate->InitializePrefs(saved_value);
 
       if (save_network_isolation_key_mode ==
           NetworkIsolationKeyMode::kDisabled) {
@@ -2916,8 +2914,8 @@ TEST_F(HttpServerPropertiesManagerTest,
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
   FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
-  std::unique_ptr<base::Value> saved_value =
-      unowned_pref_delegate->GetServerProperties()->CreateDeepCopy();
+  base::Value saved_value =
+      unowned_pref_delegate->GetServerProperties()->Clone();
   properties.reset();
 
   // Create a new HttpServerProperties using the value saved to prefs above.
@@ -2925,7 +2923,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   unowned_pref_delegate = pref_delegate.get();
   properties = std::make_unique<HttpServerProperties>(
       std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
-  unowned_pref_delegate->InitializePrefs(*saved_value);
+  unowned_pref_delegate->InitializePrefs(saved_value);
 
   // All values should have been saved and be retrievable by suffix-matching
   // servers.
