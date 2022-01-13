@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -165,12 +166,11 @@ class IncognitoBrowsingDataBrowserTest
         BrowsingDataMediaLicenseHelper::Create(
             partition->GetFileSystemContext());
     media_license_helper->StartFetching(base::BindLambdaForTesting(
-        [&](const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
-                licenses) {
+        [&](const std::list<content::StorageUsageInfo>& licenses) {
           count = licenses.size();
           LOG(INFO) << "Found " << count << " licenses.";
           for (const auto& license : licenses)
-            LOG(INFO) << license.last_modified_time;
+            LOG(INFO) << license.last_modified;
           run_loop.Quit();
         }));
     run_loop.Run();

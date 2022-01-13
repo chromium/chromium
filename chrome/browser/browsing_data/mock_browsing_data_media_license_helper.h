@@ -11,7 +11,14 @@
 #include "base/callback.h"
 #include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "url/gurl.h"
+
+namespace content {
+struct StorageUsageInfo;
+}  // namespace content
+
+namespace url {
+class Origin;
+}  // namespace url
 
 class MockBrowsingDataMediaLicenseHelper
     : public BrowsingDataMediaLicenseHelper {
@@ -25,7 +32,7 @@ class MockBrowsingDataMediaLicenseHelper
 
   // BrowsingDataMediaLicenseHelper implementation:
   void StartFetching(FetchCallback callback) override;
-  void DeleteMediaLicenseOrigin(const GURL& origin) override;
+  void DeleteMediaLicenseOrigin(const url::Origin& origin) override;
 
   // Add some MediaLicenseInfo samples.
   void AddMediaLicenseSamples();
@@ -41,7 +48,7 @@ class MockBrowsingDataMediaLicenseHelper
 
  private:
   FetchCallback callback_;
-  std::list<MediaLicenseInfo> media_licenses_;
+  std::list<content::StorageUsageInfo> media_licenses_;
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_MEDIA_LICENSE_HELPER_H_

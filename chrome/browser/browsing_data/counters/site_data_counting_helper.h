@@ -53,8 +53,8 @@ class SiteDataCountingHelper {
   void GetQuotaBucketsCallback(const std::set<storage::BucketLocator>& buckets,
                                blink::mojom::StorageType type);
   void SitesWithMediaLicensesCallback(
-      const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
-          media_license_info_list);
+      const std::list<content::StorageUsageInfo>&
+          media_license_usage_info_list);
 
   void Done(const std::vector<GURL>& origins);
 

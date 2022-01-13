@@ -295,10 +295,10 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitCacheStorage(
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitMediaLicense(
-    const BrowsingDataMediaLicenseHelper::MediaLicenseInfo* media_license) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_MEDIA_LICENSE);
-  media_license_info = media_license;
-  origin = url::Origin::Create(media_license_info->origin);
+  media_license_usage_info = storage_usage_info;
+  origin = media_license_usage_info->origin;
   return *this;
 }
 
@@ -797,13 +797,14 @@ class CookieTreeMediaLicenseNode : public CookieTreeNode {
  public:
   friend class CookieTreeMediaLicensesNode;
 
-  // |media_license_info| is expected to remain valid as long as the
+  // |media_license_usage_info| is expected to remain valid as long as the
   // CookieTreeMediaLicenseNode is valid.
   explicit CookieTreeMediaLicenseNode(
-      const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>::
-          iterator media_license_info)
-      : CookieTreeNode(base::UTF8ToUTF16(media_license_info->origin.spec())),
-        media_license_info_(media_license_info) {}
+      const std::list<content::StorageUsageInfo>::iterator
+          media_license_usage_info)
+      : CookieTreeNode(base::UTF8ToUTF16(
+            media_license_usage_info->origin.GetURL().spec())),
+        media_license_usage_info_(media_license_usage_info) {}
 
   CookieTreeMediaLicenseNode(const CookieTreeMediaLicenseNode&) = delete;
   CookieTreeMediaLicenseNode& operator=(const CookieTreeMediaLicenseNode&) =
@@ -816,22 +817,23 @@ class CookieTreeMediaLicenseNode : public CookieTreeNode {
 
     if (container) {
       container->media_license_helper_->DeleteMediaLicenseOrigin(
-          media_license_info_->origin);
-      container->media_license_info_list_.erase(media_license_info_);
+          media_license_usage_info_->origin);
+      container->media_license_info_list_.erase(media_license_usage_info_);
     }
   }
 
   DetailedInfo GetDetailedInfo() const override {
-    return DetailedInfo().InitMediaLicense(&*media_license_info_);
+    return DetailedInfo().InitMediaLicense(&*media_license_usage_info_);
   }
 
-  int64_t InclusiveSize() const override { return media_license_info_->size; }
+  int64_t InclusiveSize() const override {
+    return media_license_usage_info_->total_size_bytes;
+  }
 
  private:
-  // |media_license_info_| is expected to remain valid as long as the
+  // |media_license_usage_info_| is expected to remain valid as long as the
   // CookieTreeMediaLicenseNode is valid.
-  std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>::iterator
-      media_license_info_;
+  std::list<content::StorageUsageInfo>::iterator media_license_usage_info_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1803,10 +1805,9 @@ void CookiesTreeModel::PopulateMediaLicenseInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (auto media_license_info = container->media_license_info_list_.begin();
-       media_license_info != container->media_license_info_list_.end();
-       ++media_license_info) {
-    GURL origin(media_license_info->origin);
+  for (auto usage_info = container->media_license_info_list_.begin();
+       usage_info != container->media_license_info_list_.end(); ++usage_info) {
+    GURL origin(usage_info->origin.GetURL());
 
     if (filter.empty() || (CookieTreeHostNode::TitleForUrl(origin).find(
                                filter) != std::u16string::npos)) {
@@ -1814,7 +1815,7 @@ void CookiesTreeModel::PopulateMediaLicenseInfoWithFilter(
       CookieTreeMediaLicensesNode* media_licenses_node =
           host_node->GetOrCreateMediaLicensesNode();
       media_licenses_node->AddMediaLicenseNode(
-          std::make_unique<CookieTreeMediaLicenseNode>(media_license_info));
+          std::make_unique<CookieTreeMediaLicenseNode>(usage_info));
     }
   }
 }

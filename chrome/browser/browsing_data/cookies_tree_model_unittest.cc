@@ -290,7 +290,10 @@ class CookiesTreeModelTest : public testing::Test {
       case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
         return node->GetDetailedInfo().shared_worker_info->worker.spec() + ",";
       case CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSE:
-        return node->GetDetailedInfo().media_license_info->origin.spec() + ",";
+        return node->GetDetailedInfo()
+                   .media_license_usage_info->origin.GetURL()
+                   .spec() +
+               ",";
       default:
         return std::string();
     }

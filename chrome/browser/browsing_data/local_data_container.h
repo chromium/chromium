@@ -55,8 +55,7 @@ class LocalDataContainer {
   using SharedWorkerInfoList =
       std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>;
   using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
-  using MediaLicenseInfoList =
-      std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>;
+  using MediaLicenseUsageInfoList = std::list<content::StorageUsageInfo>;
 
   LocalDataContainer(
       scoped_refptr<browsing_data::CookieHelper> cookie_helper,
@@ -111,7 +110,8 @@ class LocalDataContainer {
   void OnSharedWorkerInfoLoaded(const SharedWorkerInfoList& shared_worker_info);
   void OnCacheStorageModelInfoLoaded(
       const CacheStorageUsageInfoList& cache_storage_info);
-  void OnMediaLicenseInfoLoaded(const MediaLicenseInfoList& media_license_info);
+  void OnMediaLicenseInfoLoaded(
+      const MediaLicenseUsageInfoList& media_license_usage_info);
 
   // Pointers to the helper objects, needed to retreive all the types of locally
   // stored data.
@@ -139,7 +139,7 @@ class LocalDataContainer {
   ServiceWorkerUsageInfoList service_worker_info_list_;
   SharedWorkerInfoList shared_worker_info_list_;
   CacheStorageUsageInfoList cache_storage_info_list_;
-  MediaLicenseInfoList media_license_info_list_;
+  MediaLicenseUsageInfoList media_license_info_list_;
 
   // A delegate, which must outlive this object. The update callbacks use the
   // delegate to deliver the updated data to the CookieTreeModel.

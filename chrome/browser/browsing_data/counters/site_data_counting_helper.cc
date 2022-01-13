@@ -183,12 +183,11 @@ void SiteDataCountingHelper::GetLocalStorageUsageInfoCallback(
 }
 
 void SiteDataCountingHelper::SitesWithMediaLicensesCallback(
-    const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
-        media_license_info_list) {
+    const std::list<content::StorageUsageInfo>& media_license_usage_info_list) {
   std::vector<GURL> origins;
-  for (const auto& info : media_license_info_list) {
-    if (info.last_modified_time >= begin_ && info.last_modified_time < end_)
-      origins.push_back(info.origin);
+  for (const auto& info : media_license_usage_info_list) {
+    if (info.last_modified >= begin_ && info.last_modified < end_)
+      origins.push_back(info.origin.GetURL());
   }
   Done(origins);
 }
