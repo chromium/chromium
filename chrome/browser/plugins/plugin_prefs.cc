@@ -113,8 +113,8 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
   }
 
   {  // Scoped update of prefs::kPluginsPluginsList.
-    ListPrefUpdateDeprecated update(prefs_, prefs::kPluginsPluginsList);
-    base::ListValue* saved_plugins_list = update.Get();
+    ListPrefUpdate update(prefs_, prefs::kPluginsPluginsList);
+    base::Value* saved_plugins_list = update.Get();
     if (saved_plugins_list) {
       for (auto& plugin_value : saved_plugins_list->GetList()) {
         base::DictionaryValue* plugin;
