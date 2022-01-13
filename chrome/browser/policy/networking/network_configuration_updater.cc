@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/networking/network_configuration_updater.h"
+#include "chrome/browser/policy/networking/network_configuration_updater.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

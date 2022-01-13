@@ -72,8 +72,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/scanning/url_constants.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

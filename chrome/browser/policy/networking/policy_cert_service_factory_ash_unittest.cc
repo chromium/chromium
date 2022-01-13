@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 
 #include <memory>
 #include <string>
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

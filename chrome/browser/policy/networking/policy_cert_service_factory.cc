@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 
 #include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/networking/device_network_configuration_updater.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
-#include "chrome/browser/ash/policy/networking/user_network_configuration_updater.h"
-#include "chrome/browser/ash/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/policy/networking/device_network_configuration_updater.h"
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/user_network_configuration_updater.h"
+#include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -10,12 +10,10 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
-#include "chrome/browser/ash/policy/networking/user_network_configuration_updater.h"
-#include "chrome/browser/ash/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/onc/certificate_scope.h"

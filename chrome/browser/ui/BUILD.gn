@@ -2958,6 +2958,7 @@ static_library("ui") {
       "//chrome/browser/nearby_sharing/logging",
       "//chrome/browser/nearby_sharing/logging:util",
       "//chrome/browser/nearby_sharing/proto",
+      "//chrome/browser/policy:onc",
       "//chrome/browser/resources:bluetooth_pairing_dialog_resources",
       "//chrome/browser/resources:internet_config_dialog_resources",
       "//chrome/browser/resources:internet_detail_dialog_resources",

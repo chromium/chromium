@@ -2454,6 +2454,7 @@ static_library("browser") {
       "//chrome/browser/ash/system_extensions",
       "//chrome/browser/ash/system_extensions/api/window_management",
       "//chrome/browser/nearby_sharing/common",
+      "//chrome/browser/policy:onc",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
@@ -4989,6 +4990,7 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
+      "//chrome/browser/policy:onc",
     ]
 
     if (target_cpu == "x64") {

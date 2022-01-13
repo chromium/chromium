@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
-#define CHROME_BROWSER_ASH_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
+#ifndef CHROME_BROWSER_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
+#define CHROME_BROWSER_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
 
 #include <memory>
 #include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/networking/network_configuration_updater.h"
+#include "chrome/browser/policy/networking/network_configuration_updater.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
 
@@ -89,4 +89,4 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_
+#endif  // CHROME_BROWSER_POLICY_NETWORKING_DEVICE_NETWORK_CONFIGURATION_UPDATER_H_

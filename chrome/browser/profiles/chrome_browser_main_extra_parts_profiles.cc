@@ -163,6 +163,8 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #else
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/gaia_info_update_service_factory.h"
@@ -268,6 +270,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::login::SecurityTokenSessionControllerFactory::GetInstance();
   ash::EnsureBrowserContextKeyedServiceFactoriesBuilt();
+  policy::PolicyCertServiceFactory::GetInstance();
+  policy::UserNetworkConfigurationUpdaterFactory::GetInstance();
 #endif
 
   AboutSigninInternalsFactory::GetInstance();
