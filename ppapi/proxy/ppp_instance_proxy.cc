@@ -42,7 +42,7 @@ using thunk::PPB_View_API;
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 PP_Bool DidCreate(PP_Instance instance,
                   uint32_t argc,
                   const char* argn[],
@@ -102,7 +102,7 @@ static const PPP_Instance_1_1 instance_interface = {
   &DidChangeFocus,
   &HandleDocumentLoad
 };
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 
@@ -126,12 +126,12 @@ PPP_Instance_Proxy::PPP_Instance_Proxy(Dispatcher* dispatcher)
 PPP_Instance_Proxy::~PPP_Instance_Proxy() {
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 // static
 const PPP_Instance* PPP_Instance_Proxy::GetInstanceInterface() {
   return &instance_interface;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 bool PPP_Instance_Proxy::OnMessageReceived(const IPC::Message& msg) {
   if (!dispatcher()->IsPlugin())
@@ -210,11 +210,11 @@ void PPP_Instance_Proxy::OnPluginMsgDidChangeView(
     return;
   data->view = new_data;
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   EnterInstanceAPINoLock<PPB_Flash_Fullscreen_API> enter(instance);
   if (!enter.failed())
     enter.functions()->SetLocalIsFullscreen(instance, flash_fullscreen);
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   ScopedPPResource resource(
       ScopedPPResource::PassRef(),

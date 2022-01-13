@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "ipc/ipc_platform_file.h"
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
 #include <unistd.h>
 #endif
 

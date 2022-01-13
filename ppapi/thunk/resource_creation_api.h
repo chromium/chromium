@@ -174,7 +174,7 @@ class ResourceCreationAPI {
   virtual PP_Resource CreateVideoEncoder(PP_Instance instance) = 0;
   virtual PP_Resource CreateVpnProvider(PP_Instance instance) = 0;
   virtual PP_Resource CreateWebSocket(PP_Instance instance) = 0;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   virtual PP_Resource CreateX509CertificatePrivate(PP_Instance instance) = 0;
   virtual PP_Resource CreateAudioInput(PP_Instance instance) = 0;
   virtual PP_Resource CreateAudioOutput(PP_Instance instance) = 0;
@@ -191,7 +191,7 @@ class ResourceCreationAPI {
       PP_Instance instance,
       PP_Resource context3d_id,
       PP_VideoDecoder_Profile profile) = 0;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   static const ApiID kApiID = API_ID_RESOURCE_CREATION;
 };

@@ -26,7 +26,7 @@ PpapiPermissions PpapiPermissions::AllPermissions() {
 PpapiPermissions PpapiPermissions::GetForCommandLine(uint32_t base_perms) {
   uint32_t additional_permissions = 0;
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Testing permissions. The testing flag implies all permissions since the
   // test plugin needs to test all interfaces.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

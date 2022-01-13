@@ -30,13 +30,13 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 base::UnsafeSharedMemoryRegion TransportSHMHandle(
     Dispatcher* dispatcher,
     const base::UnsafeSharedMemoryRegion& region) {
   return dispatcher->ShareUnsafeSharedMemoryRegionWithRemote(region);
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 gpu::CommandBuffer::State GetErrorState() {
   gpu::CommandBuffer::State error_state;
@@ -256,7 +256,7 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
 bool PPB_Graphics3D_Proxy::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PPB_Graphics3D_Proxy, msg)
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBGraphics3D_Create,
                         OnMsgCreate)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBGraphics3D_SetGetBuffer,
@@ -276,7 +276,7 @@ bool PPB_Graphics3D_Proxy::OnMessageReceived(const IPC::Message& msg) {
                         OnMsgTakeFrontBuffer)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBGraphics3D_EnsureWorkVisible,
                         OnMsgEnsureWorkVisible)
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
     IPC_MESSAGE_HANDLER(PpapiMsg_PPBGraphics3D_SwapBuffersACK,
                         OnMsgSwapBuffersACK)
@@ -287,7 +287,7 @@ bool PPB_Graphics3D_Proxy::OnMessageReceived(const IPC::Message& msg) {
   return handled;
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void PPB_Graphics3D_Proxy::OnMsgCreate(
     PP_Instance instance,
     HostResource share_context,
@@ -414,7 +414,7 @@ void PPB_Graphics3D_Proxy::OnMsgEnsureWorkVisible(const HostResource& context) {
   if (enter.succeeded())
     enter.object()->EnsureWorkVisible();
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 void PPB_Graphics3D_Proxy::OnMsgSwapBuffersACK(const HostResource& resource,
                                               int32_t pp_error) {
@@ -423,14 +423,14 @@ void PPB_Graphics3D_Proxy::OnMsgSwapBuffersACK(const HostResource& resource,
     static_cast<Graphics3D*>(enter.object())->SwapBuffersACK(pp_error);
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void PPB_Graphics3D_Proxy::SendSwapBuffersACKToPlugin(
     int32_t result,
     const HostResource& context) {
   dispatcher()->Send(new PpapiMsg_PPBGraphics3D_SwapBuffersACK(
       API_ID_PPB_GRAPHICS_3D, context, result));
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace proxy
 }  // namespace ppapi

@@ -266,7 +266,7 @@ PP_Resource ResourceCreationProxy::CreateImageData(
   // On the plugin side, we create PlatformImageData resources for trusted
   // plugins and SimpleImageData resources for untrusted ones.
   PPB_ImageData_Shared::ImageDataType type =
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
       PPB_ImageData_Shared::PLATFORM;
 #else
       PPB_ImageData_Shared::SIMPLE;
@@ -375,7 +375,7 @@ PP_Resource ResourceCreationProxy::CreateWebSocket(PP_Instance instance) {
   return (new WebSocketResource(GetConnection(), instance))->GetReference();
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 PP_Resource ResourceCreationProxy::CreateX509CertificatePrivate(
     PP_Instance instance) {
   return PPB_X509Certificate_Private_Proxy::CreateProxyResource(instance);
@@ -429,7 +429,7 @@ PP_Resource ResourceCreationProxy::CreateVideoDecoderDev(
       instance, context3d_id, profile);
 }
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 bool ResourceCreationProxy::Send(IPC::Message* msg) {
   return dispatcher()->Send(msg);

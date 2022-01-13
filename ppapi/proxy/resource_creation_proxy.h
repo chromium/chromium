@@ -153,7 +153,7 @@ class ResourceCreationProxy : public InterfaceProxy,
   PP_Resource CreateVideoEncoder(PP_Instance instance) override;
   PP_Resource CreateVpnProvider(PP_Instance instance) override;
   PP_Resource CreateWebSocket(PP_Instance instance) override;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   PP_Resource CreateX509CertificatePrivate(PP_Instance instance) override;
   PP_Resource CreateAudioInput(PP_Instance instance) override;
   PP_Resource CreateAudioOutput(PP_Instance instance) override;
@@ -170,7 +170,7 @@ class ResourceCreationProxy : public InterfaceProxy,
       PP_Instance instance,
       PP_Resource context3d_id,
       PP_VideoDecoder_Profile profile) override;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   bool Send(IPC::Message* msg) override;
   bool OnMessageReceived(const IPC::Message& msg) override;

@@ -99,7 +99,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                              uint32_t anchor) override;
   PP_Var GetDocumentURL(PP_Instance instance,
                         PP_URLComponents_Dev* components) override;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   PP_Var ResolveRelativeToDocument(PP_Instance instance,
                                    PP_Var relative,
                                    PP_URLComponents_Dev* components) override;
@@ -110,7 +110,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                               PP_URLComponents_Dev* components) override;
   PP_Var GetPluginReferrerURL(PP_Instance instance,
                               PP_URLComponents_Dev* components) override;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   static const ApiID kApiID = API_ID_PPB_INSTANCE;
 
@@ -174,7 +174,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                                PP_URLComponents_Dev* components,
                                SerializedVarReturnValue result);
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   void OnHostMsgResolveRelativeToDocument(PP_Instance instance,
                                           SerializedVarReceiveInput relative,
                                           SerializedVarReturnValue result);
@@ -188,7 +188,7 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                                      SerializedVarReturnValue result);
   void OnHostMsgGetPluginReferrerURL(PP_Instance instance,
                                      SerializedVarReturnValue result);
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   // Host -> Plugin message handlers.
   void OnPluginMsgMouseLockComplete(PP_Instance instance, int32_t result);

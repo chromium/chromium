@@ -74,7 +74,7 @@ Audio::Audio(const HostResource& audio_id,
 }
 
 Audio::~Audio() {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // Invoke StopPlayback() to ensure audio back-end has a chance to send the
   // escape value over the sync socket, which will terminate the client side
   // audio callback loop.  This is required for NaCl Plugins that can't escape
@@ -170,7 +170,7 @@ bool PPB_Audio_Proxy::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PPB_Audio_Proxy, msg)
 // Don't build host side into NaCl IRT.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBAudio_Create, OnMsgCreate)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBAudio_StartOrStop,
                         OnMsgStartOrStop)
@@ -182,7 +182,7 @@ bool PPB_Audio_Proxy::OnMessageReceived(const IPC::Message& msg) {
   return handled;
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void PPB_Audio_Proxy::OnMsgCreate(PP_Instance instance_id,
                                   int32_t sample_rate,
                                   uint32_t sample_frame_count,
@@ -307,7 +307,7 @@ int32_t PPB_Audio_Proxy::GetAudioConnectedHandles(
 
   return PP_OK;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // Processed in the plugin (message from host).
 void PPB_Audio_Proxy::OnMsgNotifyAudioStreamCreated(

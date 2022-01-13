@@ -10,11 +10,11 @@
 
 namespace ppapi {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kCorbTestPluginName[] = "corb_test_plugin.dll";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const char kCorbTestPluginName[] = "corb_test_plugin.plugin";
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 const char kCorbTestPluginName[] = "libcorb_test_plugin.so";
 #endif
 

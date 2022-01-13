@@ -18,11 +18,11 @@
 #include "ppapi/shared_impl/var.h"
 #include "ppapi/thunk/thunk.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#elif defined(OS_POSIX) && !defined(OS_NACL)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -389,7 +389,7 @@ GetPPB_NetAddress_Private_1_1_Thunk() {
 }  // namespace thunk
 
 // For the NaCl target, all we need are the API functions and the thunk.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 
 // static
 bool NetAddressPrivateImpl::ValidateNetAddress(
@@ -484,7 +484,7 @@ bool NetAddressPrivateImpl::NetAddressToIPEndPoint(
   address->Assign(net_addr->address, address_size);
   return true;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // static
 std::string NetAddressPrivateImpl::DescribeNetAddress(

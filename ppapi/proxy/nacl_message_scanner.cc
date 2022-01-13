@@ -356,7 +356,7 @@ bool NaClMessageScanner::ScanMessage(
   DCHECK(!new_msg_ptr->get());
 
   bool rewrite_msg =
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       true;
 #else
       false;

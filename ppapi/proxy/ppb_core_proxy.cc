@@ -56,7 +56,7 @@ void CallOnMainThread(int delay_in_ms,
                       PP_CompletionCallback callback,
                       int32_t result) {
   DCHECK(callback.func);
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // Some NaCl apps pass a negative delay, so we just sanitize to 0, to run as
   // soon as possible. MessageLoop checks that the delay is non-negative.
   if (delay_in_ms < 0)
@@ -112,7 +112,7 @@ const PPB_Core* PPB_Core_Proxy::GetPPB_Core_Interface() {
 }
 
 bool PPB_Core_Proxy::OnMessageReceived(const IPC::Message& msg) {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   return false;
 #else
   bool handled = true;
@@ -128,7 +128,7 @@ bool PPB_Core_Proxy::OnMessageReceived(const IPC::Message& msg) {
 #endif
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void PPB_Core_Proxy::OnMsgAddRefResource(const HostResource& resource) {
   ppb_core_impl_->AddRefResource(resource.host_resource());
 }
@@ -136,7 +136,7 @@ void PPB_Core_Proxy::OnMsgAddRefResource(const HostResource& resource) {
 void PPB_Core_Proxy::OnMsgReleaseResource(const HostResource& resource) {
   ppb_core_impl_->ReleaseResource(resource.host_resource());
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace proxy
 }  // namespace ppapi

@@ -33,7 +33,7 @@ const uint32_t kShmSize = 256;
 const size_t kDecodeBufferSize = 16;
 const uint32_t kDecodeId = 5;
 const uint32_t kTextureId1 = 1;
-#if !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 const uint32_t kTextureId2 = 2;
 #endif
 const uint32_t kNumRequestedTextures = 2;
@@ -383,7 +383,7 @@ TEST_F(VideoDecoderResourceTest, Uninitialized) {
 // TODO(bbudge) Fix sync message testing on Windows 64 bit builds. The reply
 // message for GetShm isn't received, causing Decode to fail.
 // http://crbug.com/379260
-#if !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 TEST_F(VideoDecoderResourceTest, DecodeAndGetPicture) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params, params2;
@@ -449,12 +449,12 @@ TEST_F(VideoDecoderResourceTest, DecodeAndGetPicture) {
   ASSERT_FALSE(uncalled_cb.called());
   ASSERT_EQ(kDecodeId, picture.decode_id);
 }
-#endif  // !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#endif  // !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 
 // TODO(bbudge) Fix sync message testing on Windows 64 bit builds. The reply
 // message for GetShm isn't received, causing Decode to fail.
 // http://crbug.com/379260
-#if !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 TEST_F(VideoDecoderResourceTest, RecyclePicture) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params;
@@ -485,7 +485,7 @@ TEST_F(VideoDecoderResourceTest, RecyclePicture) {
 
   ClearCallbacks(decoder.get());
 }
-#endif  // !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#endif  // !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 
 TEST_F(VideoDecoderResourceTest, Flush) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
@@ -531,7 +531,7 @@ TEST_F(VideoDecoderResourceTest, Flush) {
 // TODO(bbudge) Fix sync message testing on Windows 64 bit builds. The reply
 // message for GetShm isn't received, causing Decode to fail.
 // http://crbug.com/379260
-#if !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 TEST_F(VideoDecoderResourceTest, NotifyError) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params;
@@ -569,7 +569,7 @@ TEST_F(VideoDecoderResourceTest, NotifyError) {
   ASSERT_EQ(PP_ERROR_RESOURCE_FAILED, CallReset(decoder.get(), &uncalled_cb));
   ASSERT_FALSE(uncalled_cb.called());
 }
-#endif  // !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#endif  // !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 
 }  // namespace proxy
 }  // namespace ppapi

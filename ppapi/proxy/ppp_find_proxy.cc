@@ -15,7 +15,7 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 PP_Bool StartFind(PP_Instance instance,
                   const char* text,
                   PP_Bool case_sensitive) {

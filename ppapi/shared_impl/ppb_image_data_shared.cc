@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 #include "third_party/skia/include/core/SkTypes.h"
 #endif
 
@@ -15,7 +15,7 @@ namespace ppapi {
 
 // static
 PP_ImageDataFormat PPB_ImageData_Shared::GetNativeImageDataFormat() {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // In NaCl, just default to something. If we're wrong, it will be converted
   // later.
   // TODO(dmichael): Really proxy this.
