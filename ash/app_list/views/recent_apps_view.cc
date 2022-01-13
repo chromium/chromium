@@ -152,7 +152,26 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
   SetVisible(false);
 }
 
-RecentAppsView::~RecentAppsView() = default;
+RecentAppsView::~RecentAppsView() {
+  if (model_)
+    model_->RemoveObserver(this);
+}
+
+void RecentAppsView::OnAppListItemWillBeDeleted(AppListItem* item) {
+  std::vector<AppListItemView*> views_to_delete;
+
+  for (AppListItemView* view : item_views_) {
+    if (!view->item() || view->item() == item)
+      views_to_delete.push_back(view);
+  }
+
+  for (AppListItemView* view : views_to_delete) {
+    RemoveChildView(view);
+    base::Erase(item_views_, view);
+  }
+
+  SetVisible(item_views_.size() >= kMinRecommendedApps);
+}
 
 void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
   app_list_config_ = app_list_config;
@@ -166,6 +185,14 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
   DCHECK(app_list_config_);
   item_views_.clear();
   RemoveAllChildViews();
+
+  if (model_ != model) {
+    if (model_)
+      model_->RemoveObserver(this);
+    model_ = model;
+    if (model_)
+      model_->AddObserver(this);
+  }
 
   std::vector<std::string> app_ids = GetRecentAppIds(search_model);
   std::vector<AppListItem*> items;

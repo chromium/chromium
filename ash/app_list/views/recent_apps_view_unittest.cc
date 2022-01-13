@@ -113,6 +113,10 @@ class RecentAppsViewTest : public AshTestBase,
     }
   }
 
+  void RemoveApp(const std::string& id) {
+    AppListModelProvider::Get()->model()->DeleteItem(id);
+  }
+
   std::vector<AppListItemView*> GetAppListItemViews() {
     std::vector<AppListItemView*> views;
     RecentAppsView* recent_apps = GetRecentAppsView();
@@ -345,6 +349,24 @@ TEST_P(RecentAppsViewTest, NotVisibleWithLessThanMinimumApps) {
 
   // Verify the visibility of the recent_apps section.
   EXPECT_FALSE(GetRecentAppsView()->GetVisible());
+}
+
+TEST_P(RecentAppsViewTest, RemoveAppUpdatesRecentApps) {
+  AddAppResults(5);
+  ShowAppList();
+
+  // Verify initial set of shown apps.
+  EXPECT_EQ(std::vector<std::string>({"id0", "id1", "id2", "id3", "id4"}),
+            GetRecentAppsIds());
+
+  // Uninstall the first app.
+  RemoveApp("id0");
+
+  // Verify the visibility of the recent_apps section.
+  EXPECT_TRUE(GetRecentAppsView()->GetVisible());
+  // Verify shown apps.
+  EXPECT_EQ(std::vector<std::string>({"id1", "id2", "id3", "id4"}),
+            GetRecentAppsIds());
 }
 
 }  // namespace

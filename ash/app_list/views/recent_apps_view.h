@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -27,7 +28,8 @@ class SearchModel;
 
 // The recent apps row in the "Continue" section of the bubble launcher. Shows
 // a list of app icons.
-class ASH_EXPORT RecentAppsView : public views::View {
+class ASH_EXPORT RecentAppsView : public AppListModelObserver,
+                                  public views::View {
  public:
   METADATA_HEADER(RecentAppsView);
 
@@ -48,6 +50,9 @@ class ASH_EXPORT RecentAppsView : public views::View {
   RecentAppsView(const RecentAppsView&) = delete;
   RecentAppsView& operator=(const RecentAppsView&) = delete;
   ~RecentAppsView() override;
+
+  // AppListModelObserver:
+  void OnAppListItemWillBeDeleted(AppListItem* item) override;
 
   // Sets the `AppListConfig` that should be used to configure layout of
   // `AppListItemViews` shown within this view.
@@ -88,6 +93,7 @@ class ASH_EXPORT RecentAppsView : public views::View {
   AppListViewDelegate* const view_delegate_;
   const AppListConfig* app_list_config_ = nullptr;
   views::BoxLayout* layout_ = nullptr;
+  AppListModel* model_ = nullptr;
 
   // The grid delegate for each AppListItemView.
   class GridDelegateImpl;
