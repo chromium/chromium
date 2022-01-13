@@ -318,11 +318,9 @@ ScriptPromise BaseAudioContext::decodeAudioData(
   DCHECK(IsMainThread());
   DCHECK(audio_data);
 
-  // TODO(crbug.com/1060315): This check needs to be revised when the spec
-  // behavior is clarified for the case of a non-existent ExecutionContext.
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
+        DOMExceptionCode::kInvalidStateError,
         "Cannot decode audio data: The document is no longer active.");
     return ScriptPromise();
   }
