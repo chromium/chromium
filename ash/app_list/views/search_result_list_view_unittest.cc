@@ -14,10 +14,12 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 
@@ -25,7 +27,7 @@ namespace ash {
 namespace test {
 
 namespace {
-int kDefaultSearchItems = 5;
+int kDefaultSearchItems = 3;
 
 // Preferred sizing for different types of search result views.
 constexpr int kPreferredWidth = 640;
@@ -44,7 +46,9 @@ constexpr int num_list_types_not_used_for_categorical_search = 1;
 
 }  // namespace
 
-class SearchResultListViewTest : public views::test::WidgetTest {
+class SearchResultListViewTest : public views::test::WidgetTest,
+
+                                 public testing::WithParamInterface<bool> {
  public:
   SearchResultListViewTest() = default;
 
@@ -55,6 +59,8 @@ class SearchResultListViewTest : public views::test::WidgetTest {
 
   // Overridden from testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                              IsProductivityLauncherEnabled());
     views::test::WidgetTest::SetUp();
     widget_ = CreateTopLevelPlatformWidget();
 
@@ -95,6 +101,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   }
 
  protected:
+  bool IsProductivityLauncherEnabled() const { return GetParam(); }
   SearchResultListView* unified_view() const { return unified_view_.get(); }
   SearchResultListView* default_view() const { return default_view_.get(); }
   SearchResultListView* answer_card_view() const {
@@ -147,6 +154,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
           std::make_unique<TestSearchResult>();
       result->set_display_type(ash::SearchResultDisplayType::kList);
       result->set_title(base::UTF8ToUTF16(base::StringPrintf("Result %d", i)));
+      result->set_best_match(true);
       if (i < 2)
         result->set_details(u"Detail");
       results->Add(std::move(result));
@@ -165,8 +173,12 @@ class SearchResultListViewTest : public views::test::WidgetTest {
 
   int GetUnifiedViewResultCount() const { return unified_view_->num_results(); }
 
-  void AddTestResultAtIndex(int index) {
-    GetResults()->Add(std::make_unique<TestSearchResult>());
+  void AddTestResult() {
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kList);
+    result->set_best_match(true);
+    GetResults()->Add(std::move(result));
   }
 
   void DeleteResultAt(int index) { GetResults()->DeleteAt(index); }
@@ -177,18 +189,22 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   }
 
   void ExpectConsistent() {
-    // Adding results will schedule Update().
     RunPendingMessages();
-
     SearchModel::SearchResults* results = GetResults();
+
     for (size_t i = 0; i < results->item_count(); ++i) {
-      EXPECT_EQ(results->GetItemAt(i), GetUnifiedResultViewAt(i)->result());
+      SearchResultView* result_view = IsProductivityLauncherEnabled()
+                                          ? GetDefaultResultViewAt(i)
+                                          : GetUnifiedResultViewAt(i);
+      ASSERT_TRUE(result_view) << "result view at " << i;
+      EXPECT_EQ(results->GetItemAt(i), result_view->result());
     }
   }
 
   void DoUpdate() { unified_view()->DoUpdate(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> unified_view_;
@@ -197,7 +213,11 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   views::Widget* widget_;
 };
 
-TEST_F(SearchResultListViewTest, SpokenFeedback) {
+// Run search result list view tests with and without productivity launcher
+// enabled.
+INSTANTIATE_TEST_SUITE_P(All, SearchResultListViewTest, testing::Bool());
+
+TEST_P(SearchResultListViewTest, SpokenFeedback) {
   SetUpSearchResults();
 
   // Result 0 has a detail text. Expect that the detail is appended to the
@@ -209,7 +229,7 @@ TEST_F(SearchResultListViewTest, SpokenFeedback) {
   EXPECT_EQ(u"Result 2", GetUnifiedResultViewAt(2)->ComputeAccessibleName());
 }
 
-TEST_F(SearchResultListViewTest, CorrectEnumLength) {
+TEST_P(SearchResultListViewTest, CorrectEnumLength) {
   EXPECT_EQ(
       // Check that all types except for SearchResultListType::kUnified are
       // included in GetAllListTypesForCategoricalSearch.
@@ -227,7 +247,7 @@ TEST_F(SearchResultListViewTest, CorrectEnumLength) {
           1 /*0 indexing offset*/ - num_category_without_list_type);
 }
 
-TEST_F(SearchResultListViewTest, SearchResultViewLayout) {
+TEST_P(SearchResultListViewTest, SearchResultViewLayout) {
   // Set SearchResultListView bounds and check views are default size.
   unified_view()->SetBounds(0, 0, kPreferredWidth, 400);
   SetUpSearchResults();
@@ -261,7 +281,7 @@ TEST_F(SearchResultListViewTest, SearchResultViewLayout) {
             views::LayoutOrientation::kHorizontal);
 }
 
-TEST_F(SearchResultListViewTest, BorderTest) {
+TEST_P(SearchResultListViewTest, BorderTest) {
   unified_view()->SetBounds(0, 0, kPreferredWidth, 400);
   SetUpSearchResults();
   DoUpdate();
@@ -271,7 +291,7 @@ TEST_F(SearchResultListViewTest, BorderTest) {
   EXPECT_EQ(gfx::Insets(), GetDefaultResultViewAt(0)->GetBorder()->GetInsets());
 }
 
-TEST_F(SearchResultListViewTest, ModelObservers) {
+TEST_P(SearchResultListViewTest, ModelObservers) {
   SetUpSearchResults();
   ExpectConsistent();
 
@@ -279,16 +299,14 @@ TEST_F(SearchResultListViewTest, ModelObservers) {
   DeleteResultAt(kDefaultSearchItems - 1);
   ExpectConsistent();
 
-  // Insert at start.
-  AddTestResultAtIndex(0);
+  AddTestResult();
   ExpectConsistent();
 
   // Remove from end.
   DeleteResultAt(kDefaultSearchItems - 1);
   ExpectConsistent();
 
-  // Insert at end.
-  AddTestResultAtIndex(kDefaultSearchItems);
+  AddTestResult();
   ExpectConsistent();
 
   // Delete from start.
@@ -296,7 +314,7 @@ TEST_F(SearchResultListViewTest, ModelObservers) {
   ExpectConsistent();
 }
 
-TEST_F(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
+TEST_P(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
   SetUpSearchResults();
 
   // No assistant results available.
