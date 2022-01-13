@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
@@ -889,6 +890,34 @@ TEST_P(WebBluetoothServiceImplBondingTest,
       device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED,
       read_error_value);
   EXPECT_EQ(!on_demand_bonding_enabled(), read_value_callback_called);
+}
+
+TEST_P(WebBluetoothServiceImplBondingTest, IncompletePairingOnShutdown) {
+  RegisterTestCharacteristic();
+
+  EXPECT_CALL(test_bundle().characteristic(), ReadRemoteCharacteristic_(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED,
+          std::vector<uint8_t>()));
+
+  base::MockCallback<
+      WebBluetoothServiceImpl::RemoteCharacteristicReadValueCallback>
+      callback;
+  if (on_demand_bonding_enabled()) {
+    // The pairing is never completed so the callback won't be run before the
+    // test ends.
+    EXPECT_CALL(callback, Run(_, _)).Times(0);
+  } else {
+    EXPECT_CALL(callback, Run(WebBluetoothResult::GATT_NOT_AUTHORIZED,
+                              testing::Eq(absl::nullopt)));
+  }
+
+  service_->RemoteCharacteristicReadValue(
+      test_bundle().characteristic().GetIdentifier(), callback.Get());
+
+  // Simulate the WebBluetoothServiceImpl being destroyed due to a navigation or
+  // tab closure while the pairing request is in progress.
+  delete service_;
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

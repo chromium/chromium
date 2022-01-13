@@ -146,6 +146,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 #if PAIR_BLUETOOTH_ON_DEMAND()
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBondingTest,
                            ReadCharacteristicValueNotAuthorized);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBondingTest,
+                           IncompletePairingOnShutdown);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
   friend class FrameConnectedBluetoothDevicesTest;

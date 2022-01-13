@@ -566,9 +566,16 @@ WebBluetoothServiceImpl::WebBluetoothServiceImpl(
 
 WebBluetoothServiceImpl::~WebBluetoothServiceImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Releasing the adapter will drop references to callbacks that have not yet
   // been executed. The receiver must be closed first so that this is allowed.
   receiver()->reset();
+
+#if PAIR_BLUETOOTH_ON_DEMAND()
+  // Destroy the pairing manager before releasing the adapter to give it an
+  // opportunity to cancel pairing operations that are in progress.
+  pairing_manager_.reset();
+#endif
 
   BluetoothAdapterFactoryWrapper::Get().ReleaseAdapter(this);
 }
