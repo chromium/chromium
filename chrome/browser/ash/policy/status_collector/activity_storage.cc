@@ -161,7 +161,7 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
   DCHECK(!start.is_max());
   DCHECK(!end.is_max());
 
-  DictionaryPrefUpdateDeprecated update(pref_service_, pref_name_);
+  DictionaryPrefUpdate update(pref_service_, pref_name_);
   base::Value* activity_times = update.Get();
 
   // Assign the period to day buckets in local time.

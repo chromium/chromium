@@ -29,8 +29,8 @@ void ChildActivityStorage::AddActivityPeriod(base::Time start,
                                              base::Time now) {
   DCHECK(start <= end);
 
-  DictionaryPrefUpdateDeprecated update(pref_service_, pref_name_);
-  base::DictionaryValue* activity_times = update.Get();
+  DictionaryPrefUpdate update(pref_service_, pref_name_);
+  base::Value* activity_times = update.Get();
 
   // Assign the period to day buckets in local time.
   base::Time day_start = GetBeginningOfDay(start);

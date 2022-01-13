@@ -775,8 +775,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   {
     ash::app_time::AppTimeLimitsPolicyBuilder builder;
     builder.SetAppActivityReportingEnabled(/* enabled */ false);
-    DictionaryPrefUpdateDeprecated update(testing_profile()->GetPrefs(),
-                                          prefs::kPerAppTimeLimitsPolicy);
+    DictionaryPrefUpdate update(testing_profile()->GetPrefs(),
+                                prefs::kPerAppTimeLimitsPolicy);
     base::Value* value = update.Get();
     *value = builder.value().Clone();
   }
