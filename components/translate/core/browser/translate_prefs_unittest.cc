@@ -1120,13 +1120,7 @@ TEST_F(TranslatePrefsTest, NeverOnAlwaysAndNever) {
   EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(), IsEmpty());
 }
 
-// Failing on Android - crbug.com/1286360
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_CanTranslateLanguage DISABLED_CanTranslateLanguage
-#else
-#define MAYBE_CanTranslateLanguage CanTranslateLanguage
-#endif
-TEST_F(TranslatePrefsTest, MAYBE_CanTranslateLanguage) {
+TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
   prefs_.SetString(language::prefs::kAcceptLanguages, "en");
   TranslateDownloadManager::GetInstance()->set_application_locale("en");
 
@@ -1144,9 +1138,14 @@ TEST_F(TranslatePrefsTest, MAYBE_CanTranslateLanguage) {
   EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
       &translate_accept_languages, "en"));
 
-  if (!TranslatePrefs::IsDetailedLanguageSettingsEnabled()) {
-    // Blocked languages that are not in accept languages are not blocked.
-    translate_prefs_->BlockLanguage("de");
+  // When the detailed language settings are enabled blocked languages not in
+  // the accept languages list are blocked. When the detailed language settings
+  // are disabled blocked languages not in the accept language list are allowed.
+  translate_prefs_->BlockLanguage("de");
+  if (TranslatePrefs::IsDetailedLanguageSettingsEnabled()) {
+    EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
+        &translate_accept_languages, "de"));
+  } else {
     EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
         &translate_accept_languages, "de"));
   }
