@@ -20,12 +20,12 @@ enum class PermissionState {
   // When this is the state of a given permission, the app is unable to change
   // it to ALLOWED or BLOCKED.
   NOT_ACCESSIBLE = 0,
-  // The site has access to the requested permission and is able to use it when
-  // needed.
-  ALLOWED = 1,
   // The site has access to the requested permission, but the user has disabled
   // or blocked the subject of permission so it cannot be used.
-  BLOCKED = 2,
+  BLOCKED = 1,
+  // The site has access to the requested permission and is able to use it when
+  // needed.
+  ALLOWED = 2,
 };
 
 }  // namespace web
