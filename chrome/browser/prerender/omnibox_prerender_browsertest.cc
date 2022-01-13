@@ -157,17 +157,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 }
 
 // Verifies that prerendering functions in document are properly exposed.
-// TODO(crbug.com/1286374): Flakes on Windows, Mac and Linux.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#define MAYBE_PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox \
-  DISABLED_PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox
-#else
-#define MAYBE_PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox \
-  PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox
-#endif
 IN_PROC_BROWSER_TEST_F(
     OmniboxPrerenderBrowserTest,
-    MAYBE_PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox) {
+    PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
@@ -206,7 +198,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_LT(
       0.0,
       EvalJs(prerender_frame_host,
-             "performance.getEntriesByType('navigation')[0].activationStart"));
+             "performance.getEntriesByType('navigation')[0].activationStart")
+          .ExtractDouble());
 }
 
 // Verifies that the exportation of prerendering functions in the document is
