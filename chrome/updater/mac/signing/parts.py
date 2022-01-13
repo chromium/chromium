@@ -32,12 +32,6 @@ def get_parts(config):
 
     # Innermost parts come first.
     return [
-        CodeSignedProduct(  # Keystone Agent app bundle plist
-            ks_agent_app + '/Contents/MacOS/Info.plist',
-            config.keystone_app_name + 'Agent',
-            identifier_requirement=False,
-            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
         CodeSignedProduct(  # Keystone Agent app bundle
             ks_agent_app,
             config.keystone_app_name + 'Agent',
