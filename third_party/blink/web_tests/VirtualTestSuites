@@ -447,7 +447,8 @@
   },
   {
     "prefix": "direct-sockets",
-    "bases": ["external/wpt/direct-sockets"],
+    "bases": ["external/wpt/direct-sockets",
+    	      "wpt_internal/direct-sockets"],
     "args": ["--enable-features=DirectSockets"]
   },
   {

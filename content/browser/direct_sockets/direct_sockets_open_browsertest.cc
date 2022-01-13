@@ -429,7 +429,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
         protocol == DirectSocketsServiceImpl::ProtocolType::kTcp ? "Tcp"
                                                                  : "Udp";
     const std::string expected_result = base::StringPrintf(
-        "open%s failed: NotAllowedError: Permission denied", type.c_str());
+        "open%s failed: NetworkError: Network error.", type.c_str());
 
     base::HistogramTester histogram_tester;
     histogram_tester.ExpectBucketCount(
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_CannotEvadeCors) {
   const std::string script =
       "openTcp({remoteAddress: '127.0.0.1', remotePort: 443})";
 
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
   const std::string script =
       "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
 
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
   const std::string script = "openTcp({remotePort: 993})";
 
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
 }
 
@@ -589,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
   const std::string script =
       "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
 
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
   MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
-      "openTcp failed: NotAllowedError: Permission denied";
+      "openTcp failed: NetworkError: Network error.";
 
   const std::string script =
       R"(
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
   const std::string script = base::StringPrintf(
       "openUdp({remoteAddress: '127.0.0.1', remotePort: %d})", 0);
 
-  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
 }
 
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_CannotEvadeCors) {
   const std::string script =
       "openUdp({remoteAddress: '127.0.0.1', remotePort: 443})";
 
-  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
   const std::string script =
       "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
 
-  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
   const std::string script = "openUdp({remotePort: 993})";
 
-  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
 }
 
@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
   const std::string script =
       "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
 
-  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
             EvalJs(shell(), script));
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
   MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
-      "openUdp failed: NotAllowedError: Permission denied";
+      "openUdp failed: NetworkError: Network error.";
 
   const std::string script =
       R"(

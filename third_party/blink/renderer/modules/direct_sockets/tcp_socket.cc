@@ -82,7 +82,7 @@ void TCPSocket::Init(int32_t result,
     }
     // TODO(crbug/1282199): Create specific exception based on error code.
     resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "Permission denied"));
+        DOMExceptionCode::kNetworkError, "Network error."));
     socket_observer_receiver_.reset();
   }
   resolver_ = nullptr;

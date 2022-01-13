@@ -43,6 +43,7 @@
 "vertical-scroll"
 "vr"
 "web-share"
+"direct-sockets"
 "\"https://example.com/\""
 "*"
 "'self'"

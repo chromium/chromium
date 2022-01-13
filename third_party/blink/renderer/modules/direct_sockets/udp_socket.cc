@@ -68,7 +68,7 @@ void UDPSocket::Init(int32_t result,
     }
     // TODO(crbug/1282199): Create specific exception based on error code.
     init_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "Permission denied"));
+        DOMExceptionCode::kNetworkError, "Network error."));
   }
   init_resolver_ = nullptr;
 }

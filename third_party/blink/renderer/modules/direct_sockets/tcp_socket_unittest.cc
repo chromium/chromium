@@ -108,8 +108,8 @@ TEST(TCPSocketTest, CloseAfterInitWithoutResultOK) {
   DOMException* create_exception = V8DOMException::ToImplWithTypeCheck(
       scope.GetIsolate(), create_tester.Value().V8Value());
   ASSERT_TRUE(create_exception);
-  EXPECT_EQ(create_exception->name(), "NotAllowedError");
-  EXPECT_EQ(create_exception->message(), "Permission denied");
+  EXPECT_EQ(create_exception->name(), "NetworkError");
+  EXPECT_EQ(create_exception->message(), "Network error.");
 
   close_tester.WaitUntilSettled();
   ASSERT_TRUE(close_tester.IsFulfilled());

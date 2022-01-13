@@ -722,6 +722,7 @@ MISSING DEPENDENCY: resources/chromium/webusb-test.js
 MISSING DEPENDENCY: resources/chromium/fake-serial.js
 MISSING DEPENDENCY: resources/chromium/generic_sensor_mocks.js
 MISSING DEPENDENCY: resources/chromium/mock-barcodedetection.js
+MISSING DEPENDENCY: resources/chromium/mock-direct-sockets.js
 MISSING DEPENDENCY: resources/chromium/mock-facedetection.js
 MISSING DEPENDENCY: resources/chromium/mock-idle-detection.js
 MISSING DEPENDENCY: resources/chromium/mock-imagecapture.js
