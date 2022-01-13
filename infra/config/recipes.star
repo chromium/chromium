@@ -97,7 +97,7 @@ build_recipe(
 build_recipe(
     name = "recipe:angle_chromium",
     experiments = {
-        "luci.recipes.use_python3": 5,
+        "luci.recipes.use_python3": 25,
     },
 )
 
