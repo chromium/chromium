@@ -612,7 +612,7 @@ bool SetWallpaperInfo(const AccountId& account_id,
   if (!pref_service)
     return false;
 
-  DictionaryPrefUpdateDeprecated wallpaper_update(pref_service, pref_name);
+  DictionaryPrefUpdate wallpaper_update(pref_service, pref_name);
   base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
   if (info.asset_id.has_value()) {
     wallpaper_info_dict.SetStringPath(
@@ -665,8 +665,7 @@ void RemoveWallpaperInfo(const AccountId& account_id,
                          const std::string& pref_name) {
   if (!pref_service)
     return;
-  DictionaryPrefUpdateDeprecated prefs_wallpapers_info_update(pref_service,
-                                                              pref_name);
+  DictionaryPrefUpdate prefs_wallpapers_info_update(pref_service, pref_name);
   prefs_wallpapers_info_update->RemoveKey(account_id.GetUserEmail());
 }
 
@@ -996,8 +995,8 @@ bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
   WallpaperInfo old_info;
   if (local_state_ && GetUserWallpaperInfo(account_id, &old_info)) {
     // Remove the color cache of the previous wallpaper if it exists.
-    DictionaryPrefUpdateDeprecated wallpaper_colors_update(
-        local_state_, prefs::kWallpaperColors);
+    DictionaryPrefUpdate wallpaper_colors_update(local_state_,
+                                                 prefs::kWallpaperColors);
     wallpaper_colors_update->RemoveKey(old_info.location);
   }
   bool success = SetLocalWallpaperInfo(account_id, info);
@@ -1884,8 +1883,8 @@ void WallpaperControllerImpl::RemoveUserWallpaperInfo(
   if (!local_state_)
     return;
   // Remove the color cache of the previous wallpaper if it exists.
-  DictionaryPrefUpdateDeprecated wallpaper_colors_update(
-      local_state_, prefs::kWallpaperColors);
+  DictionaryPrefUpdate wallpaper_colors_update(local_state_,
+                                               prefs::kWallpaperColors);
   wallpaper_colors_update->RemoveKey(info.location);
 }
 
@@ -2418,14 +2417,13 @@ void WallpaperControllerImpl::CacheProminentColors(
     const std::string& current_location) {
   if (!local_state_)
     return;
-  DictionaryPrefUpdateDeprecated wallpaper_colors_update(
-      local_state_, prefs::kWallpaperColors);
-  auto wallpaper_colors = std::make_unique<base::ListValue>();
+  DictionaryPrefUpdate wallpaper_colors_update(local_state_,
+                                               prefs::kWallpaperColors);
+  base::Value wallpaper_colors(base::Value::Type::LIST);
   for (SkColor color : colors)
-    wallpaper_colors->Append(static_cast<double>(color));
-  wallpaper_colors_update->SetKey(
-      current_location,
-      base::Value::FromUniquePtrValue(std::move(wallpaper_colors)));
+    wallpaper_colors.Append(static_cast<double>(color));
+  wallpaper_colors_update->SetKey(current_location,
+                                  std::move(wallpaper_colors));
 }
 
 absl::optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(

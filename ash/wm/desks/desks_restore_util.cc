@@ -260,9 +260,8 @@ void UpdatePrimaryUserDeskNamesPrefs() {
     return;
   }
 
-  ListPrefUpdateDeprecated name_update(primary_user_prefs,
-                                       prefs::kDesksNamesList);
-  base::ListValue* name_pref_data = name_update.Get();
+  ListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
+  base::Value* name_pref_data = name_update.Get();
   name_pref_data->ClearList();
 
   const auto& desks = DesksController::Get()->desks();
@@ -294,15 +293,14 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   }
 
   // Save per-desk metrics.
-  ListPrefUpdateDeprecated metrics_update(primary_user_prefs,
-                                          prefs::kDesksMetricsList);
-  base::ListValue* metrics_pref_data = metrics_update.Get();
+  ListPrefUpdate metrics_update(primary_user_prefs, prefs::kDesksMetricsList);
+  base::Value* metrics_pref_data = metrics_update.Get();
   metrics_pref_data->ClearList();
 
   auto* desks_controller = DesksController::Get();
   const auto& desks = desks_controller->desks();
   for (const auto& desk : desks) {
-    base::DictionaryValue metrics_dict;
+    base::Value metrics_dict(base::Value::Type::DICTIONARY);
     metrics_dict.SetIntKey(
         kCreationTimeKey,
         desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
@@ -316,7 +314,7 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   DCHECK_EQ(metrics_pref_data->GetList().size(), desks.size());
 
   // Save weekly active report time.
-  DictionaryPrefUpdateDeprecated weekly_active_desks_update(
+  DictionaryPrefUpdate weekly_active_desks_update(
       primary_user_prefs, prefs::kDesksWeeklyActiveDesksMetrics);
   weekly_active_desks_update->SetIntPath(
       kReportTimeKey, desks_controller->GetWeeklyActiveReportTime()

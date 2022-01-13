@@ -91,8 +91,7 @@ void SetPerDisplayPref(PrefService* prefs,
   if (display_id == display::kInvalidDisplayId)
     return;
 
-  // Avoid DictionaryPrefUpdateDeprecated's notifications for read but
-  // unmodified prefs.
+  // Avoid DictionaryPrefUpdate's notifications for read but unmodified prefs.
   const base::Value* current_shelf_prefs =
       prefs->GetDictionary(prefs::kShelfPreferences);
   DCHECK(current_shelf_prefs);
@@ -106,8 +105,7 @@ void SetPerDisplayPref(PrefService* prefs,
       return;
   }
 
-  // TODO(crbug.com/1187061): Refactor this to remove base::DictionaryValue.
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kShelfPreferences);
+  DictionaryPrefUpdate update(prefs, prefs::kShelfPreferences);
   base::Value* shelf_prefs = update.Get();
   base::Value* display_prefs_weak = shelf_prefs->FindDictKey(display_key);
   if (!display_prefs_weak) {

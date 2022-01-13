@@ -149,29 +149,24 @@ bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginEnabled() const {
 
 void ProximityAuthLocalStatePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
-  DictionaryPrefUpdateDeprecated update(local_state_,
-                                        prefs::kEasyUnlockLocalStateUserPrefs);
+  DictionaryPrefUpdate update(local_state_,
+                              prefs::kEasyUnlockLocalStateUserPrefs);
 
-  base::DictionaryValue* current_user_prefs;
-  update.Get()->GetDictionaryWithoutPathExpansion(active_user_.GetUserEmail(),
-                                                  &current_user_prefs);
+  base::Value* current_user_prefs =
+      update.Get()->FindDictKey(active_user_.GetUserEmail());
   if (current_user_prefs) {
-    current_user_prefs->SetKey(
-        prefs::kProximityAuthHasShownLoginDisabledMessage,
-        base::Value(has_shown));
+    current_user_prefs->SetBoolKey(
+        prefs::kProximityAuthHasShownLoginDisabledMessage, has_shown);
     return;
   }
 
   // Create an otherwise empty dictionary in order to ensure |has_shown| is
   // persisted for |active_user_|.
-  std::unique_ptr<base::DictionaryValue> new_current_user_prefs =
-      std::make_unique<base::DictionaryValue>();
-  new_current_user_prefs->SetKey(
-      prefs::kProximityAuthHasShownLoginDisabledMessage,
-      base::Value(has_shown));
-  update->SetKey(
-      active_user_.GetUserEmail(),
-      base::Value::FromUniquePtrValue(std::move(new_current_user_prefs)));
+  base::Value new_current_user_prefs(base::Value::Type::DICTIONARY);
+  new_current_user_prefs.SetBoolKey(
+      prefs::kProximityAuthHasShownLoginDisabledMessage, has_shown);
+  update->SetKey(active_user_.GetUserEmail(),
+                 std::move(new_current_user_prefs));
 }
 
 bool ProximityAuthLocalStatePrefManager::HasShownLoginDisabledMessage() const {

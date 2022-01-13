@@ -259,16 +259,15 @@ void RunAllTasksUntilIdle() {
   }
 }
 
-std::unique_ptr<base::DictionaryValue> CreateWallpaperInfoDict(
-    WallpaperInfo info) {
-  auto wallpaper_info_dict = std::make_unique<base::DictionaryValue>();
+base::Value CreateWallpaperInfoDict(WallpaperInfo info) {
+  base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
   if (info.asset_id.has_value()) {
-    wallpaper_info_dict->SetStringKey(
+    wallpaper_info_dict.SetStringKey(
         WallpaperControllerImpl::kNewWallpaperAssetIdNodeName,
         base::NumberToString(info.asset_id.value()));
   }
   if (info.unit_id.has_value()) {
-    wallpaper_info_dict->SetStringKey(
+    wallpaper_info_dict.SetStringKey(
         WallpaperControllerImpl::kNewWallpaperUnitIdNodeName,
         base::NumberToString(info.unit_id.value()));
   }
@@ -281,26 +280,26 @@ std::unique_ptr<base::DictionaryValue> CreateWallpaperInfoDict(
     online_wallpaper_variant_dict.SetStringKey(
         WallpaperControllerImpl::kOnlineWallpaperUrlNodeName,
         variant.raw_url.spec());
-    online_wallpaper_variant_dict.SetIntPath(
+    online_wallpaper_variant_dict.SetIntKey(
         WallpaperControllerImpl::kOnlineWallpaperTypeNodeName,
         static_cast<int>(variant.type));
     online_wallpaper_variant_list.Append(
         std::move(online_wallpaper_variant_dict));
   }
-  wallpaper_info_dict->SetKey(
+  wallpaper_info_dict.SetKey(
       WallpaperControllerImpl::kNewWallpaperVariantListNodeName,
       std::move(online_wallpaper_variant_list));
-  wallpaper_info_dict->SetStringKey(
+  wallpaper_info_dict.SetStringKey(
       WallpaperControllerImpl::kNewWallpaperCollectionIdNodeName,
       info.collection_id);
-  wallpaper_info_dict->SetStringKey(
+  wallpaper_info_dict.SetStringKey(
       WallpaperControllerImpl::kNewWallpaperDateNodeName,
       base::NumberToString(info.date.ToInternalValue()));
-  wallpaper_info_dict->SetStringKey(
+  wallpaper_info_dict.SetStringKey(
       WallpaperControllerImpl::kNewWallpaperLocationNodeName, info.location);
-  wallpaper_info_dict->SetIntKey(
+  wallpaper_info_dict.SetIntKey(
       WallpaperControllerImpl::kNewWallpaperLayoutNodeName, info.layout);
-  wallpaper_info_dict->SetIntKey(
+  wallpaper_info_dict.SetIntKey(
       WallpaperControllerImpl::kNewWallpaperTypeNodeName,
       static_cast<int>(info.type));
   return wallpaper_info_dict;
@@ -319,11 +318,10 @@ void PutWallpaperInfoInPrefs(AccountId account_id,
                              WallpaperInfo info,
                              PrefService* pref_service,
                              const std::string& pref_name) {
-  DictionaryPrefUpdateDeprecated wallpaper_update(pref_service, pref_name);
-  auto wallpaper_info_dict = CreateWallpaperInfoDict(info);
-  wallpaper_update->SetKey(
-      account_id.GetUserEmail(),
-      base::Value::FromUniquePtrValue(std::move(wallpaper_info_dict)));
+  DictionaryPrefUpdate wallpaper_update(pref_service, pref_name);
+  base::Value wallpaper_info_dict = CreateWallpaperInfoDict(info);
+  wallpaper_update->SetKey(account_id.GetUserEmail(),
+                           std::move(wallpaper_info_dict));
 }
 
 void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
@@ -333,8 +331,8 @@ void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
   const base::Value* stored_info_dict =
       pref_service->GetDictionary(pref_name)->FindDictKey(
           account_id.GetUserEmail());
-  auto expected_info_dict = CreateWallpaperInfoDict(info);
-  EXPECT_EQ(*expected_info_dict.get(), *stored_info_dict);
+  base::Value expected_info_dict = CreateWallpaperInfoDict(info);
+  EXPECT_EQ(expected_info_dict, *stored_info_dict);
 }
 
 WallpaperInfo InfoWithType(WallpaperType type) {
@@ -3147,14 +3145,13 @@ class WallpaperControllerPrefTest : public AshTestBase,
                                     public testing::WithParamInterface<bool> {
  public:
   WallpaperControllerPrefTest() {
-    base::DictionaryValue property;
+    base::Value property(base::Value::Type::DICTIONARY);
     property.SetIntKey("rotation",
                        static_cast<int>(display::Display::ROTATE_90));
     property.SetIntKey("width", 800);
     property.SetIntKey("height", 600);
 
-    DictionaryPrefUpdateDeprecated update(local_state(),
-                                          prefs::kDisplayProperties);
+    DictionaryPrefUpdate update(local_state(), prefs::kDisplayProperties);
     update.Get()->SetKey("2200000000", std::move(property));
   }
 

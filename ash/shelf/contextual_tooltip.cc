@@ -228,7 +228,7 @@ int GetShownCount(PrefService* prefs, TooltipType type) {
 
 void HandleNudgeShown(PrefService* prefs, TooltipType type) {
   const int shown_count = GetShownCount(prefs, type);
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kContextualTooltips);
+  DictionaryPrefUpdate update(prefs, prefs::kContextualTooltips);
   update->SetIntPath(GetPath(type, kShownCount), shown_count + 1);
   update->SetPath(GetPath(type, kLastTimeShown), base::TimeToValue(GetTime()));
   GetStatusTracker(type)->HandleNudgeShown(base::TimeTicks::Now());
@@ -236,7 +236,7 @@ void HandleNudgeShown(PrefService* prefs, TooltipType type) {
 
 void HandleGesturePerformed(PrefService* prefs, TooltipType type) {
   const int success_count = GetSuccessCount(prefs, type);
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kContextualTooltips);
+  DictionaryPrefUpdate update(prefs, prefs::kContextualTooltips);
   update->SetIntPath(GetPath(type, kSuccessCount), success_count + 1);
   GetStatusTracker(type)->HandleGesturePerformed(base::TimeTicks::Now());
 }
@@ -256,10 +256,10 @@ void SetBackGestureNudgeShowing(bool showing) {
 
 void ClearPrefs() {
   DCHECK(Shell::Get()->session_controller()->GetLastActiveUserPrefService());
-  DictionaryPrefUpdateDeprecated update(
+  DictionaryPrefUpdate update(
       Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
       prefs::kContextualTooltips);
-  base::DictionaryValue* nudges_dict = update.Get();
+  base::Value* nudges_dict = update.Get();
   if (nudges_dict && !nudges_dict->DictEmpty())
     nudges_dict->DictClear();
 }

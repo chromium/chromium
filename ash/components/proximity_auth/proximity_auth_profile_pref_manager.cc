@@ -83,22 +83,21 @@ void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
 }
 
 void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
-  std::unique_ptr<base::DictionaryValue> user_prefs_dict(
-      new base::DictionaryValue());
+  base::Value user_prefs_dict(base::Value::Type::DICTIONARY);
 
-  user_prefs_dict->SetKey(
+  user_prefs_dict.SetBoolKey(
       chromeos::multidevice_setup::kSmartLockAllowedPrefName,
-      base::Value(IsEasyUnlockAllowed()));
-  user_prefs_dict->SetKey(
+      IsEasyUnlockAllowed());
+  user_prefs_dict.SetBoolKey(
       chromeos::multidevice_setup::kSmartLockEnabledPrefName,
-      base::Value(IsEasyUnlockEnabled()));
-  user_prefs_dict->SetKey(prefs::kSmartLockEligiblePrefName,
-                          base::Value(IsSmartLockEligible()));
-  user_prefs_dict->SetKey(
+      IsEasyUnlockEnabled());
+  user_prefs_dict.SetBoolKey(prefs::kSmartLockEligiblePrefName,
+                             IsSmartLockEligible());
+  user_prefs_dict.SetBoolKey(
       chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
-      base::Value(IsChromeOSLoginAllowed()));
-  user_prefs_dict->SetKey(prefs::kProximityAuthIsChromeOSLoginEnabled,
-                          base::Value(IsChromeOSLoginEnabled()));
+      IsChromeOSLoginAllowed());
+  user_prefs_dict.SetBoolKey(prefs::kProximityAuthIsChromeOSLoginEnabled,
+                             IsChromeOSLoginEnabled());
 
   // If Signin with Smart Lock is enabled, then the "has shown Signin with
   // Smart Lock is disabled message" flag should be false, to ensure the message
@@ -106,13 +105,12 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
   // old value.
   bool has_shown_login_disabled_message =
       IsChromeOSLoginEnabled() ? false : HasShownLoginDisabledMessage();
-  user_prefs_dict->SetKey(prefs::kProximityAuthHasShownLoginDisabledMessage,
-                          base::Value(has_shown_login_disabled_message));
+  user_prefs_dict.SetBoolKey(prefs::kProximityAuthHasShownLoginDisabledMessage,
+                             has_shown_login_disabled_message);
 
-  DictionaryPrefUpdateDeprecated update(local_state_,
-                                        prefs::kEasyUnlockLocalStateUserPrefs);
-  update->SetKey(account_id_.GetUserEmail(),
-                 base::Value::FromUniquePtrValue(std::move(user_prefs_dict)));
+  DictionaryPrefUpdate update(local_state_,
+                              prefs::kEasyUnlockLocalStateUserPrefs);
+  update->SetKey(account_id_.GetUserEmail(), std::move(user_prefs_dict));
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockAllowed() const {

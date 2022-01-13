@@ -310,8 +310,7 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesMutePref() {
-  DictionaryPrefUpdateDeprecated dict_update(local_state_,
-                                             prefs::kAudioDevicesMute);
+  DictionaryPrefUpdate dict_update(local_state_, prefs::kAudioDevicesMute);
   dict_update->DictClear();
   dict_update->MergeDictionary(device_mute_settings_.get());
 }
@@ -324,8 +323,8 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesVolumePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesVolumePref() {
-  DictionaryPrefUpdateDeprecated dict_update(local_state_,
-                                             prefs::kAudioDevicesVolumePercent);
+  DictionaryPrefUpdate dict_update(local_state_,
+                                   prefs::kAudioDevicesVolumePercent);
   dict_update->DictClear();
   dict_update->MergeDictionary(device_volume_settings_.get());
 }
@@ -338,8 +337,8 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesGainPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesGainPref() {
-  DictionaryPrefUpdateDeprecated dict_update(local_state_,
-                                             prefs::kAudioDevicesGainPercent);
+  DictionaryPrefUpdate dict_update(local_state_,
+                                   prefs::kAudioDevicesGainPercent);
   dict_update->DictClear();
   dict_update->MergeDictionary(device_gain_settings_.get());
 }
@@ -352,8 +351,7 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesStatePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesStatePref() {
-  DictionaryPrefUpdateDeprecated dict_update(local_state_,
-                                             prefs::kAudioDevicesState);
+  DictionaryPrefUpdate dict_update(local_state_, prefs::kAudioDevicesState);
   dict_update->DictClear();
   dict_update->MergeDictionary(device_state_settings_.get());
 }

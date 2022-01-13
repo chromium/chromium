@@ -127,7 +127,7 @@ void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
   if (!prefs)
     return;
   const int shown_count = GetNewFeatureBadgeShownCount(prefs);
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kMultipasteNudges);
+  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kNewFeatureBadgeCount, shown_count + 1);
   base::UmaHistogramBoolean(kNewBadge_ShowCount, true);
   if (new_feature_last_shown_time_.ShouldLogFeatureOpenTime()) {
@@ -199,7 +199,7 @@ void ClipboardNudgeController::OnClipboardDataRead() {
 void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
     PrefService* prefs) {
   // Reset the nudge prefs so that the nudge can be shown again.
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kMultipasteNudges);
+  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, 0);
   update->SetPath(kLastTimeShown, base::TimeToValue(base::Time()));
   update->SetIntPath(kNewFeatureBadgeCount, 0);
@@ -251,7 +251,7 @@ void ClipboardNudgeController::HandleNudgeShown() {
   if (!prefs)
     return;
   const int shown_count = GetShownCount(prefs);
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kMultipasteNudges);
+  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, shown_count + 1);
   update->SetPath(kLastTimeShown, base::TimeToValue(GetTime()));
 }
