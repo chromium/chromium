@@ -82,7 +82,7 @@ class DeviceCommandScreenshotJob::Payload
 DeviceCommandScreenshotJob::Payload::Payload(ResultCode result_code) {
   base::DictionaryValue root_dict;
   if (result_code != SUCCESS)
-    root_dict.SetInteger(kResultFieldName, result_code);
+    root_dict.SetIntKey(kResultFieldName, result_code);
   base::JSONWriter::Write(root_dict, &payload_);
 }
 

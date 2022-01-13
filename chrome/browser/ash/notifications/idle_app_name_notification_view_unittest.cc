@@ -45,7 +45,7 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
     base::DictionaryValue manifest;
     manifest.SetStringKey(extensions::manifest_keys::kName, "Test");
     manifest.SetStringKey(extensions::manifest_keys::kVersion, "1");
-    manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
+    manifest.SetIntKey(extensions::manifest_keys::kManifestVersion, 2);
     manifest.SetStringKey(extensions::manifest_keys::kDescription, "Test app");
     manifest.SetStringPath("author.email", "Someone");
 

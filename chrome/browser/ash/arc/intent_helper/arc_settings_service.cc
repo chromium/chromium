@@ -587,7 +587,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
         return;
       }
       extras.SetStringKey("host", host);
-      extras.SetInteger("port", port);
+      extras.SetIntKey("port", port);
 
       std::string bypass_list;
       if (proxy_config_dict->GetBypassList(&bypass_list) &&
@@ -637,7 +637,7 @@ void ArcSettingsServiceImpl::SyncProxySettingsForSystemProxy() const {
   extras.SetStringKey(
       "mode", ProxyPrefs::ProxyModeToString(ProxyPrefs::MODE_FIXED_SERVERS));
   extras.SetStringKey("host", host);
-  extras.SetInteger("port", port);
+  extras.SetIntKey("port", port);
   SendSettingsBroadcast(kSetProxyAction, extras);
 }
 

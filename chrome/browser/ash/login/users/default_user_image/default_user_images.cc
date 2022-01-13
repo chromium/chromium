@@ -362,7 +362,7 @@ std::unique_ptr<base::ListValue> GetCurrentImageSet() {
     int string_id = kDefaultImageInfo[index].description_message_id;
 
     image_data->SetString("url", default_user_image::GetDefaultImageUrl(index));
-    image_data->SetInteger("index", index);
+    image_data->SetIntKey("index", index);
     image_data->SetString("title", string_id
                                        ? l10n_util::GetStringUTF16(string_id)
                                        : std::u16string());

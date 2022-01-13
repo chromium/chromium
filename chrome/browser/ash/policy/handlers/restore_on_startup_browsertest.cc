@@ -48,8 +48,7 @@ class RestoreOnStartupTest : public LoginPolicyTestBase {
 
 void RestoreOnStartupTest::GetMandatoryPoliciesValue(
     base::DictionaryValue* policy) const {
-  policy->SetInteger(key::kRestoreOnStartup,
-                     SessionStartupPref::kPrefValueURLs);
+  policy->SetIntKey(key::kRestoreOnStartup, SessionStartupPref::kPrefValueURLs);
   base::ListValue urls;
   urls.Append(kStartUpURL1);
   urls.Append(kStartUpURL2);

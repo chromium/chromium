@@ -762,8 +762,8 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
       new base::DictionaryValue());
   entry_dict->SetStringKey(kAccountsPrefDeviceLocalAccountsKeyId,
                            policy::PolicyBuilder::kFakeUsername);
-  entry_dict->SetInteger(kAccountsPrefDeviceLocalAccountsKeyType,
-                         policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+  entry_dict->SetIntKey(kAccountsPrefDeviceLocalAccountsKeyType,
+                        policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
   expected_accounts.Append(std::move(entry_dict));
   const base::Value* actual_accounts =
       provider_->Get(kAccountsPrefDeviceLocalAccounts);
