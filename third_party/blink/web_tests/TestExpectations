@@ -7205,7 +7205,7 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/audioDecoder-codec-spec
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?mp4_aac [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_avc [ Pass Timeout ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/12-55.html [ Failure Pass ]
+crbug.com/1249176 virtual/gpu-rasterization/images/12-55.html [ Skip ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/file/recover-file-input-in-unposted-form.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-015.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-003.html [ Failure Pass ]
