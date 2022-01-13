@@ -63,8 +63,8 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
   }
 
   std::vector<ExtractedSharedKey> result;
-  for (const auto& epoch_and_extracted_key : epoch_to_extracted_key) {
-    result.push_back(epoch_and_extracted_key.second);
+  for (const auto& [epoch, extracted_key] : epoch_to_extracted_key) {
+    result.push_back(extracted_key);
   }
   return result;
 }

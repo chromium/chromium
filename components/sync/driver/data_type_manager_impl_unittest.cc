@@ -136,12 +136,9 @@ class FakeDataTypeManagerObserver : public DataTypeManagerObserver {
     DataTypeStatusTable::TypeErrorMap expected_errors =
         done_expectation_.data_type_status_table.GetAllErrors();
     ASSERT_EQ(expected_errors.size(), errors.size());
-    for (DataTypeStatusTable::TypeErrorMap::const_iterator iter =
-             expected_errors.begin();
-         iter != expected_errors.end(); ++iter) {
-      ASSERT_TRUE(errors.find(iter->first) != errors.end());
-      ASSERT_EQ(iter->second.error_type(),
-                errors.find(iter->first)->second.error_type());
+    for (const auto& [type, error] : expected_errors) {
+      ASSERT_TRUE(errors.find(type) != errors.end());
+      ASSERT_EQ(error.error_type(), errors.find(type)->second.error_type());
     }
     done_expectation_ = DataTypeManager::ConfigureResult();
   }

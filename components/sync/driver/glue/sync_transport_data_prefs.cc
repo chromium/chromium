@@ -50,12 +50,10 @@ void UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions,
     PrefService* pref_service) {
   auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
-  for (const auto& map_iter : invalidation_versions) {
-    std::string version_str = base::NumberToString(map_iter.second);
+  for (const auto& [type, version] : invalidation_versions) {
     invalidation_dictionary->SetString(
-        base::NumberToString(
-            GetSpecificsFieldNumberFromModelType(map_iter.first)),
-        version_str);
+        base::NumberToString(GetSpecificsFieldNumberFromModelType(type)),
+        base::NumberToString(version));
   }
   pref_service->Set(kSyncInvalidationVersions2, *invalidation_dictionary);
 }
