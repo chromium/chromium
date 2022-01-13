@@ -1233,7 +1233,7 @@
         'QuickAnswersEnabled',
         'QuickAnswersDefinitionEnabled',
         'QuickAnswersTranslationEnabled',
-        'QuickAnswersUnitConverstionEnabled',
+        'QuickAnswersUnitConversionEnabled',
       ]
     },
     {
@@ -22955,7 +22955,7 @@
       If the policy is disabled, Quick Answers translation will be disabled.''',
     },
     {
-      'name': 'QuickAnswersUnitConverstionEnabled',
+      'name': 'QuickAnswersUnitConversionEnabled',
       'owners': ['updowndota@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },

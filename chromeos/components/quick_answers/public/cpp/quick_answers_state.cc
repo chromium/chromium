@@ -23,7 +23,7 @@ using quick_answers::prefs::kQuickAnswersDefinitionEnabled;
 using quick_answers::prefs::kQuickAnswersEnabled;
 using quick_answers::prefs::kQuickAnswersNoticeImpressionCount;
 using quick_answers::prefs::kQuickAnswersTranslationEnabled;
-using quick_answers::prefs::kQuickAnswersUnitConverstionEnabled;
+using quick_answers::prefs::kQuickAnswersUnitConversionEnabled;
 
 QuickAnswersState* g_quick_answers_state = nullptr;
 
@@ -131,15 +131,15 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
       base::BindRepeating(&QuickAnswersState::UpdateTranslationEnabled,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      kQuickAnswersUnitConverstionEnabled,
-      base::BindRepeating(&QuickAnswersState::UpdateUnitConverstionEnabled,
+      kQuickAnswersUnitConversionEnabled,
+      base::BindRepeating(&QuickAnswersState::UpdateUnitConversionEnabled,
                           base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateConsentStatus();
   UpdateDefinitionEnabled();
   UpdateTranslationEnabled();
-  UpdateUnitConverstionEnabled();
+  UpdateUnitConversionEnabled();
 
   prefs_initialized_ = true;
 
@@ -256,9 +256,9 @@ void QuickAnswersState::UpdateTranslationEnabled() {
   translation_enabled_ = translation_enabled;
 }
 
-void QuickAnswersState::UpdateUnitConverstionEnabled() {
+void QuickAnswersState::UpdateUnitConversionEnabled() {
   auto unit_conversion_enabled = pref_change_registrar_->prefs()->GetBoolean(
-      kQuickAnswersUnitConverstionEnabled);
+      kQuickAnswersUnitConversionEnabled);
   if (unit_conversion_enabled_ == unit_conversion_enabled) {
     return;
   }

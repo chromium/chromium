@@ -551,7 +551,7 @@ std::string SetWhitelistedPref(Profile* profile,
              quick_answers::prefs::kQuickAnswersTranslationEnabled) {
     DCHECK(value.is_bool());
   } else if (pref_name ==
-             quick_answers::prefs::kQuickAnswersUnitConverstionEnabled) {
+             quick_answers::prefs::kQuickAnswersUnitConversionEnabled) {
     DCHECK(value.is_bool());
   } else if (pref_name == quick_answers::prefs::kQuickAnswersConsentStatus) {
     DCHECK(value.is_int());

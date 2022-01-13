@@ -13657,7 +13657,7 @@
       }
     ]
   },
-  "QuickAnswersUnitConverstionEnabled": {
+  "QuickAnswersUnitConversionEnabled": {
     "os": [
       "chromeos_ash"
     ],
@@ -13672,7 +13672,7 @@
       },
       {
         "policies": {
-          "QuickAnswersUnitConverstionEnabled": false
+          "QuickAnswersUnitConversionEnabled": false
         },
         "prefs": {
           "settings.quick_answers.unit_conversion.enabled": {
@@ -13682,7 +13682,7 @@
       },
       {
         "policies": {
-          "QuickAnswersUnitConverstionEnabled": true
+          "QuickAnswersUnitConversionEnabled": true
         },
         "prefs": {
           "settings.quick_answers.unit_conversion.enabled": {

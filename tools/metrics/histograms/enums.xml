@@ -28224,7 +28224,7 @@ Called by update_document_policy_enum.py.-->
   <int value="917" label="QuickAnswersEnabled"/>
   <int value="918" label="QuickAnswersDefinitionEnabled"/>
   <int value="919" label="QuickAnswersTranslationEnabled"/>
-  <int value="920" label="QuickAnswersUnitConverstionEnabled"/>
+  <int value="920" label="QuickAnswersUnitConversionEnabled"/>
   <int value="921" label="CORSNonWildcardRequestHeadersSupport"/>
   <int value="922" label="RemoteAccessHostClipboardSizeBytes"/>
   <int value="923" label="RemoteAccessHostAllowRemoteSupportConnections"/>

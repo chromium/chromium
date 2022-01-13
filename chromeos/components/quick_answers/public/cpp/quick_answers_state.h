@@ -85,7 +85,7 @@ class QuickAnswersState {
   void UpdateConsentStatus();
   void UpdateDefinitionEnabled();
   void UpdateTranslationEnabled();
-  void UpdateUnitConverstionEnabled();
+  void UpdateUnitConversionEnabled();
 
   // Called when the feature eligibility might change.
   void UpdateEligibility();

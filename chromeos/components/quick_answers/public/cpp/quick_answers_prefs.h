@@ -28,7 +28,7 @@ extern const char kQuickAnswersEnabled[];
 extern const char kQuickAnswersConsentStatus[];
 extern const char kQuickAnswersDefinitionEnabled[];
 extern const char kQuickAnswersTranslationEnabled[];
-extern const char kQuickAnswersUnitConverstionEnabled[];
+extern const char kQuickAnswersUnitConversionEnabled[];
 extern const char kQuickAnswersNoticeImpressionCount[];
 extern const char kQuickAnswersNoticeImpressionDuration[];
 

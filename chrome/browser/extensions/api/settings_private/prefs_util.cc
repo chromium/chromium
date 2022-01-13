@@ -636,7 +636,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[quick_answers::prefs::kQuickAnswersTranslationEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[quick_answers::prefs::kQuickAnswersUnitConverstionEnabled] =
+  (*s_allowlist)[quick_answers::prefs::kQuickAnswersUnitConversionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Misc.
