@@ -102,8 +102,11 @@ def _ReceiveFDs(sock):
     legacy_mojo_fd = None
     startup_fd = os.fdopen(fds[0])
     mojo_fd = os.fdopen(fds[1])
+  elif version:
+    raise AssertionError('Unknown version: \\x%s' % version.hex())
   else:
-    raise AssertionError('Unknown version: \\x%s' % version.encode('hex'))
+    raise AssertionError('Failed to receive startup message from ash-chrome. '
+                         'Make sure you\'re logged in to Chrome OS.')
   return legacy_mojo_fd, startup_fd, mojo_fd
 
 
