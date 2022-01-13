@@ -8523,7 +8523,6 @@ if (!is_android && !is_fuchsia) {
       "//ui/events:test_support",
       "//ui/web_dialogs:test_support",
     ]
-
     if (include_js_tests) {
       deps += [
         "//chrome/test/data/webui:interactive_ui_tests_js_mojo_lite_webui",
@@ -8556,7 +8555,10 @@ if (!is_android && !is_fuchsia) {
     }
 
     if (use_ozone) {
-      deps += [ "//ui/ozone" ]
+      deps += [
+        "//ui/ozone",
+        "//ui/ozone:ozone_interactive_ui_tests",
+      ]
     }
 
     if (use_aura) {

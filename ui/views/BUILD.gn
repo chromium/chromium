@@ -1438,22 +1438,6 @@ source_set("views_interactive_ui_tests") {
     ]
   }
 
-  # TODO(1239521): x11 interactive ui tests should probably have own target.
-  # At the moment, it's impossible to move this test file under X11 directory
-  # as it will result in a gn dependency problem.
-  if (ozone_platform_x11 && !is_chromeos_ash && !is_chromecast) {
-    sources += [
-      "widget/desktop_aura/x11_topmost_window_finder_interactive_uitest.cc",
-    ]
-    deps += [
-      "//ui/base/x",
-      "//ui/base/x:test_support",
-      "//ui/gfx/x",
-      "//ui/ozone",
-      "//ui/platform_window/x11",
-    ]
-  }
-
   if (is_chromeos_ash) {
     sources -= [ "corewm/desktop_capture_controller_unittest.cc" ]
   }

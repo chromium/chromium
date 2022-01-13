@@ -131,3 +131,37 @@ source_set("test_support") {
     "//ui/base/x:test_support",
   ]
 }
+
+source_set("interactive_uitests") {
+  testonly = true
+  sources = [ "x11_topmost_window_finder_interactive_uitest.cc" ]
+
+  deps = [
+    ":x11",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/x",
+    "//ui/base/x:test_support",
+    "//ui/events/platform/x11",
+    "//ui/gfx",
+    "//ui/gfx/x",
+    "//ui/ozone",
+    "//ui/ozone:platform",
+    "//ui/platform_window",
+    "//ui/platform_window/x11",
+  ]
+
+  # Needed for tests.  Please note that if you want to run tests locally,
+  # ensure that you start them from your out directory with the xvfb
+  # script so that openbox has time to start. Otherwise, the interactive_ui_tests
+  # will time out. e.g. -
+  #
+  # 1) cd out/Debug.
+  # 2) ../../testing/xvfb.py ./interactive_ui_tests.
+  #
+  #TODO(dpranke): move that to appropriate place after test() template is
+  # reworked.
+  data_deps = [ "//ui/base/x/xwmstartupcheck" ]
+}

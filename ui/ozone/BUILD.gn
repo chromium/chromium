@@ -26,6 +26,10 @@ ozone_platform_test_deps = ozone_external_platform_test_deps
 ozone_platform_ui_test_support_deps =
     ozone_external_platform_ui_test_support_deps
 
+# Extra dependencies to pull into interactive_ui_tests for built platforms.
+ozone_platform_interactive_ui_tests_sources =
+    ozone_external_interactive_ui_tests_deps
+
 if (ozone_platform_windows) {
   ozone_platforms += [ "windows" ]
   ozone_platform_deps += [ "platform/windows" ]
@@ -58,6 +62,8 @@ if (ozone_platform_x11) {
   ozone_platforms += [ "x11" ]
   ozone_platform_deps += [ "platform/x11" ]
   ozone_platform_ui_test_support_deps += [ "platform/x11:test_support" ]
+  ozone_platform_interactive_ui_tests_sources +=
+      [ "platform/x11:interactive_uitests" ]
 }
 
 if (ozone_platform_scenic) {
@@ -284,6 +290,15 @@ static_library("ui_test_support") {
   deps += ozone_platform_ui_test_support_deps
 
   allow_circular_includes_from = ozone_platform_ui_test_support_deps
+}
+
+source_set("ozone_interactive_ui_tests") {
+  visibility = []
+  visibility = [ "//chrome/test:interactive_ui_tests" ]
+
+  testonly = true
+
+  deps = ozone_platform_interactive_ui_tests_sources
 }
 
 static_library("test_support") {

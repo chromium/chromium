@@ -22,3 +22,8 @@ ozone_external_platform_test_deps = []
 # be listed here so that they get included into ui_test_support.
 # ozone_external_platform_ui_test_support_deps = [ "platform/foo1:ui_test_support", ... ]
 ozone_external_platform_ui_test_support_deps = []
+
+# If a platform has a test support for interactive_ui_tests, the corresponding
+# source_set can be listed here so that they can included into
+# interactive_ui_tests.
+ozone_external_interactive_ui_tests_deps = []

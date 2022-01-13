@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/x/test/x11_property_change_waiter.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -31,7 +32,7 @@
 #include "ui/platform_window/x11/x11_window.h"
 #include "ui/platform_window/x11/x11_window_manager.h"
 
-namespace views {
+namespace ui {
 
 namespace {
 
@@ -44,7 +45,7 @@ class X11VisibilityWaiter : public x11::EventObserver {
   ~X11VisibilityWaiter() override = default;
 
   void WaitUntilWindowIsVisible(x11::Window x11_window) {
-    if (ui::IsWindowVisible(x11_window))
+    if (IsWindowVisible(x11_window))
       return;
 
     event_selector_ = std::make_unique<x11::XScopedEventSelector>(
@@ -57,7 +58,7 @@ class X11VisibilityWaiter : public x11::EventObserver {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
-    DCHECK(ui::IsWindowVisible(x11_window));
+    DCHECK(IsWindowVisible(x11_window));
   }
 
  private:
@@ -77,7 +78,7 @@ class X11VisibilityWaiter : public x11::EventObserver {
   base::OnceClosure quit_closure_;
 };
 
-class TestPlatformWindowDelegate : public ui::PlatformWindowDelegate {
+class TestPlatformWindowDelegate : public PlatformWindowDelegate {
  public:
   TestPlatformWindowDelegate() = default;
   TestPlatformWindowDelegate(const TestPlatformWindowDelegate&) = delete;
@@ -85,16 +86,16 @@ class TestPlatformWindowDelegate : public ui::PlatformWindowDelegate {
       delete;
   ~TestPlatformWindowDelegate() override = default;
 
-  ui::PlatformWindowState state() { return state_; }
+  PlatformWindowState state() { return state_; }
 
   // PlatformWindowDelegate:
   void OnBoundsChanged(const BoundsChange& change) override {}
   void OnDamageRect(const gfx::Rect& damaged_region) override {}
-  void DispatchEvent(ui::Event* event) override {}
+  void DispatchEvent(Event* event) override {}
   void OnCloseRequest() override {}
   void OnClosed() override {}
-  void OnWindowStateChanged(ui::PlatformWindowState old_state,
-                            ui::PlatformWindowState new_state) override {
+  void OnWindowStateChanged(PlatformWindowState old_state,
+                            PlatformWindowState new_state) override {
     state_ = new_state;
   }
   void OnLostCapture() override {}
@@ -110,14 +111,14 @@ class TestPlatformWindowDelegate : public ui::PlatformWindowDelegate {
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  ui::PlatformWindowState state_ = ui::PlatformWindowState::kUnknown;
+  PlatformWindowState state_ = PlatformWindowState::kUnknown;
 };
 
 // Waits till |window| is minimized.
-class MinimizeWaiter : public ui::X11PropertyChangeWaiter {
+class MinimizeWaiter : public X11PropertyChangeWaiter {
  public:
   explicit MinimizeWaiter(x11::Window window)
-      : ui::X11PropertyChangeWaiter(window, "_NET_WM_STATE") {}
+      : X11PropertyChangeWaiter(window, "_NET_WM_STATE") {}
 
   MinimizeWaiter(const MinimizeWaiter&) = delete;
   MinimizeWaiter& operator=(const MinimizeWaiter&) = delete;
@@ -125,7 +126,7 @@ class MinimizeWaiter : public ui::X11PropertyChangeWaiter {
   ~MinimizeWaiter() override = default;
 
  private:
-  // ui::X11PropertyChangeWaiter:
+  // X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> wm_states;
     if (GetArrayProperty(xwindow(), x11::GetAtom("_NET_WM_STATE"),
@@ -137,9 +138,8 @@ class MinimizeWaiter : public ui::X11PropertyChangeWaiter {
 };
 
 void IconifyWindow(x11::Connection* connection, x11::Window window) {
-  ui::SendClientMessage(window, ui::GetX11RootWindow(),
-                        x11::GetAtom("WM_CHANGE_STATE"),
-                        {ui::WM_STATE_ICONIC, 0, 0, 0, 0});
+  SendClientMessage(window, GetX11RootWindow(), x11::GetAtom("WM_CHANGE_STATE"),
+                    {WM_STATE_ICONIC, 0, 0, 0, 0});
 }
 
 }  // namespace
@@ -158,10 +158,13 @@ class X11TopmostWindowFinderTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     // Run tests only for X11.
-    if (ui::OzonePlatform::GetPlatformNameForTest() != "x11")
+    if (OzonePlatform::GetPlatformNameForTest() != "x11")
       GTEST_SKIP();
 
     auto* connection = x11::Connection::Get();
+    // Not initialized when runs on CrOS builds.
+    if (!X11EventSource::GetInstance())
+      event_source_ = std::make_unique<X11EventSource>(connection);
     // Make X11 synchronous for our display connection. This does not force the
     // window manager to behave synchronously.
     connection->SynchronizeForTest(true);
@@ -175,13 +178,13 @@ class X11TopmostWindowFinderTest : public testing::Test {
 
   // Creates and shows an X11Window with |bounds|. The caller takes ownership of
   // the returned window.
-  std::unique_ptr<ui::X11Window> CreateAndShowX11Window(
-      ui::PlatformWindowDelegate* delegate,
+  std::unique_ptr<X11Window> CreateAndShowX11Window(
+      PlatformWindowDelegate* delegate,
       const gfx::Rect& bounds) {
-    ui::PlatformWindowInitProperties init_params(bounds);
-    init_params.type = ui::PlatformWindowType::kWindow;
+    PlatformWindowInitProperties init_params(bounds);
+    init_params.type = PlatformWindowType::kWindow;
     init_params.remove_standard_frame = true;
-    auto window = std::make_unique<ui::X11Window>(delegate);
+    auto window = std::make_unique<X11Window>(delegate);
     window->Initialize(std::move(init_params));
     window->Show(true);
     // The window must have a title. Otherwise, the X11TopmostWindowFinder
@@ -199,7 +202,7 @@ class X11TopmostWindowFinderTest : public testing::Test {
 
   // Creates and shows an X window with |bounds|.
   x11::Window CreateAndShowXWindow(const gfx::Rect& bounds) {
-    x11::Window root = ui::GetX11RootWindow();
+    x11::Window root = GetX11RootWindow();
     auto window = connection()->GenerateId<x11::Window>();
     connection()->CreateWindow({
         .wid = window,
@@ -212,7 +215,7 @@ class X11TopmostWindowFinderTest : public testing::Test {
     // windows.
     SetStringProperty(window, x11::Atom::WM_NAME, x11::Atom::STRING, "");
 
-    ui::SetUseOSWindowFrame(window, false);
+    SetUseOSWindowFrame(window, false);
     ShowAndSetXWindowBounds(window, bounds);
 
     // Wait until the window becomes visible so that window finder doesn't skip
@@ -240,7 +243,7 @@ class X11TopmostWindowFinderTest : public testing::Test {
 
   // Returns the topmost X window at the passed in screen position.
   x11::Window FindTopmostXWindowAt(int screen_x, int screen_y) {
-    ui::X11TopmostWindowFinder finder({});
+    X11TopmostWindowFinder finder({});
     return finder.FindWindowAt(gfx::Point(screen_x, screen_y));
   }
 
@@ -251,42 +254,43 @@ class X11TopmostWindowFinderTest : public testing::Test {
                                            x11::Window ignore_window) {
     std::set<gfx::AcceleratedWidget> ignore;
     ignore.insert(static_cast<gfx::AcceleratedWidget>(ignore_window));
-    ui::X11TopmostWindowFinder finder(ignore);
+    X11TopmostWindowFinder finder(ignore);
     return finder.FindWindowAt(gfx::Point(screen_x, screen_y));
   }
 
-  // Returns the topmost ui::X11Window at the passed in screen position. Returns
-  // nullptr if the topmost window does not have an associated ui::X11Window.
-  ui::X11Window* FindTopmostLocalProcessWindowAt(int screen_x, int screen_y) {
-    ui::X11TopmostWindowFinder finder({});
+  // Returns the topmost X11Window at the passed in screen position. Returns
+  // nullptr if the topmost window does not have an associated X11Window.
+  X11Window* FindTopmostLocalProcessWindowAt(int screen_x, int screen_y) {
+    X11TopmostWindowFinder finder({});
     auto x11_window =
         finder.FindLocalProcessWindowAt(gfx::Point(screen_x, screen_y));
     return x11_window == x11::Window::None
                ? nullptr
-               : ui::X11WindowManager::GetInstance()->GetWindow(
+               : X11WindowManager::GetInstance()->GetWindow(
                      static_cast<gfx::AcceleratedWidget>(x11_window));
   }
 
-  // Returns the topmost ui::X11Window at the passed in screen position ignoring
+  // Returns the topmost X11Window at the passed in screen position ignoring
   // |ignore_window|. Returns nullptr if the topmost window does not have an
-  // associated ui::X11Window.
-  ui::X11Window* FindTopmostLocalProcessWindowWithIgnore(
+  // associated X11Window.
+  X11Window* FindTopmostLocalProcessWindowWithIgnore(
       int screen_x,
       int screen_y,
       x11::Window ignore_window) {
     std::set<gfx::AcceleratedWidget> ignore;
     ignore.insert(static_cast<gfx::AcceleratedWidget>(ignore_window));
-    ui::X11TopmostWindowFinder finder(ignore);
+    X11TopmostWindowFinder finder(ignore);
     auto x11_window =
         finder.FindLocalProcessWindowAt(gfx::Point(screen_x, screen_y));
     return x11_window == x11::Window::None
                ? nullptr
-               : ui::X11WindowManager::GetInstance()->GetWindow(
+               : X11WindowManager::GetInstance()->GetWindow(
                      static_cast<gfx::AcceleratedWidget>(x11_window));
   }
 
  private:
   base::test::TaskEnvironment task_env_;
+  std::unique_ptr<X11EventSource> event_source_;
 };
 
 TEST_F(X11TopmostWindowFinderTest, Basic) {
@@ -374,7 +378,7 @@ TEST_F(X11TopmostWindowFinderTest, Minimized) {
 
 // Test that non-rectangular windows are properly handled.
 TEST_F(X11TopmostWindowFinderTest, NonRectangular) {
-  if (!ui::IsShapeExtensionAvailable())
+  if (!IsShapeExtensionAvailable())
     return;
 
   TestPlatformWindowDelegate delegate;
@@ -416,7 +420,7 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangular) {
 
 // Test that a window with an empty shape are properly handled.
 TEST_F(X11TopmostWindowFinderTest, NonRectangularEmptyShape) {
-  if (!ui::IsShapeExtensionAvailable())
+  if (!IsShapeExtensionAvailable())
     return;
 
   TestPlatformWindowDelegate delegate;
@@ -442,7 +446,7 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangularEmptyShape) {
 #define MAYBE_NonRectangularNullShape NonRectangularNullShape
 #endif
 TEST_F(X11TopmostWindowFinderTest, MAYBE_NonRectangularNullShape) {
-  if (!ui::IsShapeExtensionAvailable())
+  if (!IsShapeExtensionAvailable())
     return;
 
   TestPlatformWindowDelegate delegate;
@@ -470,7 +474,7 @@ TEST_F(X11TopmostWindowFinderTest, MAYBE_NonRectangularNullShape) {
 TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
   x11::Window window = CreateAndShowXWindow(gfx::Rect(100, 100, 100, 100));
 
-  x11::Window root = ui::GetX11RootWindow();
+  x11::Window root = GetX11RootWindow();
   auto menu_window = connection()->GenerateId<x11::Window>();
   connection()->CreateWindow({
       .wid = menu_window,
@@ -484,7 +488,7 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
   SetProperty(menu_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"), x11::Atom::ATOM,
               x11::GetAtom("_NET_WM_WINDOW_TYPE_MENU"));
 
-  ui::SetUseOSWindowFrame(menu_window, false);
+  SetUseOSWindowFrame(menu_window, false);
   ShowAndSetXWindowBounds(menu_window, gfx::Rect(140, 110, 100, 100));
   connection()->DispatchAll();
 
@@ -496,4 +500,4 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
   connection()->DestroyWindow({menu_window});
 }
 
-}  // namespace views
+}  // namespace ui
