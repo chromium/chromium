@@ -1979,9 +1979,6 @@ extern const char kThemeRefactorAndroidDescription[];
 extern const char kToolbarIphAndroidName[];
 extern const char kToolbarIphAndroidDescription[];
 
-extern const char kToolbarMicIphAndroidName[];
-extern const char kToolbarMicIphAndroidDescription[];
-
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 

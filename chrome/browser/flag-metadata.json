@@ -327,7 +327,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 98
+    "expiry_milestone": 103
   },
   {
     "name": "assistant-intent-page-url",
@@ -336,7 +336,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 98
+    "expiry_milestone": 103
   },
   {
     "name": "assistant-intent-translate-info",
@@ -345,7 +345,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 98
+    "expiry_milestone": 103
   },
   {
     "name": "audio-url",
@@ -4153,7 +4153,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 98
+    "expiry_milestone": 103
   },
   {
     "name": "omnibox-bookmark-paths",
@@ -5385,11 +5385,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "toolbar-mic-iph-android",
-    "owners": [ "basiaz@google.com", "chrome-voice@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "top-chrome-touch-ui",
     "owners": [ "pbos", "chrome-desktop-ui-sea@google.com" ],
     // This flag is used to easily swap into touch-mode for UI development where
@@ -5415,7 +5410,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 98
+    "expiry_milestone": 103
   },
   {
     "name": "translate-force-trigger-on-english",
@@ -5431,7 +5426,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 98
+    "expiry_milestone": 103
   },
   {
     "name": "trim-on-memory-pressure",
@@ -5678,7 +5673,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 98
+    "expiry_milestone": 103
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
