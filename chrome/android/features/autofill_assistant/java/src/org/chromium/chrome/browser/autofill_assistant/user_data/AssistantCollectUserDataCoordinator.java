@@ -5,21 +5,15 @@
 package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import android.app.Activity;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-
-import java.text.DateFormat;
-import java.util.Locale;
 
 // TODO(crbug.com/806868): Use mCarouselCoordinator to show chips.
 
@@ -35,20 +29,6 @@ public class AssistantCollectUserDataCoordinator {
 
     public AssistantCollectUserDataCoordinator(
             Activity activity, AssistantCollectUserDataModel model) {
-        this(activity, model,
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                        ? activity.getResources().getConfiguration().getLocales().get(0)
-                        : activity.getResources().getConfiguration().locale);
-    }
-
-    private AssistantCollectUserDataCoordinator(
-            Activity activity, AssistantCollectUserDataModel model, Locale locale) {
-        this(activity, model, locale, DateFormat.getDateInstance(DateFormat.MEDIUM, locale));
-    }
-
-    @VisibleForTesting
-    public AssistantCollectUserDataCoordinator(Activity activity,
-            AssistantCollectUserDataModel model, Locale locale, DateFormat dateFormat) {
         mActivity = activity;
         mModel = model;
         int sectionToSectionPadding = activity.getResources().getDimensionPixelSize(

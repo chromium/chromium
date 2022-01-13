@@ -73,11 +73,9 @@ import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Tests for the Autofill Assistant collect user data UI.
@@ -119,22 +117,6 @@ public class AutofillAssistantCollectUserDataUiTest {
             AssistantCollectUserDataModel model) throws Exception {
         AssistantCollectUserDataCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new AssistantCollectUserDataCoordinator(mTestRule.getActivity(), model));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AutofillAssistantUiTestUtil.attachToCoordinator(
-                                mTestRule.getActivity(), coordinator.getView()));
-        return coordinator;
-    }
-
-    /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
-    private AssistantCollectUserDataCoordinator createCollectUserDataCoordinator(
-            AssistantCollectUserDataModel model, Locale locale, DateFormat dateFormat)
-            throws Exception {
-        AssistantCollectUserDataCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> new AssistantCollectUserDataCoordinator(
-                                mTestRule.getActivity(), model, locale, dateFormat));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
