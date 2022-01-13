@@ -504,8 +504,8 @@ TEST_F(ArcPolicyBridgeTest, ExternalStorageDisabledTest) {
 
 TEST_F(ArcPolicyBridgeTest, WallpaperImageSetTest) {
   base::DictionaryValue dict;
-  dict.SetString("url", "https://example.com/wallpaper.jpg");
-  dict.SetString("hash", "somehash");
+  dict.SetStringKey("url", "https://example.com/wallpaper.jpg");
+  dict.SetStringKey("hash", "somehash");
   policy_map().Set(policy::key::kWallpaperImage, policy::POLICY_LEVEL_MANDATORY,
                    policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                    dict.Clone(), nullptr);

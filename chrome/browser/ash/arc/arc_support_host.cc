@@ -270,7 +270,7 @@ void ArcSupportHost::Close() {
   }
 
   base::DictionaryValue message;
-  message.SetString(kAction, kActionCloseWindow);
+  message.SetStringKey(kAction, kActionCloseWindow);
   message_host_->SendMessage(message);
 
   // Disconnect immediately, so that onWindowClosed event will not be
@@ -309,18 +309,18 @@ void ArcSupportHost::ShowPage(UIPage ui_page) {
   }
 
   base::DictionaryValue message;
-  message.SetString(kAction, kActionShowPage);
+  message.SetStringKey(kAction, kActionShowPage);
   switch (ui_page) {
     case UIPage::TERMS:
-      message.SetString(kPage, "terms");
+      message.SetStringKey(kPage, "terms");
       break;
     case UIPage::ARC_LOADING:
-      message.SetString(kPage, "arc-loading");
+      message.SetStringKey(kPage, "arc-loading");
       break;
     case UIPage::ACTIVE_DIRECTORY_AUTH:
       DCHECK(active_directory_auth_federation_url_.is_valid());
       DCHECK(!active_directory_auth_device_management_url_prefix_.empty());
-      message.SetString(kPage, "active-directory-auth");
+      message.SetStringKey(kPage, "active-directory-auth");
       message.SetPath(
           {kOptions, kFederationUrl},
           base::Value(active_directory_auth_federation_url_.spec()));
@@ -357,7 +357,7 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
   }
 
   base::DictionaryValue message_args;
-  message_args.SetString(kAction, kActionShowErrorPage);
+  message_args.SetStringKey(kAction, kActionShowErrorPage);
   int message_id;
 #define MAP_ERROR(name, id) \
   case Error::name:         \
@@ -413,7 +413,7 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
       break;
   }
 
-  message_args.SetString(kErrorMessage, message);
+  message_args.SetStringKey(kErrorMessage, message);
   message_args.SetBoolean(kShouldShowSendFeedback, should_show_send_feedback);
   message_args.SetBoolean(
       kShouldShowNetworkTests,
@@ -449,7 +449,7 @@ void ArcSupportHost::SendPreferenceCheckboxUpdate(
     return;
 
   base::DictionaryValue message;
-  message.SetString(kAction, action_name);
+  message.SetStringKey(kAction, action_name);
   message.SetBoolean(kEnabled, data.is_enabled);
   message.SetBoolean(kManaged, data.is_managed);
   message_host_->SendMessage(message);
@@ -529,129 +529,133 @@ bool ArcSupportHost::Initialize() {
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   base::DictionaryValue loadtime_data;
-  loadtime_data.SetString("appWindow", l10n_util::GetStringUTF16(
-                                           IDS_ARC_PLAYSTORE_ICON_TITLE_BETA));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
+      "appWindow",
+      l10n_util::GetStringUTF16(IDS_ARC_PLAYSTORE_ICON_TITLE_BETA));
+  loadtime_data.SetStringKey(
       "greetingHeader", l10n_util::GetStringUTF16(IDS_ARC_OOBE_TERMS_HEADING));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "initializingHeader",
       l10n_util::GetStringUTF16(IDS_ARC_PLAYSTORE_SETTING_UP_TITLE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "greetingDescription",
       l10n_util::GetStringUTF16(IDS_ARC_OOBE_TERMS_DESCRIPTION));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "buttonAgree",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "buttonCancel",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_CANCEL));
-  loadtime_data.SetString("buttonNext", l10n_util::GetStringUTF16(
-                                            IDS_ARC_OPT_IN_DIALOG_BUTTON_NEXT));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
+      "buttonNext",
+      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_NEXT));
+  loadtime_data.SetStringKey(
       "buttonSendFeedback",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_SEND_FEEDBACK));
-  loadtime_data.SetString("buttonRunNetworkTests",
-                          l10n_util::GetStringUTF16(
-                              IDS_ARC_OPT_IN_DIALOG_BUTTON_RUN_NETWORK_TESTS));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
+      "buttonRunNetworkTests",
+      l10n_util::GetStringUTF16(
+          IDS_ARC_OPT_IN_DIALOG_BUTTON_RUN_NETWORK_TESTS));
+  loadtime_data.SetStringKey(
       "buttonRetry",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_RETRY));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "progressTermsLoading",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_PROGRESS_TERMS));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "progressAndroidLoading",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_PROGRESS_ANDROID));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "authorizationFailed",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_AUTHORIZATION_FAILED));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "termsOfService",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_TERMS_OF_SERVICE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "textMetricsEnabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_ENABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_ENABLED));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "textMetricsDisabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_DISABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_DISABLED));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "textMetricsManagedEnabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_ENABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_ENABLED));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "textMetricsManagedDisabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "textBackupRestore",
       l10n_util::GetStringUTF16(is_child
                                     ? IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD
                                     : IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE));
-  loadtime_data.SetString("textPaiService",
-                          l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PAI));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey("textPaiService",
+                             l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PAI));
+  loadtime_data.SetStringKey(
       "textGoogleServiceConfirmation",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_GOOGLE_SERVICE_CONFIRMATION));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "textLocationService",
       l10n_util::GetStringUTF16(is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
                                          : IDS_ARC_OPT_IN_LOCATION_SETTING));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "serverError",
       l10n_util::GetStringUTF16(IDS_ARC_SERVER_COMMUNICATION_ERROR));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "controlledByPolicy",
       l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMoreStatisticsTitle",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_TITLE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMoreStatistics",
       l10n_util::GetStringUTF16(is_child
                                     ? IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_CHILD
                                     : IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMoreBackupAndRestoreTitle",
       l10n_util::GetStringUTF16(
           IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_TITLE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMoreBackupAndRestore",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_CHILD
                    : IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMoreLocationServicesTitle",
       l10n_util::GetStringUTF16(
           IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_TITLE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMoreLocationServices",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
                    : IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMorePaiServiceTitle",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_PAI_SERVICE_TITLE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "learnMorePaiService",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_PAI_SERVICE));
-  loadtime_data.SetString("overlayClose", l10n_util::GetStringUTF16(
-                                              IDS_ARC_OPT_IN_LEARN_MORE_CLOSE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
+      "overlayClose",
+      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_CLOSE));
+  loadtime_data.SetStringKey(
       "privacyPolicyLink",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PRIVACY_POLICY_LINK));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "activeDirectoryAuthTitle",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_TITLE));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "activeDirectoryAuthDesc",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_DESC));
-  loadtime_data.SetString(
+  loadtime_data.SetStringKey(
       "overlayLoading", l10n_util::GetStringUTF16(IDS_ARC_POPUP_HELP_LOADING));
 
   loadtime_data.SetBoolean(kArcManaged, is_arc_managed_);
@@ -659,19 +663,19 @@ bool ArcSupportHost::Initialize() {
                            ash::ProfileHelper::IsOwnerProfile(profile_));
 
   const std::string& country_code = base::CountryCodeForCurrentTimezone();
-  loadtime_data.SetString("countryCode", country_code);
+  loadtime_data.SetStringKey("countryCode", country_code);
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &loadtime_data);
-  loadtime_data.SetString("locale", app_locale);
+  loadtime_data.SetStringKey("locale", app_locale);
 
   base::DictionaryValue message;
-  message.SetString(kAction, kActionInitialize);
+  message.SetStringKey(kAction, kActionInitialize);
   message.SetKey(kData, std::move(loadtime_data));
 
   const std::string device_id = user_manager::known_user::GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));
-  message.SetString(kDeviceId, device_id);
+  message.SetStringKey(kDeviceId, device_id);
 
   message_host_->SendMessage(message);
   return true;
@@ -683,18 +687,18 @@ void ArcSupportHost::OnDisplayMetricsChanged(const display::Display& display,
     return;
 
   base::DictionaryValue message;
-  message.SetString(kAction, kActionSetWindowBounds);
+  message.SetStringKey(kAction, kActionSetWindowBounds);
   message_host_->SendMessage(message);
 }
 
 void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
-  std::string event;
-  if (!message.GetString(kEvent, &event)) {
+  const std::string* event = message.FindStringKey(kEvent);
+  if (!event) {
     NOTREACHED();
     return;
   }
 
-  if (event == kEventOnWindowClosed) {
+  if (*event == kEventOnWindowClosed) {
     // If ToS negotiation is ongoing, call the specific function.
     if (tos_delegate_) {
       tos_delegate_->OnTermsRejected();
@@ -702,25 +706,24 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
       DCHECK(error_delegate_);
       error_delegate_->OnWindowClosed();
     }
-  } else if (event == kEventOnAuthSucceeded) {
+  } else if (*event == kEventOnAuthSucceeded) {
     DCHECK(auth_delegate_);
     auth_delegate_->OnAuthSucceeded();
-  } else if (event == kEventOnAuthFailed) {
+  } else if (*event == kEventOnAuthFailed) {
     DCHECK(auth_delegate_);
-    std::string error_message;
-    if (!message.GetString(kAuthErrorMessage, &error_message)) {
+    const std::string* error_message = message.FindStringKey(kAuthErrorMessage);
+    if (!error_message) {
       NOTREACHED();
       return;
     }
     // TODO(https://crbug.com/756144): Remove once reason for crash has been
     // determined.
     LOG_IF(ERROR, !auth_delegate_)
-        << "auth_delegate_ is NULL, error: " << error_message;
-    auth_delegate_->OnAuthFailed(error_message);
-  } else if (event == kEventOnAgreed || event == kEventOnCanceled) {
+        << "auth_delegate_ is NULL, error: " << *error_message;
+    auth_delegate_->OnAuthFailed(*error_message);
+  } else if (*event == kEventOnAgreed || *event == kEventOnCanceled) {
     DCHECK(tos_delegate_);
     absl::optional<bool> tos_shown = message.FindBoolKey(kTosShown);
-    std::string tos_content;
     absl::optional<bool> is_metrics_enabled =
         message.FindBoolKey(kIsMetricsEnabled);
     absl::optional<bool> is_backup_restore_enabled =
@@ -731,8 +734,10 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
         message.FindBoolKey(kIsLocationServiceEnabled);
     absl::optional<bool> is_location_service_managed =
         message.FindBoolKey(kIsLocationServiceManaged);
-    if (!message.GetString(kTosContent, &tos_content) ||
-        !tos_shown.has_value() || !is_metrics_enabled.has_value() ||
+
+    const std::string* tos_content = message.FindStringKey(kTosContent);
+    if (!tos_content || !tos_shown.has_value() ||
+        !is_metrics_enabled.has_value() ||
         !is_backup_restore_enabled.has_value() ||
         !is_backup_restore_managed.has_value() ||
         !is_location_service_enabled.has_value() ||
@@ -741,7 +746,7 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
       return;
     }
 
-    bool accepted = event == kEventOnAgreed;
+    bool accepted = *event == kEventOnAgreed;
     if (!accepted) {
       // Cancel is equivalent to not granting consent to the individual
       // features, so ensure we don't record consent.
@@ -765,9 +770,9 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
     play_consent.set_consent_flow(
         UserConsentTypes::ArcPlayTermsOfServiceConsent::SETUP);
     if (tos_shown.value()) {
-      play_consent.set_play_terms_of_service_text_length(tos_content.length());
+      play_consent.set_play_terms_of_service_text_length(tos_content->length());
       play_consent.set_play_terms_of_service_hash(
-          base::SHA1HashString(tos_content));
+          base::SHA1HashString(*tos_content));
     }
     ConsentAuditorFactory::GetForProfile(profile_)->RecordArcPlayConsent(
         account_id, play_consent);
@@ -814,7 +819,7 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
                                    is_backup_restore_enabled.value(),
                                    is_location_service_enabled.value());
     }
-  } else if (event == kEventOnRetryClicked) {
+  } else if (*event == kEventOnRetryClicked) {
     // If ToS negotiation or manual authentication is ongoing, call the
     // corresponding delegate.  Otherwise, call the general retry function.
     if (tos_delegate_) {
@@ -825,16 +830,16 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
       DCHECK(error_delegate_);
       error_delegate_->OnRetryClicked();
     }
-  } else if (event == kEventOnSendFeedbackClicked) {
+  } else if (*event == kEventOnSendFeedbackClicked) {
     DCHECK(error_delegate_);
     error_delegate_->OnSendFeedbackClicked();
-  } else if (event == kEventOnRunNetworkTestsClicked) {
+  } else if (*event == kEventOnRunNetworkTestsClicked) {
     DCHECK(error_delegate_);
     error_delegate_->OnRunNetworkTestsClicked();
-  } else if (event == kEventOnOpenPrivacySettingsPageClicked) {
+  } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {
     chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
   } else {
-    LOG(ERROR) << "Unknown message: " << event;
+    LOG(ERROR) << "Unknown message: " << *event;
     NOTREACHED();
   }
 }

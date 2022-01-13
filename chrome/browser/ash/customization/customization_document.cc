@@ -160,16 +160,16 @@ std::string GetLocaleSpecificStringImpl(
 
   const base::DictionaryValue* locale_dictionary = NULL;
   if (dictionary_content->GetDictionary(locale, &locale_dictionary)) {
-    std::string result;
-    if (locale_dictionary->GetString(entry_name, &result))
-      return result;
+    const std::string* result = locale_dictionary->FindStringKey(entry_name);
+    if (result)
+      return *result;
   }
 
   const base::DictionaryValue* default_dictionary = NULL;
   if (dictionary_content->GetDictionary(kDefaultAttr, &default_dictionary)) {
-    std::string result;
-    if (default_dictionary->GetString(entry_name, &result))
-      return result;
+    const std::string* result = default_dictionary->FindStringKey(entry_name);
+    if (result)
+      return *result;
   }
 
   return std::string();
@@ -287,8 +287,8 @@ bool CustomizationDocument::LoadManifestFromString(
     return false;
   }
 
-  std::string result;
-  if (!root_->GetString(kVersionAttr, &result) || result != accepted_version_) {
+  const std::string* result = root_->FindStringKey(kVersionAttr);
+  if (!result || *result != accepted_version_) {
     LOG(ERROR) << "Wrong customization manifest version";
     root_.reset();
     return false;
@@ -340,9 +340,20 @@ StartupCustomizationDocument* StartupCustomizationDocument::GetInstance() {
 void StartupCustomizationDocument::Init(
     chromeos::system::StatisticsProvider* statistics_provider) {
   if (IsReady()) {
-    root_->GetString(kInitialLocaleAttr, &initial_locale_);
-    root_->GetString(kInitialTimezoneAttr, &initial_timezone_);
-    root_->GetString(kKeyboardLayoutAttr, &keyboard_layout_);
+    const std::string* initial_locale_ptr =
+        root_->FindStringKey(kInitialLocaleAttr);
+    if (initial_locale_ptr)
+      initial_locale_ = *initial_locale_ptr;
+
+    const std::string* initial_timezone_ptr =
+        root_->FindStringKey(kInitialTimezoneAttr);
+    if (initial_timezone_ptr)
+      initial_timezone_ = *initial_timezone_ptr;
+
+    const std::string* keyboard_layout_ptr =
+        root_->FindStringKey(kKeyboardLayoutAttr);
+    if (keyboard_layout_ptr)
+      keyboard_layout_ = *keyboard_layout_ptr;
 
     std::string hwid;
     if (statistics_provider->GetMachineStatistic(
@@ -354,21 +365,27 @@ void StartupCustomizationDocument::Init(
           if (hwid_value.is_dict())
             hwid_dictionary = &base::Value::AsDictionaryValue(hwid_value);
 
-          std::string hwid_mask;
-          if (hwid_dictionary &&
-              hwid_dictionary->GetString(kHwidMaskAttr, &hwid_mask)) {
-            if (base::MatchPattern(hwid, hwid_mask)) {
+          const std::string* hwid_mask =
+              hwid_dictionary ? hwid_dictionary->FindStringKey(kHwidMaskAttr)
+                              : nullptr;
+          if (hwid_mask) {
+            if (base::MatchPattern(hwid, *hwid_mask)) {
               // If HWID for this machine matches some mask, use HWID specific
               // settings.
-              std::string result;
-              if (hwid_dictionary->GetString(kInitialLocaleAttr, &result))
-                initial_locale_ = result;
+              const std::string* initial_locale =
+                  hwid_dictionary->FindStringKey(kInitialLocaleAttr);
+              if (initial_locale)
+                initial_locale_ = *initial_locale;
 
-              if (hwid_dictionary->GetString(kInitialTimezoneAttr, &result))
-                initial_timezone_ = result;
+              const std::string* initial_timezone =
+                  hwid_dictionary->FindStringKey(kInitialTimezoneAttr);
+              if (initial_timezone)
+                initial_timezone_ = *initial_timezone;
 
-              if (hwid_dictionary->GetString(kKeyboardLayoutAttr, &result))
-                keyboard_layout_ = result;
+              const std::string* keyboard_layout =
+                  hwid_dictionary->FindStringKey(kKeyboardLayoutAttr);
+              if (keyboard_layout)
+                keyboard_layout_ = *keyboard_layout;
             }
             // Don't break here to allow other entires to be applied if match.
           } else {
@@ -701,11 +718,11 @@ bool ServicesCustomizationDocument::GetDefaultWallpaperUrl(
   if (!IsReady())
     return false;
 
-  std::string url;
-  if (!root_->GetString(kDefaultWallpaperAttr, &url))
+  const std::string* url = root_->FindStringKey(kDefaultWallpaperAttr);
+  if (!url)
     return false;
 
-  *out_url = GURL(url);
+  *out_url = GURL(*url);
   return true;
 }
 
@@ -741,11 +758,13 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
       } else if (app_entry_value.is_dict()) {
         const base::DictionaryValue& app_entry =
             base::Value::AsDictionaryValue(app_entry_value);
-        if (!app_entry.GetString(kIdAttr, &app_id)) {
+        const std::string* app_id_ptr = app_entry.FindStringKey(kIdAttr);
+        if (!app_id_ptr) {
           LOG(ERROR) << "Wrong format of default application list";
           prefs->DictClear();
           break;
         }
+        app_id = *app_id_ptr;
         entry = app_entry.CreateDeepCopy();
         entry->RemoveKey(kIdAttr);
       } else {
@@ -755,8 +774,9 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
       }
       if (!entry->FindKey(
               extensions::ExternalProviderImpl::kExternalUpdateUrl)) {
-        entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                         extension_urls::GetWebstoreUpdateUrl().spec());
+        entry->SetStringKey(
+            extensions::ExternalProviderImpl::kExternalUpdateUrl,
+            extension_urls::GetWebstoreUpdateUrl().spec());
       }
       prefs->SetPath(app_id, base::Value::FromUniquePtrValue(std::move(entry)));
     }

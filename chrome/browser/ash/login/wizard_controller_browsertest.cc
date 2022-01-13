@@ -1207,9 +1207,10 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
   base::DictionaryValue device_state;
-  device_state.SetString(policy::kDeviceStateMode,
-                         policy::kDeviceStateModeDisabled);
-  device_state.SetString(policy::kDeviceStateDisabledMessage, kDisabledMessage);
+  device_state.SetStringKey(policy::kDeviceStateMode,
+                            policy::kDeviceStateModeDisabled);
+  device_state.SetStringKey(policy::kDeviceStateDisabledMessage,
+                            kDisabledMessage);
   g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                         device_state);
   EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage))
@@ -1317,8 +1318,9 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
                    ->clear_forced_re_enrollment_vpd_call_count());
 
   base::DictionaryValue device_state;
-  device_state.SetString(policy::kDeviceStateMode,
-                         policy::kDeviceStateRestoreModeReEnrollmentEnforced);
+  device_state.SetStringKey(
+      policy::kDeviceStateMode,
+      policy::kDeviceStateRestoreModeReEnrollmentEnforced);
   g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                         device_state);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
@@ -1402,8 +1404,9 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
     test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
 
     base::DictionaryValue device_state;
-    device_state.SetString(policy::kDeviceStateMode,
-                           policy::kDeviceStateRestoreModeReEnrollmentEnforced);
+    device_state.SetStringKey(
+        policy::kDeviceStateMode,
+        policy::kDeviceStateRestoreModeReEnrollmentEnforced);
     g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                           device_state);
     EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
@@ -1522,8 +1525,9 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
               GetErrorScreen()->GetParentScreen());
     base::DictionaryValue device_state;
-    device_state.SetString(policy::kDeviceStateMode,
-                           policy::kDeviceStateRestoreModeReEnrollmentEnforced);
+    device_state.SetStringKey(
+        policy::kDeviceStateMode,
+        policy::kDeviceStateRestoreModeReEnrollmentEnforced);
     g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                           device_state);
     EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
@@ -1628,8 +1632,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   test::OobeJS().ExpectVisiblePath(kGuestSessionLink);
 
   base::DictionaryValue device_state;
-  device_state.SetString(policy::kDeviceStateMode,
-                         policy::kDeviceStateRestoreModeReEnrollmentEnforced);
+  device_state.SetStringKey(
+      policy::kDeviceStateMode,
+      policy::kDeviceStateRestoreModeReEnrollmentEnforced);
   g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                         device_state);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
@@ -1842,8 +1847,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
       system::kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(-1 /* days_offset */));
   base::DictionaryValue device_state;
-  device_state.SetString(policy::kDeviceStateMode,
-                         policy::kDeviceStateRestoreModeReEnrollmentEnforced);
+  device_state.SetStringKey(
+      policy::kDeviceStateMode,
+      policy::kDeviceStateRestoreModeReEnrollmentEnforced);
   g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                         device_state);
 
@@ -2689,9 +2695,10 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
   base::DictionaryValue device_state;
-  device_state.SetString(policy::kDeviceStateMode,
-                         policy::kDeviceStateModeDisabled);
-  device_state.SetString(policy::kDeviceStateDisabledMessage, kDisabledMessage);
+  device_state.SetStringKey(policy::kDeviceStateMode,
+                            policy::kDeviceStateModeDisabled);
+  device_state.SetStringKey(policy::kDeviceStateDisabledMessage,
+                            kDisabledMessage);
   g_browser_process->local_state()->Set(prefs::kServerBackedDeviceState,
                                         device_state);
 

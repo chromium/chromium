@@ -760,8 +760,8 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
   base::ListValue expected_accounts;
   std::unique_ptr<base::DictionaryValue> entry_dict(
       new base::DictionaryValue());
-  entry_dict->SetString(kAccountsPrefDeviceLocalAccountsKeyId,
-                        policy::PolicyBuilder::kFakeUsername);
+  entry_dict->SetStringKey(kAccountsPrefDeviceLocalAccountsKeyId,
+                           policy::PolicyBuilder::kFakeUsername);
   entry_dict->SetInteger(kAccountsPrefDeviceLocalAccountsKeyType,
                          policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
   expected_accounts.Append(std::move(entry_dict));

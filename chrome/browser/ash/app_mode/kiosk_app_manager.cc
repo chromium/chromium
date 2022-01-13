@@ -821,11 +821,11 @@ void KioskAppManager::UpdateExternalCachePrefs() {
     base::DictionaryValue entry;
 
     if (apps_[i]->update_url().is_valid()) {
-      entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                      apps_[i]->update_url().spec());
+      entry.SetStringKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                         apps_[i]->update_url().spec());
     } else {
-      entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                      extension_urls::GetWebstoreUpdateUrl().spec());
+      entry.SetStringKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                         extension_urls::GetWebstoreUpdateUrl().spec());
     }
 
     prefs->SetPath(apps_[i]->app_id(), std::move(entry));

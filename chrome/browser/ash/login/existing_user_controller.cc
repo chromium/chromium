@@ -1494,7 +1494,9 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
     base::DictionaryValue* entry = nullptr;
     keyboard_layouts->GetDictionary(i, &entry);
     if (entry->FindBoolKey("selected").value_or(false)) {
-      entry->GetString("value", &keyboard_layout);
+      const std::string* keyboard_layout_ptr = entry->FindStringKey("value");
+      if (keyboard_layout_ptr)
+        keyboard_layout = *keyboard_layout_ptr;
       break;
     }
   }

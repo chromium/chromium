@@ -523,8 +523,8 @@ void ArcSettingsServiceImpl::SyncLocale() const {
   // code (e.g. fr_FR).  Since Android expects locale to contain country code,
   // ARC will derive a likely locale with country code from such
   GetLocaleAndPreferredLanguages(profile_, &locale, &preferred_languages);
-  extras.SetString("locale", locale);
-  extras.SetString("preferredLanguages", preferred_languages);
+  extras.SetStringKey("locale", locale);
+  extras.SetStringKey("preferredLanguages", preferred_languages);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_LOCALE", extras);
 }
 
@@ -552,7 +552,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
   }
 
   base::DictionaryValue extras;
-  extras.SetString("mode", ProxyPrefs::ProxyModeToString(mode));
+  extras.SetStringKey("mode", ProxyPrefs::ProxyModeToString(mode));
 
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT:
@@ -563,10 +563,10 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
     case ProxyPrefs::MODE_AUTO_DETECT: {
       // WPAD with DHCP has a higher priority than DNS.
       if (dhcp_wpad_url_.is_valid()) {
-        extras.SetString("pacUrl", dhcp_wpad_url_.spec());
+        extras.SetStringKey("pacUrl", dhcp_wpad_url_.spec());
       } else {
         // Fallback to WPAD via DNS.
-        extras.SetString("pacUrl", "http://wpad/wpad.dat");
+        extras.SetStringKey("pacUrl", "http://wpad/wpad.dat");
       }
       break;
     }
@@ -576,7 +576,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
         LOG(ERROR) << "No pac URL for pac_script proxy mode.";
         return;
       }
-      extras.SetString("pacUrl", pac_url);
+      extras.SetStringKey("pacUrl", pac_url);
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
@@ -586,7 +586,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
         LOG(ERROR) << "No Http proxy server is sent.";
         return;
       }
-      extras.SetString("host", host);
+      extras.SetStringKey("host", host);
       extras.SetInteger("port", port);
 
       std::string bypass_list;
@@ -600,7 +600,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         bypass_list =
             base::JoinString(bypassed_hosts, kArcProxyBypassListDelimiter);
-        extras.SetString("bypassList", bypass_list);
+        extras.SetStringKey("bypassList", bypass_list);
       }
       break;
     }
@@ -634,9 +634,9 @@ void ArcSettingsServiceImpl::SyncProxySettingsForSystemProxy() const {
     return;
 
   base::DictionaryValue extras;
-  extras.SetString(
+  extras.SetStringKey(
       "mode", ProxyPrefs::ProxyModeToString(ProxyPrefs::MODE_FIXED_SERVERS));
-  extras.SetString("host", host);
+  extras.SetStringKey("host", host);
   extras.SetInteger("port", port);
   SendSettingsBroadcast(kSetProxyAction, extras);
 }
@@ -697,7 +697,7 @@ void ArcSettingsServiceImpl::SyncTimeZone() const {
   TimezoneSettings* timezone_settings = TimezoneSettings::GetInstance();
   std::u16string timezoneID = timezone_settings->GetCurrentTimezoneID();
   base::DictionaryValue extras;
-  extras.SetString("olsonTimeZone", timezoneID);
+  extras.SetStringKey("olsonTimeZone", timezoneID);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_TIME_ZONE", extras);
 }
 

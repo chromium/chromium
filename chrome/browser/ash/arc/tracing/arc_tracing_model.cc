@@ -357,9 +357,10 @@ bool ArcTracingModel::Build(const std::string& data) {
     return false;
   }
 
-  std::string sys_traces;
-  if (dictionary->GetString("systemTraceEvents", &sys_traces)) {
-    if (!ConvertSysTraces(sys_traces)) {
+  const std::string* sys_traces =
+      dictionary->FindStringKey("systemTraceEvents");
+  if (sys_traces) {
+    if (!ConvertSysTraces(*sys_traces)) {
       LOG(ERROR) << "Failed to convert systrace data";
       return false;
     }

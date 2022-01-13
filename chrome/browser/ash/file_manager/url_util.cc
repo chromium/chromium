@@ -77,14 +77,14 @@ GURL GetFileManagerMainPageUrlWithParams(
     const std::string& search_query,
     bool show_android_picker_apps) {
   base::DictionaryValue arg_value;
-  arg_value.SetString("type", GetDialogTypeAsString(type));
-  arg_value.SetString("title", title);
-  arg_value.SetString("currentDirectoryURL", current_directory_url.spec());
-  arg_value.SetString("selectionURL", selection_url.spec());
+  arg_value.SetStringKey("type", GetDialogTypeAsString(type));
+  arg_value.SetStringKey("title", title);
+  arg_value.SetStringKey("currentDirectoryURL", current_directory_url.spec());
+  arg_value.SetStringKey("selectionURL", selection_url.spec());
   // |targetName| is only relevant for SaveAs.
   if (type == ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE)
-    arg_value.SetString("targetName", target_name);
-  arg_value.SetString("searchQuery", search_query);
+    arg_value.SetStringKey("targetName", target_name);
+  arg_value.SetStringKey("searchQuery", search_query);
   arg_value.SetBoolean("showAndroidPickerApps", show_android_picker_apps);
 
   if (file_types) {
@@ -100,7 +100,7 @@ GURL GetFileManagerMainPageUrlWithParams(
 
       if (i < file_types->extension_description_overrides.size()) {
         std::u16string desc = file_types->extension_description_overrides[i];
-        dict->SetString("description", desc);
+        dict->SetStringKey("description", desc);
       }
 
       // file_type_index is 1-based. 0 means no selection at all.
@@ -117,17 +117,17 @@ GURL GetFileManagerMainPageUrlWithParams(
   if (file_types) {
     switch (file_types->allowed_paths) {
       case ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH:
-        arg_value.SetString(kAllowedPaths, kNativePath);
+        arg_value.SetStringKey(kAllowedPaths, kNativePath);
         break;
       case ui::SelectFileDialog::FileTypeInfo::ANY_PATH:
-        arg_value.SetString(kAllowedPaths, kAnyPath);
+        arg_value.SetStringKey(kAllowedPaths, kAnyPath);
         break;
       case ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL:
-        arg_value.SetString(kAllowedPaths, kAnyPathOrUrl);
+        arg_value.SetStringKey(kAllowedPaths, kAnyPathOrUrl);
         break;
     }
   } else {
-    arg_value.SetString(kAllowedPaths, kNativePath);
+    arg_value.SetStringKey(kAllowedPaths, kNativePath);
   }
 
   std::string json_args;

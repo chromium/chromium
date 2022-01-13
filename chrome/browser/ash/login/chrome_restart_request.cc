@@ -365,19 +365,20 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
                                 const base::CommandLine& base_command_line,
                                 base::CommandLine* command_line) {
   base::DictionaryValue otr_switches;
-  otr_switches.SetString(switches::kGuestSession, std::string());
-  otr_switches.SetString(::switches::kIncognito, std::string());
-  otr_switches.SetString(::switches::kLoggingLevel, kGuestModeLoggingLevel);
-  otr_switches.SetString(
+  otr_switches.SetStringKey(switches::kGuestSession, std::string());
+  otr_switches.SetStringKey(::switches::kIncognito, std::string());
+  otr_switches.SetStringKey(::switches::kLoggingLevel, kGuestModeLoggingLevel);
+  otr_switches.SetStringKey(
       switches::kLoginUser,
       cryptohome::Identification(user_manager::GuestAccountId()).id());
   if (!base::SysInfo::IsRunningOnChromeOS()) {
-    otr_switches.SetString(switches::kLoginProfile, chrome::kLegacyProfileDir);
+    otr_switches.SetStringKey(switches::kLoginProfile,
+                              chrome::kLegacyProfileDir);
   }
 
   // Override the home page.
-  otr_switches.SetString(::switches::kHomePage,
-                         GURL(chrome::kChromeUINewTabURL).spec());
+  otr_switches.SetStringKey(::switches::kHomePage,
+                            GURL(chrome::kChromeUINewTabURL).spec());
 
   DeriveCommandLine(start_url, base_command_line, otr_switches, command_line);
   DeriveEnabledFeatures(command_line);

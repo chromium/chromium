@@ -104,15 +104,15 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
     const std::string& id,
     const std::string& required_platform_version) {
   base::DictionaryValue value;
-  value.SetString("name", name);
-  value.SetString("version", version);
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", version);
   base::ListValue scripts;
   scripts.Append("main.js");
   value.SetPath("app.background.scripts", std::move(scripts));
   value.SetBoolean("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
-    value.SetString("kiosk.required_platform_version",
-                    required_platform_version);
+    value.SetStringPath("kiosk.required_platform_version",
+                        required_platform_version);
   }
 
   std::string err;
@@ -318,10 +318,10 @@ class KioskAppManagerTest : public InProcessBrowserTest {
         CopyFileToTempDir(data_dir.AppendASCII(icon_file_name));
 
     base::DictionaryValue apps_dict;
-    apps_dict.SetString(app_id + ".name", app_name);
-    apps_dict.SetString(app_id + ".icon", icon_path.MaybeAsASCII());
-    apps_dict.SetString(app_id + ".required_platform_version",
-                        required_platform_version);
+    apps_dict.SetStringPath(app_id + ".name", app_name);
+    apps_dict.SetStringPath(app_id + ".icon", icon_path.MaybeAsASCII());
+    apps_dict.SetStringPath(app_id + ".required_platform_version",
+                            required_platform_version);
 
     PrefService* local_state = g_browser_process->local_state();
     DictionaryPrefUpdateDeprecated dict_update(

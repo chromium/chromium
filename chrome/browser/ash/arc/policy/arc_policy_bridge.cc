@@ -675,15 +675,17 @@ void ArcPolicyBridge::UpdateComplianceReportMetrics(
   serializer.Serialize(*report);
   bool is_arc_plus_plus_report_successful =
       report->FindBoolKey("isArcPlusPlusReportSuccessful").value_or(false);
-  std::string reported_policies_hash;
-  report->GetString("policyHash", &reported_policies_hash);
-  if (!is_arc_plus_plus_report_successful || reported_policies_hash.empty())
+  const std::string* reported_policies_hash =
+      report->FindStringKey("policyHash");
+  if (!is_arc_plus_plus_report_successful || !reported_policies_hash ||
+      reported_policies_hash->empty()) {
     return;
+  }
 
   const base::TimeTicks now = base::TimeTicks::Now();
   ArcSessionManager* const session_manager = ArcSessionManager::Get();
 
-  if (reported_policies_hash == initial_policies_hash_ &&
+  if (*reported_policies_hash == initial_policies_hash_ &&
       !first_compliance_timing_reported_) {
     const base::TimeTicks sign_in_start_time =
         session_manager->sign_in_start_time();
@@ -696,7 +698,7 @@ void ArcPolicyBridge::UpdateComplianceReportMetrics(
     first_compliance_timing_reported_ = true;
   }
 
-  if (reported_policies_hash == update_notification_policies_hash_ &&
+  if (*reported_policies_hash == update_notification_policies_hash_ &&
       !compliance_since_update_timing_reported_) {
     UpdateComplianceSinceUpdateTiming(now - update_notification_time_);
     compliance_since_update_timing_reported_ = true;

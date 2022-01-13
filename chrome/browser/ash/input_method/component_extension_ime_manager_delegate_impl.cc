@@ -255,12 +255,21 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     const base::DictionaryValue& dict,
     ComponentExtensionEngine* out) {
   DCHECK(out);
-  if (!dict.GetString(extensions::manifest_keys::kId, &out->engine_id))
+  const std::string* engine_id =
+      dict.FindStringKey(extensions::manifest_keys::kId);
+  if (!engine_id)
     return false;
-  if (!dict.GetString(extensions::manifest_keys::kName, &out->display_name))
+  out->engine_id = *engine_id;
+
+  const std::string* display_name =
+      dict.FindStringKey(extensions::manifest_keys::kName);
+  if (!display_name)
     return false;
-  if (!dict.GetString(extensions::manifest_keys::kIndicator, &out->indicator))
-    out->indicator = "";
+  out->display_name = *display_name;
+
+  const std::string* indicator =
+      dict.FindStringKey(extensions::manifest_keys::kIndicator);
+  out->indicator = indicator ? *indicator : "";
 
   std::set<std::string> languages;
   const base::Value* language_value = nullptr;
@@ -303,7 +312,10 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     return false;
   out->input_view_url = url;
 #else
-  if (dict.GetString(extensions::manifest_keys::kInputView, &url_string)) {
+  const std::string* input_view =
+      dict.FindStringKey(extensions::manifest_keys::kInputView);
+  if (input_view) {
+    url_string = *input_view;
     GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
@@ -314,7 +326,10 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   }
 #endif
 
-  if (dict.GetString(extensions::manifest_keys::kOptionsPage, &url_string)) {
+  const std::string* option_page =
+      dict.FindStringKey(extensions::manifest_keys::kOptionsPage);
+  if (option_page) {
+    url_string = *option_page;
     GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
@@ -335,18 +350,21 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadExtensionInfo(
     const base::DictionaryValue& manifest,
     const std::string& extension_id,
     ComponentExtensionIME* out) {
-  if (!manifest.GetString(extensions::manifest_keys::kDescription,
-                          &out->description))
+  const std::string* description =
+      manifest.FindStringKey(extensions::manifest_keys::kDescription);
+  if (!description)
     return false;
-  std::string path;
-  if (manifest.GetString(kImePathKeyName, &path))
-    out->path = base::FilePath(path);
-  std::string url_string;
-  if (manifest.GetString(extensions::manifest_keys::kOptionsPage,
-                         &url_string)) {
+  out->description = *description;
+
+  const std::string* path = manifest.FindStringKey(kImePathKeyName);
+  if (path)
+    out->path = base::FilePath(*path);
+  const std::string* url_string =
+      manifest.FindStringKey(extensions::manifest_keys::kOptionsPage);
+  if (url_string) {
     GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(extension_id),
-        url_string);
+        *url_string);
     if (!url.is_valid())
       return false;
     out->options_page_url = url;
