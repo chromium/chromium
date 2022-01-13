@@ -82,10 +82,8 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
     return;
   }
 
-  base::DictionaryValue* device_id_to_nickname_map =
-      DictionaryPrefUpdateDeprecated(local_state_,
-                                     kDeviceIdToNicknameMapPrefName)
-          .Get();
+  base::Value* device_id_to_nickname_map =
+      DictionaryPrefUpdate(local_state_, kDeviceIdToNicknameMapPrefName).Get();
   DCHECK(device_id_to_nickname_map)
       << "Device ID to nickname map pref is unregistered.";
   device_id_to_nickname_map->SetStringKey(device_id, nickname);
@@ -101,10 +99,8 @@ void DeviceNameManagerImpl::RemoveDeviceNickname(const std::string& device_id) {
     return;
   }
 
-  base::DictionaryValue* device_id_to_nickname_map =
-      DictionaryPrefUpdateDeprecated(local_state_,
-                                     kDeviceIdToNicknameMapPrefName)
-          .Get();
+  base::Value* device_id_to_nickname_map =
+      DictionaryPrefUpdate(local_state_, kDeviceIdToNicknameMapPrefName).Get();
   DCHECK(device_id_to_nickname_map)
       << "Device ID to nickname map pref is unregistered.";
 
