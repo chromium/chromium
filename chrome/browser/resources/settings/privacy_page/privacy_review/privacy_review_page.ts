@@ -160,7 +160,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         PrivacyReviewStep.WELCOME,
         {
           nextStep: PrivacyReviewStep.MSBB,
-          isAvailable: () => this.shouldShowWelcomeCard_(),
+          isAvailable: () => true,
         },
       ],
       [
@@ -359,10 +359,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   private isSyncOn_(): boolean {
     assert(this.syncStatus_);
     return !!this.syncStatus_.signedIn && !this.syncStatus_.hasError;
-  }
-
-  private shouldShowWelcomeCard_(): boolean {
-    return this.getPref('privacy_review.show_welcome_card').value;
   }
 
   private shouldShowCookiesCard_(): boolean {

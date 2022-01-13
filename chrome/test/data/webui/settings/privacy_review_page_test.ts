@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsCheckboxElement, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -34,12 +34,6 @@ suite('PrivacyReviewPage', function() {
     page = document.createElement('settings-privacy-review-page');
     page.disableAnimationsForTesting();
     page.prefs = {
-      privacy_review: {
-        show_welcome_card: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true,
-        },
-      },
       privacy_guide: {
         viewed: {
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -304,9 +298,6 @@ suite('PrivacyReviewPage', function() {
   }
 
   test('startPrivacyReview', function() {
-    // Make sure the pref to show the welcome card is on.
-    page.setPrefValue('privacy_review.show_welcome_card', true);
-
     // Navigating to the privacy review without a step parameter navigates to
     // the welcome card.
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
@@ -314,28 +305,9 @@ suite('PrivacyReviewPage', function() {
     assertWelcomeCardVisible();
 
     assertTrue(page.getPref('privacy_guide.viewed').value);
-
-    const welcomeFragment =
-        page.shadowRoot!.querySelector<PrivacyReviewWelcomeFragmentElement>(
-            '#' + PrivacyReviewStep.WELCOME)!;
-    const dontShowAgainCheckbox =
-        welcomeFragment.shadowRoot!.querySelector<SettingsCheckboxElement>(
-            '#dontShowAgainCheckbox')!;
-    assertFalse(dontShowAgainCheckbox.checked);
-    dontShowAgainCheckbox.$.checkbox.click();
-    welcomeFragment.$.startButton.click();
-    flush();
-    assertMsbbCardVisible();
-
-    // Navigating this time should skip the welcome card.
-    assertFalse(page.getPref('privacy_review.show_welcome_card').value);
-    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
-    assertMsbbCardVisible();
   });
 
   test('welcomeForwardNavigation', function() {
-    page.setPrefValue('privacy_review.show_welcome_card', true);
-
     // Navigating to the privacy review without a step parameter navigates to
     // the welcome card.
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);

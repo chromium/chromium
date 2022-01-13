@@ -1637,8 +1637,6 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_SUB_HEADER},
       {"privacyReviewWelcomeCardStartButton",
        IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_START_BUTTON},
-      {"privacyReviewWelcomeCardDontShowAgainCheckbox",
-       IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_DONT_SHOW_AGAIN_CHECKBOX},
       {"privacyReviewCompletionCardHeader",
        IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_HEADER},
       {"privacyReviewCompletionCardSubHeader",

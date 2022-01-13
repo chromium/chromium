@@ -17,7 +17,7 @@
   .footer {
     align-items: center;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 8px 0;
   }
 </style>
@@ -32,11 +32,6 @@
   <div class="cr-secondary-text">$i18n{privacyReviewWelcomeCardSubHeader}</div>
 </div>
 <div class="footer">
-  <settings-checkbox id="dontShowAgainCheckbox"
-      pref="{{prefs.privacy_review.show_welcome_card}}"
-      label="$i18n{privacyReviewWelcomeCardDontShowAgainCheckbox}"
-      inverted no-set-pref>
-  </settings-checkbox>
   <cr-button class="action-button" id="startButton"
       on-click="onStartButtonClick_">
     $i18n{privacyReviewWelcomeCardStartButton}

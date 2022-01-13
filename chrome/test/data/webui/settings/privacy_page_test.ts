@@ -214,10 +214,6 @@ suite('PrivacyReviewEnabled', function() {
       privacy_sandbox: {
         apis_enabled: {value: true},
       },
-      privacy_review: {
-        show_welcome_card:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
-      },
       privacy_guide: {
         viewed: {
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
