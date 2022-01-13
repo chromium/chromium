@@ -550,6 +550,7 @@ cc_test_static_library("test_support") {
     "test/layer_tree_pixel_test.h",
     "test/layer_tree_test.cc",
     "test/layer_tree_test.h",
+    "test/lottie_test_data.cc",
     "test/lottie_test_data.h",
     "test/mock_latency_info_swap_promise_monitor.cc",
     "test/mock_latency_info_swap_promise_monitor.h",

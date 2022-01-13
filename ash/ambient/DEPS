@@ -6,4 +6,7 @@ specific_include_rules = {
   "ambient_controller.cc": [
     "+chromeos/assistant/buildflags.h",
   ],
+  ".*test.cc": [
+    "+cc/test",
+  ],
 }

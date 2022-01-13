@@ -5,7 +5,10 @@
 #ifndef CC_TEST_LOTTIE_TEST_DATA_H_
 #define CC_TEST_LOTTIE_TEST_DATA_H_
 
+#include <string>
+
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 
 namespace cc {
 
@@ -75,6 +78,7 @@ constexpr base::StringPiece kLottieDataWithoutAssets2 =
 // then image_1 for another second.
 constexpr int kLottieDataWith2AssetsWidth = 690;
 constexpr int kLottieDataWith2AssetsHeight = 455;
+constexpr base::TimeDelta kLottieDataWith2AssetsDuration = base::Seconds(2);
 constexpr base::StringPiece kLottieDataWith2Assets =
     R"({
   "v": "5.7.4",
@@ -276,6 +280,12 @@ constexpr base::StringPiece kLottieDataWith2Assets =
   ],
   "markers": []
 })";
+
+// Returns an animation with the same structure as |kLottieDataWith2Assets|
+// except with asset ids specified by the caller.
+std::string CreateCustomLottieDataWith2Assets(
+    base::StringPiece custom_asset_id_0,
+    base::StringPiece custom_asset_id_1);
 
 }  // namespace cc
 

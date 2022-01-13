@@ -17,6 +17,11 @@ FakeAmbientAnimationStaticResources::FakeAmbientAnimationStaticResources() =
 FakeAmbientAnimationStaticResources::~FakeAmbientAnimationStaticResources() =
     default;
 
+void FakeAmbientAnimationStaticResources::SetLottieData(
+    std::string lottie_data) {
+  lottie_data_ = std::move(lottie_data);
+}
+
 void FakeAmbientAnimationStaticResources::SetStaticImageAsset(
     base::StringPiece asset_id,
     gfx::ImageSkia image) {
@@ -24,8 +29,7 @@ void FakeAmbientAnimationStaticResources::SetStaticImageAsset(
 }
 
 base::StringPiece FakeAmbientAnimationStaticResources::GetLottieData() const {
-  NOTIMPLEMENTED();
-  return base::StringPiece();
+  return lottie_data_;
 }
 
 gfx::ImageSkia FakeAmbientAnimationStaticResources::GetStaticImageAsset(

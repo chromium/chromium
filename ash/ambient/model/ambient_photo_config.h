@@ -68,7 +68,8 @@ struct ASH_EXPORT AmbientPhotoConfig {
   //   single paired topic. It may need to prepare 2 topics at a time.
 };
 
-std::ostream& operator<<(std::ostream& os, AmbientPhotoConfig::Marker marker);
+ASH_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    AmbientPhotoConfig::Marker marker);
 
 }  // namespace ash
 

@@ -51,7 +51,8 @@ void AnimatedImageView::SetAnimatedImage(
 
 void AnimatedImageView::Play() {
   DCHECK(animated_image_);
-  DCHECK_EQ(state_, State::kStopped);
+  if (state_ == State::kPlaying)
+    return;
 
   state_ = State::kPlaying;
 
