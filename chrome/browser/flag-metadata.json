@@ -2133,6 +2133,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-holding-space-in-progress-animation-v2",
+    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "enable-holding-space-in-progress-downloads-integration",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
     "expiry_milestone": 99

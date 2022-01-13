@@ -52789,6 +52789,7 @@ from previous Chrome versions.
   <int value="-579192400" label="disable-input-view"/>
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
+  <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
   <int value="-574354898" label="PostQuantumCECPQ2:enabled"/>
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
   <int value="-574000901" label="AVIF:enabled"/>
@@ -56138,6 +56139,7 @@ from previous Chrome versions.
   <int value="1915028326" label="BuiltInModuleKvStorage:disabled"/>
   <int value="1915178511" label="disable-blink-features"/>
   <int value="1916637435" label="TranslateSubFrames:enabled"/>
+  <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
   <int value="1918984253"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:disabled"/>
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>

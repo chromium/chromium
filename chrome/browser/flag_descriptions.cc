@@ -4724,6 +4724,11 @@ const char kHelpAppSearchServiceIntegrationDescription[] =
     "Enables the integration between the help app and the local search"
     " service. Includes using the search service for in app search.";
 
+const char kHoldingSpaceInProgressAnimationV2Name[] =
+    "Enable showing v2 in-progress animations in Tote.";
+const char kHoldingSpaceInProgressAnimationV2Description[] =
+    "Show v2 in-progress animations in Tote.";
+
 const char kHoldingSpaceInProgressDownloadsIntegrationName[] =
     "Enable showing in-progress downloads in Tote.";
 const char kHoldingSpaceInProgressDownloadsIntegrationDescription[] =
