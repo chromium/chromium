@@ -1246,10 +1246,6 @@
       status: "experimental",
     },
     {
-      name: "IntersectionObserverDocumentScrollingElementRoot",
-      status: "stable",
-    },
-    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
     },

@@ -236,9 +236,7 @@ const LayoutObject* IntersectionGeometry::GetRootLayoutObjectForTarget(
     return nullptr;
 
   LayoutObject* root = nullptr;
-  if (RuntimeEnabledFeatures::
-          IntersectionObserverDocumentScrollingElementRootEnabled() &&
-      root_node->IsDocumentNode()) {
+  if (root_node->IsDocumentNode()) {
     root = To<Document>(root_node)->GetLayoutView();
   } else {
     root = root_node->GetLayoutObject();
