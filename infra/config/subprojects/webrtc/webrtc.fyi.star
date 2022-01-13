@@ -91,7 +91,7 @@ builder(
     triggered_by = ["WebRTC Chromium FYI Linux Builder"],
 )
 
-builder(
+base_builder(
     name = "WebRTC Chromium FYI Mac Builder",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
@@ -103,7 +103,7 @@ builder(
     os = os.MAC_ANY,
 )
 
-builder(
+base_builder(
     name = "WebRTC Chromium FYI Mac Tester",
     os = os.MAC_ANY,
     triggered_by = ["WebRTC Chromium FYI Mac Builder"],
