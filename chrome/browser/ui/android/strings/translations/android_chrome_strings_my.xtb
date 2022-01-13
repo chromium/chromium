@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">စာမျက်နှာ သို့သွားရန်</translation>
 <translation id="2122601567107267586">အက်ပ်ကို ဖွင့်၍မရပါ</translation>
 <translation id="2126426811489709554">Chrome မှ စွမ်းအင်ထုတ်ပေးပါသည်</translation>
-<translation id="2131665479022868825"><ph name="DATA" /> ကို သိမ်းဆည်းပြီးပါပြီ</translation>
 <translation id="2132122640199389833">လင့်ခ်ချိတ်ထားသည့် စက်အားလုံး ဖယ်ရှားရန်</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ပိတ်ထား၏</translation>
 <translation id="2139186145475833000">ပင်မမျက်နှာပြင်သို့ ထည့်ရန်</translation>
@@ -500,7 +499,6 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="3912508018559818924">ဝဘ်မှ အကောင်းဆုံးကို ရှာနေသည်…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ကို ဖွင့်ထားသည်</translation>
-<translation id="3925830358619338299">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပြီးပါပြီ</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ကျွန်ုပ်၏ ဒေတာများကို ပေါင်းပါ</translation>
 <translation id="3934366560681368531">“</translation>
@@ -808,7 +806,6 @@
 <translation id="5697688514913266141">သင်၏ဖိုင်ကို <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> သို့ သိမ်းလိုက်ပါမည်။ <ph name="BEGIN_LINK2" />တည်းဖြတ်ရန်<ph name="END_LINK2" />။</translation>
 <translation id="570347048394355941">တဘ်ပြောင်းရန်</translation>
 <translation id="572328651809341494">မကြာမီက တဲဘ်များ</translation>
-<translation id="5723735397759933332">'အပေါ့စားမုဒ်' က ယခုအခါ HTTPS စာမျက်နှာများပေါ်တွင် ပုံများကို အကောင်းဆုံးပြုပြင်ခြင်းဖြင့် သင့်အတွက် ဒေတာပိုမိုချွေတာပေးနိုင်ပါပြီ။</translation>
 <translation id="5726692708398506830">စာမျက်နှာပေါ်ရှိ အရာအားလုံးကို ပိုကြီးအောင်လုပ်ရန်</translation>
 <translation id="5748802427693696783">ပုံမှန်တဘ်များအဖြစ်သို့ ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="5749068826913805084">Chrome သည် ဖိုင်များကို ဒေါင်းလုဒ် လုပ်ရန် သိုလှောင်ခန်းကို သုံးရန် လိုအပ်သည်။</translation>
@@ -1322,7 +1319,6 @@
 <translation id="8427875596167638501">အစမ်းကြည့်ရှုမှုတဘ်ကို တစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8430824733382774043">ဖန်သားပြင်ဓာတ်ပုံသီးသန့် မျှဝေပါ</translation>
-<translation id="8431730749911729314">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပါ</translation>
 <translation id="8438566539970814960">ရှာဖွေမှုနှင့် ဖွင့်ကြည့်မှု ပိုမိုကောင်းမွန်လာအောင် လုပ်ခြင်း</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - ဘာသာစကား အသင့်ဖြစ်ပြီ၊ <ph name="APP_NAME" /> ပြန်စပါ။</translation>
 <translation id="8442258441309440798">သတင်းဆောင်းပါးများ မရနိုင်ပါ</translation>
@@ -1358,7 +1354,6 @@
 <translation id="8560602726703398413">'လိပ်စာများ' တွင် သင်၏ဖတ်ရန်စာရင်းကို ရှာပါ</translation>
 <translation id="8562452229998620586">သိမ်းဆည်းထားသော စကားဝှက်များ ဤတွင် ပေါ်လာလိမ့်မည်။</translation>
 <translation id="856481929701340285">ဒက်စတော့ဆိုက် တောင်းရန်</translation>
-<translation id="8569404424186215731"><ph name="DATE" /> ကတည်းက</translation>
 <translation id="8570677896027847510">ဖိုင်ကို လုံခြုံစွာ ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="8571213806525832805">ပြီးခဲ့သည့် ၄ ပတ်</translation>
 <translation id="8572344201470131220">ပုံကို ကူးယူပြီး</translation>

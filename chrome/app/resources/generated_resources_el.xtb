@@ -1274,6 +1274,7 @@
     Κέντρο βοήθειας<ph name="END_LINK" />.</translation>
 <translation id="22665427234727190">Να γίνεται ερώτηση όταν κάποιος ιστότοπος θέλει να αποκτήσει πρόσβαση σε συσκευές Bluetooth (συνιστάται)</translation>
 <translation id="2266957463645820432">IPP μέσω USB (IPPUSB)</translation>
+<translation id="2268130516524549846">Το Bluetooth έχει απενεργοποιηθεί</translation>
 <translation id="2270450558902169558">Ανταλλαγή δεδομένων με συσκευές στον τομέα <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Με την εγκατάσταση <ph name="BEGIN_BOLD" />θα διαγραφούν όλα τα δεδομένα του σκληρού δίσκου σας<ph name="END_BOLD" />. Βεβαιωθείτε ότι έχετε δημιουργήσει αντίγραφα ασφαλείας για τα δεδομένα σας.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Μετά την έναρξη της εγκατάστασης, δεν είναι δυνατή η ακύρωσή της.<ph name="END_PARAGRAPH2" /></translation>
@@ -2098,7 +2099,6 @@
 <translation id="3088052000289932193">Ο ιστότοπος χρησιμοποιεί MIDI.</translation>
 <translation id="3088128611727407543">Προετοιμασία προφίλ εφαρμογής…</translation>
 <translation id="3088325635286126843">&amp;Μετονομασία...</translation>
-<translation id="3089064280130434511">Αποκλεισμός ιστοτόπων σε ό,τι αφορά το άνοιγμα και την τοποθέτηση παραθύρων στις οθόνες σας</translation>
 <translation id="3089137131053189723">Η αναζήτηση διαγράφηκε</translation>
 <translation id="3090589793601454425">Να μην γίνει μετακίνηση</translation>
 <translation id="3090819949319990166">Δεν είναι δυνατή η αντιγραφή του εξωτερικού αρχείου crx στο <ph name="TEMP_CRX_FILE" />.</translation>
@@ -3717,6 +3717,7 @@
 <translation id="4813136279048157860">Οι εικόνες μου</translation>
 <translation id="4813512666221746211">Σφάλμα δικτύου</translation>
 <translation id="4814378367953456825">Εισαγάγετε ένα όνομα για αυτό το μοναδικό χαρακτηριστικό</translation>
+<translation id="481574578487123132">Συνδεδεμένες συσκευές</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Λεπτομέρειες</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 σελιδοδείκτης διαγράφηκε}other{{COUNT} σελιδοδείκτες διαγράφηκαν}}</translation>
 <translation id="4819607494758673676">Ειδοποιήσεις Βοηθού Google</translation>
@@ -3731,7 +3732,6 @@
 <translation id="482952334869563894">Συσκευές USB από τον πάροχο <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Ρύθμιση PIN</translation>
 <translation id="4830026649400230050">Όλες οι κατάλληλες λήψεις δρομολογούνται στον λογαριασμό <ph name="WEB_DRIVE" /> του οργανισμού σας.</translation>
-<translation id="4830121310592638841">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να ανοίξει και να τοποθετήσει παράθυρα στις οθόνες σας</translation>
 <translation id="4830502475412647084">Εγκατάσταση ενημέρωσης λειτουργικού συστήματος</translation>
 <translation id="4830573902900904548">Η συσκευή σας <ph name="DEVICE_TYPE" /> δεν μπορεί να συνδεθεί στο διαδίκτυο χρησιμοποιώντας το δίκτυο <ph name="NETWORK_NAME" />. Επιλέξτε κάποιο άλλο δίκτυο. <ph name="LEARN_MORE_LINK_START" />Μάθετε περισσότερα<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Βρέθηκε ένας εκτυπωτής από τον διακομιστή εκτύπωσης.</translation>
@@ -4432,6 +4432,7 @@
 <translation id="5563234215388768762">Κάντε αναζήτηση στο Google ή πληκτρολογήστε κάποιο URL</translation>
 <translation id="5565735124758917034">Ενεργό</translation>
 <translation id="5568069709869097550">Δεν είναι δυνατή η σύνδεση</translation>
+<translation id="5571066253365925590">Το Bluetooth έχει ενεργοποιηθεί</translation>
 <translation id="5571092938913434726">Καθολικά στοιχεία ελέγχου μέσων</translation>
 <translation id="5571832155627049070">Προσαρμογή του προφίλ σας</translation>
 <translation id="5572851009514199876">Εκκινήστε και συνδεθείτε στο Chrome, έτσι ώστε το Chrome να μπορεί να ελέγξει εάν έχετε δικαίωμα πρόσβασης σε αυτόν τον ιστότοπο.</translation>
@@ -4830,6 +4831,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Για να είστε σίγουροι ότι θα μπορείτε να περιηγηθείτε στον ιστό, ζητήστε από τον διαχειριστή να καταργήσει αυτήν την εφαρμογή.}other{Για να είστε σίγουροι ότι θα μπορείτε να περιηγηθείτε στον ιστό, ζητήστε από τον διαχειριστή να καταργήσει αυτές τις εφαρμογές.}}</translation>
 <translation id="5997337190805127100">Μάθετε περισσότερα για την πρόσβαση ιστοτόπου</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> αποτελέσματα για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6002122790816966947">Οι συσκευές σας</translation>
 <translation id="6002210667729577411">Μετακίνηση ομάδας σε νέο παράθυρο</translation>
 <translation id="6002452033851752583">Ο κωδικός πρόσβασης διαγράφηκε από τον Λογαριασμό σας Google.</translation>
 <translation id="6002458620803359783">Προτιμώμενες φωνές</translation>
@@ -5636,7 +5638,6 @@
 <translation id="6833996806551876956">Δοκιμή Πλαίσιο ιδιωτικότητας</translation>
 <translation id="6834652994408928492">Η Λειτουργία χαμηλού φωτισμού θα ενεργοποιείται αυτόματα κατά τη δύση του ηλίου</translation>
 <translation id="6835762382653651563">Συνδεθείτε στο Διαδίκτυο για να ενημερώσετε τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6838034009068684089">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να ανοίξει και να τοποθετήσει παράθυρα στις οθόνες σας (συνιστάται)</translation>
 <translation id="6839225236531462745">Σφάλμα διαγραφής πιστοποιητικού</translation>
 <translation id="6839916869147598086">Η σύνδεση έχει αλλάξει</translation>
 <translation id="6840155290835956714">Ερώτηση πριν από την αποστολή</translation>
@@ -6547,7 +6548,6 @@
 <translation id="7775694664330414886">Η καρτέλα μεταφέρθηκε σε ομάδα χωρίς όνομα - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Ο ιστότοπος <ph name="ORIGIN" /> θα μπορεί να βλέπει αρχεία στον φάκελο <ph name="FOLDERNAME" /> μέχρι να κλείσετε όλες τις καρτέλες για αυτόν τον ιστότοπο</translation>
 <translation id="7776701556330691704">Δεν βρέθηκαν φωνές</translation>
-<translation id="7777284276915203144">Οι κωδικοί πρόσβασης κρυπτογραφούνται στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="7781335840981796660">Θα καταργηθούν όλοι οι λογαριασμοί χρηστών και τα τοπικά δεδομένα.</translation>
 <translation id="7782102568078991263">Δεν υπάρχουν άλλες προτάσεις από την Google</translation>
 <translation id="7782717250816686129">Αποθήκευση σταθερών δεδομένων στην οθόνη σύνδεσης και ενσωμάτωση διαπιστευτηρίων στην περίοδο σύνδεσης.</translation>
@@ -7200,7 +7200,6 @@
 <translation id="8428634594422941299">Το κατάλαβα</translation>
 <translation id="84297032718407999">Θα αποσυνδεθείτε σε <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Εμφάνιση πατημάτων</translation>
-<translation id="8431730749911729314">Κρυπτογραφήστε τους κωδικούς πρόσβασης στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="8434480141477525001">NaCl Εντοπισμός σφαλμάτων θύρας</translation>
 <translation id="8435395510592618362">Επαληθεύστε την ταυτότητά σας με την εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">ΗΠΑ</translation>

@@ -1272,6 +1272,7 @@
     ကူညီရေးဌာန<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="22665427234727190">ဝဘ်ဆိုက်က ဘလူးတုသ်စက်များကို အသုံးပြုလိုသည့်အခါ ခွင့်တောင်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="2266957463645820432">USB မှတစ်ဆင့် IPP (IPPUSB)</translation>
+<translation id="2268130516524549846">ဘလူးတုရှ် ပိတ်ထား</translation>
 <translation id="2270450558902169558">ဒိုမိန်း <ph name="DOMAIN" /> တွင် မည်သည့်စက်ကိရိယာဖြင့်မဆို ဒေတာများ အလဲအလှယ်ပြုရန်</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ထည့်သွင်းခြင်းသည် <ph name="BEGIN_BOLD" />သင့်ဟတ်ဒရိုက်ဗ် တစ်ခုလုံးကို (ဒေတာ) ဖျက်ပါမည်<ph name="END_BOLD" />။ သင့်ဒေတာကို အရန်သိမ်းထားကြောင်း သေချာပါစေ။<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ထည့်သွင်းမှုစတင်ပြီးပါက ပယ်ဖျက်၍မရပါ။<ph name="END_PARAGRAPH2" /></translation>
@@ -2096,7 +2097,6 @@
 <translation id="3088052000289932193">ဝဘ်ဆိုက်က MIDI ကို အသုံးပြုနေသည်</translation>
 <translation id="3088128611727407543">အက်ပ်ပရိုဖိုင် ပြင်ဆင်နေသည်...</translation>
 <translation id="3088325635286126843">&amp;အမည် ပြောင်းရန်...</translation>
-<translation id="3089064280130434511">သင့်ဖန်သားပြင်များတွင် ဝဘ်ဆိုက်များက ဝင်းဒိုးများ ဖွင့်ပြီး နေရာချထားခြင်းကို ပိတ်ထားရန်</translation>
 <translation id="3089137131053189723">ရှာဖွေမှုကို ရှင်းလင်းလိုက်ပါပြီ</translation>
 <translation id="3090589793601454425">မရွှေ့ပါနှင့်</translation>
 <translation id="3090819949319990166">ပြင်ပရှိ crx ဖိုင်ကို <ph name="TEMP_CRX_FILE" /> သို့ ကူးယူမရပါ။</translation>
@@ -3714,6 +3714,7 @@
 <translation id="4813136279048157860">ကျွန်ုပ်၏ ပုံများ</translation>
 <translation id="4813512666221746211">ကွန်ရက် ပြဿနာ</translation>
 <translation id="4814378367953456825">ဤလက်ဗွေအတွက် အမည်တစ်ခု ထည့်ရန်</translation>
+<translation id="481574578487123132">လင့်ခ်ချိတ်ထားသည့် စက်များ</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />၊ အသေးစိတ်များ</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{လိပ်စာ 1 ခု ဖျက်လိုက်သည်}other{လိပ်စာ {COUNT} ခု ဖျက်လိုက်သည်}}</translation>
 <translation id="4819607494758673676">Google Assistant အကြောင်းကြားချက်များ</translation>
@@ -3728,7 +3729,6 @@
 <translation id="482952334869563894"><ph name="VENDOR_ID" /> မှ USB ကိရိယာများ</translation>
 <translation id="4829768588131278040">ပင်နံပါတ်ကို သတ်မှတ်ရန်</translation>
 <translation id="4830026649400230050">အကျုံးဝင်သော ဒေါင်းလုဒ်အားလုံးကို သင့်အဖွဲ့အစည်း၏ <ph name="WEB_DRIVE" /> အကောင့်သို့ ပေးပို့သည်။</translation>
-<translation id="4830121310592638841">သင့်ဖန်သားပြင်များတွင် ဝဘ်ဆိုက်က ဝင်းဒိုးများ ဖွင့်ပြီး နေရာချထားလိုသည့်အခါ ခွင့်တောင်းရန်</translation>
 <translation id="4830502475412647084">OS အပ်ဒိတ်ကို ထည့်သွင်းနေသည်</translation>
 <translation id="4830573902900904548">သင့် <ph name="DEVICE_TYPE" /> သည် <ph name="NETWORK_NAME" /> ကိုအသုံးပြုပြီ: အင်တာနက်သို့ ချိတ်ဆက်၍မရနိုင်ပါ။ ကျေးဇူးပြု၍ အခြားကွန်ရက်ကို ရွေးချယ်ပါ။ <ph name="LEARN_MORE_LINK_START" />ပိုမိုလေ့လာရန်<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">ပရင်တာဆာဗာမှ ပရင်တာ ၁ ခုတွေ့သည်</translation>
@@ -4429,6 +4429,7 @@
 <translation id="5563234215388768762">Google တွင်ရှာပါ သို့မဟုတ် URL ကိုထည့်ပါ</translation>
 <translation id="5565735124758917034">အသက်ဝင်နေ</translation>
 <translation id="5568069709869097550">လက်မှတ်ထိုးဝင်၍ မရပါ။</translation>
+<translation id="5571066253365925590">ဘလူးတုသ်ကို ဖွင့်ထား</translation>
 <translation id="5571092938913434726">အထွေထွေ မီဒီယာ ထိန်းချုပ်မှုများ</translation>
 <translation id="5571832155627049070">သင့်ပရိုဖိုင်ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="5572851009514199876">သင်သည် ဤဆိုက်ကို ကြည့်ရှုခွင့်ရှိမရှိ Chrome က စစ်ဆေးပေးရန် စတင်၍ Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
@@ -4825,6 +4826,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ဝဘ်ဆိုက်ကို ဆက်လက် ကြည့်ရှုနိုင်ရေးအတွက် ဤအပလီကေးရှင်းကို ဖယ်ရှားပေးရန် စီမံခန့်ခွဲသူထံ တောင်းဆိုပါ။}other{ဝဘ်ဆိုက်ကို ဆက်လက် ကြည့်ရှုနိုင်ရေးအတွက် ဤအပလီကေးရှင်းများကို ဖယ်ရှားပေးရန် စီမံခန့်ခွဲသူထံ တောင်းဆိုပါ။}}</translation>
 <translation id="5997337190805127100">ဝဘ်ဆိုက်အသုံးပြုခွင့်အကြောင်း ပိုမိုလေ့လာခြင်း</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခု</translation>
+<translation id="6002122790816966947">သင်၏စက်များ</translation>
 <translation id="6002210667729577411">အုပ်စုကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ခြင်း</translation>
 <translation id="6002452033851752583">စကားဝှက်ကို သင့် Google Account မှဖျက်လိုက်ပါပြီ</translation>
 <translation id="6002458620803359783">အသုံးပြုလိုသည့် စကားသံများ</translation>
@@ -5630,7 +5632,6 @@
 <translation id="6833996806551876956">'ပုဂ္ဂိုလ်ရေး လုံခြုံသည့်နေရာ' အစမ်းသုံးခြင်း</translation>
 <translation id="6834652994408928492">နေဝင်ချိန်တွင် အမှောင်မုဒ် အလိုအလျောက်ဖွင့်မည်</translation>
 <translation id="6835762382653651563">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ အင်တာနက်နှင့် ချိတ်ဆက်ပါ။</translation>
-<translation id="6838034009068684089">သင့်ဖန်သားပြင်များတွင် ဝဘ်ဆိုက်က ဝင်းဒိုးများ ဖွင့်ပြီး နေရာချထားလိုသည့်အခါ ခွင့်တောင်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="6839225236531462745">အသိမှတ်ပြု လက်မှတ် ဖျက်ခြင်း မှားယွင်းမှု</translation>
 <translation id="6839916869147598086">အကောင့်ဝင်ရောက်ခြင်းကို ပြောင်းထားသည်</translation>
 <translation id="6840155290835956714">မပို့မီ မေးမြန်းရန်</translation>
@@ -6541,7 +6542,6 @@
 <translation id="7775694664330414886">အမည်ပေးမထားသော အုပ်စုထဲသို့ တဘ်ကိုရွှေ့လိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">ဤဝဘ်ဆိုက်အတွက် တဘ်များအားလုံးကို မပိတ်မချင်း <ph name="ORIGIN" /> သည် <ph name="FOLDERNAME" /> ရှိ ဖိုင်များကို ကြည့်နိုင်ပါမည်</translation>
 <translation id="7776701556330691704">မည်သည့်အသံမျှ မတွေ့ပါ</translation>
-<translation id="7777284276915203144">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပြီးပါပြီ</translation>
 <translation id="7781335840981796660">အသုံးပြုသူ အကောင့်များ နှင့် ဒေတာ အားလုံး ဖယ်ရှားပစ်မည်။</translation>
 <translation id="7782102568078991263">Google မှအကြံပေးချက်များ မရှိတော့ပါ</translation>
 <translation id="7782717250816686129">အကောင့်ဝင်ရောက်မှု ဖန်သားပြင်တွင် အမြဲသုံးဒေတာကို သိမ်းပြီး စက်ရှင်သို့ဝင်ရန် အထောက်အထားများ ထည့်သွင်းပါ။</translation>
@@ -7193,7 +7193,6 @@
 <translation id="8428634594422941299">ရပါပြီ</translation>
 <translation id="84297032718407999">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အတွင်း ထွက်သွားပါမည်</translation>
 <translation id="8431190899827883166">တို့ရန်များကို ပြခြင်း</translation>
-<translation id="8431730749911729314">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပါ</translation>
 <translation id="8434480141477525001">NaCl အမှားရှာပြင်ခြင်း ပို့တ်</translation>
 <translation id="8435395510592618362">သင်မည်သူမည်ဝါဖြစ်ကြောင်း <ph name="APP_NAME" /> နှင့် အတည်ပြုပါ</translation>
 <translation id="8437209419043462667">US</translation>

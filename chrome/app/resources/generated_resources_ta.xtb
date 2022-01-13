@@ -1274,6 +1274,7 @@
     உதவி மையத்தைப்<ph name="END_LINK" /> பார்க்கவும்.</translation>
 <translation id="22665427234727190">புளூடூத் சாதனங்களை அணுக ஒரு தளம் விரும்பும் போது அனுமதி கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="2266957463645820432">USBக்கான IPP (IPPUSB)</translation>
+<translation id="2268130516524549846">புளூடூத் முடக்கப்பட்டது</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> டொமைனில் உள்ள எந்தச் சாதனத்துடனும் தரவைப் பரிமாறவும்</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />இதை நிறுவினால் <ph name="BEGIN_BOLD" />உங்கள் ஹார்டு டிரைவில் இருக்கும் தரவு அனைத்தும் அழிக்கப்படும்<ph name="END_BOLD" />. தரவு காப்புப் பிரதி எடுக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />நிறுவத் தொடங்கிய பின்னர் இதனை ரத்துசெய்ய முடியாது.<ph name="END_PARAGRAPH2" /></translation>
@@ -2098,7 +2099,6 @@
 <translation id="3088052000289932193">தளம் MIDIயைப் பயன்படுத்துகிறது</translation>
 <translation id="3088128611727407543">ஆப்ஸ் சுயவிவரம் தயாராகிறது...</translation>
 <translation id="3088325635286126843">&amp;மறுபெயரிடுக...</translation>
-<translation id="3089064280130434511">எனது திரைகளில் சாளரங்களைத் திறந்து வைப்பதிலிருந்து தளங்களைத் தடைசெய்</translation>
 <translation id="3089137131053189723">தேடல் அழிக்கப்பட்டது</translation>
 <translation id="3090589793601454425">நகர்த்த வேண்டாம்</translation>
 <translation id="3090819949319990166">வெளிப்புற crx ஃபைலை <ph name="TEMP_CRX_FILE" />க்கு நகலெடுக்க முடியாது.</translation>
@@ -3717,6 +3717,7 @@
 <translation id="4813136279048157860">எனது படங்கள்</translation>
 <translation id="4813512666221746211">நெட்வொர்க் பிழை</translation>
 <translation id="4814378367953456825">இந்தக் கைரேகைக்கு ஒரு பெயரை உள்ளிடவும்</translation>
+<translation id="481574578487123132">இணைக்கப்பட்டுள்ள சாதனங்கள்</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, விவரங்கள்</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 புக்மார்க் நீக்கப்பட்டது}other{{COUNT} புக்மார்க்குகள் நீக்கப்பட்டன}}</translation>
 <translation id="4819607494758673676">Google Assistant அறிவிப்புகள்</translation>
@@ -3731,7 +3732,6 @@
 <translation id="482952334869563894">விற்பனையாளர் <ph name="VENDOR_ID" /> வழங்கும் USB சாதனங்கள்</translation>
 <translation id="4829768588131278040">பின்னை அமை</translation>
 <translation id="4830026649400230050">தகுதிபெறும் பதிவிறக்கங்கள் அனைத்தும் உங்கள் நிறுவனத்தின் <ph name="WEB_DRIVE" /> கணக்கில் சேமிக்கப்படும்.</translation>
-<translation id="4830121310592638841">எனது திரைகளில் சாளரங்களைத் திறந்து வைக்க ஒரு தளம் விரும்பும்போது அனுமதி கேள்</translation>
 <translation id="4830502475412647084">OS புதுப்பிப்பை நிறுவுகிறது</translation>
 <translation id="4830573902900904548">உங்கள் <ph name="DEVICE_TYPE" /> ஆல் <ph name="NETWORK_NAME" /> மூலம் இணையத்துடன் இணைய முடியவில்லை. வேறு நெட்வொர்க்கைத் தேர்வுசெய்யவும். <ph name="LEARN_MORE_LINK_START" />மேலும் அறிக<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">பிரிண்ட் சேவையகத்தில் ஒரு பிரிண்டர் உள்ளது</translation>
@@ -4432,6 +4432,7 @@
 <translation id="5563234215388768762">Googleளில் தேடவும் அல்லது URLலை உள்ளிடவும்</translation>
 <translation id="5565735124758917034">செயலில் உள்ளது</translation>
 <translation id="5568069709869097550">உள்நுழைய முடியவில்லை</translation>
+<translation id="5571066253365925590">புளூடூத் இயக்கப்பட்டது</translation>
 <translation id="5571092938913434726">மொத்த மீடியாவின் கட்டுப்பாடுகள்</translation>
 <translation id="5571832155627049070">உங்கள் சுயவிவரத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="5572851009514199876">Chromeமைத் தொடங்கி உள்நுழையவும். அப்போதுதான் இந்தத் தளத்தை அணுகுவதற்கு உங்களுக்கு அனுமதி உள்ளதா என்பதை Chrome சரிபார்க்க முடியும்.</translation>
@@ -4830,6 +4831,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{இணையத்தில் உங்களால் தொடர்ந்து உலாவ முடிய வேண்டுமானால், இந்த ஆப்ஸை அகற்றும்படி உங்கள் நிர்வாகியிடம் தெரிவிக்கவும்.}other{இணையத்தில் உங்களால் தொடர்ந்து உலாவ முடிய வேண்டுமானால், இந்த ஆப்ஸை அகற்றும்படி உங்கள் நிர்வாகியிடம் தெரிவிக்கவும்.}}</translation>
 <translation id="5997337190805127100">தள அணுகலைப் பற்றி மேலும் அறிக</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'க்கு <ph name="RESULT_COUNT" /> முடிவுகள் உள்ளன</translation>
+<translation id="6002122790816966947">உங்கள் சாதனங்கள்</translation>
 <translation id="6002210667729577411">குழுவைப் புதிய சாளரத்திற்கு நகர்த்து</translation>
 <translation id="6002452033851752583">கடவுச்சொல் உங்கள் Google கணக்கிலிருந்து நீக்கப்பட்டது</translation>
 <translation id="6002458620803359783">விருப்பமான குரல்கள்</translation>
@@ -5636,7 +5638,6 @@
 <translation id="6833996806551876956">தனியுரிமை சாண்ட்பாக்ஸ் இலவச உபயோகக் காலம்</translation>
 <translation id="6834652994408928492">சூரியன் மறையும்போது, டார்க் பயன்முறை தானாக இயக்கப்படும்</translation>
 <translation id="6835762382653651563">உங்கள் <ph name="DEVICE_TYPE" />ஐப் புதுப்பிக்க இணையத்துடன் இணையவும்.</translation>
-<translation id="6838034009068684089">எனது திரைகளில் சாளரங்களைத் திறந்து வைக்க ஒரு தளம் விரும்பும்போது அனுமதி கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="6839225236531462745">சான்றிதழ் நீக்குதல் பிழை</translation>
 <translation id="6839916869147598086">உள்நுழையும் முறை மாறியுள்ளது</translation>
 <translation id="6840155290835956714">அனுப்பும் முன் கேள்</translation>
@@ -6547,7 +6548,6 @@
 <translation id="7775694664330414886">தாவல் பெயரிடப்படாத இந்தக் குழுவிற்கு நகர்த்தப்பட்டது - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">இந்தத் தளத்தின் தாவல்கள் அனைத்தையும் மூடும் வரை <ph name="ORIGIN" /> தளத்தால் <ph name="FOLDERNAME" /> இல் உள்ள ஃபைல்களைப் பார்க்க முடியும்</translation>
 <translation id="7776701556330691704">குரல்கள் எதுவும் இல்லை</translation>
-<translation id="7777284276915203144">Google கடவுச்சொல் நிர்வாகியில் கடவுச்சொற்கள் சேமிக்கப்படுவதற்கு முன்பு உங்கள் சாதனத்தில் அவை என்க்ரிப்ஷன் செய்யப்படுகின்றன</translation>
 <translation id="7781335840981796660">எல்லா பயனர்களின் கணக்குகளும், அகத் தரவும் அகற்றப்படும்.</translation>
 <translation id="7782102568078991263">Google இலிருந்து மேலும் பரிந்துரைகள் இல்லை</translation>
 <translation id="7782717250816686129">உள்நுழையும் திரையில் நிலையான தரவைச் சேமித்து அமர்வினுள் அனுமதிச் சான்றுகளை உள்ளிடு.</translation>
@@ -7200,7 +7200,6 @@
 <translation id="8428634594422941299">நிராகரி</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> இல் வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="8431190899827883166">Show taps</translation>
-<translation id="8431730749911729314">Google கடவுச்சொல் நிர்வாகியில் கடவுச்சொற்கள் சேமிக்கப்படுவதற்கு முன்பு உங்கள் சாதனத்தில் அவை என்க்ரிப்ஷன் செய்யப்படும்</translation>
 <translation id="8434480141477525001">NaCl பிழைத்திருத்தப் போர்ட்</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> மூலம் உங்கள் அடையாளத்தைச் சரிபார்க்கவும்</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>

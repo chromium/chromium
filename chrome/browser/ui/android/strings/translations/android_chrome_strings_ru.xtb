@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">Перейти на страницу</translation>
 <translation id="2122601567107267586">Не удалось открыть приложение</translation>
 <translation id="2126426811489709554">Технологии Chrome</translation>
-<translation id="2131665479022868825">Сэкономлено: <ph name="DATA" /></translation>
 <translation id="2132122640199389833">Удалить все связанные устройства</translation>
 <translation id="213279576345780926">Вкладка "<ph name="TAB_TITLE" />" закрыта.</translation>
 <translation id="2139186145475833000">Добавить на гл. экран</translation>
@@ -500,7 +499,6 @@
 <translation id="3908308510347173149">Обновить: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Загрузка данных из Интернета…</translation>
 <translation id="3924911262913579434">Включен режим "<ph name="SAFE_BROWSING_MODE" />"</translation>
-<translation id="3925830358619338299">Ваши пароли шифруются на устройстве и только потом сохраняются в Диспетчере паролей Google.</translation>
 <translation id="3927692899758076493">Без засечек</translation>
 <translation id="3928666092801078803">Объединить данные</translation>
 <translation id="3934366560681368531">"</translation>
@@ -808,7 +806,6 @@
 <translation id="5697688514913266141">Куда будет сохранен файл: <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Изменить<ph name="END_LINK2" /></translation>
 <translation id="570347048394355941">Переключиться на вкладку</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>
-<translation id="5723735397759933332">Упрощенный режим позволяет экономить больше трафика благодаря оптимизации изображений на страницах с поддержкой HTTPS.</translation>
 <translation id="5726692708398506830">Увеличить масштаб страницы</translation>
 <translation id="5748802427693696783">Переключено на обычные вкладки</translation>
 <translation id="5749068826913805084">Для скачивания файлов браузеру Chrome требуется доступ к хранилищу.</translation>
@@ -1323,7 +1320,6 @@
 <translation id="8427875596167638501">Вкладка предпросмотра открыта на половину высоты</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8430824733382774043">Поделиться только скриншотом</translation>
-<translation id="8431730749911729314">Шифруйте пароли на устройстве, прежде чем они будут сохраняться в Диспетчере паролей Google.</translation>
 <translation id="8438566539970814960">Помогать улучшить просмотр страниц и поиск</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – языковой пакет скачан. Перезапустите <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Нет рекомендаций</translation>
@@ -1359,7 +1355,6 @@
 <translation id="8560602726703398413">Список для чтения находится в закладках</translation>
 <translation id="8562452229998620586">Здесь будут показаны сохраненные пароли.</translation>
 <translation id="856481929701340285">Полная версия</translation>
-<translation id="8569404424186215731">с <ph name="DATE" /></translation>
 <translation id="8570677896027847510">Невозможно безопасно скачать файл</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8572344201470131220">Изображение скопировано.</translation>

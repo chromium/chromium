@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">पेजवर जा</translation>
 <translation id="2122601567107267586">ॲप उघडता आले नाही</translation>
 <translation id="2126426811489709554">Chrome द्वारे समर्थित</translation>
-<translation id="2131665479022868825"><ph name="DATA" /> बचत केली</translation>
 <translation id="2132122640199389833">सर्व लिंक केलेली डिव्हाइस काढून टाका</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद केले</translation>
 <translation id="2139186145475833000">होम स्क्रीनवर जोडा</translation>
@@ -500,7 +499,6 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> अपडेट करा</translation>
 <translation id="3912508018559818924">वेबवरून सर्वोत्तम शोधत आहे…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> सुरू आहे</translation>
-<translation id="3925830358619338299">तुमचे पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट केले जातात</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
 <translation id="3934366560681368531">“</translation>
@@ -808,7 +806,6 @@
 <translation id="5697688514913266141">तुमची फाइल <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> मध्ये सेव्ह केली जाईल. <ph name="BEGIN_LINK2" />संपादित करा<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">टॅब वर स्विच करा</translation>
 <translation id="572328651809341494">अलीकडील टॅब</translation>
-<translation id="5723735397759933332">HTTPS पेजवरील इमेज ऑप्टिमाइझ करून लाइट मोड आता तुमचा आणखी डेटा वाचवतो.</translation>
 <translation id="5726692708398506830">पृष्ठावरील प्रत्येकगोष्ट आणखी मोठी करा</translation>
 <translation id="5748802427693696783">मानक टॅबवर स्विच केले</translation>
 <translation id="5749068826913805084">Chrome ला फाइल डाउनलोड करण्यासाठी स्टोरेज ॲक्सेस आवश्यक आहे.</translation>
@@ -1323,7 +1320,6 @@
 <translation id="8427875596167638501">पूर्वावलोकन टॅब अर्धा उघडा आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8430824733382774043">फक्त स्क्रीनशॉट शेअर करा</translation>
-<translation id="8431730749911729314">पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट करा</translation>
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - भाषा वापरासाठी तयार आहे, <ph name="APP_NAME" /> रीस्टार्ट करा.</translation>
 <translation id="8442258441309440798">कोणत्याही बातम्या उपलब्ध नाहीत</translation>
@@ -1359,7 +1355,6 @@
 <translation id="8560602726703398413">बुकमार्क मध्ये तुमची वाचन सूची शोधा</translation>
 <translation id="8562452229998620586">सेव्ह केलेले पासवर्ड येथे दिसून येतील.</translation>
 <translation id="856481929701340285">डेस्कटॉप साइटची विनंती करा</translation>
-<translation id="8569404424186215731"><ph name="DATE" /> पासून</translation>
 <translation id="8570677896027847510">फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
 <translation id="8572344201470131220">इमेज कॉपी केली</translation>

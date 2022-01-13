@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">Μετάβαση στη σελίδα</translation>
 <translation id="2122601567107267586">Δεν ήταν δυνατό το άνοιγμα της εφαρμογής</translation>
 <translation id="2126426811489709554">Με την υποστήριξη του Chrome</translation>
-<translation id="2131665479022868825">Αποθηκεύτηκαν <ph name="DATA" /></translation>
 <translation id="2132122640199389833">Κατάργηση όλων των συνδεδεμένων συσκευών</translation>
 <translation id="213279576345780926">Η καρτέλα <ph name="TAB_TITLE" /> έκλεισε</translation>
 <translation id="2139186145475833000">Προσθήκη στην αρχική οθόνη</translation>
@@ -500,7 +499,6 @@
 <translation id="3908308510347173149">Ενημέρωση <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Εύρεση των καλύτερων στον ιστό…</translation>
 <translation id="3924911262913579434">Η λειτουργία <ph name="SAFE_BROWSING_MODE" /> είναι ενεργή.</translation>
-<translation id="3925830358619338299">Οι κωδικοί πρόσβασης κρυπτογραφούνται στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Συνδυασμός των δεδομένων μου</translation>
 <translation id="3934366560681368531">"</translation>
@@ -808,7 +806,6 @@
 <translation id="5697688514913266141">Το αρχείο σας θα αποθηκευτεί στον κατάλογο <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Επεξεργασία<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Εναλλαγή σε καρτέλα</translation>
 <translation id="572328651809341494">Πρόσφατες καρτέλες</translation>
-<translation id="5723735397759933332">Η λειτουργία Lite πλέον εξοικονομεί περισσότερα δεδομένα βελτιστοποιώντας εικόνες σε σελίδες HTTPS.</translation>
 <translation id="5726692708398506830">Μεγέθυνση όλων των στοιχείων της σελίδας</translation>
 <translation id="5748802427693696783">Έγινε εναλλαγή σε τυπικές καρτέλες</translation>
 <translation id="5749068826913805084">Το Chrome χρειάζεται πρόσβαση στο χώρο αποθήκευσης για τη λήψη αρχείων.</translation>
@@ -1323,7 +1320,6 @@
 <translation id="8427875596167638501">Η καρτέλα προεπισκόπησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8430824733382774043">Κοινοποίηση μόνο στιγμιότυπου οθόνης</translation>
-<translation id="8431730749911729314">Κρυπτογραφήστε τους κωδικούς πρόσβασης στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Η γλώσσα είναι έτοιμη. Επανεκκινήστε την εφαρμογή <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Δεν υπάρχουν διαθέσιμες ιστορίες</translation>
@@ -1359,7 +1355,6 @@
 <translation id="8560602726703398413">Βρείτε τη λίστα ανάγνωσης στους Σελιδοδείκτες.</translation>
 <translation id="8562452229998620586">Οι αποθηκευμένοι κωδικοί πρόσβασής σας θα εμφανιστούν εδώ.</translation>
 <translation id="856481929701340285">Αίτηση ιστότοπου για υπολογιστή</translation>
-<translation id="8569404424186215731">από <ph name="DATE" /></translation>
 <translation id="8570677896027847510">Δεν είναι δυνατή η λήψη του αρχείου με ασφάλεια.</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
 <translation id="8572344201470131220">Η εικόνα αντιγράφηκε.</translation>

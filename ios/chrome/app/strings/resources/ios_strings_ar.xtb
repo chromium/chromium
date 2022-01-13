@@ -143,6 +143,7 @@
 <translation id="2271351792809375263">‏يمكنك استخدام كلمات المرور المحفوظة على Chrome في التطبيقات الأخرى على جهازك.</translation>
 <translation id="2273327106802955778">قائمة "المزيد"</translation>
 <translation id="2286505070150039482">النص المُحدَّد</translation>
+<translation id="2299218006564889602">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="2302742851632557585">تغيير كلمة المرور على الموقع الإلكتروني</translation>
 <translation id="2316709634732130529">استخدام كلمة المرور المقترحة</translation>
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
@@ -546,6 +547,7 @@
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
 <translation id="60829778314739003">قبول ومتابعة</translation>
 <translation id="6084848228346514841">اختيار علامات التبويب</translation>
+<translation id="6103540626693881831">التشفير على الجهاز فقط</translation>
 <translation id="6108923351542677676">الإعداد قيد التقدّم…</translation>
 <translation id="6119050551270742952">صفحة الويب الحالية في وضع التصفح المتخفي</translation>
 <translation id="6122191549521593678">متصل</translation>
@@ -765,6 +767,7 @@
 <translation id="797413074872316787">للمزامنة والتخصيص على جميع الأجهزة، عليك تفعيل المزامنة.</translation>
 <translation id="7978018860671536736">‏3. النقر على AutoFill Passwords (الملء التلقائي لكلمات المرور)</translation>
 <translation id="7982789257301363584">الشبكة</translation>
+<translation id="7987685713885608670">‏لتوفير مزيد من الأمان، يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>

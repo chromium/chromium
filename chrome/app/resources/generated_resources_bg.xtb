@@ -1270,6 +1270,7 @@
 Помощния център<ph name="END_LINK" />.</translation>
 <translation id="22665427234727190">Извеждане на запитване, когато сайт иска достъп до Bluetooth устройства (препоръчително)</translation>
 <translation id="2266957463645820432">IPP през USB (IPPUSB)</translation>
+<translation id="2268130516524549846">Bluetooth е деактивиран</translation>
 <translation id="2270450558902169558">Обмен на данни с всяко устройство в домейна <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />При инсталирането <ph name="BEGIN_BOLD" />ще бъде изтрит целият ви твърд диск<ph name="END_BOLD" />. Уверете се, че данните ви имат резервно копие.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />След като инсталирането започне, не може да бъде отменено.<ph name="END_PARAGRAPH2" /></translation>
@@ -2094,7 +2095,6 @@
 <translation id="3088052000289932193">Сайтът използва MIDI</translation>
 <translation id="3088128611727407543">Потребителският профил за приложението се подготвя...</translation>
 <translation id="3088325635286126843">&amp;Преименуване...</translation>
-<translation id="3089064280130434511">Блокиране на сайтовете, така че да не отварят и разполагат прозорци на екраните ви</translation>
 <translation id="3089137131053189723">Търсенето бе изчистено</translation>
 <translation id="3090589793601454425">Без преместване</translation>
 <translation id="3090819949319990166">Външният crx файл не може да се копира в/ъв „<ph name="TEMP_CRX_FILE" />“.</translation>
@@ -3224,6 +3224,7 @@
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="4279129444466079448">На това устройство можете да инсталирате до <ph name="PROFILE_LIMIT" /> профила на електронната SIM карта. За да добавите друг такъв профил, първо премахнете съществуващ.</translation>
+<translation id="4280325816108262082">Връзката на устройството ще бъде прекратена автоматично, когато бъде изключено или не се използва</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4282196459431406533">Функцията Smart Lock е включена</translation>
 <translation id="4284755288573763878">Искате ли да изключите подобрената защита?</translation>
@@ -3713,6 +3714,7 @@
 <translation id="4813136279048157860">Моите изображения</translation>
 <translation id="4813512666221746211">Грешка в мрежата</translation>
 <translation id="4814378367953456825">Въведете име за този отпечатък</translation>
+<translation id="481574578487123132">Свързани устройства</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, подробности</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Изтрихте 1 отметка}other{Изтрихте {COUNT} отметки}}</translation>
 <translation id="4819607494758673676">Известия от Google Асистент</translation>
@@ -3727,7 +3729,6 @@
 <translation id="482952334869563894">USB устройства от доставчика <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Настройване на ПИН</translation>
 <translation id="4830026649400230050">Всички отговарящи на условията изтегляния се пренасочват към профила в(ъв) <ph name="WEB_DRIVE" /> на организацията ви.</translation>
-<translation id="4830121310592638841">Извеждане на запитване, когато сайт иска да отваря и разполага прозорци на екраните ви</translation>
 <translation id="4830502475412647084">Актуализацията на операционната система се инсталира</translation>
 <translation id="4830573902900904548">Устройството ви <ph name="DEVICE_TYPE" /> не може да се свърже с интернет през „<ph name="NETWORK_NAME" />“. Моля, изберете друга мрежа. <ph name="LEARN_MORE_LINK_START" />Научете повече<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">В сървъра за отпечатване бе открит 1 принтер</translation>
@@ -4344,6 +4345,7 @@
 <translation id="5490721031479690399">Прекратяване на връзката на устройство с Bluetooth</translation>
 <translation id="5490798133083738649">Разрешаване на достъпа на Linux до микрофона ви</translation>
 <translation id="549211519852037402">Бежово и бяло</translation>
+<translation id="5492637351392383067">Шифроване на устройството</translation>
 <translation id="5493792505296048976">екранът е включен</translation>
 <translation id="5494016731375030300">Наскоро затворени раздели</translation>
 <translation id="5494362494988149300">Отваряне &amp;след изтегляне</translation>
@@ -4427,6 +4429,7 @@
 <translation id="5563234215388768762">Търсете с Google или въведете URL адрес</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5568069709869097550">Не може да се влезе</translation>
+<translation id="5571066253365925590">Bluetooth е активиран</translation>
 <translation id="5571092938913434726">Глобални контроли за мултимедия</translation>
 <translation id="5571832155627049070">Персонализиране на потребителския ви профил</translation>
 <translation id="5572851009514199876">Моля, стартирайте браузъра Chrome и влезте в него, за да се провери дали имате достъп до този сайт.</translation>
@@ -4825,6 +4828,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{За да продължите да сърфирате безпроблемно в мрежата, помолете администратора да премахне това приложение.}other{За да продължите да сърфирате безпроблемно в мрежата, помолете администратора да премахне тези приложения.}}</translation>
 <translation id="5997337190805127100">Научете повече за достъпа на сайта</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултата за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6002122790816966947">Вашите устройства</translation>
 <translation id="6002210667729577411">Преместване на групата в нов прозорец</translation>
 <translation id="6002452033851752583">Паролата бе изтрита от профила ви в Google</translation>
 <translation id="6002458620803359783">Предпочитани гласове</translation>
@@ -5631,7 +5635,6 @@
 <translation id="6833996806551876956">Пробен период за Privacy Sandbox</translation>
 <translation id="6834652994408928492">Тъмният режим ще се включи автоматично при залез</translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6838034009068684089">Извеждане на запитване, когато сайт иска да отваря и разполага прозорци на екраните ви (препоръчително)</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
 <translation id="6839916869147598086">Функцията за влизане в профил е променена</translation>
 <translation id="6840155290835956714">Извеждане на запитване преди изпращане</translation>
@@ -7983,6 +7986,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> не може да отваря файловете в тази папка, защото са системни</translation>
 <translation id="950307215746360464">Ръководство за настройване</translation>
 <translation id="951991426597076286">Отхвърляне</translation>
+<translation id="952471655966876828">Устройството ще се свърже автоматично, когато бъде включено и се използва</translation>
 <translation id="953434574221655299">Разрешено е да разпознава кога използвате устройството си активно</translation>
 <translation id="956500788634395331">Защитени сте от потенциално опасни разширения</translation>
 <translation id="957960681186851048">Този сайт опита да изтегли автоматично няколко файла</translation>

@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">पेज पर जाएं</translation>
 <translation id="2122601567107267586">ऐप्लिकेशन नहीं खोला जा सका</translation>
 <translation id="2126426811489709554">Chrome के द्वारा संचालित</translation>
-<translation id="2131665479022868825"><ph name="DATA" /> बचाया गया</translation>
 <translation id="2132122640199389833">लिंक किए गए सभी डिवाइस हटाएं</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद है</translation>
 <translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
@@ -500,7 +499,6 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> को अपडेट करें</translation>
 <translation id="3912508018559818924">वेब की सबसे अच्छी जानकारी ढूंढी जा रही है…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> चालू है</translation>
-<translation id="3925830358619338299">Google पासवर्ड मैनेजर में सेव होने से पहले, पासवर्ड आपके डिवाइस पर एन्क्रिप्ट (सुरक्षित) कर लिए जाते हैं</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">मेरा डेटा संयोजित करें</translation>
 <translation id="3934366560681368531">“</translation>
@@ -808,7 +806,6 @@
 <translation id="5697688514913266141">आपकी फ़ाइल <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> में सेव की जाएगी. <ph name="BEGIN_LINK2" />बदलाव करें<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">टैब पर स्विच करें</translation>
 <translation id="572328651809341494">हाल ही के टैब</translation>
-<translation id="5723735397759933332">लाइट मोड अब एचटीटीपीएस पेजों पर इमेज ऑप्टिमाइज़ करके, आपके लिए और डेटा बचा सकता है.</translation>
 <translation id="5726692708398506830">पेज पर सब कुछ बड़ा करें</translation>
 <translation id="5748802427693696783">मानक टैब पर स्विच कर दिया गया</translation>
 <translation id="5749068826913805084">फ़ाइलें डाउनलोड करने के लिए Chrome को मेमोरी के ऐक्‍सेस की ज़रूरत होगी.</translation>
@@ -1323,7 +1320,6 @@
 <translation id="8427875596167638501">'झलक' टैब आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8430824733382774043">सिर्फ़ स्क्रीनशॉट शेयर करें</translation>
-<translation id="8431730749911729314">Google पासवर्ड मैनेजर में सेव होने से पहले, पासवर्ड अपने डिवाइस पर एन्क्रिप्ट (सुरक्षित) करें</translation>
 <translation id="8438566539970814960">खोजों और ब्राउज़िंग को बेहतर बनाएं</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - भाषा इस्तेमाल के लिए तैयार है. <ph name="APP_NAME" /> को रीस्टार्ट करें.</translation>
 <translation id="8442258441309440798">कोई भी कहानी उपलब्ध नहीं है</translation>
@@ -1359,7 +1355,6 @@
 <translation id="8560602726703398413">Bookmarks में अपनी पढ़ने की चीज़ों की सूची खोजें</translation>
 <translation id="8562452229998620586">सहेजे गए पासवर्ड यहां दिखाई देंगे.</translation>
 <translation id="856481929701340285">डेस्‍कटॉप साइट का अनुरोध करें</translation>
-<translation id="8569404424186215731"><ph name="DATE" /> से</translation>
 <translation id="8570677896027847510">फ़ाइल सुरक्षित तरीके से डाउनलोड नहीं की जा सकी</translation>
 <translation id="8571213806525832805">पिछले चार हफ़्ते</translation>
 <translation id="8572344201470131220">इमेज कॉपी की गई</translation>

@@ -1275,6 +1275,7 @@
     Центарот за помош<ph name="END_LINK" />.</translation>
 <translation id="22665427234727190">Прашувај кога некој сајт сака да пристапи до Bluetooth-уредите (препорачано)</translation>
 <translation id="2266957463645820432">IPP преку USB (IPPUSB)</translation>
+<translation id="2268130516524549846">Bluetooth е оневозможен</translation>
 <translation id="2270450558902169558">Разменете податоци со кој било уред во доменот <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Инсталацијата <ph name="BEGIN_BOLD" />ќе го избрише целиот хард диск<ph name="END_BOLD" />. Уверете се дека имате направено бекап на вашите податоци.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Откако ќе започне, инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
@@ -2099,7 +2100,6 @@
 <translation id="3088052000289932193">Сајтот користи MIDI</translation>
 <translation id="3088128611727407543">Се подготвува профилот на апликацијата…</translation>
 <translation id="3088325635286126843">&amp;Преименувај...</translation>
-<translation id="3089064280130434511">Не дозволувајте сајтовите да отвораат и поставуваат прозорци на екраните</translation>
 <translation id="3089137131053189723">Пребарувањето е избришано</translation>
 <translation id="3090589793601454425">Не преместувај</translation>
 <translation id="3090819949319990166">Не може да ја копира надворешната crx датотека на <ph name="TEMP_CRX_FILE" />.</translation>
@@ -3718,6 +3718,7 @@
 <translation id="4813136279048157860">Мои слики</translation>
 <translation id="4813512666221746211">Грешка на мрежа</translation>
 <translation id="4814378367953456825">Внесете име за отпечатоков</translation>
+<translation id="481574578487123132">Поврзани уреди</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, детали</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 обележувач е избришан}one{{COUNT} обележувач е избришан}other{{COUNT} обележувачи се избришани}}</translation>
 <translation id="4819607494758673676">Известувања на „Помошникот на Google“</translation>
@@ -3732,7 +3733,6 @@
 <translation id="482952334869563894">USB-уреди од продавачот <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Постави PIN</translation>
 <translation id="4830026649400230050">Сите подобни преземања се насочуваат кон сметката <ph name="WEB_DRIVE" /> на вашата организација.</translation>
-<translation id="4830121310592638841">Прашувај кога некој сајт сака да отвора и поставува прозорци на екраните</translation>
 <translation id="4830502475412647084">Се инсталира ажурирање на ОС</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> не може да се поврзе на интернет преку <ph name="NETWORK_NAME" />. Изберете друга мрежа. <ph name="LEARN_MORE_LINK_START" />Дознајте повеќе<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Најден е 1 печатач од серверот за печатење</translation>
@@ -4433,6 +4433,7 @@
 <translation id="5563234215388768762">Пребарајте на Google или напишете URL</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5568069709869097550">Не може да се најавите</translation>
+<translation id="5571066253365925590">Bluetooth е овозможен</translation>
 <translation id="5571092938913434726">Глобални контроли за аудиовизуелни содржини</translation>
 <translation id="5571832155627049070">Приспособете го вашиот профил</translation>
 <translation id="5572851009514199876">Започнете и најавете се на Chrome за да може Chrome да провери дали ви е дозволено да пристапите на сајтов.</translation>
@@ -4830,6 +4831,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{За да може и понатаму да прелистувате на интернет, побарајте од администраторот да ја отстрани апликацијава.}one{За да може и понатаму да прелистувате на интернет, побарајте од администраторот да ги отстрани апликацииве.}other{За да може и понатаму да прелистувате на интернет, побарајте од администраторот да ги отстрани апликацииве.}}</translation>
 <translation id="5997337190805127100">Дознајте повеќе за пристап до сајтови</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултати за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6002122790816966947">Ваши уреди</translation>
 <translation id="6002210667729577411">Преместете ја групата во нов прозорец</translation>
 <translation id="6002452033851752583">Лозинката е избришана од сметката на Google</translation>
 <translation id="6002458620803359783">Претпочитани гласови</translation>
@@ -5636,7 +5638,6 @@
 <translation id="6833996806551876956">Пробен период за Sandbox за приватност</translation>
 <translation id="6834652994408928492">Темниот режим ќе се вклучи автоматски на зајдисонце</translation>
 <translation id="6835762382653651563">Поврзете се на интернет за да го ажурирате <ph name="DEVICE_TYPE" />.</translation>
-<translation id="6838034009068684089">Прашувај кога некој сајт сака да отвора и поставува прозорци на екраните (препорачано)</translation>
 <translation id="6839225236531462745">Грешка при бришење сертификат</translation>
 <translation id="6839916869147598086">Најавувањето се промени</translation>
 <translation id="6840155290835956714">Прашај пред да испратиш</translation>
@@ -6547,7 +6548,6 @@
 <translation id="7775694664330414886">Картичката е преместена во неименувана група - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ќе може да прегледува датотеки во <ph name="FOLDERNAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
 <translation id="7776701556330691704">Не се најдени гласови</translation>
-<translation id="7777284276915203144">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="7781335840981796660">Сите кориснички сметки и локални податоци ќе бидат отстранети.</translation>
 <translation id="7782102568078991263">Нема повеќе предлози од Google</translation>
 <translation id="7782717250816686129">Складирајте постојани податоци на екранот за најавување и вметнувајте акредитиви во сесијата.</translation>
@@ -7202,7 +7202,6 @@
 <translation id="8428634594422941299">Сфатив</translation>
 <translation id="84297032718407999">Ќе ве одјавиме за <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Прикажувај допири</translation>
-<translation id="8431730749911729314">Шифрирајте ги лозинките на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="8434480141477525001">Порта за откривање грешки на NaCl</translation>
 <translation id="8435395510592618362">Потврдете го вашиот идентитет со <ph name="APP_NAME" /></translation>
 <translation id="8437209419043462667">US</translation>

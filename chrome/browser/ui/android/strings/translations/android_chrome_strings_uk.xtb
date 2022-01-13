@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">Перейти на сторінку</translation>
 <translation id="2122601567107267586">Не вдалося відкрити додаток</translation>
 <translation id="2126426811489709554">Технології Chrome</translation>
-<translation id="2131665479022868825">Заощаджено <ph name="DATA" /></translation>
 <translation id="2132122640199389833">Видалити всі зв’язані пристрої</translation>
 <translation id="213279576345780926">Вкладку "<ph name="TAB_TITLE" />" закрито</translation>
 <translation id="2139186145475833000">Додати на головний екран</translation>
@@ -772,6 +771,7 @@
 <translation id="5483197086164197190">Навігація в Chrome</translation>
 <translation id="5487521232677179737">Видалити дані</translation>
 <translation id="549025011754480756">Як шукати за допомогою голосу</translation>
+<translation id="5492637351392383067">Шифрування на пристрої</translation>
 <translation id="5514904542973294328">Вимкнено адміністратором пристрою</translation>
 <translation id="5515439363601853141">Розблокуйте, щоб переглянути пароль</translation>
 <translation id="5517095782334947753">У вас є закладки, історія, паролі й інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>
@@ -806,7 +806,6 @@
 <translation id="5697688514913266141">Файл буде збережено в каталозі <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Змінити<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Перейти на вкладку</translation>
 <translation id="572328651809341494">Останні вкладки</translation>
-<translation id="5723735397759933332">Тепер спрощений режим оптимізує зображення на сторінках HTTPS, щоб заощаджувати більше трафіку.</translation>
 <translation id="5726692708398506830">Збільшити всі елементи на сторінці</translation>
 <translation id="5748802427693696783">Ви перейшли на стандартні вкладки</translation>
 <translation id="5749068826913805084">Щоб завантажувати файли, Chrome потребує доступу до пам’яті.</translation>
@@ -1356,7 +1355,6 @@
 <translation id="8560602726703398413">Ваш список читання буде в закладках</translation>
 <translation id="8562452229998620586">Тут відображатимуться збережені паролі.</translation>
 <translation id="856481929701340285">Версія для комп’ютера</translation>
-<translation id="8569404424186215731">з <ph name="DATE" /></translation>
 <translation id="8570677896027847510">Не можна безпечно завантажити файл</translation>
 <translation id="8571213806525832805">Останні 4 тижні</translation>
 <translation id="8572344201470131220">Зображення скопійовано</translation>

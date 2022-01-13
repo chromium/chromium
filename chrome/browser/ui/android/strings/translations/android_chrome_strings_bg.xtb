@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">Към страницата</translation>
 <translation id="2122601567107267586">Приложението не можа да бъде отворено</translation>
 <translation id="2126426811489709554">Предоставено от Chrome</translation>
-<translation id="2131665479022868825">Спестихте <ph name="DATA" /></translation>
 <translation id="2132122640199389833">Премахване на всички свързани устройства</translation>
 <translation id="213279576345780926">Затворихте „<ph name="TAB_TITLE" />“</translation>
 <translation id="2139186145475833000">Добавяне към началния екран</translation>
@@ -772,6 +771,7 @@
 <translation id="5483197086164197190">Навигиране в Chrome</translation>
 <translation id="5487521232677179737">Изчиств. на данните</translation>
 <translation id="549025011754480756">Как да търсите с гласа си</translation>
+<translation id="5492637351392383067">Шифроване на устройството</translation>
 <translation id="5514904542973294328">Деактивирано от администратора на това устройство</translation>
 <translation id="5515439363601853141">Отключете, за да видите паролата си</translation>
 <translation id="5517095782334947753">Имате отметки, история, пароли и други настройки от <ph name="FROM_ACCOUNT" /></translation>
@@ -806,7 +806,6 @@
 <translation id="5697688514913266141">Файлът ще бъде запазен в <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Редактиране<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Превключване към раздел</translation>
 <translation id="572328651809341494">Скорошни раздели</translation>
-<translation id="5723735397759933332">С олекотения режим вече спестявате повече данни, тъй като изображенията на HTTPS страниците се оптимизират.</translation>
 <translation id="5726692708398506830">Уголемяване на всички елементи на страницата</translation>
 <translation id="5748802427693696783">Превключихте към стандартните раздели</translation>
 <translation id="5749068826913805084">Chrome се нуждае от достъп до хранилището, за да изтегля файлове.</translation>
@@ -1356,7 +1355,6 @@
 <translation id="8560602726703398413">Списъкът ви за четене се намира в „Отметки“</translation>
 <translation id="8562452229998620586">Запазените пароли ще се покажат тук.</translation>
 <translation id="856481929701340285">Заявка за настолния сайт</translation>
-<translation id="8569404424186215731">от <ph name="DATE" /></translation>
 <translation id="8570677896027847510">Файлът не може да бъде изтеглен по сигурен начин</translation>
 <translation id="8571213806525832805">Последните 4 седмици</translation>
 <translation id="8572344201470131220">Изображението е копирано</translation>

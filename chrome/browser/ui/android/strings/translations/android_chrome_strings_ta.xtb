@@ -189,7 +189,6 @@
 <translation id="2111511281910874386">பக்கத்திற்குச் செல்லவும்</translation>
 <translation id="2122601567107267586">பயன்பாட்டைத் திறக்க முடியவில்லை</translation>
 <translation id="2126426811489709554">Chromeஇல் இயங்குகிறது</translation>
-<translation id="2131665479022868825"><ph name="DATA" /> சேமிக்கப்பட்டது</translation>
 <translation id="2132122640199389833">இணைக்கப்பட்டுள்ள சாதனங்கள் அனைத்தையும் அகற்று</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> மூடப்பட்டது</translation>
 <translation id="2139186145475833000">முகப்புத் திரையில் சேர்</translation>
@@ -500,7 +499,6 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ஐப் புதுப்பி</translation>
 <translation id="3912508018559818924">இணையத்திலிருந்து தரவை ஏற்றுகிறோம்…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> இயக்கத்தில் உள்ளது</translation>
-<translation id="3925830358619338299">Google கடவுச்சொல் நிர்வாகியில் கடவுச்சொற்கள் சேமிக்கப்படுவதற்கு முன்பு உங்கள் சாதனத்தில் அவை என்க்ரிப்ஷன் செய்யப்படுகின்றன</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
 <translation id="3934366560681368531">“</translation>
@@ -808,7 +806,6 @@
 <translation id="5697688514913266141">உங்கள் ஃபைல் <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> இல் சேமிக்கப்படும். <ph name="BEGIN_LINK2" />மாற்று<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">தாவலுக்கு மாறும்</translation>
 <translation id="572328651809341494">சமீபத்திய தாவல்கள்</translation>
-<translation id="5723735397759933332">HTTPS பக்கங்களில் உள்ள படங்களைச் சுருக்குவதன் மூலம் லைட் பயன்முறை இப்போது கூடுதல் டேட்டாவைச் சேமிக்கிறது.</translation>
 <translation id="5726692708398506830">பக்கத்திலுள்ள அனைத்தையும் பெரிதாக்கும்</translation>
 <translation id="5748802427693696783">இயல்பான தாவல்களுக்கு மாற்றப்பட்டது</translation>
 <translation id="5749068826913805084">ஃபைல்களைப் பதிவிறக்க Chromeக்கு சேமிப்பிட அணுகல் தேவை.</translation>
@@ -1323,7 +1320,6 @@
 <translation id="8427875596167638501">மாதிரிக்காட்சித் தாவல் பாதியளவு திறந்துள்ளது</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8430824733382774043">ஸ்கிரீன்ஷாட்டை மட்டும் பகிரும்</translation>
-<translation id="8431730749911729314">Google கடவுச்சொல் நிர்வாகியில் கடவுச்சொற்கள் சேமிக்கப்படுவதற்கு முன்பு உங்கள் சாதனத்தில் அவை என்க்ரிப்ஷன் செய்யப்படும்</translation>
 <translation id="8438566539970814960">தேடல்களையும் உலாவலையும் மேலும் சிறப்பாக்குக</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - பதிவிறக்கப்பட்டது, <ph name="APP_NAME" /> ஆப்ஸை மீண்டும் தொடங்கவும்.</translation>
 <translation id="8442258441309440798">புதிய கட்டுரைகள் எதுவுமில்லை</translation>
@@ -1359,7 +1355,6 @@
 <translation id="8560602726703398413">புக்மார்க்குகளில் உங்கள் வாசிப்புப் பட்டியலைக் கண்டறியலாம்</translation>
 <translation id="8562452229998620586">சேமிக்கப்பட்ட கடவுச்சொற்கள் இங்கு காண்பிக்கப்படும்.</translation>
 <translation id="856481929701340285">டெஸ்க்டாப் தளத்தைக் கோரு</translation>
-<translation id="8569404424186215731"><ph name="DATE" /> முதல்</translation>
 <translation id="8570677896027847510">ஃபைலைப் பாதுகாப்பாகப் பதிவிறக்க முடியாது</translation>
 <translation id="8571213806525832805">கடந்த 4 வாரங்கள்</translation>
 <translation id="8572344201470131220">படம் நகலெடுக்கப்பட்டது</translation>

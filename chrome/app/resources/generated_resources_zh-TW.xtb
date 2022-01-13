@@ -1259,6 +1259,7 @@
 <translation id="2263679799334060788">你的寶貴意見可協助我們讓 Google Cast 更臻完美。如需排解投放問題的相關說明，請參閱<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />的文章。</translation>
 <translation id="22665427234727190">網站必須先詢問你，才能存取藍牙裝置 (建議)</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
+<translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2270450558902169558">與 <ph name="DOMAIN" /> 網域中的任何裝置交換資料</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確認資料已備份。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
@@ -2083,7 +2084,6 @@
 <translation id="3088052000289932193">網站正在使用 MIDI 裝置</translation>
 <translation id="3088128611727407543">正在準備應用程式設定檔...</translation>
 <translation id="3088325635286126843">重新命名(&amp;R)...</translation>
-<translation id="3089064280130434511">禁止網站在你的畫面中開啟與放置視窗</translation>
 <translation id="3089137131053189723">已清除搜尋內容</translation>
 <translation id="3090589793601454425">不要移動</translation>
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
@@ -3700,6 +3700,7 @@
 <translation id="4813136279048157860">我的圖片</translation>
 <translation id="4813512666221746211">網路錯誤</translation>
 <translation id="4814378367953456825">請輸入這個指紋的名稱</translation>
+<translation id="481574578487123132">連結的裝置</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />，詳細資料</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
 <translation id="4819607494758673676">Google 助理通知</translation>
@@ -3714,7 +3715,6 @@
 <translation id="482952334869563894">來自供應商 <ph name="VENDOR_ID" /> 的 USB 裝置</translation>
 <translation id="4829768588131278040">設定 PIN 碼</translation>
 <translation id="4830026649400230050">所有符合資格的下載內容都會轉送至貴機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
-<translation id="4830121310592638841">網站必須先詢問你，才能在你的畫面中開啟與放置視窗</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4830573902900904548">您的 <ph name="DEVICE_TYPE" /> 無法透過 <ph name="NETWORK_NAME" /> 連線至網際網路，請選擇其他網路。<ph name="LEARN_MORE_LINK_START" />瞭解詳情<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">在列印伺服器上找到 1 台印表機</translation>
@@ -4415,6 +4415,7 @@
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
 <translation id="5565735124758917034">管理中</translation>
 <translation id="5568069709869097550">無法登入</translation>
+<translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="5571092938913434726">全域媒體控制項</translation>
 <translation id="5571832155627049070">自訂你的設定檔</translation>
 <translation id="5572851009514199876">請啟動 Chrome 並登入帳戶，Chrome 將確認你是否可存取這個網站。</translation>
@@ -4812,6 +4813,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
+<translation id="6002122790816966947">你的裝置</translation>
 <translation id="6002210667729577411">將群組移到新視窗</translation>
 <translation id="6002452033851752583">已從你的 Google 帳戶中刪除密碼</translation>
 <translation id="6002458620803359783">聲音偏好</translation>
@@ -5618,7 +5620,6 @@
 <translation id="6833996806551876956">Privacy Sandbox 試用期</translation>
 <translation id="6834652994408928492">深色模式會在日落時自動開啟</translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
-<translation id="6838034009068684089">網站必須先詢問你，才能在你的畫面中開啟與放置視窗 (建議)</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前詢問我</translation>
@@ -6529,7 +6530,6 @@
 <translation id="7775694664330414886">分頁已移至包含「<ph name="GROUP_CONTENTS" />」的未命名群組</translation>
 <translation id="7776156998370251340">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以讀取「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="7776701556330691704">找不到語音</translation>
-<translation id="7777284276915203144">你的密碼在儲存至 Google 密碼管理員之前，已在裝置上加密</translation>
 <translation id="7781335840981796660">系統將移除所有使用者帳戶和本機資料。</translation>
 <translation id="7782102568078991263">沒有更多來自 Google 的建議</translation>
 <translation id="7782717250816686129">儲存登入畫面中的永久資料，並在工作階段中置入憑證。</translation>
@@ -7182,7 +7182,6 @@
 <translation id="8428634594422941299">我知道了</translation>
 <translation id="84297032718407999">你將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示觸控回應</translation>
-<translation id="8431730749911729314">系統會先在裝置上將你的密碼加密，再儲存至 Google 密碼管理員</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8435395510592618362">向 <ph name="APP_NAME" /> 驗證你的身分</translation>
 <translation id="8437209419043462667">美式配置</translation>

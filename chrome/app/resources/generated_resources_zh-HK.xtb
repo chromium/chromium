@@ -1273,6 +1273,7 @@
 說明中心<ph name="END_LINK" />的說明。</translation>
 <translation id="22665427234727190">在網站要求存取藍牙裝置時詢問您 (建議)</translation>
 <translation id="2266957463645820432">透過 USB 的 IPP (IPPUSB)</translation>
+<translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2270450558902169558">與網域 <ph name="DOMAIN" /> 中的任何裝置交換數據</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確保已將資料備份。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
@@ -2097,7 +2098,6 @@
 <translation id="3088052000289932193">網站正在使用 MIDI 裝置</translation>
 <translation id="3088128611727407543">正在準備應用程式設定檔…</translation>
 <translation id="3088325635286126843">重新命名(&amp;R)…</translation>
-<translation id="3089064280130434511">禁止網站在您的螢幕上開啟並放置視窗</translation>
 <translation id="3089137131053189723">已清除搜尋</translation>
 <translation id="3090589793601454425">不要移動</translation>
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
@@ -3226,7 +3226,7 @@
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4278390842282768270">已允許</translation>
 <translation id="4279129444466079448">您在此裝置上最多可安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
-<translation id="4280325816108262082">裝置關閉或處於閒置狀態時，會自動中斷連線</translation>
+<translation id="4280325816108262082">當裝置關閉或處於閒置狀態時，裝置將會自動中斷連線</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4282196459431406533">Smart Lock 已啟用</translation>
 <translation id="4284755288573763878">要關閉「強化安全瀏覽」功能嗎？</translation>
@@ -3716,6 +3716,7 @@
 <translation id="4813136279048157860">我的圖片</translation>
 <translation id="4813512666221746211">網絡錯誤</translation>
 <translation id="4814378367953456825">請輸入此指紋的名稱</translation>
+<translation id="481574578487123132">連結的裝置</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />，詳情</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
 <translation id="4819607494758673676">「Google 助理」通知</translation>
@@ -3730,7 +3731,6 @@
 <translation id="482952334869563894">來自供應商 <ph name="VENDOR_ID" /> 的 USB 裝置</translation>
 <translation id="4829768588131278040">設定 PIN</translation>
 <translation id="4830026649400230050">所有符合資格的下載項目都會導向至您機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
-<translation id="4830121310592638841">在網站要求在您的螢幕上開啟並放置視窗時詢問您</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> 無法透過 <ph name="NETWORK_NAME" /> 連線至互聯網，請選擇其他網絡。<ph name="LEARN_MORE_LINK_START" />瞭解詳情<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">在列印伺服器中找到 1 部打印機</translation>
@@ -4348,7 +4348,7 @@
 <translation id="5490721031479690399">解除連結藍牙裝置</translation>
 <translation id="5490798133083738649">允許 Linux 存取您的麥克風</translation>
 <translation id="549211519852037402">米色和白色</translation>
-<translation id="5492637351392383067">裝置端加密</translation>
+<translation id="5492637351392383067">在裝置上加密</translation>
 <translation id="5493792505296048976">螢幕已開啟</translation>
 <translation id="5494016731375030300">最近關閉的分頁</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
@@ -4432,6 +4432,7 @@
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
 <translation id="5565735124758917034">啟用</translation>
 <translation id="5568069709869097550">無法登入</translation>
+<translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="5571092938913434726">全域媒體控制項</translation>
 <translation id="5571832155627049070">自訂你的設定檔</translation>
 <translation id="5572851009514199876">請啟動 Chrome 並登入帳戶，讓 Chrome 確認您是否擁有此網站的存取權。</translation>
@@ -4829,6 +4830,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保您可以繼續瀏覽網絡，請要求您的管理員移除此應用程式。}other{為確保您可以繼續瀏覽網絡，請要求您的管理員移除這些應用程式。}}</translation>
 <translation id="5997337190805127100">瞭解詳情網站存取權</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
+<translation id="6002122790816966947">您的裝置</translation>
 <translation id="6002210667729577411">將群組移至新視窗</translation>
 <translation id="6002452033851752583">密碼已從您的 Google 帳戶中刪除</translation>
 <translation id="6002458620803359783">偏好的聲音</translation>
@@ -5635,7 +5637,6 @@
 <translation id="6833996806551876956">私隱沙箱試用</translation>
 <translation id="6834652994408928492">「暗光模式」將會在日落時自動開啟</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
-<translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前先詢問</translation>
@@ -6546,7 +6547,6 @@
 <translation id="7775694664330414886">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅未命名群組</translation>
 <translation id="7776156998370251340">在您關閉此網站的所有分頁前，<ph name="ORIGIN" /> 都能查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="7776701556330691704">找不到語音</translation>
-<translation id="7777284276915203144">你的密碼在儲存至 Google 密碼管理員之前，已在裝置上加密</translation>
 <translation id="7781335840981796660">系統將移除所有使用者帳戶和本機數據。</translation>
 <translation id="7782102568078991263">沒有來自 Google 的建議</translation>
 <translation id="7782717250816686129">儲存登入畫面中的永久資料，並在工作階段中插入憑證。</translation>
@@ -7199,7 +7199,6 @@
 <translation id="8428634594422941299">知道了</translation>
 <translation id="84297032718407999">您將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示輕按選項</translation>
-<translation id="8431730749911729314">系統會先在裝置上將你的密碼加密，再儲存至 Google 密碼管理員</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8435395510592618362">透過 <ph name="APP_NAME" /> 驗證身分</translation>
 <translation id="8437209419043462667">美式鍵盤</translation>
@@ -7989,7 +7988,7 @@
 <translation id="947667444780368238">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾中的檔案</translation>
 <translation id="950307215746360464">設定指南</translation>
 <translation id="951991426597076286">拒絕</translation>
-<translation id="952471655966876828">裝置開啟或處於使用狀態時，會自動連線</translation>
+<translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>
 <translation id="953434574221655299">允許偵測您使用裝置的時間</translation>
 <translation id="956500788634395331">保護您免受可能有害的擴充程式影響</translation>
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>
