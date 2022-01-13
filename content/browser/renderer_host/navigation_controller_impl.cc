@@ -1327,6 +1327,15 @@ bool NavigationControllerImpl::RendererDidNavigate(
       NOTREACHED();
       break;
   }
+  // If any navigation has committed on the main frame or created a new
+  // NavigationEntry for a subframe, we can no longer be on an "initial"
+  // NavigationEntry (although the NavigationEntry object itself might be reused
+  // from an originally-initial NavigationEntry, but it would already lose its
+  // "initial" status at this point).
+  // TODO(https://crbug.com/524208): Also remove the "initial" status after
+  // AUTO_SUBFRAME navigations.
+  DCHECK(!GetLastCommittedEntry()->IsInitialEntry() ||
+         (details->type == NAVIGATION_TYPE_AUTO_SUBFRAME));
 
   // At this point, we know that the navigation has just completed, so
   // record the time.
@@ -2750,6 +2759,12 @@ void NavigationControllerImpl::InsertOrReplaceEntry(
     }
     entries_[last_committed_entry_index_] = std::move(entry);
     return;
+  }
+
+  if (GetLastCommittedEntry() && GetLastCommittedEntry()->IsInitialEntry()) {
+    // We should remove the old entry's "initial" status, as it will no longer
+    // be the only NavigationEntry.
+    GetLastCommittedEntry()->RemoveInitialEntryStatusIfNecessary();
   }
 
   // We shouldn't see replace == true when there's no committed entries.

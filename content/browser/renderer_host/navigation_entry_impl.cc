@@ -724,6 +724,17 @@ bool NavigationEntryImpl::GetCanLoadLocalResources() {
   return can_load_local_resources_;
 }
 
+void NavigationEntryImpl::RemoveInitialEntryStatusIfNecessary() {
+  if (!is_initial_entry_)
+    return;
+  is_initial_entry_ = false;
+  if (GetURL().is_empty()) {
+    // The NavigationEntry is no longer the initial entry. Ensure that we now
+    // use "about:blank" as the URL, instead of an empty URL.
+    SetURL(GURL(url::kAboutBlankURL));
+  }
+}
+
 bool NavigationEntryImpl::IsInitialEntry() {
   return is_initial_entry_;
 }
@@ -734,7 +745,7 @@ std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::Clone() const {
                               ClonePolicy::kShareFrameEntries);
   // When we are not deep-copying, the NavigationEntry is going to be used for
   // a new committed navigation, so it loses its "initial" status.
-  entry->set_is_initial_entry(false);
+  entry->RemoveInitialEntryStatusIfNecessary();
   return entry;
 }
 
@@ -756,7 +767,7 @@ std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneAndReplace(
       root_frame_tree_node, nullptr, ClonePolicy::kShareFrameEntries);
   // When we are not deep-copying, the NavigationEntry is going to be used for
   // a new committed navigation, so it loses its "initial" status.
-  entry->set_is_initial_entry(false);
+  entry->RemoveInitialEntryStatusIfNecessary();
   return entry;
 }
 
