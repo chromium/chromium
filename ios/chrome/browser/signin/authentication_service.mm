@@ -437,9 +437,8 @@ void AuthenticationService::SignOut(
   if (force_clear_browsing_data || (is_managed && is_first_setup_complete)) {
     delegate_->ClearBrowsingData(completion);
   } else if (completion) {
-    // TODO(crbug.com/1277841): Needs to call completion on the next loop cycle
-    // to be more consistent with the clear browsing data completion.
-    completion();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  base::BindOnce(completion));
   }
 }
 
