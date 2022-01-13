@@ -38,11 +38,16 @@ static_library("arc") {
 static_library("arc_test_support") {
   testonly = true
   sources = [
+    "test/fake_intent_helper_host.cc",
+    "test/fake_intent_helper_host.h",
     "test/fake_intent_helper_instance.cc",
     "test/fake_intent_helper_instance.h",
   ]
 
-  deps = [ "//ash/components/arc/mojom" ]
+  deps = [
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session:connection_holder",
+  ]
 }
 
 source_set("unit_tests") {
