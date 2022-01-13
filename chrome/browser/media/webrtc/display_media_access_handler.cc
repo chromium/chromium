@@ -35,13 +35,13 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -122,7 +122,7 @@ void DisplayMediaAccessHandler::HandleRequest(
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Do not allow picker UI to be shown on a page that isn't in the foreground
   // in Mac, because the UI implementation in Mac pops a window over any content
   // which might be confusing for the users. See https://crbug.com/1407733 for
@@ -136,7 +136,7 @@ void DisplayMediaAccessHandler::HandleRequest(
         blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
     return;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   if (request.request_type == blink::MEDIA_DEVICE_UPDATE) {
     DCHECK(!request.requested_video_device_id.empty());
@@ -436,7 +436,7 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Check screen capture permissions on Mac if necessary.
   if ((media_id.type == content::DesktopMediaID::TYPE_SCREEN ||
        media_id.type == content::DesktopMediaID::TYPE_WINDOW) &&
@@ -447,9 +447,9 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
         blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);
     return;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Check Data Leak Prevention restrictions on Chrome.
   // base::Unretained(this) is safe because DisplayMediaAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
@@ -471,7 +471,7 @@ void DisplayMediaAccessHandler::WebContentsDestroyed(
   pending_requests_.erase(web_contents);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
     base::WeakPtr<content::WebContents> web_contents,
     const content::DesktopMediaID& media_id,
@@ -488,7 +488,7 @@ void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
   }
   AcceptRequest(web_contents.get(), media_id);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void DisplayMediaAccessHandler::DeletePendingAccessRequest(
     int render_process_id,

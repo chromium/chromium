@@ -270,7 +270,7 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
                             content::WebContents* second_tab) {
     StartDetectingVideo(first_tab, "remote-view");
     StartDetectingVideo(second_tab, "remote-view");
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Video is choppy on Mac OS X. http://crbug.com/443542.
     WaitForVideoToPlay(first_tab);
     WaitForVideoToPlay(second_tab);
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
 }
 
 // TODO(crbug.com/1282292): Test is flaky on Linux and ChromeOS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RunP2PScreenshareWhileSharingTab \
   DISABLED_RunP2PScreenshareWhileSharingTab
 #else

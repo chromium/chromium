@@ -70,7 +70,7 @@ bool WVTestLicenseServerConfig::GetServerCommandLine(
 
   // Needed to dynamically load .so libraries used by license server.
   // TODO(shadi): Remove need to set env variable once b/12932983 is fixed.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   const char kLibraryPathEnvVarName[] = "LD_LIBRARY_PATH";
   std::string library_paths(license_server_path.DirName().value());
@@ -78,7 +78,7 @@ bool WVTestLicenseServerConfig::GetServerCommandLine(
   if (env->GetVar(kLibraryPathEnvVarName, &old_path))
     library_paths.append(":").append(old_path);
   env->SetVar(kLibraryPathEnvVarName, library_paths);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Since it is a Python command line, we need to AppendArg instead of
   // AppendSwitch so that the arguments are passed to the Python server instead
@@ -131,11 +131,11 @@ bool WVTestLicenseServerConfig::SelectServerPort() {
 bool WVTestLicenseServerConfig::IsPlatformSupported() {
 // TODO(crbug.com/1175344): Reenable OS_LINUX once license server
 // (or Widevine CDM) updated.
-#if defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
   return true;
 #else
   return false;
-#endif  // defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 }
 
 std::string WVTestLicenseServerConfig::GetServerURL() {
@@ -147,12 +147,12 @@ void WVTestLicenseServerConfig::GetLicenseServerPath(base::FilePath *path) {
   GetLicenseServerRootPath(&server_root);
   // Platform-specific license server binary path relative to root.
   *path =
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       server_root.Append(FILE_PATH_LITERAL("linux"))
           .Append(FILE_PATH_LITERAL("license_server.py"));
 #else
     server_root.Append(FILE_PATH_LITERAL("unsupported_platform"));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void WVTestLicenseServerConfig::GetLicenseServerRootPath(

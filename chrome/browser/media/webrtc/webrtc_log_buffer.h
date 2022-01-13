@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "components/webrtc_logging/common/partial_circular_buffer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const size_t kWebRtcLogSize = 1 * 1024 * 1024;  // 1 MB
 #else
 const size_t kWebRtcLogSize = 6 * 1024 * 1024;  // 6 MB

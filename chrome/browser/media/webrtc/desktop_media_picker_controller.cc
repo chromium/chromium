@@ -91,7 +91,7 @@ void DesktopMediaPickerController::OnInitialMediaListFound() {
     // system-wide audio loopback) at this time.
     content::DesktopMediaID media_id = source_list->GetSource(0).id;
     DCHECK_EQ(media_id.type, content::DesktopMediaID::TYPE_SCREEN);
-#if defined(USE_CRAS) || defined(OS_WIN)
+#if defined(USE_CRAS) || BUILDFLAG(IS_WIN)
     media_id.audio_share = params_.request_audio;
 #else
     media_id.audio_share = false;

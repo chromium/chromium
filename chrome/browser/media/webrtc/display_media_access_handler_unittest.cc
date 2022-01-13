@@ -27,13 +27,13 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -214,7 +214,7 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGiven) {
                                          content::DesktopMediaID::kFakeId),
                  &result, &devices, false /* request_audio */);
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
   // that are disabled by default.
   if (base::mac::IsAtLeastOS10_15()) {
@@ -239,7 +239,7 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGivenToRequestWithAudio) {
                                         true /* audio_share */);
   ProcessRequest(fake_media_id, &result, &devices, true /* request_audio */);
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
   // that are disabled by default.
   if (base::mac::IsAtLeastOS10_15()) {
@@ -267,7 +267,7 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionDenied) {
   EXPECT_EQ(0u, devices.size());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
   const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
                                          content::DesktopMediaID::kFakeId);
@@ -341,7 +341,7 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpWebContentsDestroyed) {
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, result);
   EXPECT_EQ(0u, devices.size());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
   const int render_process_id =
@@ -525,7 +525,7 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
   EXPECT_TRUE(test_flags_[0].picker_created);
   EXPECT_TRUE(test_flags_[0].picker_deleted);
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
   // that are disabled by default.
   if (base::mac::IsAtLeastOS10_15()) {
@@ -571,7 +571,7 @@ TEST_F(DisplayMediaAccessHandlerTest,
       /*expected_number_of_devices=*/2u);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceDlpRestricted) {
   const content::DesktopMediaID media_id(
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
@@ -617,7 +617,7 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceDlpNotRestricted) {
       blink::mojom::MediaStreamRequestResult::OK,
       /*expected_number_of_devices=*/1u);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceWithPendingPickerRequest) {
   SetTestFlags({MakePickerTestFlags(false /*request_audio*/),
@@ -636,7 +636,7 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceWithPendingPickerRequest) {
   EXPECT_TRUE(test_flags_[0].picker_created);
   EXPECT_TRUE(test_flags_[0].picker_deleted);
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
   // that are disabled by default.
   if (base::mac::IsAtLeastOS10_15()) {
@@ -675,7 +675,7 @@ TEST_F(DisplayMediaAccessHandlerTest,
 
   wait_loop[0].Run();
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
   // that are disabled by default.
   if (base::mac::IsAtLeastOS10_15()) {
@@ -715,7 +715,7 @@ TEST_F(DisplayMediaAccessHandlerTest,
   EXPECT_TRUE(test_flags_[0].picker_created);
   EXPECT_TRUE(test_flags_[0].picker_deleted);
 // TODO(https://crbug.com/1266425): Fix screen-capture tests on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Starting from macOS 10.15, screen capture requires system permissions
   // that are disabled by default.
   if (base::mac::IsAtLeastOS10_15()) {

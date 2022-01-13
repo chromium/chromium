@@ -34,17 +34,17 @@ const char kBoundary[] = "----**--yradnuoBgoLtrapitluMklaTelgooG--**----";
 constexpr size_t kExpectedMimeOverheadBytes = 1000;  // Intentional overshot.
 
 // TODO(crbug.com/817495): Eliminate the duplication with other uploaders.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kProduct[] = "Chrome";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const char kProduct[] = "Chrome_Mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kProduct[] = "Chrome_ChromeOS";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kProduct[] = "Chrome_Linux";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kProduct[] = "Chrome_Android";
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 const char kProduct[] = "Chrome_Fuchsia";
 #else
 #error Platform not supported.

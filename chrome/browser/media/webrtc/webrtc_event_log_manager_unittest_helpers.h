@@ -25,9 +25,9 @@ enum class WebRtcEventLogCompression {
 std::unique_ptr<LogFileWriter::Factory> CreateLogFileWriterFactory(
     WebRtcEventLogCompression compression);
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 void RemoveWritePermissions(const base::FilePath& path);
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 // Always estimates strings to be compressed to zero bytes.
 class NullEstimator : public CompressedSizeEstimator {

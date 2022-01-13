@@ -14,7 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -144,7 +144,7 @@ void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
       });
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit CaptureTerminatedDialogDelegate(content::WebContents* web_contents)
@@ -164,7 +164,7 @@ class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
 #endif
 
 void ShowCaptureTerminatedDialog(content::WebContents* contents) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TabModalConfirmDialog::Create(
       std::make_unique<CaptureTerminatedDialogDelegate>(contents), contents);
 #endif

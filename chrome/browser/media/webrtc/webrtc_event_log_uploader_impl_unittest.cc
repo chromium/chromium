@@ -53,7 +53,7 @@ class UploadObserver {
   base::OnceClosure on_complete_callback_;
 };
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 void RemovePermissions(const base::FilePath& path, int removed_permissions) {
   int permissions;
   ASSERT_TRUE(base::GetPosixFilePermissions(path, &permissions));
@@ -67,7 +67,7 @@ void RemoveReadPermissions(const base::FilePath& path) {
                                    base::FILE_PERMISSION_READ_BY_OTHERS;
   RemovePermissions(path, read_permissions);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 }  // namespace
 
 class WebRtcEventLogUploaderImplTest : public ::testing::Test {
@@ -236,7 +236,7 @@ TEST_F(WebRtcEventLogUploaderImplTest, UnsuccessfulUploadReportedToObserver2) {
   EXPECT_FALSE(base::PathExists(log_file_));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcEventLogUploaderImplTest, FailureToReadFileReportedToObserver) {
   // Show the failure was independent of the URLLoaderFactory's primed return
   // value.
@@ -256,7 +256,7 @@ TEST_F(WebRtcEventLogUploaderImplTest, NonExistentFileReportedToObserver) {
   EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
   StartAndWaitForUpload();
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(WebRtcEventLogUploaderImplTest, FilesUpToMaxSizeUploaded) {
   int64_t log_file_size_bytes;

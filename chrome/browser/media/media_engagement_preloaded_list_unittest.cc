@@ -18,7 +18,7 @@
 
 namespace {
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Generated files are re-homed to the package root.
 const base::FilePath kTestDataPath = base::FilePath(
     FILE_PATH_LITERAL("chrome/test/data/media/engagement/preload"));
@@ -208,12 +208,12 @@ TEST_F(MediaEngagementPreloadedListTest, LoadMissingFile) {
   ExpectCheckResultNotLoadedCount(1);
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // ".." is not a file that can be opened on Fuchsia.
 #define MAYBE_LoadFileReadFailed DISABLED_LoadFileReadFailed
 #else
 #define MAYBE_LoadFileReadFailed LoadFileReadFailed
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 TEST_F(MediaEngagementPreloadedListTest, MAYBE_LoadFileReadFailed) {
   ASSERT_FALSE(LoadFromFile(kFileReadFailedPath));
   EXPECT_FALSE(IsLoaded());

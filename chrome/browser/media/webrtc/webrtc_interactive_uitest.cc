@@ -30,7 +30,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -148,7 +148,7 @@ class WebRtcBrowserTest : public WebRtcTestBase {
   void DetectVideoAndHangUp() {
     StartDetectingVideo(left_tab_, "remote-view");
     StartDetectingVideo(right_tab_, "remote-view");
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Video is choppy on Mac OS X. http://crbug.com/443542.
     WaitForVideoToPlay(left_tab_);
     WaitForVideoToPlay(right_tab_);
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(jam): this test only on 10.12.
   if (base::mac::IsOS10_12())
     return;

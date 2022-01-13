@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1241344): test fails on some mac bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2 \
   DISABLED_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2
 #else

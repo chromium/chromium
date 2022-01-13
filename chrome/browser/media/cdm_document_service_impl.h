@@ -44,10 +44,10 @@ class CdmDocumentServiceImpl final
                          const std::string& challenge,
                          ChallengePlatformCallback callback) final;
   void GetStorageId(uint32_t version, GetStorageIdCallback callback) final;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   void IsVerifiedAccessEnabled(IsVerifiedAccessEnabledCallback callback) final;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(
       GetMediaFoundationCdmDataCallback callback) final;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
@@ -58,7 +58,7 @@ class CdmDocumentServiceImpl final
       base::Time end,
       const base::RepeatingCallback<bool(const GURL&)>& filter,
       base::OnceClosure complete_cb);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   // |this| can only be destructed as a DocumentService.

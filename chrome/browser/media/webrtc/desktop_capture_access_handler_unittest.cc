@@ -36,7 +36,7 @@
 #include "ui/aura/window.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
 #endif
@@ -64,7 +64,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
       blink::mojom::MediaStreamRequestResult* request_result,
       blink::MediaStreamDevices* devices_result,
       bool expect_result = true) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndDisableFeature(
         features::kMacSystemScreenCapturePermissionCheck);

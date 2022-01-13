@@ -26,7 +26,7 @@ bool MediaRouterEnabled(content::BrowserContext* context);
 // process.
 void ClearMediaRouterStoredPrefsForTesting();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Enables the media router. Can be disabled in tests unrelated to
 // Media Router where it interferes. Can also be useful to disable for local
@@ -100,7 +100,7 @@ bool GetAccessCodeCastEnabledPref(PrefService* pref_service);
 // in the cast list.
 base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service);
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router
 

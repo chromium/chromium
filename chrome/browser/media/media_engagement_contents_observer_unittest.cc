@@ -36,7 +36,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug/1004580) All these tests crash on Android
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class MediaEngagementContentsObserverTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -1362,4 +1362,4 @@ TEST_F(MediaEngagementContentsObserverTest, PlayerStateIsCleanedUp) {
   EXPECT_EQ(0u, GetStoredPlayerStatesCount());
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

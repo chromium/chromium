@@ -36,7 +36,7 @@
 #include "ui/snapshot/snapshot_aura.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "components/remote_cocoa/browser/scoped_cg_window_id.h"
 #endif
 
@@ -94,7 +94,7 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const base::Feature kWindowCaptureMacV2{"WindowCaptureMacV2",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
@@ -316,7 +316,7 @@ NativeDesktopMediaList::NativeDesktopMediaList(
       thread_("DesktopMediaListCaptureThread") {
   type_ = type;
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // On Windows/OSX the thread must be a UI thread.
   base::MessagePumpType thread_type = base::MessagePumpType::UI;
 #else
@@ -383,7 +383,7 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
           DesktopMediaID::TYPE_WINDOW, aura_window);
       source.id.window_id = aura_id.window_id;
     }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
       if (remote_cocoa::ScopedCGWindowID::Get(source.id.id))
         source.id.window_id = source.id.id;

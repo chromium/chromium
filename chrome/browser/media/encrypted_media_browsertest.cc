@@ -39,7 +39,7 @@
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
@@ -802,7 +802,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
 }
 
 // TODO(1019187): Failing on win7.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CDMCrashDuringDecode DISABLED_CDMCrashDuringDecode
 #else
 #define MAYBE_CDMCrashDuringDecode CDMCrashDuringDecode

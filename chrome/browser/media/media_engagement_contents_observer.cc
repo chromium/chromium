@@ -24,11 +24,11 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -618,7 +618,7 @@ void MediaEngagementContentsObserver::ReadyToCommitNavigation(
 }
 
 content::WebContents* MediaEngagementContentsObserver::GetOpener() const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != service_->profile())
       continue;
@@ -631,7 +631,7 @@ content::WebContents* MediaEngagementContentsObserver::GetOpener() const {
     // Whether or not the |opener| is null, this is the right tab strip.
     return browser->tab_strip_model()->GetOpenerOfWebContentsAt(index);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return nullptr;
 }

@@ -602,7 +602,7 @@ TEST_P(MediaEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
 }
 
 // The test is flaky: crbug.com/1042417.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CleanUpDatabaseWhenHistoryIsExpired \
   DISABLED_CleanUpDatabaseWhenHistoryIsExpired
 #else
@@ -886,7 +886,7 @@ class MediaEngagementServiceEnabledTest
     : public ChromeRenderViewHostTestHarness {};
 
 TEST_F(MediaEngagementServiceEnabledTest, IsEnabled) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Make sure these flags are disabled on Android
   EXPECT_FALSE(base::FeatureList::IsEnabled(
       media::kMediaEngagementBypassAutoplayPolicies));

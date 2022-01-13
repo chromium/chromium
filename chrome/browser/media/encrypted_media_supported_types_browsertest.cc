@@ -41,7 +41,7 @@
 #include "media/cdm/cdm_paths.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error This file needs to be updated to run on Android.
 #endif
 
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
   auto result =
       IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Persistent license session supported by Widevine key system on Windows and
   // Mac. On ChromeOS, it is supported when the protected media identifier
   // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
@@ -1458,7 +1458,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
   // Widevine experiment key system is only supported on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Widevine key system doesn't support hardware security.
   EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
   EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));

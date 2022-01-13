@@ -49,7 +49,7 @@ std::string MakeLabel(const char* test_name, const std::string& video_codec) {
 }  // namespace
 
 static const base::FilePath::CharType kFrameAnalyzerExecutable[] =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     FILE_PATH_LITERAL("frame_analyzer.exe");
 #else
     FILE_PATH_LITERAL("frame_analyzer");
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoQualityBrowserTest,
 // component build.
 // TODO(crbug.com/1008766): re-enable when flakiness is investigated, diagnosed
 // and resolved.
-#if defined(OS_WIN) || defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_WIN) || defined(COMPONENT_BUILD)
 #define MAYBE_MANUAL_TestVideoQualityVp9 DISABLED_MANUAL_TestVideoQualityVp9
 #else
 #define MAYBE_MANUAL_TestVideoQualityVp9 MANUAL_TestVideoQualityVp9
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoQualityBrowserTest,
 
 // Flaky on mac (crbug.com/754684) and WebRTC's frame_analyzer doesn't build
 // from a Chromium's component build.
-#if defined(OS_MAC) || defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_MAC) || defined(COMPONENT_BUILD)
 #define MAYBE_MANUAL_TestVideoQualityH264 DISABLED_MANUAL_TestVideoQualityH264
 #else
 #define MAYBE_MANUAL_TestVideoQualityH264 MANUAL_TestVideoQualityH264

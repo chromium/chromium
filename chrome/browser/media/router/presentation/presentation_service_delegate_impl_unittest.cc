@@ -62,7 +62,7 @@ MATCHER_P(InfoEquals, expected, "") {
   return expected.url == arg.url && expected.id == arg.id;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Set the user preference for |origin| to prefer tab mirroring.
 void EnableTabMirroringForOrigin(PrefService* prefs,
                                  const std::string& origin) {
@@ -766,7 +766,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
   delegate_impl_->Reset(main_frame_process_id_, main_frame_routing_id_);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
   std::string origin(frame_origin_.Serialize());
   content::WebContentsTester::For(GetWebContents())
@@ -872,6 +872,6 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
           &MockCreatePresentationConnnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

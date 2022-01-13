@@ -230,7 +230,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
 
     // Get the native window's id.
     gfx::AcceleratedWidget widget = host->GetAcceleratedWidget();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     window.id = reinterpret_cast<DesktopMediaID::Id>(widget);
 #else
     window.id = widget;
@@ -251,7 +251,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
     aura::Window* aura_window = desktop_widgets_[index]->GetNativeWindow();
     gfx::AcceleratedWidget widget =
         aura_window->GetHost()->GetAcceleratedWidget();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     int native_id = reinterpret_cast<DesktopMediaID::Id>(widget);
 #else
     int native_id = widget;

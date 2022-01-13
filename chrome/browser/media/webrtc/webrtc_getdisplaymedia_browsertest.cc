@@ -33,7 +33,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
@@ -107,7 +107,7 @@ void RunGetDisplayMedia(content::WebContents* tab,
                          constraints.c_str()),
       &result));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!is_fake_ui && !is_tab_capture &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
           system_media_permissions::SystemPermission::kAllowed) {
@@ -213,11 +213,11 @@ class WebRtcScreenCaptureBrowserTestWithPicker
 };
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideo) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -271,18 +271,19 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
-#elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(NDEBUG))
+#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+       !defined(NDEBUG))
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
        defined(ADDRESS_SANITIZER))
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 #else
 #define MAYBE_ScreenCaptureVideoAndAudio ScreenCaptureVideoAndAudio
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideoAndAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -451,7 +452,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    /*allowlisted_by_policy=*/true)));
 
 // Flaky on Win bots http://crbug.com/1264805
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenShareFromEmbedded DISABLED_ScreenShareFromEmbedded
 #else
 #define MAYBE_ScreenShareFromEmbedded ScreenShareFromEmbedded

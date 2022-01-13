@@ -33,7 +33,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // For fine-grained suppression.
 #include "base/win/windows_version.h"
 #endif
@@ -507,7 +507,7 @@ std::string WebRtcTestBase::GetStreamSize(
 }
 
 bool WebRtcTestBase::OnWin8OrHigher() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::win::GetVersion() >= base::win::Version::WIN8;
 #else
   return false;

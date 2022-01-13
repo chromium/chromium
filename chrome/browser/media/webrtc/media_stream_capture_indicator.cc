@@ -31,7 +31,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/webrtc/media_stream_focus_delegate.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -203,7 +203,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
       : device_usage_(device_usage),
         devices_(devices),
         ui_(std::move(ui)),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         focus_delegate_(web_contents),
 #endif
         application_title_(std::move(application_title)) {
@@ -266,7 +266,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetFocus(const content::DesktopMediaID& media_id,
                 bool focus,
                 bool is_from_microtask,
@@ -278,7 +278,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   base::WeakPtr<WebContentsDeviceUsage> device_usage_;
   const blink::MediaStreamDevices devices_;
   const std::unique_ptr<::MediaStreamUI> ui_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   MediaStreamFocusDelegate focus_delegate_;
 #endif
   const std::u16string application_title_;
@@ -623,9 +623,9 @@ void MediaStreamCaptureIndicator::GetStatusTrayIconInfo(
     bool video,
     gfx::ImageSkia* image,
     std::u16string* tool_tip) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
-#else   // !defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(audio || video);
   DCHECK(image);
@@ -646,5 +646,5 @@ void MediaStreamCaptureIndicator::GetStatusTrayIconInfo(
 
   *tool_tip = l10n_util::GetStringUTF16(message_id);
   *image = gfx::CreateVectorIcon(*icon, 16, gfx::kChromeIconGrey);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }

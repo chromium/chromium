@@ -71,7 +71,7 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void InitializeCastMediaRouteProvider();
   void InitializeDialMediaRouteProvider();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Ensures that mDNS discovery is enabled in the Cast MRP. This can be
   // called many times but the MRPM will only be called once per registration
   // period.

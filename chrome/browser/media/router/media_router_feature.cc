@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -20,13 +21,13 @@
 #include "media/base/media_switches.h"
 #include "ui/base/buildflags.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/prefs/pref_registry_simple.h"
 #endif
 
 namespace media_router {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const base::Feature kMediaRouter{"MediaRouter",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCastAllowAllIPsFeature{"CastAllowAllIPs",
@@ -39,7 +40,7 @@ const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDialEnforceUrlIPAddress{"DialEnforceUrlIPAddress",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 const PrefService::Preference* GetMediaRouterPref(
@@ -61,10 +62,10 @@ void ClearMediaRouterStoredPrefsForTesting() {
 }
 
 bool MediaRouterEnabled(content::BrowserContext* context) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(kMediaRouter))
     return false;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // If the Media Router was already enabled or disabled for |context|, then it
   // must remain so.  The Media Router does not support dynamic
@@ -86,7 +87,7 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
   return true;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kMediaRouterCastAllowAllIPs, false,
                                 PrefRegistry::PUBLIC);
@@ -140,15 +141,15 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
 }
 
 bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return pref_service->GetBoolean(prefs::kAccessCodeCastEnabled);
 #else
   return false;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (!GetAccessCodeCastEnabledPref(pref_service)) {
     return base::Seconds(0);
   }
@@ -156,9 +157,9 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
       pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
 #else
   return base::Seconds(0);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

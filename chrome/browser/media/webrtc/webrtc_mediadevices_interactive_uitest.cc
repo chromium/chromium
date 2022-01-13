@@ -34,7 +34,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <CoreGraphics/CoreGraphics.h>
 #endif
 
@@ -405,8 +405,8 @@ class WebRtcMediaDevicesPrerenderingBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesPrerenderingBrowserTest,
                        EnumerateDevicesInPrerendering) {
-#if defined(OS_MAC)
-  // Test will fail if the window it's runnig in contains the mouse pointer.
+#if BUILDFLAG(IS_MAC)
+  // Test will fail if the window it's running in contains the mouse pointer.
   // Here we warp the cursor, hopefully, out of the window.
   CGWarpMouseCursorPosition({0, 0});
 #endif

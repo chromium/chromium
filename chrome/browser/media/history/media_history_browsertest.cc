@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DISABLED_GetPlaybackSessions) {
 }
 
 // TODO(crbug.com/1176025): Flaking on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_SaveImagesWithDifferentSessions \
   DISABLED_SaveImagesWithDifferentSessions
 #else
@@ -819,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
             GetPlaybackSessionsSync(GetOTRMediaHistoryService(browser), 2));
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 // TODO(crbug.com/1152073): This test has flaky timeouts on Mac Debug.
 #define MAYBE_RecordWatchtime_AudioVideo DISABLED_RecordWatchtime_AudioVideo
 #else
@@ -1103,7 +1103,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
 }
 
 // TODO(crbug.com/1086828): Test is flaky on Linux, Windows, Mac and Lacros.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_DoNotRecordWatchtime_Background \
   DISABLED_DoNotRecordWatchtime_Background

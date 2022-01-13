@@ -55,7 +55,7 @@ void CastMediaSinkService::Start(
       FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::Start,
                                 base::Unretained(impl_.get())));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   StartMdnsDiscovery();
 #endif
 }

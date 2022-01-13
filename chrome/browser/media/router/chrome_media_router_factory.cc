@@ -11,7 +11,7 @@
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "content/public/browser/browser_context.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/android/router/chrome_media_router_client.h"
 #include "components/media_router/browser/android/media_router_android.h"
 #include "components/media_router/browser/android/media_router_dialog_controller_android.h"
@@ -37,7 +37,7 @@ ChromeMediaRouterFactory* ChromeMediaRouterFactory::GetInstance() {
 
 // static
 void ChromeMediaRouterFactory::DoPlatformInit() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   InitChromeMediaRouterJavaClient();
 
   // The desktop (Views) version of this is in ChromeBrowserMainExtraPartsViews
@@ -71,7 +71,7 @@ KeyedService* ChromeMediaRouterFactory::BuildServiceInstanceFor(
     return nullptr;
   }
   MediaRouterBase* media_router = nullptr;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   media_router = new MediaRouterAndroid();
 #else
   media_router = new MediaRouterDesktop(context);

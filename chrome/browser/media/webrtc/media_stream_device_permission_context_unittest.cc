@@ -20,7 +20,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/permissions/permission_request_manager.h"
 #endif
 
@@ -106,7 +106,7 @@ class MediaStreamDevicePermissionContextTests
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 #else
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());

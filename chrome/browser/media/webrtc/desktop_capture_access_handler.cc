@@ -61,9 +61,9 @@
 #include "ui/base/ui_base_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
@@ -71,7 +71,7 @@ using extensions::mojom::ManifestLocation;
 namespace {
 
 // Currently, loopback audio capture is only supported on Windows and ChromeOS.
-#if defined(USE_CRAS) || defined(OS_WIN)
+#if defined(USE_CRAS) || BUILDFLAG(IS_WIN)
 constexpr bool kIsLoopbackAudioSupported = true;
 #else
 constexpr bool kIsLoopbackAudioSupported = false;
@@ -107,7 +107,7 @@ bool HasNotificationExemption(const GURL& url) {
           base::FeatureList::IsEnabled(features::kWebUIFeedback));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Find browser or app window from a given |web_contents|.
 gfx::NativeWindow FindParentWindowForWebContents(
     content::WebContents* web_contents) {
@@ -190,7 +190,7 @@ bool IsRequestApproved(content::WebContents* web_contents,
     return true;
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   gfx::NativeWindow parent_window =
       FindParentWindowForWebContents(web_contents);
 #else
@@ -366,7 +366,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
                /*ui=*/nullptr);
       return;
     }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (system_media_permissions::CheckSystemScreenCapturePermission() !=
         system_media_permissions::SystemPermission::kAllowed) {
       std::move(pending_request->callback)
@@ -428,7 +428,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
              /*ui=*/nullptr);
     return;
   }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (media_id.type != content::DesktopMediaID::TYPE_WEB_CONTENTS &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
           system_media_permissions::SystemPermission::kAllowed) {

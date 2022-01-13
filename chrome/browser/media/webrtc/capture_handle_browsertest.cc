@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 }
 
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
   DISABLED_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
 #else
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
   DISABLED_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
 #else
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 }
 
 // TODO(crbug/1219998): Disabled because of flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle \
   DISABLED_RegularTabCannotReadIncognitoTabCaptureHandle
 #else
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 }
 
 // TODO(crbug/1219998): Disabled because of flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture \
   DISABLED_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture
 #else

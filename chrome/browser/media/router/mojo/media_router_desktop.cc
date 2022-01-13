@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
@@ -22,13 +23,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/router/mojo/media_route_provider_util_win.h"
 #endif
 
 namespace media_router {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kLoggerComponent[] = "MediaRouterDesktop";
 #endif
 
@@ -51,7 +52,7 @@ void MediaRouterDesktop::OnUserGesture() {
                                 media_sink_service_status_.GetWeakPtr()));
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!media_sink_service_->MdnsDiscoveryStarted()) {
     GetLogger()->LogInfo(
         mojom::LogCategory::kDiscovery, kLoggerComponent,
@@ -90,7 +91,7 @@ MediaRouterDesktop::GetProviderIdForPresentation(
 
 MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context)
     : MediaRouterDesktop(context, DualMediaSinkService::GetInstance()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CanFirewallUseLocalPorts(
       base::BindOnce(&MediaRouterDesktop::OnFirewallCheckComplete,
                      weak_factory_.GetWeakPtr()));
@@ -210,7 +211,7 @@ void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
                              std::move(dial_provider_remote));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void MediaRouterDesktop::EnsureMdnsDiscoveryEnabled() {
   media_sink_service_->StartMdnsDiscovery();
 }

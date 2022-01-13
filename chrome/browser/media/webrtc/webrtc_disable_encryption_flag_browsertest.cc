@@ -52,10 +52,10 @@ class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
 // TODO(crbug.com/910216): De-flake this for ChromeOs.
 // TODO(crbug.com/984879): De-flake this for ASAN/MSAN Linux.
 // TODO(crbug.com/1211144): De-flake this for MacOS.
-#if defined(OS_CHROMEOS) || defined(OS_MAC) ||                     \
-    (defined(OS_LINUX) &&                                          \
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||                 \
+    (BUILDFLAG(IS_LINUX) &&                                        \
      (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))) || \
-    (defined(OS_WIN) && defined(ADDRESS_SANITIZER))
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_VerifyEncryption DISABLED_VerifyEncryption
 #else
 #define MAYBE_VerifyEncryption VerifyEncryption
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcDisableEncryptionFlagBrowserTest,
       channel == version_info::Channel::DEV) {
     should_detect_encryption = false;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (channel == version_info::Channel::BETA)
     should_detect_encryption = false;
 #endif

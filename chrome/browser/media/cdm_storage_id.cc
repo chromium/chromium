@@ -16,7 +16,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "url/origin.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/bind.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #endif
@@ -30,13 +30,13 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_RLZ)
 #include "rlz/lib/machine_id.h"
 #else
 #error "RLZ must be enabled on Windows/Mac"
 #endif  // BUILDFLAG(ENABLE_RLZ)
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -89,7 +89,7 @@ std::vector<uint8_t> CalculateStorageId(
   return result;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void ComputeAndReturnStorageId(const std::vector<uint8_t>& profile_salt,
                                const url::Origin& origin,
                                CdmStorageIdCallback callback,
@@ -98,14 +98,14 @@ void ComputeAndReturnStorageId(const std::vector<uint8_t>& profile_salt,
   std::move(callback).Run(
       CalculateStorageId(storage_id_key, profile_salt, origin, machine_id));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
 void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
                       const url::Origin& origin,
                       CdmStorageIdCallback callback) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::string machine_id;
   std::string storage_id_key = GetCdmStorageIdKey();
   rlz_lib::GetMachineId(&machine_id);
