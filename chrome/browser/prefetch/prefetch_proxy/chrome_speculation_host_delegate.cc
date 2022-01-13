@@ -48,15 +48,14 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
   // non-private prefetches with subresources.
   std::vector<GURL> same_origin_prefetches_with_subresources;
 
-  const url::Origin origin = render_frame_host_.GetLastCommittedOrigin();
+  const url::Origin& origin = render_frame_host_.GetLastCommittedOrigin();
 
   // Returns true if the given entry is processed. Being processed means this
   // delegate has a corresponding strategy to process the candidate, so it
   // extracts the candidate's URL.
   auto should_process_entry =
       [&](const blink::mojom::SpeculationCandidatePtr& candidate) {
-        bool is_same_origin =
-            url::Origin::Create(candidate->url).IsSameOriginWith(origin);
+        bool is_same_origin = origin.IsSameOriginWith(candidate->url);
         bool private_prefetch =
             candidate->requires_anonymous_client_ip_when_cross_origin &&
             !is_same_origin;

@@ -697,7 +697,7 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
 
   const GURL test_site("https://webauthndemo.appspot.com");
   DCHECK(test_site.is_valid());
-  return origin.IsSameOriginWith(url::Origin::Create(test_site));
+  return origin.IsSameOriginWith(test_site);
 }
 
 void ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent(

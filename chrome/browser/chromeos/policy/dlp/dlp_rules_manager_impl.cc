@@ -250,8 +250,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
          restriction == Restriction::kFiles);
 
   // Allow copy/paste within the same document.
-  if (url::Origin::Create(source).IsSameOriginWith(
-          url::Origin::Create(destination)))
+  if (url::IsSameOriginWith(source, destination))
     return Level::kAllow;
 
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(

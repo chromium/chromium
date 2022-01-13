@@ -695,8 +695,7 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
   const url::Origin& initiator = request_initiator.value();
 
   // Don't block same-origin documents.
-  url::Origin target_origin = url::Origin::Create(request_url);
-  if (initiator.IsSameOriginWith(target_origin))
+  if (initiator.IsSameOriginWith(request_url))
     return Decision::kAllow;
 
   // Only apply CORB to `no-cors` requests.

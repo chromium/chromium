@@ -203,8 +203,7 @@ void PermissionRequestManager::AddRequest(
   const GURL& main_frame_origin =
       PermissionUtil::GetLastCommittedOriginAsURL(web_contents());
   bool is_main_frame =
-      url::Origin::Create(main_frame_origin)
-          .IsSameOriginWith(url::Origin::Create(request->requesting_origin()));
+      url::IsSameOriginWith(main_frame_origin, request->requesting_origin());
 
   absl::optional<url::Origin> auto_approval_origin =
       PermissionsClient::Get()->GetAutoApprovalOrigin();

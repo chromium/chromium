@@ -188,8 +188,7 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   // through the NavigationThrottle, so it's not a problem here
   RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree()->GetMainFrame();
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
-  if (!main_origin.IsSameOriginWith(
-          url::Origin::Create(navigation_handle()->GetURL()))) {
+  if (!main_origin.IsSameOriginWith(navigation_handle()->GetURL())) {
     DeferCrossOriginSubframeNavigation(*frame_tree_node);
     return NavigationThrottle::DEFER;
   }

@@ -46,12 +46,12 @@ void RenderFrameHostCSPContext::SanitizeDataForUseInCspViolation(
   // There is no need to sanitize data when it is same-origin with the current
   // url of the renderer.
   if (render_frame_host_) {
-    if (url::Origin::Create(*blocked_url)
-            .IsSameOriginWith(render_frame_host_->GetLastCommittedOrigin())) {
+    if (render_frame_host_->GetLastCommittedOrigin().IsSameOriginWith(
+            *blocked_url)) {
       sanitize_blocked_url = false;
     }
-    if (url::Origin::Create(source_location_url)
-            .IsSameOriginWith(render_frame_host_->GetLastCommittedOrigin())) {
+    if (render_frame_host_->GetLastCommittedOrigin().IsSameOriginWith(
+            source_location_url)) {
       sanitize_source_location = false;
     }
   }

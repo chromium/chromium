@@ -1250,8 +1250,7 @@ bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
   }
   const url::Origin& owner_origin =
       owner_web_contents()->GetMainFrame()->GetLastCommittedOrigin();
-  const bool base_in_owner_origin =
-      owner_origin.IsSameOriginWith(url::Origin::Create(base_url));
+  const bool base_in_owner_origin = owner_origin.IsSameOriginWith(base_url);
   // |base_url| must be a valid URL. It is also limited to URLs that the owner
   // is trusted to have control over.
   if (!base_url.is_valid() ||

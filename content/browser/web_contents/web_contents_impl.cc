@@ -312,7 +312,7 @@ bool AreValidRegisterProtocolHandlerArguments(
     return false;
 
   if (security_level < blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins &&
-      !url_origin.IsSameOriginWith(origin))
+      !origin.IsSameOriginWith(url))
     return false;
 
   return true;
@@ -6761,9 +6761,7 @@ void WebContentsImpl::RunJavaScriptDialog(
     if (!render_frame_host->GetLastCommittedOrigin().opaque()) {
       bool is_different_origin_subframe =
           render_frame_host->GetLastCommittedOrigin() !=
-          url::Origin::Create(render_frame_host->GetOutermostMainFrame()
-                                  ->GetLastCommittedURL()
-                                  .DeprecatedGetOriginAsURL());
+          render_frame_host->GetOutermostMainFrame()->GetLastCommittedOrigin();
       suppress_this_message |= is_different_origin_subframe;
       if (is_different_origin_subframe) {
         GetMainFrame()->AddMessageToConsole(

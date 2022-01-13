@@ -222,6 +222,15 @@ class COMPONENT_EXPORT(URL) Origin {
     return !IsSameOriginWith(other);
   }
 
+  // Non-opaque origin is "same-origin" with `url` if their schemes, hosts, and
+  // ports are exact matches.  Opaque origin is never "same-origin" with any
+  // `url`.  about:blank, about:srcdoc, and invalid GURLs are never
+  // "same-origin" with any origin.  This method is a shorthand for
+  // `origin.IsSameOriginWith(url::Origin::Create(url))`.
+  //
+  // See also CanBeDerivedFrom.
+  bool IsSameOriginWith(const GURL& url) const;
+
   // This method returns true for any |url| which if navigated to could result
   // in an origin compatible with |this|.
   bool CanBeDerivedFrom(const GURL& url) const;

@@ -163,6 +163,20 @@ bool Origin::IsSameOriginWith(const Origin& other) const {
   return std::tie(tuple_, nonce_) == std::tie(other.tuple_, other.nonce_);
 }
 
+bool Origin::IsSameOriginWith(const GURL& url) const {
+  if (opaque())
+    return false;
+
+  // The `url::Origin::Create` call here preserves how IsSameOriginWith was used
+  // historically, even though in some scenarios it is not clearly correct:
+  // - Origin of about:blank and about:srcdoc cannot be correctly
+  //   computed/recovered.
+  // - Ideally passing an invalid `url` would be a caller error (e.g. a DCHECK).
+  // - The caller intent is not always clear wrt handling the outer-vs-inner
+  //   origins/URLs in blob: and filesystem: schemes.
+  return IsSameOriginWith(url::Origin::Create(url));
+}
+
 bool Origin::CanBeDerivedFrom(const GURL& url) const {
   DCHECK(url.is_valid());
 

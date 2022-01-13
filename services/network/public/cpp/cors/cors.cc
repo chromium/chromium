@@ -260,7 +260,7 @@ bool ShouldCheckCors(const GURL& request_url,
   // DCHECK for a while, just in case.
   DCHECK(!request_url.SchemeIs(url::kDataScheme));
 
-  if (request_initiator->IsSameOriginWith(url::Origin::Create(request_url)))
+  if (request_initiator->IsSameOriginWith(request_url))
     return false;
   return true;
 }

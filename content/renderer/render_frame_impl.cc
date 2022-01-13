@@ -4834,7 +4834,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // adapted to the renderer process side.
   if (!params->origin.opaque() && params->url.IsStandard() &&
       GetBlinkPreferences().web_security_enabled) {
-    if (!params->origin.IsSameOriginWith(url::Origin::Create(params->url))) {
+    if (!params->origin.IsSameOriginWith(params->url)) {
       // Exclude file: URLs when settings allow them access any origin.
       if (!file_scheme_with_universal_access) {
         SCOPED_CRASH_KEY_STRING256("MakeDCPLParams", "mismatched_url",

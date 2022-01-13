@@ -746,6 +746,29 @@ TEST_F(OriginTest, DeserializeValidNonce) {
   EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
 }
 
+TEST_F(OriginTest, IsSameOriginWith) {
+  url::Origin opaque_origin;
+  GURL foo_url = GURL("https://foo.com/path");
+  url::Origin foo_origin = url::Origin::Create(foo_url);
+  GURL bar_url = GURL("https://bar.com/path");
+  url::Origin bar_origin = url::Origin::Create(bar_url);
+
+  EXPECT_FALSE(opaque_origin.IsSameOriginWith(foo_origin));
+  EXPECT_FALSE(opaque_origin.IsSameOriginWith(foo_url));
+
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(foo_origin));
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(foo_url));
+
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(bar_origin));
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(bar_url));
+
+  // Documenting legacy behavior.  This doesn't necessarily mean that the legacy
+  // behavior is correct (or desirable in the long-term).
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL("about:blank")));
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL()));  // Invalid GURL.
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(GURL("blob:https://foo.com/guid")));
+}
+
 INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,
                                AbstractOriginTest,
                                UrlOriginTestTraits);

@@ -2534,10 +2534,9 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
   // [spec]: 4. If request’s origin is same origin with request’s current URL’s
   //            origin and request does not have a redirect-tainted origin, then
   //            return true.
-  url::Origin request_origin = url::Origin::Create(url);
   url::Origin request_initiator =
       url_request_->initiator().value_or(url::Origin());
-  if (request_origin.IsSameOriginWith(request_initiator))
+  if (request_initiator.IsSameOriginWith(url))
     return true;
 
   // [spec]: 5. Return false.

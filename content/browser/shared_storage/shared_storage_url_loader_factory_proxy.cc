@@ -51,7 +51,7 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
     const network::ResourceRequest& url_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(frame_origin_.IsSameOriginWith(url::Origin::Create(script_url_)));
+  DCHECK(frame_origin_.IsSameOriginWith(script_url_));
 
   if (url_request.url != script_url_) {
     receiver_.ReportBadMessage("Unexpected request");

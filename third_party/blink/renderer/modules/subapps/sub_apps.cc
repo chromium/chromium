@@ -90,8 +90,7 @@ ScriptPromise SubApps::add(ScriptState* script_state,
   }
 
   KURL completed_url = KURL(navigator->DomWindow()->Url(), install_url);
-  if (!url::Origin::Create(navigator->DomWindow()->Url())
-           .IsSameOriginWith(url::Origin::Create(completed_url))) {
+  if (!url::IsSameOriginWith(navigator->DomWindow()->Url(), completed_url)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "API argument must be a relative path or a fully qualified URL matching"

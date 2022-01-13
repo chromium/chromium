@@ -387,11 +387,9 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
   BOOL isCrossOriginTargetFrame = NO;
   if (action.sourceFrame && action.targetFrame &&
       action.sourceFrame != action.targetFrame) {
-    url::Origin sourceOrigin = url::Origin::Create(
-        web::GURLOriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin));
-    url::Origin targetOrigin = url::Origin::Create(
+    isCrossOriginTargetFrame = !url::IsSameOriginWith(
+        web::GURLOriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin),
         web::GURLOriginWithWKSecurityOrigin(action.targetFrame.securityOrigin));
-    isCrossOriginTargetFrame = !sourceOrigin.IsSameOriginWith(targetOrigin);
   }
   const web::WebStatePolicyDecider::RequestInfo requestInfo(
       transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,

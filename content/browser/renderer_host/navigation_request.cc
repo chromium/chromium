@@ -5030,8 +5030,7 @@ NavigationRequest::CheckCredentialedSubresource() const {
   RenderFrameHostImpl* parent = frame_tree_node_->parent();
   DCHECK(parent);
   const GURL& parent_url = parent->GetLastCommittedURL();
-  if (url::Origin::Create(parent_url)
-          .IsSameOriginWith(url::Origin::Create(common_params_->url)) &&
+  if (url::IsSameOriginWith(parent_url, common_params_->url) &&
       parent_url.username() == common_params_->url.username() &&
       parent_url.password() == common_params_->url.password()) {
     return CredentialedSubresourceCheckResult::ALLOW_REQUEST;

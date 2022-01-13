@@ -293,8 +293,7 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
       const GURL loaded_url = entry->GetURL();
       if (virtual_url.SchemeIsHTTPOrHTTPS() &&
           loaded_url.SchemeIsHTTPOrHTTPS() &&
-          !url::Origin::Create(virtual_url)
-               .IsSameOriginWith(url::Origin::Create(loaded_url))) {
+          !url::IsSameOriginWith(virtual_url, loaded_url)) {
         return PermissionResult(
             CONTENT_SETTING_BLOCK,
             PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN);

@@ -143,9 +143,8 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
                     origin_string != "null";
   absl::optional<url::Origin> request_initiator = url_request.request_initiator;
   if (has_origin && request_initiator.has_value()) {
-    url::Origin origin = url::Origin::Create(GURL(origin_string));
     bool origin_head_same_as_request_origin =
-        request_initiator.value().IsSameOriginWith(origin);
+        request_initiator.value().IsSameOriginWith(GURL(origin_string));
     UMA_HISTOGRAM_BOOLEAN(
         "NetworkService.URLLoaderFactory.OriginHeaderSameAsRequestOrigin",
         origin_head_same_as_request_origin);

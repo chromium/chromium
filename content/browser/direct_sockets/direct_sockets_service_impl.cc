@@ -515,7 +515,7 @@ bool DirectSocketsServiceImpl::IsAllowedRestrictedApiOrigin(
 
   for (std::string& origin_string : origin_strings) {
     GURL url(std::move(origin_string));
-    if (last_committed_origin.IsSameOriginWith(url::Origin::Create(url))) {
+    if (last_committed_origin.IsSameOriginWith(url)) {
       return true;
     }
   }

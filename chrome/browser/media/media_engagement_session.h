@@ -36,8 +36,8 @@ class MediaEngagementSession : public base::RefCounted<MediaEngagementSession> {
   MediaEngagementSession(const MediaEngagementSession&) = delete;
   MediaEngagementSession& operator=(const MediaEngagementSession&) = delete;
 
-  // Returns whether the session's origin is same origin with |origin|.
-  bool IsSameOriginWith(const url::Origin& origin) const;
+  // Returns whether the session's origin is same origin with |url|.
+  bool IsSameOriginWith(const GURL& url) const;
 
   // Record that the session received a significant playback from a media
   // element.

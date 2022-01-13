@@ -72,9 +72,7 @@ GURL GetSRTDownloadURL() {
 
   // Ensure URL construction didn't change origin.
   const GURL download_root(kDownloadRootPath);
-  const url::Origin known_good_origin = url::Origin::Create(download_root);
-  url::Origin current_origin = url::Origin::Create(download_url);
-  if (!current_origin.IsSameOriginWith(known_good_origin))
+  if (!url::IsSameOriginWith(download_url, download_root))
     return GetStableDownloadURL();
 
   return download_url;

@@ -279,10 +279,9 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
     RenderFrameHostImpl* parent = request->frame_tree_node()
                                       ->current_frame_host()
                                       ->GetParentOrOuterDocument();
-    url::Origin current_origin =
-        url::Origin::Create(navigation_handle()->GetURL());
     while (parent) {
-      if (!parent->GetLastCommittedOrigin().IsSameOriginWith(current_origin)) {
+      if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
+              navigation_handle()->GetURL())) {
         GetContentClient()->browser()->LogWebFeatureForCurrentPage(
             parent, blink::mojom::WebFeature::
                         kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO);

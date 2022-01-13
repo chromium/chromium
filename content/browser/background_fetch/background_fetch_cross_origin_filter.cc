@@ -61,8 +61,7 @@ BackgroundFetchCrossOriginFilter::BackgroundFetchCrossOriginFilter(
   const auto& response_header_map = request.GetResponseHeaders();
 
   // True iff |source_origin| is the same origin as the original request URL.
-  is_same_origin_ =
-      source_origin.IsSameOriginWith(url::Origin::Create(final_url));
+  is_same_origin_ = source_origin.IsSameOriginWith(final_url);
 
   // Access-Control-Allow-Origin checks. The header's values must be valid for
   // it to not be completely discarded.

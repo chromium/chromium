@@ -29,7 +29,7 @@ SharedWorkerInstance::SharedWorkerInstance(
   DCHECK(url.SchemeIs(url::kDataScheme) ||
          GetContentClient()->browser()->DoesSchemeAllowCrossOriginSharedWorker(
              storage_key.origin().scheme()) ||
-         url::Origin::Create(url).IsSameOriginWith(storage_key.origin()));
+         storage_key.origin().IsSameOriginWith(url));
 }
 
 SharedWorkerInstance::SharedWorkerInstance(const SharedWorkerInstance& other) =

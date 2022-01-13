@@ -385,16 +385,15 @@ void CookieStoreManager::GetSubscriptions(
     return;
   }
 
-  const url::Origin first_origin = url::Origin::Create(it->second[0]->url());
+  const GURL& first_url = it->second[0]->url();
 #if DCHECK_IS_ON()
   for (const auto& subscription : it->second) {
-    DCHECK(
-        first_origin.IsSameOriginWith(url::Origin::Create(subscription->url())))
+    DCHECK(url::IsSameOriginWith(first_url, subscription->url()))
         << "Service worker's change subscriptions don't have the same origin";
   }
 #endif  // DCHECK_IS_ON()
 
-  if (!origin.IsSameOriginWith(first_origin)) {
+  if (!origin.IsSameOriginWith(first_url)) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(
         std::vector<blink::mojom::CookieChangeSubscriptionPtr>(), false);

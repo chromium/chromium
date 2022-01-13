@@ -802,7 +802,7 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
     return false;
   }
 
-  if (origin_.IsSameOriginWith(url::Origin::Create(url)))
+  if (origin_.IsSameOriginWith(url))
     return true;
 
   mojo::ReportBadMessage("Incorrect url origin");

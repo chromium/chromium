@@ -69,10 +69,9 @@ FileSystemURL::FileSystemURL(const GURL& url,
   GURL origin_url;
   // URL should be able to be parsed and the parsed origin should match the
   // StorageKey's origin member.
-  is_valid_ =
-      ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
-                               &virtual_path_) &&
-      storage_key.origin().IsSameOriginWith(url::Origin::Create(origin_url));
+  is_valid_ = ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
+                                       &virtual_path_) &&
+              storage_key.origin().IsSameOriginWith(origin_url);
   storage_key_ = storage_key;
   path_ = virtual_path_;
   type_ = mount_type_;

@@ -127,8 +127,7 @@ ResponseHeadersHeuristicForUma CalculateResponseHeadersHeuristicForUma(
 
   // Same-origin requests are allowed (the spec doesn't explicitly deal with
   // this).
-  url::Origin target_origin = url::Origin::Create(request_url);
-  if (request_initiator->IsSameOriginWith(target_origin))
+  if (request_initiator->IsSameOriginWith(request_url))
     return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
 
   // Presence of an "X-Content-Type-Options: nosniff" header means that ORB will

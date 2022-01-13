@@ -130,7 +130,7 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
         security_options->disable_web_security ||
         (security_options->allow_cors_to_same_scheme &&
          resource_request.request_initiator->IsSameOriginWith(
-             url::Origin::Create(resource_request_.url)));
+             resource_request_.url));
     reject_cors_request_ = true;
   }
   response_head_->response_type = network::cors::CalculateResponseType(

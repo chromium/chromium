@@ -112,7 +112,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // skip the same-origin check.
     if (!attributes.IsBrowserInitiated() &&
         !attributes.initiator_origin.value().IsSameOriginWith(
-            url::Origin::Create(attributes.prerendering_url))) {
+            attributes.prerendering_url)) {
       RecordPrerenderHostFinalStatus(
           PrerenderHost::FinalStatus::kCrossOriginNavigation,
           attributes.trigger_type, attributes.embedder_histogram_suffix);

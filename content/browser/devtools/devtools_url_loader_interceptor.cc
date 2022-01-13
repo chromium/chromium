@@ -1391,11 +1391,9 @@ void InterceptionJob::FollowRedirect(
 
   network::ResourceRequest* request = &create_loader_params_->request;
   const net::RedirectInfo& info = *response_metadata_->redirect_info;
-  const auto current_origin = url::Origin::Create(request->url);
-  const auto new_origin = url::Origin::Create(info.new_url);
   if (request->request_initiator &&
-      (!new_origin.IsSameOriginWith(current_origin) &&
-       !request->request_initiator->IsSameOriginWith(current_origin))) {
+      (!url::IsSameOriginWith(info.new_url, request->url) &&
+       !request->request_initiator->IsSameOriginWith(request->url))) {
     tainted_origin_ = true;
   }
 
@@ -1415,6 +1413,7 @@ void InterceptionJob::FollowRedirect(
   request->referrer_policy = info.new_referrer_policy;
   request->referrer = GURL(info.new_referrer);
   if (request->trusted_params) {
+    const auto new_origin = url::Origin::Create(info.new_url);
     request->trusted_params->isolation_info =
         request->trusted_params->isolation_info.CreateForRedirect(new_origin);
   }

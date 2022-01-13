@@ -1525,7 +1525,7 @@ bool AllowsBlanketEnforcementOfRequiredCSP(
     return true;
   }
 
-  if (request_origin.IsSameOriginWith(url::Origin::Create(response_url))) {
+  if (request_origin.IsSameOriginWith(response_url)) {
     required_csp->self_origin = ComputeSelfOrigin(response_url);
     return true;
   }

@@ -64,10 +64,10 @@ void NetworkServiceNetworkDelegate::MaybeTruncateReferrer(
 
   if (base::FeatureList::IsEnabled(
           net::features::kCapReferrerToOriginOnCrossOrigin)) {
-    url::Origin destination_origin = url::Origin::Create(effective_url);
-    url::Origin source_origin = url::Origin::Create(GURL(request->referrer()));
-    if (!destination_origin.IsSameOriginWith(source_origin))
-      request->SetReferrer(source_origin.GetURL().spec());
+    if (!url::IsSameOriginWith(effective_url, GURL(request->referrer()))) {
+      auto capped_referrer = url::Origin::Create(GURL(request->referrer()));
+      request->SetReferrer(capped_referrer.GetURL().spec());
+    }
   }
 }
 

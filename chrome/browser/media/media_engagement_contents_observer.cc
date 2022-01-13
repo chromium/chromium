@@ -169,8 +169,7 @@ void MediaEngagementContentsObserver::DidFinishNavigation(
   RegisterAudiblePlayersWithSession();
   ClearPlayerStates();
 
-  url::Origin new_origin = url::Origin::Create(navigation_handle->GetURL());
-  if (session_ && session_->IsSameOriginWith(new_origin))
+  if (session_ && session_->IsSameOriginWith(navigation_handle->GetURL()))
     return;
 
   // Only get the opener if the navigation originated from a link.
@@ -653,7 +652,8 @@ MediaEngagementContentsObserver::GetOrCreateSession(
       service_->GetContentsObserverFor(opener);
 
   if (opener_observer && opener_observer->session_ &&
-      opener_observer->session_->IsSameOriginWith(origin)) {
+      opener_observer->session_->IsSameOriginWith(
+          navigation_handle->GetURL())) {
     return opener_observer->session_;
   }
 

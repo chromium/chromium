@@ -75,7 +75,7 @@ void PaymentManager::Init(const GURL& context_url, const std::string& scope) {
         "Scope URL is not from the same origin of the context URL.");
     return;
   }
-  if (!origin_.IsSameOriginWith(url::Origin::Create(context_url))) {
+  if (!origin_.IsSameOriginWith(context_url)) {
     receiver_.ResetWithReason(
         static_cast<uint32_t>(ReasonCode::kCrossOriginDataAccess),
         "Cross origin data access.");

@@ -240,10 +240,9 @@ bool PrefetchURLLoaderService::IsValidCrossOriginPrefetch(
   // The request is expected to be cross-origin. Same-origin prefetches do not
   // need a special NetworkIsolationKey, and therefore must not be marked for
   // restricted use.
-  url::Origin destination_origin = url::Origin::Create(resource_request.url);
   DCHECK(resource_request.request_initiator.has_value());  // Checked above.
   if (resource_request.request_initiator->IsSameOriginWith(
-          destination_origin)) {
+          resource_request.url)) {
     loader_factory_receivers_.ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: same-origin");
     return false;

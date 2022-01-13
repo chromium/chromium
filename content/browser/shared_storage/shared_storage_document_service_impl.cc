@@ -32,7 +32,7 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     const GURL& script_source_url,
     AddModuleOnWorkletCallback callback) {
   if (!render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
-          url::Origin::Create(script_source_url))) {
+          script_source_url)) {
     // This could indicate a compromised renderer, so let's terminate it.
     mojo::ReportBadMessage("Attempted to load a cross-origin module script.");
 

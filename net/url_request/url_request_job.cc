@@ -319,8 +319,7 @@ GURL URLRequestJob::ComputeReferrerForPolicy(
   if (stripped_referrer.spec().size() > 4096)
     should_strip_to_origin = true;
 
-  bool same_origin = url::Origin::Create(original_referrer)
-                         .IsSameOriginWith(url::Origin::Create(destination));
+  bool same_origin = url::IsSameOriginWith(original_referrer, destination);
 
   if (same_origin_out_for_metrics)
     *same_origin_out_for_metrics = same_origin;

@@ -814,8 +814,7 @@ void FileURLLoaderFactory::CreateLoaderAndStart(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity) ||
       (request.request_initiator &&
-       (request.request_initiator->IsSameOriginWith(
-            url::Origin::Create(request.url)) ||
+       (request.request_initiator->IsSameOriginWith(request.url) ||
         (shared_cors_origin_access_list_ &&
          shared_cors_origin_access_list_->GetOriginAccessList()
                  .CheckAccessState(*request.request_initiator, request.url) ==

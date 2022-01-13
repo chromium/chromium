@@ -450,10 +450,6 @@ const std::string SerializeHeaderString(const T& value) {
       .value_or(std::string());
 }
 
-bool IsSameOrigin(const GURL& url1, const GURL& url2) {
-  return url::Origin::Create(url1).IsSameOriginWith(url::Origin::Create(url2));
-}
-
 // Returns true iff the `url` is embedded inside a frame that has the
 // Sec-CH-UA-Reduced client hint and thus, is enrolled in the
 // UserAgentReduction Origin Trial.
@@ -475,7 +471,7 @@ bool IsUserAgentReductionEnabledForEmbeddedFrame(
     // Don't use Sec-CH-UA-Reduced from third-party origins if third-party
     // cookies are blocked, so that we don't reveal any more user data than
     // is allowed by the cookie settings.
-    if (IsSameOrigin(current_url, main_frame_url) ||
+    if (url::IsSameOriginWith(current_url, main_frame_url) ||
         !delegate->AreThirdPartyCookiesBlocked(current_url)) {
       blink::EnabledClientHints current_url_hints;
       delegate->GetAllowedClientHintsFromSource(current_url,
@@ -501,7 +497,6 @@ void RemoveAllClientHintsExceptUaReduced(
     std::vector<WebClientHintsType>* accept_ch,
     GURL* main_frame_url,
     GURL const** third_party_url) {
-  const url::Origin request_origin = url::Origin::Create(url);
   RenderFrameHostImpl* main_frame =
       frame_tree_node->frame_tree()->GetMainFrame();
 
@@ -513,7 +508,7 @@ void RemoveAllClientHintsExceptUaReduced(
     }
   }
 
-  if (!request_origin.IsSameOriginWith(main_frame->GetLastCommittedOrigin())) {
+  if (!main_frame->GetLastCommittedOrigin().IsSameOriginWith(url)) {
     // If third-party cookeis are blocked, we will not persist the
     // Sec-CH-UA-Reduced client hint in a third-party context.
     if (delegate->AreThirdPartyCookiesBlocked(url)) {

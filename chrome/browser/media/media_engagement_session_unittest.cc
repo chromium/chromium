@@ -157,17 +157,14 @@ TEST_F(MediaEngagementSessionTest, IsSameOrigin) {
       service(), origin(), MediaEngagementSession::RestoreType::kNotRestored,
       ukm_source_id());
 
-  std::vector<url::Origin> origins = {
-      origin(),
-      url::Origin::Create(GURL("http://example.com")),
-      url::Origin::Create(GURL("https://example.org")),
-      url::Origin(),
-      url::Origin::Create(GURL("http://google.com")),
-      url::Origin::Create(GURL("http://foo.example.com")),
+  std::vector<GURL> urls = {
+      origin().GetURL(),           GURL("http://example.com"),
+      GURL("https://example.org"), GURL(),
+      GURL("http://google.com"),   GURL("http://foo.example.com"),
   };
 
-  for (const auto& orig : origins) {
-    EXPECT_EQ(origin().IsSameOriginWith(orig), session->IsSameOriginWith(orig));
+  for (const auto& url : urls) {
+    EXPECT_EQ(origin().IsSameOriginWith(url), session->IsSameOriginWith(url));
   }
 }
 

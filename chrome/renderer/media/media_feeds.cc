@@ -65,8 +65,7 @@ absl::optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
 
     // If the URL is not the same origin as the document then we should throw
     // and error.
-    auto feed_origin = url::Origin::Create(url);
-    if (!document_origin.IsSameOriginWith(feed_origin)) {
+    if (!document_origin.IsSameOriginWith(url)) {
       frame->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                                  "The Media Feed URL needs to be the same "
                                  "origin as the document URL.");

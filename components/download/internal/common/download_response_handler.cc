@@ -173,8 +173,7 @@ void DownloadResponseHandler::OnReceiveRedirect(
     return;
   }
 
-  if (!first_origin_.IsSameOriginWith(
-          url::Origin::Create(redirect_info.new_url))) {
+  if (!first_origin_.IsSameOriginWith(redirect_info.new_url)) {
     // Cross-origin redirect.
     switch (cross_origin_redirects_) {
       case network::mojom::RedirectMode::kFollow:

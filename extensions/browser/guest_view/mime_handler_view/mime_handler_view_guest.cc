@@ -470,11 +470,8 @@ void MimeHandlerViewGuest::DidFinishNavigation(
 
   if (navigation_handle->IsInMainFrame()) {
     // We should not navigate the guest away from the handling extension.
-    const url::Origin handler_origin =
-        url::Origin::Create(stream_->handler_url());
     const GURL& new_url = navigation_handle->GetURL();
-    const url::Origin new_origin = url::Origin::Create(new_url);
-    CHECK(new_origin.IsSameOriginWith(handler_origin) ||
+    CHECK(url::IsSameOriginWith(new_url, stream_->handler_url()) ||
           new_url.IsAboutBlank());
   }
 }
