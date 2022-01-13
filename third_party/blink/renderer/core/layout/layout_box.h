@@ -2212,7 +2212,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 #if DCHECK_IS_ON()
   void CheckIsVisualOverflowComputed() const;
 #else
-  ALWAYS_INLINE void CheckIsVisualOverflowComputed() const {}
+  ALWAYS_INLINE void CheckIsVisualOverflowComputed() const { NOT_DESTROYED(); }
 #endif
   inline bool VisualOverflowIsSet() const {
     NOT_DESTROYED();
