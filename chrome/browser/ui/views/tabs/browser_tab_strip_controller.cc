@@ -699,18 +699,15 @@ void BrowserTabStripController::OnTabGroupChanged(
         gfx::Range tabs_in_group = ListTabsInGroup(change.group);
         for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
           tabstrip_->tab_at(i)->SetVisible(!new_visuals->is_collapsed());
-          if (base::FeatureList::IsEnabled(
-                  features::kTabGroupsCollapseFreezing)) {
-            if (visuals_delta->new_visuals->is_collapsed()) {
-              tabstrip_->tab_at(i)->SetFreezingVoteToken(
-                  performance_manager::freezing::EmitFreezingVoteForWebContents(
-                      model_->GetWebContentsAt(i),
-                      performance_manager::freezing::FreezingVoteValue::
-                          kCanFreeze,
-                      "Collapsed Tab Group"));
-            } else {
-              tabstrip_->tab_at(i)->ReleaseFreezingVoteToken();
-            }
+          if (visuals_delta->new_visuals->is_collapsed()) {
+            tabstrip_->tab_at(i)->SetFreezingVoteToken(
+                performance_manager::freezing::EmitFreezingVoteForWebContents(
+                    model_->GetWebContentsAt(i),
+                    performance_manager::freezing::FreezingVoteValue::
+                        kCanFreeze,
+                    "Collapsed Tab Group"));
+          } else {
+            tabstrip_->tab_at(i)->ReleaseFreezingVoteToken();
           }
         }
       }

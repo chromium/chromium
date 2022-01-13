@@ -1366,9 +1366,6 @@ extern const char kAppsShortcutDefaultOffDescription[];
 extern const char kTabGroupsAutoCreateName[];
 extern const char kTabGroupsAutoCreateDescription[];
 
-extern const char kTabGroupsCollapseFreezingName[];
-extern const char kTabGroupsCollapseFreezingDescription[];
-
 extern const char kTabGroupsNewBadgePromoName[];
 extern const char kTabGroupsNewBadgePromoDescription[];
 

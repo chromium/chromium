@@ -2377,10 +2377,6 @@ const char kTabGroupsAutoCreateName[] = "Tab Groups Auto Create";
 const char kTabGroupsAutoCreateDescription[] =
     "Automatically creates groups for users, if tab groups are enabled.";
 
-const char kTabGroupsCollapseFreezingName[] = "Tab Groups Collapse Freezing";
-const char kTabGroupsCollapseFreezingDescription[] =
-    "Experimental tab freezing upon collapsing a tab group.";
-
 const char kTabGroupsNewBadgePromoName[] = "Tab Groups 'New' Badge Promo";
 const char kTabGroupsNewBadgePromoDescription[] =
     "Causes a 'New' badge to appear on the entry point for creating a tab "

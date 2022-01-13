@@ -4855,11 +4855,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsAutoCreateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsAutoCreate)},
 
-    {"tab-groups-collapse-freezing",
-     flag_descriptions::kTabGroupsCollapseFreezingName,
-     flag_descriptions::kTabGroupsCollapseFreezingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupsCollapseFreezing)},
-
     {"tab-groups-new-badge-promo",
      flag_descriptions::kTabGroupsNewBadgePromoName,
      flag_descriptions::kTabGroupsNewBadgePromoDescription, kOsDesktop,
