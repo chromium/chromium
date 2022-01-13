@@ -1663,7 +1663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListPageSwitcherSource"
-    enum="AppListPageSwitcherSource" expires_after="2022-05-08">
+    enum="AppListPageSwitcherSource" expires_after="2022-07-11">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>newcomer@chromium.org</owner>
@@ -1703,7 +1703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreQueryState"
-    enum="AppListPlayStoreQueryState" expires_after="2022-03-06">
+    enum="AppListPlayStoreQueryState" expires_after="2022-07-11">
   <owner>hejq@chromium.org</owner>
   <summary>The state of a Play Store app search request.</summary>
 </histogram>

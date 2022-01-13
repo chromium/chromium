@@ -1254,7 +1254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2022-05-08">
+    units="microseconds" expires_after="2022-07-11">
   <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the start of the frame
@@ -1982,7 +1982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2022-05-08">
+    units="microseconds" expires_after="2022-07-11">
   <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and start of the frame swap
