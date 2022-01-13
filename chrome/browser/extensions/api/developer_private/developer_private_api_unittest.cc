@@ -45,6 +45,7 @@
 #include "extensions/browser/install/extension_install_ui.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
@@ -1798,6 +1799,35 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileZip) {
       observer.WaitForExtensionInstalled();
   ASSERT_TRUE(extension);
   EXPECT_EQ("Simple Empty Extension", extension->name());
+}
+
+// Test developerPrivate.getUserSiteSettings.
+TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  const url::Origin permitted_url =
+      url::Origin::Create(GURL("http://a.example.com"));
+  const url::Origin restricted_url =
+      url::Origin::Create(GURL("http://b.example.com"));
+
+  manager->AddUserPermittedSite(permitted_url);
+  manager->AddUserRestrictedSite(restricted_url);
+
+  scoped_refptr<ExtensionFunction> function(
+      new api::DeveloperPrivateGetUserSiteSettingsFunction());
+
+  base::ListValue args;
+  EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
+  ASSERT_TRUE(function->GetResultList());
+  ASSERT_EQ(1u, function->GetResultList()->GetList().size());
+  const base::Value& response_value = function->GetResultList()->GetList()[0];
+  std::unique_ptr<api::developer_private::UserSiteSettings> settings =
+      api::developer_private::UserSiteSettings::FromValue(response_value);
+
+  ASSERT_TRUE(settings);
+  EXPECT_THAT(settings->permitted_sites,
+              testing::UnorderedElementsAre("http://a.example.com"));
+  EXPECT_THAT(settings->restricted_sites,
+              testing::UnorderedElementsAre("http://b.example.com"));
 }
 
 class DeveloperPrivateApiAllowlistUnitTest

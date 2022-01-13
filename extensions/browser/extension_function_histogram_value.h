@@ -1672,6 +1672,7 @@ enum HistogramValue {
   OS_TELEMETRY_GETMEMORYINFO = 1609,
   AUTOTESTPRIVATE_COULDALLOWCROSTINI = 1610,
   WEB_AUTHENTICATION_PROXY_COMPLETE_CREATE_REQUEST = 1611,
+  DEVELOPERPRIVATE_GETUSERSITESETTINGS = 1612,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

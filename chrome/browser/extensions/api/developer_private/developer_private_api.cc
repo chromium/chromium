@@ -83,6 +83,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/path_util.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/warning_service.h"
@@ -2109,6 +2110,29 @@ DeveloperPrivateRemoveHostPermissionFunction::Run() {
 void DeveloperPrivateRemoveHostPermissionFunction::
     OnRuntimePermissionsRevoked() {
   Respond(NoArguments());
+}
+
+DeveloperPrivateGetUserSiteSettingsFunction::
+    DeveloperPrivateGetUserSiteSettingsFunction() = default;
+DeveloperPrivateGetUserSiteSettingsFunction::
+    ~DeveloperPrivateGetUserSiteSettingsFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetUserSiteSettingsFunction::Run() {
+  const PermissionsManager::UserPermissionsSettings& settings =
+      PermissionsManager::Get(browser_context())->GetUserPermissionsSettings();
+
+  developer::UserSiteSettings user_site_settings;
+  user_site_settings.permitted_sites.reserve(settings.permitted_sites.size());
+  for (const auto& origin : settings.permitted_sites)
+    user_site_settings.permitted_sites.push_back(origin.Serialize());
+
+  user_site_settings.restricted_sites.reserve(settings.restricted_sites.size());
+  for (const auto& origin : settings.restricted_sites)
+    user_site_settings.restricted_sites.push_back(origin.Serialize());
+
+  return RespondNow(OneArgument(
+      base::Value::FromUniquePtrValue(user_site_settings.ToValue())));
 }
 
 }  // namespace api

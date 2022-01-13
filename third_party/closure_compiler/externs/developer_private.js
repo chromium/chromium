@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.developerPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: developerPrivate */
 
@@ -426,6 +426,14 @@ chrome.developerPrivate.ReloadOptions;
 chrome.developerPrivate.LoadUnpackedOptions;
 
 /**
+ * @typedef {{
+ *   permittedSites: !Array<string>,
+ *   restrictedSites: !Array<string>
+ * }}
+ */
+chrome.developerPrivate.UserSiteSettings;
+
+/**
  * @enum {string}
  */
 chrome.developerPrivate.PackStatus = {
@@ -778,6 +786,13 @@ chrome.developerPrivate.addHostPermission = function(extensionId, host, callback
  * @param {function(): void=} callback
  */
 chrome.developerPrivate.removeHostPermission = function(extensionId, host, callback) {};
+
+/**
+ * Returns the user specified site settings (which origins can extensions
+ * always/never run on) for the current profile.
+ * @param {function(!chrome.developerPrivate.UserSiteSettings): void=} callback
+ */
+chrome.developerPrivate.getUserSiteSettings = function(callback) {};
 
 /**
  * @param {string} id

@@ -864,6 +864,24 @@ class DeveloperPrivateRemoveHostPermissionFunction
   void OnRuntimePermissionsRevoked();
 };
 
+class DeveloperPrivateGetUserSiteSettingsFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getUserSiteSettings",
+                             DEVELOPERPRIVATE_GETUSERSITESETTINGS)
+  DeveloperPrivateGetUserSiteSettingsFunction();
+
+  DeveloperPrivateGetUserSiteSettingsFunction(
+      const DeveloperPrivateGetUserSiteSettingsFunction&) = delete;
+  DeveloperPrivateGetUserSiteSettingsFunction& operator=(
+      const DeveloperPrivateGetUserSiteSettingsFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateGetUserSiteSettingsFunction() override;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace api
 
 }  // namespace extensions

@@ -31227,6 +31227,7 @@ Called by update_extension_histograms.py.-->
   <int value="1609" label="OS_TELEMETRY_GETMEMORYINFO"/>
   <int value="1610" label="AUTOTESTPRIVATE_COULDALLOWCROSTINI"/>
   <int value="1611" label="WEB_AUTHENTICATION_PROXY_COMPLETE_CREATE_REQUEST"/>
+  <int value="1612" label="DEVELOPERPRIVATE_GETUSERSITESETTINGS"/>
 </enum>
 
 <enum name="ExtensionIconState">
