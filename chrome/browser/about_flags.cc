@@ -4912,6 +4912,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpDriveModuleVariations,
                                     "DesktopNtpModules")},
 
+#if !defined(OFFICIAL_BUILD)
+    {"ntp-dummy-modules", flag_descriptions::kNtpDummyModulesName,
+     flag_descriptions::kNtpDummyModulesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
+#endif
+
     {"ntp-photos-module", flag_descriptions::kNtpPhotosModuleName,
      flag_descriptions::kNtpPhotosModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpPhotosModule,

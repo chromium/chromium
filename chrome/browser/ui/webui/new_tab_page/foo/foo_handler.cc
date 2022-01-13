@@ -31,17 +31,7 @@ void FooHandler::GetData(GetDataCallback callback) {
         "https://lh3.googleusercontent.com/proxy/"
         "d_4gDNBtm9Ddv8zqqm0MVY93_j-_e5M-bGgH-"
         "bSAfIR65FYGacJTemvNp9fDT0eiIbi3bzrf7HMMsupe2QIIfm5H7BMHY3AI5rkYUpx-lQ="
-        "w170-h85-p-k-no-nd-mv"},
-       {"item5", "bar",
-        "https://lh5.googleusercontent.com/proxy/"
-        "xvtq6_782kBajCBr0GISHpujOb51XLKUeEOJ2lLPKh12-"
-        "xNBTCtsoHT14NQcaH9l4JhatcXEMBkqgUeCWhb3XhdLnD1BiNzQ_LVydwg=w170-h85-p-"
-        "k-no-nd-mv"},
-       {"item6", "baz",
-        "https://lh6.googleusercontent.com/proxy/"
-        "fUx750lchxFJb3f37v_-"
-        "4iJPzcTKtJbd5LDRO7S9Xy7nkPzh7HFU61tN36j4Diaa9Yk3K7kWshRwmqcrulnhbeJrRp"
-        "In79PjHN-N=w170-h85-p-k-no-nd-mv"}});
+        "w170-h85-p-k-no-nd-mv"}});
 
   std::vector<foo::mojom::FooDataItemPtr> data;
   for (const auto& datum : tileData) {

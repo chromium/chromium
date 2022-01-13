@@ -48,7 +48,7 @@ js_type_check("closure_compile") {
   ]
   if (!is_official_build) {
     deps += [
-      "modules/dummy:module_test",
+      "modules/dummy_v2:module_test",
       "modules/photos:module_test",
     ]
   }

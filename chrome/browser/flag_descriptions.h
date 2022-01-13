@@ -2063,6 +2063,11 @@ extern const char kNtpModulesDescription[];
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
 
+#if !defined(OFFICIAL_BUILD)
+extern const char kNtpDummyModulesName[];
+extern const char kNtpDummyModulesDescription[];
+#endif
+
 extern const char kNtpPhotosModuleName[];
 extern const char kNtpPhotosModuleDescription[];
 

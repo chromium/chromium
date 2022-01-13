@@ -13,7 +13,7 @@ import {chromeCartDescriptor as chromeCartV2Descriptor} from './cart_v2/module.j
 import {driveDescriptor} from './drive/module.js';
 import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 // <if expr="not is_official_build">
-import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
+import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './dummy_v2/module.js';
 // </if>
 import {ModuleDescriptor, ModuleDescriptorV2} from './module_descriptor.js';
 import {photosDescriptor} from './photos/module.js';
@@ -59,6 +59,20 @@ if (loadTimeData.getBoolean('photosModuleEnabled')) {
 }
 
 // <if expr="not is_official_build">
-descriptors.push(dummyDescriptor);
-descriptors.push(dummyDescriptor2);
+if (loadTimeData.getBoolean('dummyModulesEnabled')) {
+  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
+    descriptorsV2.push(dummyV2Descriptor);
+    descriptorsV2.push(dummyV2Descriptor02);
+    descriptorsV2.push(dummyV2Descriptor03);
+    descriptorsV2.push(dummyV2Descriptor04);
+    descriptorsV2.push(dummyV2Descriptor05);
+    descriptorsV2.push(dummyV2Descriptor06);
+    descriptorsV2.push(dummyV2Descriptor07);
+    descriptorsV2.push(dummyV2Descriptor08);
+    descriptorsV2.push(dummyV2Descriptor09);
+    descriptorsV2.push(dummyV2Descriptor10);
+    descriptorsV2.push(dummyV2Descriptor11);
+    descriptorsV2.push(dummyV2Descriptor12);
+  }
+}
 // </if>

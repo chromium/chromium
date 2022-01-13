@@ -3603,6 +3603,13 @@ const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
 
+#if !defined(OFFICIAL_BUILD)
+const char kNtpDummyModulesName[] = "NTP Dummy Modules";
+const char kNtpDummyModulesDescription[] =
+    "Adds dummy modules to New Tab Page when 'NTP Modules Redesigned' is "
+    "enabled.";
+#endif
+
 const char kNtpPhotosModuleName[] = "NTP Photos Module";
 const char kNtpPhotosModuleDescription[] =
     "Shows the Google Photos module on the New Tab Page";

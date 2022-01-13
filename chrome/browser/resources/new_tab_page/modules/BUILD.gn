@@ -47,7 +47,7 @@ js_library("module_descriptors") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   if (!is_official_build) {
-    deps += [ "dummy:module" ]
+    deps += [ "dummy_v2:module" ]
   }
 }
 
@@ -102,7 +102,7 @@ group("web_components") {
     "cart_v2:web_components",
     "drive:web_components",
     "drive_v2:web_components",
-    "dummy:web_components",
+    "dummy_v2:web_components",
     "photos:web_components",
     "recipes_v2:web_components",
     "task_module:web_components",
@@ -145,7 +145,7 @@ preprocess_if_expr("preprocess") {
     "photos/photos_module_proxy.js",
   ]
   if (!is_official_build) {
-    in_files += [ "dummy/foo_proxy.js" ]
+    in_files += [ "dummy_v2/foo_proxy.js" ]
   }
 }
 
@@ -169,6 +169,6 @@ preprocess_if_expr("preprocess_gen") {
     "photos/module.js",
   ]
   if (!is_official_build) {
-    in_files += [ "dummy/module.js" ]
+    in_files += [ "dummy_v2/module.js" ]
   }
 }

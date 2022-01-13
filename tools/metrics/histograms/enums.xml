@@ -52606,6 +52606,7 @@ from previous Chrome versions.
   <int value="-715865629" label="HideShelfControlsInTabletMode:enabled"/>
   <int value="-715733307" label="force-effective-connection-type"/>
   <int value="-715552057" label="GridLayoutForNtpShortcuts:disabled"/>
+  <int value="-714919832" label="NtpDummyModules:disabled"/>
   <int value="-714712077" label="ClickToOpenPDFPlaceholder:disabled"/>
   <int value="-714710496" label="VideoFullscreenOrientationLock:disabled"/>
   <int value="-714543772" label="enable-gpu-service-logging"/>
@@ -55498,6 +55499,7 @@ from previous Chrome versions.
   <int value="1430924529" label="TranslateIntent:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>
+  <int value="1434502662" label="NtpDummyModules:enabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>
   <int value="1435251818" label="AutofillNoLocalSaveOnUploadSuccess:enabled"/>
   <int value="1436454450" label="InterestFeedV2:disabled"/>

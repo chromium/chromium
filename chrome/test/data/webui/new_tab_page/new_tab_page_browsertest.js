@@ -247,7 +247,7 @@ GEN('#if !defined(OFFICIAL_BUILD)');
 var NewTabPageModulesDummyModuleTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/dummy/module_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/dummy_v2/module_test.js';
   }
 };
 

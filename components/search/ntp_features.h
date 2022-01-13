@@ -36,6 +36,9 @@ extern const base::Feature kNtpChromeCartModule;
 extern const base::Feature kNtpModulesRedesigned;
 extern const base::Feature kNtpModulesRedesignedLayout;
 extern const base::Feature kNtpDriveModule;
+#if !defined(OFFICIAL_BUILD)
+extern const base::Feature kNtpDummyModules;
+#endif
 extern const base::Feature kNtpPhotosModule;
 extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;

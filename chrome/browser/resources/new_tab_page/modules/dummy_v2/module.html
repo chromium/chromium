@@ -1,5 +1,6 @@
 <style>
   :host {
+    height: 100%;
     width: 100%;
   }
 
@@ -8,9 +9,7 @@
   }
 
   #moduleContent {
-    align-items: center;
     display: flex;
-    height: 260px;
     justify-content: center;
   }
 
@@ -28,11 +27,12 @@
     disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesDummyLower')]]"
+    icon-src="icons/generic_globe.svg"
     on-disable-button-click="onDisableButtonClick_">
   [[title]]
 </ntp-module-header>
 <div id="moduleContent">
-  <cr-grid id="tiles" columns="3">
+  <cr-grid id="tiles" columns="2">
     <template id="tileList" is="dom-repeat" items="[[tiles]]">
       <div class="tile-item" title="[[item.label]]">
         <img is="cr-auto-img" auto-src="[[item.imageUrl]]"></img>

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FooHandlerRemote} from 'chrome://new-tab-page/foo.mojom-webui.js';
-import {$$, dummyDescriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
@@ -41,7 +41,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
       },
     ];
     handler.setResultFor('getData', Promise.resolve({data}));
-    const module = await dummyDescriptor.initialize(0);
+    const module = await dummyV2Descriptor.initialize(0);
     assert(module);
     document.body.append(module);
     $$(module, '#tileList').render();
@@ -57,7 +57,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
 
   test('creates module without data', async () => {
     // Act.
-    const module = await dummyDescriptor.initialize(0);
+    const module = await dummyV2Descriptor.initialize(0);
     assert(module);
     document.body.append(module);
     $$(module, '#tileList').render();

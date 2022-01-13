@@ -4052,6 +4052,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "ntp-dummy-modules",
+    "owners": [ "pauladedeji", "tiborg" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "ntp-modules",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 100

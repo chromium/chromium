@@ -49,7 +49,7 @@ js_type_check("closure_compile") {
     "modules:module_descriptors",
     "modules:module_registry",
     "modules:modules",
-    "modules/dummy:foo_proxy",
+    "modules/dummy_v2:foo_proxy",
     "realbox:realbox",
     "realbox:realbox_browser_proxy",
     "realbox:realbox_dropdown",
@@ -79,7 +79,7 @@ js_library("lazy_load") {
     ":customize_dialog",
     ":middle_slot_promo",
     ":voice_search_overlay",
-    "modules/dummy:module",
+    "modules/dummy_v2:module",
   ]
 }
 

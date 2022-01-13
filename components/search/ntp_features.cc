@@ -84,6 +84,11 @@ const base::Feature kNtpShoppingTasksModule{"NtpShoppingTasksModule",
 // If enabled, chrome cart module will be shown.
 const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+#if !defined(OFFICIAL_BUILD)
+// If enabled, dummy modules will be shown.
+const base::Feature kNtpDummyModules{"NtpDummyModules",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // If enabled, redesigned modules will be shown.
 const base::Feature kNtpModulesRedesigned{"NtpModulesRedesigned",

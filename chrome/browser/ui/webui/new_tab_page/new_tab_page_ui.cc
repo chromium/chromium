@@ -227,6 +227,16 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDummy2Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy3Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy4Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy5Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy6Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy7Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy8Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy9Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy10Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy11Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesDummy12Title", IDS_NTP_MODULES_DUMMY2_TITLE},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},
       {"modulesPhotosInfo", IDS_NTP_MODULES_PHOTOS_INFO},
       {"modulesPhotosSentence", IDS_NTP_MODULES_PHOTOS_MEMORIES_TITLE},
@@ -287,6 +297,11 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
+#if !defined(OFFICIAL_BUILD)
+  source->AddBoolean(
+      "dummyModulesEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpDummyModules));
+#endif
   source->AddBoolean(
       "recipeTasksModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule));
