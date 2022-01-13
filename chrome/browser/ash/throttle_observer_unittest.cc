@@ -12,6 +12,8 @@
 
 namespace ash {
 
+constexpr const char kObserverName[] = "TestObserver";
+
 class ThrottleObserverTest
     : public testing::Test,
       public base::SupportsWeakPtr<ThrottleObserverTest> {
@@ -33,12 +35,17 @@ class ThrottleObserverTest
   size_t notify_count() const { return notify_count_; }
 
  private:
-  ThrottleObserver observer_{"TestObserver"};
+  ThrottleObserver observer_{kObserverName};
   size_t notify_count_{0};
 };
 
 // Tests that ThrottleObserver can be constructed and destructed.
 TEST_F(ThrottleObserverTest, TestConstructDestruct) {}
+
+// Tests that ThrottleObserver's name is properly set.
+TEST_F(ThrottleObserverTest, TestObserverName) {
+  EXPECT_EQ(kObserverName, observer()->name());
+}
 
 // Tests that ThrottleObserver notifies observers on SetActive().
 TEST_F(ThrottleObserverTest, TestSetActive) {
@@ -74,6 +81,18 @@ TEST_F(ThrottleObserverTest, TestSetEnforced) {
   observer()->SetEnforced(false);
   EXPECT_FALSE(observer()->enforced());
   EXPECT_EQ(3U, notify_count());
+}
+
+// Tests that the callback is not called after StopObserving.
+TEST_F(ThrottleObserverTest, TestStopObserving) {
+  observer()->StopObserving();
+  EXPECT_EQ(0U, notify_count());
+
+  observer()->SetActive(true);
+  EXPECT_EQ(0U, notify_count());
+
+  observer()->SetEnforced(true);
+  EXPECT_EQ(0U, notify_count());
 }
 
 }  // namespace ash
