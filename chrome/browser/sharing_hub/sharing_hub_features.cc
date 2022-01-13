@@ -41,9 +41,14 @@ bool SharingHubAppMenuEnabled(content::BrowserContext* context) {
 }
 
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile)
+    return false;
+
   return (base::FeatureList::IsEnabled(kSharingHubDesktopOmnibox) ||
           share::AreUpcomingSharingFeaturesEnabled()) &&
-         IsEnterprisePolicyEnabled(context);
+         IsEnterprisePolicyEnabled(context) && !profile->IsIncognitoProfile() &&
+         !profile->IsGuestSession();
 }
 
 bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
