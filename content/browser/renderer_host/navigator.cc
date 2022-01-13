@@ -428,15 +428,6 @@ void Navigator::DidNavigate(
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
-  // If a frame claims the navigation was same-document, it must be the current
-  // frame, not a pending one.
-  // TODO(creis): This check should be moved to RenderFrameHostImpl, allowing an
-  // early return.  See https://crbug.com/1209097.
-  if (was_within_same_document && render_frame_host != old_frame_host.get()) {
-    bad_message::ReceivedBadMessage(render_frame_host->GetProcess(),
-                                    bad_message::NI_IN_PAGE_NAVIGATION);
-    was_within_same_document = false;
-  }
   // At this point we have already chosen a SiteInstance for this navigation, so
   // set OriginIsolationRequest to kNone in the conversion to UrlInfo below:
   // this is done implicitly in the UrlInfoInit constructor.
@@ -451,6 +442,12 @@ void Navigator::DidNavigate(
         old_frame_host->render_view_host()->GetPageLifecycleStateManager();
     page_lifecycle_state_manager->DidSetPagehideDispatchDuringNewPageCommit(
         std::move(old_page_info->new_lifecycle_state_for_old_page));
+  }
+
+  // If a frame claims the navigation was same-document, it must be the current
+  // frame, not a pending one.
+  if (was_within_same_document && render_frame_host != old_frame_host.get()) {
+    was_within_same_document = false;
   }
 
   if (ui::PageTransitionIsMainFrame(params.transition)) {
