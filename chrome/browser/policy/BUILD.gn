@@ -40,16 +40,16 @@ source_set("onc") {
   sources = []
   if (is_chromeos_ash) {
     sources += [
-      "networking/device_network_configuration_updater.cc",
-      "networking/device_network_configuration_updater.h",
+      "networking/device_network_configuration_updater_ash.cc",
+      "networking/device_network_configuration_updater_ash.h",
       "networking/network_configuration_updater.cc",
       "networking/network_configuration_updater.h",
       "networking/policy_cert_service.cc",
       "networking/policy_cert_service.h",
       "networking/policy_cert_service_factory.cc",
       "networking/policy_cert_service_factory.h",
-      "networking/user_network_configuration_updater.cc",
-      "networking/user_network_configuration_updater.h",
+      "networking/user_network_configuration_updater_ash.cc",
+      "networking/user_network_configuration_updater_ash.h",
       "networking/user_network_configuration_updater_factory.cc",
       "networking/user_network_configuration_updater_factory.h",
     ]
