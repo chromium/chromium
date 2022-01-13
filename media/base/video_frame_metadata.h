@@ -16,6 +16,8 @@
 
 namespace media {
 
+// NOTE: When adding new VideoFrameMetadata fields, please ensure you update the
+// MergeMetadataFrom() method.
 struct MEDIA_EXPORT VideoFrameMetadata {
   VideoFrameMetadata();
   ~VideoFrameMetadata() = default;
