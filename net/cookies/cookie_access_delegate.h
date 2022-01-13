@@ -76,9 +76,12 @@ class NET_EXPORT CookieAccessDelegate {
 
   // Converts the CookiePartitionKey's site to its First-Party Set owner if
   // the site is in a nontrivial set.
-  static absl::optional<CookiePartitionKey> FirstPartySetifyPartitionKey(
+  //
+  // May invoke `callback` either synchronously or asynchronously.
+  static void FirstPartySetifyPartitionKey(
       const CookieAccessDelegate* delegate,
-      const CookiePartitionKey& cookie_partition_key);
+      const CookiePartitionKey& cookie_partition_key,
+      base::OnceCallback<void(absl::optional<CookiePartitionKey>)> callback);
 
   // Computes the First-Party Sets.
   //

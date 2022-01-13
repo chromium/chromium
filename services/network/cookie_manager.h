@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -136,6 +137,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // Handles connection errors on change listener pipes.
   void RemoveChangeListener(ListenerRegistration* registration);
 
+  // Called after getting the First-Party-Set-aware partition key when setting a
+  // cookie.
+  void OnGotFirstPartySetPartitionKeyForSet(
+      const GURL& source_url,
+      const net::CookieOptions& cookie_options,
+      std::unique_ptr<net::CanonicalCookie> cookie,
+      SetCanonicalCookieCallback callback,
+      absl::optional<net::CookiePartitionKey> cookie_partition_key,
+      absl::optional<net::CookiePartitionKey> fps_cookie_partition_key);
+
+  // Called after getting the First-Party-Set-aware partition key when deleting
+  // a cookie.
+  void OnGotFirstPartySetPartitionKeyForDelete(
+      std::unique_ptr<net::CanonicalCookie> cookie,
+      DeleteCanonicalCookieCallback callback,
+      absl::optional<net::CookiePartitionKey> cookie_partition_key,
+      absl::optional<net::CookiePartitionKey> fps_cookie_partition_key);
+
   const raw_ptr<net::CookieStore> cookie_store_;
   scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store_;
   mojo::ReceiverSet<mojom::CookieManager> receivers_;
@@ -143,6 +162,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // Note: RestrictedCookieManager and CookieAccessDelegate store pointers to
   // |cookie_settings_|.
   CookieSettings cookie_settings_;
+
+  base::WeakPtrFactory<CookieManager> weak_factory_{this};
 };
 
 COMPONENT_EXPORT(NETWORK_SERVICE)
