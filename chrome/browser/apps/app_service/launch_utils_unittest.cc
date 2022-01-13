@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
@@ -12,9 +13,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class LaunchUtilsTest : public testing::Test {
  protected:
@@ -201,7 +202,7 @@ TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_CustomProtocol) {
   EXPECT_EQ(0U, launch_files.size());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verifies that convert params (with no override url, intent, files) to crosapi
 // and back works.
 TEST_F(LaunchUtilsTest, ConvertToCrosapi) {
@@ -337,4 +338,4 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

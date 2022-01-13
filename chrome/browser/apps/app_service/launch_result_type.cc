@@ -4,13 +4,15 @@
 
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 
-#if defined(OS_CHROMEOS)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 LaunchResult ConvertMojomLaunchResultToLaunchResult(
     crosapi::mojom::LaunchResultPtr mojom_launch_result) {
   auto launch_result = LaunchResult();
@@ -29,6 +31,6 @@ LaunchResultToMojomLaunchResultCallback(LaunchCallback callback) {
       },
       std::move(callback));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

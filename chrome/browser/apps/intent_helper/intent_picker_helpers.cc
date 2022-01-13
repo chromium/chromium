@@ -21,12 +21,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -36,11 +36,11 @@ std::vector<IntentPickerAppInfo> FindAppsForUrl(
     content::WebContents* web_contents,
     const GURL& url,
     std::vector<IntentPickerAppInfo> apps) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On the Mac, if there is a Universal Link, it goes first.
   if (absl::optional<IntentPickerAppInfo> mac_app = FindMacAppForUrl(url))
     apps.push_back(std::move(mac_app.value()));
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -64,7 +64,7 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
                                const GURL& url,
                                const std::string& launch_name,
                                PickerEntryType app_type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   LaunchAppFromIntentPickerChromeOs(web_contents, url, launch_name, app_type);
 #else
   switch (app_type) {
@@ -72,16 +72,16 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
       web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
       break;
     case PickerEntryType::kMacOs:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       LaunchMacApp(url, launch_name);
       break;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     case PickerEntryType::kArc:
     case PickerEntryType::kDevice:
     case PickerEntryType::kUnknown:
       NOTREACHED();
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OnIntentPickerClosed(
@@ -92,7 +92,7 @@ void OnIntentPickerClosed(
     PickerEntryType entry_type,
     IntentPickerCloseReason close_reason,
     bool should_persist) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   OnIntentPickerClosedChromeOs(web_contents, ui_auto_display_service,
                                PickerShowState::kOmnibox, url, launch_name,
                                entry_type, close_reason, should_persist);
@@ -111,7 +111,7 @@ void OnIntentPickerClosed(
     // the UI from showing after 2+ dismissals.
     ui_auto_display_service->IncrementCounter(url);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OnAppIconsLoaded(content::WebContents* web_contents,
@@ -120,13 +120,13 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
                       std::vector<IntentPickerAppInfo> apps) {
   ShowIntentPickerBubbleForApps(
       web_contents, std::move(apps),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       /*show_stay_in_chrome=*/true,
       /*show_remember_selection=*/true,
 #else
       /*show_stay_in_chrome=*/false,
       /*show_remember_selection=*/false,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       base::BindOnce(&OnIntentPickerClosed, web_contents,
                      ui_auto_display_service, url));
 }
@@ -155,9 +155,9 @@ bool MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   std::vector<IntentPickerAppInfo> apps = GetAppsForIntentPicker(web_contents);
   bool show_intent_icon = !apps.empty();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   MaybeShowIntentPickerBubble(navigation_handle, std::move(apps));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return show_intent_icon;
 }
 
@@ -172,7 +172,7 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
   if (apps.empty())
     return;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
       apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconClicked);
 #endif

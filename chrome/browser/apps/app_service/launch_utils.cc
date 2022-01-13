@@ -33,11 +33,11 @@
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 // Use manual mapping for launch container and window open disposition because
 // we cannot use mojom traits for crosapi::mojom::LaunchParams yet. Move to auto
@@ -129,7 +129,7 @@ apps::mojom::LaunchContainer ConvertWindowModeToAppLaunchContainer(
 }
 
 }  // namespace
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -142,7 +142,7 @@ std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
 
   launch_files.reserve(command_line.GetArgs().size());
   for (const auto& arg : command_line.GetArgs()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     GURL url(base::AsStringPiece16(arg));
 #else
     GURL url(arg);
@@ -354,7 +354,7 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
     const apps::AppLaunchParams& params,
     Profile* profile) {
@@ -430,6 +430,6 @@ crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
       ConvertWindowModeToAppLaunchContainer(window_mode));
   return apps::ConvertLaunchParamsToCrosapi(launch_params, proxy->profile());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
 #endif
 
@@ -111,7 +112,7 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter);
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Convert App Service Intent to Crosapi Intent.
 // |profile| is only needed when the intent contains files, can be filled with
 // null otherwise.

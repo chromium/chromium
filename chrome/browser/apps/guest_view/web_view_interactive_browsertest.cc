@@ -70,7 +70,7 @@ using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This class observes the RenderWidgetHostViewCocoa corresponding to the outer
 // most WebContents provided for newly added subviews. The added subview
 // corresponds to a NSPopUpButtonCell which will be removed shortly after being
@@ -181,7 +181,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
   void SendCopyKeyPressToPlatformApp() {
     ASSERT_EQ(1U, GetAppWindowCount());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Send Cmd+C on MacOSX.
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         GetPlatformAppWindow(), ui::VKEY_C, false, false, false, true));
@@ -193,7 +193,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   }
 
   void SendStartOfLineKeyPressToPlatformApp() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Send Cmd+Left on MacOSX.
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         GetPlatformAppWindow(), ui::VKEY_LEFT, false, false, false, true));
@@ -205,7 +205,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   }
 
   void SendBackShortcutToPlatformApp() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Send Cmd+[ on MacOSX.
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         GetPlatformAppWindow(), ui::VKEY_OEM_4, false, false, false, true));
@@ -218,7 +218,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   }
 
   void SendForwardShortcutToPlatformApp() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Send Cmd+] on MacOSX.
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         GetPlatformAppWindow(), ui::VKEY_OEM_6, false, false, false, true));
@@ -562,7 +562,7 @@ class DISABLED_WebViewPopupInteractiveTest : public WebViewInteractiveTest {};
 // Timeouts flakily: crbug.com/1003345
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
                        DISABLED_PointerLock) {
   SetupTest("web_view/pointer_lock",
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
       gfx::Point(corner().x() + 74, corner().y() + 74)));
   MoveMouseInsideWindowWithListener(gfx::Point(75, 75), "mouse-move");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // When the mouse is unlocked on win aura, sending a test mouse click clicks
   // where the mouse moved to while locked. I was unable to figure out why, and
   // since the issue only occurs with the test mouse events, just fix it with
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
   ASSERT_TRUE(unlocked_listener.WaitUntilSatisfied());
 }
 
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that if a <webview> is focused before navigation then the guest starts
 // off focused.
@@ -702,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusTakeFocus) {
 }
 
 // Flaky on Mac and Linux - https://crbug.com/707648
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Focus_FocusTracksEmbedder DISABLED_Focus_FocusTracksEmbedder
 #else
 #define MAYBE_Focus_FocusTracksEmbedder Focus_FocusTracksEmbedder
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_EditCommandsNoMenu) {
 
   ExtensionTestMessageListener start_of_line_listener("StartOfLine", false);
   SendStartOfLineKeyPressToPlatformApp();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, sending an accelerator [key-down] will also cause the subsequent
   // key-up to be swallowed. The implementation of guest.html is waiting for a
   // key-up to send the caret-position message. So we send a key-down/key-up of
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_EditCommandsNoMenu) {
 // the NSEvent is sent to NSApplication in ui/base/test/ui_controls_mac.mm .
 // This test is disabled on only the Mac until the problem is resolved.
 // See http://crbug.com/425859 for more information.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_NewWindow_OpenInNewTab DISABLED_NewWindow_OpenInNewTab
 #else
 #define MAYBE_NewWindow_OpenInNewTab NewWindow_OpenInNewTab
@@ -895,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_NewWindow_OpenInNewTab) {
                    NEEDS_TEST_SERVER, &embedder_web_contents));
 
   EXPECT_TRUE(loaded_listener.WaitUntilSatisfied());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       GetPlatformAppWindow(), ui::VKEY_RETURN,
       false, false, false, true /* cmd */));
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, Navigation_BackForwardKeys) {
 
 // Trips over a DCHECK in content::MouseLockDispatcher::OnLockMouseACK; see
 // https://crbug.com/761783.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PointerLock_PointerLockLostWithFocus \
   PointerLock_PointerLockLostWithFocus
 #else
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
 //
 // In addition to the above, these tests are flaky on some platforms:
 // http://crbug.com/468660
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FullscreenAllow_EmbedderHasPermission \
   FullscreenAllow_EmbedderHasPermission
 #else
@@ -1005,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        "web_view/fullscreen/embedder_has_permission");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FullscreenDeny_EmbedderHasPermission \
   FullscreenDeny_EmbedderHasPermission
 #else
@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        "web_view/fullscreen/embedder_has_permission");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FullscreenAllow_EmbedderHasNoPermission \
   FullscreenAllow_EmbedderHasNoPermission
 #else
@@ -1031,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        "web_view/fullscreen/embedder_has_no_permission");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FullscreenDeny_EmbedderHasNoPermission \
   FullscreenDeny_EmbedderHasNoPermission
 #else
@@ -1101,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 
   // |text_input_client| is not available for mac and android.
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
   ui::TextInputClient* text_input_client = embedder_web_contents->GetMainFrame()
                                                ->GetRenderViewHost()
                                                ->GetWidget()
@@ -1114,8 +1114,8 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
 }
 
 // ui::TextInputClient is NULL for mac and android.
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
-#if defined(ADDRESS_SANITIZER) || defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_WIN)
 #define MAYBE_Focus_InputMethod DISABLED_Focus_InputMethod
 #else
 #define MAYBE_Focus_InputMethod Focus_InputMethod
@@ -1195,13 +1195,13 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
 }
 #endif
 
-#if defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)  // TODO(https://crbug.com/801552): Flaky.
+#if BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)  // TODO(https://crbug.com/801552): Flaky.
 #define MAYBE_LongPressSelection DISABLED_LongPressSelection
 #else
 #define MAYBE_LongPressSelection LongPressSelection
 #endif
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
   SetupTest("web_view/text_selection",
             "/extensions/platform_apps/web_view/text_selection/guest.html");
@@ -1211,7 +1211,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
 
   blink::WebInputEvent::Type context_menu_gesture_event_type =
       blink::WebInputEvent::Type::kGestureLongPress;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   context_menu_gesture_event_type = blink::WebInputEvent::Type::kGestureLongTap;
 #endif
   auto filter = std::make_unique<content::InputMsgWatcher>(
@@ -1246,7 +1246,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
   message_loop_runner->Run();
 
 // TODO: Fix quick menu opening on Windows.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 #endif
 
@@ -1254,7 +1254,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, TextSelection) {
   SetupTest("web_view/text_selection",
             "/extensions/platform_apps/web_view/text_selection/guest.html");
@@ -1306,8 +1306,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookup) {
 
 // Flaky on Mac: http://crbug.com/811893
 // Flaky on Linux/ChromeOS/Windows: http://crbug.com/845638
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_FocusAndVisibility DISABLED_FocusAndVisibility
 #else
 #define MAYBE_FocusAndVisibility FocusAndVisibility
@@ -1326,7 +1326,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, MAYBE_FocusAndVisibility) {
   // least once.
   ExtensionTestMessageListener key_processed_listener(
       "WebViewInteractiveTest.KeyUp", false);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On mac, the event listener seems one key event behind and deadlocks. Send
   // an extra tab to get things unblocked. See http://crbug.com/685281 when
   // fixed, this can be removed.
@@ -1374,8 +1374,8 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, MAYBE_FocusAndVisibility) {
 // Flaky on MacOSX, crbug.com/817066.
 // Flaky timeouts on Linux. https://crbug.com/709202
 // Flaky timeouts on Win. https://crbug.com/846695
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_KeyboardFocusSimple DISABLED_KeyboardFocusSimple
 #else
 #define MAYBE_KeyboardFocusSimple KeyboardFocusSimple
@@ -1420,8 +1420,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusSimple) {
 // Flaky on MacOSX, crbug.com/817067.
 // Flaky on linux, crbug.com/706830.
 // Flaky on Windows, crbug.com/847201.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_KeyboardFocusWindowCycle DISABLED_KeyboardFocusWindowCycle
 #else
 #define MAYBE_KeyboardFocusWindowCycle KeyboardFocusWindowCycle
@@ -1490,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This test verifies that replacement range for IME works with <webview>s. To
 // verify this, a <webview> with an <input> inside is loaded. Then the <input>
 // is focused and  populated with some text. The test then sends an IPC to
@@ -1608,7 +1608,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   observer.WaitForCompositionRangeLength(3U);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This test verifies that drop-down lists appear correctly inside OOPIF-based
 // webviews which have offset inside embedder. This is a test for all guest
 // views as the logic for showing such popups is inside content/ layer. For more

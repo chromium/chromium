@@ -185,7 +185,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 };
 
 // TODO(crbug.com/1177103): Re-enable. Flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_BasicGalleryWatch DISABLED_BasicGalleryWatch
 #else
 #define MAYBE_BasicGalleryWatch BasicGalleryWatch
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 }
 
 // TODO(crbug.com/1047645): Flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CorrectResponseOnModifyingWatchedGallery \
   DISABLED_CorrectResponseOnModifyingWatchedGallery
 #else
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 // Test is flaky on windows and linux: crbug.com/1150017.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_RemoveListenerAndModifyGallery \
   DISABLED_RemoveListenerAndModifyGallery
 #else

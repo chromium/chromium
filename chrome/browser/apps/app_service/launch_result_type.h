@@ -7,10 +7,11 @@
 
 #include "base/callback_forward.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 // LaunchResult, and LaunchCallback can be used in Chrome Ash, lacros, and other
@@ -22,13 +23,13 @@ struct LaunchResult {
 
 using LaunchCallback = base::OnceCallback<void(LaunchResult&&)>;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 LaunchResult ConvertMojomLaunchResultToLaunchResult(
     crosapi::mojom::LaunchResultPtr mojom_launch_result);
 
 base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)>
 LaunchResultToMojomLaunchResultCallback(LaunchCallback callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps
 

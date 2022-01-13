@@ -30,7 +30,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/mac/app_mode_common.h"
 #endif
 
@@ -38,7 +38,7 @@ using extensions::Extension;
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This version number is stored in local prefs to check whether app shortcuts
 // need to be recreated. This might happen when we change various aspects of app
 // shortcuts like command-line flags or associated icons, binaries, etc.

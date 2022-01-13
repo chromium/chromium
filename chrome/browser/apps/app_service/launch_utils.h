@@ -8,16 +8,17 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/base/window_open_disposition.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/app.mojom.h"
@@ -92,7 +93,7 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(
     apps::mojom::WindowInfoPtr window_info);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Helper to convert apps::AppLaunchParams to crosapi::mojom::LaunchParams.
 // This is needed because we cannot use traits to convert Intent at the moment,
 // After that is done, this can be moved to the mojom type traits.
@@ -113,7 +114,7 @@ crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
     int event_flags,
     apps::mojom::LaunchSource launch_source,
     int64_t display_id);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps
 

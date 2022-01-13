@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -29,7 +30,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
@@ -750,7 +751,7 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     const apps::mojom::IntentPtr& app_service_intent,
     Profile* profile) {

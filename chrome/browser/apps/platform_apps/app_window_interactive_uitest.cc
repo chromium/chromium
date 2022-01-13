@@ -16,11 +16,11 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
   EXPECT_TRUE(GetFirstAppWindow()->GetBaseWindow()->IsFullscreen());
 }
 
-#if defined(OS_MAC) || defined(THREAD_SANITIZER) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || defined(THREAD_SANITIZER) || BUILDFLAG(IS_LINUX)
 // http://crbug.com/404081
 // http://crbug.com/1263448 (tsan)
 // http://crbug.com/1263661 (linux)
@@ -275,7 +275,7 @@ void AppWindowInteractiveTest::TestOuterBoundsHelper(
   gfx::Rect window_bounds;
   gfx::Size min_size, max_size;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Get the bounds from the HWND.
   HWND hwnd = views::HWNDForNativeWindow(window->GetNativeWindow());
   RECT rect;
@@ -301,7 +301,7 @@ void AppWindowInteractiveTest::TestOuterBoundsHelper(
       max_size.width() ? max_size.width() + insets.left() + insets.right() : 0,
       max_size.height() ? max_size.height() + insets.top() + insets.bottom()
                         : 0);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // These match the values in the outer_bounds/test.js
   EXPECT_EQ(gfx::Rect(10, 11, 300, 301), window_bounds);
@@ -313,7 +313,7 @@ void AppWindowInteractiveTest::TestOuterBoundsHelper(
 }
 
 // TODO(jackhou): Make this test work for other OSes.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define MAYBE_TestOuterBoundsFrameChrome DISABLED_TestOuterBoundsFrameChrome
 #define MAYBE_TestOuterBoundsFrameNone DISABLED_TestOuterBoundsFrameNone
 #define MAYBE_TestOuterBoundsFrameColor DISABLED_TestOuterBoundsFrameColor
@@ -344,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
 // Those tests should be disabled on Linux GTK when they are enabled on the
 // other platforms, see http://crbug.com/328829.
 // Flaky failures on Windows; see https://crbug.com/788283.
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_AURA)) || \
-    defined(OS_MAC) || defined(OS_WIN)
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_TestCreate DISABLED_TestCreate
 #else
 #define MAYBE_TestCreate TestCreate
@@ -363,8 +363,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestCreate) {
 // ::Show() because of Cocoa conventions. See http://crbug.com/326987
 // Those tests should be disabled on Linux GTK when they are enabled on the
 // other platforms, see http://crbug.com/328829
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_AURA)) || \
-    defined(OS_WIN) || defined(OS_MAC)
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestShow DISABLED_TestShow
 #else
 #define MAYBE_TestShow TestShow
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestFullscreen) {
 }
 
 // Only Linux and Windows use keep-alive to determine when to shut down.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 // In general, hidden windows should not keep Chrome alive. The exception is
 // when windows are created hidden, we allow the app some time to show the

@@ -9,7 +9,7 @@
 #include "rlz/buildflags/buildflags.h"
 
 // Supported on all platforms, but on Windows only if RLZ is enabled.
-#if !defined(OS_WIN) || BUILDFLAG(ENABLE_RLZ)
+#if !BUILDFLAG(IS_WIN) || BUILDFLAG(ENABLE_RLZ)
 
 using MusicManagerPrivateTest = extensions::PlatformAppBrowserTest;
 

@@ -1397,8 +1397,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestDisplayNoneWebviewLoad) {
   TestHelper("testDisplayNoneWebviewLoad", "web_view/shim", NO_TEST_SERVER);
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_Shim_TestDisplayNoneWebviewRemoveChild \
   DISABLED_Shim_TestDisplayNoneWebviewRemoveChild
 #else
@@ -1489,7 +1489,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestAddAndRemoveContentScripts) {
              NEEDS_TEST_SERVER);
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_Shim_TestAddContentScriptsWithNewWindowAPI \
   DISABLED_Shim_TestAddContentScriptsWithNewWindowAPI
 #else
@@ -1584,7 +1584,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestNestedCrossOriginSubframes) {
              "web_view/shim", NEEDS_TEST_SERVER);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky on Mac. See https://crbug.com/674904.
 #define MAYBE_Shim_TestNestedSubframes DISABLED_Shim_TestNestedSubframes
 #else
@@ -2092,7 +2092,7 @@ IN_PROC_BROWSER_TEST_F(WebViewSizeTest, Shim_TestResizeWebviewResizesContent) {
 
 // Test makes sure that interstitial pages renders in <webview>.
 // Flaky on Win dbg: crbug.com/779973
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_InterstitialPage DISABLED_InterstitialPage
 #else
 #define MAYBE_InterstitialPage InterstitialPage
@@ -2112,7 +2112,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_InterstitialPage) {
 // Test makes sure that interstitial pages are registered in the
 // RenderWidgetHostInputEventRouter when inside a <webview>.
 // Flaky on Win dbg: crbug.com/779973
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_InterstitialPageRouteEvents DISABLED_InterstitialPageRouteEvents
 #else
 #define MAYBE_InterstitialPageRouteEvents InterstitialPageRouteEvents
@@ -2135,7 +2135,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_InterstitialPageRouteEvents) {
 // Test makes sure that the browser does not crash when a <webview> navigates
 // out of an interstitial.
 // Flaky on Win dbg: crbug.com/779973
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_InterstitialPageDetach DISABLED_InterstitialPageDetach
 #else
 #define MAYBE_InterstitialPageDetach InterstitialPageDetach
@@ -2159,7 +2159,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_InterstitialPageDetach) {
 // This test makes sure the browser process does not crash if app is closed
 // while an interstitial page is being shown in guest.
 // Flaky on Win dbg: crbug.com/779973
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_InterstitialTeardown DISABLED_InterstitialTeardown
 #else
 #define MAYBE_InterstitialTeardown InterstitialTeardown
@@ -3109,7 +3109,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ClearDataTwice) {
       << message_;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Test is disabled on Windows because it fails often (~9% time)
 // http://crbug.com/489088
 #define MAYBE_ClearDataCache DISABLED_ClearDataCache
@@ -3237,7 +3237,7 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
 }  // namespace
 
 // TODO(crbug.com/994789): Flaky on MSan, Linux, and Chrome OS.
-#if defined(MEMORY_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DownloadCookieIsolation DISABLED_DownloadCookieIsolation
 #else
 #define MAYBE_DownloadCookieIsolation DownloadCookieIsolation
@@ -3382,8 +3382,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
 
 // TODO(crbug.com/994789): Flaky on MSan, Linux, and ChromeOS.
 // TODO(crbug.com/1204299): Flaky on Windows. Consistently failing on Mac.
-#if defined(MEMORY_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN) || defined(OS_MAC)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_DownloadCookieIsolation_CrossSession \
   DISABLED_DownloadCookieIsolation_CrossSession
 #else
@@ -3622,7 +3622,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Dialog_TestConfirmDialogDefaultCancel) {
 }
 
 // Disable due to runloop time out. https://crbug.com/937461
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Dialog_TestConfirmDialogDefaultGCCancel \
   DISABLED_Dialog_TestConfirmDialogDefaultGCCancel
 #else
@@ -3663,8 +3663,8 @@ class WebViewCaptureTest : public WebViewTest {
 // https://crbug.com/1087381
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_CHROMEOS) ||                                  \
-    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#if BUILDFLAG(IS_CHROMEOS) ||                                  \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
      defined(ADDRESS_SANITIZER))
 #define MAYBE_Shim_TestZoomAPI DISABLED_Shim_TestZoomAPI
 #else
@@ -4652,7 +4652,7 @@ class ChromeSignInWebViewTest : public WebViewTest {
   }
 };
 
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // This verifies the fix for http://crbug.com/667708.
 IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,
                        ClosingChromeSignInShouldNotCrash) {
