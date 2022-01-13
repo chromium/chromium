@@ -45,8 +45,6 @@ source_set("block_swizzler") {
   sources = [
     "scoped_block_swizzler.h",
     "scoped_block_swizzler.mm",
-    "scoped_method_swizzler.h",
-    "scoped_method_swizzler.mm",
   ]
   deps = [ "//base" ]
 }
@@ -100,7 +98,6 @@ test("ios_testing_unittests") {
   sources = [
     "ocmock_complex_type_helper_unittest.mm",
     "scoped_block_swizzler_unittest.mm",
-    "scoped_method_swizzler_unittest.mm",
   ]
 
   assert_no_deps = ios_assert_no_deps
