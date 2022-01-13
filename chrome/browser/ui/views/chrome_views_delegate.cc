@@ -90,21 +90,21 @@ void ChromeViewsDelegate::SaveWindowPlacement(const views::Widget* window,
 
   std::unique_ptr<DictionaryPrefUpdateDeprecated> pref_update =
       chrome::GetWindowPlacementDictionaryReadWrite(window_name, prefs);
-  base::DictionaryValue* window_preferences = pref_update->Get();
-  window_preferences->SetInteger("left", bounds.x());
-  window_preferences->SetInteger("top", bounds.y());
-  window_preferences->SetInteger("right", bounds.right());
-  window_preferences->SetInteger("bottom", bounds.bottom());
-  window_preferences->SetBoolean("maximized",
+  base::Value* window_preferences = pref_update->Get();
+  window_preferences->SetIntKey("left", bounds.x());
+  window_preferences->SetIntKey("top", bounds.y());
+  window_preferences->SetIntKey("right", bounds.right());
+  window_preferences->SetIntKey("bottom", bounds.bottom());
+  window_preferences->SetBoolKey("maximized",
                                  show_state == ui::SHOW_STATE_MAXIMIZED);
 
   gfx::Rect work_area(display::Screen::GetScreen()
                           ->GetDisplayNearestView(window->GetNativeView())
                           .work_area());
-  window_preferences->SetInteger("work_area_left", work_area.x());
-  window_preferences->SetInteger("work_area_top", work_area.y());
-  window_preferences->SetInteger("work_area_right", work_area.right());
-  window_preferences->SetInteger("work_area_bottom", work_area.bottom());
+  window_preferences->SetIntKey("work_area_left", work_area.x());
+  window_preferences->SetIntKey("work_area_top", work_area.y());
+  window_preferences->SetIntKey("work_area_right", work_area.right());
+  window_preferences->SetIntKey("work_area_bottom", work_area.bottom());
 }
 
 bool ChromeViewsDelegate::GetSavedWindowPlacement(
