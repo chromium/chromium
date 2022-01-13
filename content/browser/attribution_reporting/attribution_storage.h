@@ -92,13 +92,6 @@ class AttributionStorage {
     virtual RateLimitConfig GetRateLimits(
         AttributionType attribution_type) const WARN_UNUSED_RESULT = 0;
 
-    // Returns random data for falsely attributed event sources. Only present on
-    // the delegate interface so it can be overridden to return deterministic
-    // data in tests. The data must be sanitized in the same way it would be for
-    // `AttributionPolicy::GetNoisedEventSourceTriggerData()`.
-    virtual uint64_t GetFakeEventSourceTriggerData() const
-        WARN_UNUSED_RESULT = 0;
-
     // Returns the maximum frequency at which to delete expired sources.
     // Must be positive.
     virtual base::TimeDelta GetDeleteExpiredSourcesFrequency() const

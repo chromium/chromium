@@ -88,7 +88,6 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   RateLimitConfig GetRateLimits(
       AttributionStorage::AttributionType attribution_type) const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
-  uint64_t GetFakeEventSourceTriggerData() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::GUID NewReportID() const override;
@@ -108,10 +107,6 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   }
 
   void set_rate_limits(RateLimitConfig c) { rate_limits_ = c; }
-
-  void set_fake_event_source_trigger_data(uint64_t data) {
-    fake_event_source_trigger_data_ = data;
-  }
 
   void set_delete_expired_sources_frequency(base::TimeDelta frequency) {
     delete_expired_sources_frequency_ = frequency;
@@ -135,8 +130,6 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
       .time_window = base::TimeDelta::Max(),
       .max_contributions_per_window = INT_MAX,
   };
-
-  uint64_t fake_event_source_trigger_data_ = 0;
 
   base::TimeDelta delete_expired_sources_frequency_;
   base::TimeDelta delete_expired_rate_limits_frequency_;
@@ -236,6 +229,9 @@ class SourceBuilder {
   SourceBuilder& SetAttributionLogic(
       StorableSource::AttributionLogic attribution_logic) WARN_UNUSED_RESULT;
 
+  SourceBuilder& SetFakeTriggerData(absl::optional<uint64_t> fake_trigger_data)
+      WARN_UNUSED_RESULT;
+
   SourceBuilder& SetSourceId(absl::optional<StorableSource::Id> source_id)
       WARN_UNUSED_RESULT;
 
@@ -256,6 +252,7 @@ class SourceBuilder {
   int64_t priority_ = 0;
   StorableSource::AttributionLogic attribution_logic_ =
       StorableSource::AttributionLogic::kTruthfully;
+  absl::optional<uint64_t> fake_trigger_data_;
   absl::optional<StorableSource::Id> source_id_;
   std::vector<int64_t> dedup_keys_;
 };

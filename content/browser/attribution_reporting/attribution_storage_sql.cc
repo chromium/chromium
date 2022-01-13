@@ -231,7 +231,8 @@ WARN_UNUSED_RESULT absl::optional<SourceToAttribute> ReadSourceToAttribute(
       .source = StorableSource(source_event_id, std::move(impression_origin),
                                std::move(conversion_origin), reporting_origin,
                                impression_time, expiry_time, *source_type,
-                               priority, *attribution_logic, source_id),
+                               priority, *attribution_logic,
+                               /*fake_trigger_data=*/absl::nullopt, source_id),
       .num_conversions = num_conversions,
   };
 }
@@ -260,7 +261,7 @@ absl::optional<StorableSource> ReadSourceFromStatement(
                         std::move(conversion_origin),
                         std::move(reporting_origin), impression_time,
                         expiry_time, *source_type, priority, *attribution_logic,
-                        source_id);
+                        /*fake_trigger_data=*/absl::nullopt, source_id);
 }
 
 }  // namespace
@@ -453,16 +454,15 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
   if (source.attribution_logic() ==
       StorableSource::AttributionLogic::kFalsely) {
     DCHECK_EQ(StorableSource::SourceType::kEvent, source.source_type());
+    DCHECK(source.fake_trigger_data().has_value());
 
     StorableSource::Id source_id(db_->GetLastInsertRowId());
-    uint64_t event_source_trigger_data =
-        delegate_->GetFakeEventSourceTriggerData();
 
     const base::Time trigger_time = source.impression_time();
     const base::Time report_time =
         delegate_->GetReportTime(source, trigger_time);
 
-    AttributionReport report(source, event_source_trigger_data,
+    AttributionReport report(source, *source.fake_trigger_data(),
                              /*trigger_time=*/trigger_time,
                              /*report_time=*/report_time,
                              /*priority=*/0,
@@ -849,11 +849,11 @@ absl::optional<AttributionReport> ReadReportFromStatement(
 
   // Create the source and AttributionReport objects from the retrieved
   // columns.
-  StorableSource source(source_event_id, std::move(impression_origin),
-                        std::move(conversion_origin),
-                        std::move(reporting_origin), impression_time,
-                        expiry_time, *source_type, attribution_source_priority,
-                        *attribution_logic, source_id);
+  StorableSource source(
+      source_event_id, std::move(impression_origin),
+      std::move(conversion_origin), std::move(reporting_origin),
+      impression_time, expiry_time, *source_type, attribution_source_priority,
+      *attribution_logic, /*fake_trigger_data=*/absl::nullopt, source_id);
 
   AttributionReport report(std::move(source), trigger_data, trigger_time,
                            report_time, conversion_priority,

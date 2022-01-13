@@ -7,7 +7,6 @@
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 
 namespace content {
@@ -69,12 +68,6 @@ AttributionStorageDelegateImpl::GetRateLimits(
           .max_contributions_per_window = 65536,
       };
   }
-}
-
-uint64_t AttributionStorageDelegateImpl::GetFakeEventSourceTriggerData() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AttributionPolicy().SanitizeTriggerData(
-      base::RandUint64(), StorableSource::SourceType::kEvent);
 }
 
 base::TimeDelta

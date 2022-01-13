@@ -71,9 +71,37 @@ class CONTENT_EXPORT AttributionPolicy {
   absl::optional<base::TimeDelta> GetFailedReportDelay(
       int failed_send_attempts) const WARN_UNUSED_RESULT;
 
-  // Selects how to handle the given impression; may involve RNG or other
+  class CONTENT_EXPORT AttributionMode {
+   public:
+    explicit AttributionMode(
+        StorableSource::AttributionLogic logic,
+        absl::optional<uint64_t> fake_trigger_data = absl::nullopt);
+
+    ~AttributionMode();
+
+    AttributionMode(const AttributionMode&);
+    AttributionMode(AttributionMode&&);
+
+    AttributionMode& operator=(const AttributionMode&);
+    AttributionMode& operator=(AttributionMode&&);
+
+    WARN_UNUSED_RESULT
+    StorableSource::AttributionLogic logic() const { return logic_; }
+
+    // `absl::nullopt` when `logic()` is not `AttributionLogic::kFalsely`.
+    WARN_UNUSED_RESULT
+    absl::optional<uint64_t> fake_trigger_data() const {
+      return fake_trigger_data_;
+    }
+
+   private:
+    StorableSource::AttributionLogic logic_;
+    absl::optional<uint64_t> fake_trigger_data_;
+  };
+
+  // Selects how to handle the given source type; may involve RNG or other
   // dynamic criteria.
-  StorableSource::AttributionLogic GetAttributionLogicForImpression(
+  AttributionMode GetAttributionMode(
       StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
 
  protected:

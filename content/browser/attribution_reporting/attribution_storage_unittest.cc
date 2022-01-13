@@ -1133,7 +1133,6 @@ TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
 }
 
 TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
-  delegate()->set_fake_event_source_trigger_data(7);
   delegate()->set_max_attributions_per_source(1);
 
   const auto impression =
@@ -1142,6 +1141,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           .SetSourceType(StorableSource::SourceType::kEvent)
           .SetPriority(100)
           .SetAttributionLogic(StorableSource::AttributionLogic::kFalsely)
+          .SetFakeTriggerData(7)
           .Build();
   storage()->StoreSource(impression);
 

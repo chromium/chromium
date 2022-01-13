@@ -60,6 +60,7 @@ class CONTENT_EXPORT StorableSource {
                  SourceType source_type,
                  int64_t priority,
                  AttributionLogic attribution_logic,
+                 absl::optional<uint64_t> fake_trigger_data,
                  absl::optional<Id> source_id);
   StorableSource(const StorableSource& other);
   StorableSource& operator=(const StorableSource& other);
@@ -99,6 +100,10 @@ class CONTENT_EXPORT StorableSource {
     return attribution_logic_;
   }
 
+  absl::optional<uint64_t> fake_trigger_data() const WARN_UNUSED_RESULT {
+    return fake_trigger_data_;
+  }
+
   const std::vector<int64_t>& dedup_keys() const WARN_UNUSED_RESULT {
     return dedup_keys_;
   }
@@ -129,6 +134,11 @@ class CONTENT_EXPORT StorableSource {
   SourceType source_type_;
   int64_t priority_;
   AttributionLogic attribution_logic_;
+
+  // Only set on sources passed into `AttributionStorage::StoreSource()`, not on
+  // sources retrieved from storage, because it is not actually stored in the
+  // underlying DB: it is used immediately to generate fake reports.
+  absl::optional<uint64_t> fake_trigger_data_;
 
   // If null, an ID has not been assigned yet.
   absl::optional<Id> source_id_;

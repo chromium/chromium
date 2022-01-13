@@ -16,8 +16,11 @@ namespace content {
 
 namespace {
 
+using AttributionLogic = ::content::StorableSource::AttributionLogic;
+using AttributionMode = ::content::AttributionPolicy::AttributionMode;
+
 WARN_UNUSED_RESULT
-uint64_t MaxAllowedValueForSourceType(StorableSource::SourceType source_type) {
+uint64_t TriggerDataCardinality(StorableSource::SourceType source_type) {
   switch (source_type) {
     case StorableSource::SourceType::kNavigation:
       return 8;
@@ -28,6 +31,21 @@ uint64_t MaxAllowedValueForSourceType(StorableSource::SourceType source_type) {
 
 }  // namespace
 
+AttributionMode::AttributionMode(AttributionLogic logic,
+                                 absl::optional<uint64_t> fake_trigger_data)
+    : logic_(logic), fake_trigger_data_(fake_trigger_data) {
+  DCHECK_EQ(logic_ == AttributionLogic::kFalsely,
+            fake_trigger_data_.has_value());
+}
+
+AttributionMode::~AttributionMode() = default;
+
+AttributionMode::AttributionMode(const AttributionMode&) = default;
+AttributionMode::AttributionMode(AttributionMode&&) = default;
+
+AttributionMode& AttributionMode::operator=(const AttributionMode&) = default;
+AttributionMode& AttributionMode::operator=(AttributionMode&&) = default;
+
 AttributionPolicy::AttributionPolicy(bool debug_mode)
     : debug_mode_(debug_mode) {}
 
@@ -37,31 +55,31 @@ bool AttributionPolicy::ShouldNoiseTriggerData() const {
   return base::RandDouble() <= .05;
 }
 
-uint64_t AttributionPolicy::MakeNoisedTriggerData(uint64_t max) const {
-  return base::RandGenerator(max);
+uint64_t AttributionPolicy::MakeNoisedTriggerData(uint64_t cardinality) const {
+  return base::RandGenerator(cardinality);
 }
 
 uint64_t AttributionPolicy::SanitizeTriggerData(
     uint64_t trigger_data,
     StorableSource::SourceType source_type) const {
-  const uint64_t max_allowed_values = MaxAllowedValueForSourceType(source_type);
+  const uint64_t cardinality = TriggerDataCardinality(source_type);
 
   // Add noise to the conversion when the value is first sanitized from a
   // conversion registration event. This noised data will be used for all
   // associated impressions that convert.
   if (!debug_mode_ && ShouldNoiseTriggerData()) {
-    const uint64_t noised_data = MakeNoisedTriggerData(max_allowed_values);
-    DCHECK_LT(noised_data, max_allowed_values);
+    const uint64_t noised_data = MakeNoisedTriggerData(cardinality);
+    DCHECK_LT(noised_data, cardinality);
     return noised_data;
   }
 
-  return trigger_data % max_allowed_values;
+  return trigger_data % cardinality;
 }
 
 bool AttributionPolicy::IsTriggerDataInRange(
     uint64_t trigger_data,
     StorableSource::SourceType source_type) const {
-  return trigger_data < MaxAllowedValueForSourceType(source_type);
+  return trigger_data < TriggerDataCardinality(source_type);
 }
 
 uint64_t AttributionPolicy::SanitizeSourceEventId(
@@ -120,26 +138,34 @@ absl::optional<base::TimeDelta> AttributionPolicy::GetFailedReportDelay(
   return kInitialReportDelay * pow(kDelayFactor, failed_send_attempts - 1);
 }
 
-StorableSource::AttributionLogic
-AttributionPolicy::GetAttributionLogicForImpression(
+AttributionPolicy::AttributionMode AttributionPolicy::GetAttributionMode(
     StorableSource::SourceType source_type) const {
   if (debug_mode_)
-    return StorableSource::AttributionLogic::kTruthfully;
+    return AttributionMode(AttributionLogic::kTruthfully);
 
+  double randomized_response_probability;
+
+  // TODO(apaseltiner): Pick non-zero probabilities.
   switch (source_type) {
     case StorableSource::SourceType::kNavigation:
-      return StorableSource::AttributionLogic::kTruthfully;
-    case StorableSource::SourceType::kEvent: {
-      // TODO(apaseltiner): Finalize a value for this so that noise is actually
-      // triggered.
-      const double kNoise = 0;
-      if (base::RandDouble() < (1 - kNoise))
-        return StorableSource::AttributionLogic::kTruthfully;
-      if (base::RandInt(0, 1) == 0)
-        return StorableSource::AttributionLogic::kNever;
-      return StorableSource::AttributionLogic::kFalsely;
-    }
+      randomized_response_probability = 0;
+      break;
+    case StorableSource::SourceType::kEvent:
+      randomized_response_probability = 0;
+      break;
   }
+
+  if (base::RandDouble() < randomized_response_probability) {
+    // The 0 value is reserved for `kNever`, so we add 1 here and subtract it
+    // later.
+    uint64_t r = MakeNoisedTriggerData(1 + TriggerDataCardinality(source_type));
+    if (r == 0)
+      return AttributionMode(AttributionLogic::kNever);
+
+    return AttributionMode(AttributionLogic::kFalsely, r - 1);
+  }
+
+  return AttributionMode(AttributionLogic::kTruthfully);
 }
 
 }  // namespace content

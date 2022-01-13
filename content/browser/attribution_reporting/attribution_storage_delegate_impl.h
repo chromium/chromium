@@ -46,7 +46,6 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   int GetMaxAttributionDestinationsPerEventSource() const override;
   RateLimitConfig GetRateLimits(
       AttributionStorage::AttributionType attribution_type) const override;
-  uint64_t GetFakeEventSourceTriggerData() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::GUID NewReportID() const override;

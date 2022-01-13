@@ -90,10 +90,6 @@ ConfigurableStorageDelegate::GetRateLimits(
   return rate_limits_;
 }
 
-uint64_t ConfigurableStorageDelegate::GetFakeEventSourceTriggerData() const {
-  return fake_event_source_trigger_data_;
-}
-
 base::TimeDelta ConfigurableStorageDelegate::GetDeleteExpiredSourcesFrequency()
     const {
   return delete_expired_sources_frequency_;
@@ -210,6 +206,12 @@ SourceBuilder& SourceBuilder::SetAttributionLogic(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetFakeTriggerData(
+    absl::optional<uint64_t> fake_trigger_data) {
+  fake_trigger_data_ = fake_trigger_data;
+  return *this;
+}
+
 SourceBuilder& SourceBuilder::SetSourceId(
     absl::optional<StorableSource::Id> source_id) {
   source_id_ = source_id;
@@ -226,7 +228,7 @@ StorableSource SourceBuilder::Build() const {
       source_event_id_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
       /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
-      attribution_logic_, source_id_);
+      attribution_logic_, fake_trigger_data_, source_id_);
   impression.SetDedupKeys(dedup_keys_);
   return impression;
 }
