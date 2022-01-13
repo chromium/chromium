@@ -393,8 +393,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
       *DlpRulesManagerFactory::GetForPrimaryProfile(), &helper);
 
   {
-    ListPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                    policy_prefs::kDlpRulesList);
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
     base::Value rule(base::Value::Type::DICTIONARY);
     base::Value src_urls(base::Value::Type::DICTIONARY);
     base::Value src_urls_list(base::Value::Type::LIST);
@@ -478,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnComponent) {
   SetupCrostini();
 
   {
-    ListPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                    policy_prefs::kDlpRulesList);
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
     base::Value rule(base::Value::Type::DICTIONARY);
     base::Value src_urls(base::Value::Type::DICTIONARY);
     base::Value src_urls_list(base::Value::Type::LIST);
@@ -596,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
 
   // TODO(1276069): Refactor duplicated code below.
   {
-    ListPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                    policy_prefs::kDlpRulesList);
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
     base::Value rule(base::Value::Type::DICTIONARY);
     base::Value src_urls(base::Value::Type::DICTIONARY);
     base::Value src_urls_list(base::Value::Type::LIST);
@@ -690,8 +690,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
 
   // TODO(1276069): Refactor duplicated code below.
   {
-    ListPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                    policy_prefs::kDlpRulesList);
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
     base::Value rule(base::Value::Type::DICTIONARY);
     base::Value src_urls(base::Value::Type::DICTIONARY);
     base::Value src_urls_list(base::Value::Type::LIST);
@@ -781,8 +781,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
 
   // TODO(1276069): Refactor duplicated code below.
   {
-    ListPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                    policy_prefs::kDlpRulesList);
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
     base::Value rule(base::Value::Type::DICTIONARY);
     base::Value src_urls(base::Value::Type::DICTIONARY);
     base::Value src_urls_list(base::Value::Type::LIST);
@@ -861,8 +861,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_Reporting) {
 
   // TODO(1276069): Refactor duplicated code below.
   {
-    ListPrefUpdateDeprecated update(g_browser_process->local_state(),
-                                    policy_prefs::kDlpRulesList);
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
     base::Value rule(base::Value::Type::DICTIONARY);
     base::Value src_urls(base::Value::Type::DICTIONARY);
     base::Value src_urls_list(base::Value::Type::LIST);
