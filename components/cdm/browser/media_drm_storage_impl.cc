@@ -354,7 +354,7 @@ void ClearSessionDataForTimePeriod(base::Value* sessions_dict,
 // 2. Removes the origin data if all of the sessions are removed.
 // 3. Returns a list of origin IDs to unprovision.
 std::vector<base::UnguessableToken> ClearMatchingLicenseData(
-    base::DictionaryValue* storage_dict,
+    base::Value* storage_dict,
     base::Time start,
     base::Time end,
     const base::RepeatingCallback<bool(const GURL&)>& filter) {
@@ -573,8 +573,7 @@ class InitializationSerializer {
 
     // Save the origin ID in the preference as long as it is not null.
     if (origin_id) {
-      DictionaryPrefUpdateDeprecated update(pref_service,
-                                            prefs::kMediaDrmStorage);
+      DictionaryPrefUpdate update(pref_service, prefs::kMediaDrmStorage);
       CreateOriginDictAndReturnSessionsDict(update.Get(), origin,
                                             origin_id.value());
     }
@@ -693,7 +692,7 @@ void MediaDrmStorageImpl::ClearMatchingLicenses(
     base::OnceClosure complete_cb) {
   DVLOG(1) << __func__ << ": Clear licenses [" << start << ", " << end << "]";
 
-  DictionaryPrefUpdateDeprecated update(pref_service, prefs::kMediaDrmStorage);
+  DictionaryPrefUpdate update(pref_service, prefs::kMediaDrmStorage);
 
   std::vector<base::UnguessableToken> no_license_origin_ids =
       ClearMatchingLicenseData(update.Get(), start, end, filter);
@@ -815,8 +814,8 @@ void MediaDrmStorageImpl::OnProvisioned(OnProvisionedCallback callback) {
     return;
   }
 
-  DictionaryPrefUpdateDeprecated update(pref_service_, prefs::kMediaDrmStorage);
-  base::DictionaryValue* storage_dict = update.Get();
+  DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
+  base::Value* storage_dict = update.Get();
   DCHECK(storage_dict);
 
   // Update origin dict once origin provisioning completes. There may be
@@ -847,8 +846,8 @@ void MediaDrmStorageImpl::SavePersistentSession(
     return;
   }
 
-  DictionaryPrefUpdateDeprecated update(pref_service_, prefs::kMediaDrmStorage);
-  base::DictionaryValue* storage_dict = update.Get();
+  DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
+  base::Value* storage_dict = update.Get();
   DCHECK(storage_dict);
 
   base::Value* sessions_dict = GetSessionsDictFromStorageDict<base::Value>(
@@ -948,7 +947,7 @@ void MediaDrmStorageImpl::RemovePersistentSession(
     return;
   }
 
-  DictionaryPrefUpdateDeprecated update(pref_service_, prefs::kMediaDrmStorage);
+  DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
 
   base::Value* sessions_dict = GetSessionsDictFromStorageDict<base::Value>(
       update.Get(), origin().Serialize());
