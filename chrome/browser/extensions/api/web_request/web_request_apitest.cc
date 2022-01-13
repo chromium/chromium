@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
   // Pass "debug" as a custom arg to debug test flakiness.
   ASSERT_TRUE(RunExtensionTest("webrequest",
                                {.page_url = "test_auth_required.html",
-                                .custom_arg = "debug",
+                                .custom_arg = R"({"debug": true})",
                                 .open_in_incognito = GetEnableIncognito()},
                                {.allow_in_incognito = GetEnableIncognito()}))
       << message_;
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
   // Pass "debug" as a custom arg to debug test flakiness.
   ASSERT_TRUE(RunExtensionTest("webrequest",
                                {.page_url = "test_auth_required_async.html",
-                                .custom_arg = "debug",
+                                .custom_arg = R"({"debug": true})",
                                 .open_in_incognito = GetEnableIncognito()},
                                {.allow_in_incognito = GetEnableIncognito()}))
       << message_;
@@ -687,8 +687,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestRedirects) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_redirects.html",
-                                              .custom_arg = "useExtraHeaders"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.page_url = "test_redirects.html",
+                                .custom_arg = R"({"useExtraHeaders": true})"}))
       << message_;
 }
 
@@ -730,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest",
                                {.page_url = "test_subresource_redirects.html",
-                                .custom_arg = "useExtraHeaders"}))
+                                .custom_arg = R"({"useExtraHeaders": true})"}))
       << message_;
 }
 
@@ -4707,7 +4708,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest,
                        DeclarativeSendMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.page_url = "test_fenced_frames_send_message.html"}))
+      "webrequest", {.page_url = "test_fenced_frames_send_message.html",
+                     .custom_arg = !GetParam() ? R"({"mparch": true})" : ""}))
       << message_;
 }
 

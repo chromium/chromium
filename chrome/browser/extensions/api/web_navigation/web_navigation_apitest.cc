@@ -660,7 +660,9 @@ class WebNavigationApiFencedFrameTest
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, Load) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames")) << message_;
+  ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames",
+                               {.custom_arg = !GetParam() ? "MPArch" : ""}))
+      << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(WebNavigationApiFencedFrameTest,

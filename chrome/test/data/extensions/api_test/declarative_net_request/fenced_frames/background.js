@@ -62,7 +62,7 @@ var tests = [
         request: {
           initiator: getServerURL('a.com'),
           method: 'GET',
-          frameId: 4,
+          frameId: mparchEnabled ? 5 : 4,
           parentFrameId: 0,
           type: 'sub_frame',
           tabId: tab.id,
@@ -89,7 +89,7 @@ var tests = [
         request: {
           initiator: getServerURL('a.com'),
           method: 'GET',
-          frameId: mparchEnabled ? 6 : 5,
+          frameId: mparchEnabled ? 7 : 5,
           parentFrameId: 0,
           type: 'sub_frame',
           tabId: tab.id,

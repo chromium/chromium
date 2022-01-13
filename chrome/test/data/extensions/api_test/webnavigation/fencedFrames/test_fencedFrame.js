@@ -14,6 +14,8 @@ loadScript.then(async function() {
   let URL_INTERMEDIATE_IFRAME = getURL('iframe.html');
   let URL_FENCED_FRAME = 'http://a.com:' + port +
       '/extensions/api_test/webnavigation/fencedFrames/frame.html';
+  var mparchEnabled = config.customArg == 'MPArch';
+
   chrome.test.runTests([
     // Navigates from an extension page to a HTTP page to contain
     // an iframe which contains a fenced frame.
@@ -146,7 +148,7 @@ loadScript.then(async function() {
                 parentFrameId: 0,
                 url: URL_INTERMEDIATE_IFRAME},
               {errorOccurred: false,
-                frameId: 5,
+               frameId: mparchEnabled ? 6 : 5,
                 parentFrameId: 4,
                 url: URL_FENCED_FRAME}],
                details);

@@ -14,11 +14,32 @@
 
 namespace content {
 
+namespace {
+
+FrameTreeNode* CreateDelegateFrameTreeNode(
+    RenderFrameHostImpl* owner_render_frame_host) {
+  return owner_render_frame_host->frame_tree()->AddFrame(
+      &*owner_render_frame_host, owner_render_frame_host->GetProcess()->GetID(),
+      owner_render_frame_host->GetProcess()->GetNextRoutingID(),
+      /*frame_remote=*/mojo::NullAssociatedRemote(),
+      /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
+      /*policy_container_bind_params=*/nullptr,
+      blink::mojom::TreeScopeType::kDocument, "", "", true,
+      blink::LocalFrameToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+      blink::FrameOwnerElementType::kFencedframe,
+      /*is_dummy_frame_for_inner_tree=*/true);
+}
+
+}  // namespace
+
 FencedFrame::FencedFrame(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host)
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
+      outer_delegate_frame_tree_node_(
+          CreateDelegateFrameTreeNode(&*owner_render_frame_host)),
       frame_tree_(
           std::make_unique<FrameTree>(web_contents_->GetBrowserContext(),
                                       /*delegate=*/this,
@@ -112,23 +133,7 @@ RenderFrameProxyHost* FencedFrame::GetProxyToInnerMainFrame() {
 }
 
 void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
-  // The fenced frame should not already be attached.
-  DCHECK(!outer_delegate_frame_tree_node_);
-
-  outer_delegate_frame_tree_node_ =
-      owner_render_frame_host_->frame_tree()->AddFrame(
-          &*owner_render_frame_host_,
-          owner_render_frame_host_->GetProcess()->GetID(),
-          owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
-          /*frame_remote=*/mojo::NullAssociatedRemote(),
-          /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
-          /*policy_container_bind_params=*/nullptr,
-          blink::mojom::TreeScopeType::kDocument, "", "", true,
-          blink::LocalFrameToken(), base::UnguessableToken::Create(),
-          blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
-          blink::FrameOwnerElementType::kFencedframe,
-          /*is_dummy_frame_for_inner_tree=*/true);
-
+  DCHECK(outer_delegate_frame_tree_node_);
   // Connect the outer delegate RenderFrameHost with the inner main
   // FrameTreeNode. This allows us to traverse from the outer delegate RFH
   // inward, to the inner fenced frame FrameTree.

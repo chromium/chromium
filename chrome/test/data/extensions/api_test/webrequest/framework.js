@@ -8,6 +8,7 @@ var expectedEventData;
 var capturedEventData;
 var capturedUnexpectedData;
 var expectedEventOrder;
+var mparchEnabled;
 var tabId;
 var tabIdMap;
 var frameIdMap;
@@ -62,8 +63,11 @@ function runTestsForTab(tests, tab) {
 // Creates an "about:blank" tab and runs |tests| with this tab as default.
 function runTests(tests) {
   chrome.test.getConfig(function(config) {
-    if (config.customArg == 'debug')
-      debug = true;
+    if (config.customArg) {
+      let args = JSON.parse(config.customArg);
+      debug = args.debug;
+      mparchEnabled = args.mparch;
+    }
 
     var waitForAboutBlank = function(_, info, tab) {
       if (debug) {
