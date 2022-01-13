@@ -791,7 +791,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.Startup.Visibility" enum="StartupVisibility"
+<histogram name="UMA.StartupVisibility" enum="StartupVisibility"
     expires_after="2022-11-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
