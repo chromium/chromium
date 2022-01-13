@@ -32,8 +32,7 @@ void RemoveMojoObservers(ArcBootPhaseThrottleObserver* observer) {
 }  // namespace
 
 ArcBootPhaseThrottleObserver::ArcBootPhaseThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL,
-                       "ArcIsBooting") {}
+    : ThrottleObserver("ArcIsBooting") {}
 
 ArcBootPhaseThrottleObserver::~ArcBootPhaseThrottleObserver() = default;
 

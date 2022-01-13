@@ -37,6 +37,9 @@ class ArcInstanceThrottle : public KeyedService,
                             public ash::ThrottleService,
                             public ConnectionObserver<mojom::PowerInstance> {
  public:
+  // The name of the observer which monitors chrome://arc-power-control.
+  static const char kChromeArcPowerControlPageObserver[];
+
   class Delegate {
    public:
     Delegate() = default;
@@ -78,7 +81,7 @@ class ArcInstanceThrottle : public KeyedService,
 
  private:
   // ash::ThrottleService:
-  void ThrottleInstance(ash::ThrottleObserver::PriorityLevel level) override;
+  void ThrottleInstance(bool should_throttle) override;
   void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
                                        base::TimeDelta delta) override;
 

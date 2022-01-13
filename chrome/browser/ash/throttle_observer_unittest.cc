@@ -33,16 +33,14 @@ class ThrottleObserverTest
   size_t notify_count() const { return notify_count_; }
 
  private:
-  ThrottleObserver observer_{ThrottleObserver::PriorityLevel::LOW,
-                             "TestObserver"};
+  ThrottleObserver observer_{"TestObserver"};
   size_t notify_count_{0};
 };
 
 // Tests that ThrottleObserver can be constructed and destructed.
 TEST_F(ThrottleObserverTest, TestConstructDestruct) {}
 
-// Tests that ThrottleObserver notifies observers only when its 'active'
-// state changes
+// Tests that ThrottleObserver notifies observers on SetActive().
 TEST_F(ThrottleObserverTest, TestSetActive) {
   EXPECT_EQ(0U, notify_count());
   EXPECT_FALSE(observer()->active());
@@ -53,11 +51,29 @@ TEST_F(ThrottleObserverTest, TestSetActive) {
 
   observer()->SetActive(true);
   EXPECT_TRUE(observer()->active());
-  EXPECT_EQ(1U, notify_count());
+  EXPECT_EQ(2U, notify_count());
 
   observer()->SetActive(false);
   EXPECT_FALSE(observer()->active());
+  EXPECT_EQ(3U, notify_count());
+}
+
+// Tests that ThrottleObserver notifies observers on SetEnforced().
+TEST_F(ThrottleObserverTest, TestSetEnforced) {
+  EXPECT_EQ(0U, notify_count());
+  EXPECT_FALSE(observer()->enforced());
+
+  observer()->SetEnforced(true);
+  EXPECT_TRUE(observer()->enforced());
+  EXPECT_EQ(1U, notify_count());
+
+  observer()->SetEnforced(true);
+  EXPECT_TRUE(observer()->enforced());
   EXPECT_EQ(2U, notify_count());
+
+  observer()->SetEnforced(false);
+  EXPECT_FALSE(observer()->enforced());
+  EXPECT_EQ(3U, notify_count());
 }
 
 }  // namespace ash

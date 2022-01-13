@@ -22,8 +22,7 @@ namespace ash {
 class WindowThrottleObserverBase : public ThrottleObserver,
                                    public wm::ActivationChangeObserver {
  public:
-  WindowThrottleObserverBase(ThrottleObserver::PriorityLevel level,
-                             std::string name);
+  explicit WindowThrottleObserverBase(const std::string& name);
 
   WindowThrottleObserverBase(const WindowThrottleObserverBase&) = delete;
   WindowThrottleObserverBase& operator=(const WindowThrottleObserverBase&) =

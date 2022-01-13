@@ -16,7 +16,7 @@ constexpr base::TimeDelta kHandleServiceAnrTime = base::Seconds(20);
 }  // namespace
 
 ArcPowerThrottleObserver::ArcPowerThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL, "ArcPower") {}
+    : ThrottleObserver("ArcPower") {}
 
 ArcPowerThrottleObserver::~ArcPowerThrottleObserver() = default;
 

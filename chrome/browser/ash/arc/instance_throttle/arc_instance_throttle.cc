@@ -145,20 +145,16 @@ class ArcInstanceThrottleFactory
   ~ArcInstanceThrottleFactory() override = default;
 };
 
-CpuRestrictionState LevelToCpuRestriction(
-    ash::ThrottleObserver::PriorityLevel level) {
-  switch (level) {
-    case ash::ThrottleObserver::PriorityLevel::CRITICAL:
-    case ash::ThrottleObserver::PriorityLevel::IMPORTANT:
-    case ash::ThrottleObserver::PriorityLevel::NORMAL:
-      return CpuRestrictionState::CPU_RESTRICTION_FOREGROUND;
-    case ash::ThrottleObserver::PriorityLevel::LOW:
-    case ash::ThrottleObserver::PriorityLevel::UNKNOWN:
-      return CpuRestrictionState::CPU_RESTRICTION_BACKGROUND;
-  }
+CpuRestrictionState ToCpuRestriction(bool should_throttle) {
+  return should_throttle ? CpuRestrictionState::CPU_RESTRICTION_BACKGROUND
+                         : CpuRestrictionState::CPU_RESTRICTION_FOREGROUND;
 }
 
 }  // namespace
+
+// static
+const char ArcInstanceThrottle::kChromeArcPowerControlPageObserver[] =
+    "arc-power-control";
 
 // static
 ArcInstanceThrottle* ArcInstanceThrottle::GetForBrowserContext(
@@ -185,6 +181,9 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   AddObserver(std::make_unique<ArcPowerThrottleObserver>());
   AddObserver(std::make_unique<ArcProvisioningThrottleObserver>());
   AddObserver(std::make_unique<ArcSwitchThrottleObserver>());
+  // This one is controlled by chromeos::ArcPowerControlHandler.
+  AddObserver(std::make_unique<ash::ThrottleObserver>(
+      kChromeArcPowerControlPageObserver));
   StartObservers();
   DCHECK(bridge_);
   bridge_->power()->AddObserver(this);
@@ -199,13 +198,13 @@ void ArcInstanceThrottle::Shutdown() {
 }
 
 void ArcInstanceThrottle::OnConnectionReady() {
-  NotifyCpuRestriction(LevelToCpuRestriction(level()));
+  NotifyCpuRestriction(ToCpuRestriction(should_throttle()));
 }
 
-void ArcInstanceThrottle::ThrottleInstance(
-    ash::ThrottleObserver::PriorityLevel level) {
+void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
   const CpuRestrictionState cpu_restriction_state =
-      LevelToCpuRestriction(level);
+      ToCpuRestriction(should_throttle);
+
   NotifyCpuRestriction(cpu_restriction_state);
   delegate_->SetCpuRestriction(cpu_restriction_state);
 }

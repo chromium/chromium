@@ -10,8 +10,7 @@
 namespace arc {
 
 ArcKioskModeThrottleObserver::ArcKioskModeThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL,
-                       "ArcKioskMode") {}
+    : ThrottleObserver("ArcKioskMode") {}
 
 void ArcKioskModeThrottleObserver::StartObserving(
     content::BrowserContext* context,

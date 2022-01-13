@@ -9,8 +9,7 @@
 namespace arc {
 
 ArcSwitchThrottleObserver::ArcSwitchThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL, "ArcSwitch") {
-}
+    : ThrottleObserver("ArcSwitch") {}
 
 void ArcSwitchThrottleObserver::StartObserving(
     content::BrowserContext* context,

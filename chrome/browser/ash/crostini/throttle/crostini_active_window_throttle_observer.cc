@@ -13,8 +13,7 @@
 namespace crostini {
 
 CrostiniActiveWindowThrottleObserver::CrostiniActiveWindowThrottleObserver()
-    : WindowThrottleObserverBase(ThrottleObserver::PriorityLevel::CRITICAL,
-                                 "CrostiniWindowIsActiveWindow") {}
+    : WindowThrottleObserverBase("CrostiniWindowIsActiveWindow") {}
 
 bool CrostiniActiveWindowThrottleObserver::ProcessWindowActivation(
     ActivationReason reason,

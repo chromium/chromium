@@ -61,10 +61,8 @@ bool ShouldIgnoreWindowActivation(
 
 }  // namespace
 
-WindowThrottleObserverBase::WindowThrottleObserverBase(
-    ThrottleObserver::PriorityLevel level,
-    std::string name)
-    : ThrottleObserver(level, name) {}
+WindowThrottleObserverBase::WindowThrottleObserverBase(const std::string& name)
+    : ThrottleObserver(name) {}
 
 void WindowThrottleObserverBase::StartObserving(
     content::BrowserContext* context,
