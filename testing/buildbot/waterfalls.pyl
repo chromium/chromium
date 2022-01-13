@@ -1578,6 +1578,7 @@
       },
       'linux-lacros-tester-rel': {
         'mixins': [
+          'isolate_profile_data',
           'linux-bionic',
         ],
         'additional_compile_targets': [
