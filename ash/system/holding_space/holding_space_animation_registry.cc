@@ -211,8 +211,13 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
         .animation = std::move(animation),
         .subscription = std::move(subscription)};
 
-    animations_by_key_.emplace(key, std::move(subscribed_animation))
-        .first->second.animation->Start();
+    if (it == animations_by_key_.end()) {
+      animations_by_key_.emplace(key, std::move(subscribed_animation))
+          .first->second.animation->Start();
+    } else {
+      it->second = std::move(subscribed_animation);
+      it->second.animation->Start();
+    }
 
     NotifyAnimationChangedForKey(key);
   }

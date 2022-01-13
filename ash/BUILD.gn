@@ -2491,6 +2491,7 @@ test("ash_unittests") {
     "system/caps_lock_notification_controller_unittest.cc",
     "system/geolocation/geolocation_controller_unittest.cc",
     "system/gesture_education/gesture_education_notification_controller_unittest.cc",
+    "system/holding_space/holding_space_animation_registry_unittest.cc",
     "system/holding_space/holding_space_tray_unittest.cc",
     "system/hps/hps_configuration_unittest.cc",
     "system/ime/ime_feature_pod_controller_unittest.cc",
