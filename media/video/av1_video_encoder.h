@@ -57,6 +57,7 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
   // coming from real frames.
   aom_codec_pts_t artificial_timestamp_ = 0;
 
+  gfx::Size originally_configured_size_;
   base::TimeDelta last_frame_timestamp_;
   gfx::ColorSpace last_frame_color_space_;
   int temporal_svc_frame_index_ = 0;

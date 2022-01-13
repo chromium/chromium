@@ -17,7 +17,7 @@ data_path = os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
 four_colors_img_path = os.path.join(data_path, 'four-colors.y4m')
 
 frame_sources = ["camera", "capture", "offscreen", "hw_decoder", "sw_decoder"]
-codecs = ["avc1.42001E", "vp8", "vp09.00.10.08"]
+codecs = ["avc1.42001E", "vp8", "vp09.00.10.08", "av01.0.04M.08"]
 accelerations = ["prefer-hardware", "prefer-software"]
 
 

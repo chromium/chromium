@@ -267,6 +267,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
 #undef CALL_AOM_CONTROL
 
   options_ = options;
+  originally_configured_size_ = options.frame_size;
   output_cb_ = BindToCurrentLoop(std::move(output_cb));
   codec_ = std::move(codec);
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
@@ -316,12 +317,11 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  const bool is_yuv = IsYuvPlanar(frame->format());
-  if (frame->visible_rect().size() != options_.frame_size || !is_yuv) {
+  const bool i420 = frame->format() == PIXEL_FORMAT_I420;
+  if (frame->visible_rect().size() != options_.frame_size || !i420) {
     auto resized_frame = frame_pool_.CreateFrame(
-        is_yuv ? frame->format() : PIXEL_FORMAT_I420, options_.frame_size,
-        gfx::Rect(options_.frame_size), options_.frame_size,
-        frame->timestamp());
+        PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(options_.frame_size),
+        options_.frame_size, frame->timestamp());
 
     if (resized_frame) {
       Status conv_status =
@@ -395,6 +395,15 @@ void Av1VideoEncoder::ChangeOptions(const Options& options,
   if (!codec_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
+    return;
+  }
+
+  if (options.frame_size.width() > originally_configured_size_.width() ||
+      options.frame_size.height() > originally_configured_size_.height()) {
+    auto status = EncoderStatus(
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        "libaom doesn't support dynamically increasing frame dimensions");
+    std::move(done_cb).Run(std::move(status));
     return;
   }
 
