@@ -230,7 +230,6 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
