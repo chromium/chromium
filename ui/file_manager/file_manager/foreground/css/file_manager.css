@@ -1825,19 +1825,27 @@ body.files-ng #default-task-dialog.bottom-shadow::after {
   width: 100%
 }
 
-body.files-ng #default-tasks-list li {
+#default-tasks-list li {
   height: 40px;
   line-height: 40px;
 }
 
-body.files-ng #default-tasks-list > li > * {
+#default-tasks-list > li > .icon {
+  -webkit-mask-position: 16px center;
+  -webkit-mask-repeat: no-repeat;
   background-position: 16px center;
   background-repeat: no-repeat;
   background-size: 20px;
-  padding-inline-start: 52px;
+  height: 100%;
 }
 
-html[dir='rtl'] body.files-ng #default-tasks-list > li > * {
+#default-tasks-list > li > .label {
+  padding-inline-start: 52px;
+  position: absolute;
+}
+
+html[dir='rtl'] #default-tasks-list > li > .icon {
+  -webkit-mask-position-x: calc(100% - 16px);
   background-position-x: calc(100% - 16px);
 }
 
@@ -2130,13 +2138,8 @@ body.check-select #list-container list li[selected] .detail-thumbnail
   opacity: 0;
 }
 
-#tasks-menu cr-menu-item:not(.change-default) {
-  background-position: left 10px center;
-  padding-inline-start: 32px;
-}
-
-html[dir='rtl'] #tasks-menu cr-menu-item:not(.change-default) {
-  background-position: right 10px center;
+#tasks-menu cr-menu-item.change-default .icon.start {
+  display: none;
 }
 
 #action-bar {

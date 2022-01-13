@@ -26,7 +26,13 @@ export class FilesMenuItem extends MenuItem {
     this.iconStart_ = null;
 
     /** @private {?HTMLElement} */
+    this.iconEnd_ = null;
+
+    /** @private {?HTMLElement} */
     this.ripple_ = null;
+
+    /** @public @type {?chrome.fileManagerPrivate.FileTaskDescriptor} */
+    this.descriptor = null;
 
     throw new Error('Designed to decorate elements');
   }
@@ -58,10 +64,21 @@ export class FilesMenuItem extends MenuItem {
           assertInstanceof(document.createElement('div'), HTMLElement);
       this.iconStart_.classList.add('icon', 'start');
 
+      this.iconEnd_ =
+          assertInstanceof(document.createElement('div'), HTMLElement);
+      this.iconEnd_.classList.add('icon', 'end');
+      /**
+       * This is hidden by default because most of the menu items don't require
+       * an end icon, the component which uses end icon should explicitly make
+       * it visible.
+       */
+      this.setIconEndHidden(true);
+
       // Override with standard menu item elements.
       this.textContent = '';
       this.appendChild(this.iconStart_);
       this.appendChild(this.label_);
+      this.appendChild(this.iconEnd_);
     }
 
     this.ripple_ =
@@ -204,5 +221,59 @@ export class FilesMenuItem extends MenuItem {
    */
   set iconStartImage(value) {
     this.iconStart_.setAttribute('style', 'background-image: ' + value);
+  }
+
+  /**
+   * @return {string}
+   */
+  get iconStartFileType() {
+    return this.iconStart_.getAttribute('file-type-icon');
+  }
+
+  /**
+   * @param {string} value
+   */
+  set iconStartFileType(value) {
+    this.iconStart_.setAttribute('file-type-icon', value);
+  }
+
+  /**
+   * @return {string}
+   */
+  get iconEndImage() {
+    return this.iconEnd_.style.backgroundImage;
+  }
+
+  /**
+   * @param {string} value
+   */
+  set iconEndImage(value) {
+    this.iconEnd_.setAttribute('style', 'background-image: ' + value);
+  }
+
+  /**
+   * @return {string}
+   */
+  get iconEndFileType() {
+    return this.iconEnd_.getAttribute('file-type-icon');
+  }
+
+  /**
+   * @param {string} value
+   */
+  set iconEndFileType(value) {
+    this.iconEnd_.setAttribute('file-type-icon', value);
+  }
+
+  removeIconEndFileType() {
+    this.iconEnd_.removeAttribute('file-type-icon');
+  }
+
+  /**
+   *
+   * @param {boolean} isHidden
+   */
+  setIconEndHidden(isHidden) {
+    this.iconEnd_.toggleAttribute('hidden', isHidden);
   }
 }

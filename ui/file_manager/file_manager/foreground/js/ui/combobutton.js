@@ -59,9 +59,13 @@ export class ComboButton extends MultiMenuButton {
     }
 
     menuitem.data = item;
+    // Move backgroundImage from the menu item container to the child icon.
+    menuitem.iconStartImage = menuitem.style.backgroundImage;
+    menuitem.style.backgroundImage = '';
+
     if (item.iconType) {
-      menuitem.style.backgroundImage = '';
-      menuitem.setAttribute('file-type-icon', item.iconType);
+      menuitem.iconStartImage = '';
+      menuitem.iconStartFileType = item.iconType;
     }
     if (item.bold) {
       menuitem.style.fontWeight = 'bold';

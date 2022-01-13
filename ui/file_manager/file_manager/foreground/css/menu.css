@@ -69,24 +69,38 @@ cr-menu[hidden].files-menu.animating {
 }
 
 cr-menu.files-menu > cr-menu-item {
-  background-size: 16px 16px;
   position: relative;
 }
 
 /* Icon on the left of the item label for cr.ui.FilesMenuItem.
    TODO(mtomasz): Upstream to cr.ui.MenuItem. */
-cr-menu.files-menu.has-icon-start cr-menu-item .icon.start {
+cr-menu.files-menu cr-menu-item .icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
   background-position: center;
   background-repeat: no-repeat;
-  display: inline-block;
-  height: 16px;
-  margin-inline-end: 8px;
+  background-size: 16px 16px;
+  height: 32px;
   vertical-align: middle;
   width: 16px;
 }
 
+cr-menu.files-menu cr-menu-item .icon.start {
+  display: inline-block;
+  margin-inline-end: 8px;
+}
+
 cr-menu.files-menu:not(.has-icon-start) cr-menu-item .icon.start {
   display: none;
+}
+
+cr-menu.files-menu cr-menu-item .icon.end {
+  float: right;
+}
+
+html[dir='rtl'] cr-menu.files-menu cr-menu-item .icon.end {
+  float: left;
 }
 
 cr-menu.files-menu > cr-menu-item > .icon {

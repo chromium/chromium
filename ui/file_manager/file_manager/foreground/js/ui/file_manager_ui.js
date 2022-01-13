@@ -304,11 +304,11 @@ export class FileManagerUI {
         util.queryDecoratedElement('#file-context-menu', MultiMenu);
 
     /**
-     * @public {!HTMLMenuItemElement}
+     * @public {!FilesMenuItem}
      * @const
      */
     this.defaultTaskMenuItem =
-        /** @type {!HTMLMenuItemElement} */
+        /** @type {!FilesMenuItem} */
         (queryRequiredElement('#default-task-menu-item', this.fileContextMenu));
 
     /**
