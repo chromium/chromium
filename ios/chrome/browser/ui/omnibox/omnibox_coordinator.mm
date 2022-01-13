@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -145,7 +146,8 @@
             dispatchingForProtocol:@protocol(ThumbStripCommands)]) {
       id<ThumbStripCommands> thumbStripHandler = HandlerForProtocol(
           self.browser->GetCommandDispatcher(), ThumbStripCommands);
-      [thumbStripHandler closeThumbStrip];
+      [thumbStripHandler
+          closeThumbStripWithTrigger:ViewRevealTrigger::OmniboxFocus];
     }
 
     // In multiwindow context, -becomeFirstRepsonder is not enough to get the

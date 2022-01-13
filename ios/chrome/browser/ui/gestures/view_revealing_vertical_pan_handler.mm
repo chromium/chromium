@@ -8,6 +8,7 @@
 #include "base/cxx17_backports.h"
 #include "base/ios/block_types.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 #import "ios/chrome/browser/ui/gestures/pan_handler_scroll_view.h"
@@ -46,11 +47,34 @@ enum class LayoutTransitionState {
 
 }  // namespace
 
+@interface ViewRevealingPanGestureRecognizer ()
+
+// Trigger for this custom PanGestureRecognizer.
+@property(nonatomic, assign) ViewRevealTrigger trigger;
+
+@end
+
+@implementation ViewRevealingPanGestureRecognizer
+
+- (instancetype)initWithTarget:(id)target
+                        action:(SEL)action
+                       trigger:(ViewRevealTrigger)trigger {
+  if (self = [super initWithTarget:target action:action]) {
+    _trigger = trigger;
+  }
+  return self;
+}
+
+@end
+
 @interface ViewRevealingVerticalPanHandler ()
 
 // Privately redeclare |currentState| as readwrite.
 @property(nonatomic, readwrite, assign) ViewRevealState currentState;
 
+// The latest trigger that brought the view to the currentState (or nextState if
+// a transition is on).
+@property(nonatomic, readwrite, assign) ViewRevealTrigger changeStateTrigger;
 // The state that the currentState will be set to if the transition animation
 // completes with its REVERSED property set to NO.
 @property(nonatomic, assign) ViewRevealState nextState;
@@ -123,6 +147,14 @@ enum class LayoutTransitionState {
   self.currentRecognizer = gesture;
   CGFloat translationY = [gesture translationInView:gesture.view.superview].y;
 
+  if ([gesture isKindOfClass:ViewRevealingPanGestureRecognizer.class]) {
+    self.changeStateTrigger =
+        (base::mac::ObjCCastStrict<ViewRevealingPanGestureRecognizer>(gesture))
+            .trigger;
+  } else {
+    self.changeStateTrigger = ViewRevealTrigger::Unknown;
+  }
+
   if (gesture.state == UIGestureRecognizerStateBegan) {
     [self panGestureBegan];
   } else if (gesture.state == UIGestureRecognizerStateChanged) {
@@ -140,10 +172,20 @@ enum class LayoutTransitionState {
   [self.animatees addObject:animatee];
   // Make sure the newly added animatee is in the correct state.
   [UIView performWithoutAnimation:^{
-    [animatee willAnimateViewRevealFromState:self.currentState
-                                     toState:self.currentState];
-    [animatee animateViewReveal:self.currentState];
-    [animatee didAnimateViewReveal:self.currentState];
+    if ([animatee respondsToSelector:@selector
+                  (willAnimateViewRevealFromState:toState:)]) {
+      [animatee willAnimateViewRevealFromState:self.currentState
+                                       toState:self.currentState];
+    }
+    if ([animatee respondsToSelector:@selector(animateViewReveal:)]) {
+      [animatee animateViewReveal:self.currentState];
+    }
+    if ([animatee respondsToSelector:@selector
+                  (didAnimateViewRevealFromState:toState:trigger:)]) {
+      [animatee didAnimateViewRevealFromState:self.currentState
+                                      toState:self.currentState
+                                      trigger:self.changeStateTrigger];
+    }
   }];
 }
 
@@ -153,7 +195,12 @@ enum class LayoutTransitionState {
   _remainingHeight = _revealedHeight - _peekedHeight;
 }
 
-- (void)setNextState:(ViewRevealState)state animated:(BOOL)animated {
+- (void)setNextState:(ViewRevealState)state
+            animated:(BOOL)animated
+             trigger:(ViewRevealTrigger)trigger {
+  // Remember new trigger even if the next state is ignored.
+  self.changeStateTrigger = trigger;
+
   // Don't change animation if state is already currentState, it creates
   // confusion.
   if (self.currentState == state) {
@@ -190,8 +237,11 @@ enum class LayoutTransitionState {
 // from the current view reveal state.
 - (void)willAnimateViewReveal {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
-    [animatee willAnimateViewRevealFromState:self.currentState
-                                     toState:self.nextState];
+    if ([animatee respondsToSelector:@selector
+                  (willAnimateViewRevealFromState:toState:)]) {
+      [animatee willAnimateViewRevealFromState:self.currentState
+                                       toState:self.nextState];
+    }
   }
 }
 
@@ -199,15 +249,23 @@ enum class LayoutTransitionState {
 // reveal state.
 - (void)animateToNextViewRevealState {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
-    [animatee animateViewReveal:self.nextState];
+    if ([animatee respondsToSelector:@selector(animateViewReveal:)]) {
+      [animatee animateViewReveal:self.nextState];
+    }
   }
 }
 
 // Called inside the completion block of the current animation. Takes as
 // argument the state to which the animatees did animate to.
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+- (void)didAnimateViewRevealFromState:(ViewRevealState)fromViewRevealState
+                              toState:(ViewRevealState)toViewRevealState {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
-    [animatee didAnimateViewReveal:viewRevealState];
+    if ([animatee respondsToSelector:@selector
+                  (didAnimateViewRevealFromState:toState:trigger:)]) {
+      [animatee didAnimateViewRevealFromState:fromViewRevealState
+                                      toState:toViewRevealState
+                                      trigger:self.changeStateTrigger];
+    }
   }
 }
 
@@ -229,6 +287,7 @@ enum class LayoutTransitionState {
   if (self.currentState == self.nextState) {
     return;
   }
+  ViewRevealState startState = self.currentState;
   [self willAnimateViewReveal];
   [self.animator stopAnimation:YES];
 
@@ -243,7 +302,8 @@ enum class LayoutTransitionState {
     if (!weakSelf.animator.reversed) {
       weakSelf.currentState = weakSelf.nextState;
     }
-    [weakSelf didAnimateViewReveal:weakSelf.currentState];
+    [weakSelf didAnimateViewRevealFromState:startState
+                                    toState:weakSelf.currentState];
   }];
   [self.animator pauseAnimation];
   [self createLayoutTransitionIfNeeded];
@@ -340,7 +400,9 @@ enum class LayoutTransitionState {
           self.animator.state == UIViewAnimatingStateActive) {
         return;
       }
-      [self setNextState:self.nextState animated:YES];
+      [self setNextState:self.nextState
+                animated:YES
+                 trigger:self.changeStateTrigger];
     });
   };
   [self.layoutSwitcherProvider.layoutSwitcher
@@ -713,6 +775,7 @@ enum class LayoutTransitionState {
   UIPanGestureRecognizer* gesture = scrollView.panGestureRecognizer;
   self.startTransitionY = [gesture translationInView:gesture.view.superview].y;
   self.currentRecognizer = scrollView.panGestureRecognizer;
+  self.changeStateTrigger = ViewRevealTrigger::WebScroll;
   [self panGestureBegan];
   self.lastScrollOffset = scrollView.contentOffset;
   self.deferredScrollEnabled = NO;

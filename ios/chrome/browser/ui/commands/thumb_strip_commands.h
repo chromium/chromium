@@ -7,10 +7,11 @@
 
 // Commands for manipulating the state of the thumb strip.
 @protocol ThumbStripCommands
+enum class ViewRevealTrigger;
 
 // Asks the thumb strip to close itself. This may happen after some delay if the
 // thumb strip is already transitioninig.
-- (void)closeThumbStrip;
+- (void)closeThumbStripWithTrigger:(ViewRevealTrigger)trigger;
 
 @end
 

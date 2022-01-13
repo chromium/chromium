@@ -31,13 +31,8 @@
   }
   return self;
 }
-- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
-                               toState:(ViewRevealState)nextViewRevealState {
-}
 - (void)animateViewReveal:(ViewRevealState)viewRevealState {
   self.state = viewRevealState;
-}
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
 }
 @end
 
@@ -233,33 +228,47 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, ManualStateChange) {
   [pan_handler addAnimatee:fake_animatee];
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
 
-  [pan_handler setNextState:ViewRevealState::Revealed animated:NO];
+  [pan_handler setNextState:ViewRevealState::Revealed
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Revealed, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 
-  [pan_handler setNextState:ViewRevealState::Hidden animated:NO];
+  [pan_handler setNextState:ViewRevealState::Hidden
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 
   // Try from hidden to peek to hidden
-  [pan_handler setNextState:ViewRevealState::Peeked animated:NO];
+  [pan_handler setNextState:ViewRevealState::Peeked
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Peeked, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Horizontal, fake_layout_switcher.state);
 
-  [pan_handler setNextState:ViewRevealState::Hidden animated:NO];
+  [pan_handler setNextState:ViewRevealState::Hidden
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Horizontal, fake_layout_switcher.state);
 
   // Now try with going Fullscreen and back to Hidden.
-  [pan_handler setNextState:ViewRevealState::Revealed animated:NO];
+  [pan_handler setNextState:ViewRevealState::Revealed
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Revealed, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 
-  [pan_handler setNextState:ViewRevealState::Fullscreen animated:NO];
+  [pan_handler setNextState:ViewRevealState::Fullscreen
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Fullscreen, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 
-  [pan_handler setNextState:ViewRevealState::Hidden animated:NO];
+  [pan_handler setNextState:ViewRevealState::Hidden
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 }
@@ -332,13 +341,19 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, CurrentState) {
                   initialState:ViewRevealState::Hidden];
   EXPECT_EQ(ViewRevealState::Hidden, pan_handler.currentState);
 
-  [pan_handler setNextState:ViewRevealState::Revealed animated:NO];
+  [pan_handler setNextState:ViewRevealState::Revealed
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Revealed, pan_handler.currentState);
 
-  [pan_handler setNextState:ViewRevealState::Peeked animated:NO];
+  [pan_handler setNextState:ViewRevealState::Peeked
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Peeked, pan_handler.currentState);
 
-  [pan_handler setNextState:ViewRevealState::Hidden animated:NO];
+  [pan_handler setNextState:ViewRevealState::Hidden
+                   animated:NO
+                    trigger:ViewRevealTrigger::Unknown];
   EXPECT_EQ(ViewRevealState::Hidden, pan_handler.currentState);
 }
 

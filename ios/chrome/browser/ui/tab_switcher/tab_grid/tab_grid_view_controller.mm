@@ -787,10 +787,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  [self updateNotSelectedTabCellOpacityForState:viewRevealState];
-  self.currentState = viewRevealState;
-  switch (viewRevealState) {
+- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
+                              toState:(ViewRevealState)currentViewRevealState
+                              trigger:(ViewRevealTrigger)trigger {
+  [self updateNotSelectedTabCellOpacityForState:currentViewRevealState];
+  self.currentState = currentViewRevealState;
+  switch (currentViewRevealState) {
     case ViewRevealState::Hidden:
       [self.delegate tabGridViewControllerDidDismiss:self];
       break;

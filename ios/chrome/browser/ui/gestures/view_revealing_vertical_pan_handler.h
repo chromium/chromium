@@ -49,7 +49,9 @@
 
 // Requests the pan handler to transition to |state|. Depending on the
 // internals, this may not happen immediately.
-- (void)setNextState:(ViewRevealState)state animated:(BOOL)animated;
+- (void)setNextState:(ViewRevealState)state
+            animated:(BOOL)animated
+             trigger:(ViewRevealTrigger)trigger;
 
 // Height of the view that will be revealed after the transition to Peeked
 // state.
@@ -69,6 +71,15 @@
 // No view revealed (Hidden), view partially revealed (Peeked), and view
 // completely revealed (Revealed).
 @property(nonatomic, readonly) ViewRevealState currentState;
+
+@end
+
+@interface ViewRevealingPanGestureRecognizer : UIPanGestureRecognizer
+
+// Inits a custom |UIPanGestureRecognizer| for the given |trigger|.
+- (instancetype)initWithTarget:(id)target
+                        action:(SEL)action
+                       trigger:(ViewRevealTrigger)trigger;
 
 @end
 

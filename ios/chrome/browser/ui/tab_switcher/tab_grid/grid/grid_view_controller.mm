@@ -1466,12 +1466,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 
   // Handle the tap.
-  [self.thumbStripHandler closeThumbStrip];
+  [self.thumbStripHandler
+      closeThumbStripWithTrigger:ViewRevealTrigger::BackgroundTap];
 }
 
 - (void)handleThumbStripBackgroundSwipeUpGesture:
     (UIGestureRecognizer*)recognizer {
-  [self.thumbStripHandler closeThumbStrip];
+  [self.thumbStripHandler
+      closeThumbStripWithTrigger:ViewRevealTrigger::BackgroundSwipe];
 }
 
 @end

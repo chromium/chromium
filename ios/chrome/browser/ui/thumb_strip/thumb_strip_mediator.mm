@@ -167,9 +167,11 @@
   // No-op.
 }
 
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  if (viewRevealState == ViewRevealState::Peeked ||
-      viewRevealState == ViewRevealState::Hidden) {
+- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
+                              toState:(ViewRevealState)currentViewRevealState
+                              trigger:(ViewRevealTrigger)trigger {
+  if (currentViewRevealState == ViewRevealState::Peeked ||
+      currentViewRevealState == ViewRevealState::Hidden) {
     self.regularOverlayPresentationContext->SetUIDisabled(false);
     if (self.incognitoOverlayPresentationContext) {
       self.incognitoOverlayPresentationContext->SetUIDisabled(false);

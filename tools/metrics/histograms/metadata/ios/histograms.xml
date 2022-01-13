@@ -1478,6 +1478,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Thumbstrip.CancelBy" enum="ThumbstripOpenByIOS"
+    expires_after="2022-12-01">
+  <owner>djean@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    [iOS] Reports how a thumbstrip opening was cancelled. It uses the same enum
+    as IOS.Thumbstrip.OpenBy.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Thumbstrip.CloseBy" enum="ThumbstripCloseByIOS"
+    expires_after="2022-12-01">
+  <owner>djean@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>[iOS] Reports how the thumbstrip was closed.</summary>
+</histogram>
+
+<histogram name="IOS.Thumbstrip.OpenBy" enum="ThumbstripOpenByIOS"
+    expires_after="2022-12-01">
+  <owner>djean@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>[iOS] Reports how the thumbstrip was opened.</summary>
+</histogram>
+
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
     expires_after="2022-07-03">
   <owner>gambard@chromium.org</owner>

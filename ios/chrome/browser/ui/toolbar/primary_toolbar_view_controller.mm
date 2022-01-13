@@ -64,9 +64,11 @@
   _panGestureHandler = panGestureHandler;
   [self.view removeGestureRecognizer:self.panGestureRecognizer];
 
-  UIPanGestureRecognizer* panGestureRecognizer = [[UIPanGestureRecognizer alloc]
-      initWithTarget:panGestureHandler
-              action:@selector(handlePanGesture:)];
+  UIPanGestureRecognizer* panGestureRecognizer =
+      [[ViewRevealingPanGestureRecognizer alloc]
+          initWithTarget:panGestureHandler
+                  action:@selector(handlePanGesture:)
+                 trigger:ViewRevealTrigger::PrimaryToolbar];
   panGestureRecognizer.delegate = panGestureHandler;
   panGestureRecognizer.maximumNumberOfTouches = 1;
   [self.view addGestureRecognizer:panGestureRecognizer];
@@ -91,9 +93,6 @@
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
   self.view.topCornersRounded =
       (nextViewRevealState != ViewRevealState::Hidden);
-}
-
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
 }
 
 #pragma mark - AdaptiveToolbarViewController

@@ -14,9 +14,26 @@ enum class ViewRevealState {
   Fullscreen,  // The view is fully revealed - under software control only.
 };
 
+enum class ViewRevealTrigger {
+  Unknown,           // Unknown, only during tests.
+  TabStrip,          // User is dragging from the tab strip.
+  TabGrid,           // User requested tab grid opening or closing or new tab.
+  PrimaryToolbar,    // User is dragging from the primary toolbar.
+  FakeTab,           // User tapped the fake tab at bottom.
+  Fullscreen,        // Page change caused entering or exiting fullscreen.
+  UserNavigation,    // Triggered by user web page navigation.
+  WebScroll,         // Triggered by user scrolling the web view.
+  AppBackgrounding,  // Triggered by app being backgrounded.
+  OmniboxFocus,      // Triggered by user focus on omnibox.
+  BackgroundTap,     // Triggered by user tap on background.
+  BackgroundSwipe,   // Triggered by user swipping up background.
+};
+
 // Protocol defining an interface to handle animations from the view revealing
 // pan gesture handler.
 @protocol ViewRevealingAnimatee <NSObject>
+
+@optional
 
 // Called before a view reveal animation. Takes as argument both the state in
 // which the view revealer is before the animation and the state that the view
@@ -30,9 +47,9 @@ enum class ViewRevealState {
 
 // Called inside the completion block of a view reveal animation. Takes as
 // argument the state in which the view revealer is now.
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState;
-
-@optional
+- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
+                              toState:(ViewRevealState)currentViewRevealState
+                              trigger:(ViewRevealTrigger)trigger;
 
 // Tells the animatee when a web view drag starts and when it ends (at the end
 // of deceleration).

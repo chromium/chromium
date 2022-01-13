@@ -1789,7 +1789,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // the status bar to mimic this layout.
 - (void)installFakeStatusBar {
   // This method is called when the view is loaded and when the thumb strip is
-  // installed via addAnimatee -> didAnimateViewReveal-> installFakeStatusBar.
+  // installed via addAnimatee -> didAnimateViewRevealFromState ->
+  // installFakeStatusBar.
 
   // Remove the _fakeStatusBarView if present.
   [_fakeStatusBarView removeFromSuperview];
@@ -3047,12 +3048,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
+                              toState:(ViewRevealState)currentViewRevealState
+                              trigger:(ViewRevealTrigger)trigger {
   [self.tabStripSnapshot removeFromSuperview];
-  self.bottomPosition = (viewRevealState == ViewRevealState::Revealed ||
-                         viewRevealState == ViewRevealState::Fullscreen);
+  self.bottomPosition = (currentViewRevealState == ViewRevealState::Revealed ||
+                         currentViewRevealState == ViewRevealState::Fullscreen);
 
-  if (viewRevealState == ViewRevealState::Hidden) {
+  if (currentViewRevealState == ViewRevealState::Hidden) {
     // Stop disabling fullscreen.
     if (!_deferEndFullscreenDisabler) {
       _fullscreenDisabler.reset();
@@ -3088,7 +3091,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         }
       }
     }
-  } else if (viewRevealState == ViewRevealState::Peeked) {
+  } else if (currentViewRevealState == ViewRevealState::Peeked) {
     // Close the omnibox after opening the thumb strip
     [self.omniboxHandler cancelOmniboxEdit];
   }

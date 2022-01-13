@@ -86443,6 +86443,23 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Promoted temp thumbnail to regular"/>
 </enum>
 
+<enum name="ThumbstripCloseByIOS">
+  <int value="0" label="Closed by dragging the primary toolbar up"/>
+  <int value="1" label="Closed by tapping the fake tab at bottom"/>
+  <int value="2" label="Closed by user navigating in web page"/>
+  <int value="3" label="Closed by scrolling web page / ntp up"/>
+  <int value="4" label="Closed by tapping new tab button"/>
+  <int value="5" label="Closed by focusing the omnibox"/>
+  <int value="6" label="Closed by user tapping thumbstrip background"/>
+  <int value="7" label="Closed by user swiping thumbstrip background up"/>
+</enum>
+
+<enum name="ThumbstripOpenByIOS">
+  <int value="0" label="Opened by dragging tab strip down"/>
+  <int value="1" label="Opened by dragging primary toolbar down"/>
+  <int value="2" label="Opened by scrolling web page / ntp down from top"/>
+</enum>
+
 <enum name="TileMemoryBudget">
   <int value="0" label="Within memory budget"/>
   <int value="1" label="Exceeded memory budget"/>
