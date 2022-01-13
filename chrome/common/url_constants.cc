@@ -335,9 +335,10 @@ const char kArcPrivacyPolicyURLPath[] = "arc/privacy_policy";
 
 const char kArcTermsURLPath[] = "arc/terms";
 
-// TODO(crbug.com/1248270): Use real link to Bluetooth pairing learn more.
+// TODO(crbug.com/1010321): Remove 'm100' prefix from link once Bluetooth Revamp
+// has shipped.
 const char kBluetoothPairingLearnMoreUrl[] =
-    "https://support.google.com/chromebook/?p=bluetooth_pairing";
+    "https://support.google.com/chromebook?p=bluetooth_revamp_m100";
 
 const char kChromeAccessibilityHelpURL[] =
     "https://support.google.com/chromebook/topic/6323347";
