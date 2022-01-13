@@ -56,8 +56,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
@@ -125,18 +125,20 @@ int GetHorizontalMargin() {
 }
 
 // Builds a column set for |layout| used in the autofill dropdown.
-void BuildColumnSet(views::GridLayout* layout) {
-  views::ColumnSet* column_set = layout->AddColumnSet(0);
+void BuildColumnSet(views::TableLayoutView* layout_view) {
   const int column_divider = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, column_divider);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  layout_view
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kStretch,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, column_divider)
+      .AddColumn(views::LayoutAlignment::kStart,
+                 views::LayoutAlignment::kStretch,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 }
 
 std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
@@ -702,11 +704,9 @@ void AutofillPopupItemView::CreateContent() {
       CreateSubtextViews();
   std::unique_ptr<views::View> description_label = CreateDescriptionView();
 
-  std::unique_ptr<views::View> all_labels = std::make_unique<views::View>();
-  views::GridLayout* grid_layout =
-      all_labels->SetLayoutManager(std::make_unique<views::GridLayout>());
-  BuildColumnSet(grid_layout);
-  grid_layout->StartRow(0, 0);
+  auto all_labels = std::make_unique<views::TableLayoutView>();
+  BuildColumnSet(all_labels.get());
+  all_labels->AddRows(1, 0);
 
   // Create the first line text view.
   if (minor_text_label) {
@@ -727,22 +727,22 @@ void AutofillPopupItemView::CreateContent() {
 
     first_line_container->AddChildView(std::move(main_text_label));
     first_line_container->AddChildView(std::move(minor_text_label));
-    grid_layout->AddView(std::move(first_line_container));
+    all_labels->AddChildView(std::move(first_line_container));
   } else {
-    grid_layout->AddView(std::move(main_text_label));
+    all_labels->AddChildView(std::move(main_text_label));
   }
 
   if (description_label) {
-    grid_layout->AddView(std::move(description_label));
+    all_labels->AddChildView(std::move(description_label));
   } else {
-    grid_layout->SkipColumns(1);
+    all_labels->AddChildView(std::make_unique<views::View>());
   }
 
   UpdateLayoutSize(layout_manager, subtext_labels.size());
   for (std::unique_ptr<views::View>& subtext_label : subtext_labels) {
-    grid_layout->StartRowWithPadding(0, 0, 0, kAdjacentLabelsVerticalSpacing);
-    grid_layout->AddView(std::move(subtext_label));
-    grid_layout->SkipColumns(1);
+    all_labels->AddPaddingRow(0, kAdjacentLabelsVerticalSpacing).AddRows(1, 0);
+    all_labels->AddChildView(std::move(subtext_label));
+    all_labels->AddChildView(std::make_unique<views::View>());
   }
 
   AddChildView(std::move(all_labels));
@@ -1174,7 +1174,7 @@ void AutofillPopupSeparatorView::GetAccessibleNodeData(
 }
 
 void AutofillPopupSeparatorView::CreateContent() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
   AddChildView(std::make_unique<PopupSeparator>(popup_view()));
 }
 
@@ -1229,7 +1229,7 @@ void AutofillPopupWarningView::CreateContent() {
   int horizontal_margin = GetHorizontalMargin();
   int vertical_margin = AutofillPopupBaseView::GetCornerRadius();
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets(vertical_margin, horizontal_margin)));
 
@@ -1551,7 +1551,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
           (footer_item_line_numbers.empty()) ? GetContentsVerticalPadding() : 0,
           0)));
 
-      padding_wrapper->SetLayoutManager(std::make_unique<views::FillLayout>());
+      padding_wrapper->SetUseDefaultFillLayout(true);
       padding_wrapper->AddChildView(scroll_view_.get());
       content_view->AddChildView(padding_wrapper);
       content_layout->SetFlexForView(padding_wrapper, 1);
