@@ -75,11 +75,11 @@ void SetFakePluginVmPolicy(Profile* profile,
                            const std::string& image_url,
                            const std::string& image_hash,
                            const std::string& license_key) {
-  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
-                                        plugin_vm::prefs::kPluginVmImage);
-  base::DictionaryValue* dict = update.Get();
-  dict->SetPath(prefs::kPluginVmImageUrlKeyName, base::Value(image_url));
-  dict->SetPath(prefs::kPluginVmImageHashKeyName, base::Value(image_hash));
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              plugin_vm::prefs::kPluginVmImage);
+  base::Value* dict = update.Get();
+  dict->SetStringPath(prefs::kPluginVmImageUrlKeyName, image_url);
+  dict->SetStringPath(prefs::kPluginVmImageHashKeyName, image_hash);
   plugin_vm::PluginVmInstallerFactory::GetForProfile(profile)
       ->SkipLicenseCheckForTesting();  // IN-TEST
   MutableFakeLicenseKey() = license_key;
