@@ -366,14 +366,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="network_time_component"/>
     </sender>
   </group>
-  <group name="Printing">
-    <sender name="Cloud Print">
-      <traffic_annotation unique_id="cloud_print_backend"/>
-      <traffic_annotation unique_id="cloud_print_credential_update"/>
-      <traffic_annotation unique_id="cloud_print_proxy"/>
-      <traffic_annotation unique_id="printer_job_handler"/>
-    </sender>
-  </group>
   <group name="Search">
     <sender name="Web History">
       <traffic_annotation unique_id="web_history_counter"/>

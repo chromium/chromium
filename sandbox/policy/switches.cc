@@ -131,7 +131,6 @@ const char kNaClLoaderProcess[] = "nacl-loader";
 const char kPpapiPluginProcess[] = "ppapi";
 const char kRendererProcess[] = "renderer";
 const char kUtilityProcess[] = "utility";
-const char kCloudPrintServiceProcess[] = "service";
 const char kZygoteProcessType[] = "zygote";
 const char kRelauncherProcessType[] = "relauncher";
 

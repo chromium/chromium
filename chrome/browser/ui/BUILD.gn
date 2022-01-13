@@ -5261,12 +5261,6 @@ static_library("ui") {
         "webui/print_preview/local_printer_handler_default.h",
       ]
     }
-
-    if (enable_service_discovery) {
-      if (!is_chromeos_ash) {
-        deps += [ "//chrome/common:service_process_mojom" ]
-      }
-    }
   }
 
   if (safe_browsing_mode > 0) {

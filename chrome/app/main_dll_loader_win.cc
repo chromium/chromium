@@ -133,14 +133,12 @@ int MainDllLoader::Launch(HINSTANCE instance,
   // Initialize the sandbox services.
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   const bool is_browser = process_type_.empty();
-  const bool is_cloud_print_service =
-      process_type_ == switches::kCloudPrintServiceProcess;
   // IsUnsandboxedSandboxType() can't be used here because its result can be
   // gated behind a feature flag, which are not yet initialized.
   const bool is_sandboxed =
       sandbox::policy::SandboxTypeFromCommandLine(cmd_line) !=
       sandbox::mojom::Sandbox::kNoSandbox;
-  if (is_browser || is_cloud_print_service || is_sandboxed) {
+  if (is_browser || is_sandboxed) {
     // For child processes that are running as --no-sandbox, don't initialize
     // the sandbox info, otherwise they'll be treated as brokers (as if they
     // were the browser).

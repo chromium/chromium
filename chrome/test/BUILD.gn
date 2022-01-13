@@ -662,10 +662,6 @@ static_library("test_support") {
   if (enable_plugins) {
     public_deps += [ "//ppapi/shared_impl" ]
   }
-
-  if (enable_print_preview && !is_chromeos_ash) {
-    public_deps += [ "//chrome/service" ]
-  }
 }
 
 if (is_android) {
@@ -2312,8 +2308,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_browsertest.mm",
         "../browser/webshare/mac/sharing_service_operation_browsertest.cc",
         "../common/mac/app_mode_chrome_locator_browsertest.mm",
-        "../common/mac/mock_launchd.h",
-        "../common/mac/mock_launchd.mm",
         "../common/profiler/thread_profiler_browsertest.cc",
       ]
       sources -= [
@@ -3973,20 +3967,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/printing/test_print_view_manager_for_request_preview.h",
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
-      if (!is_mac && !is_chromeos) {
-        sources += [
-          # This test depends on GetCommandLineForRelaunch, which is not
-          # available on Mac. It is also not intended to run on ChromeOS.
-          "../browser/printing/cloud_print/test/cloud_print_policy_browsertest.cc",
-        ]
-      }
-      if (!is_chromeos) {
-        sources += [
-          # Not intended to run on ChromeOS.
-          "../browser/printing/cloud_print/test/cloud_print_proxy_process_browsertest.cc",
-          "../browser/service_process/service_process_control_browsertest.cc",
-        ]
-      }
       deps += [ "//printing:test_support" ]
     }
     if (enable_paint_preview) {
@@ -5627,7 +5607,6 @@ test("unit_tests") {
       "../browser/performance_monitor/resource_coalition_mac_unittest.mm",
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
       "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unit_test.mm",
-      "../browser/service_process/service_process_control_mac_unittest.mm",
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
       "../browser/ui/cocoa/bookmarks/bookmark_menu_bridge_unittest.mm",
       "../browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller_unittest.mm",
@@ -5651,8 +5630,6 @@ test("unit_tests") {
       "../browser/ui/cocoa/window_size_autosaver_unittest.mm",
       "../browser/ui/content_settings/content_setting_media_image_model_unittest.mm",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
-      "../common/mac/mock_launchd.h",
-      "../common/mac/mock_launchd.mm",
       "../utility/importer/safari_importer_unittest.mm",
     ]
 
@@ -7589,10 +7566,6 @@ test("unit_tests") {
         sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_posix_unittest.cc" ]
       }
 
-      if (is_mac) {
-        sources += [ "../common/service_process_util_mac_unittest.mm" ]
-      }
-
       if (is_chromeos) {
         sources += [
           "../browser/ui/webui/print_preview/local_printer_handler_chromeos_unittest.cc",
@@ -7600,19 +7573,8 @@ test("unit_tests") {
         ]
       } else {
         sources += [
-          "../browser/printing/cloud_print/cloud_print_proxy_service_unittest.cc",
           "../browser/ui/webui/print_preview/local_printer_handler_default_unittest.cc",
           "../common/cloud_print/cloud_print_helpers_unittest.cc",
-          "../common/service_process_util_unittest.cc",
-          "../service/cloud_print/cloud_print_service_helpers_unittest.cc",
-          "../service/cloud_print/cloud_print_token_store_unittest.cc",
-          "../service/cloud_print/cloud_print_url_fetcher_unittest.cc",
-          "../service/cloud_print/connector_settings_unittest.cc",
-          "../service/cloud_print/printer_job_handler_unittest.cc",
-          "../service/cloud_print/printer_job_queue_handler_unittest.cc",
-          "../service/net/in_process_network_connection_tracker_unittest.cc",
-          "../service/service_ipc_server_unittest.cc",
-          "../service/service_process_prefs_unittest.cc",
         ]
       }
 

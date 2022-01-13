@@ -372,39 +372,6 @@ static_library("common") {
       "//components/printing/common",
       "//printing",
     ]
-    if (enable_print_preview && !is_chromeos_ash) {
-      # Part of the service_process_util code below is based on a model where
-      # the cloud print service is a long-lived process independent of chrome,
-      # which is not appropriate on android.
-      assert(!is_android)
-      sources += [
-        "service_process_util.cc",
-        "service_process_util.h",
-      ]
-      if (is_linux || is_chromeos) {
-        sources += [ "service_process_util_linux.cc" ]
-      }
-      if (is_mac) {
-        sources += [ "service_process_util_mac.mm" ]
-      }
-      if (is_posix) {
-        sources += [
-          "service_process_util_posix.cc",
-          "service_process_util_posix.h",
-        ]
-      }
-      if (is_win) {
-        sources += [
-          "chrome_utility_printing_param_traits_macros.h",
-          "service_process_util_win.cc",
-        ]
-
-        public_deps += [
-          "//printing/backend",
-          "//printing/mojom",
-        ]
-      }
-    }
   }
 
   if (is_android) {
@@ -781,16 +748,6 @@ mojom("mojo_bindings") {
   }
 }
 
-if (enable_print_preview && !is_chromeos_ash) {
-  mojom("service_process_mojom") {
-    sources = [
-      "cloud_print.mojom",
-      "service_process.mojom",
-    ]
-    public_deps = [ "//mojo/public/mojom/base" ]
-  }
-}
-
 mojom("supervised_user_commands_mojom") {
   sources = [ "supervised_user_commands.mojom" ]
 }
@@ -803,26 +760,4 @@ mojom("available_offline_content_mojom") {
 mojom("offline_page_auto_fetcher_mojom") {
   sources = [ "offline_page_auto_fetcher.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
-}
-
-if (enable_basic_printing && is_win) {
-  mojom("cloud_print_utility_mojom") {
-    sources = [ "cloud_print_utility.mojom" ]
-    cpp_typemaps = [
-      {
-        types = [
-          {
-            mojom = "chrome.mojom.PrinterCapsAndDefaults"
-            cpp = "::printing::PrinterCapsAndDefaults"
-          },
-          {
-            mojom = "chrome.mojom.PrinterSemanticCapsAndDefaults"
-            cpp = "::printing::PrinterSemanticCapsAndDefaults"
-          },
-        ]
-        traits_headers = [ "chrome_utility_printing_param_traits_macros.h" ]
-        traits_public_deps = [ ":common" ]
-      },
-    ]
-  }
 }

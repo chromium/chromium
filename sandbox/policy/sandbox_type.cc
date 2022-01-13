@@ -214,9 +214,6 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
     return Sandbox::kNoSandbox;
 #endif
 
-  if (process_type == switches::kCloudPrintServiceProcess)
-    return Sandbox::kNoSandbox;
-
   CHECK(false)
       << "Command line does not provide a valid sandbox configuration: "
       << command_line.GetCommandLineString();

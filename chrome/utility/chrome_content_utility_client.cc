@@ -22,10 +22,6 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-#include "chrome/utility/printing_handler.h"
-#endif
-
 namespace {
 
 base::LazyInstance<ChromeContentUtilityClient::NetworkBinderCreationCallback>::
@@ -33,9 +29,7 @@ base::LazyInstance<ChromeContentUtilityClient::NetworkBinderCreationCallback>::
 
 }  // namespace
 
-ChromeContentUtilityClient::ChromeContentUtilityClient()
-    : utility_process_running_elevated_(false) {
-}
+ChromeContentUtilityClient::ChromeContentUtilityClient() = default;
 
 ChromeContentUtilityClient::~ChromeContentUtilityClient() = default;
 

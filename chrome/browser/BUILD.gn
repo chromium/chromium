@@ -6318,22 +6318,6 @@ static_library("browser") {
           "printing/print_dialog_cloud_win.h",
         ]
       }
-
-      if (is_mac) {
-        sources += [ "service_process/service_process_control_mac.mm" ]
-      }
-
-      if (!is_chromeos_ash) {
-        sources += [
-          "printing/cloud_print/cloud_print_proxy_service.cc",
-          "printing/cloud_print/cloud_print_proxy_service.h",
-          "printing/cloud_print/cloud_print_proxy_service_factory.cc",
-          "printing/cloud_print/cloud_print_proxy_service_factory.h",
-          "service_process/service_process_control.cc",
-          "service_process/service_process_control.h",
-        ]
-        public_deps += [ "//chrome/common:service_process_mojom" ]
-      }
     } else {
       # Partial - only printing support.
       sources += [

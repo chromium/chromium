@@ -216,17 +216,6 @@ static_library("utility") {
     }
   }
 
-  if (enable_print_preview) {
-    if (is_win) {
-      sources += [
-        "printing_handler.cc",
-        "printing_handler.h",
-      ]
-      public_deps += [ "//chrome/common:cloud_print_utility_mojom" ]
-      deps += [ "//printing/backend" ]
-    }
-  }
-
   if (safe_browsing_mode == 1) {
     deps += [ "//chrome/services/file_util" ]
     if (is_mac) {

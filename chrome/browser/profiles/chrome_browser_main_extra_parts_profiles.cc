@@ -198,10 +198,6 @@
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/printing/cloud_print/cloud_print_proxy_service_factory.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/exit_type_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -323,9 +319,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   ChromeBrowsingDataRemoverDelegateFactory::GetInstance();
   ChromeSigninClientFactory::GetInstance();
   ClientHintsFactory::GetInstance();
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  CloudPrintProxyServiceFactory::GetInstance();
-#endif
   ConsentAuditorFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
 #if !defined(OS_ANDROID)

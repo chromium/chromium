@@ -64,10 +64,6 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/service_process/service_process_control.h"
-#endif
-
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
@@ -175,10 +171,6 @@ bool ShutdownPreThreadsStop() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserShutdownStarted",
                                                      false);
-#endif
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Shutdown the IPC channel to the service processes.
-  ServiceProcessControl::GetInstance()->Disconnect();
 #endif
 
   // WARNING: During logoff/shutdown (WM_ENDSESSION) we may not have enough

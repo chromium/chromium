@@ -47,10 +47,6 @@ Refer to README.md for content description and update process.
  <item id="chrome_feedback_report_app" added_in_milestone="62" content_hash_code="04bf864a" os_list="linux,windows,chromeos,android" file_path="components/feedback/feedback_uploader.cc" />
  <item id="chrome_variations_service" added_in_milestone="62" content_hash_code="00f59481" os_list="linux,windows,chromeos,android" file_path="components/variations/service/variations_service.cc" />
  <item id="client_download_request" added_in_milestone="62" content_hash_code="04bc89c5" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc" />
- <item id="cloud_print" added_in_milestone="65" type="completing" content_hash_code="03a1a8bc" os_list="linux,windows" semantics_fields="1,5" policy_fields="-1,3,4" file_path="chrome/service/cloud_print/cloud_print_url_fetcher.cc" />
- <item id="cloud_print_backend" added_in_milestone="62" type="partial" second_id="cloud_print" content_hash_code="05177cb5" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/cloud_print_proxy_backend.cc" />
- <item id="cloud_print_credential_update" added_in_milestone="66" content_hash_code="001200a0" os_list="linux,windows" file_path="chrome/service/cloud_print/cloud_print_proxy_backend.cc" />
- <item id="cloud_print_proxy" added_in_milestone="62" type="partial" second_id="cloud_print" content_hash_code="056a8973" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/cloud_print_proxy.cc" />
  <item id="content_hash_verification_job" added_in_milestone="62" content_hash_code="079fc9db" os_list="linux,windows,chromeos" file_path="extensions/browser/content_hash_fetcher.cc" />
  <item id="content_suggestion_get_favicon" added_in_milestone="62" content_hash_code="0800f6e5" os_list="linux,windows,chromeos,android" file_path="components/ntp_snippets/content_suggestions_service.cc" />
  <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="06161a36" os_list="linux,windows,chromeos,android" file_path="content/browser/attribution_reporting/attribution_network_sender_impl.cc" />
@@ -190,7 +186,6 @@ Refer to README.md for content description and update process.
  <item id="prefetch_download" added_in_milestone="62" content_hash_code="0146e99e" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/prefetch_downloader_impl.cc" />
  <item id="prefetch_proxy_probe" added_in_milestone="88" content_hash_code="001d245d" os_list="linux,windows,chromeos,android" file_path="chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc" />
  <item id="prefetch_visuals" added_in_milestone="75" content_hash_code="0564010a" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/visuals_fetch_by_url.cc" />
- <item id="printer_job_handler" added_in_milestone="62" type="partial" second_id="cloud_print" content_hash_code="048348b5" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/printer_job_handler.cc" />
  <item id="profile_avatar" added_in_milestone="62" content_hash_code="06c4a5fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_avatar_downloader.cc" />
  <item id="profile_resetter_upload" added_in_milestone="62" content_hash_code="07b56813" os_list="linux,windows,chromeos" file_path="chrome/browser/profile_resetter/reset_report_uploader.cc" />
  <item id="promo_service" added_in_milestone="72" content_hash_code="01f69c19" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/promos/promo_service.cc" />

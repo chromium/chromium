@@ -201,10 +201,6 @@ base::LazyInstance<ChromeContentUtilityClient>::DestructorAtExit
 
 extern int NaClMain(content::MainFunctionParams);
 
-#if !defined(OS_CHROMEOS)
-extern int CloudPrintServiceProcessMain(content::MainFunctionParams);
-#endif
-
 const char* const ChromeMainDelegate::kNonWildcardDomainNonPortSchemes[] = {
     extensions::kExtensionScheme, chrome::kChromeSearchScheme,
     content::kChromeDevToolsScheme, content::kChromeUIScheme,
@@ -276,8 +272,7 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
   if (process_type == switches::kPpapiPluginProcess) {
     score = content::kPluginOomScore;
   } else if (process_type == switches::kUtilityProcess ||
-             process_type == switches::kGpuProcess ||
-             process_type == switches::kCloudPrintServiceProcess) {
+             process_type == switches::kGpuProcess) {
     score = content::kMiscOomScore;
 #if BUILDFLAG(ENABLE_NACL)
   } else if (process_type == switches::kNaClLoaderProcess) {
@@ -1212,17 +1207,10 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
 absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {
-// ANDROID doesn't support "service", so no CloudPrintServiceProcessMain, and
-// arraysize doesn't support empty array. So we comment out the block for
-// Android.
 #if defined(OS_ANDROID)
   NOTREACHED();  // Android provides a subclass and shares no code here.
 #else
   static const MainFunction kMainFunctions[] = {
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OS_CHROMEOS)
-    {switches::kCloudPrintServiceProcess, CloudPrintServiceProcessMain},
-#endif
-
 #if defined(OS_MAC)
     {switches::kRelauncherProcess, mac_relauncher::internal::RelauncherMain},
 #endif

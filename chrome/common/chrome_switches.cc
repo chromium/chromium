@@ -127,17 +127,6 @@ const char kCloudPrintJobTitle[]            = "cloud-print-job-title";
 // print job. Defaults to null if unspecified.
 const char kCloudPrintPrintTicket[]         = "cloud-print-print-ticket";
 
-// The process type value which causes a process to run as a cloud print service
-// process.
-//
-// DO NOT CHANGE THIS VALUE. Cloud printing relies on an external binary
-// launching Chrome with this process type.
-const char kCloudPrintServiceProcess[]      = "service";
-
-// Setup cloud print proxy for provided printers. This does not start
-// service or register proxy for autostart.
-const char kCloudPrintSetupProxy[]          = "cloud-print-setup-proxy";
-
 // Comma-separated list of BrowserThreads that cause browser process to crash if
 // the given browser thread is not responsive. UI/IO are the BrowserThreads that
 // are supported.
