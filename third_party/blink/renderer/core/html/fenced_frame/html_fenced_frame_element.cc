@@ -95,6 +95,9 @@ Node::InsertionNotificationRequest HTMLFencedFrameElement::InsertedInto(
 }
 
 void HTMLFencedFrameElement::DidNotifySubtreeInsertionsToDocument() {
+  if (!SubframeLoadingDisabler::CanLoadFrame(*this))
+    return;
+
   frame_delegate_->DidGetInserted();
   Navigate();
 }
