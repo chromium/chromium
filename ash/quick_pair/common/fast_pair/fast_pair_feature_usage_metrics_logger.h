@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -27,6 +28,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON)
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
   bool IsEnabled() const override;
+  absl::optional<bool> IsAccessible() const override;
   void RecordUsage(bool success);
 
  private:

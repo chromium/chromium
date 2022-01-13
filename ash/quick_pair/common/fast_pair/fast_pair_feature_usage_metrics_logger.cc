@@ -32,6 +32,24 @@ bool FastPairFeatureUsageMetricsLogger::IsEligible() const {
   return true;
 }
 
+absl::optional<bool> FastPairFeatureUsageMetricsLogger::IsAccessible() const {
+  PrefService* pref_service =
+      QuickPairBrowserDelegate::Get()->GetActivePrefService();
+
+  if (!pref_service)
+    return false;
+
+  // |PrefService::IsManagedPreference()| determines if a feature is set by
+  // enterprise policy. If Fast Pair is not controlled by enterprise policy,
+  // then the feature is accessible.
+  if (!pref_service->IsManagedPreference(ash::prefs::kFastPairEnabled))
+    return true;
+
+  // If the feature is controlled by enterprise policy, then we match
+  // |IsAccessible| to whether the feature is enabled or disabled by policy.
+  return pref_service->GetBoolean(ash::prefs::kFastPairEnabled);
+}
+
 bool FastPairFeatureUsageMetricsLogger::IsEnabled() const {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();

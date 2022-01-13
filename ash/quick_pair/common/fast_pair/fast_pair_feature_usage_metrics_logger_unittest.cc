@@ -36,6 +36,13 @@ class FastPairFeatureUsageMetricsLoggerTest : public ::testing::Test {
     pref_service_.SetBoolean(ash::prefs::kFastPairEnabled, is_enabled);
   }
 
+  void SetManagedEnabled(bool is_enabled) {
+    pref_service_.SetManagedPref(ash::prefs::kFastPairEnabled,
+                                 std::make_unique<base::Value>(is_enabled));
+    ASSERT_TRUE(
+        pref_service_.IsManagedPreference(ash::prefs::kFastPairEnabled));
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   TestingPrefServiceSimple pref_service_;
@@ -84,6 +91,37 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, RecordUsage) {
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.FastPair",
       feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 1);
+}
+
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Unmanaged_Enabled) {
+  FastPairFeatureUsageMetricsLogger feature_usage_metrics;
+
+  EXPECT_TRUE(feature_usage_metrics.IsAccessible().value());
+  EXPECT_TRUE(feature_usage_metrics.IsEnabled());
+}
+
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Unmanaged_Disabled) {
+  FastPairFeatureUsageMetricsLogger feature_usage_metrics;
+
+  SetEnabled(/*is_enabled=*/false);
+  EXPECT_TRUE(feature_usage_metrics.IsAccessible().value());
+  EXPECT_FALSE(feature_usage_metrics.IsEnabled());
+}
+
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Managed_Enabled) {
+  FastPairFeatureUsageMetricsLogger feature_usage_metrics;
+
+  SetManagedEnabled(/*is_enabled=*/true);
+  EXPECT_TRUE(feature_usage_metrics.IsAccessible().value());
+  EXPECT_TRUE(feature_usage_metrics.IsEnabled());
+}
+
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Managed_Disabled) {
+  FastPairFeatureUsageMetricsLogger feature_usage_metrics;
+
+  SetManagedEnabled(/*is_enabled=*/false);
+  EXPECT_FALSE(feature_usage_metrics.IsAccessible().value());
+  EXPECT_FALSE(feature_usage_metrics.IsEnabled());
 }
 
 }  // namespace quick_pair
