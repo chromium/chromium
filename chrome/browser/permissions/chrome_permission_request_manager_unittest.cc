@@ -591,8 +591,8 @@ TEST_F(ChromePermissionRequestManagerTest,
   WaitForBubbleToBeShown();
   Deny();
 
-  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                        permissions::prefs::kPermissionActions);
+  DictionaryPrefUpdate update(profile()->GetPrefs(),
+                              permissions::prefs::kPermissionActions);
   const auto permissions_actions =
       update->FindListPath("notifications")->GetList();
   PermissionActionsHistoryFactory::GetForProfile(profile())->ClearHistory(
