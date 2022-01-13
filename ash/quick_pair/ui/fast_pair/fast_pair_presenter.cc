@@ -74,6 +74,8 @@ void FastPairPresenter::OnDiscoveryMetadataRetrieved(
       device_metadata->image(),
       base::BindRepeating(&FastPairPresenter::OnDiscoveryClicked,
                           weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindRepeating(&FastPairPresenter::OnDiscoveryLearnMoreClicked,
+                          weak_pointer_factory_.GetWeakPtr(), callback),
       base::BindOnce(&FastPairPresenter::OnDiscoveryDismissed,
                      weak_pointer_factory_.GetWeakPtr(), callback));
 }
@@ -86,6 +88,12 @@ void FastPairPresenter::OnDiscoveryDismissed(DiscoveryCallback callback,
                                              bool user_dismissed) {
   callback.Run(user_dismissed ? DiscoveryAction::kDismissedByUser
                               : DiscoveryAction::kDismissed);
+}
+
+void FastPairPresenter::OnDiscoveryLearnMoreClicked(
+    DiscoveryCallback callback) {
+  // TODO (b/207589697): Implement support for "Learn More" Buttons.
+  callback.Run(DiscoveryAction::kLearnMore);
 }
 
 void FastPairPresenter::ShowPairing(scoped_refptr<Device> device) {
@@ -192,8 +200,9 @@ void FastPairPresenter::OnAssociateAccountMetadataRetrieved(
       base::ASCIIToUTF16(email), device_metadata->image(),
       base::BindRepeating(&FastPairPresenter::OnAssociateAccountActionClicked,
                           weak_pointer_factory_.GetWeakPtr(), callback),
-      base::BindRepeating(&FastPairPresenter::OnLearnMoreClicked,
-                          weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindRepeating(
+          &FastPairPresenter::OnAssociateAccountLearnMoreClicked,
+          weak_pointer_factory_.GetWeakPtr(), callback),
       base::BindOnce(&FastPairPresenter::OnAssociateAccountDismissed,
                      weak_pointer_factory_.GetWeakPtr(), callback));
 }
@@ -203,8 +212,9 @@ void FastPairPresenter::OnAssociateAccountActionClicked(
   callback.Run(AssociateAccountAction::kAssoicateAccount);
 }
 
-void FastPairPresenter::OnLearnMoreClicked(AssociateAccountCallback callback) {
-  // TODO (crbug/1256983): Implement support for "Learn More" Button in Show
+void FastPairPresenter::OnAssociateAccountLearnMoreClicked(
+    AssociateAccountCallback callback) {
+  // TODO (b/207589697): Implement support for "Learn More" Button in Show
   // Associate Account Notification
   callback.Run(AssociateAccountAction::kLearnMore);
 }

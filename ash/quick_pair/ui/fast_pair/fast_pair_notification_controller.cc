@@ -159,6 +159,7 @@ void FastPairNotificationController::ShowDiscoveryNotification(
     const std::u16string& device_name,
     const gfx::Image device_image,
     base::RepeatingClosure on_connect_clicked,
+    base::RepeatingClosure on_learn_more_clicked,
     base::OnceCallback<void(bool)> on_close) {
   std::unique_ptr<message_center::Notification> discovery_notification =
       CreateNotification(
@@ -171,13 +172,15 @@ void FastPairNotificationController::ShowDiscoveryNotification(
 
   message_center::ButtonInfo connect_button(
       l10n_util::GetStringUTF16(IDS_FAST_PAIR_CONNECT_BUTTON));
-  discovery_notification->set_buttons({connect_button});
+  message_center::ButtonInfo learn_more_button(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_LEARN_MORE_BUTTON));
+  discovery_notification->set_buttons({connect_button, learn_more_button});
 
   discovery_notification->set_delegate(
       base::MakeRefCounted<NotificationDelegate>(
           /*on_primary_click=*/on_connect_clicked,
           /*on_close=*/std::move(on_close),
-          /*on_secondary_click=*/base::DoNothing(),
+          /*on_secondary_click=*/on_learn_more_clicked,
           /*expire_notification_timer=*/&expire_notification_timer_));
   discovery_notification->set_image(device_image);
 

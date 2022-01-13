@@ -79,12 +79,13 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
   base::flat_map<scoped_refptr<Device>, base::TimeTicks>
       device_pairing_start_timestamps_;
 
-  // Set of devices of which on the Associate Account UI shown, the Learn More
-  // button was pressed. We need this map to know which
-  // |FastPairRetroactiveEngagementFlowEvent| event to log at the subsequent
-  // AssociateAccount action events that will follow, since the LearnMore
-  // event is not a terminal state.
-  base::flat_set<scoped_refptr<Device>> learn_more_devices_;
+  // Set of devices of which on the Associate Account UI and Discovery UI shown,
+  // the Learn More button was pressed. We need this map to know which
+  // |FastPairRetroactiveEngagementFlowEvent| or
+  // |FastPairEngagementFlowEvent| event to log at the subsequent
+  // events that will follow, since the LearnMore event is not a terminal state.
+  base::flat_set<scoped_refptr<Device>> associate_account_learn_more_devices_;
+  base::flat_set<scoped_refptr<Device>> discovery_learn_more_devices_;
 
   // The classic pairing addresses of Fast Pair devices that we have already
   // paired to.

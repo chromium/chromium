@@ -18,6 +18,9 @@ std::ostream& operator<<(std::ostream& stream, DiscoveryAction action) {
     case DiscoveryAction::kDismissed:
       stream << "[Dismissed]";
       break;
+    case DiscoveryAction::kLearnMore:
+      stream << "[Learn more]";
+      break;
   }
 
   return stream;

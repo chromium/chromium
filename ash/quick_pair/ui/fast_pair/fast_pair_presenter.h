@@ -45,13 +45,14 @@ class FastPairPresenter {
  private:
   void OnDiscoveryClicked(DiscoveryCallback action_callback);
   void OnDiscoveryDismissed(DiscoveryCallback callback, bool user_dismissed);
+  void OnDiscoveryLearnMoreClicked(DiscoveryCallback action_callback);
 
   void OnNavigateToSettings(PairingFailedCallback callback);
   void OnPairingFailedDismissed(PairingFailedCallback callback,
                                 bool user_dismissed);
 
   void OnAssociateAccountActionClicked(AssociateAccountCallback callback);
-  void OnLearnMoreClicked(AssociateAccountCallback callback);
+  void OnAssociateAccountLearnMoreClicked(AssociateAccountCallback callback);
   void OnAssociateAccountDismissed(AssociateAccountCallback callback,
                                    bool user_dismissed);
 

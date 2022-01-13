@@ -98,16 +98,53 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
                                                DiscoveryAction action) {
   switch (action) {
     case DiscoveryAction::kPairToDevice:
+      if (base::Contains(discovery_learn_more_devices_, device)) {
+        AttemptRecordingFastPairEngagementFlow(
+            *device, FastPairEngagementFlowEvent::
+                         kDiscoveryUiConnectPressedAfterLearnMorePressed);
+        discovery_learn_more_devices_.erase(device);
+        break;
+      }
+
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiConnectPressed);
       device_pairing_start_timestamps_[device] = base::TimeTicks::Now();
       break;
+    case DiscoveryAction::kLearnMore:
+      // We need to record whether or not the Discovery UI for this
+      // device has had the Learn More button pressed because since the
+      // Learn More button is not a terminal state, we need to record
+      // if the subsequent terminal states were reached after the user
+      // has learned more about saving their accounts. So we will check
+      // this map when the user dismisses or saves their account in order
+      // to capture whether or not the user elected to learn more beforehand.
+      discovery_learn_more_devices_.insert(device);
+
+      AttemptRecordingFastPairEngagementFlow(
+          *device, FastPairEngagementFlowEvent::kDiscoveryUiLearnMorePressed);
+      break;
     case DiscoveryAction::kDismissedByUser:
+      if (base::Contains(discovery_learn_more_devices_, device)) {
+        AttemptRecordingFastPairEngagementFlow(
+            *device, FastPairEngagementFlowEvent::
+                         kDiscoveryUiDismissedByUserAfterLearnMorePressed);
+        discovery_learn_more_devices_.erase(device);
+        break;
+      }
+
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser);
       feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
       break;
     case DiscoveryAction::kDismissed:
+      if (base::Contains(discovery_learn_more_devices_, device)) {
+        AttemptRecordingFastPairEngagementFlow(
+            *device, FastPairEngagementFlowEvent::
+                         kDiscoveryUiDismissedAfterLearnMorePressed);
+        discovery_learn_more_devices_.erase(device);
+        break;
+      }
+
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissed);
       feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
@@ -151,11 +188,11 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
     AssociateAccountAction action) {
   switch (action) {
     case AssociateAccountAction::kAssoicateAccount:
-      if (base::Contains(learn_more_devices_, device)) {
+      if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::
                          kAssociateAccountSavePressedAfterLearnMorePressed);
-        learn_more_devices_.erase(device);
+        associate_account_learn_more_devices_.erase(device);
         break;
       }
 
@@ -171,18 +208,18 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
       // has learned more about saving their accounts. So we will check
       // this map when the user dismisses or saves their account in order
       // to capture whether or not the user elected to learn more beforehand.
-      learn_more_devices_.insert(device);
+      associate_account_learn_more_devices_.insert(device);
 
       AttemptRecordingFastPairRetroactiveEngagementFlow(
           *device, FastPairRetroactiveEngagementFlowEvent::
                        kAssociateAccountLearnMorePressed);
       break;
     case AssociateAccountAction::kDismissedByUser:
-      if (base::Contains(learn_more_devices_, device)) {
+      if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::
                          kAssociateAccountDismissedByUserAfterLearnMorePressed);
-        learn_more_devices_.erase(device);
+        associate_account_learn_more_devices_.erase(device);
         break;
       }
 
@@ -191,11 +228,11 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
                        kAssociateAccountUiDismissedByUser);
       break;
     case AssociateAccountAction::kDismissed:
-      if (base::Contains(learn_more_devices_, device)) {
+      if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::
                          kAssociateAccountDismissedAfterLearnMorePressed);
-        learn_more_devices_.erase(device);
+        associate_account_learn_more_devices_.erase(device);
         break;
       }
 

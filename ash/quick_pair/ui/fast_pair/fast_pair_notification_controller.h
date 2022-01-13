@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) FastPairNotificationController {
   void ShowDiscoveryNotification(const std::u16string& device_name,
                                  gfx::Image device_image,
                                  base::RepeatingClosure on_connect_clicked,
+                                 base::RepeatingClosure on_learn_more_clicked,
                                  base::OnceCallback<void(bool)> on_close);
   void ShowPairingNotification(const std::u16string& device_name,
                                gfx::Image device_image,

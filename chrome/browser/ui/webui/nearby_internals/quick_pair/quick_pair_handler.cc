@@ -3860,7 +3860,8 @@ void QuickPairHandler::NotifyFastPairDiscovery(const base::ListValue* args) {
 
 void QuickPairHandler::OnImageDecodedFastPairDiscovery(gfx::Image image) {
   fast_pair_notification_controller_->ShowDiscoveryNotification(
-      kTestDeviceName, image, base::DoNothing(), base::DoNothing());
+      kTestDeviceName, image, base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
 }
 
 void QuickPairHandler::NotifyFastPairPairing(const base::ListValue* args) {

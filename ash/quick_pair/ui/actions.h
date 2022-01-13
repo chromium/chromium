@@ -14,7 +14,8 @@ namespace quick_pair {
 enum class COMPONENT_EXPORT(QUICK_PAIR_UI) DiscoveryAction {
   kPairToDevice = 0,
   kDismissedByUser = 1,
-  kDismissed = 2
+  kDismissed = 2,
+  kLearnMore = 3,
 };
 
 enum class COMPONENT_EXPORT(QUICK_PAIR_UI) AssociateAccountAction {
