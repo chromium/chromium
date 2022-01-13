@@ -298,6 +298,40 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, DocumentAvailableInMainFrame) {
   EXPECT_FALSE(fenced_frame_root_node->IsLoading());
 }
 
+// Test that a fenced-frame does not perform any of the Android main-frame
+// viewport behaviors like zoom-out-to-fit-content or parsing the viewport
+// <meta>.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, ViewportSettings) {
+  const GURL top_level_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/viewport.html");
+  EXPECT_TRUE(NavigateToURL(shell(), top_level_url));
+
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+  std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
+  ASSERT_EQ(1ul, fenced_frames.size());
+  FencedFrame* fenced_frame = fenced_frames.back();
+
+  fenced_frame->WaitForDidStopLoadingForTesting();
+
+  // Ensure various dimensions and properties in the fenced frame
+  // match the dimensions of the <fencedframe> in the parent and do
+  // not take into account the <meta name="viewport"> in the
+  // fenced-frame page.
+  EXPECT_EQ(
+      EvalJs(fenced_frame->GetInnerRoot(), "window.innerWidth").ExtractInt(),
+      314);
+  EXPECT_EQ(
+      EvalJs(fenced_frame->GetInnerRoot(), "window.innerHeight").ExtractInt(),
+      271);
+  EXPECT_EQ(EvalJs(fenced_frame->GetInnerRoot(),
+                   "document.documentElement.clientWidth")
+                .ExtractInt(),
+            314);
+  EXPECT_EQ(EvalJs(fenced_frame->GetInnerRoot(), "window.visualViewport.scale")
+                .ExtractDouble(),
+            1.0);
+}
+
 namespace {
 
 enum class FrameTypeWithOrigin {

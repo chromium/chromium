@@ -595,6 +595,10 @@ WebViewImpl::WebViewImpl(
   AllInstances().insert(this);
 
   resize_viewport_anchor_ = MakeGarbageCollected<ResizeViewportAnchor>(*page_);
+
+  // Ensure we have valid page scale constraints even if the embedder never
+  // changes defaults.
+  GetPageScaleConstraintsSet().ComputeFinalConstraints();
 }
 
 WebViewImpl::~WebViewImpl() {
@@ -2647,7 +2651,7 @@ PageScaleConstraintsSet& WebViewImpl::GetPageScaleConstraintsSet() const {
 
 void WebViewImpl::RefreshPageScaleFactor() {
   if (!MainFrame() || !GetPage() || !GetPage()->MainFrame() ||
-      !GetPage()->MainFrame()->IsLocalFrame() || IsFencedFrameRoot() ||
+      !GetPage()->MainFrame()->IsLocalFrame() ||
       !GetPage()->DeprecatedLocalMainFrame()->View())
     return;
   UpdatePageDefinedViewportConstraints(MainFrameImpl()
@@ -3336,12 +3340,25 @@ void WebViewImpl::UpdateWebPreferences(
     const blink::web_pref::WebPreferences& preferences) {
   web_preferences_ = preferences;
 
+  if (IsFencedFrameRoot()) {
+    // The main frame of a fenced frame should not behave like a top level
+    // frame in terms of viewport behavior. i.e. It shouldn't allow zooming,
+    // either explicitly or to fit content, and it should not interpret the
+    // viewport <meta> tag.
+    web_preferences_.viewport_enabled = false;
+    web_preferences_.viewport_meta_enabled = false;
+    web_preferences_.default_minimum_page_scale_factor = 1.f;
+    web_preferences_.default_maximum_page_scale_factor = 1.f;
+    web_preferences_.shrinks_viewport_contents_to_fit = false;
+    web_preferences_.main_frame_resizes_are_orientation_changes = false;
+  }
+
   if (MainFrameImpl()) {
     MainFrameImpl()->FrameWidgetImpl()->SetPrefersReducedMotion(
         web_preferences_.prefers_reduced_motion);
   }
 
-  ApplyWebPreferences(preferences, this);
+  ApplyWebPreferences(web_preferences_, this);
   ApplyCommandLineToSettings(SettingsImpl());
 }
 
