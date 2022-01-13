@@ -71,6 +71,8 @@ class WebFrameImpl : public WebFrame,
   bool ExecuteJavaScript(
       const std::string& script,
       base::OnceCallback<void(const base::Value*)> callback) override;
+  bool ExecuteJavaScript(const std::string& script,
+                         ExecuteJavaScriptCallbackWithError callback) override;
 
   // WebFrameContentWorldAPI:
   bool CallJavaScriptFunctionInContentWorld(
@@ -141,6 +143,15 @@ class WebFrameImpl : public WebFrame,
                                  const std::vector<base::Value>& parameters,
                                  int message_id,
                                  bool reply_with_result);
+
+  // Converts the given callback into a |ExecuteJavaScriptCallbackWithError|
+  // callback. This function improves code sharing by being a bridge
+  // between the various ExecuteJavaScript() functions.
+  ExecuteJavaScriptCallbackWithError ExecuteJavaScriptCallbackAdapter(
+      base::OnceCallback<void(const base::Value*)> callback);
+  // Prints the information about the error that was generated from the
+  // execution of the given arbitrary JavaScript string.
+  void LogScriptWarning(NSString* script, NSError* error);
 
   // Runs the request associated with the message with id |message_id|. The
   // completion callback, if any, associated with |message_id| will be called
