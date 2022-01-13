@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
@@ -40,8 +41,15 @@ sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
   sync_pb::LocalTrustedVault proto;
   std::string ciphertext;
   std::string decrypted_content;
-  if (base::ReadFileToString(file_path, &ciphertext) &&
-      OSCrypt::DecryptString(ciphertext, &decrypted_content)) {
+  if (!base::ReadFileToString(file_path, &ciphertext)) {
+    return proto;
+  }
+
+  const bool decryption_success =
+      OSCrypt::DecryptString(ciphertext, &decrypted_content);
+  base::UmaHistogramBoolean("Sync.TrustedVaultLocalDataDecryptionIsSuccessful",
+                            decryption_success);
+  if (decryption_success) {
     proto.ParseFromString(decrypted_content);
   }
 
@@ -51,7 +59,11 @@ sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
 void WriteToDisk(const sync_pb::LocalTrustedVault& data,
                  const base::FilePath& file_path) {
   std::string encrypted_data;
-  if (!OSCrypt::EncryptString(data.SerializeAsString(), &encrypted_data)) {
+  const bool encryption_success =
+      OSCrypt::EncryptString(data.SerializeAsString(), &encrypted_data);
+  base::UmaHistogramBoolean("Sync.TrustedVaultLocalDataEncryptionIsSuccessful",
+                            encryption_success);
+  if (!encryption_success) {
     DLOG(ERROR) << "Failed to encrypt trusted vault file.";
     return;
   }

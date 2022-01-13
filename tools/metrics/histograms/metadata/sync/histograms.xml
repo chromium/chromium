@@ -1860,6 +1860,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultLocalDataDecryptionIsSuccessful"
+    enum="BooleanSuccess" expires_after="2022-07-03">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether local data was successfully decrypted upon every attempt to
+    read local file.
+  </summary>
+</histogram>
+
+<histogram name="Sync.TrustedVaultLocalDataEncryptionIsSuccessful"
+    enum="BooleanSuccess" expires_after="2022-07-03">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether local data was successfully encrypted upon every attempt to
+    write local file.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultRecoverabilityDegradedFixTrigger"
     enum="TrustedVaultUserActionTrigger" expires_after="2022-05-01">
   <owner>mmoskvitin@google.com</owner>
