@@ -148,3 +148,12 @@ export let FakeUpdateProviderInterface;
  */
 export const InstallationProgress =
     ash.firmwareUpdate.mojom.InstallationProgress;
+
+/**
+ * @typedef {{
+ *   title: string,
+ *   body: string,
+ *   footer: string,
+ * }}
+ */
+export let DialogContent;

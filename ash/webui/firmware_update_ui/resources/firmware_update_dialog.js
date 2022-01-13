@@ -15,9 +15,16 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateProviderInterface, UpdateState} from './firmware_update_types.js';
+import {DialogContent, FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateProviderInterface, UpdateState} from './firmware_update_types.js';
 import {getUpdateProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
+
+/** @type {!DialogContent} */
+const initialDialogContent = {
+  title: '',
+  body: '',
+  footer: ''
+};
 
 /**
  * @fileoverview
@@ -54,6 +61,13 @@ export class FirmwareUpdateDialogElement extends
       installationProgress: {
         type: Object,
       },
+
+      /** @type {!DialogContent} */
+      dialogContent: {
+        type: Object,
+        value: initialDialogContent,
+        computed: 'computeDialogContent_(installationProgress.*)',
+      }
     };
   }
 
@@ -171,33 +185,48 @@ export class FirmwareUpdateDialogElement extends
 
   /**
    * @protected
-   * @return {string}
+   * @return {boolean}
    */
-  computeUpdateDialogTitle_() {
-    return this.isUpdateInProgress_() ?
-        this.i18n('updating', mojoString16ToString(this.update.deviceName)) :
-        this.i18n(
-            'deviceUpToDate', mojoString16ToString(this.update.deviceName));
+  isUpdateDone_() {
+    // TODO(michaelcheco): Handle failed state.
+    return this.installationProgress.state === UpdateState.kSuccess;
   }
 
   /**
-   * @protected
-   * @return {string}
+   * @param {!UpdateState} state
+   * @return {!DialogContent}
    */
-  computeProgressText_() {
-    return this.i18n('installing', this.installationProgress.percentage);
-  }
-
-  /**
-   * @protected
-   * @return {string}
-   */
-  computeUpdateDialogBodyText_() {
+  createDialogContentObj_(state) {
     const {deviceName, deviceVersion} = this.update;
-    return this.installationProgress.state === UpdateState.kSuccess ?
-        this.i18n(
-            'hasBeenUpdated', mojoString16ToString(deviceName), deviceVersion) :
-        this.i18n('updatingInfo');
+    const {percentage} = this.installationProgress;
+
+    const dialogContent = {
+      [UpdateState.kUpdating]: {
+        title: this.i18n('updating', mojoString16ToString(deviceName)),
+        body: this.i18n('updatingInfo'),
+        footer: this.i18n('installing', percentage),
+      },
+      [UpdateState.kSuccess]: {
+        title: this.i18n('deviceUpToDate', mojoString16ToString(deviceName)),
+        body: this.i18n(
+            'hasBeenUpdated', mojoString16ToString(deviceName), deviceVersion),
+        footer: '',
+      },
+    };
+
+    return dialogContent[state];
+  }
+
+  /** @return {!DialogContent} */
+  computeDialogContent_() {
+    if (this.isUpdateInProgress_()) {
+      return this.createDialogContentObj_(UpdateState.kUpdating);
+    }
+
+    if (this.isUpdateDone_()) {
+      return this.createDialogContentObj_(UpdateState.kSuccess);
+    }
+    return initialDialogContent;
   }
 }
 
