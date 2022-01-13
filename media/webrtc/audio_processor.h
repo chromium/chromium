@@ -144,10 +144,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
  private:
   friend class AudioProcessorTest;
 
-  // Helper to initialize the capture converter.
-  void InitializeCaptureFifo(const media::AudioParameters& input_format)
-      VALID_CONTEXT_REQUIRED(owning_sequence_);
-
   // Called by ProcessCapturedAudio().
   // Returns the new microphone volume in the range of |0.0, 1.0], or unset if
   // the volume should not be updated.
