@@ -42,10 +42,10 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
 
   // Creates a widget which allows maximizing based on |maximize_allowed|.
   // The caller takes ownership of the returned widget.
-  views::Widget* CreateTestWidget(MaximizeAllowed maximize_allowed,
-                                  MinimizeAllowed minimize_allowed,
-                                  CloseButtonVisible close_button_visible)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] views::Widget* CreateTestWidget(
+      MaximizeAllowed maximize_allowed,
+      MinimizeAllowed minimize_allowed,
+      CloseButtonVisible close_button_visible) {
     views::Widget* widget = new views::Widget;
     views::Widget::InitParams params(
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);

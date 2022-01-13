@@ -139,7 +139,7 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
 
   // If restore timer is running, stops it, runs its task and returns true.
   // Otherwise, returns false.
-  bool TriggerRestoreTimer() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TriggerRestoreTimer() {
     if (!restorer_->restore_timer_for_test()->IsRunning())
       return false;
 

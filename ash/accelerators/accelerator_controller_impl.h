@@ -19,7 +19,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
@@ -106,7 +105,7 @@ class ASH_EXPORT AcceleratorControllerImpl
 
     // If |controller_->tablet_mode_volume_adjust_timer_| is running, stops it,
     // runs its task, and returns true. Otherwise returns false.
-    bool TriggerTabletModeVolumeAdjustTimer() WARN_UNUSED_RESULT;
+    [[nodiscard]] bool TriggerTabletModeVolumeAdjustTimer();
 
     // Registers the specified accelerators.
     void RegisterAccelerators(const AcceleratorData accelerators[],

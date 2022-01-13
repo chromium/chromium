@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_POWER_POWER_BUTTON_CONTROLLER_TEST_API_H_
 
 #include "ash/system/power/power_button_controller.h"
-#include "base/compiler_specific.h"
 
 namespace base {
 class TickClock;
@@ -40,14 +39,14 @@ class PowerButtonControllerTestApi {
 
   // If |controller_->pre_shutdown_timer_| is running, stops it, runs its task,
   // and returns true. Otherwise, returns false.
-  bool TriggerPreShutdownTimeout() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TriggerPreShutdownTimeout();
 
   // Returns true when |power_button_menu_timer_| is running.
   bool PowerButtonMenuTimerIsRunning() const;
 
   // If |controller_->power_button_menu_timer_| is running, stops it, runs its
   // task, and returns true. Otherwise, returns false.
-  bool TriggerPowerButtonMenuTimeout() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TriggerPowerButtonMenuTimeout();
 
   // Sends |event| to |controller_->display_controller_|.
   void SendKeyEvent(ui::KeyEvent* event);

@@ -67,7 +67,7 @@ class ArcPowerBridge : public KeyedService,
 
   // If |notify_brightness_timer_| is set, runs it and returns true. Returns
   // false otherwise.
-  bool TriggerNotifyBrightnessTimerForTesting() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TriggerNotifyBrightnessTimerForTesting();
 
   // Runs the message loop until replies have been received for all pending
   // device service requests in |wake_lock_requestors_|.

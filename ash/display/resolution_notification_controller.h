@@ -59,12 +59,12 @@ class ASH_EXPORT ResolutionNotificationController
   // |accept_callback| will be called when the user accepts the resoltion change
   // by closing the notification bubble or clicking on the accept button (if
   // any).
-  bool PrepareNotificationAndSetDisplayMode(
+  [[nodiscard]] bool PrepareNotificationAndSetDisplayMode(
       int64_t display_id,
       const display::ManagedDisplayMode& old_resolution,
       const display::ManagedDisplayMode& new_resolution,
       mojom::DisplayConfigSource source,
-      base::OnceClosure accept_callback) WARN_UNUSED_RESULT;
+      base::OnceClosure accept_callback);
 
   DisplayChangeDialog* dialog_for_testing() const {
     return confirmation_dialog_.get();

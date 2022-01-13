@@ -69,8 +69,8 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   virtual views::Widget* GetBubbleWidget() const;
 
   // Returns a lock that prevents window activation from closing bubbles.
-  static base::ScopedClosureRunner DisableCloseBubbleOnWindowActivated()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static base::ScopedClosureRunner
+  DisableCloseBubbleOnWindowActivated();
 
   // Whether a window activation change should close bubbles.
   static bool ShouldCloseBubbleOnWindowActivated();
@@ -162,7 +162,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Disables bounce in and fade in animation. The animation will remain
   // disabled until the returned scoped closure runner is run.
-  base::ScopedClosureRunner DisableShowAnimation() WARN_UNUSED_RESULT;
+  [[nodiscard]] base::ScopedClosureRunner DisableShowAnimation();
 
   // Returns true if the view is showing a context menu.
   bool IsShowingMenu() const;

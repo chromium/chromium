@@ -102,7 +102,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // Clip rect of this view's widget will be removed during the life time of the
   // returned ScopedNoClipRect.
-  std::unique_ptr<ScopedNoClipRect> CreateScopedNoClipRect() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<ScopedNoClipRect> CreateScopedNoClipRect();
 
   // Starts the launcher nudge animation.
   void StartNudgeAnimation();

@@ -42,8 +42,8 @@ class AppListReorderUndoContainerView : public views::View {
   void OnReorderUndoButtonClicked();
 
   // Calculates the toast text based on the temporary sorting order.
-  std::u16string CalculateToastTextFromOrder(AppListSortOrder order) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::u16string CalculateToastTextFromOrder(
+      AppListSortOrder order) const;
 
   SystemToastStyle* toast_view_ = nullptr;
 };

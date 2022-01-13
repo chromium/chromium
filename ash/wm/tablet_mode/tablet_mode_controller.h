@@ -15,7 +15,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell_observer.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -121,7 +120,7 @@ class ASH_EXPORT TabletModeController
 
   // If |record_lid_angle_timer_| is running, invokes its task and returns true.
   // Otherwise, returns false.
-  bool TriggerRecordLidAngleTimerForTesting() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TriggerRecordLidAngleTimerForTesting();
 
   // Starts observing |window| for animation changes.
   void MaybeObserveBoundsAnimation(aura::Window* window);

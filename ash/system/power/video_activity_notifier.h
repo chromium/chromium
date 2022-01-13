@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/video_detector.h"
-#include "base/compiler_specific.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -32,7 +31,7 @@ class ASH_EXPORT VideoActivityNotifier : public VideoDetector::Observer,
 
   // If |notify_timer_| is running, calls MaybeNotifyPowerManager() and returns
   // true. Returns false otherwise.
-  bool TriggerTimeoutForTest() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TriggerTimeoutForTest();
 
  private:
   bool should_notify_power_manager() {

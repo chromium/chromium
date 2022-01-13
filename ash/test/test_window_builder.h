@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/compiler_specific.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
@@ -64,7 +63,7 @@ class ASH_EXPORT TestWindowBuilder {
 
   // Build a window based on the parameter already set. This can be called only
   // once and the object cannot be used to create multiple windows.
-  std::unique_ptr<aura::Window> Build() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<aura::Window> Build();
 
  private:
   aura::Window* parent_ = nullptr;
