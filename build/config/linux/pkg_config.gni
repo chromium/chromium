@@ -53,9 +53,10 @@ pkg_config_script = "//build/config/linux/pkg-config.py"
 # need to invoke it manually.
 pkg_config_args = []
 
+common_pkg_config_args = []
 if (sysroot != "") {
   # Pass the sysroot if we're using one (it requires the CPU arch also).
-  pkg_config_args += [
+  common_pkg_config_args += [
     "-s",
     rebase_path(sysroot),
     "-a",
@@ -92,9 +93,9 @@ template("pkg_config") {
          "Variable |packages| must be defined to be a list in pkg_config.")
   config(target_name) {
     if (host_toolchain == current_toolchain) {
-      args = host_pkg_config_args + invoker.packages
+      args = common_pkg_config_args + host_pkg_config_args + invoker.packages
     } else {
-      args = pkg_config_args + invoker.packages
+      args = common_pkg_config_args + pkg_config_args + invoker.packages
     }
     if (defined(invoker.extra_args)) {
       args += invoker.extra_args
