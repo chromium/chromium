@@ -25,7 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -68,9 +68,8 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     app_host_ = std::make_unique<FakeAppHost>(
         arc_service_manager_.arc_bridge_service()->app());
     app_instance_ = std::make_unique<FakeAppInstance>(app_host_.get());
-    // TODO(yusukes): Implement and use FakeIntentHelperHost just like above.
-    arc_intent_helper_bridge_ = std::make_unique<ArcIntentHelperBridge>(
-        testing_profile_.get(), arc_service_manager_.arc_bridge_service());
+    intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
+        arc_service_manager_.arc_bridge_service()->intent_helper());
     intent_helper_instance_ = std::make_unique<FakeIntentHelperInstance>();
   }
 
@@ -136,8 +135,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
 
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
-  // TODO(yusukes): Implement and use FakeIntentHelperHost.
-  std::unique_ptr<ArcIntentHelperBridge> arc_intent_helper_bridge_;
+  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
 };
 
