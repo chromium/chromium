@@ -53,8 +53,8 @@ void FakePendingNetworkConfigurationTracker::IncrementCompletedAttempts(
 std::vector<PendingNetworkConfigurationUpdate>
 FakePendingNetworkConfigurationTracker::GetPendingUpdates() {
   std::vector<PendingNetworkConfigurationUpdate> list;
-  for (const auto& it : id_to_pending_update_map_)
-    list.emplace_back(it.second);
+  for (const auto& [id, pending_update] : id_to_pending_update_map_)
+    list.emplace_back(pending_update);
   return list;
 }
 

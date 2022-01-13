@@ -93,8 +93,8 @@ void ExtractProtosFromDataBatch(
     std::unique_ptr<syncer::DataBatch> batch,
     std::vector<sync_pb::WifiConfigurationSpecifics>* output) {
   while (batch->HasNext()) {
-    const syncer::KeyAndData& data_pair = batch->Next();
-    output->push_back(data_pair.second->specifics.wifi_configuration());
+    const auto& [key, data] = batch->Next();
+    output->push_back(data->specifics.wifi_configuration());
   }
 }
 

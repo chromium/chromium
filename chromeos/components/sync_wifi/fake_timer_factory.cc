@@ -27,8 +27,8 @@ void FakeTimerFactory::FireAll() {
   // Make a copy because firing a timer will usually destroy it.  This calls
   // OnOneShotTimerDeleted and removes it from |id_to_timer_map_|.
   auto id_to_timer_map_copy = id_to_timer_map_;
-  for (auto it : id_to_timer_map_copy)
-    it.second->Fire();
+  for (auto [id, timer] : id_to_timer_map_copy)
+    timer->Fire();
 }
 
 void FakeTimerFactory::OnOneShotTimerDeleted(
