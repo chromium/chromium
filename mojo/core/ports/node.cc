@@ -914,6 +914,7 @@ int Node::OnObserveClosure(const PortRef& port_ref,
   bool notify_delegate = false;
   NodeName peer_node_name;
   bool try_remove_proxy = false;
+  bool erase_port = false;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
@@ -946,6 +947,10 @@ int Node::OnObserveClosure(const PortRef& port_ref,
       // read from the other end.
       port->last_sequence_num_acknowledged =
           port->next_sequence_num_to_send - 1;
+    } else if (port->state == Port::kClosed) {
+      // This is the ack for a closed proxy port notification. Now it's fine to
+      // delete the port.
+      erase_port = true;
     } else {
       // We haven't yet reached the receiving peer of the closed port, so we'll
       // forward the message along as-is.
@@ -973,6 +978,9 @@ int Node::OnObserveClosure(const PortRef& port_ref,
 
   if (try_remove_proxy)
     TryRemoveProxy(port_ref);
+
+  if (erase_port)
+    ErasePort(port_ref.name());
 
   if (event)
     delegate_->ForwardEvent(peer_node_name, std::move(event));
@@ -1826,6 +1834,9 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
   std::vector<PortName> dead_proxies_to_broadcast;
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;
 
+  ScopedEvent closure_event;
+  NodeName closure_event_target_node;
+
   {
     PortLocker::AssertNoPortsLockedOnCurrentThread();
     base::AutoLock ports_lock(ports_lock_);
@@ -1862,6 +1873,16 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
         SinglePortLocker locker(&local_port_ref);
         auto* port = locker.port();
 
+        if (port_name != kInvalidPortName) {
+          // If this is a targeted observe dead proxy event, send out an
+          // ObserveClosure to acknowledge it.
+          closure_event_target_node = port->peer_node_name;
+          closure_event = std::make_unique<ObserveClosureEvent>(
+              port->peer_port_name, local_port_ref.name(),
+              port->next_control_sequence_num_to_send++,
+              port->last_sequence_num_to_receive);
+        }
+
         if (!port->peer_closed) {
           // Treat this as immediate peer closure. It's an exceptional
           // condition akin to a broken pipe, so we don't care about losing
@@ -1880,6 +1901,7 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
         // broadcast our own death so it can be back-propagated. This is
         // inefficient but rare.
         if (port->state != Port::kReceiving) {
+          port->state = Port::kClosed;
           dead_proxies_to_broadcast.push_back(local_port_ref.name());
           std::vector<std::unique_ptr<UserMessageEvent>> messages;
           port->message_queue.TakeAllMessages(&messages);
@@ -1891,9 +1913,16 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
     }
   }
 
+#ifdef MOJO_BACKWARDS_COMPAT
   for (const auto& proxy_name : dead_proxies_to_broadcast) {
     ErasePort(proxy_name);
     DVLOG(2) << "Forcibly deleted port " << proxy_name << "@" << name_;
+  }
+#endif
+
+  if (closure_event) {
+    delegate_->ForwardEvent(closure_event_target_node,
+                            std::move(closure_event));
   }
 
   // Wake up any receiving ports who have just observed simulated peer closure.
