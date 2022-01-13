@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/login/cookie_waiter.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -291,11 +292,6 @@ void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
   }
 }
 
-void EnrollmentScreenHandler::ShowEnrollmentCloudReadyNotAllowedError() {
-  ShowScreen(EnrollmentScreenView::kScreenId);
-  CallJS("login.OAuthEnrollmentScreen.showOSNotInstalledError");
-}
-
 void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
     const std::string& domain_join_config,
     const std::string& machine_name,
@@ -459,10 +455,6 @@ void EnrollmentScreenHandler::ShowOtherError(
 
 void EnrollmentScreenHandler::Shutdown() {
   shutdown_ = true;
-}
-
-void EnrollmentScreenHandler::SetIsBrandedBuild(bool is_branded) {
-  CallJS("login.OAuthEnrollmentScreen.setIsBrandedBuild", is_branded);
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentStatus(
@@ -658,8 +650,6 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("oauthEnrollSuccessTitle",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_TITLE);
   builder->Add("oauthEnrollErrorTitle", IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE);
-  builder->Add("oauthOSNotInstalledError",
-               IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED);
   builder->Add("oauthEnrollDeviceInformation",
                IDS_ENTERPRISE_ENROLLMENT_DEVICE_INFORMATION);
   builder->Add("oauthEnrollExplainAttributeLink",
@@ -1032,6 +1022,15 @@ void EnrollmentScreenHandler::ShowErrorForDevice(int message_id, bool retry) {
   ShowErrorMessage(
       l10n_util::GetStringFUTF8(message_id, ui::GetChromeOSDeviceName()),
       retry);
+}
+
+void EnrollmentScreenHandler::ShowEnrollmentDuringTrialNotAllowedError() {
+  ShowScreen(EnrollmentScreenView::kScreenId);
+  ShowErrorMessage(
+      l10n_util::GetStringFUTF8(
+          IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED,
+          l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)),
+      /*retry=*/false);
 }
 
 void EnrollmentScreenHandler::ShowErrorMessage(const std::string& message,

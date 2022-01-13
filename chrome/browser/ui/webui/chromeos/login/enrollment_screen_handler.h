@@ -85,7 +85,7 @@ class EnrollmentScreenHandler
   void ShowSigninScreen() override;
   void ShowUserError(UserErrorType error_type,
                      const std::string& email) override;
-  void ShowEnrollmentCloudReadyNotAllowedError() override;
+  void ShowEnrollmentDuringTrialNotAllowedError() override;
   void ShowActiveDirectoryScreen(const std::string& domain_join_config,
                                  const std::string& machine_name,
                                  const std::string& username,
@@ -100,7 +100,6 @@ class EnrollmentScreenHandler
   void ShowOtherError(
       EnterpriseEnrollmentHelper::OtherError error_code) override;
   void Shutdown() override;
-  void SetIsBrandedBuild(bool is_branded) override;
 
   // Implements BaseScreenHandler:
   void Initialize() override;

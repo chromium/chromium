@@ -84,8 +84,8 @@ class EnrollmentScreenView {
   virtual void ShowUserError(UserErrorType error_type,
                              const std::string& email) = 0;
 
-  // Shows error that enrollment is not allowed during CloudReady run.
-  virtual void ShowEnrollmentCloudReadyNotAllowedError() = 0;
+  // Shows error that enrollment is not allowed during trial run.
+  virtual void ShowEnrollmentDuringTrialNotAllowedError() = 0;
 
   // Shows the Active Directory domain joining screen.
   virtual void ShowActiveDirectoryScreen(const std::string& domain_join_config,
@@ -116,10 +116,6 @@ class EnrollmentScreenView {
   virtual void ShowEnrollmentStatus(policy::EnrollmentStatus status) = 0;
 
   virtual void Shutdown() = 0;
-
-  // Sets if build is branded or not to show correct error message when OS is
-  // not installed on the device.
-  virtual void SetIsBrandedBuild(bool is_branded) = 0;
 };
 
 }  // namespace ash

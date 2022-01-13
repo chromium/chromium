@@ -129,11 +129,6 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
         },
         readOnly: true,
       },
-
-      isBranded: {
-        type: Boolean,
-        value: true,
-      },
     };
   }
 
@@ -152,8 +147,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   get EXTERNAL_API() {
     return [
       'doReload', 'setAdJoinConfiguration', 'setAdJoinParams',
-      'setEnterpriseDomainInfo', 'setIsBrandedBuild', 'showAttributePromptStep',
-      'showError', 'showOSNotInstalledError', 'showStep'
+      'setEnterpriseDomainInfo', 'showAttributePromptStep', 'showError',
+      'showStep'
     ];
   }
 
@@ -507,15 +502,6 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
   }
 
-  showOSNotInstalledError() {
-    this.canRetryAfterError_ = false;
-    this.errorText_ = this.i18nDynamic(
-        this.locale, 'oauthOSNotInstalledError',
-        this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
-                         loadTimeData.getString('osInstallChromiumOS'));
-    this.showStep(OobeTypes.EnrollmentStep.ERROR);
-  }
-
   /**
    *  Provides the label for the generic cancel button (Skip / Enroll Manually)
    *
@@ -574,13 +560,6 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    */
   onTPMCheckCanceled_() {
     this.userActed('cancel-tpm-check');
-  }
-
-  /**
-   * @param {boolean} is_branded
-   */
-  setIsBrandedBuild(is_branded) {
-    this.isBranded = is_branded;
   }
 }
 

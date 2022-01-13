@@ -50,7 +50,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void,
               ShowUserError,
               (UserErrorType error_type, const std::string& email));
-  MOCK_METHOD(void, ShowEnrollmentCloudReadyNotAllowedError, ());
+  MOCK_METHOD(void, ShowEnrollmentDuringTrialNotAllowedError, ());
   MOCK_METHOD(void,
               ShowLicenseTypeSelectionScreen,
               (const base::DictionaryValue&));
@@ -70,7 +70,6 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, ShowOtherError, (EnterpriseEnrollmentHelper::OtherError));
   MOCK_METHOD(void, ShowEnrollmentStatus, (policy::EnrollmentStatus status));
   MOCK_METHOD(void, Shutdown, ());
-  MOCK_METHOD(void, SetIsBrandedBuild, (bool is_branded));
 
  private:
   EnrollmentScreen* screen_ = nullptr;

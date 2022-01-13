@@ -271,6 +271,20 @@ void EnrollmentScreen::UpdateFlowType() {
 }
 
 void EnrollmentScreen::ShowImpl() {
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Show enrollment screen";
+  if (view_)
+    view_->SetEnrollmentController(this);
+  // Block enrollment on liveboot (OS isn't installed yet and this is trial
+  // flow).
+  if (switches::IsOsInstallAllowed()) {
+    if (view_)
+      view_->ShowEnrollmentDuringTrialNotAllowedError();
+    return;
+  }
+  // If TPM can be dynamically configured: show spinner and try taking
+  // ownership.
   if (!tpm_checked_ && switches::IsTpmDynamic()) {
     if (view_)
       view_->ShowEnrollmentTPMCheckingScreen();
@@ -278,20 +292,8 @@ void EnrollmentScreen::ShowImpl() {
     return;
   }
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-  // in the logs.
-  LOG(WARNING) << "Show enrollment screen";
-  if (view_)
-    view_->SetEnrollmentController(this);
   UMA(policy::kMetricEnrollmentTriggered);
   UpdateFlowType();
-  if (switches::IsOsInstallAllowed()) {
-    if (view_) {
-      view_->SetIsBrandedBuild(context()->is_branded_build);
-      view_->ShowEnrollmentCloudReadyNotAllowedError();
-    }
-    return;
-  }
   switch (current_auth_) {
     case AUTH_OAUTH:
       ShowInteractiveScreen();
