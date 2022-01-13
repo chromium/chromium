@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
+import {Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -561,6 +561,54 @@ suite('PrivacyReviewPage', function() {
     setSignInState(false);
     assertTrue(isChildVisible(completionFragment, '#privacySandboxRow'));
     assertFalse(isChildVisible(completionFragment, '#waaRow'));
+  });
+
+  test('privacyReviewVisibilityChildAccount', function() {
+    // Set the user to have a non-child account.
+    const syncStatus:
+        SyncStatus = {childUser: false, statusAction: StatusAction.NO_ACTION};
+    webUIListenerCallback('sync-status-changed', syncStatus);
+    flush();
+
+    // Navigating to the privacy review works.
+    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
+    flush();
+    assertWelcomeCardVisible();
+
+    // The user signs in to a child user account. This hides the privacy review
+    // and navigates away back to privacy settings page.
+    const newSyncStatus:
+        SyncStatus = {childUser: true, statusAction: StatusAction.NO_ACTION};
+    webUIListenerCallback('sync-status-changed', newSyncStatus);
+    flush();
+    assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
+
+    // User trying to manually navigate to privacy review fails.
+    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
+    flush();
+    assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
+  });
+
+  test('privacyReviewVisibilityManagedAccount', function() {
+    // Set the user to have a non-managed account.
+    webUIListenerCallback('is-managed-changed', false);
+    flush();
+
+    // Navigating to the privacy review works.
+    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
+    flush();
+    assertWelcomeCardVisible();
+
+    // The user signs in to a managed account. This hides the privacy review and
+    // navigates away back to privacy settings page.
+    webUIListenerCallback('is-managed-changed', true);
+    flush();
+    assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
+
+    // User trying to manually navigate to privacy review fails.
+    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
+    flush();
+    assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
   });
 });
 

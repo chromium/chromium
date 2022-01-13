@@ -101,12 +101,20 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         computed:
             'computeStepIndicatorModel(privacyReviewStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
       },
+
+      syncStatus_: Object,
+
+      isManaged_: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
   static get observers() {
     return [
-      `onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)`
+      'onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
+      'exitIfNecessary(isManaged_, syncStatus_.childUser)',
     ];
   }
 
@@ -118,6 +126,9 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       SyncBrowserProxyImpl.getInstance();
   private syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
+  // The privacy review flag is only enabled when the user was not managed at
+  // the time settings were loaded, so this is default false.
+  private isManaged_: boolean = false;
 
   constructor() {
     super();
@@ -131,9 +142,11 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
     this.addWebUIListener(
         'sync-status-changed',
-        (syncStatus: SyncStatus) => this.onSyncStatusChange_(syncStatus));
+        (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
     this.syncBrowserProxy_.getSyncStatus().then(
-        (syncStatus: SyncStatus) => this.onSyncStatusChange_(syncStatus));
+        (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
+    this.addWebUIListener(
+        'is-managed-changed', this.onIsManagedChanged_.bind(this));
   }
 
   disableAnimationsForTesting() {
@@ -142,12 +155,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /** RouteObserverBehavior */
   currentRouteChanged(newRoute: Route) {
-    if (newRoute === routes.PRIVACY_REVIEW) {
-      // Set the pref that the user has viewed the Privacy guide.
-      this.setPrefValue('privacy_guide.viewed', true);
-
-      this.updateStateFromQueryParameters_();
+    if (newRoute !== routes.PRIVACY_REVIEW || this.exitIfNecessary()) {
+      return;
     }
+    // Set the pref that the user has viewed the Privacy guide.
+    this.setPrefValue('privacy_guide.viewed', true);
+    this.updateStateFromQueryParameters_();
   }
 
   /**
@@ -198,7 +211,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           // Allow the history sync card to be shown while `syncStatus_` is
           // unavailable. Otherwise we would skip it in
           // `navigateForwardIfCurrentCardNoLongerAvailable` before
-          // `onSyncStatusChange_` is called asynchronously.
+          // `onSyncStatusChanged_` is called asynchronously.
           isAvailable: () => !this.syncStatus_ || this.isSyncOn_(),
         },
       ],
@@ -225,10 +238,22 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     ]);
   }
 
+  private exitIfNecessary(): boolean {
+    if (this.isManaged_ || (this.syncStatus_ && this.syncStatus_.childUser)) {
+      Router.getInstance().navigateTo(routes.PRIVACY);
+      return true;
+    }
+    return false;
+  }
+
   /** Handler for when the sync state is pushed from the browser. */
-  private onSyncStatusChange_(syncStatus: SyncStatus) {
+  private onSyncStatusChanged_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
     this.navigateForwardIfCurrentCardNoLongerAvailable();
+  }
+
+  private onIsManagedChanged_(isManaged: boolean) {
+    this.isManaged_ = isManaged;
   }
 
   /** Update the privacy review state based on changed prefs. */
