@@ -191,6 +191,10 @@ class EulaScreenTester extends ScreenElementApi {
     return this.isVisible() && this.eulaStep.isVisible() &&
         this.nextButton.isVisible();
   }
+
+  getNextButtonName() {
+    return loadTimeData.getString('oobeEulaAcceptAndContinueButtonText');
+  }
 }
 
 class UpdateScreenTester extends ScreenElementApi {
