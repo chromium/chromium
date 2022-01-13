@@ -4606,6 +4606,7 @@
             }
           ],
           "idempotent": false,
+          "quickrun_shards": 4,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },

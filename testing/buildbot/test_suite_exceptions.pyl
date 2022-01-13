@@ -679,7 +679,7 @@
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
           'shards': 15,
-          'quickrun_shards': 30,
+          'quickrun_shards': 40,
         }
       },
       'Win11 Tests x64': {
@@ -821,6 +821,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter',
         ],
+      },
+      'chromeos-amd64-generic-rel': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
       },
       'fuchsia-code-coverage': {
         'swarming': {
@@ -1241,6 +1246,9 @@
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
+        'swarming': {
+          'quickrun_shards': 18,
+        },
       },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,
@@ -1881,6 +1889,11 @@
         # These are slow on the TSan bots for some reason, crbug.com/794372
         'swarming': {
           'shards': 6,
+        },
+      },
+      'Win10 Tests x64': {
+        'swarming': {
+          'quickrun_shards': 8
         },
       },
       # temporary, https://crbug.com/818832
@@ -2811,6 +2824,11 @@
           'shards': 6,
         },
       },
+      'Win10 Tests x64': {
+        'swarming': {
+          'quickrun_shards': 3,
+        },
+      },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100, # https://crbug.com/840369
       },
@@ -2939,6 +2957,11 @@
         },
         'experiment_percentage': 100,
       },
+      'chromeos-amd64-generic-rel': {
+        'swarming': {
+          'quickrun_shards': 24,
+        },
+      },
       'chromeos-eve-chrome': {
         'args': [
           # TODO(crbug.com/1191132): Re-enable.
@@ -2993,6 +3016,11 @@
     'modifications': {
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,  # crbug.com/870673
+      },
+      'chromeos-amd64-generic-rel': {
+        'swarming': {
+          'quickrun_shards': 60,
+        },
       },
     },
     'remove_from': [
@@ -3302,6 +3330,15 @@
       },
     },
   },
+  'webgl_conformance_d3d11_passthrough_tests': {
+    'modifications': {
+      'Win10 x64 Release (NVIDIA)': {
+        'swarming': {
+          'quickrun_shards': 4,
+        },
+      },
+    },
+  },
   'webgl_conformance_gl_passthrough_tests': {
     'remove_from': [
       # crbug.com/555545 and crbug.com/649824:
@@ -3337,6 +3374,13 @@
       # constrained. crbug.com/950690
       'Mac FYI Retina Debug (NVIDIA)',
     ],
+    'modifications': {
+      'chromeos-amd64-generic-rel': {
+        'swarming': {
+          'quickrun_shards': 40,
+        },
+      },
+    },
   },
   'webgpu_blink_web_tests': {
     'modifications': {

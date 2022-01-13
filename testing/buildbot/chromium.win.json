@@ -1834,7 +1834,7 @@
               "os": "Windows-10-19042"
             }
           ],
-          "quickrun_shards": 30,
+          "quickrun_shards": 40,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
@@ -2101,6 +2101,7 @@
               "os": "Windows-10-19042"
             }
           ],
+          "quickrun_shards": 18,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2597,6 +2598,7 @@
               "os": "Windows-10-19042"
             }
           ],
+          "quickrun_shards": 8,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -3189,6 +3191,7 @@
               "os": "Windows-10-19042"
             }
           ],
+          "quickrun_shards": 3,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sync_integration_tests",
