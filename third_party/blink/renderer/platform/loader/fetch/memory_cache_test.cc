@@ -265,7 +265,6 @@ TEST_F(MemoryCacheTest, ResourcePruningLater_MultipleResourceMaps) {
 static void TestClientRemoval(ResourceFetcher* fetcher,
                               const String& identifier1,
                               const String& identifier2) {
-  GetMemoryCache()->SetCapacity(0);
   const char kData[6] = "abcde";
   Persistent<MockResourceClient> client1 =
       MakeGarbageCollected<MockResourceClient>();
@@ -280,7 +279,6 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   resource1->AppendData(kData, 4u);
   resource2->AppendData(kData, 4u);
 
-  GetMemoryCache()->SetCapacity(0);
   // Remove and re-Add the resources, with proper cache identifiers.
   GetMemoryCache()->Remove(resource1);
   GetMemoryCache()->Remove(resource2);
@@ -319,6 +317,9 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   WeakPersistent<Resource> resource1_weak = resource1;
   WeakPersistent<Resource> resource2_weak = resource2;
 
+  auto original_capacity = GetMemoryCache()->Capacity();
+  GetMemoryCache()->SetCapacity(0);
+
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
   // Resources are garbage-collected (WeakMemoryCache) and thus removed
@@ -326,6 +327,7 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   EXPECT_FALSE(resource1_weak);
   EXPECT_FALSE(resource2_weak);
   EXPECT_EQ(0u, GetMemoryCache()->size());
+  GetMemoryCache()->SetCapacity(original_capacity);
 }
 
 TEST_F(MemoryCacheTest, ClientRemoval_Basic) {
