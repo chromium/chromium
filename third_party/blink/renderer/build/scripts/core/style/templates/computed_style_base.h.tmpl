@@ -22,6 +22,7 @@
 #}
 {% import 'templates/fields/keyword.tmpl' as keyword %}
 {% import 'templates/fields/multi_keyword.tmpl' as multi_keyword %}
+{% import 'templates/fields/bitset_keyword.tmpl' as bitset_keyword %}
 {% import 'templates/fields/primitive.tmpl' as primitive %}
 {% import 'templates/fields/monotonic_flag.tmpl' as monotonic_flag %}
 {% import 'templates/fields/external.tmpl' as external %}
@@ -30,6 +31,7 @@
 {% set field_templates = {
      'keyword': keyword,
      'multi_keyword': multi_keyword,
+     'bitset_keyword': bitset_keyword,
      'primitive': primitive,
      'monotonic_flag': monotonic_flag,
      'external': external,

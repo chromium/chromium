@@ -219,6 +219,10 @@
         "keyword",
         // Field can take on any subset of values from a list of keywords.
         "multi_keyword",
+        // Semantically equivalent to keyword, but the type is represented as a
+        // bit flag field as with multi_keyword as a performance optimization
+        // for matching multiple values.
+        "bitset_keyword",
         // Field stores a primitive value like int/bool. The type is specified
         // by type_name. The interface has a initial/getter/setter/resetter.
         "primitive",
@@ -5121,7 +5125,7 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       independent: true,
       inherited: true,
-      field_template: "multi_keyword", // We use a bitflag field due peformance issues. TODO: crbug/12839063
+      field_template: "bitset_keyword",
       keywords: [
         "normal", "pre", "pre-wrap", "pre-line", "nowrap", "-webkit-nowrap", "break-spaces"
       ],

@@ -105,6 +105,7 @@ class ComputedStyleInitialValues{
     {% endif %}
   {% elif property.field_template == "keyword" or
         property.field_template == "multi_keyword" or
+        property.field_template == "bitset_keyword" or
         property.field_template == "primitive" %}
 
   static {{property.type_name}} {{property.initial}}() {

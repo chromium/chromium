@@ -294,7 +294,8 @@ class CSSProperties(object):
 
             type_name = property_['type_name']
             if (property_['field_template'] == 'keyword'
-                    or property_['field_template'] == 'multi_keyword'):
+                    or property_['field_template'] == 'multi_keyword'
+                    or property_['field_template'] == 'bitset_keyword'):
                 default_value = (type_name + '::' + NameStyleConverter(
                     property_['default_value']).to_enum_value())
             elif (property_['field_template'] == 'external'
