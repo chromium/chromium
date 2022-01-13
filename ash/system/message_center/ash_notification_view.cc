@@ -828,6 +828,10 @@ void AshNotificationView::UpdateControlButtonsVisibility() {
   // Always hide snooze button in control buttons since we show this snooze
   // button in actions button view.
   control_buttons_view()->ShowSnoozeButton(false);
+
+  // Hide settings button for grouped child notifications.
+  if (is_grouped_child_view_)
+    control_buttons_view()->ShowSettingsButton(false);
 }
 
 bool AshNotificationView::IsIconViewShown() const {
@@ -911,11 +915,16 @@ void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
 
   NotificationViewBase::ToggleInlineSettings(event);
 
-  // In settings UI, we only show the app icon and header row along with the
-  // inline settings UI.
-  header_row()->SetVisible(true);
-  left_content()->SetVisible(!should_show_inline_settings);
-  right_content()->SetVisible(!should_show_inline_settings);
+  if (is_grouped_parent_view_) {
+    grouped_notifications_scroll_view_->SetVisible(
+        !should_show_inline_settings);
+  } else {
+    // In settings UI, we only show the app icon and header row along with the
+    // inline settings UI.
+    header_row()->SetVisible(true);
+    left_content()->SetVisible(!should_show_inline_settings);
+    right_content()->SetVisible(!should_show_inline_settings);
+  }
   expand_button_->SetVisible(!should_show_inline_settings);
 
   PreferredSizeChanged();
@@ -1252,24 +1261,25 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
 
   message_center_utils::InitLayerForAnimations(main_right_view_);
   message_center_utils::InitLayerForAnimations(inline_settings_row());
-  message_center_utils::InitLayerForAnimations(left_content());
-  message_center_utils::InitLayerForAnimations(icon_view());
 
   // Fade out views.
   if (should_show_inline_settings) {
-    message_center_utils::FadeOutView(
-        left_content(),
-        base::BindRepeating(
-            [](base::WeakPtr<ash::AshNotificationView> parent,
-               views::View* left_content) {
-              if (parent) {
-                left_content->layer()->SetOpacity(1.0f);
-                left_content->SetVisible(false);
-              }
-            },
-            weak_factory_.GetWeakPtr(), left_content()),
-        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
-
+    // Fade out left_content if it's visible.
+    if (left_content_->GetVisible()) {
+      message_center_utils::InitLayerForAnimations(left_content());
+      message_center_utils::FadeOutView(
+          left_content(),
+          base::BindRepeating(
+              [](base::WeakPtr<ash::AshNotificationView> parent,
+                 views::View* left_content) {
+                if (parent) {
+                  left_content->layer()->SetOpacity(1.0f);
+                  left_content->SetVisible(false);
+                }
+              },
+              weak_factory_.GetWeakPtr(), left_content()),
+          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+    }
     message_center_utils::FadeOutView(
         expand_button_,
         base::BindRepeating(
@@ -1285,6 +1295,7 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
 
     // Fade out icon_view() if it exists.
     if (icon_view()) {
+      message_center_utils::InitLayerForAnimations(icon_view());
       message_center_utils::FadeOutView(
           icon_view(),
           base::BindRepeating(

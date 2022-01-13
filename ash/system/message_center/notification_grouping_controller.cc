@@ -258,6 +258,9 @@ NotificationGroupingController::CreateCopyForParentNotification(
       /*delegate=*/nullptr);
   child_copy->set_timestamp(parent_notification.timestamp() -
                             base::Milliseconds(1));
+  child_copy->set_settings_button_handler(
+      parent_notification.rich_notification_data().settings_button_handler);
+  child_copy->set_delegate(parent_notification.delegate());
   child_copy->SetGroupChild();
 
   return child_copy;
