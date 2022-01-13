@@ -516,7 +516,7 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     if (!user_accepted_management) {
       chrome::enterprise_util::SetUserAcceptedAccountManagement(
           profile_, enterprise_account_confirmed_);
-      user_accepted_management = true;
+      user_accepted_management = enterprise_account_confirmed_;
     }
     if (user_accepted_management)
       signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;

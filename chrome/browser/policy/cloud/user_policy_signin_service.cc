@@ -68,7 +68,10 @@ void UserPolicySigninService::PrepareForUserCloudPolicyManagerShutdown() {
   // in the destructor because we want to shutdown the registration helper
   // before UserCloudPolicyManager shuts down the CloudPolicyClient.
   registration_helper_.reset();
-  observed_profile_.Reset();
+  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
+      g_browser_process->profile_manager()) {
+    observed_profile_.Reset();
+  }
 
   UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown();
 }
@@ -118,8 +121,10 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   UserPolicySigninServiceBase::OnPrimaryAccountChanged(event);
 
-  if (event.GetEventTypeFor(consent_level()) !=
-      signin::PrimaryAccountChangeEvent::Type::kSet) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+          signin::PrimaryAccountChangeEvent::Type::kSet &&
+      event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+          signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;
   }
 

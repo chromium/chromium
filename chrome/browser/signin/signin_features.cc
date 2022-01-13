@@ -13,4 +13,4 @@ const base::Feature kProcessGaiaRemoveLocalAccountHeader{
 // Uses enterprise confirmation dialog for managed accounts signin outside of
 // the profile picker.
 const base::Feature kAccountPoliciesLoadedWithoutSync{
-    "AccountPoliciesLoadedWithoutSync", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AccountPoliciesLoadedWithoutSync", base::FEATURE_ENABLED_BY_DEFAULT};

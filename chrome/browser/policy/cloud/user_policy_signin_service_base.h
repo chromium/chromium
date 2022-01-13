@@ -86,6 +86,10 @@ class UserPolicySigninServiceBase : public KeyedService,
       scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
       PolicyFetchCallback callback);
 
+  void set_profile_can_be_managed_for_testing(bool can_be_managed) {
+    profile_can_be_managed_for_testing_ = can_be_managed;
+  }
+
   // signin::IdentityManager::Observer implementation:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
@@ -175,6 +179,7 @@ class UserPolicySigninServiceBase : public KeyedService,
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
   signin::ConsentLevel consent_level_;
+  bool profile_can_be_managed_for_testing_ = false;
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
 };
 

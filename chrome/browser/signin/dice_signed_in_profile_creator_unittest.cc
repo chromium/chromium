@@ -117,6 +117,11 @@ class DiceSignedInProfileCreatorTest : public testing::Test,
 
   void DeleteProfiles() {
     identity_test_env_profile_adaptor_.reset();
+
+    // Delete the profile first to make sure all observers to the profile
+    // manager are cleared to avoid heap-use-after-free when the observer try to
+    // stop observing the manager.
+    profile_.reset();
     if (profile_manager_) {
       profile_manager()->RemoveObserver(this);
       TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);

@@ -102,18 +102,19 @@ void UserPolicySigninServiceBase::OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
       ProfileManager* profile_manager = g_browser_process->profile_manager();
-      DCHECK(profile_manager);
-      ProfileAttributesEntry* entry =
-          profile_manager->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(profile_->GetPath());
-      if (entry)
-        entry->SetUserAcceptedAccountManagement(false);
+      // Some tests do not have a profile manager.
+      if (profile_manager) {
+        ProfileAttributesEntry* entry =
+            profile_manager->GetProfileAttributesStorage()
+                .GetProfileAttributesWithPath(profile_->GetPath());
+        if (entry)
+          entry->SetUserAcceptedAccountManagement(false);
+      }
+      ShutdownUserCloudPolicyManager();
+    } else if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+               signin::PrimaryAccountChangeEvent::Type::kCleared) {
+      ShutdownUserCloudPolicyManager();
     }
-    ShutdownUserCloudPolicyManager();
-  } else if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
-                 signin::PrimaryAccountChangeEvent::Type::kCleared &&
-             !base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-    ShutdownUserCloudPolicyManager();
   }
 }
 
@@ -301,7 +302,8 @@ bool UserPolicySigninServiceBase::CanApplyPoliciesForSignedInUser(
                       signin::ConsentLevel::kSignin)
                 : identity_manager()->HasPrimaryAccount(
                       signin::ConsentLevel::kSignin)) &&
-           chrome::enterprise_util::ProfileCanBeManaged(profile());
+           (profile_can_be_managed_for_testing_ ||
+            chrome::enterprise_util::ProfileCanBeManaged(profile()));
   }
 
   return check_for_refresh_token

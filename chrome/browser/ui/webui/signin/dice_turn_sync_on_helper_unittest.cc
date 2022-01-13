@@ -19,6 +19,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -232,10 +233,16 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<UnittestProfileManager>(temp_dir_.GetPath()));
+    auto testing_profile = BuildTestingProfile(
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("profile")),
+        /*delegate=*/nullptr);
+    profile_ = testing_profile.get();
 
-    profile_ = BuildTestingProfile(base::FilePath(), /*delegate=*/nullptr);
+    // Makes sure the profile has profile storage entries.
+    profile_manager()->RegisterTestingProfile(std::move(testing_profile),
+                                              /*add_to_storage=*/true);
     identity_test_env_profile_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     account_id_ = identity_test_env()->MakeAccountAvailable(kEmail).account_id;
     user_policy_signin_service_ = static_cast<FakeUserPolicySigninService*>(
         policy::UserPolicySigninServiceFactory::GetForProfile(profile()));
@@ -247,13 +254,12 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 
   ~DiceTurnSyncOnHelperTest() override {
     DCHECK_GT(delegate_destroyed_, 0);
-    // Destroy extra profiles.
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
+    ClearProfile();
     base::RunLoop().RunUntilIdle();
   }
 
   // Basic accessors.
-  Profile* profile() { return profile_.get(); }
+  Profile* profile() { return profile_; }
   Profile* new_profile() { return new_profile_; }
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_profile_adaptor_->identity_test_env();
@@ -277,7 +283,8 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   }
   void ClearProfile() {
     identity_test_env_profile_adaptor_.reset();
-    profile_.reset();
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
+    profile_ = nullptr;
     user_policy_signin_service_ = nullptr;
   }
 
@@ -364,7 +371,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 #endif
   }
 
-  void CheckSyncAborted() {
+  void CheckSyncAborted(bool has_primary_account) {
 // TODO(crbug.com/1263553): Get rid of the lacros special casing once sync
 // disabled is fully supported on lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -376,7 +383,8 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 #else
     EXPECT_FALSE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-    EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+    EXPECT_EQ(has_primary_account,
+              identity_manager()->HasAccountWithRefreshToken(account_id()));
 #endif
   }
 
@@ -511,7 +519,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
   CoreAccountId account_id_;
-  std::unique_ptr<TestingProfile> profile_;
+  TestingProfile* profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   raw_ptr<FakeUserPolicySigninService> user_policy_signin_service_ = nullptr;
@@ -649,7 +657,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
-  CheckSyncAborted();
+  CheckSyncAborted(/*has_primary_account=*/false);
   CheckDelegateCalls();
 }
 
@@ -670,7 +678,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
       DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
-  CheckSyncAborted();
+  CheckSyncAborted(/*has_primary_account=*/false);
   CheckDelegateCalls();
 }
 
@@ -741,6 +749,27 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbort) {
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
+
+// Aborts the flow after the cross account dialog.
+TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
+  // Set expectations.
+  expected_merge_data_previous_email_ = kPreviousEmail;
+  expected_merge_data_new_email_ = kEmail;
+  // Configure the test.
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
+                                   kPreviousEmail);
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  // Signin flow.
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  // Check expectations.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
 #endif
 
 // Merge data after the cross account dialog.
@@ -758,7 +787,31 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinue) {
   CreateDiceTurnOnSyncHelper(
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
-  CheckSyncAborted();
+  CheckSyncAborted(/*has_primary_account=*/false);
+  CheckDelegateCalls();
+}
+
+// Merge data after the cross account dialog.
+TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
+  // Set expectations.
+  expected_merge_data_previous_email_ = kPreviousEmail;
+  expected_merge_data_new_email_ = kEmail;
+  expected_sync_confirmation_shown_ = true;
+  SetExpectationsForSyncStartupCompleted(profile());
+  // Configure the test.
+  merge_data_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
+                                   kPreviousEmail);
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  // Signin flow.
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  // Check expectations.
+  // This was already a signed-in and managed enterprise account so we keep the
+  // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
+  CheckSyncAborted(/*has_primary_account=*/true);
   CheckDelegateCalls();
 }
 
@@ -885,6 +938,32 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
                               signin::ConsentLevel::kSignin));
   CheckDelegateCalls();
 }
+
+// Test that the unconsented primary account is kept if the user creates a new
+// account and cancels sync activation.
+TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
+  // Set expectations.
+  expected_enterprise_confirmation_email_ = kEnterpriseEmail;
+  expected_sync_confirmation_shown_ = true;
+  sync_confirmation_result_ =
+      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
+  SetExpectationsForSyncStartupCompleted(profile());
+  // Configure the test.
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE;
+  UseEnterpriseAccount();
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id(), signin::ConsentLevel::kSignin);
+
+  // Signin flow.
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  // This was already a signed-in and managed enterprise account so we keep the
+  // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
+  CheckSyncAborted(/*has_primary_account=*/true);
+  CheckDelegateCalls();
+}
 #endif
 
 // Tests that the sync confirmation is shown and the user can abort.
@@ -900,7 +979,7 @@ TEST_F(DiceTurnSyncOnHelperTest, UndoSync) {
   CreateDiceTurnOnSyncHelper(
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
-  CheckSyncAborted();
+  CheckSyncAborted(/*has_primary_account=*/false);
   CheckDelegateCalls();
 }
 

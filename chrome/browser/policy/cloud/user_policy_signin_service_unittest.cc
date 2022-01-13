@@ -154,6 +154,8 @@ class UserPolicySigninServiceTest : public testing::Test {
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
 
+    UserPolicySigninServiceFactory::GetForProfile(profile_.get())
+        ->set_profile_can_be_managed_for_testing(true);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
 
