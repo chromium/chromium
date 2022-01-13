@@ -59,6 +59,8 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
                                                    const WMEvent* event) {
   if (!delegate_)
     return;
+
+  const WMEventType event_type = event->type();
   bool pin_transition = window_state->IsTrustedPinned() ||
                         window_state->IsPinned() || event->IsPinEvent();
   // Pinned State transition is handled on server side.
@@ -79,7 +81,7 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     set_next_bounds_change_animation_type(kAnimationCrossFade);
     EnterNextState(window_state, next_state_type);
 
-    VLOG(1) << "Processing Pinned Transtion: event=" << event->type()
+    VLOG(1) << "Processing Pinned Transtion: event=" << event_type
             << ", state=" << old_state_type << "=>" << next_state_type
             << ", pinned=" << was_pinned << "=>" << window_state->IsPinned()
             << ", trusted pinned=" << was_trusted_pinned << "=>"
@@ -87,54 +89,22 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     return;
   }
 
-  auto* window = window_state->window();
-  switch (event->type()) {
+  switch (event_type) {
     case WM_EVENT_NORMAL:
     case WM_EVENT_MAXIMIZE:
     case WM_EVENT_MINIMIZE:
-    case WM_EVENT_FULLSCREEN: {
-      // Clients handle a window state change asynchronously. So in the case
-      // that the window is in a transitional state (already snapped but not
-      // applied to its window state yet), we here skip to pass WM_EVENT.
-      if (SplitViewController::Get(window)->IsWindowInTransitionalState(window))
-        return;
-
-      // Reset window state
-      window_state->UpdateWindowPropertiesFromStateType();
-      WindowStateType next_state =
-          GetResolvedNextWindowStateType(window_state, event);
-      VLOG(1) << "Processing State Transtion: event=" << event->type()
-              << ", state=" << state_type_ << ", next_state=" << next_state;
-      // Then ask delegate to handle the window state change.
-      delegate_->HandleWindowStateRequest(window_state, next_state);
-      break;
-    }
+    case WM_EVENT_FULLSCREEN:
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY: {
-      if (window_state->CanSnap()) {
-        HandleWindowSnapping(window_state, event->type());
-        // Get the desired window bounds for the snap state.
-        gfx::Rect bounds = GetSnappedWindowBoundsInParent(
-            window, event->type() == WM_EVENT_SNAP_PRIMARY
-                        ? WindowStateType::kPrimarySnapped
-                        : WindowStateType::kSecondarySnapped);
-
-        // We don't want Unminimize() to restore the pre-snapped state during
-        // the transition.
-        window->ClearProperty(aura::client::kPreMinimizedShowStateKey);
-
-        window_state->UpdateWindowPropertiesFromStateType();
-        WindowStateType next_state =
-            GetResolvedNextWindowStateType(window_state, event);
-        VLOG(1) << "Processing State Transtion: event=" << event->type()
-                << ", state=" << state_type_ << ", next_state=" << next_state;
-
-        // Then ask delegate to set the desired bounds for the snap state.
-        delegate_->HandleBoundsRequest(window_state, next_state, bounds,
-                                       window_state->GetDisplay().id());
-      }
+      WindowStateType next_state =
+          GetResolvedNextWindowStateType(window_state, event);
+      UpdateWindowForTransitionEvents(window_state, next_state, event_type);
       break;
     }
+    case WM_EVENT_RESTORE:
+      UpdateWindowForTransitionEvents(
+          window_state, window_state->GetRestoreWindowState(), event_type);
+      break;
     case WM_EVENT_SHOW_INACTIVE:
       NOTREACHED();
       break;
@@ -327,6 +297,52 @@ WindowStateType ClientControlledState::GetResolvedNextWindowStateType(
     return WindowStateType::kMaximized;
 
   return next;
+}
+
+void ClientControlledState::UpdateWindowForTransitionEvents(
+    WindowState* window_state,
+    chromeos::WindowStateType next_state_type,
+    WMEventType event_type) {
+  aura::Window* window = window_state->window();
+
+  if (next_state_type == WindowStateType::kPrimarySnapped ||
+      next_state_type == WindowStateType::kSecondarySnapped) {
+    if (window_state->CanSnap()) {
+      HandleWindowSnapping(window_state,
+                           next_state_type == WindowStateType::kPrimarySnapped
+                               ? WM_EVENT_SNAP_PRIMARY
+                               : WM_EVENT_SNAP_SECONDARY);
+      // Get the desired window bounds for the snap state.
+      gfx::Rect bounds =
+          GetSnappedWindowBoundsInParent(window, next_state_type);
+      // We don't want Unminimize() to restore the pre-snapped state during the
+      // transition.
+      window->ClearProperty(aura::client::kPreMinimizedShowStateKey);
+
+      window_state->UpdateWindowPropertiesFromStateType();
+      VLOG(1) << "Processing State Transtion: event=" << event_type
+              << ", state=" << state_type_
+              << ", next_state=" << next_state_type;
+
+      // Then ask delegate to set the desired bounds for the snap state.
+      delegate_->HandleBoundsRequest(window_state, next_state_type, bounds,
+                                     window_state->GetDisplay().id());
+    }
+  } else {
+    // Clients handle a window state change asynchronously. So in the case
+    // that the window is in a transitional state (already snapped but not
+    // applied to its window state yet), we here skip to pass WM_EVENT.
+    if (SplitViewController::Get(window)->IsWindowInTransitionalState(window))
+      return;
+
+    // Reset window state.
+    window_state->UpdateWindowPropertiesFromStateType();
+    VLOG(1) << "Processing State Transtion: event=" << event_type
+            << ", state=" << state_type_ << ", next_state=" << next_state_type;
+
+    // Then ask delegate to handle the window state change.
+    delegate_->HandleWindowStateRequest(window_state, next_state_type);
+  }
 }
 
 }  // namespace ash

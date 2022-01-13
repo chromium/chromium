@@ -1194,6 +1194,22 @@ TEST_F(WindowStateTest, MinimizedAndPipRestoreTest) {
   EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
 }
 
+// Tests the restore behavior for default or normal window.
+TEST_F(WindowStateTest, NormalOrDefaultRestore) {
+  // Start with kDefault window state.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kDefault);
+
+  // Restoring a kDefault window will change its window state to kNormal.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  // Restoring kNormal window will do nothing.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+}
+
 // Test WindowStateTest functionalities with portrait display. This test is
 // parameterized to enable vertical layout or horizontal layout snap in
 // portrait display.

@@ -162,36 +162,6 @@ WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
   return WM_EVENT_NORMAL;
 }
 
-WMEventType WMEventTypeFromWindowStateType(WindowStateType window_state_type) {
-  switch (window_state_type) {
-    case WindowStateType::kDefault:
-    case WindowStateType::kNormal:
-      return WM_EVENT_NORMAL;
-    case WindowStateType::kMinimized:
-      return WM_EVENT_MINIMIZE;
-    case WindowStateType::kMaximized:
-      return WM_EVENT_MAXIMIZE;
-    case WindowStateType::kInactive:
-      return WM_EVENT_SHOW_INACTIVE;
-    case WindowStateType::kFullscreen:
-      return WM_EVENT_FULLSCREEN;
-    case WindowStateType::kPrimarySnapped:
-      return WM_EVENT_SNAP_PRIMARY;
-    case WindowStateType::kSecondarySnapped:
-      return WM_EVENT_SNAP_SECONDARY;
-    case WindowStateType::kPinned:
-      return WM_EVENT_PIN;
-    case WindowStateType::kTrustedPinned:
-      return WM_EVENT_TRUSTED_PIN;
-    case WindowStateType::kPip:
-      return WM_EVENT_PIP;
-    case WindowStateType::kAutoPositioned:
-      NOTREACHED() << "No WMEvent defined for the window state type: "
-                   << window_state_type;
-  }
-  return WM_EVENT_NORMAL;
-}
-
 float GetCurrentSnapRatio(aura::Window* window) {
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window);
@@ -414,7 +384,7 @@ void WindowState::Deactivate() {
 }
 
 void WindowState::Restore() {
-  const WMEvent event(WMEventTypeFromWindowStateType(GetRestoreWindowState()));
+  const WMEvent event(WM_EVENT_RESTORE);
   OnWMEvent(&event);
 }
 
@@ -671,11 +641,22 @@ display::Display WindowState::GetDisplay() const {
 }
 
 WindowStateType WindowState::GetRestoreWindowState() const {
-  return window_state_restore_history_.empty() ||
-                 window_state_restore_history_.back() ==
-                     WindowStateType::kDefault
-             ? WindowStateType::kNormal
-             : window_state_restore_history_.back();
+  WindowStateType restore_state =
+      window_state_restore_history_.empty() ||
+              window_state_restore_history_.back() == WindowStateType::kDefault
+          ? WindowStateType::kNormal
+          : window_state_restore_history_.back();
+
+  // Different with the restore behaviors in clamshell mode, a window can not be
+  // restored to kNormal window state if it's a maximize-able window.
+  // We should still be able to restore a fullscreen/minimized/snapped window to
+  // kMaximized window state for a maximize-able window, and also should be able
+  // to support restoring a fullscreen/minimized/maximized window to snapped
+  // window states.
+  if (IsTabletModeEnabled() && restore_state == WindowStateType::kNormal)
+    restore_state = GetMaximizedOrCenteredWindowType();
+
+  return restore_state;
 }
 
 void WindowState::CreateDragDetails(const gfx::PointF& point_in_parent,
@@ -1025,6 +1006,13 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
        kWindowStateRestoreHistoryLayerMap.at(previous_state_type))) {
     window_state_restore_history_.push_back(previous_state_type);
   }
+}
+
+chromeos::WindowStateType WindowState::GetMaximizedOrCenteredWindowType()
+    const {
+  return CanMaximize() && ::wm::GetTransientParent(window_) == nullptr
+             ? WindowStateType::kMaximized
+             : WindowStateType::kNormal;
 }
 
 // static

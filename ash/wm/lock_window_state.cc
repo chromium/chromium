@@ -58,6 +58,7 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
     case WM_EVENT_NORMAL:
+    case WM_EVENT_RESTORE:
     case WM_EVENT_MAXIMIZE:
       UpdateWindow(window_state,
                    GetMaximizedOrCenteredWindowType(window_state));

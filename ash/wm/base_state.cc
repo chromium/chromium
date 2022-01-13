@@ -35,8 +35,9 @@ void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
     return;
   }
   if ((window_state->IsTrustedPinned() || window_state->IsPinned()) &&
-      (event->type() != WM_EVENT_NORMAL && event->IsTransitionEvent())) {
-    // PIN state can be exited only by normal event.
+      (event->type() != WM_EVENT_NORMAL && event->type() != WM_EVENT_RESTORE &&
+       event->IsTransitionEvent())) {
+    // PIN state can be exited only by normal event or restore event.
     return;
   }
 
@@ -75,6 +76,8 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
       return WindowStateType::kPrimarySnapped;
     case WM_EVENT_SNAP_SECONDARY:
       return WindowStateType::kSecondarySnapped;
+    case WM_EVENT_RESTORE:
+      return window_state->GetRestoreWindowState();
     case WM_EVENT_SHOW_INACTIVE:
       return WindowStateType::kInactive;
     case WM_EVENT_PIN:
