@@ -140,7 +140,7 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
   auto* old_pref_value = prefs_->GetList(kBlacklist);
   if (!old_pref_value->GetList().empty()) {
     prefs_->Set(kBlocklist, *old_pref_value);
-    ListPrefUpdateDeprecated update(prefs_, kBlacklist);
+    ListPrefUpdate update(prefs_, kBlacklist);
     update->ClearList();
   }
 
@@ -176,7 +176,7 @@ void OomInterventionDecider::AddToList(const char* list_name,
                                        const std::string& host) {
   if (IsInList(list_name, host))
     return;
-  ListPrefUpdateDeprecated update(prefs_, list_name);
+  ListPrefUpdate update(prefs_, list_name);
   update->Append(host);
   if (update->GetList().size() > kMaxListSize)
     update->EraseListIter(update->GetList().begin());
