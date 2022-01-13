@@ -520,7 +520,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   AcceptTermsAndExpectDemoSetupProgress();
 
-  EXPECT_TRUE(DemoSetupController::GetSubOrganizationEmail().empty());
+  // Verify the email corresponds to US.
+  EXPECT_EQ("admin-us@cros-demo-mode.com",
+            DemoSetupController::GetSubOrganizationEmail());
 
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 

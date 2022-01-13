@@ -399,13 +399,13 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
 TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
   std::string email = DemoSetupController::GetSubOrganizationEmail();
 
-  // kDemoModeCountry defaults to "US" which is the root organisation.
-  EXPECT_EQ(email, "");
+  // kDemoModeCountry defaults to "US".
+  EXPECT_EQ(email, "admin-us@cros-demo-mode.com");
 
   // Test other supported countries.
   const std::string testing_supported_countries[] = {
-      "BE", "CA", "DK", "FI", "FR", "DE", "IE", "IT",
-      "JP", "LU", "NL", "NO", "ES", "SE", "GB"};
+      "US", "BE", "CA", "DK", "FI", "FR", "DE", "IE",
+      "IT", "JP", "LU", "NL", "NO", "ES", "SE", "GB"};
 
   for (auto country : testing_supported_countries) {
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
@@ -437,13 +437,13 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
 TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailWithLowercase) {
   std::string email = DemoSetupController::GetSubOrganizationEmail();
 
-  // kDemoModeCountry defaults to "US" which is the root organisation.
-  EXPECT_EQ(email, "");
+  // kDemoModeCountry defaults to "US".
+  EXPECT_EQ(email, "admin-us@cros-demo-mode.com");
 
   // Test other supported countries.
   const std::string testing_supported_countries[] = {
-      "be", "ca", "dk", "fi", "fr", "de", "ie", "it",
-      "jp", "lu", "nl", "no", "es", "se", "gb"};
+      "us", "be", "ca", "dk", "fi", "fr", "de", "ie",
+      "it", "jp", "lu", "nl", "no", "es", "se", "gb"};
 
   for (auto country : testing_supported_countries) {
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,

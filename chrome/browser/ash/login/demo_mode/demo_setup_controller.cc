@@ -506,11 +506,10 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   std::string country_lowercase = base::ToLowerASCII(country);
 
   // Exclude US as it is the default country.
-  if (country_uppercase != "US" &&
-      std::find(std::begin(DemoSession::kSupportedCountries),
+  if (std::find(std::begin(DemoSession::kSupportedCountries),
                 std::end(DemoSession::kSupportedCountries),
                 country_uppercase) !=
-          std::end(DemoSession::kSupportedCountries)) {
+      std::end(DemoSession::kSupportedCountries)) {
     return "admin-" + country_lowercase + "@" + policy::kDemoModeDomain;
   }
   return std::string();
