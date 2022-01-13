@@ -83,13 +83,12 @@ void PermissionActionsHistory::RecordAction(
     PermissionAction action,
     RequestType type,
     PermissionPromptDisposition prompt_disposition) {
-  DictionaryPrefUpdateDeprecated update(pref_service_,
-                                        prefs::kPermissionActions);
+  DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
 
   const base::StringPiece permission_path(PermissionKeyForRequestType(type));
 
   if (!update->FindPathOfType(permission_path, base::Value::Type::LIST)) {
-    update->SetPath(permission_path, base::ListValue());
+    update->SetPath(permission_path, base::Value(base::Value::Type::LIST));
   }
 
   base::Value* permission_actions =
@@ -123,8 +122,7 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
     return;
   }
 
-  DictionaryPrefUpdateDeprecated update(pref_service_,
-                                        prefs::kPermissionActions);
+  DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
 
   for (auto permission_entry : update->DictItems()) {
     permission_entry.second.EraseListValueIf([delete_begin,
