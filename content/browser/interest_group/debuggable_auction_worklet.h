@@ -43,6 +43,7 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
 
  private:
   friend class AuctionRunner;
+  friend class AuctionWorkletManager;
   friend class std::default_delete<DebuggableAuctionWorklet>;
 
   // Registers `this` with DebuggableAuctionWorkletTracker, and passes through

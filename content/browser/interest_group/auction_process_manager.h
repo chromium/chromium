@@ -138,6 +138,9 @@ class CONTENT_EXPORT AuctionProcessManager {
   size_t GetPendingSellerRequestsForTesting() const {
     return pending_seller_request_queue_.size();
   }
+  size_t GetSellerProcessCountForTesting() const {
+    return seller_processes_.size();
+  }
 
  protected:
   // Launches the actual process. Virtual so tests can override it.

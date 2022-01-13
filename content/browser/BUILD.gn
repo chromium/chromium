@@ -1036,6 +1036,8 @@ source_set("browser") {
     "interest_group/auction_runner.h",
     "interest_group/auction_url_loader_factory_proxy.cc",
     "interest_group/auction_url_loader_factory_proxy.h",
+    "interest_group/auction_worklet_manager.cc",
+    "interest_group/auction_worklet_manager.h",
     "interest_group/debuggable_auction_worklet.cc",
     "interest_group/debuggable_auction_worklet.h",
     "interest_group/debuggable_auction_worklet_tracker.cc",
