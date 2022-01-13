@@ -36709,6 +36709,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4106" label="RTCLocalSdpModificationIceUfragPwd"/>
   <int value="4107" label="WebNfcNdefMakeReadOnly"/>
   <int value="4108" label="V8Navigator_DeprecatedURNToURL_Method"/>
+  <int value="4109" label="WebAppManifestHandleLinks"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

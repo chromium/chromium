@@ -140,6 +140,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const std::string* GetAppLaunchQueryParams(const AppId& app_id) const;
   const apps::ShareTarget* GetAppShareTarget(const AppId& app_id) const;
   blink::mojom::CaptureLinks GetAppCaptureLinks(const AppId& app_id) const;
+  blink::mojom::HandleLinks GetAppHandleLinks(const AppId& app_id) const;
   const apps::FileHandlers* GetAppFileHandlers(const AppId& app_id) const;
   const apps::ProtocolHandlers* GetAppProtocolHandlers(
       const AppId& app_id) const;

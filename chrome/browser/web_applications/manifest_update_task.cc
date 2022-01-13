@@ -379,6 +379,9 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   if (web_application_info_->capture_links != app->capture_links())
     return true;
 
+  if (web_application_info_->handle_links != app->handle_links())
+    return true;
+
   if (os_integration_manager_.IsFileHandlingAPIAvailable(app_id_) &&
       app->file_handlers() != web_application_info_->file_handlers) {
     return true;

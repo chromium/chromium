@@ -128,6 +128,16 @@ mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
   return mojom::CaptureLinks::kUndefined;
 }
 
+mojom::HandleLinks HandleLinksFromString(const std::string& handle_links) {
+  if (base::LowerCaseEqualsASCII(handle_links, "auto"))
+    return mojom::HandleLinks::kAuto;
+  if (base::LowerCaseEqualsASCII(handle_links, "preferred"))
+    return mojom::HandleLinks::kPreferred;
+  if (base::LowerCaseEqualsASCII(handle_links, "not-preferred"))
+    return mojom::HandleLinks::kNotPreferred;
+  return mojom::HandleLinks::kUndefined;
+}
+
 absl::optional<Manifest::LaunchHandler::RouteTo> RouteToFromString(
     const std::string& route_to) {
   if (base::LowerCaseEqualsASCII(route_to, "auto"))

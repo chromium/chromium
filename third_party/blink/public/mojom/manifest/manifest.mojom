@@ -8,6 +8,7 @@ import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
+import "third_party/blink/public/mojom/manifest/handle_links.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -116,6 +117,11 @@ struct Manifest {
   // experiment. See:
   // https://github.com/w3c/manifest/issues/975#issuecomment-960222756
   ManifestUserPreferences? user_preferences;
+
+  // TODO(crbug.com/1254457): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
+  HandleLinks handle_links;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:

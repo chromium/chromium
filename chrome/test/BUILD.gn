@@ -2044,6 +2044,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/web_applications/web_app_dark_mode_browsertest.cc",
       "../browser/ui/web_applications/web_app_engagement_browsertest.cc",
       "../browser/ui/web_applications/web_app_file_handling_browsertest.cc",
+      "../browser/ui/web_applications/web_app_handle_links_browsertest.cc",
       "../browser/ui/web_applications/web_app_launch_handler_browsertest.cc",
       "../browser/ui/web_applications/web_app_link_capturing_browsertest.cc",
       "../browser/ui/web_applications/web_app_metrics_browsertest.cc",

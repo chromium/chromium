@@ -460,6 +460,10 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::ManifestUserPreferencesPtr ParseUserPreferences(
       const JSONObject* object);
 
+  // Parse the `handle_links` field of the manifest as defined in:
+  // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
+  mojom::blink::HandleLinks ParseHandleLinks(const JSONObject* object);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

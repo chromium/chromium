@@ -3415,7 +3415,7 @@ enum WebFeature {
   kRTCLocalSdpModificationIceUfragPwd = 4106,
   kWebNfcNdefMakeReadOnly = 4107,
   kV8Navigator_DeprecatedURNToURL_Method = 4108,
-
+  kWebAppManifestHandleLinks = 4109,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

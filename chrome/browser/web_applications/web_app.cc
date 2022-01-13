@@ -342,6 +342,10 @@ void WebApp::SetCaptureLinks(blink::mojom::CaptureLinks capture_links) {
   capture_links_ = capture_links;
 }
 
+void WebApp::SetHandleLinks(blink::mojom::HandleLinks handle_links) {
+  handle_links_ = handle_links;
+}
+
 void WebApp::SetLaunchQueryParams(
     absl::optional<std::string> launch_query_params) {
   launch_query_params_ = std::move(launch_query_params);
@@ -455,6 +459,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.run_on_os_login_mode_,
         app.sync_fallback_data_,
         app.capture_links_,
+        app.handle_links_,
         app.manifest_url_,
         app.manifest_id_,
         app.client_data_.system_web_app_data,
@@ -526,6 +531,8 @@ base::Value WebApp::AsDebugValue() const {
                     ColorToString(dark_mode_background_color_));
 
   root.SetStringKey("capture_links", ConvertToString(capture_links_));
+
+  root.SetStringKey("handle_links", ConvertToString(handle_links_));
 
   root.SetKey("chromeos_data",
               chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());

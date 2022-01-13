@@ -430,6 +430,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   if (random.next_bool())
     app->SetParentAppId(base::NumberToString(random.next_uint()));
 
+  app->SetHandleLinks(random.next_enum<blink::mojom::HandleLinks>());
+
   // `random` should not be used after the chromeos block if the result
   // is expected to be deterministic across cros and non-cros builds.
   if (IsChromeOsDataMandatory()) {

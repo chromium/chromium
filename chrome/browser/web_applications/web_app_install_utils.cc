@@ -476,6 +476,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   web_app_info->capture_links = manifest.capture_links;
 
+  web_app_info->handle_links = manifest.handle_links;
+
   if (manifest_url.is_valid())
     web_app_info->manifest_url = manifest_url;
 

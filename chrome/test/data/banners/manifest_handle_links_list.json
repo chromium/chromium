@@ -1,0 +1,6 @@
+{
+  "name": "Manifest test app with handle_links list",
+  "start_url": "manifest_test_page.html",
+  "display": "fullscreen",
+  "handle_links": ["unknown", "preferred"]
+}

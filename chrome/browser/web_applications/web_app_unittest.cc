@@ -190,6 +190,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [  ],
    "manifest_icons": [  ],
+   "handle_links": "kUndefined",
    "install_time": "1601-01-01 00:00:00.000 UTC",
    "is_generated_icon": false,
    "is_from_sync_and_pending_installation": false,
@@ -372,6 +373,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       } ],
       "name": "2591174844 file"
    } ],
+   "handle_links": "kAuto",
    "install_time": "1970-01-10 21:57:36.131 UTC",
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": true,

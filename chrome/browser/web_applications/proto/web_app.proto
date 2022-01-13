@@ -193,8 +193,8 @@ message WebAppProto {
 
   optional ClientDataProto client_data = 28;
 
-  // This enum should be synced with |ManifestCaptureLinks| in
-  // third_party/blink/public/mojom/manifest/manifest.mojom
+  // This enum should be synced with |CaptureLinks| in
+  // third_party/blink/public/mojom/manifest/capture_links.mojom
   enum CaptureLinks {
     // UNDEFINED if optional |capture_links| is absent.
     NONE = 1;
@@ -277,4 +277,15 @@ message WebAppProto {
 
   // Whether the app should show up in file-open intent and picking surfaces.
   optional bool handles_file_open_intents = 47;
+
+  // This enum should be synced with |HandleLinks| in
+  // third_party/blink/public/mojom/manifest/handle_links.mojom
+  enum HandleLinks {
+    // UNDEFINED if optional |handle_links| is absent.
+    AUTO = 1;
+    PREFERRED = 2;
+    NOT_PREFERRED = 3;
+  }
+
+  optional HandleLinks handle_links = 48;
 }

@@ -294,6 +294,10 @@ struct WebAppInstallInfo {
   blink::mojom::CaptureLinks capture_links =
       blink::mojom::CaptureLinks::kUndefined;
 
+  // Developer hint for whether app should handle links within its app scope.
+  blink::mojom::HandleLinks handle_links =
+      blink::mojom::HandleLinks::kUndefined;
+
   // Whether the app should be loaded in a dedicated storage partition.
   bool is_storage_isolated = false;
 

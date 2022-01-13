@@ -178,6 +178,8 @@ bool ManifestParser::Parse() {
     manifest_->user_preferences = ParseUserPreferences(root_object.get());
   }
 
+  manifest_->handle_links = ParseHandleLinks(root_object.get());
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 
   return has_comments;
@@ -1690,6 +1692,25 @@ mojom::blink::ManifestUserPreferencesPtr ManifestParser::ParseUserPreferences(
       ParsePreferenceOverrides(user_preferences_map, "color_scheme_dark");
 
   return result;
+}
+
+mojom::blink::HandleLinks ManifestParser::ParseHandleLinks(
+    const JSONObject* object) {
+  // Return kUndefined if feature is disabled instead of kAuto to indicate that
+  // no behavior that depends on HandleLinks should be active.
+  if (!RuntimeEnabledFeatures::WebAppHandleLinksEnabled())
+    return mojom::blink::HandleLinks::kUndefined;
+
+  const mojom::blink::HandleLinks enum_value =
+      ParseFirstValidEnum<mojom::blink::HandleLinks>(
+          object, "handle_links", &HandleLinksFromString,
+          /*invalid_value=*/mojom::blink::HandleLinks::kUndefined);
+
+  // invalid_value cannot be kAuto because kAuto is a valid input string.
+  // However, if no valid value is parsed, the value returned should be kAuto.
+  if (enum_value == mojom::blink::HandleLinks::kUndefined)
+    return mojom::blink::HandleLinks::kAuto;
+  return enum_value;
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,
