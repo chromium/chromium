@@ -505,7 +505,8 @@ class MediaCodecUtil {
 
     // List of supported HW encoders.
     @IntDef({HWEncoder.QcomVp8, HWEncoder.QcomH264, HWEncoder.ExynosVp8, HWEncoder.ExynosVp9,
-            HWEncoder.ExynosH264, HWEncoder.MediatekH264, HWEncoder.HisiH264})
+            HWEncoder.ExynosH264, HWEncoder.MediatekH264, HWEncoder.HisiH264,
+            HWEncoder.SpreadtrumH264})
     @Retention(RetentionPolicy.SOURCE)
     public @interface HWEncoder {
         int QcomVp8 = 0;
@@ -515,7 +516,8 @@ class MediaCodecUtil {
         int ExynosH264 = 4;
         int MediatekH264 = 5;
         int HisiH264 = 6;
-        int NUM_ENTRIES = 7;
+        int SpreadtrumH264 = 7;
+        int NUM_ENTRIES = 8;
     }
 
     private static String getMimeForHWEncoder(@HWEncoder int decoder) {
@@ -529,6 +531,7 @@ class MediaCodecUtil {
             case HWEncoder.ExynosH264:
             case HWEncoder.MediatekH264:
             case HWEncoder.HisiH264:
+            case HWEncoder.SpreadtrumH264:
                 return MimeTypes.VIDEO_H264;
         }
         return "";
@@ -548,6 +551,8 @@ class MediaCodecUtil {
                 return "mtk";
             case HWEncoder.HisiH264:
                 return "hisi";
+            case HWEncoder.SpreadtrumH264:
+                return "sprd";
         }
         return "";
     }
@@ -565,6 +570,8 @@ class MediaCodecUtil {
                 return Build.VERSION_CODES.O_MR1;
             case HWEncoder.HisiH264:
                 return Build.VERSION_CODES.N;
+            case HWEncoder.SpreadtrumH264:
+                return Build.VERSION_CODES.R;
         }
         return -1;
     }
@@ -579,6 +586,7 @@ class MediaCodecUtil {
             case HWEncoder.ExynosH264:
             case HWEncoder.MediatekH264:
             case HWEncoder.HisiH264:
+            case HWEncoder.SpreadtrumH264:
                 return BitrateAdjuster.Type.FRAMERATE_ADJUSTMENT;
         }
         throw new IllegalArgumentException("Invalid HWEncoder decoder parameter.");
