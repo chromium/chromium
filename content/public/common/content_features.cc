@@ -894,6 +894,11 @@ const base::Feature kSuppressDifferentOriginSubframeJSDialogs{
 const base::Feature kSyntheticPointerActions{"SyntheticPointerActions",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether optimizations controlled by kNavigationThreadingOptimizations are
+// moved to the IO thread or a separate background thread.
+const base::Feature kThreadingOptimizationsOnIO{
+    "ThreadingOptimizationsOnIO", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables async touchpad pinch zoom events. We check the ACK of the first
 // synthetic wheel event in a pinch sequence, then send the rest of the
 // synthetic wheel events of the pinch sequence as non-blocking if the first

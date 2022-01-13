@@ -154,9 +154,14 @@ void ContentSettingsManagerImpl::Create(
       std::move(delegate));
   if (base::FeatureList::IsEnabled(
           features::kNavigationThreadingOptimizations)) {
-    base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::USER_VISIBLE})
-        ->PostTask(FROM_HERE, std::move(create));
+    if (base::FeatureList::IsEnabled(features::kThreadingOptimizationsOnIO)) {
+      content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                   std::move(create));
+    } else {
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING})
+          ->PostTask(FROM_HERE, std::move(create));
+    }
   } else {
     std::move(create).Run();
   }
