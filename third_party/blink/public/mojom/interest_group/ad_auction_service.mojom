@@ -59,4 +59,12 @@ interface AdAuctionService {
   // response. The JSON `name`, `owner`, `userBiddingSignals` and other unknown
   // fields will be ignored.
   UpdateAdInterestGroups();
+
+  // Gets the true URL from a URN returned from RunAdAuction. This function
+  // will be removed once all FLEDGE auctions switch to using fenced frames.
+  // The uuid_url should have the format format
+  // "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122.
+  // TODO(crbug.com/1253118): Remove this function when we remove support for
+  // showing FLEDGE ads in iframes.
+  DeprecatedGetURLFromURN(url.mojom.Url uuid_url) => (url.mojom.Url? decoded_url);
 };

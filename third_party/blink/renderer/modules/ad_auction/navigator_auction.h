@@ -80,6 +80,15 @@ class MODULES_EXPORT NavigatorAuction final
                                             uint16_t num_ad_components,
                                             ExceptionState& exception_state);
 
+  ScriptPromise deprecatedURNToURL(ScriptState* script_state,
+                                   const String& uuid_url_string,
+                                   ExceptionState& exception_state);
+
+  static ScriptPromise deprecatedURNToURL(ScriptState* script_state,
+                                          Navigator& navigator,
+                                          const String& uuid_url_string,
+                                          ExceptionState& exception_state);
+
   ScriptPromise createAdRequest(ScriptState*,
                                 const AdRequestConfig*,
                                 ExceptionState&);
@@ -111,6 +120,9 @@ class MODULES_EXPORT NavigatorAuction final
                           const absl::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by runAdAuction().
   void AuctionComplete(ScriptPromiseResolver*, const absl::optional<KURL>&);
+  // Completion callback for Mojo call made by deprecatedURNToURL().
+  void GetURLFromURNComplete(ScriptPromiseResolver*,
+                             const absl::optional<KURL>&);
 
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
 };

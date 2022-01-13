@@ -708,8 +708,21 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         static_cast<RenderFrameHostImpl*>(adapter.render_frame_host())
             ->GetPage()
             .fenced_frame_urls_map();
-    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ignored;
     fenced_frame_urls_map.ConvertFencedFrameURNToURL(urn_url, observer);
+  }
+
+  absl::optional<GURL> ConvertFencedFrameURNToURLInJS(
+      const GURL& urn_url,
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
+    ToRenderFrameHost adapter(execution_target ? *execution_target : shell());
+    EvalJsResult result = EvalJs(adapter, JsReplace(R"(
+      navigator.deprecatedURNToURL($1)
+    )",
+                                                    urn_url));
+    if (!result.error.empty() || result.value.is_none())
+      return absl::nullopt;
+    return GURL(result.ExtractString());
   }
 
   WebContentsImpl* web_contents() const {
@@ -3630,8 +3643,10 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
       TestFencedFrameURLMappingResultObserver observer;
       ConvertFencedFrameURNToURL(*maybe_url, &observer);
       EXPECT_TRUE(observer.mapped_url());
+      absl::optional<GURL> decoded_URL = observer.mapped_url();
+      EXPECT_EQ(decoded_URL, ConvertFencedFrameURNToURLInJS(*maybe_url));
       NavigateIframeAndCheckURL(web_contents(), *maybe_url,
-                                *observer.mapped_url());
+                                decoded_URL.value_or(GURL()));
       return *observer.mapped_url();
     }
     return absl::nullopt;
@@ -4685,6 +4700,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
         execution_target);
     ExpectNotAllowedToLeaveInterestGroup(origin, "cars", execution_target);
   }
+}
+
+// navigator.deprecatedURNToURL returns null for an invalid URN.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, InvalidURN) {
+  GURL invalid_urn("urn:uuid:c36973b5-e5d9-de59-e4c4-364f137b3c7a");
+  EXPECT_EQ(absl::nullopt, ConvertFencedFrameURNToURLInJS(invalid_urn));
 }
 
 }  // namespace
