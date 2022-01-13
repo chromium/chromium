@@ -280,93 +280,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COULD_NOT_SHOW);
 }
 
-using PaymentRequestJourneyLoggerMultipleShowBasicCardDisabledTest =
-    BasicCardDisabledTestBase;
-
-IN_PROC_BROWSER_TEST_F(
-    PaymentRequestJourneyLoggerMultipleShowBasicCardDisabledTest,
-    ShowSameRequest) {
-  std::string a_method_name;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js",
-                    &a_method_name);
-  std::string b_method_name;
-  InstallPaymentApp("b.com", "payment_request_success_responder.js",
-                    &b_method_name);
-
-  NavigateTo("c.com", "/payment_request_multiple_show_test.html");
-
-  base::HistogramTester histogram_tester;
-
-  // Start a Payment Request.
-  InvokePaymentRequestUIWithJs(content::JsReplace(
-      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
-      a_method_name, b_method_name));
-
-  // Try to show it again.
-  content::WebContents* web_contents = GetActiveWebContents();
-  const std::string click_buy_button_js =
-      "(function() { document.getElementById('showAgain').click(); })();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
-
-  // Complete the original Payment Request.
-  ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
-  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
-
-  // Trying to show the same request twice is not considered a concurrent
-  // request.
-  EXPECT_TRUE(
-      histogram_tester.GetAllSamples("PaymentRequest.CheckoutFunnel.NoShow")
-          .empty());
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_GOOGLE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COULD_NOT_SHOW);
-}
-
-class PaymentRequestJourneyLoggerMultipleShowTestWithPaymentHandlersEnabled
-    : public PaymentRequestJourneyLoggerMultipleShowTest {
- public:
-  PaymentRequestJourneyLoggerMultipleShowTestWithPaymentHandlersEnabled() {
-    // Enable payment handlers, also known as service worker payment apps. The
-    // rest of the test is identical to
-    // "StartNewRequestWithoutPaymentAppsFeature" testcase above.
-    feature_list_.InitAndEnableFeature(features::kServiceWorkerPaymentApps);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PaymentRequestJourneyLoggerMultipleShowTestWithPaymentHandlersEnabled,
-    StartNewRequest) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
+                       StartNewRequest) {
   NavigateTo("/payment_request_multiple_show_test.html");
 
   base::HistogramTester histogram_tester;
@@ -474,11 +389,78 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(could_not_show & JourneyLogger::EVENT_COULD_NOT_SHOW);
 }
 
-using PaymentRequestJourneyLoggerMultipleShowTestWithPaymentHandlersEnabledBasicCardDisabledTest =
+using PaymentRequestJourneyLoggerMultipleShowBasicCardDisabledTest =
     BasicCardDisabledTestBase;
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentRequestJourneyLoggerMultipleShowTestWithPaymentHandlersEnabledBasicCardDisabledTest,
+    PaymentRequestJourneyLoggerMultipleShowBasicCardDisabledTest,
+    ShowSameRequest) {
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("c.com", "/payment_request_multiple_show_test.html");
+
+  base::HistogramTester histogram_tester;
+
+  // Start a Payment Request.
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+
+  // Try to show it again.
+  content::WebContents* web_contents = GetActiveWebContents();
+  const std::string click_buy_button_js =
+      "(function() { document.getElementById('showAgain').click(); })();";
+  ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
+
+  // Complete the original Payment Request.
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // Trying to show the same request twice is not considered a concurrent
+  // request.
+  EXPECT_TRUE(
+      histogram_tester.GetAllSamples("PaymentRequest.CheckoutFunnel.NoShow")
+          .empty());
+
+  // Make sure the correct events were logged.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_GOOGLE);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COULD_NOT_SHOW);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestJourneyLoggerMultipleShowBasicCardDisabledTest,
     StartNewRequest) {
   std::string a_method_name;
   InstallPaymentApp("a.com", "payment_request_success_responder.js",
