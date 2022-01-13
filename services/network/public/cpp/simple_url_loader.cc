@@ -1504,7 +1504,7 @@ void SimpleURLLoaderImpl::FinishWithResult(int net_error) {
 
   client_receiver_.reset();
   url_loader_.reset();
-  timeout_timer_.Stop();
+  timeout_timer_.AbandonAndStop();
 
   request_state_->finished = true;
   request_state_->net_error = net_error;

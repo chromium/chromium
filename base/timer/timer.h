@@ -130,13 +130,11 @@ class BASE_EXPORT TimerBase {
   // is not running.
   virtual void Stop();
 
-  // Abandons the scheduled task (if any) and stops the timer (if running).
-  void AbandonAndStop() {
-    AbandonScheduledTask();
-
-    Stop();
-    // No more member accesses here: |this| could be deleted at this point.
-  }
+  // Abandons the scheduled task (if any) and stops the timer (if running). Use
+  // this instead of Stop() only if the timer will need to be used or destroyed
+  // on another sequence.
+  // TODO(1262205): Remove once kAlwaysAbandonScheduledTask is gone.
+  void AbandonAndStop();
 
   // Call this method to reset the timer delay. The user task must be set. If
   // the timer is not running, this will start it by posting a task.

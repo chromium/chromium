@@ -153,11 +153,22 @@ void TimerBase::Stop() {
   if (g_is_always_abandon_scheduled_task_enabled)
     AbandonScheduledTask();
 
-  // It's safe to destroy or restart Timer on another sequence after Stop().
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-
   OnStop();
   // No more member accesses here: |this| could be deleted after Stop() call.
+}
+
+void TimerBase::AbandonAndStop() {
+  // Note: Stop() is more or less re-implemented here because it cannot be
+  // called without rebinding the |sequence_checker_| to the current sequence
+  // after the call to AbandonScheduledTask().
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  is_running_ = false;
+
+  AbandonScheduledTask();
+
+  OnStop();
+  // No more member accesses here: |this| could be deleted at this point.
 }
 
 void TimerBase::Reset() {
@@ -229,6 +240,10 @@ void TimerBase::AbandonScheduledTask() {
     DCHECK(delayed_task_handle_.IsValid());
     delayed_task_handle_.CancelTask();
   }
+
+  // It's safe to destroy or restart Timer on another sequence after the task is
+  // abandoned.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 void TimerBase::OnScheduledTaskInvoked(
