@@ -334,10 +334,10 @@ base::Value ForeignSessionHandler::GetForeignSessions() {
                                 FormatSessionTime(session->modified_time));
       session_data.SetDoubleKey("timestamp", session->modified_time.ToJsTime());
 
-      bool is_collapsed = collapsed_sessions->HasKey(session_tag);
+      bool is_collapsed = collapsed_sessions->FindKey(session_tag);
       session_data.SetBoolKey("collapsed", is_collapsed);
       if (is_collapsed)
-        current_collapsed_sessions->SetBoolean(session_tag, true);
+        current_collapsed_sessions->SetBoolKey(session_tag, true);
 
       base::Value window_list(base::Value::Type::LIST);
 
