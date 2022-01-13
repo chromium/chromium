@@ -141,7 +141,9 @@ src/webgpu/api/operation/memory_sync/buffer/rw_and_wr.spec.ts
 src/webgpu/api/operation/memory_sync/buffer/ww.spec.ts
 src/webgpu/api/operation/memory_sync/texture/rw_and_wr.spec.ts
 src/webgpu/api/operation/memory_sync/texture/ww.spec.ts
+src/webgpu/api/operation/pipeline/default_layout.spec.ts
 src/webgpu/api/operation/queue/writeBuffer.spec.ts
+src/webgpu/api/operation/render_pass/clear_value.spec.ts
 src/webgpu/api/operation/render_pass/resolve.spec.ts
 src/webgpu/api/operation/render_pass/storeOp.spec.ts
 src/webgpu/api/operation/render_pass/storeop2.spec.ts
@@ -158,6 +160,7 @@ src/webgpu/api/operation/rendering/depth.spec.ts
 src/webgpu/api/operation/rendering/depth_clip_clamp.spec.ts
 src/webgpu/api/operation/rendering/draw.spec.ts
 src/webgpu/api/operation/rendering/indirect_draw.spec.ts
+src/webgpu/api/operation/rendering/robust_access_index.spec.ts
 src/webgpu/api/operation/resource_init/buffer.spec.ts
 src/webgpu/util/texture/subresource.ts
 src/webgpu/api/operation/resource_init/check_texture/by_copy.ts
@@ -170,7 +173,6 @@ src/webgpu/api/operation/sampling/lod_clamp.spec.ts
 src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/texture_view/read.spec.ts
 src/webgpu/api/operation/texture_view/write.spec.ts
-src/webgpu/api/operation/vertex_state/basic.spec.ts
 src/webgpu/api/operation/vertex_state/correctness.spec.ts
 src/webgpu/api/operation/vertex_state/index_format.spec.ts
 src/webgpu/api/validation/validation_test.ts
@@ -192,7 +194,7 @@ src/webgpu/api/validation/buffer/create.spec.ts
 src/webgpu/api/validation/buffer/destroy.spec.ts
 src/webgpu/api/validation/buffer/mapping.spec.ts
 src/webgpu/api/validation/buffer/threading.spec.ts
-src/webgpu/api/validation/capability_checks/features/depth_clamping.spec.ts
+src/webgpu/api/validation/capability_checks/features/depth_clip_control.spec.ts
 src/webgpu/api/validation/capability_checks/features/query_types.spec.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts
 src/webgpu/api/validation/encoding/beginRenderPass.spec.ts
@@ -286,7 +288,6 @@ src/webgpu/web_platform/canvas/readbackFromWebGPUCanvas.spec.ts
 src/webgpu/web_platform/copyToTexture/ImageBitmap.spec.ts
 src/webgpu/web_platform/copyToTexture/canvas.spec.ts
 src/webgpu/web_platform/copyToTexture/video.spec.ts
-src/webgpu/web_platform/external_texture/canvas.spec.ts
 src/webgpu/web_platform/external_texture/video.spec.ts
 src/webgpu/web_platform/reftests/gpu_ref_test.ts
 src/webgpu/web_platform/reftests/canvas_clear.html.ts

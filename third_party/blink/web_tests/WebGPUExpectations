@@ -286,6 +286,16 @@ crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,ca
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,capability_checks,features,texture_formats:render_bundle_encoder_descriptor_depth_stencil_format:format="depth32float-stencil8";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,capability_checks,features,texture_formats:texture_descriptor:format="depth24unorm-stencil8";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,capability_checks,features,texture_formats:texture_descriptor:format="depth32float-stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,depth_aspect,depth_test:isAsync=false;format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,depth_aspect,depth_test:isAsync=true;format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,depth_aspect,depth_write:isAsync=false;format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,depth_aspect,depth_write:isAsync=true;format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,format:isAsync=false;format="stencil8" [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,format:isAsync=true;format="stencil8" [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,stencil_aspect,stencil_test:isAsync=false;format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,stencil_aspect,stencil_test:isAsync=true;format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,stencil_aspect,stencil_write:isAsync=false;format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,stencil_aspect,stencil_write:isAsync=true;format="stencil8";* [ Failure ]
 
 # Need to clamp depth in shader on Vulkan
 crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:clampDepth=false;writeDepth=true;* [ Failure ]
@@ -465,6 +475,8 @@ crbug.com/dawn/1095 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader
 
 # (NVIDIA-only) Started failing when the test was added.
 crbug.com/tint/1287 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,shader_io,shared_structs:shared_between_stages:* [ Failure ]
+
+crbug.com/dawn/1256 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gpu_context_canvas:* [ Crash ]
 
 ###
 ### Windows (D3D12) specific
