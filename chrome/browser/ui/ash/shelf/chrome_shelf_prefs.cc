@@ -600,7 +600,7 @@ void ChromeShelfPrefs::AddDefaultApps(
     default_app_ids.push_back(default_app_id);
   InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
                                                default_app_ids);
-  ListPrefUpdateDeprecated update(pref_service, GetShelfDefaultPinLayoutPref());
+  ListPrefUpdate update(pref_service, GetShelfDefaultPinLayoutPref());
   update->Append(kDefaultPinnedAppsKey);
 }
 
