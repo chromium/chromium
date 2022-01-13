@@ -16,6 +16,17 @@
 #define PR_SET_TAGGED_ADDR_CTRL 55
 #define PR_GET_TAGGED_ADDR_CTRL 56
 #define PR_TAGGED_ADDR_ENABLE (1UL << 0)
+
+#if BUILDFLAG(IS_LINUX)
+#include <linux/version.h>
+
+// Linux headers already provide these since v5.10.
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
+#define HAS_PR_MTE_MACROS
+#endif
+#endif
+
+#ifndef HAS_PR_MTE_MACROS
 #define PR_MTE_TCF_SHIFT 1
 #define PR_MTE_TCF_NONE (0UL << PR_MTE_TCF_SHIFT)
 #define PR_MTE_TCF_SYNC (1UL << PR_MTE_TCF_SHIFT)
@@ -23,6 +34,7 @@
 #define PR_MTE_TCF_MASK (3UL << PR_MTE_TCF_SHIFT)
 #define PR_MTE_TAG_SHIFT 3
 #define PR_MTE_TAG_MASK (0xffffUL << PR_MTE_TAG_SHIFT)
+#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
