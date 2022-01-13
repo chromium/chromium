@@ -5272,7 +5272,7 @@
   {
     "name": "sync-settings-categorization",
     "owners": [ "bsazonov", "rsorokin", "cros-oac@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 101
   },
   {
     "name": "sync-trusted-vault-passphrase-ios-rpc",
