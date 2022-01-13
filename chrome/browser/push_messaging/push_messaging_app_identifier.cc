@@ -221,8 +221,8 @@ std::vector<PushMessagingAppIdentifier> PushMessagingAppIdentifier::GetAll(
 
 // static
 void PushMessagingAppIdentifier::DeleteAllFromPrefs(Profile* profile) {
-  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
-                                        prefs::kPushMessagingAppIdentifierMap);
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kPushMessagingAppIdentifierMap);
   base::Value* map = update.Get();
   map->DictClear();
 }
@@ -259,8 +259,8 @@ bool PushMessagingAppIdentifier::IsExpired() const {
 void PushMessagingAppIdentifier::PersistToPrefs(Profile* profile) const {
   DCheckValid();
 
-  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
-                                        prefs::kPushMessagingAppIdentifierMap);
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kPushMessagingAppIdentifierMap);
   base::Value* map = update.Get();
 
   // Delete any stale entry with the same origin and Service Worker
@@ -278,8 +278,8 @@ void PushMessagingAppIdentifier::PersistToPrefs(Profile* profile) const {
 void PushMessagingAppIdentifier::DeleteFromPrefs(Profile* profile) const {
   DCheckValid();
 
-  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
-                                        prefs::kPushMessagingAppIdentifierMap);
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kPushMessagingAppIdentifierMap);
   base::Value* map = update.Get();
   map->RemoveKey(app_id_);
 }
