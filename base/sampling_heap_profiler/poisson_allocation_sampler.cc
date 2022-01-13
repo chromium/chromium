@@ -14,7 +14,6 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/ignore_result.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -70,7 +69,9 @@ pthread_key_t ReentryGuard::entered_key_;
 
 #else
 
-class ReentryGuard {
+// Use [[maybe_unused]] as this lightweight stand-in for the more heavyweight
+// ReentryGuard above will otherwise trigger the "unused code" warnings.
+class [[maybe_unused]] ReentryGuard {
  public:
   operator bool() { return true; }
   static void Init() {}
@@ -145,6 +146,8 @@ void (*g_hooks_install_callback)();
 // true, knows that the other function has already run so it's time to invoke
 // the callback.
 std::atomic_bool g_hooks_installed;
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
   ReentryGuard guard;
@@ -316,6 +319,8 @@ AllocatorDispatch g_allocator_dispatch = {&AllocFn,
                                           &AlignedFreeFn,
                                           nullptr};
 
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
 
 void PartitionAllocHook(void* address, size_t size, const char* type) {
@@ -336,7 +341,6 @@ void InstallStandardAllocatorHooks() {
   // If the allocator shim isn't available, then we don't install any hooks.
   // There's no point in printing an error message, since this can regularly
   // happen for tests.
-  ignore_result(g_allocator_dispatch);
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
@@ -428,16 +432,15 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
 
 // static
 void PoissonAllocationSampler::Init() {
-  static bool init_once = []() {
+  [[maybe_unused]] static bool init_once = []() {
     ReentryGuard::Init();
     return true;
   }();
-  ignore_result(init_once);
 }
 
 // static
 void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
-  static bool hook_installed = [] {
+  [[maybe_unused]] static bool hook_installed = [] {
     InstallStandardAllocatorHooks();
     bool expected = false;
     if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
@@ -446,7 +449,6 @@ void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
     }
     return true;
   }();
-  ignore_result(hook_installed);
 }
 
 // static
@@ -639,7 +641,6 @@ void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
   // `thread_local`, which may cause a reentrancy issue.  So, temporarily
   // disable the sampling by having a ReentryGuard.
   ReentryGuard guard;
-  ignore_result(guard);
 
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
@@ -655,7 +656,6 @@ void PoissonAllocationSampler::RemoveSamplesObserver(
   // `thread_local`, which may cause a reentrancy issue.  So, temporarily
   // disable the sampling by having a ReentryGuard.
   ReentryGuard guard;
-  ignore_result(guard);
 
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);

@@ -478,10 +478,9 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
     mojo::Message* message,
     std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
 {%- if interface.methods %}
-  const bool message_is_sync = message->has_flag(mojo::Message::kFlagIsSync);
-  const uint64_t request_id = message->request_id();
-  ALLOW_UNUSED_LOCAL(message_is_sync);
-  ALLOW_UNUSED_LOCAL(request_id);
+  [[maybe_unused]] const bool message_is_sync =
+      message->has_flag(mojo::Message::kFlagIsSync);
+  [[maybe_unused]] const uint64_t request_id = message->request_id();
   switch (message->header()->name) {
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {

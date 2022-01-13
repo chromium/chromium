@@ -23,7 +23,6 @@ bool {{class_name}}::Validate(
   }
 
   const {{class_name}}* object = static_cast<const {{class_name}}*>(data);
-  ALLOW_UNUSED_LOCAL(object);
 
   if (inlined && object->is_null())
     return true;
