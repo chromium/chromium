@@ -134,6 +134,8 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
     fake_url_for_testing_ = fake_url;
   }
 
+  int GetNumUpdatesForTesting() { return updates_.size(); }
+
   // Resets the mojo::Receiver |install_controller_receiver_|
   // and |update_progress_observer_|.
   void ResetInstallState();

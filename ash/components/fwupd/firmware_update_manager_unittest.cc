@@ -169,6 +169,12 @@ class FirmwareUpdateManagerTest : public testing::Test {
     loop.Run();
   }
 
+  int GetNumUpdatesCached() {
+    return firmware_update_manager_->GetNumUpdatesForTesting();
+  }
+
+  void RequestDevices() { firmware_update_manager_->RequestDevices(); }
+
   void SetFakeUrlForTesting(const std::string& fake_url) {
     firmware_update_manager_->SetFakeUrlForTesting(fake_url);
   }
@@ -440,6 +446,34 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
                 kFakeUpdatePriorityForTesting),
             updates[0]->priority);
   EXPECT_EQ(kFakeUpdateFileNameForTesting, updates[0]->filepath.value());
+}
+
+TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
+      update_observer.updates();
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1U, updates.size());
+  ASSERT_EQ(1, GetNumUpdatesCached());
+
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+
+  RequestDevices();
+  base::RunLoop().RunUntilIdle();
+
+  // Expect cache to clear and only 1 updates now instead of 2.
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& new_updates =
+      update_observer.updates();
+  ASSERT_EQ(1U, new_updates.size());
+  ASSERT_EQ(1, GetNumUpdatesCached());
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {

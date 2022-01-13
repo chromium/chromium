@@ -407,6 +407,8 @@ void FirmwareUpdateManager::OnDeviceListResponse(
     chromeos::FwupdDeviceList* devices) {
   DCHECK(devices);
   DCHECK(!HasPendingUpdates());
+  // Clear all cached updates prior to fetching the new update list.
+  updates_.clear();
 
   // Fire the observer with an empty list if there are no devices in the
   // response.
