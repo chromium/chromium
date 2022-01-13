@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#import "ios/chrome/browser/providers/chromium_logo_controller.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,13 +24,13 @@ ChromiumBrowserProvider::ChromiumBrowserProvider()
 ChromiumBrowserProvider::~ChromiumBrowserProvider() {}
 
 UITextField* ChromiumBrowserProvider::CreateStyledTextField() const {
-  return [[UITextField alloc] initWithFrame:CGRectZero];
+  return provider::CreateStyledTextField();
 }
 
 id<LogoVendor> ChromiumBrowserProvider::CreateLogoVendor(
     Browser* browser,
     web::WebState* web_state) const {
-  return [[ChromiumLogoController alloc] init];
+  return provider::CreateLogoVendor(browser, web_state);
 }
 
 UserFeedbackProvider* ChromiumBrowserProvider::GetUserFeedbackProvider() const {

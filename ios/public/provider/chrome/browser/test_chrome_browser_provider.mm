@@ -12,6 +12,7 @@
 #include "ios/public/provider/chrome/browser/mailto/test_mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_trusted_vault_service.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -43,7 +44,7 @@ TestChromeBrowserProvider::GetChromeTrustedVaultService() {
 }
 
 UITextField* TestChromeBrowserProvider::CreateStyledTextField() const {
-  return [[UITextField alloc] initWithFrame:CGRectZero];
+  return provider::CreateStyledTextField();
 }
 
 TestUserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
