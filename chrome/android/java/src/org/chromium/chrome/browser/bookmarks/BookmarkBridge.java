@@ -229,71 +229,70 @@ public class BookmarkBridge {
             mRead = read;
         }
 
-        /** @return Title of the bookmark item. */
+        /** Returns the title of the bookmark item. */
         public String getTitle() {
             return mTitle;
         }
 
-        /** @return Url of the bookmark item. */
+        /** Returns the url of the bookmark item. */
         public GURL getUrl() {
             return mUrl;
         }
 
-        /** @return The string to display for the item's url. */
+        /** Returns the string to display for the item's url. */
         public String getUrlForDisplay() {
             return UrlFormatter.formatUrlForSecurityDisplay(
                     getUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         }
 
-        /** @return Whether item is a folder or a bookmark. */
+        /** Returns whether item is a folder or a bookmark. */
         public boolean isFolder() {
             return mIsFolder;
         }
 
-        /** @return Parent id of the bookmark item. */
+        /** Returns the parent id of the bookmark item. */
         public BookmarkId getParentId() {
             return mParentId;
         }
 
-        /** @return Whether this bookmark can be edited. */
+        /** Returns whether this bookmark can be edited. */
         public boolean isEditable() {
             return mForceEditableForTesting || mIsEditable;
         }
 
-        /**@return Whether this bookmark's URL can be edited */
+        /** Returns whether this bookmark's URL can be edited */
         public boolean isUrlEditable() {
             return isEditable() && mId.getType() == BookmarkType.NORMAL;
         }
 
-        /**@return Whether this bookmark can be moved */
+        /** Returns whether this bookmark can be moved */
         public boolean isMovable() {
             return ReadingListUtils.isSwappableReadingListItem(mId) || isReorderable();
         }
 
-        /**@return Whether this bookmark can be moved */
+        /** Returns whether this bookmark can be moved */
         public boolean isReorderable() {
             return isEditable() && mId.getType() == BookmarkType.NORMAL;
         }
 
-        /** @return Whether this is a managed bookmark. */
+        /** Returns whether this is a managed bookmark. */
         public boolean isManaged() {
             return mIsManaged;
         }
 
+        /** Returns the {@link BookmarkId}. */
         public BookmarkId getId() {
             return mId;
         }
 
-        /**
-         * @return The timestamp in milliseconds since epoch that the bookmark is added.
-         */
+        /** Retuns the timestamp in milliseconds since epoch that the bookmark is added. */
         public long getDateAdded() {
             return mDateAdded;
         }
 
         /**
-         * @return Whether the bookmark is read. Only valid for {@link BookmarkType#READING_LIST}.
-         *         Defaults to "false" for other types.
+         * Returns whether the bookmark is read. Only valid for {@link BookmarkType#READING_LIST}.
+         * Defaults to "false" for other types.
          */
         public boolean isRead() {
             return mRead;
