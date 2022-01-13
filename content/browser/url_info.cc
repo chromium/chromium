@@ -6,11 +6,9 @@
 
 namespace content {
 
-UrlInfo::UrlInfo(const UrlInfo& other) = default;
+UrlInfo::UrlInfo() = default;
 
-UrlInfo::UrlInfo()
-    : web_exposed_isolation_info(WebExposedIsolationInfo::CreateNonIsolated()) {
-}
+UrlInfo::UrlInfo(const UrlInfo& other) = default;
 
 UrlInfo::UrlInfo(const UrlInfoInit& init)
     : url(init.url_),
@@ -43,10 +41,7 @@ bool UrlInfo::IsIsolated() const {
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
 
 UrlInfoInit::UrlInfoInit(const GURL& url)
-    : url_(url),
-      origin_(url::Origin::Create(url)),
-      web_exposed_isolation_info_(
-          WebExposedIsolationInfo::CreateNonIsolated()) {}
+    : url_(url), origin_(url::Origin::Create(url)) {}
 
 UrlInfoInit::UrlInfoInit(const UrlInfo& base)
     : url_(base.url),

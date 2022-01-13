@@ -112,16 +112,15 @@ class CONTENT_EXPORT SiteInfo {
   // SiteInfos, to help ensure all creation sites are updated accordingly when
   // new values are added. The private function MakeTie() should be updated
   // accordingly.
-  SiteInfo(
-      const GURL& site_url,
-      const GURL& process_lock_url,
-      bool requires_origin_keyed_process,
-      const StoragePartitionConfig storage_partition_config,
-      const absl::optional<WebExposedIsolationInfo>& web_exposed_isolation_info,
-      bool is_guest,
-      bool does_site_request_dedicated_process_for_coop,
-      bool is_jit_disabled,
-      bool is_pdf);
+  SiteInfo(const GURL& site_url,
+           const GURL& process_lock_url,
+           bool requires_origin_keyed_process,
+           const StoragePartitionConfig storage_partition_config,
+           const WebExposedIsolationInfo& web_exposed_isolation_info,
+           bool is_guest,
+           bool does_site_request_dedicated_process_for_coop,
+           bool is_jit_disabled,
+           bool is_pdf);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();

@@ -308,9 +308,23 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   bool does_site_request_dedicated_process_for_coop =
       url_info.requests_coop_isolation();
 
+  // Note: Well-formed UrlInfos can arrive here with null
+  // WebExposedIsolationInfo. One example is, going through the process model
+  // prior to having received response headers that determine the final
+  // WebExposedIsolationInfo, and creating a new speculative SiteInstance. In
+  // these cases we consider the SiteInfo to be non-isolated.
+  //
+  // Sometimes SiteInfos are built from UrlInfos for the purpose of using
+  // SiteInfo comparisons. Sometimes we only want to compare some attributes and
+  // do not care about WebExposedIsolationInfo. These cases should not rely on
+  // the default WebExposedIsolationInfo value. Callers should specify why it is
+  // appropriate to disregard WebExposedIsolationInfo and override it manually
+  // to what they expect the other value to be.
   return SiteInfo(site_url, lock_url, requires_origin_keyed_process,
                   storage_partition_config.value(),
-                  url_info.web_exposed_isolation_info, false /* is_guest */,
+                  url_info.web_exposed_isolation_info.value_or(
+                      WebExposedIsolationInfo::CreateNonIsolated()),
+                  false /* is_guest */,
                   does_site_request_dedicated_process_for_coop, is_jitless,
                   url_info.is_pdf);
 }
@@ -321,22 +335,20 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
   return Create(isolation_context, UrlInfo::CreateForTesting(url));
 }
 
-SiteInfo::SiteInfo(
-    const GURL& site_url,
-    const GURL& process_lock_url,
-    bool requires_origin_keyed_process,
-    const StoragePartitionConfig storage_partition_config,
-    const absl::optional<WebExposedIsolationInfo>& web_exposed_isolation_info,
-    bool is_guest,
-    bool does_site_request_dedicated_process_for_coop,
-    bool is_jit_disabled,
-    bool is_pdf)
+SiteInfo::SiteInfo(const GURL& site_url,
+                   const GURL& process_lock_url,
+                   bool requires_origin_keyed_process,
+                   const StoragePartitionConfig storage_partition_config,
+                   const WebExposedIsolationInfo& web_exposed_isolation_info,
+                   bool is_guest,
+                   bool does_site_request_dedicated_process_for_coop,
+                   bool is_jit_disabled,
+                   bool is_pdf)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       requires_origin_keyed_process_(requires_origin_keyed_process),
       storage_partition_config_(storage_partition_config),
-      web_exposed_isolation_info_(web_exposed_isolation_info.value_or(
-          WebExposedIsolationInfo::CreateNonIsolated())),
+      web_exposed_isolation_info_(web_exposed_isolation_info),
       is_guest_(is_guest),
       does_site_request_dedicated_process_for_coop_(
           does_site_request_dedicated_process_for_coop),

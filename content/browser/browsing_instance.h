@@ -140,9 +140,11 @@ class CONTENT_EXPORT BrowsingInstance final
   // Note: Unlike ComputeSiteInfoForURL() this method can return a SiteInfo for
   // a default SiteInstance, if `url_info` can be placed in the default
   // SiteInstance and `allow_default_instance` is true.
-  // TODO(http://crbug.com/1243449): This function has become ambiguous
-  // regarding the web_exposed_isolation_info of `url_info`. It is currently
-  // disregarded but we should probably check that the values are equal.
+  //
+  // Note: Since we're asking to get a SiteInfo that would belong in this
+  // BrowsingInstance, it is mandatory that |url_info|'s
+  // web_exposed_isolation_info is compatible with the BrowsingInstance's
+  // internal WebExposedIsolationInfo value.
   SiteInfo GetSiteInfoForURL(const UrlInfo& url_info,
                              bool allow_default_instance);
 

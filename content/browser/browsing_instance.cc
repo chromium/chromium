@@ -200,8 +200,16 @@ SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
           : UrlInfo(UrlInfoInit(url_info).WithStoragePartitionConfig(
                 storage_partition_config_));
 
+  // The WebExposedIsolationInfos must be compatible for this function to make
+  // sense.
+  DCHECK(WebExposedIsolationInfo::AreCompatible(
+      url_info.web_exposed_isolation_info, web_exposed_isolation_info_));
+
+  // If the passed in UrlInfo has a null WebExposedIsolationInfo, meaning that
+  // it is compatible with any isolation state, we reuse the isolation state of
+  // the BrowsingInstance.
   url_info_with_partition.web_exposed_isolation_info =
-      web_exposed_isolation_info_;
+      url_info.web_exposed_isolation_info.value_or(web_exposed_isolation_info_);
   return SiteInfo::Create(isolation_context_, url_info_with_partition);
 }
 
