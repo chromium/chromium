@@ -28,7 +28,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_bus.h"
 #include "media/base/user_input_monitor.h"
-#include "services/audio/audio_processor.h"
+#include "services/audio/audio_processor_handler.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"
 
@@ -205,35 +205,37 @@ class InputController::AudioCallback
   bool error_during_callback_ = false;
 };
 
-InputController::InputController(EventHandler* handler,
+InputController::InputController(EventHandler* event_handler,
                                  SyncWriter* sync_writer,
                                  media::UserInputMonitor* user_input_monitor,
                                  InputStreamActivityMonitor* activity_monitor,
                                  DeviceOutputListener* device_output_listener,
                                  const media::AudioParameters& params,
                                  StreamType type)
-    : handler_(handler),
+    : event_handler_(event_handler),
       stream_(nullptr),
       sync_writer_(sync_writer),
       type_(type),
       user_input_monitor_(user_input_monitor),
       activity_monitor_(activity_monitor) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
-  DCHECK(handler_);
+  DCHECK(event_handler_);
   DCHECK(sync_writer_);
   DCHECK(activity_monitor_);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (device_output_listener) {
-    // Unretained() is safe, because |handler_| outlives |audio_processor_|.
-    audio_processor_ = std::make_unique<AudioProcessor>(
+    // Unretained() is safe, because |event_handler_| outlives
+    // |audio_processor_handler_|.
+    audio_processor_handler_ = std::make_unique<AudioProcessorHandler>(
         device_output_listener,
-        base::BindRepeating(&EventHandler::OnLog, base::Unretained(handler_)));
+        base::BindRepeating(&EventHandler::OnLog,
+                            base::Unretained(event_handler_)));
   }
 #endif
 
   if (!user_input_monitor_) {
-    handler_->OnLog(
+    event_handler_->OnLog(
         "AIC::InputController() => (WARNING: keypress monitoring is disabled)");
   }
 }
@@ -283,7 +285,7 @@ void InputController::Record() {
   if (!stream_ || audio_callback_)
     return;
 
-  handler_->OnLog("AIC::Record()");
+  event_handler_->OnLog("AIC::Record()");
 
   if (user_input_monitor_) {
     user_input_monitor_->EnableKeyPressMonitoring();
@@ -295,8 +297,8 @@ void InputController::Record() {
   audio_callback_ = std::make_unique<AudioCallback>(this);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (audio_processor_)
-    audio_processor_->Start();
+  if (audio_processor_handler_)
+    audio_processor_handler_->Start();
 #endif
 
   stream_->Start(audio_callback_.get());
@@ -319,8 +321,8 @@ void InputController::Close() {
   // Allow calling unconditionally and bail if we don't have a stream to close.
   if (audio_callback_) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    if (audio_processor_)
-      audio_processor_->Stop();
+    if (audio_processor_handler_)
+      audio_processor_handler_->Stop();
 #endif
     stream_->Stop();
     activity_monitor_->OnInputStreamInactive();
@@ -363,7 +365,7 @@ void InputController::Close() {
                                     kLogStringPrefix);
   }
 
-  handler_->OnLog(log_string);
+  event_handler_->OnLog(log_string);
 
   stream_->Close();
   stream_ = nullptr;
@@ -376,7 +378,7 @@ void InputController::Close() {
     LogSilenceState(silence_state_);
     log_string = base::StringPrintf("%s(silence_state=%s)", kLogStringPrefix,
                                     SilenceStateToString(silence_state_));
-    handler_->OnLog(log_string);
+    event_handler_->OnLog(log_string);
   }
 #endif
 
@@ -392,7 +394,8 @@ void InputController::SetVolume(double volume) {
   if (!stream_)
     return;
 
-  handler_->OnLog(base::StringPrintf("AIC::SetVolume({volume=%.2f})", volume));
+  event_handler_->OnLog(
+      base::StringPrintf("AIC::SetVolume({volume=%.2f})", volume));
 
   // Only ask for the maximum volume at first call and use cached value
   // for remaining function calls.
@@ -416,8 +419,8 @@ void InputController::SetOutputDeviceForAec(
     stream_->SetOutputDeviceForAec(output_device_id);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (audio_processor_)
-    audio_processor_->SetOutputDeviceForAec(output_device_id);
+  if (audio_processor_handler_)
+    audio_processor_handler_->SetOutputDeviceForAec(output_device_id);
 #endif
 }
 
@@ -447,7 +450,7 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
   DCHECK(!stream_);
   SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioInputController.CreateTime");
-  handler_->OnLog("AIC::DoCreate({device_id=" + device_id + "})");
+  event_handler_->OnLog("AIC::DoCreate({device_id=" + device_id + "})");
 
 #if defined(AUDIO_POWER_MONITORING)
   // We only do power measurements for UMA stats for low latency streams, and
@@ -465,7 +468,7 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
 
   if (!stream) {
     LogCaptureStartupResult(CAPTURE_STARTUP_CREATE_STREAM_FAILED);
-    handler_->OnError(STREAM_CREATE_ERROR);
+    event_handler_->OnError(STREAM_CREATE_ERROR);
     return;
   }
 
@@ -473,7 +476,7 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   if (open_outcome != OpenOutcome::kSuccess) {
     stream->Close();
     LogCaptureStartupResult(CAPTURE_STARTUP_OPEN_STREAM_FAILED);
-    handler_->OnError(MapOpenOutcomeToErrorCode(open_outcome));
+    event_handler_->OnError(MapOpenOutcomeToErrorCode(open_outcome));
     return;
   }
 
@@ -484,7 +487,7 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   // functionality to modify the input volume slider. One such example is
   // Windows XP.
   power_measurement_is_enabled_ &= agc_is_supported;
-  handler_->OnLog(
+  event_handler_->OnLog(
       base::StringPrintf("AIC::DoCreate => (power_measurement_is_enabled=%d)",
                          power_measurement_is_enabled_));
 #else
@@ -496,7 +499,7 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
 
   // Send initial muted state along with OnCreated, to avoid races.
   is_muted_ = stream_->IsMuted();
-  handler_->OnCreated(is_muted_);
+  event_handler_->OnCreated(is_muted_);
   check_muted_state_timer_.Start(FROM_HERE, kCheckMutedStateInterval, this,
                                  &InputController::CheckMutedState);
   DCHECK(check_muted_state_timer_.IsRunning());
@@ -504,7 +507,7 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
 
 void InputController::DoReportError() {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
-  handler_->OnError(STREAM_ERROR);
+  event_handler_->OnError(STREAM_ERROR);
 }
 
 void InputController::DoLogAudioLevels(float level_dbfs,
@@ -519,7 +522,7 @@ void InputController::DoLogAudioLevels(float level_dbfs,
   const bool microphone_is_muted = stream_->IsMuted();
   if (microphone_is_muted) {
     LogMicrophoneMuteResult(MICROPHONE_IS_MUTED);
-    handler_->OnLog("AIC::OnData => (microphone is muted)");
+    event_handler_->OnLog("AIC::OnData => (microphone is muted)");
   } else {
     LogMicrophoneMuteResult(MICROPHONE_IS_NOT_MUTED);
   }
@@ -529,7 +532,7 @@ void InputController::DoLogAudioLevels(float level_dbfs,
   static const float kSilenceThresholdDBFS = -72.24719896f;
   if (level_dbfs < kSilenceThresholdDBFS)
     log_string += " <=> low audio input level";
-  handler_->OnLog(log_string + ")");
+  event_handler_->OnLog(log_string + ")");
 
   if (!microphone_is_muted) {
     UpdateSilenceState(level_dbfs < kSilenceThresholdDBFS);
@@ -539,7 +542,7 @@ void InputController::DoLogAudioLevels(float level_dbfs,
                                   microphone_volume_percent);
   if (microphone_volume_percent < kLowLevelMicrophoneLevelPercent)
     log_string += " <=> low microphone level";
-  handler_->OnLog(log_string + ")");
+  event_handler_->OnLog(log_string + ")");
 #endif
 }
 
@@ -613,7 +616,7 @@ void InputController::LogCallbackError() {
 
 void InputController::LogMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
-  handler_->OnLog(message);
+  event_handler_->OnLog(message);
 }
 
 bool InputController::CheckForKeyboardInput() {
@@ -662,10 +665,10 @@ void InputController::CheckMutedState() {
   const bool new_state = stream_->IsMuted();
   if (new_state != is_muted_) {
     is_muted_ = new_state;
-    handler_->OnMuted(is_muted_);
+    event_handler_->OnMuted(is_muted_);
     std::string log_string =
         base::StringPrintf("AIC::OnMuted({is_muted=%d})", is_muted_);
-    handler_->OnLog(log_string);
+    event_handler_->OnLog(log_string);
   }
 }
 
@@ -673,7 +676,7 @@ void InputController::ReportIsAlive() {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
   DCHECK(stream_);
   // Don't store any state, just log the event for now.
-  handler_->OnLog("AIC::OnData => (stream is alive)");
+  event_handler_->OnLog("AIC::OnData => (stream is alive)");
 }
 
 // static

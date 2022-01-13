@@ -111,8 +111,8 @@ source_set("audio") {
 
   if (chrome_wide_echo_cancellation_supported) {
     sources += [
-      "audio_processor.cc",
-      "audio_processor.h",
+      "audio_processor_handler.cc",
+      "audio_processor_handler.h",
       "mixing_graph.cc",
       "mixing_graph.h",
       "mixing_graph_impl.cc",

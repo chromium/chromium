@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/audio_processor.h"
+#include "services/audio/audio_processor_handler.h"
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,7 +15,7 @@
 
 namespace audio {
 
-class AudioProcessor::UmaLogger {
+class AudioProcessorHandler::UmaLogger {
  public:
   UmaLogger(const std::string& device_id)
       : is_default_(media::AudioDeviceDescription::IsDefaultDevice(device_id)),
@@ -36,21 +36,22 @@ class AudioProcessor::UmaLogger {
   base::TimeTicks start_;
 };
 
-AudioProcessor::AudioProcessor(DeviceOutputListener* device_output_listener,
-                               LogCallback log_callback)
+AudioProcessorHandler::AudioProcessorHandler(
+    DeviceOutputListener* device_output_listener,
+    LogCallback log_callback)
     : device_output_listener_(device_output_listener),
       log_callback_(std::move(log_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(device_output_listener_);
 }
 
-AudioProcessor::~AudioProcessor() {
+AudioProcessorHandler::~AudioProcessorHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   if (active_)
     Stop();
 }
 
-void AudioProcessor::SetOutputDeviceForAec(
+void AudioProcessorHandler::SetOutputDeviceForAec(
     const std::string& output_device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   if (output_device_id_ == output_device_id ||
@@ -65,35 +66,36 @@ void AudioProcessor::SetOutputDeviceForAec(
     StartListening();
 }
 
-void AudioProcessor::Start() {
+void AudioProcessorHandler::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(!active_);
   active_ = true;
   StartListening();
 }
 
-void AudioProcessor::Stop() {
+void AudioProcessorHandler::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
   device_output_listener_->StopListening(this);
-  log_callback_.Run("AudioProcessor: stop listening");
+  log_callback_.Run("AudioProcessorHandler: stop listening");
   active_ = false;
   uma_logger_.reset();
 }
 
-void AudioProcessor::OnPlayoutData(const media::AudioBus& audio_bus,
-                                   int sample_rate,
-                                   base::TimeDelta delay) {
-  TRACE_EVENT2("audio", "AudioProcessor::OnData", " this ",
+void AudioProcessorHandler::OnPlayoutData(const media::AudioBus& audio_bus,
+                                          int sample_rate,
+                                          base::TimeDelta delay) {
+  TRACE_EVENT2("audio", "AudioProcessorHandler::OnData", " this ",
                static_cast<void*>(this), "delay", delay.InMillisecondsF());
 }
 
-void AudioProcessor::StartListening() {
+void AudioProcessorHandler::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
   uma_logger_ = std::make_unique<UmaLogger>(output_device_id_);
-  log_callback_.Run(base::StrCat(
-      {"AudioProcessor: listening to output device: ", output_device_id_}));
+  log_callback_.Run(
+      base::StrCat({"AudioProcessorHandler: listening to output device: ",
+                    output_device_id_}));
   device_output_listener_->StartListening(this, output_device_id_);
 }
 
