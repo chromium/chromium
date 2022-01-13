@@ -9,15 +9,15 @@ Caspian is the name for the WebAssembly portion of the SuperSize Tiger Viewer.
 Caspian needs some minor edits that we don't want to commit:
 
 ```sh
-git apply -3 tools/binary_size/libsupersize/caspian/wasmbuild.patch
+git apply -3 tools/binary_size/libsupersize/viewer/caspian/wasmbuild.patch
 ```
 
 To re-create .patch file:
 ```sh
 git add ...files to include in patch...
-git diff --staged > tools/binary_size/libsupersize/caspian/wasmbuild.patch
+git diff --staged > tools/binary_size/libsupersize/viewer/caspian/wasmbuild.patch
 # Double check that only expected files are included in the patch:
-grep +++ tools/binary_size/libsupersize/caspian/wasmbuild.patch
+grep +++ tools/binary_size/libsupersize/viewer/caspian/wasmbuild.patch
 ```
 
 ## Building the test app & tests
@@ -47,14 +47,4 @@ Build:
 ```sh
 gn gen out/caspian --args='is_official_build=true treat_warnings_as_errors=false fatal_linker_warnings=false chrome_pgo_phase=0'
 ( cd out/caspian; autoninja caspian_web && cp wasm/caspian_web.* ../../tools/binary_size/libsupersize/static/ )
-```
-
-Run local test server:
-```sh
-tools/binary_size/libsupersize/upload_html_viewer.py --local
-```
-
-Deploy to firebase:
-```sh
-tools/binary_size/libsupersize/upload_html_viewer.py [--prod | --staging]
 ```

@@ -10,9 +10,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "tools/binary_size/libsupersize/caspian/diff.h"
-#include "tools/binary_size/libsupersize/caspian/file_format.h"
-#include "tools/binary_size/libsupersize/caspian/model.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 void ParseSizeInfoFromFile(const char* filename, caspian::SizeInfo* info) {
   std::ifstream ifs(filename, std::ifstream::in);

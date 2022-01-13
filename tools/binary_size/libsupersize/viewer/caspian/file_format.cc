@@ -6,7 +6,7 @@
  * The .size file spec is found in libsupersize/file_format.py
  */
 
-#include "tools/binary_size/libsupersize/caspian/file_format.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"
 
 #include <assert.h>
 #include <stdint.h>
@@ -23,7 +23,7 @@
 
 #include "third_party/jsoncpp/source/include/json/json.h"
 #include "third_party/zlib/google/compression_utils_portable.h"
-#include "tools/binary_size/libsupersize/caspian/model.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace {
 const char kDiffHeader[] = "# Created by //tools/binary_size\nDIFF\n";

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_DIFF_H_
-#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_DIFF_H_
+#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_DIFF_H_
+#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_DIFF_H_
 
-#include "tools/binary_size/libsupersize/caspian/model.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace caspian {
 DeltaSizeInfo Diff(const SizeInfo* before, const SizeInfo* after);
 }
 
-#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_DIFF_H_
+#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_DIFF_H_

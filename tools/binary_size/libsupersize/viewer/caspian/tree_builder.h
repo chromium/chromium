@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_TREE_BUILDER_H_
-#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_TREE_BUILDER_H_
+#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_TREE_BUILDER_H_
+#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_TREE_BUILDER_H_
 
 #include <deque>
 #include <functional>
@@ -13,8 +13,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "tools/binary_size/libsupersize/caspian/lens.h"
-#include "tools/binary_size/libsupersize/caspian/model.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/lens.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace caspian {
 class TreeBuilder {
@@ -68,4 +68,4 @@ class TreeBuilder {
   std::vector<const BaseSymbol*> symbols_;
 };  // TreeBuilder
 }  // namespace caspian
-#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_TREE_BUILDER_H_
+#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_TREE_BUILDER_H_

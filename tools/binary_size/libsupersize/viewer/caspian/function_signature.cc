@@ -15,7 +15,7 @@
 #include <tuple>
 #include <vector>
 
-#include "tools/binary_size/libsupersize/caspian/function_signature.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/function_signature.h"
 
 namespace {
 bool EndsWith(std::string_view str,

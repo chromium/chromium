@@ -15,11 +15,11 @@
 
 #include "third_party/jsoncpp/source/include/json/json.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "tools/binary_size/libsupersize/caspian/diff.h"
-#include "tools/binary_size/libsupersize/caspian/file_format.h"
-#include "tools/binary_size/libsupersize/caspian/lens.h"
-#include "tools/binary_size/libsupersize/caspian/model.h"
-#include "tools/binary_size/libsupersize/caspian/tree_builder.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/lens.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/model.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/tree_builder.h"
 
 namespace caspian {
 namespace {

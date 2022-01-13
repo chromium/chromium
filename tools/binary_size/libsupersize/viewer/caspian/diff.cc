@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "tools/binary_size/libsupersize/caspian/diff.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
 
 #include <deque>
 #include <functional>
@@ -216,10 +216,10 @@ DeltaSizeInfo Diff(const SizeInfo* before, const SizeInfo* after) {
   // symbols.  Any symbols still unmatched are tried in the next round.
   int step = 0;
   DiffHelper helper;
-  std::vector<DiffHelper::MatchFunc>
-      key_funcs = {helper.SectionAndFullNameAndPathAndSize(),
-                   helper.SectionAndFullNameAndPath(),
-                   helper.SectionAndNameAndPath(), helper.SectionAndFullName()};
+  std::vector<DiffHelper::MatchFunc> key_funcs = {
+      helper.SectionAndFullNameAndPathAndSize(),
+      helper.SectionAndFullNameAndPath(), helper.SectionAndNameAndPath(),
+      helper.SectionAndFullName()};
   std::unordered_map<SectionId, float> padding_by_section_name;
   for (const auto& key_function : key_funcs) {
     int n_matched_symbols =

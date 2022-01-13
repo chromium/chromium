@@ -2,7 +2,6 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Update the firebase project hosting the Super Size UI."""
 
 import argparse
@@ -13,7 +12,6 @@ import subprocess
 import sys
 import tempfile
 import uuid
-
 
 FIREBASE_PROJECT = 'chrome-supersize'
 PROD_URL = 'https://chrome-supersize.firebaseapp.com/'
@@ -135,11 +133,8 @@ def main():
                                      help='Deploy to prod.')
   options = parser.parse_args()
 
-  message = (
-  """This script deploys the contents of //tools/binary_size/libsupersize/static
-to firebase hosting at chrome-supersize.firebaseapp.com. Please ensure you have
-read the instructions at //tools/binary_size/libsupersize/static/README.md first
-before running this. Are you sure you want to continue?""")
+  message = (f'This script deploys the viewer to {PROD_URL}.\n'
+             'Are you sure you want to continue?')
 
   if options.deploy_mode != PROD or _Prompt(message):
     _CheckFirebaseCLI()

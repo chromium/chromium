@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_GROUPED_PATH_H_
-#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_GROUPED_PATH_H_
+#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_GROUPED_PATH_H_
+#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_GROUPED_PATH_H_
 
 #include <stddef.h>
 
@@ -50,11 +50,11 @@ std::ostream& operator<<(std::ostream& os, const GroupedPath& path);
 namespace std {
 template <>
 struct hash<caspian::GroupedPath> {
-  std::size_t operator()(const caspian::GroupedPath& grouped_path) const
-      noexcept {
+  std::size_t operator()(
+      const caspian::GroupedPath& grouped_path) const noexcept {
     return std::hash<std::string_view>{}(grouped_path.group) ^
            std::hash<std::string_view>{}(grouped_path.path);
   }
 };
 }  // namespace std
-#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_GROUPED_PATH_H_
+#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_GROUPED_PATH_H_

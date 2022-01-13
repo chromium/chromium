@@ -108,6 +108,7 @@ function restartWorker() {
         window.supersize.worker.loadTree('from-url://',
           authResponse.access_token));
   } else {
-    window.supersize.treeReady = window.supersize.worker.loadTree('from-url://');
+    window.supersize.treeReady = window.supersize.worker.loadTree(
+        'from-url://');
   }
 })()

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "tools/binary_size/libsupersize/caspian/tree_builder.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/tree_builder.h"
 
 #include <algorithm>
 #include <iostream>

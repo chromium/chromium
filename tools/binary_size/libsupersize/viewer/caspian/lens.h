@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_LENS_H_
-#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_LENS_H_
+#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_LENS_H_
+#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_LENS_H_
 
 #include <string_view>
 
@@ -42,4 +42,4 @@ class GeneratedLens : public BaseLens {
 };
 }  // namespace caspian
 
-#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_LENS_H_
+#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_LENS_H_

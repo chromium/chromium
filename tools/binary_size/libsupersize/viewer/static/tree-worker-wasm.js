@@ -108,9 +108,9 @@ function looksLikeGoogleCloudStorage(url) {
 }
 
 function parseGoogleCloudStorageUrl(url) {
-  const re = /^https:\/\/storage\.googleapis\.com\/(?<bucket>[^\/]+)\/(?<file>.+)/;
+  const re = /^https:\/\/storage\.googleapis\.com\/(?<bkt>[^\/]+)\/(?<file>.+)/;
   const match = re.exec(url);
-  const bucket = encodeURIComponent(match.groups['bucket']);
+  const bucket = encodeURIComponent(match.groups['bkt']);
   const file = encodeURIComponent(match.groups['file']);
   return {bucket, file};
 }
@@ -256,7 +256,9 @@ function parseOptions(options) {
 }
 
 const actions = {
-  /** @param {{input:string|null,accessToken:string|null,options:string}} param0 */
+  /**
+   * @param {{input:string|null,accessToken:string|null,options:string}} param0
+   */
   load({input, accessToken, options}) {
     const {
       groupBy,

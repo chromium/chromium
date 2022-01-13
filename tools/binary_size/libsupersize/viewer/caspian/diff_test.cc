@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "tools/binary_size/libsupersize/caspian/diff.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
 
 #include <stdint.h>
 
@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "tools/binary_size/libsupersize/caspian/model.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace caspian {
 namespace {

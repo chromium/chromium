@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_MODEL_H_
-#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_MODEL_H_
+#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_MODEL_H_
+#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_MODEL_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -18,7 +18,7 @@
 #include <vector>
 
 #include "third_party/jsoncpp/source/include/json/json.h"
-#include "tools/binary_size/libsupersize/caspian/grouped_path.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/grouped_path.h"
 
 // Copied from representation in tools/binary_size/libsupersize/models.py
 
@@ -380,4 +380,4 @@ struct TreeNode {
 };
 
 }  // namespace caspian
-#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_MODEL_H_
+#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_MODEL_H_

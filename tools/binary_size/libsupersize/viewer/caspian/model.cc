@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "tools/binary_size/libsupersize/caspian/model.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 #include <algorithm>
 #include <iostream>
@@ -11,8 +11,8 @@
 #include <tuple>
 #include <unordered_map>
 
-#include "tools/binary_size/libsupersize/caspian/file_format.h"
-#include "tools/binary_size/libsupersize/caspian/function_signature.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/function_signature.h"
 
 namespace caspian {
 

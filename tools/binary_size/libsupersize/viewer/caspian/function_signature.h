@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_FUNCTION_SIGNATURE_H_
-#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_FUNCTION_SIGNATURE_H_
+#ifndef TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_FUNCTION_SIGNATURE_H_
+#define TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_FUNCTION_SIGNATURE_H_
 
 #include <deque>
 #include <string>
@@ -57,4 +57,4 @@ std::string NormalizeTopLevelClangLambda(std::string_view name,
 std::string StripTemplateArgs(std::string_view name);
 }  // namespace caspian
 
-#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_CASPIAN_FUNCTION_SIGNATURE_H_
+#endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_FUNCTION_SIGNATURE_H_
