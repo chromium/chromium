@@ -698,10 +698,9 @@ void BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(
     const std::string& user_id_hash) {
   int count = GetMigrationAttemptCountForUser(local_state, user_id_hash);
   count += 1;
-  DictionaryPrefUpdateDeprecated update(local_state,
-                                        kMigrationAttemptCountPref);
-  base::DictionaryValue* dict = update.Get();
-  dict->SetKey(user_id_hash, base::Value(count));
+  DictionaryPrefUpdate update(local_state, kMigrationAttemptCountPref);
+  base::Value* dict = update.Get();
+  dict->SetIntKey(user_id_hash, count);
 }
 
 // static
@@ -717,9 +716,8 @@ int BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
 void BrowserDataMigratorImpl::ClearMigrationAttemptCountForUser(
     PrefService* local_state,
     const std::string& user_id_hash) {
-  DictionaryPrefUpdateDeprecated update(local_state,
-                                        kMigrationAttemptCountPref);
-  base::DictionaryValue* dict = update.Get();
+  DictionaryPrefUpdate update(local_state, kMigrationAttemptCountPref);
+  base::Value* dict = update.Get();
   dict->RemoveKey(user_id_hash);
 }
 

@@ -550,7 +550,7 @@ base::Version GetDataVer(PrefService* local_state,
                          const std::string& user_id_hash) {
   const base::Value* data_versions = local_state->GetDictionary(kDataVerPref);
   const std::string* data_version_str =
-      data_versions->FindStringPath(user_id_hash);
+      data_versions->FindStringKey(user_id_hash);
 
   if (!data_version_str)
     return base::Version();
@@ -562,9 +562,9 @@ void RecordDataVer(PrefService* local_state,
                    const std::string& user_id_hash,
                    const base::Version& version) {
   DCHECK(version.IsValid());
-  DictionaryPrefUpdateDeprecated update(local_state, kDataVerPref);
-  base::DictionaryValue* dict = update.Get();
-  dict->SetString(user_id_hash, version.GetString());
+  DictionaryPrefUpdate update(local_state, kDataVerPref);
+  base::Value* dict = update.Get();
+  dict->SetStringKey(user_id_hash, version.GetString());
 }
 
 bool IsDataWipeRequired(const std::string& user_id_hash) {
@@ -729,17 +729,17 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
 
 void SetProfileMigrationCompletedForUser(PrefService* local_state,
                                          const std::string& user_id_hash) {
-  DictionaryPrefUpdateDeprecated update(local_state,
-                                        kProfileMigrationCompletedForUserPref);
-  base::DictionaryValue* dict = update.Get();
+  DictionaryPrefUpdate update(local_state,
+                              kProfileMigrationCompletedForUserPref);
+  base::Value* dict = update.Get();
   dict->SetBoolKey(user_id_hash, true);
 }
 
 void ClearProfileMigrationCompletedForUser(PrefService* local_state,
                                            const std::string& user_id_hash) {
-  DictionaryPrefUpdateDeprecated update(local_state,
-                                        kProfileMigrationCompletedForUserPref);
-  base::DictionaryValue* dict = update.Get();
+  DictionaryPrefUpdate update(local_state,
+                              kProfileMigrationCompletedForUserPref);
+  base::Value* dict = update.Get();
   dict->RemoveKey(user_id_hash);
 }
 
