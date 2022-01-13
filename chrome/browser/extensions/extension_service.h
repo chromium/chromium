@@ -469,6 +469,10 @@ class ExtensionService : public ExtensionServiceInterface,
   }
 
   void UninstallMigratedExtensionsForTest() { UninstallMigratedExtensions(); }
+
+  void ProfileMarkedForPermanentDeletionForTesting() {
+    OnProfileMarkedForPermanentDeletion(profile_);
+  }
 #endif
 
   void set_browser_terminating_for_test(bool value) {

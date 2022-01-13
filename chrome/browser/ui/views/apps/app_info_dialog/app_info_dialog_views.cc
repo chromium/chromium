@@ -114,6 +114,12 @@ void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
   }
 }
 
+base::OnceCallback<void(AppInfoDialog*)>&
+AppInfoDialog::InstanceCallbackForTesting() {
+  static base::NoDestructor<base::OnceCallback<void(AppInfoDialog*)>> callback;
+  return *callback;
+}
+
 AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
     : profile_(profile), app_id_(app->id()) {
   views::BoxLayout* layout =
@@ -174,8 +180,12 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
     dialog_footer_ = AddChildView(std::move(dialog_footer));
   }
 
-  // Close the dialog if the app is uninstalled, or if the profile is destroyed.
+  // Close the dialog if the app is uninstalled, unloaded, or if the profile is
+  // destroyed.
   StartObservingExtensionRegistry();
+
+  if (InstanceCallbackForTesting())
+    std::move(InstanceCallbackForTesting()).Run(this);
 }
 
 AppInfoDialog::~AppInfoDialog() {
@@ -197,6 +207,16 @@ void AppInfoDialog::StopObservingExtensionRegistry() {
   if (extension_registry_)
     extension_registry_->RemoveObserver(this);
   extension_registry_ = nullptr;
+}
+
+void AppInfoDialog::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  if (extension->id() != app_id_)
+    return;
+
+  Close();
 }
 
 void AppInfoDialog::OnExtensionUninstalled(

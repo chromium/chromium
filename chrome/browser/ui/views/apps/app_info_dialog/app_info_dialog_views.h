@@ -33,6 +33,9 @@ class AppInfoDialog : public views::View,
                       public extensions::ExtensionRegistryObserver {
  public:
   METADATA_HEADER(AppInfoDialog);
+
+  static base::OnceCallback<void(AppInfoDialog*)>& InstanceCallbackForTesting();
+
   AppInfoDialog(Profile* profile, const extensions::Extension* app);
   AppInfoDialog(const AppInfoDialog&) = delete;
   AppInfoDialog& operator=(const AppInfoDialog&) = delete;
@@ -50,6 +53,9 @@ class AppInfoDialog : public views::View,
   void StopObservingExtensionRegistry();
 
   // Overridden from extensions::ExtensionRegistryObserver:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
