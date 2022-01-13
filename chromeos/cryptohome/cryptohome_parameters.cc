@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "components/account_id/account_id.h"
@@ -136,15 +137,8 @@ void KeyDefinition::ProviderData::operator=(const ProviderData& other) {
 KeyDefinition::ProviderData::~ProviderData() = default;
 
 bool KeyDefinition::ProviderData::operator==(const ProviderData& other) const {
-  const bool has_number = number != nullptr;
-  const bool other_has_number = other.number != nullptr;
-  const bool has_bytes = bytes != nullptr;
-  const bool other_has_bytes = other.bytes != nullptr;
-  return name == other.name &&
-         has_number == other_has_number &&
-         has_bytes == other_has_bytes &&
-         (!has_number || (*number == *other.number)) &&
-         (!has_bytes || (*bytes == *other.bytes));
+  return name == other.name && base::ValuesEquivalent(number, other.number) &&
+         base::ValuesEquivalent(bytes, other.bytes);
 }
 
 bool KeyDefinition::Policy::operator==(const Policy& other) const {

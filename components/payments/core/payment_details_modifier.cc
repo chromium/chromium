@@ -4,6 +4,7 @@
 
 #include "components/payments/core/payment_details_modifier.h"
 
+#include "base/memory/values_equivalent.h"
 #include "base/values.h"
 
 namespace payments {
@@ -44,8 +45,7 @@ PaymentDetailsModifier& PaymentDetailsModifier::operator=(
 bool PaymentDetailsModifier::operator==(
     const PaymentDetailsModifier& other) const {
   return method_data == other.method_data &&
-         ((!total && !other.total) ||
-          (total && other.total && *total == *other.total)) &&
+         base::ValuesEquivalent(total, other.total) &&
          additional_display_items == other.additional_display_items;
 }
 

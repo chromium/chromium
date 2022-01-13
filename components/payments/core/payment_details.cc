@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/values_equivalent.h"
 #include "base/values.h"
 
 namespace payments {
@@ -51,9 +52,7 @@ PaymentDetails& PaymentDetails::operator=(const PaymentDetails& other) {
 }
 
 bool PaymentDetails::operator==(const PaymentDetails& other) const {
-  return id == other.id &&
-         ((!total && !other.total) ||
-          (total && other.total && *total == *other.total)) &&
+  return id == other.id && base::ValuesEquivalent(total, other.total) &&
          display_items == other.display_items &&
          shipping_options == other.shipping_options &&
          modifiers == other.modifiers && error == other.error;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/values_equivalent.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,12 +25,7 @@ MATCHER_P3(PrefValueMatches, prefs, pref_name, value, "") {
   if (!pref)
     return false;
 
-  const base::Value* actual_value = pref->GetValue();
-  if (!actual_value)
-    return value == NULL;
-  if (!value)
-    return actual_value == NULL;
-  return *value == *actual_value;
+  return base::ValuesEquivalent(value, pref->GetValue());
 }
 
 // A mock for testing preference notifications and easy setup of expectations.

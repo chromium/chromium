@@ -4,10 +4,12 @@
 
 #include "services/network/public/cpp/origin_policy.h"
 
+#include "base/memory/values_equivalent.h"
+
 namespace network {
 bool operator==(const OriginPolicyContentsPtr& a,
                 const OriginPolicyContentsPtr& b) {
-  return (a.get() == b.get()) || (a && b && *a == *b);
+  return base::ValuesEquivalent(a, b);
 }
 
 bool operator!=(const OriginPolicyContentsPtr& a,
