@@ -3384,17 +3384,7 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   bool got_new_fragment = &old_result->PhysicalFragment() != &fragment;
   if (got_new_fragment) {
-    // Clear associations with the LayoutObjects and the items in the *first*
-    // box fragment. We only ever associate LayoutObjects with the items in the
-    // first box fragment, but this doesn't take place until we have added all
-    // the fragments for the node. Therefore we need to clean up this now,
-    // regardless of which index we're at. This means that we're potentially
-    // doing duplicate work here (for each fragment we replace), but only if
-    // we're split into multiple box fragments.
-    // TODO(layout-dev): Make this work for multiple box fragments (block
-    // fragmentation).
-    if (To<NGPhysicalBoxFragment>(layout_results_[0]->PhysicalFragment())
-            .HasItems()) {
+    if (HasFragmentItems()) {
       if (!index)
         InvalidateItems(*old_result);
       NGFragmentItems::ClearAssociatedFragments(this);
@@ -3444,9 +3434,7 @@ void LayoutBox::ClearLayoutResults() {
     InvalidateItems(*measure_result_);
   measure_result_ = nullptr;
 
-  if (!layout_results_.IsEmpty() &&
-      To<NGPhysicalBoxFragment>(layout_results_[0]->PhysicalFragment())
-          .IsInlineFormattingContext())
+  if (HasFragmentItems())
     NGFragmentItems::ClearAssociatedFragments(this);
 
   ShrinkLayoutResults(0);
