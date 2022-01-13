@@ -114,6 +114,95 @@ constexpr bool IsIndependentSystemNsAllowed() {
 #endif
 }
 
+int GetCaptureBufferSize(bool need_webrtc_processing,
+                         const media::AudioParameters input_device_params) {
+#if defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+  // TODO(henrika): Re-evaluate whether to use same logic as other platforms.
+  // https://crbug.com/638081
+  return 2 * input_device_params.sample_rate() / 100;
+#else
+  // If audio processing is turned on, require 10ms buffers.
+  if (need_webrtc_processing)
+    return input_device_params.sample_rate() / 100;
+
+  // If audio processing is off and the native hardware buffer size was
+  // provided, use it. It can be harmful, in terms of CPU/power consumption,
+  // to use smaller buffer sizes than the native size
+  // (https://crbug.com/362261).
+  if (int hardware_buffer_size = input_device_params.frames_per_buffer())
+    return hardware_buffer_size;
+
+  // If the buffer size is missing from the MediaStreamDevice, provide 10ms as
+  // a fall-back.
+  //
+  // TODO(miu): Identify where/why the buffer size might be missing, fix the
+  // code, and then require it here. https://crbug.com/638081
+  return input_device_params.sample_rate() / 100;
+#endif
+}
+
+// Will return nullopt if |input_device_params| are not supported.
+absl::optional<media::AudioParameters> ComputeAudioCaptureParams(
+    const media::AudioParameters& input_device_params,
+    const media::AudioProcessingSettings& audio_processing_settings) {
+  // If KEYBOARD_MIC effect is set, change the layout to the corresponding
+  // layout that includes the keyboard mic.
+  media::ChannelLayout channel_layout = input_device_params.channel_layout();
+  if ((input_device_params.effects() & media::AudioParameters::KEYBOARD_MIC) &&
+      audio_processing_settings.transient_noise_suppression) {
+    if (channel_layout == media::CHANNEL_LAYOUT_STEREO) {
+      channel_layout = media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
+      DVLOG(1) << "Changed stereo layout to stereo + keyboard mic layout due "
+               << "to KEYBOARD_MIC effect.";
+    } else {
+      DVLOG(1) << "KEYBOARD_MIC effect ignored, not compatible with layout "
+               << channel_layout;
+    }
+  }
+
+  DVLOG(1) << "Audio input hardware channel layout: " << channel_layout;
+  UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout", channel_layout,
+                            media::CHANNEL_LAYOUT_MAX + 1);
+
+  // Verify that the reported input channel configuration is supported.
+  if (channel_layout != media::CHANNEL_LAYOUT_MONO &&
+      channel_layout != media::CHANNEL_LAYOUT_STEREO &&
+      channel_layout != media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC &&
+      channel_layout != media::CHANNEL_LAYOUT_DISCRETE) {
+    SendLogMessage(
+        base::StringPrintf("EnsureSourceIsStarted() => (ERROR: "
+                           "input channel layout (%d) is not supported.",
+                           static_cast<int>(channel_layout)));
+    return absl::nullopt;
+  }
+
+  DVLOG(1) << "Audio input hardware sample rate: "
+           << input_device_params.sample_rate();
+  media::AudioSampleRate asr;
+  if (media::ToAudioSampleRate(input_device_params.sample_rate(), &asr)) {
+    UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputSampleRate", asr,
+                              media::kAudioSampleRateMax + 1);
+  } else {
+    UMA_HISTOGRAM_COUNTS_1M("WebRTC.AudioInputSampleRateUnexpected",
+                            input_device_params.sample_rate());
+  }
+
+  media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
+      input_device_params.sample_rate(),
+      GetCaptureBufferSize(
+          audio_processing_settings.NeedWebrtcAudioProcessing(),
+          input_device_params));
+  params.set_effects(input_device_params.effects());
+  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
+    DCHECK_LE(input_device_params.channels(), 2);
+    params.set_channels_for_discrete(input_device_params.channels());
+  }
+  DVLOG(1) << params.AsHumanReadableString();
+  CHECK(params.IsValid());
+  return params;
+}
+
 }  // namespace
 
 ProcessedLocalAudioSource::ProcessedLocalAudioSource(
@@ -295,62 +384,6 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     return false;
   }
 
-  // If KEYBOARD_MIC effect is set, change the layout to the corresponding
-  // layout that includes the keyboard mic.
-  media::ChannelLayout channel_layout = device().input.channel_layout();
-  if ((device().input.effects() & media::AudioParameters::KEYBOARD_MIC) &&
-      audio_processing_properties_.goog_experimental_noise_suppression) {
-    if (channel_layout == media::CHANNEL_LAYOUT_STEREO) {
-      channel_layout = media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
-      DVLOG(1) << "Changed stereo layout to stereo + keyboard mic layout due "
-               << "to KEYBOARD_MIC effect.";
-    } else {
-      DVLOG(1) << "KEYBOARD_MIC effect ignored, not compatible with layout "
-               << channel_layout;
-    }
-  }
-
-  DVLOG(1) << "Audio input hardware channel layout: " << channel_layout;
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout", channel_layout,
-                            media::CHANNEL_LAYOUT_MAX + 1);
-
-  // Verify that the reported input channel configuration is supported.
-  if (channel_layout != media::CHANNEL_LAYOUT_MONO &&
-      channel_layout != media::CHANNEL_LAYOUT_STEREO &&
-      channel_layout != media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC &&
-      channel_layout != media::CHANNEL_LAYOUT_DISCRETE) {
-    SendLogMessage(
-        base::StringPrintf("EnsureSourceIsStarted() => (ERROR: "
-                           "input channel layout (%d) is not supported.",
-                           static_cast<int>(channel_layout)));
-    return false;
-  }
-
-  DVLOG(1) << "Audio input hardware sample rate: "
-           << device().input.sample_rate();
-  media::AudioSampleRate asr;
-  if (media::ToAudioSampleRate(device().input.sample_rate(), &asr)) {
-    UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputSampleRate", asr,
-                              media::kAudioSampleRateMax + 1);
-  } else {
-    UMA_HISTOGRAM_COUNTS_1M("WebRTC.AudioInputSampleRateUnexpected",
-                            device().input.sample_rate());
-  }
-
-  // Determine the audio format required of the AudioCapturerSource. Then,
-  // pass that to the |media_stream_audio_processor_| and set the output format
-  // of this ProcessedLocalAudioSource to the processor's output format.
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                channel_layout, device().input.sample_rate(),
-                                device().input.sample_rate() / 100);
-  params.set_effects(device().input.effects());
-  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
-    DCHECK_LE(device().input.channels(), 2);
-    params.set_channels_for_discrete(device().input.channels());
-  }
-  DVLOG(1) << params.AsHumanReadableString();
-  DCHECK(params.IsValid());
-
   // If system level echo cancellation is active, flag any other active system
   // level effects to the media stream audio processor.
   if (audio_processing_properties_.echo_cancellation_type ==
@@ -371,34 +404,50 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     }
   }
 
-  media::AudioSourceParameters source_params(device().session_id());
+  // No more modifications of |audio_processing_properties_| after this line.
+  media::AudioProcessingSettings audio_processing_settings(
+      audio_processing_properties_.ToAudioProcessingSettings(
+          num_requested_channels_ > 1));
+
+  // Determine the audio format required of the AudioCapturerSource. Then,
+  // pass that to the |media_stream_audio_processor_| and set the output format
+  // of this ProcessedLocalAudioSource to the processor's output format.
+  auto maybe_audio_capture_params =
+      ComputeAudioCaptureParams(device().input, audio_processing_settings);
+  if (!maybe_audio_capture_params)  // Unsupported configuration.
+    return false;
+
+  media::AudioParameters& audio_capture_params = *maybe_audio_capture_params;
+
   blink::WebRtcLogMessage("Using APM in renderer process.");
-  bool use_multichannel_processing = num_requested_channels_ > 1;
+
   // This callback has to be valid until MediaStreamAudioProcessor is stopped,
   // which happens in EnsureSourceIsStopped().
   MediaStreamAudioProcessor::DeliverProcessedAudioCallback processing_callback =
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &ProcessedLocalAudioSource::DeliverProcessedAudio,
           CrossThreadUnretained(this)));
+
   media_stream_audio_processor_ =
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          std::move(processing_callback), audio_processing_properties_,
-          use_multichannel_processing, rtc_audio_device);
-  params.set_frames_per_buffer(GetBufferSize(device().input.sample_rate()));
-  media_stream_audio_processor_->OnCaptureFormatChanged(params);
+          std::move(processing_callback), audio_processing_settings,
+          rtc_audio_device);
+  media_stream_audio_processor_->OnCaptureFormatChanged(audio_capture_params);
+
   SetFormat(media_stream_audio_processor_->OutputFormat());
 
   // Start the source.
   SendLogMessageWithSessionId(base::StringPrintf(
       "EnsureSourceIsStarted() => (WebRTC audio source starts: "
       "input_parameters=[%s], output_parameters=[%s])",
-      params.AsHumanReadableString().c_str(),
+      audio_capture_params.AsHumanReadableString().c_str(),
       GetAudioParameters().AsHumanReadableString().c_str()));
   auto* web_frame =
       static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(consumer_frame_));
+  media::AudioSourceParameters source_params(device().session_id());
   scoped_refptr<media::AudioCapturerSource> new_source =
       Platform::Current()->NewAudioCapturerSource(web_frame, source_params);
-  new_source->Initialize(params, this);
+  new_source->Initialize(audio_capture_params, this);
   // We need to set the AGC control before starting the stream.
   new_source->SetAutomaticGainControl(true);
   source_ = std::move(new_source);
@@ -538,33 +587,6 @@ void ProcessedLocalAudioSource::DeliverProcessedAudio(
         CrossThreadBindOnce(&ProcessedLocalAudioSource::SetVolume,
                             weak_factory_.GetWeakPtr(), *new_volume));
   }
-}
-
-int ProcessedLocalAudioSource::GetBufferSize(int sample_rate) const {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-#if defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
-  // TODO(henrika): Re-evaluate whether to use same logic as other platforms.
-  // https://crbug.com/638081
-  return (2 * sample_rate / 100);
-#else
-  // If audio processing is turned on, require 10ms buffers.
-  if (media_stream_audio_processor_->has_webrtc_audio_processing())
-    return (sample_rate / 100);
-
-  // If audio processing is off and the native hardware buffer size was
-  // provided, use it. It can be harmful, in terms of CPU/power consumption,
-  // to use smaller buffer sizes than the native size
-  // (https://crbug.com/362261).
-  if (int hardware_buffer_size = device().input.frames_per_buffer())
-    return hardware_buffer_size;
-
-  // If the buffer size is missing from the MediaStreamDevice, provide 10ms as
-  // a fall-back.
-  //
-  // TODO(miu): Identify where/why the buffer size might be missing, fix the
-  // code, and then require it here. https://crbug.com/638081
-  return (sample_rate / 100);
-#endif
 }
 
 }  // namespace blink

@@ -22,15 +22,13 @@ namespace blink {
 
 MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
-    const AudioProcessingProperties& properties,
-    bool use_capture_multi_channel_processing,
+    const media::AudioProcessingSettings& settings,
     scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source)
     : audio_processor_(std::move(deliver_processed_audio_callback),
                        /*log_callback=*/
                        ConvertToBaseRepeatingCallback(
                            CrossThreadBindRepeating(&WebRtcLogMessage)),
-                       properties.ToAudioProcessingSettings(
-                           use_capture_multi_channel_processing)),
+                       settings),
       playout_data_source_(std::move(playout_data_source)),
       main_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
       aec_dump_agent_impl_(AecDumpAgentImpl::Create(this)),

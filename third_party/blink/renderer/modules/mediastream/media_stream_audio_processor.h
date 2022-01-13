@@ -23,6 +23,7 @@
 
 namespace media {
 class AudioBus;
+struct AudioProcessingSettings;
 }  // namespace media
 
 namespace blink {
@@ -56,20 +57,14 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // thread.
   MediaStreamAudioProcessor(
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
-      const AudioProcessingProperties& properties,
-      bool use_capture_multi_channel_processing,
+      const media::AudioProcessingSettings& settings,
       scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source);
 
   MediaStreamAudioProcessor(const MediaStreamAudioProcessor&) = delete;
   MediaStreamAudioProcessor& operator=(const MediaStreamAudioProcessor&) =
       delete;
 
-  // Called when the format of the capture data has changed.
-  // Called on the main render thread. The caller is responsible for stopping
-  // the capture thread before calling this method.
-  // After this method, the capture thread will be changed to a new capture
-  // thread.
-  void OnCaptureFormatChanged(const media::AudioParameters& source_params);
+  void OnCaptureFormatChanged(const media::AudioParameters& input_format);
 
   // Processes and delivers capture audio,
   // See media::AudioProcessor::ProcessCapturedAudio for API details.

@@ -57,6 +57,12 @@ struct MEDIA_EXPORT AudioProcessingSettings {
            force_apm_creation == b.force_apm_creation;
   }
 
+  bool NeedWebrtcAudioProcessing() const {
+    return echo_cancellation || force_apm_creation || noise_suppression ||
+           high_pass_filter || automatic_gain_control ||
+           transient_noise_suppression;
+  }
+
   // Stringifies the settings for human-readable logging.
   std::string ToString() const;
 };

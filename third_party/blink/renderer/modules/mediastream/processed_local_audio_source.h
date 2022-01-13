@@ -122,10 +122,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // Update the device (source) mic volume.
   void SetVolume(double volume);
 
-  // Helper function to get the source buffer size based on whether audio
-  // processing will take place.
-  int GetBufferSize(int sample_rate) const;
-
   // Helper method which sends the log |message| to a native WebRTC log and
   // adds the current session ID (from the associated media stream device) to
   // make the log unique.
