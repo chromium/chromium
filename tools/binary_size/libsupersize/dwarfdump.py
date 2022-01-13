@@ -4,8 +4,11 @@
 # found in the LICENSE file.
 """Runs dwarfdump on passed-in .so."""
 
+import argparse
 import bisect
 import dataclasses
+import logging
+import os
 import subprocess
 import typing
 
@@ -200,3 +203,21 @@ def _ExtractDwValue(line):
     lparen_index += 1
     rparen_index -= 1
   return line[lparen_index + 1:rparen_index]
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('dwarf_dump_output', type=os.path.realpath)
+
+  args = parser.parse_args()
+  logging.basicConfig(level=logging.DEBUG,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+
+  with open(args.dwarf_dump_output, 'r') as f:
+    source_mapper = CreateAddressSourceMapperForTest(f.read().splitlines())
+  logging.warning('Found %d source paths across %s ranges',
+                  source_mapper.NumberOfPaths(), source_mapper.num_ranges)
+
+
+if __name__ == '__main__':
+  main()
