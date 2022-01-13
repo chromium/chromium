@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -65,7 +66,7 @@ constexpr char kNormalReportingSettingsPref[] = R"([
 constexpr char kAffiliationId2[] = "affiliation-id-2";
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
 constexpr char kUsername1[] = "user@domain1.com";
 constexpr char kUsername2[] = "admin@domain2.com";
@@ -111,7 +112,7 @@ class ConnectorsServiceProfileBrowserTest
       ManagementStatus management_status)
       : management_status_(management_status) {
     if (management_status_ != ManagementStatus::UNMANAGED) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       policy::SetDMTokenForTesting(
           policy::DMToken::CreateValidTokenForTesting(kFakeBrowserDMToken));
 #else
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetReportingSettings(connector());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -351,7 +352,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
 
   void ValidateClientMetadata(const ClientMetadata& metadata,
                               bool profile_reporting) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     bool includes_device_info =
         management_status() == ManagementStatus::AFFILIATED;
 #else
@@ -393,7 +394,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
       ASSERT_EQ(metadata.device().dm_token(),
                 *reporting_metadata.FindStringPath("device.dmToken"));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
       ASSERT_TRUE(metadata.device().has_client_id());
       ASSERT_EQ(metadata.device().client_id(),
                 *reporting_metadata.FindStringPath("device.clientId"));
@@ -469,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                            /*profile_reporting*/ false);
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ((management_status() == ManagementStatus::UNAFFILIATED) ? kDomain2
                                                                     : kDomain1,
             ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
@@ -488,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -536,7 +537,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -597,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAppliedRealTimeUrlCheck();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(maybe_dm_token.has_value());
     ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);

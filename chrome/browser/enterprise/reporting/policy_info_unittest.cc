@@ -23,11 +23,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace em = enterprise_management;
 
@@ -134,7 +134,7 @@ TEST_F(PolicyInfoTest, ChromePolicy) {
   EXPECT_NE("", policy2.error());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PolicyInfoTest, ExtensionPolicy) {
   EXPECT_CALL(*policy_service(), GetPolicies(_)).Times(3);
   extensions::ExtensionRegistry* extension_registry =
@@ -177,7 +177,7 @@ TEST_F(PolicyInfoTest, ExtensionPolicy) {
   EXPECT_EQ(em::Policy_PolicySource_SOURCE_PLATFORM, policy1.source());
   EXPECT_NE(std::string(), policy1.error());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PolicyInfoTest, MachineLevelUserCloudPolicyFetchTimestamp) {
   em::ChromeUserProfileInfo profile_info;

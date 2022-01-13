@@ -58,13 +58,13 @@ bool UserAcceptedAccountManagement(Profile* profile);
 // management through the enterprise account confirmation dialog.
 bool ProfileCanBeManaged(Profile* profile);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // Returns the UTF8-encoded string representation of the entity that manages
 // `profile` or nullopt if unmanaged. `profile` must be not-null.
 std::string GetAccountManagerName(Profile* profile);
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_util
 }  // namespace chrome

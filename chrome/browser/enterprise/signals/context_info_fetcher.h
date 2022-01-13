@@ -105,7 +105,7 @@ class ContextInfoFetcher {
   raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
 };
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 class ScopedUfwConfigPathForTesting {
  public:
   explicit ScopedUfwConfigPathForTesting(const char* path);
@@ -118,7 +118,7 @@ class ScopedUfwConfigPathForTesting {
  private:
   const char* initial_path_;
 };
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace enterprise_signals
 

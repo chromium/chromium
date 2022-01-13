@@ -986,7 +986,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
 }
 
 // Flaky on Mac: https://crbug.com/1143782:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FileIsEncrypted_PolicyAllows DISABLED_FileIsEncrypted_PolicyAllows
 #else
 #define MAYBE_FileIsEncrypted_PolicyAllows FileIsEncrypted_PolicyAllows

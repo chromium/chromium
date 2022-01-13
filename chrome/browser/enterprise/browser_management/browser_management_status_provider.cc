@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -66,10 +66,10 @@ LocalBrowserManagementStatusProvider::GetAuthority() {
   if (g_browser_process->browser_policy_connector()
           ->HasMachineLevelPolicies()) {
     result = EnterpriseManagementAuthority::COMPUTER_LOCAL;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain())
       result = EnterpriseManagementAuthority::DOMAIN_LOCAL;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
   return result;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

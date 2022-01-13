@@ -27,16 +27,16 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "net/dns/public/resolv_reader.h"
 #include "net/dns/public/scoped_res_state.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <netfw.h>
 #include <windows.h>
 #include <wrl/client.h>
@@ -52,7 +52,7 @@ namespace enterprise_signals {
 
 namespace {
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 const char** GetUfwConfigPath() {
   static const char* path = "/etc/ufw/ufw.conf";
   return &path;
@@ -81,9 +81,9 @@ SettingValue GetUfwStatus() {
   else
     return SettingValue::UNKNOWN;
 }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SettingValue GetWinOSFirewall() {
   Microsoft::WRL::ComPtr<INetFwPolicy2> firewall_policy;
   HRESULT hr = CoCreateInstance(CLSID_NetFwPolicy2, nullptr, CLSCTX_ALL,
@@ -119,7 +119,7 @@ SettingValue GetWinOSFirewall() {
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 SettingValue GetMacOSFirewall() {
   // There is no official Apple documentation on how to obtain the enabled
   // status of the firewall (System Preferences> Security & Privacy> Firewall).
@@ -225,7 +225,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.password_protection_warning_trigger =
       utils::GetPasswordProtectionWarningTrigger(profile->GetPrefs());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
       .get()
       ->PostTaskAndReplyWithResult(
@@ -273,11 +273,11 @@ std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
 }
 
 SettingValue ContextInfoFetcher::GetOSFirewall() {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   return GetUfwStatus();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return GetWinOSFirewall();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return GetMacOSFirewall();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return GetChromeosFirewall();
@@ -286,7 +286,7 @@ SettingValue ContextInfoFetcher::GetOSFirewall() {
 #endif
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 ScopedUfwConfigPathForTesting::ScopedUfwConfigPathForTesting(const char* path)
     : initial_path_(*GetUfwConfigPath()) {
   *GetUfwConfigPath() = path;
@@ -295,11 +295,11 @@ ScopedUfwConfigPathForTesting::ScopedUfwConfigPathForTesting(const char* path)
 ScopedUfwConfigPathForTesting::~ScopedUfwConfigPathForTesting() {
   *GetUfwConfigPath() = initial_path_;
 }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
   std::vector<std::string> dns_addresses;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   std::unique_ptr<net::ScopedResState> res = net::ResolvReader().GetResState();
   if (res) {
     absl::optional<std::vector<net::IPEndPoint>> nameservers =
@@ -314,7 +314,7 @@ std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
       }
     }
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   absl::optional<std::vector<net::IPEndPoint>> nameservers;
   absl::optional<net::WinDnsSystemSettings> settings =
       net::ReadWinSystemDnsSettings();

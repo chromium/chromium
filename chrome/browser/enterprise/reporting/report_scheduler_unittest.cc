@@ -37,12 +37,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -62,7 +62,7 @@ constexpr char kDMToken[] = "dm_token";
 constexpr char kClientId[] = "client_id";
 constexpr base::TimeDelta kDefaultUploadInterval = base::Hours(24);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kUploadTriggerMetricName[] =
     "Enterprise.CloudReportingUploadTrigger";
 #endif
@@ -79,7 +79,7 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
 
 class MockReportGenerator : public ReportGenerator {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   explicit MockReportGenerator(
       ReportingDelegateFactoryAndroid* delegate_factory)
       : ReportGenerator(delegate_factory) {}
@@ -87,7 +87,7 @@ class MockReportGenerator : public ReportGenerator {
   explicit MockReportGenerator(
       ReportingDelegateFactoryDesktop* delegate_factory)
       : ReportGenerator(delegate_factory) {}
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   void Generate(ReportType report_type, ReportCallback callback) override {
     OnGenerate(report_type, callback);
   }
@@ -110,7 +110,7 @@ class MockReportUploader : public ReportUploader {
 
 class MockRealTimeReportGenerator : public RealTimeReportGenerator {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   explicit MockRealTimeReportGenerator(
       ReportingDelegateFactoryAndroid* delegate_factory)
       : RealTimeReportGenerator(delegate_factory) {}
@@ -118,7 +118,7 @@ class MockRealTimeReportGenerator : public RealTimeReportGenerator {
   explicit MockRealTimeReportGenerator(
       ReportingDelegateFactoryDesktop* delegate_factory)
       : RealTimeReportGenerator(delegate_factory) {}
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   MOCK_METHOD2(Generate,
                std::vector<std::unique_ptr<google::protobuf::MessageLite>>(
@@ -253,22 +253,22 @@ class ReportSchedulerTest : public ::testing::Test {
 #endif
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void TriggerExtensionRequestReport(Profile* profile) {
     static_cast<ReportSchedulerDesktop*>(scheduler_->GetDelegateForTesting())
         ->TriggerExtensionRequest(profile);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   TestingProfileManager profile_manager_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ReportingDelegateFactoryAndroid report_delegate_factory_;
 #else
   ReportingDelegateFactoryDesktop report_delegate_factory_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ReportScheduler> scheduler_;
   raw_ptr<policy::MockCloudPolicyClient> client_;
   raw_ptr<MockReportGenerator> generator_;
@@ -490,7 +490,7 @@ TEST_F(ReportSchedulerTest, ReportingIsDisabledWhileNewReportIsPosted) {
 }
 
 // Android does not support version updates nor extensions
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -700,6 +700,6 @@ TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 5, 1);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_reporting

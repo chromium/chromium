@@ -12,9 +12,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/component_updater/pref_names.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise_signals {
 namespace utils {
@@ -53,7 +53,7 @@ safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel(
 
 absl::optional<bool> GetThirdPartyBlockingEnabled(PrefService* local_state) {
   DCHECK(local_state);
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return local_state->GetBoolean(prefs::kThirdPartyBlockingEnabled);
 #else
   return absl::nullopt;
@@ -76,7 +76,7 @@ GetPasswordProtectionWarningTrigger(PrefService* profile_prefs) {
 
 absl::optional<bool> GetChromeCleanupEnabled(PrefService* local_state) {
   DCHECK(local_state);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return local_state->GetBoolean(prefs::kSwReporterEnabled);
 #else
   return absl::nullopt;

@@ -28,9 +28,9 @@
 #include "device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/upgrade_detector/build_state.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/chrome_constants.h"
@@ -38,17 +38,17 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/test/base/scoped_channel_override.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace em = enterprise_management;
 
@@ -86,7 +86,7 @@ void VerifyBrowserVersionAndChannel(em::BrowserReport* report,
 }
 
 void VerifyBuildState(em::BrowserReport* report) {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   const auto* build_state = g_browser_process->GetBuildState();
   if (build_state->update_type() == BuildState::UpdateType::kNone ||
       !build_state->installed_version()) {
@@ -95,7 +95,7 @@ void VerifyBuildState(em::BrowserReport* report) {
     EXPECT_EQ(report->installed_browser_version(),
               build_state->installed_version()->GetString());
   }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void VerifyExtendedStableChannel(em::BrowserReport* report) {
@@ -107,7 +107,7 @@ void VerifyExtendedStableChannel(em::BrowserReport* report) {
   } else {
     EXPECT_FALSE(report->has_is_extended_stable_channel());
     // On Android, local Chrome branded builds report "CHANNEL_UNKNOWN".
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_NE(report->channel(), em::Channel::CHANNEL_UNKNOWN);
 #endif
   }
@@ -126,7 +126,7 @@ void VerifyProfile(em::BrowserReport* report) {
 }
 
 void VerifyPlugins(em::BrowserReport* report) {
-#if BUILDFLAG(ENABLE_PLUGINS) && !defined(OS_ANDROID) && \
+#if BUILDFLAG(ENABLE_PLUGINS) && !BUILDFLAG(IS_ANDROID) && \
     !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_LE(1, report->plugins_size());
   em::Plugin plugin = report->plugins(0);
@@ -136,17 +136,17 @@ void VerifyPlugins(em::BrowserReport* report) {
   EXPECT_EQ(kPluginDescription, plugin.description());
 #else
   EXPECT_EQ(0, report->plugins_size());
-#endif  // BUILDFLAG(ENABLE_PLUGINS) && !defined(OS_ANDROID) &&
+#endif  // BUILDFLAG(ENABLE_PLUGINS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 typedef ReportingDelegateFactoryAndroid PlatformReportingDelegateFactory;
 #else
 typedef ReportingDelegateFactoryDesktop PlatformReportingDelegateFactory;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class BrowserReportGeneratorTest : public ::testing::Test {
  public:
@@ -203,13 +203,13 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void InitializeUpdate() {
     auto* build_state = g_browser_process->GetBuildState();
     build_state->SetUpdate(BuildState::UpdateType::kNormalUpdate,
                            base::Version("1.2.3.4"), absl::nullopt);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void GenerateAndVerify() {
     base::RunLoop run_loop;
@@ -285,7 +285,7 @@ TEST_F(BrowserReportGeneratorTest, GenerateBasicReportForProfileReporting) {
   GenerateProfileReportAndVerify();
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(BrowserReportGeneratorTest, GenerateBasicReportWithUpdate) {
   InitializeUpdate();
   InitializeProfile();
@@ -293,9 +293,9 @@ TEST_F(BrowserReportGeneratorTest, GenerateBasicReportWithUpdate) {
   InitializePlugin();
   GenerateAndVerify();
 }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(BrowserReportGeneratorTest, ExtendedStableChannel) {
   chrome::ScopedChannelOverride channel_override(
@@ -307,7 +307,7 @@ TEST_F(BrowserReportGeneratorTest, ExtendedStableChannel) {
   InitializePlugin();
   GenerateAndVerify();
 }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
         // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace enterprise_reporting

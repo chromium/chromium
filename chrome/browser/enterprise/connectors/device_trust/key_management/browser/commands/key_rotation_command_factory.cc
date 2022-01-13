@@ -10,9 +10,9 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/win_key_rotation_command.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise_connectors {
 
@@ -37,11 +37,11 @@ KeyRotationCommandFactory* KeyRotationCommandFactory::GetInstance() {
 }
 
 std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_unique<WinKeyRotationCommand>();
 #else
   return nullptr;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // static
