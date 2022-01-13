@@ -43,7 +43,8 @@
   </div>
   <div slot="body" id="container">
     <network-list id="networkList" show-technology-badge
-        networks="[[networks_]]" on-selected="onNetworkSelected_">
+        networks="[[networks_]]" on-selected="onNetworkSelected_"
+        disabled="[[allButtonsDisabled]]">
     </network-list>
   </div>
 </base-page>

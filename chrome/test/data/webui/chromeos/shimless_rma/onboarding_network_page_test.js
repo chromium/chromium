@@ -43,7 +43,7 @@ export function onboardingNetworkPageTest() {
   /**
    * @return {!Promise}
    */
-  function initializeChooseDestinationPage() {
+  function initializeOnboardingNetworkPage() {
     assertFalse(!!component);
 
     component = /** @type {!OnboardingNetworkPage} */ (
@@ -71,7 +71,7 @@ export function onboardingNetworkPageTest() {
   }
 
   test('ComponentRenders', async () => {
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
     assertTrue(!!component);
 
     const networkList = component.shadowRoot.querySelector('#networkList');
@@ -81,7 +81,7 @@ export function onboardingNetworkPageTest() {
 
   test('PopulatesNetworkList', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
 
     const networkList = component.shadowRoot.querySelector('#networkList');
     assertTrue(!!networkList);
@@ -91,7 +91,7 @@ export function onboardingNetworkPageTest() {
 
   test('NetworkSelectionDialog', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
 
     const networkList = component.shadowRoot.querySelector('#networkList');
     component.onNetworkSelected_({detail: networkList.networks[1]});
@@ -108,7 +108,7 @@ export function onboardingNetworkPageTest() {
 
   test('DialogConnectButtonBindsToDialog', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
     await openNetworkConfigDialog();
 
     const connectButton = /** @type {!CrDialogElement} */ (
@@ -124,7 +124,7 @@ export function onboardingNetworkPageTest() {
 
   test('DialogCloses', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
 
     const dialog = /** @type {!CrDialogElement} */ (
         component.shadowRoot.querySelector('#dialog'));
@@ -165,5 +165,14 @@ export function onboardingNetworkPageTest() {
     component.refreshNetworks();
     await flushTasks();
     assertEquals('nextButtonLabel', buttonLabelKey);
+  });
+
+  test('DisableNetworkList', async () => {
+    await initializeOnboardingNetworkPage();
+
+    const networkList = component.shadowRoot.querySelector('#networkList');
+    assertEquals(undefined, networkList.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(networkList.disabled);
   });
 }

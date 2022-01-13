@@ -52,6 +52,12 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   static get properties() {
     return {
       /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
+      /**
        * Array of available networks
        * @protected
        * @type {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
