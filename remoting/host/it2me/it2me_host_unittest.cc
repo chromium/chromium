@@ -272,7 +272,7 @@ void It2MeHostTest::SetPolicies(
         policies) {
   policies_ = std::make_unique<base::DictionaryValue>();
   for (const auto& policy : policies) {
-    policies_->Set(policy.first, policy.second.CreateDeepCopy());
+    policies_->SetKey(policy.first, policy.second.Clone());
   }
   if (it2me_host_) {
     it2me_host_->OnPolicyUpdate(std::move(policies_));
