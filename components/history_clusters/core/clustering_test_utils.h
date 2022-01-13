@@ -19,7 +19,7 @@ class VisitResult {
  public:
   VisitResult(int visit_id,
               float score,
-              const std::vector<history::VisitID>& duplicate_visit_ids = {},
+              const std::vector<VisitResult>& duplicate_visits = {},
               bool is_search_visit = false);
   explicit VisitResult(const history::ClusterVisit& visit);
   VisitResult(const VisitResult& other);
@@ -30,7 +30,7 @@ class VisitResult {
  private:
   const int visit_id_;
   const float score_;
-  const std::vector<history::VisitID> duplicate_visit_ids_;
+  std::vector<VisitResult> duplicate_visits_;
   const bool is_search_visit_;
 };
 

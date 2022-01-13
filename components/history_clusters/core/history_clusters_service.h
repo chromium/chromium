@@ -159,11 +159,6 @@ class HistoryClustersService : public KeyedService {
   // keystroke, the cache may be ready and return true then.
   bool DoesQueryMatchAnyCluster(const std::string& query);
 
-  // Collapses all the duplicate visits into the canonical visits, thereby
-  // "unflattening" the output of the backend. Public for testing purposes.
-  // TODO(tommycli): Move into the backend.
-  static void CollapseDuplicateVisits(std::vector<history::Cluster>* clusters);
-
   // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
   void ClearKeywordCache();
 

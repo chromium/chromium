@@ -212,12 +212,12 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterTwoVisitsTiedByURL) {
 
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0, {1}),
-                                      testing::VisitResult(1, 0.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  2, 1.0, {testing::VisitResult(1, 0.0)}))));
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.ClusterSize.Min", 2, 1);
+      "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.ClusterSize.Max", 2, 1);
+      "History.Clusters.Backend.ClusterSize.Max", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Min", 0, 1);
   histogram_tester.ExpectUniqueSample(
@@ -238,8 +238,8 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, DedupeClusters) {
 
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0, {1}),
-                                      testing::VisitResult(1, 0.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  2, 1.0, {testing::VisitResult(1, 0.0)}))));
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
@@ -297,16 +297,17 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, MultipleClusters) {
   visits.push_back(visit3);
 
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
-                                      testing::VisitResult(4, 1.0, {1}),
-                                      testing::VisitResult(1, 0.0)),
-                          ElementsAre(testing::VisitResult(3, 1.0)),
-                          ElementsAre(testing::VisitResult(10, 1.0))));
+  EXPECT_THAT(
+      testing::ToVisitResults(result_clusters),
+      ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
+                              testing::VisitResult(
+                                  4, 1.0, {testing::VisitResult(1, 0.0)})),
+                  ElementsAre(testing::VisitResult(3, 1.0)),
+                  ElementsAre(testing::VisitResult(10, 1.0))));
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.ClusterSize.Max", 3, 1);
+      "History.Clusters.Backend.ClusterSize.Max", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Min", 0, 1);
   histogram_tester.ExpectUniqueSample(
@@ -412,11 +413,11 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   visits.push_back(visit5);
 
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
-  EXPECT_THAT(
-      testing::ToVisitResults(result_clusters),
-      ElementsAre(ElementsAre(
-          testing::VisitResult(2, 1.0), testing::VisitResult(4, 1.0, {1}),
-          testing::VisitResult(10, 0.5), testing::VisitResult(1, 0.0))));
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(
+                  testing::VisitResult(2, 1.0),
+                  testing::VisitResult(4, 1.0, {testing::VisitResult(1, 0.0)}),
+                  testing::VisitResult(10, 0.5))));
 }
 
 TEST_F(OnDeviceClusteringWithContentBackendTest,
@@ -460,15 +461,16 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
   visits.push_back(visit5);
 
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
-                                      testing::VisitResult(4, 1.0, {1}),
-                                      testing::VisitResult(1, 0.0)),
-                          ElementsAre(testing::VisitResult(10, 1.0))));
+  EXPECT_THAT(
+      testing::ToVisitResults(result_clusters),
+      ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
+                              testing::VisitResult(
+                                  4, 1.0, {testing::VisitResult(1, 0.0)})),
+                  ElementsAre(testing::VisitResult(10, 1.0))));
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.ClusterSize.Max", 3, 1);
+      "History.Clusters.Backend.ClusterSize.Max", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -532,13 +534,14 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
 
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
   ASSERT_EQ(result_clusters.size(), 2u);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0, {1}, true),
-                                      testing::VisitResult(1, 0.0, {}, true)),
-                          ElementsAre(testing::VisitResult(3, 1.0, {}, true))));
+  EXPECT_THAT(
+      testing::ToVisitResults(result_clusters),
+      ElementsAre(ElementsAre(testing::VisitResult(
+                      2, 1.0, {testing::VisitResult(1, 0.0, {}, true)}, true)),
+                  ElementsAre(testing::VisitResult(3, 1.0, {}, true))));
   // Make sure visits are normalized.
   history::Cluster cluster = result_clusters.at(0);
-  ASSERT_EQ(cluster.visits.size(), 2u);
+  ASSERT_EQ(cluster.visits.size(), 1u);
   // The first visit should have its original URL as the normalized URL and
   // also have its entities rewritten.
   history::ClusterVisit better_visit = cluster.visits.at(0);
@@ -558,12 +561,13 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .visibility_score,
               FloatEq(0.5));
   // The second visit should have a normalized URL, but be the worse duplicate.
-  EXPECT_EQ(cluster.visits.at(1).normalized_url,
+  EXPECT_EQ(cluster.visits.at(0).duplicate_visits.at(0).normalized_url,
             GURL("http://default-engine.com/?q=foo"));
-  EXPECT_THAT(cluster.visits.at(1)
+  EXPECT_THAT(cluster.visits.at(0)
+                  .duplicate_visits.at(0)
                   .annotated_visit.content_annotations.model_annotations
                   .visibility_score,
-              FloatEq(-1.0));
+              FloatEq(-1));
 
   history::Cluster cluster2 = result_clusters.at(1);
   ASSERT_EQ(cluster2.visits.size(), 1u);
@@ -580,7 +584,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.ClusterSize.Max", 2, 1);
+      "History.Clusters.Backend.ClusterSize.Max", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Min", 0, 1);
   histogram_tester.ExpectUniqueSample(

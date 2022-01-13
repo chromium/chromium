@@ -9,27 +9,29 @@
 namespace history_clusters {
 namespace testing {
 
-VisitResult::VisitResult(
-    int visit_id,
-    float score,
-    const std::vector<history::VisitID>& duplicate_visit_ids,
-    bool is_search_visit)
+VisitResult::VisitResult(int visit_id,
+                         float score,
+                         const std::vector<VisitResult>& duplicate_visits,
+                         bool is_search_visit)
     : visit_id_(visit_id),
       score_(score),
-      duplicate_visit_ids_(duplicate_visit_ids),
+      duplicate_visits_(duplicate_visits),
       is_search_visit_(is_search_visit) {}
 VisitResult::VisitResult(const history::ClusterVisit& visit)
     : visit_id_(visit.annotated_visit.visit_row.visit_id),
       score_(visit.score),
-      duplicate_visit_ids_(visit.duplicate_visit_ids),
-      is_search_visit_(visit.is_search_visit) {}
+      is_search_visit_(visit.is_search_visit) {
+  for (const auto& duplicate : visit.duplicate_visits) {
+    duplicate_visits_.emplace_back(duplicate);
+  }
+}
 
 VisitResult::VisitResult(const VisitResult& other) = default;
 VisitResult::~VisitResult() = default;
 
 bool VisitResult::operator==(const VisitResult& rhs) const {
   return visit_id_ == rhs.visit_id_ && score_ == rhs.score_ &&
-         duplicate_visit_ids_ == rhs.duplicate_visit_ids_ &&
+         duplicate_visits_ == rhs.duplicate_visits_ &&
          is_search_visit_ == rhs.is_search_visit_;
 }
 

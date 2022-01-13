@@ -67,7 +67,8 @@ TEST_F(OnDeviceClusteringUtilTest, MergeDuplicateVisitIntoCanonicalVisit) {
   canonical_visit.annotated_visit.content_annotations.model_annotations
       .categories.emplace_back("category1", 20);
 
-  MergeDuplicateVisitIntoCanonicalVisit(duplicate_visit, canonical_visit);
+  MergeDuplicateVisitIntoCanonicalVisit(std::move(duplicate_visit),
+                                        canonical_visit);
   EXPECT_TRUE(
       canonical_visit.annotated_visit.context_annotations.omnibox_url_copied);
   EXPECT_TRUE(
@@ -120,20 +121,6 @@ TEST_F(OnDeviceClusteringUtilTest, MergeDuplicateVisitIntoCanonicalVisit) {
           .entities[0]
           .weight,
       20);
-}
-
-TEST_F(OnDeviceClusteringUtilTest, CalculateAllDuplicateVisitsForCluster) {
-  history::ClusterVisit visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/")));
-  history::ClusterVisit visit2 = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/")));
-  visit2.duplicate_visit_ids = {1};
-
-  history::Cluster cluster;
-  cluster.visits = {visit, visit2};
-
-  EXPECT_THAT(CalculateAllDuplicateVisitsForCluster(cluster),
-              UnorderedElementsAre(1));
 }
 
 TEST_F(OnDeviceClusteringUtilTest, SortClusters) {

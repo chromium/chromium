@@ -198,8 +198,9 @@ std::string GetDebugJSONForClusters(
       debug_visit.SetKey("entities", std::move(debug_entities));
 
       base::ListValue debug_duplicate_visits;
-      for (const auto duplicate_visit : visit.duplicate_visit_ids) {
-        debug_duplicate_visits.Append(int(duplicate_visit));
+      for (const auto& duplicate_visit : visit.duplicate_visits) {
+        debug_duplicate_visits.Append(static_cast<int>(
+            duplicate_visit.annotated_visit.visit_row.visit_id));
       }
       debug_visit.SetKey("duplicate_visits", std::move(debug_duplicate_visits));
 
@@ -458,52 +459,6 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
          all_keywords_cache_.contains(query_lower);
 }
 
-// static
-void HistoryClustersService::CollapseDuplicateVisits(
-    std::vector<history::Cluster>* clusters) {
-  DCHECK(clusters);
-  for (auto& cluster : *clusters) {
-    // Identify child visits, i.e. visits that are marked duplicate and are not
-    // canonical. We use the temporary vector `child_visits_vector` in order to
-    // construct the set in 1 go as each set insertion is O(n).
-    std::vector<history::VisitID> child_visits_vector;
-    for (const auto& cluster_visit : cluster.visits) {
-      for (const auto& duplicate_id : cluster_visit.duplicate_visit_ids)
-        child_visits_vector.push_back(duplicate_id);
-    }
-    base::flat_set<history::VisitID> child_visits_set{
-        std::move(child_visits_vector)};
-
-    // Split the visits into child visits, stored in a map for constant lookup
-    // later, and parent visits. Because we're `std::move`ing visits,
-    // `cluster.visits` should not be used after this iteration.
-    base::flat_map<int64_t, history::ClusterVisit> child_visits_map;
-    std::vector<history::ClusterVisit> parent_visits;
-    for (const auto& cluster_visit : cluster.visits) {
-      const auto& id = cluster_visit.annotated_visit.visit_row.visit_id;
-      if (child_visits_set.contains(id))
-        child_visits_map[id] = std::move(cluster_visit);
-      else
-        parent_visits.push_back(std::move(cluster_visit));
-    }
-
-    // Move the child visits into the duplicates vectors of the parents.
-    // Because we're `std::move`ing visits, `child_visits_map` and
-    // should not be used after this iteration. Order matters, `parent_visits`
-    // preserves the order of `cluster.visits`.
-    for (auto& visit : parent_visits) {
-      for (const auto& duplicate_id : visit.duplicate_visit_ids) {
-        DCHECK(child_visits_map.count(duplicate_id));
-        visit.duplicate_visits.push_back(
-            std::move(child_visits_map[duplicate_id]));
-      }
-    }
-    // Transfer the newly constructed unflattened list of parent visits back
-    // into the cluster.
-    cluster.visits = std::move(parent_visits);
-  }
-}
-
 void HistoryClustersService::ClearKeywordCache() {
   all_keywords_cache_timestamp_ = base::Time();
   short_keyword_cache_timestamp_ = base::Time();
@@ -664,7 +619,6 @@ QueryClustersResult HistoryClustersService::PostProcessClusters(
   }
 
   FilterClustersMatchingQuery(query, &raw_clusters);
-  CollapseDuplicateVisits(&raw_clusters);
   result.clusters = raw_clusters;
   return result;
 }

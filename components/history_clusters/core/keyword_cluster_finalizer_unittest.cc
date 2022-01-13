@@ -57,8 +57,8 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
       {"category", 1}};
 
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://baz.com/")));
-  visit3.duplicate_visit_ids.push_back(1);
+      testing::CreateDefaultAnnotatedVisit(3, GURL("https://baz.com/")));
+  visit3.duplicate_visits.push_back(visit);
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
       {"github", 1}, {"otherentity", 1}};
@@ -66,7 +66,7 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
       {"category", 1}};
 
   history::Cluster cluster;
-  cluster.visits = {visit, visit2, visit3};
+  cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
   EXPECT_THAT(cluster.keywords,
               UnorderedElementsAre(u"github", u"otherentity"));
@@ -115,7 +115,7 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
 
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://baz.com/")));
-  visit3.duplicate_visit_ids.push_back(1);
+  visit3.duplicate_visits.push_back(visit);
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
       {"github", 1}, {"otherentity", 1}};
@@ -123,7 +123,7 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
       {"category", 1}};
 
   history::Cluster cluster;
-  cluster.visits = {visit, visit2, visit3};
+  cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
   EXPECT_THAT(cluster.keywords,
               UnorderedElementsAre(u"github", u"category", u"onlyinnoisyvisit",

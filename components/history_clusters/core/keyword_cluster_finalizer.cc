@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 

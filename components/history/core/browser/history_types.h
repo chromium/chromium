@@ -817,16 +817,9 @@ struct ClusterVisit {
   // visit is to the containing cluster.
   float score = 0.0;
 
-  // A list of `VisitID`s considered duplicates of this cluster visit. The best
-  // visit among all the duplicates will list the worse duplicate visit IDs in
-  // its vector. The worse duplicates will have an empty vector here.
-  std::vector<VisitID> duplicate_visit_ids;
-
-  // A list of visits that have been de-duplicated into this visit. After
-  // post-processing by the service, this will be populated with the visits
-  // marked within `duplicate_visit_ids`.
-  // TODO(tommycli): Move the un-flattening into the backend and eliminate
-  // `duplicate_visit_ids`.
+  // A list of visits that have been de-duplicated into this visit. The parent
+  // visit is considered the best visit among all the duplicates, and the worse
+  // visits are now contained here.
   std::vector<ClusterVisit> duplicate_visits;
 
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the

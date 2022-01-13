@@ -10,12 +10,6 @@ namespace history_clusters {
 
 namespace {
 
-bool IsCanonicalVisit(const base::flat_set<history::VisitID>& duplicate_ids,
-                      const history::ClusterVisit& visit) {
-  return duplicate_ids.find(visit.annotated_visit.visit_row.visit_id) ==
-         duplicate_ids.end();
-}
-
 // See https://en.wikipedia.org/wiki/Smoothstep.
 float clamp(float x, float lowerlimit, float upperlimit) {
   if (x < lowerlimit)
@@ -41,25 +35,18 @@ RankingClusterFinalizer::~RankingClusterFinalizer() = default;
 
 void RankingClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   base::flat_map<history::VisitID, VisitScores> url_visit_scores;
-  const base::flat_set<history::VisitID>& duplicate_visit_ids =
-      CalculateAllDuplicateVisitsForCluster(cluster);
 
-  CalculateVisitDurationScores(cluster, url_visit_scores, duplicate_visit_ids);
-  CalculateVisitAttributeScoring(cluster, url_visit_scores,
-                                 duplicate_visit_ids);
-  ComputeFinalVisitScores(cluster, url_visit_scores, duplicate_visit_ids);
+  CalculateVisitDurationScores(cluster, url_visit_scores);
+  CalculateVisitAttributeScoring(cluster, url_visit_scores);
+  ComputeFinalVisitScores(cluster, url_visit_scores);
 }
 
 void RankingClusterFinalizer::CalculateVisitAttributeScoring(
     history::Cluster& cluster,
-    base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-    const base::flat_set<history::VisitID>& duplicate_visit_ids) {
+    base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   for (auto visit_it = cluster.visits.rbegin();
        visit_it != cluster.visits.rend(); ++visit_it) {
     auto& visit = *visit_it;
-    if (!IsCanonicalVisit(duplicate_visit_ids, visit)) {
-      continue;
-    }
     auto it = url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
     if (it == url_visit_scores.end()) {
       auto visit_score = VisitScores();
@@ -85,8 +72,7 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
 
 void RankingClusterFinalizer::CalculateVisitDurationScores(
     history::Cluster& cluster,
-    base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-    const base::flat_set<history::VisitID>& duplicate_visit_ids) {
+    base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   // |max_visit_duration| and |max_foreground_duration| must be > 0 for
   // reshaping between 0 and 1.
   base::TimeDelta max_visit_duration = base::Seconds(1);
@@ -106,9 +92,6 @@ void RankingClusterFinalizer::CalculateVisitDurationScores(
   for (auto visit_it = cluster.visits.rbegin();
        visit_it != cluster.visits.rend(); ++visit_it) {
     auto& visit = *visit_it;
-    if (!IsCanonicalVisit(duplicate_visit_ids, visit)) {
-      continue;
-    }
     float visit_duration_score =
         Smoothstep(0.0f, max_visit_duration.InSecondsF(),
                    visit.annotated_visit.visit_row.visit_duration.InSecondsF());
@@ -134,21 +117,20 @@ void RankingClusterFinalizer::CalculateVisitDurationScores(
 
 void RankingClusterFinalizer::ComputeFinalVisitScores(
     history::Cluster& cluster,
-    base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-    const base::flat_set<history::VisitID>& duplicate_visit_ids) {
+    base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   float max_score = -1.0;
   for (auto visit_it = cluster.visits.rbegin();
        visit_it != cluster.visits.rend(); ++visit_it) {
     auto& visit = *visit_it;
 
     // Only canonical visits should have scores > 0.0.
-    if (!IsCanonicalVisit(duplicate_visit_ids, visit)) {
+    for (auto& duplicate_visit : visit.duplicate_visits) {
       // Check that no individual scores have been given a visit that is not
       // canonical a score.
-      DCHECK(url_visit_scores.find(visit.annotated_visit.visit_row.visit_id) ==
+      DCHECK(url_visit_scores.find(
+                 duplicate_visit.annotated_visit.visit_row.visit_id) ==
              url_visit_scores.end());
-      visit.score = 0.0;
-      continue;
+      duplicate_visit.score = 0.0;
     }
 
     // Determine the max score to use for normalizing all the scores.

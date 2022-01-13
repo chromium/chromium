@@ -45,11 +45,11 @@ TEST_F(NoisyClusterFinalizerTest, FilterHighEngagementClusters) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visit_ids.push_back(1);
+  visit2.duplicate_visits.push_back(visit);
   visit2.engagement_score = 25.0;
 
   history::Cluster cluster;
-  cluster.visits = {visit, visit2};
+  cluster.visits = {visit2};
   FinalizeCluster(cluster);
   EXPECT_FALSE(cluster.should_show_on_prominent_ui_surfaces);
 }
@@ -62,18 +62,18 @@ TEST_F(NoisyClusterFinalizerTest, HideClusterWithOnlyOneInterestingVisit) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visit_ids.push_back(1);
+  visit2.duplicate_visits.push_back(visit);
   visit2.engagement_score = 25.0;
 
   history::Cluster cluster;
-  cluster.visits = {visit, visit2};
+  cluster.visits = {visit2};
   FinalizeCluster(cluster);
   EXPECT_FALSE(cluster.should_show_on_prominent_ui_surfaces);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.WasClusterFiltered.NoisyCluster", true, 1);
 }
 
-TEST_F(NoisyClusterFinalizerTest, KeepClusterWitihAtLeastTwoInterestingVisits) {
+TEST_F(NoisyClusterFinalizerTest, KeepClusterWithAtLeastTwoInterestingVisits) {
   base::HistogramTester histogram_tester;
   history::ClusterVisit visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://bar.com/")));
@@ -81,15 +81,15 @@ TEST_F(NoisyClusterFinalizerTest, KeepClusterWitihAtLeastTwoInterestingVisits) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visit_ids.push_back(1);
   visit2.engagement_score = 25.0;
 
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(3, GURL("https://foo.com/")));
+  visit3.duplicate_visits.push_back(visit);
   visit3.engagement_score = 5.0;
 
   history::Cluster cluster;
-  cluster.visits = {visit, visit2, visit3};
+  cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
   EXPECT_TRUE(cluster.should_show_on_prominent_ui_surfaces);
   histogram_tester.ExpectUniqueSample(

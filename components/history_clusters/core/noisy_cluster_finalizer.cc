@@ -18,7 +18,8 @@ void NoisyClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   ScopedFilterClusterMetricsRecorder metrics_recorder("NoisyCluster");
   for (const auto& visit : cluster.visits) {
     if (!IsNoisyVisit(visit)) {
-      interesting_visit_cnt += 1;
+      // Use the canonical visit's noisiness for all its duplicates too.
+      interesting_visit_cnt += 1 + visit.duplicate_visits.size();
     }
     if (interesting_visit_cnt >=
         features::NumberInterestingVisitsFilterThreshold()) {

@@ -10,7 +10,7 @@
 namespace history_clusters {
 
 void MergeDuplicateVisitIntoCanonicalVisit(
-    const history::ClusterVisit& duplicate_visit,
+    history::ClusterVisit&& duplicate_visit,
     history::ClusterVisit& canonical_visit) {
   // Upgrade the canonical visit's annotations (i.e. is-bookmarked) with
   // those of the duplicate visits.
@@ -68,19 +68,12 @@ void MergeDuplicateVisitIntoCanonicalVisit(
             : duplicate_foreground_duration;
   }
 
-  // Add the duplicate visit into the canonical visit's duplicate IDs.
-  canonical_visit.duplicate_visit_ids.push_back(
-      duplicate_visit.annotated_visit.visit_row.visit_id);
-}
+  // Update the canonical_visit with the more recent timestamp.
+  canonical_visit.annotated_visit.visit_row.visit_time =
+      std::max(canonical_visit.annotated_visit.visit_row.visit_time,
+               duplicate_visit.annotated_visit.visit_row.visit_time);
 
-base::flat_set<history::VisitID> CalculateAllDuplicateVisitsForCluster(
-    const history::Cluster& cluster) {
-  base::flat_set<history::VisitID> duplicate_visit_ids;
-  for (const auto& visit : cluster.visits) {
-    duplicate_visit_ids.insert(visit.duplicate_visit_ids.begin(),
-                               visit.duplicate_visit_ids.end());
-  }
-  return duplicate_visit_ids;
+  canonical_visit.duplicate_visits.push_back(std::move(duplicate_visit));
 }
 
 void SortClusters(std::vector<history::Cluster>* clusters) {
