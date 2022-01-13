@@ -1064,6 +1064,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2021-12-26">
+  <obsolete>
+    Removed Jan 2022: no longer needed and expired.
+  </obsolete>
   <owner>bingler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>The amount of time (ms) to initialize the cookies database.</summary>

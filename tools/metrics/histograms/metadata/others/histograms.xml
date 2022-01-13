@@ -12695,6 +12695,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReportingAndNEL.TimeInitializeDB" units="ms"
     expires_after="2020-09-09">
+  <obsolete>
+    Removed Jan 2022: no longer needed and expired.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>

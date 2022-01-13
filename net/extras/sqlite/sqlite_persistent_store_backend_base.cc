@@ -75,8 +75,6 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     return db_ != nullptr;
   }
 
-  base::Time start = base::Time::Now();
-
   const base::FilePath dir = path_.DirName();
   if (!base::PathExists(dir) && !base::CreateDirectory(dir)) {
     RecordPathDoesNotExistProblem();
@@ -109,10 +107,6 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     Reset();
     return false;
   }
-
-  base::UmaHistogramCustomTimes(histogram_tag_ + ".TimeInitializeDB",
-                                base::Time::Now() - start,
-                                base::Milliseconds(1), base::Minutes(1), 50);
 
   initialized_ = DoInitializeDatabase();
 
