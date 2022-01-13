@@ -4,17 +4,15 @@
 
 #include "components/policy/core/common/policy_proto_decoders.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
-
-namespace {
-const PolicyPerProfileFilter kFilter = PolicyPerProfileFilter::kAny;
-}
 
 class PolicyProtoDecodersTest : public testing::Test {
  public:
@@ -34,7 +32,7 @@ TEST_F(PolicyProtoDecodersTest, BooleanPolicy) {
 
   DecodeProtoFields(user_policy_.payload(), external_data_manager_,
                     POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
-                    kFilter);
+                    PolicyPerProfileFilter::kAny);
 
   EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
 }
@@ -48,7 +46,7 @@ TEST_F(PolicyProtoDecodersTest, IntegerPolicy) {
 
   DecodeProtoFields(user_policy_.payload(), external_data_manager_,
                     POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
-                    kFilter);
+                    PolicyPerProfileFilter::kAny);
 
   EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
 }
@@ -63,7 +61,7 @@ TEST_F(PolicyProtoDecodersTest, StringPolicy) {
 
   DecodeProtoFields(user_policy_.payload(), external_data_manager_,
                     POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
-                    kFilter);
+                    PolicyPerProfileFilter::kAny);
 
   EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
 }
@@ -83,11 +81,179 @@ TEST_F(PolicyProtoDecodersTest, StringListPolicy) {
 
   DecodeProtoFields(user_policy_.payload(), external_data_manager_,
                     POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
-                    kFilter);
+                    PolicyPerProfileFilter::kAny);
 
   EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
 }
 
-// TODO(crbug.com/1278735): Add more tests cases for DecodeProtoFields
+TEST_F(PolicyProtoDecodersTest, PolicyWithOptionUnset) {
+  user_policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  user_policy_.payload()
+      .mutable_searchsuggestenabled()
+      ->mutable_policy_options()
+      ->set_mode(em::PolicyOptions::UNSET);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
+
+  // Any values with PolicyOptions::UNSET will never set into policy_map_
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, PolicyWithOptionRecommended) {
+  expected_policy_map_.Set(key::kSearchSuggestEnabled, POLICY_LEVEL_RECOMMENDED,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(true), nullptr);
+
+  user_policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  user_policy_.payload()
+      .mutable_searchsuggestenabled()
+      ->mutable_policy_options()
+      ->set_mode(em::PolicyOptions::RECOMMENDED);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, IntegerPolicyWithValueLowerThanMinLimit) {
+  std::string too_small_value =
+      base::NumberToString(std::numeric_limits<int32_t>::min() - 1LL);
+
+  expected_policy_map_.Set(key::kIncognitoModeAvailability,
+                           POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                           POLICY_SOURCE_CLOUD, base::Value(too_small_value),
+                           nullptr);
+  expected_policy_map_.AddMessage(
+      key::kIncognitoModeAvailability, PolicyMap::MessageType::kError,
+      IDS_POLICY_PROTO_PARSING_ERROR, {u"Number out of range - invalid int32"});
+
+  user_policy_.payload().mutable_incognitomodeavailability()->set_value(
+      std::numeric_limits<int32_t>::min() - 1LL);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, IntegerPolicyWithValueUpperThanMaxLimit) {
+  std::string too_big_value =
+      base::NumberToString(std::numeric_limits<int32_t>::max() + 1LL);
+
+  expected_policy_map_.Set(key::kIncognitoModeAvailability,
+                           POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                           POLICY_SOURCE_CLOUD, base::Value(too_big_value),
+                           nullptr);
+  expected_policy_map_.AddMessage(
+      key::kIncognitoModeAvailability, PolicyMap::MessageType::kError,
+      IDS_POLICY_PROTO_PARSING_ERROR, {u"Number out of range - invalid int32"});
+
+  user_policy_.payload().mutable_incognitomodeavailability()->set_value(
+      std::numeric_limits<int32_t>::max() + 1LL);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, JsonPolicy) {
+  base::Value jsonPolicy(base::Value::Type::DICTIONARY);
+  jsonPolicy.SetKey("key", base::Value("value"));
+
+  expected_policy_map_.Set(key::kManagedBookmarks, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           std::move(jsonPolicy), nullptr);
+
+  std::string jsonPolicyStr = R"({
+    "key": "value"
+    })";
+  auto* disabled_managed_bookmarks_settings =
+      user_policy_.payload().mutable_managedbookmarks()->mutable_value();
+  disabled_managed_bookmarks_settings->append(jsonPolicyStr);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, InvalidJsonPolicy) {
+  std::string invalidDummyJson = R"({
+    "key": "value"
+  )";  // lacks a close brace
+
+  expected_policy_map_.Set(key::kManagedBookmarks, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(invalidDummyJson), nullptr);
+  expected_policy_map_.AddMessage(
+      key::kManagedBookmarks, PolicyMap::MessageType::kError,
+      IDS_POLICY_PROTO_PARSING_ERROR, {u"Line: 3, column: 3, Syntax error."});
+
+  auto* disabled_managed_bookmarks_settings =
+      user_policy_.payload().mutable_managedbookmarks()->mutable_value();
+  disabled_managed_bookmarks_settings->append(invalidDummyJson);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, PolicyWithAnyFilter) {
+  expected_policy_map_.Set(key::kSearchSuggestEnabled, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(true), nullptr);
+  expected_policy_map_.Set(key::kCloudReportingEnabled, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(true), nullptr);
+
+  user_policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  user_policy_.payload().mutable_cloudreportingenabled()->set_value(true);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, PolicyWithTrueFilter) {
+  expected_policy_map_.Set(key::kSearchSuggestEnabled, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(true), nullptr);
+
+  user_policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  user_policy_.payload().mutable_cloudreportingenabled()->set_value(true);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kTrue);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
+
+TEST_F(PolicyProtoDecodersTest, PolicyWithFalseFilter) {
+  expected_policy_map_.Set(key::kCloudReportingEnabled, POLICY_LEVEL_MANDATORY,
+                           POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                           base::Value(true), nullptr);
+
+  user_policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  user_policy_.payload().mutable_cloudreportingenabled()->set_value(true);
+
+  DecodeProtoFields(user_policy_.payload(), external_data_manager_,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kFalse);
+
+  EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
+}
 
 }  // namespace policy
