@@ -58,9 +58,27 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   }
 
   bool NeedWebrtcAudioProcessing() const {
-    return echo_cancellation || force_apm_creation || noise_suppression ||
-           high_pass_filter || automatic_gain_control ||
-           transient_noise_suppression;
+    // TODO(https://crbug.com/1269364): Legacy iOS-specific behavior;
+    // reconsider.
+#if defined(OS_IOS)
+    if (stereo_mirroring)
+      return true;
+#else
+    if (echo_cancellation || automatic_gain_control) {
+      return true;
+    }
+#endif
+
+#if !defined(OS_ANDROID)
+    if (force_apm_creation)
+      return true;
+#endif
+
+    return noise_suppression || high_pass_filter || transient_noise_suppression;
+  }
+
+  bool NeedAudioModification() const {
+    return NeedWebrtcAudioProcessing() || stereo_mirroring;
   }
 
   // Stringifies the settings for human-readable logging.

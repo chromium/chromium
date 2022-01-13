@@ -33,34 +33,7 @@
 namespace media {
 
 namespace {
-
 constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
-
-// Creates a WebRTC audio processing module, if required by the processing
-// settings.
-rtc::scoped_refptr<webrtc::AudioProcessing>
-MaybeCreateWebRtcAudioProcessingModule(
-    const AudioProcessingSettings& settings) {
-  // TODO(https://crbug.com/1269364): Share this logic with
-  // MediaStreamAudioProcessor::WouldModifyAudio().
-#if defined(OS_ANDROID)
-  const bool force_apm_creation = false;
-#else
-  const bool force_apm_creation = settings.force_apm_creation;
-#endif
-
-  // Return immediately if none of the effects requiring webrtc::AudioProcessing
-  // are enabled. For example, the stereo mirroring effect is handled directly
-  // in the AudioProcessor implementation.
-  if (!settings.echo_cancellation && !force_apm_creation &&
-      !settings.noise_suppression && !settings.high_pass_filter &&
-      !settings.automatic_gain_control &&
-      !settings.transient_noise_suppression) {
-    return nullptr;
-  }
-
-  return media::CreateWebRtcAudioProcessingModule(settings);
-}
 }  // namespace
 
 // Wraps AudioBus to provide access to the array of channel pointers, since this
@@ -220,7 +193,7 @@ AudioProcessor::AudioProcessor(
     const AudioProcessingSettings& settings)
     : settings_(settings),
       webrtc_audio_processing_(
-          MaybeCreateWebRtcAudioProcessingModule(settings)),
+          media::CreateWebRtcAudioProcessingModule(settings)),
       log_callback_(std::move(log_callback)),
       playout_delay_(base::TimeDelta()),
       deliver_processed_audio_callback_(

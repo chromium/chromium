@@ -247,6 +247,9 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
 
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings) {
+  if (!settings.NeedWebrtcAudioProcessing())
+    return nullptr;
+
   webrtc::AudioProcessingBuilder ap_builder;
   if (settings.echo_cancellation) {
     ap_builder.SetEchoControlFactory(

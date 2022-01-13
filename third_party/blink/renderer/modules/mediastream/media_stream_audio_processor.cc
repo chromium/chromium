@@ -115,32 +115,26 @@ void MediaStreamAudioProcessor::OnStopDump() {
 }
 
 // static
+// TODO(https://crbug.com/1269364): This logic should be moved to
+// ProcessedLocalAudioSource and verified/fixed; The decision should be
+// "hardware effects are required or software audio mofidications are needed
+// (AudioProcessingSettings.NeedAudioModification())".
 bool MediaStreamAudioProcessor::WouldModifyAudio(
     const AudioProcessingProperties& properties) {
-  // Note: This method should be kept in-sync with any changes to the logic in
-  // AudioProcessor::InitializeAudioProcessingModule().
-  // TODO(https://crbug.com/1269364): Share this logic with
-  // AudioProcessor::InitializeAudioProcessingModule().
-
-  if (properties.goog_audio_mirroring)
+  if (properties
+          .ToAudioProcessingSettings(
+              /*multi_channel_capture_processing - does not matter here*/ false)
+          .NeedAudioModification()) {
     return true;
+  }
 
 #if !defined(OS_IOS)
-  if (properties.EchoCancellationIsWebRtcProvided() ||
-      properties.goog_auto_gain_control) {
+  if (properties.goog_auto_gain_control) {
     return true;
   }
 #endif
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  if (properties.goog_experimental_echo_cancellation) {
-    return true;
-  }
-#endif
-
-  if (properties.goog_noise_suppression ||
-      properties.goog_experimental_noise_suppression ||
-      properties.goog_highpass_filter) {
+  if (properties.goog_noise_suppression) {
     return true;
   }
 

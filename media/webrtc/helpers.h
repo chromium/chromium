@@ -36,6 +36,7 @@ bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio);
 
 // Creates and configures a `webrtc::AudioProcessing` audio processing module
 // (APM), based on the provided parameters and on features and field trials.
+// Returns nullptr if settings.NeedWebrtcAudioProcessing() is false.
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings);
