@@ -90,7 +90,7 @@ struct ReentrantScannerGuard final {
 };
 thread_local size_t ReentrantScannerGuard::guard_ = 0;
 #else
-struct [[maybe_unused]] ReentrantScannerGuard final{};
+struct ALLOW_UNUSED_TYPE ReentrantScannerGuard final {};
 #endif  // defined(PA_HAS_ALLOCATION_GUARD)
 
 // Scope that disables MTE checks. Only used inside scanning to avoid the race:
@@ -943,10 +943,10 @@ void UnmarkInCardTable(uintptr_t object,
 #endif
 }
 
-[[maybe_unused]] size_t FreeAndUnmarkInCardTable(
-    PartitionRoot<ThreadSafe>* root,
-    SlotSpanMetadata<ThreadSafe>* slot_span,
-    uintptr_t object) {
+ALLOW_UNUSED_TYPE size_t
+FreeAndUnmarkInCardTable(PartitionRoot<ThreadSafe>* root,
+                         SlotSpanMetadata<ThreadSafe>* slot_span,
+                         uintptr_t object) {
   object = memory::RemaskPtr(object);
   const size_t slot_size = slot_span->bucket->slot_size;
   uintptr_t slot_start =
@@ -956,10 +956,10 @@ void UnmarkInCardTable(uintptr_t object,
   return slot_size;
 }
 
-[[maybe_unused]] void SweepSuperPage(ThreadSafePartitionRoot* root,
-                                     uintptr_t super_page,
-                                     size_t epoch,
-                                     SweepStat& stat) {
+ALLOW_UNUSED_TYPE void SweepSuperPage(ThreadSafePartitionRoot* root,
+                                      uintptr_t super_page,
+                                      size_t epoch,
+                                      SweepStat& stat) {
   auto* bitmap = StateBitmapFromAddr(super_page);
   ThreadSafePartitionRoot::FromFirstSuperPage(super_page);
   bitmap->IterateUnmarkedQuarantined(epoch, [root, &stat](uintptr_t object) {
@@ -969,7 +969,7 @@ void UnmarkInCardTable(uintptr_t object,
   });
 }
 
-[[maybe_unused]] void SweepSuperPageAndDiscardMarkedQuarantine(
+ALLOW_UNUSED_TYPE void SweepSuperPageAndDiscardMarkedQuarantine(
     ThreadSafePartitionRoot* root,
     uintptr_t super_page,
     size_t epoch,
@@ -1003,7 +1003,7 @@ void UnmarkInCardTable(uintptr_t object,
   });
 }
 
-[[maybe_unused]] void SweepSuperPageWithBatchedFree(
+ALLOW_UNUSED_TYPE void SweepSuperPageWithBatchedFree(
     ThreadSafePartitionRoot* root,
     uintptr_t super_page,
     size_t epoch,

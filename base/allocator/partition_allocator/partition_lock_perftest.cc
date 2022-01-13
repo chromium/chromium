@@ -70,7 +70,7 @@ class Spin : public PlatformThread::Delegate {
 
 TEST(PartitionLockPerfTest, Simple) {
   LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
-  uint32_t data = 0;
+  ALLOW_UNUSED_TYPE uint32_t data = 0;
 
   Lock lock;
 
@@ -81,7 +81,6 @@ TEST(PartitionLockPerfTest, Simple) {
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
 
-  ALLOW_UNUSED_LOCAL(data);
   auto reporter = SetUpReporter(kStoryBaseline);
   reporter.AddResult(kMetricLockUnlockThroughput, timer.LapsPerSecond());
   reporter.AddResult(kMetricLockUnlockLatency, 1e9 / timer.LapsPerSecond());

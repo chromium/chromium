@@ -66,8 +66,7 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsOnStackValue) {
   // No check that the needle is initially not found as on some platforms it
   // may be part of temporaries after setting it up through StackScanner.
   {
-    int* volatile tmp = scanner->needle();
-    ALLOW_UNUSED_LOCAL(tmp);
+    ALLOW_UNUSED_TYPE int* volatile tmp = scanner->needle();
     GetStack()->IteratePointers(scanner.get());
     EXPECT_TRUE(scanner->found());
   }
@@ -80,10 +79,8 @@ TEST_F(PartitionAllocStackTest,
   // No check that the needle is initially not found as on some platforms it
   // may be part of  temporaries after setting it up through StackScanner.
   {
-    char a = 'c';
-    ALLOW_UNUSED_LOCAL(a);
-    int* volatile tmp = scanner->needle();
-    ALLOW_UNUSED_LOCAL(tmp);
+    ALLOW_UNUSED_TYPE char a = 'c';
+    ALLOW_UNUSED_TYPE int* volatile tmp = scanner->needle();
     GetStack()->IteratePointers(scanner.get());
     EXPECT_TRUE(scanner->found());
   }
@@ -329,8 +326,7 @@ class CheckStackAlignmentVisitor final : public StackVisitor {
   void VisitStack(uintptr_t*, uintptr_t*) final {
     // Check that the stack doesn't get misaligned by asm trampolines.
     float f[4] = {0.};
-    volatile auto xmm = ::_mm_load_ps(f);
-    ALLOW_UNUSED_LOCAL(xmm);
+    ALLOW_UNUSED_TYPE volatile auto xmm = ::_mm_load_ps(f);
   }
 };
 
