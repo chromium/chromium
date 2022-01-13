@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -187,8 +188,7 @@ class AppListClientImpl
 
   // Records the browser window status + the opened search result type when
   // the result is opened from the search box.
-  void RecordOpenedResultFromSearchBox(
-      ash::AppListSearchResultType result_type);
+  void RecordOpenedResultFromSearchBox(ash::SearchResultType result_type);
 
   // Maybe records the launcher action. Launcher actions include activating an
   // app and opening a search result from either a suggestion chip or the search

@@ -221,7 +221,7 @@ void AppListClientImpl::OpenSearchResult(
     RecordZeroStateSuggestionOpenTypeHistogram(result->metrics_type());
 
   if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
-    RecordOpenedResultFromSearchBox(result_type);
+    RecordOpenedResultFromSearchBox(result->metrics_type());
 
   MaybeRecordLauncherAction(launched_from);
 
@@ -664,7 +664,7 @@ void AppListClientImpl::MaybeRecordViewShown() {
 }
 
 void AppListClientImpl::RecordOpenedResultFromSearchBox(
-    ash::AppListSearchResultType result_type) {
+    ash::SearchResultType result_type) {
   // Check whether there is any Chrome non-app browser window open and not
   // minimized.
   bool non_app_browser_open_and_not_minimzed = false;
@@ -681,14 +681,14 @@ void AppListClientImpl::RecordOpenedResultFromSearchBox(
 
   if (non_app_browser_open_and_not_minimzed) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Apps.OpenedAppListSearchResultFromSearchBox."
+        "Apps.OpenedAppListSearchResultFromSearchBoxV2."
         "ExistNonAppBrowserWindowOpenAndNotMinimized",
-        result_type);
+        result_type, ash::SEARCH_RESULT_TYPE_BOUNDARY);
   } else {
     UMA_HISTOGRAM_ENUMERATION(
-        "Apps.OpenedAppListSearchResultFromSearchBox."
+        "Apps.OpenedAppListSearchResultFromSearchBoxV2."
         "NonAppBrowserWindowsEitherClosedOrMinimized",
-        result_type);
+        result_type, ash::SEARCH_RESULT_TYPE_BOUNDARY);
   }
 }
 

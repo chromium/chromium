@@ -2768,6 +2768,33 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.OpenedAppListSearchResultFromSearchBox.{AnyNonAppBrowserWindowOpenAndNotMinimized}"
     enum="AppListSearchResult" expires_after="M101">
+  <obsolete>
+    Deprecated 01/2022, because it was recording the similarly named
+    AppListSearchResultType enum, rather than SearchResultType. Replaced with
+    Apps.OpenedAppListSearchResultFromSearchBoxV2.*.
+  </obsolete>
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the opened launcher search results from the search box. Data is
+    gathered when a search result is opened from the search box.
+    {AnyNonAppBrowserWindowOpenAndNotMinimized} denotes whether there is any
+    non-app browser window open and not minimized when a search result is
+    opened.
+  </summary>
+  <token key="AnyNonAppBrowserWindowOpenAndNotMinimized">
+    <variant name="ExistNonAppBrowserWindowOpenAndNotMinimized"
+        summary="there exists at least one non-app browser window which is
+                 open and not minimized"/>
+    <variant name="NonAppBrowserWindowsEitherClosedOrMinimized"
+        summary="there is no open non-app browser windows or all open non-app
+                 browser windows are minimized"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Apps.OpenedAppListSearchResultFromSearchBoxV2.{AnyNonAppBrowserWindowOpenAndNotMinimized}"
+    enum="AppListSearchResult" expires_after="M101">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>

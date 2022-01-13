@@ -244,12 +244,13 @@ enum class AppListLaunchedFrom {
 // from the apps grid.
 enum class AppListLaunchType { kSearchResult, kAppSearchResult, kApp };
 
-// Type of the search result, which is set in Chrome. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never be
-// reused.
+// Type of the search result, which is set in Chrome.
 //
-// TODO(crbug.com/1258415): kFileChip and kDriveChip can be deprecated once the
-// new launcher is launched.
+// This should not be used for metrics. Please use ash::SearchResultType in
+// ash/public/cpp/app_list/app_list_metrics.h instead.
+//
+// TODO(crbug.com/1258415): kFileChip and kDriveChip can be removed once the
+// productivity launcher is launched.
 enum class AppListSearchResultType {
   kUnknown,       // Unknown type. Don't use over IPC
   kInstalledApp,  // Installed apps.

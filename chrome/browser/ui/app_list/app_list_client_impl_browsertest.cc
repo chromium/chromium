@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -407,9 +408,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
 
   // Expect that opening the result from the search box is recorded.
   histogram_tester.ExpectBucketCount(
-      "Apps.OpenedAppListSearchResultFromSearchBox."
+      "Apps.OpenedAppListSearchResultFromSearchBoxV2."
       "ExistNonAppBrowserWindowOpenAndNotMinimized",
-      static_cast<int>(ash::AppListSearchResultType::kInstalledApp),
+      static_cast<int>(ash::EXTENSION_APP),
       /*expected_bucket_count=*/1);
 
   // Verify that opening the app result is recorded.
@@ -436,9 +437,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
 
   // Expect that opening the result from the search box is recorded.
   histogram_tester.ExpectBucketCount(
-      "Apps.OpenedAppListSearchResultFromSearchBox."
+      "Apps.OpenedAppListSearchResultFromSearchBoxV2."
       "NonAppBrowserWindowsEitherClosedOrMinimized",
-      static_cast<int>(ash::AppListSearchResultType::kInstalledApp),
+      static_cast<int>(ash::EXTENSION_APP),
       /*expected_bucket_count=*/1);
 
   // Needed to let AppLaunchEventLogger finish its work on worker thread.
