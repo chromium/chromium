@@ -45,6 +45,12 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       finalizationMessage_: {
         type: String,

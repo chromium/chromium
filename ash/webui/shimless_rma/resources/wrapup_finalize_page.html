@@ -8,7 +8,8 @@
     <div>
       <cr-button id="retryFinalizationButton" class="cancel-button"
           on-click="onRetryFinalizationButtonClicked_"
-          hidden$="[[!shouldShowRetryButton_]]">
+          hidden$="[[!shouldShowRetryButton_]]"
+          disabled="[[allButtonsDisabled]]">
         [[i18n('finalizePageFailedRetryButtonLabel')]]
       </cr-button>
     </div>

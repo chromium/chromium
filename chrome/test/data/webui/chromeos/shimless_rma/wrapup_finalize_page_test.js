@@ -150,4 +150,14 @@ export function wrapupFinalizePageTest() {
     await flushTasks();
     assertEquals(1, callCount);
   });
+
+  test('FinalizationRetryButtonDisabled', async () => {
+    await initializeFinalizePage();
+
+    const retryButton =
+        component.shadowRoot.querySelector('#retryFinalizationButton');
+    assertFalse(retryButton.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(retryButton.disabled);
+  });
 }
