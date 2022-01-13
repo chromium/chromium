@@ -398,6 +398,7 @@ void XRCompositorCommon::GetFrameData(
     // shouldn't get new ones until this resolves or presentation ends/restarts.
     if (delayed_get_frame_data_callback_) {
       mojo::ReportBadMessage("Multiple outstanding GetFrameData calls");
+      return;
     }
     delayed_get_frame_data_callback_ = base::BindOnce(
         &XRCompositorCommon::GetFrameData, base::Unretained(this),
