@@ -863,8 +863,8 @@ void TaskManagerTableModel::StoreColumnsSettings() {
   if (!local_state)
     return;
 
-  DictionaryPrefUpdateDeprecated dict_update(
-      local_state, prefs::kTaskManagerColumnVisibility);
+  DictionaryPrefUpdate dict_update(local_state,
+                                   prefs::kTaskManagerColumnVisibility);
 
   base::DictionaryValue::Iterator it(*columns_settings_);
   while (!it.IsAtEnd()) {
@@ -874,13 +874,13 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 
   // Store the current sort status to be restored again at startup.
   if (!table_view_delegate_->IsTableSorted()) {
-    dict_update->SetString(kSortColumnIdKey, "");
+    dict_update->SetStringKey(kSortColumnIdKey, "");
   } else {
     const auto& sort_descriptor = table_view_delegate_->GetSortDescriptor();
-    dict_update->SetString(
+    dict_update->SetStringKey(
         kSortColumnIdKey,
         GetColumnIdAsString(sort_descriptor.sorted_column_id));
-    dict_update->SetBoolean(kSortIsAscendingKey, sort_descriptor.is_ascending);
+    dict_update->SetBoolKey(kSortIsAscendingKey, sort_descriptor.is_ascending);
   }
 }
 
