@@ -2736,8 +2736,7 @@ TEST_F(
     bool expect_queue_enabled = (i == 0) || (Now() > first_run_time);
     if (paused)
       expect_queue_enabled = false;
-    EXPECT_EQ(expect_queue_enabled,
-              throttleable_task_queue()->GetTaskQueue()->IsQueueEnabled())
+    EXPECT_EQ(expect_queue_enabled, throttleable_task_queue()->IsQueueEnabled())
         << "i = " << i;
 
     // After we've run any expensive tasks suspend the queue.  The throttling
@@ -2782,8 +2781,7 @@ TEST_F(MainThreadSchedulerImplTest,
 
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(UseCase::kSynchronizedGesture, CurrentUseCase()) << "i = " << i;
-    EXPECT_TRUE(throttleable_task_queue()->GetTaskQueue()->IsQueueEnabled())
-        << "i = " << i;
+    EXPECT_TRUE(throttleable_task_queue()->IsQueueEnabled()) << "i = " << i;
   }
 
   // Task is not throttled.
@@ -3452,8 +3450,8 @@ TEST_F(MainThreadSchedulerImplTest, TaskQueueReferenceClearedOnShutdown) {
   scoped_refptr<MainThreadTaskQueue> queue2 =
       scheduler_->NewThrottleableTaskQueueForTest(nullptr);
 
-  EXPECT_TRUE(queue1->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(queue2->GetTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(queue1->IsQueueEnabled());
+  EXPECT_TRUE(queue2->IsQueueEnabled());
 
   scheduler_->OnShutdownTaskQueue(queue1);
 
@@ -3461,8 +3459,8 @@ TEST_F(MainThreadSchedulerImplTest, TaskQueueReferenceClearedOnShutdown) {
 
   // queue2 should be disabled, as it is a regular queue and nothing should
   // change for queue1 because it was shut down.
-  EXPECT_TRUE(queue1->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(queue2->GetTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(queue1->IsQueueEnabled());
+  EXPECT_FALSE(queue2->IsQueueEnabled());
 }
 
 TEST_F(MainThreadSchedulerImplTest, MicrotaskCheckpointTiming) {

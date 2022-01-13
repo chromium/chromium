@@ -590,7 +590,7 @@ TEST_F(TimerTest, UserSuppliedTaskRunner) {
   timer.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   // Make sure the task was posted on taskRunner.
-  EXPECT_FALSE(task_queue->GetTaskQueue()->IsEmpty());
+  EXPECT_FALSE(task_queue->IsEmpty());
 }
 
 TEST_F(TimerTest, RunOnHeapTimer) {
@@ -712,8 +712,8 @@ TEST_F(TimerTest, MoveToNewTaskRunnerOneShot) {
 
   EXPECT_THAT(run_order, ElementsAre(task_runner2));
 
-  EXPECT_TRUE(task_queue1->GetTaskQueue()->IsEmpty());
-  EXPECT_TRUE(task_queue2->GetTaskQueue()->IsEmpty());
+  EXPECT_TRUE(task_queue1->IsEmpty());
+  EXPECT_TRUE(task_queue2->IsEmpty());
 }
 
 TEST_F(TimerTest, MoveToNewTaskRunnerRepeating) {
@@ -755,8 +755,8 @@ TEST_F(TimerTest, MoveToNewTaskRunnerRepeating) {
   EXPECT_THAT(run_order, ElementsAre(task_runner1, task_runner1, task_runner2,
                                      task_runner2));
 
-  EXPECT_TRUE(task_queue1->GetTaskQueue()->IsEmpty());
-  EXPECT_FALSE(task_queue2->GetTaskQueue()->IsEmpty());
+  EXPECT_TRUE(task_queue1->IsEmpty());
+  EXPECT_FALSE(task_queue2->IsEmpty());
 }
 
 // This test checks that when inactive timer is moved to a different task
@@ -778,8 +778,8 @@ TEST_F(TimerTest, MoveToNewTaskRunnerWithoutTasks) {
 
   platform_->RunUntilIdle();
   EXPECT_TRUE(!run_times_.size());
-  EXPECT_TRUE(task_queue1->GetTaskQueue()->IsEmpty());
-  EXPECT_TRUE(task_queue2->GetTaskQueue()->IsEmpty());
+  EXPECT_TRUE(task_queue1->IsEmpty());
+  EXPECT_TRUE(task_queue2->IsEmpty());
 }
 
 }  // namespace

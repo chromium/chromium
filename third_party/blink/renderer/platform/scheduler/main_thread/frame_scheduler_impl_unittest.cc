@@ -826,27 +826,27 @@ TEST_F(FrameSchedulerImplTest, PauseAndResume) {
 }
 
 TEST_F(FrameSchedulerImplTest, PauseAndResumeForCooperativeScheduling) {
-  EXPECT_TRUE(LoadingTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(ThrottleableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(DeferrableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(PausableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(UnpausableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(LoadingTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(ThrottleableTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(DeferrableTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(PausableTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(UnpausableTaskQueue()->IsQueueEnabled());
 
   frame_scheduler_->SetPreemptedForCooperativeScheduling(
       FrameOrWorkerScheduler::Preempted(true));
-  EXPECT_FALSE(LoadingTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(ThrottleableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(DeferrableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(PausableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(UnpausableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
+  EXPECT_FALSE(LoadingTaskQueue()->IsQueueEnabled());
+  EXPECT_FALSE(ThrottleableTaskQueue()->IsQueueEnabled());
+  EXPECT_FALSE(DeferrableTaskQueue()->IsQueueEnabled());
+  EXPECT_FALSE(PausableTaskQueue()->IsQueueEnabled());
+  EXPECT_FALSE(UnpausableTaskQueue()->IsQueueEnabled());
 
   frame_scheduler_->SetPreemptedForCooperativeScheduling(
       FrameOrWorkerScheduler::Preempted(false));
-  EXPECT_TRUE(LoadingTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(ThrottleableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(DeferrableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(PausableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(UnpausableTaskQueue()->GetTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(LoadingTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(ThrottleableTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(DeferrableTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(PausableTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(UnpausableTaskQueue()->IsQueueEnabled());
 }
 
 namespace {
@@ -1085,9 +1085,9 @@ class FrameSchedulerImplTestWithUnfreezableLoading
 TEST_F(FrameSchedulerImplTestWithUnfreezableLoading,
        LoadingTasksKeepRunningWhenFrozen) {
   int counter = 0;
-  UnfreezableLoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnfreezableLoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
 
   page_scheduler_->SetPageVisible(false);
@@ -3639,16 +3639,13 @@ class DeprioritizeDOMTimerTest : public FrameSchedulerImplTest {
       TaskQueue::QueuePriority expected_priority) {
     EXPECT_EQ(
         JavaScriptTimerNormalThrottleableTaskQueueForFrame(frame_scheduler)
-            ->GetTaskQueue()
             ->GetQueuePriority(),
         expected_priority);
     EXPECT_EQ(
         JavaScriptTimerIntensivelyThrottleableTaskQueueForFrame(frame_scheduler)
-            ->GetTaskQueue()
             ->GetQueuePriority(),
         expected_priority);
     EXPECT_EQ(JavaScriptTimerNonThrottleableTaskQueueForFrame(frame_scheduler)
-                  ->GetTaskQueue()
                   ->GetQueuePriority(),
               expected_priority);
   }

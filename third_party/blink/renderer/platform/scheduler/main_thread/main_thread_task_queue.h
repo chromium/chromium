@@ -36,10 +36,6 @@ namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplTest;
 }
 
-namespace task_queue_throttler_unittest {
-class TaskQueueThrottlerTest;
-}
-
 class FrameSchedulerImpl;
 class MainThreadSchedulerImpl;
 class WakeUpBudgetPool;
@@ -490,6 +486,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return task_queue_->GetQueuePriority();
   }
 
+  bool IsQueueEnabled() const { return task_queue_->IsQueueEnabled(); }
+  bool IsEmpty() const { return task_queue_->IsEmpty(); }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -498,11 +497,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);
-
-  // Returns the underlying task queue. Only to be used for tests that need to
-  // test functionality of the task queue specifically without the wrapping
-  // MainThreadTaskQueue (ex TaskQueueThrottlerTest).
-  TaskQueue* GetTaskQueueForTest() { return task_queue_.get(); }
 
   // TODO(kdillon): Remove references to TaskQueueImpl once TaskQueueImpl
   // inherits from TaskQueue.
@@ -522,8 +516,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   friend class base::sequence_manager::SequenceManager;
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
-  friend class blink::scheduler::task_queue_throttler_unittest::
-      TaskQueueThrottlerTest;
 
   // Clear references to main thread scheduler and frame scheduler and dispatch
   // appropriate notifications. This is the common part of ShutdownTaskQueue and
