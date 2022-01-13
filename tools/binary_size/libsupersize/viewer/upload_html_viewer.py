@@ -6,11 +6,11 @@
 
 import argparse
 import os
-import requests
 import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.request
 import uuid
 
 FIREBASE_PROJECT = 'chrome-supersize'
@@ -28,7 +28,7 @@ DEV = 'dev'
 
 def _FirebaseLogin():
   """Login into the Firebase CLI"""
-  subprocess.check_call(['firebase', 'login'])
+  subprocess.check_call(['firebase', 'login', '--no-localhost'])
 
 
 def _CheckFirebaseCLI():
@@ -79,19 +79,20 @@ def _FirebaseDeploy(project_dir, deploy_mode=PROD):
 
 def _DownloadCaspianFiles(project_static_dir):
   for f in CASPIAN_FILES:
-    response = requests.get(PROD_URL + f)
-    with open(os.path.join(project_static_dir, f), 'wb') as output:
-      output.write(response.content)
+    with urllib.request.urlopen(PROD_URL + f) as response:
+      with open(os.path.join(project_static_dir, f), 'wb') as output:
+        shutil.copyfileobj(response, output)
 
 
 def _CopyStaticFiles(project_static_dir):
   """Copy over static files from the static directory."""
-  static_files = os.path.join(os.path.dirname(__file__), 'static')
+  static_files = os.path.normpath(
+      os.path.join(os.path.dirname(__file__), 'static'))
   shutil.copytree(static_files, project_static_dir)
   if not all(
       os.path.exists(os.path.join(static_files, f)) for f in CASPIAN_FILES):
-    print('Some caspian files do not exist in ({}). Downloading *all* caspian '
-          'files from currently deployed instance.'.format(static_files))
+    print(f'Some wasm files do not exist in ({static_files}). Using copies '
+          f'from {PROD_URL} instead.')
     _DownloadCaspianFiles(project_static_dir)
 
 
@@ -138,7 +139,8 @@ def main():
 
   if options.deploy_mode != PROD or _Prompt(message):
     _CheckFirebaseCLI()
-    _FirebaseLogin()
+    if options.deploy_mode != DEV:
+      _FirebaseLogin()
     with tempfile.TemporaryDirectory(prefix='firebase-') as project_dir:
       static_dir = _FirebaseInitProjectDir(project_dir)
       _CopyStaticFiles(static_dir)
