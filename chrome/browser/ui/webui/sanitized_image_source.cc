@@ -80,6 +80,7 @@ void SanitizedImageSource::StartDataRequest(
         })");
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url_param;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   loaders_.push_back(
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation));
   loaders_.back()->DownloadToString(

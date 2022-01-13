@@ -84,7 +84,6 @@ TEST_F(SanitizedImageSourceTest, MultiRequest) {
     std::string url;
     std::string body;
     std::tie(color, url, body) = datum;
-    test_url_loader_factory_.AddResponse(url, body);
     EXPECT_CALL(*mock_image_decoder_,
                 DecodeImage(body, gfx::Size(), testing::_))
         .Times(1)
@@ -104,6 +103,24 @@ TEST_F(SanitizedImageSourceTest, MultiRequest) {
         GURL(base::StrCat({chrome::kChromeUIImageURL, "?", url})),
         content::WebContents::Getter(), callback.Get());
   }
+
+  ASSERT_EQ(data.size(),
+            static_cast<unsigned long>(test_url_loader_factory_.NumPending()));
+
+  // Answer requests and check correctness.
+  for (size_t i = 0; i < data.size(); i++) {
+    SkColor color;
+    std::string url;
+    std::string body;
+    std::tie(color, url, body) = data[i];
+    auto* request = test_url_loader_factory_.GetPendingRequest(i);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+              request->request.credentials_mode);
+    EXPECT_EQ(url, request->request.url);
+    test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+        request, body);
+  }
+
   task_environment_.RunUntilIdle();
 }
 
