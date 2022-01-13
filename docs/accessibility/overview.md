@@ -106,8 +106,8 @@ if you call IAccessible::get_accRole, it returns ROLE_SYSTEM_DOCUMENT,
 and if you call IAccessible::get_accName, it returns "How old are you?".
 Other methods let you walk the tree.
 
-The Linux accessibility API, (ATK)[https://gnome.pages.gitlab.gnome.org/atk/],
-is similar to (IAccessible2)[https://wiki.linuxfoundation.org/accessibility/iaccessible2/start],
+The Linux accessibility API, [ATK](https://gnome.pages.gitlab.gnome.org/atk/),
+is similar to [IAccessible2](https://wiki.linuxfoundation.org/accessibility/iaccessible2/start),
 aka IA2. Historical note: IA2 was developed to extend MSAA/IAccessible to add
 richer document support, in a way that was harmonious with ATK, in order to
 simplify implementing them both within the same product. Both APIs are
@@ -208,10 +208,10 @@ Developers can inspect the accessibility tree in several ways:
 and inspecting a tree directly. Note that you may want to enable the
 'Internal' option. Click 'show accessibility tree' for a particular tab,
 then click again to refresh that tree.
-* Using the [https://developer.chrome.com/extensions/automation](
-Automation API).
-* Installing the [https://github.com/google/automation-inspector](
-Automation Inspector Chrome extension).
+* Using the [Automation API](
+https://developer.chrome.com/extensions/automation).
+* Installing the [Automation Inspector Chrome extension](
+https://github.com/google/automation-inspector).
 * Building and using [ax_dump_tree or ax_dump_events](tools/accessibility/inspect/README.md).
 These can be used to view accessibility trees and events from any application on
 Windows, Mac or Linux.
