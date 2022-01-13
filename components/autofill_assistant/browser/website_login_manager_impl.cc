@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -448,7 +449,7 @@ void WebsiteLoginManagerImpl::EditPasswordForLogin(
                      weak_ptr_factory_.GetWeakPtr())));
   pending_requests_.back()->Start();
 }
-std::string WebsiteLoginManagerImpl::GeneratePassword(
+absl::optional<std::string> WebsiteLoginManagerImpl::GeneratePassword(
     autofill::FormSignature form_signature,
     autofill::FieldSignature field_signature,
     uint64_t max_length) {
@@ -460,7 +461,9 @@ std::string WebsiteLoginManagerImpl::GeneratePassword(
   // frame has a different origin than the main frame, passwords-related
   // features may not work.
   auto* driver = factory->GetDriverForFrame(web_contents_->GetMainFrame());
-  DCHECK(driver);
+  if (!driver) {
+    return absl::nullopt;
+  }
 
   return base::UTF16ToUTF8(
       driver->GetPasswordGenerationHelper()->GeneratePassword(

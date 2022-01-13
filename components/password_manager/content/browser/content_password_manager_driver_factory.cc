@@ -50,8 +50,16 @@ void ContentPasswordManagerDriverFactory::BindPasswordManagerDriver(
   // the request will be just dropped, this would cause closing the message pipe
   // which would raise connection error to peer side.
   // Peer side could reconnect later when needed.
+  // TODO(https://crbug.com/1286342): WebContents should never be null here; the
+  // helper function above only returns a null WebContents if
+  // `render_frame_host` is null, but that should never be the case here.
   if (!web_contents)
     return;
+
+  // This is called by a Mojo registry for associated interfaces, which should
+  // never attempt to bind interfaces for RenderFrameHosts with non-live
+  // RenderFrames.
+  CHECK(render_frame_host->IsRenderFrameLive());
 
   ContentPasswordManagerDriverFactory* factory =
       ContentPasswordManagerDriverFactory::FromWebContents(web_contents);
@@ -67,7 +75,12 @@ ContentPasswordManagerDriverFactory::GetDriverForFrame(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_EQ(web_contents(),
             content::WebContents::FromRenderFrameHost(render_frame_host));
-  DCHECK(render_frame_host->IsRenderFrameCreated());
+
+  // A RenderFrameHost without a live RenderFrame will never call
+  // RenderFrameDeleted(), and the corresponding driver would never be cleaned
+  // up.
+  if (!render_frame_host->IsRenderFrameLive())
+    return nullptr;
 
   // TryEmplace() will return an iterator to the driver corresponding to
   // `render_frame_host`. It creates a new one if required.
@@ -97,6 +110,8 @@ void ContentPasswordManagerDriverFactory::DidFinishNavigation(
                              navigation->GetPageTransition(),
                              navigation->WasInitiatedByLinkClick(),
                              password_client_->GetPasswordManager());
+  // A committed navigation always has a live RenderFrameHost.
+  CHECK(navigation->GetRenderFrameHost()->IsRenderFrameLive());
   GetDriverForFrame(navigation->GetRenderFrameHost())
       ->GetPasswordAutofillManager()
       ->DidNavigateMainFrame();

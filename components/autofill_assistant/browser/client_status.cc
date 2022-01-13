@@ -161,6 +161,9 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::RESEND_USER_DATA:
       out << "RESEND_USER_DATA";
       break;
+    case ProcessedActionStatusProto::NO_RENDER_FRAME:
+      out << "NO_RENDER_FRAME";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.
