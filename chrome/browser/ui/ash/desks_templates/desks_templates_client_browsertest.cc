@@ -172,6 +172,23 @@ void ClickButton(const views::Button* button) {
   event_generator.ClickLeftButton();
 }
 
+void ClickSaveDeskAsTemplateButton() {
+  views::Button* save_desk_as_template_button =
+      ash::GetSaveDeskAsTemplateButton();
+  DCHECK(save_desk_as_template_button);
+  ClickButton(save_desk_as_template_button);
+  ash::WaitForDesksTemplatesUI();
+}
+
+void ClickFirstTemplateItem() {
+  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
+  DCHECK(template_item);
+  ClickButton(template_item);
+
+  // We need to wait for the template to be fetched from the model.
+  ash::WaitForDesksTemplatesUI();
+}
+
 class MockDesksTemplatesAppLaunchHandler
     : public DesksTemplatesAppLaunchHandler {
  public:
@@ -975,7 +992,43 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_FALSE(iter != app_id_to_launch_list.end());
 }
 
+// Tests that captured desk templates can be recalled as a JSON string.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
+  // Test that Singleton was properly initialized.
+  ASSERT_TRUE(DesksTemplatesClient::Get());
+
+  // Change |browser|'s bounds.
+  const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  window->SetBounds(browser_bounds);
+  // Make window visible on all desks.
+  window->SetProperty(aura::client::kWindowWorkspaceKey,
+                      aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+
+  // Create the settings app, which is a system web app.
+  web_app::AppId settings_app_id =
+      CreateSettingsSystemWebApp(browser()->profile());
+
+  // Change the Settings app's bounds too.
+  const gfx::Rect settings_app_bounds = gfx::Rect(100, 100, 800, 300);
+  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
+  ASSERT_TRUE(settings_window);
+  settings_window->SetBounds(settings_app_bounds);
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+
+  std::string template_json = GetTemplateJson(
+      desk_template->uuid().AsLowercaseString(), browser()->profile());
+
+  // content of the conversion is tested in:
+  // components/desks_storage/core/desk_template_conversion_unittests.cc in this
+  // case we're simply interested in whether or not we got content back.
+  ASSERT_TRUE(!template_json.empty());
+}
+
 // Tests that basic operations using the native UI work as expected.
+// TODO(crbug.com/1286515): Remove the NativeUI prefix from these tests.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUIBasic) {
   auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
   ASSERT_EQ(0, desk_model->GetEntryCount());
@@ -1037,19 +1090,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUILaunchBrowser) {
   // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  views::Button* save_desk_as_template_button =
-      ash::GetSaveDeskAsTemplateButton();
-  ASSERT_TRUE(save_desk_as_template_button);
-  ClickButton(save_desk_as_template_button);
 
-  ash::WaitForDesksTemplatesUI();
+  ClickSaveDeskAsTemplateButton();
 
-  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
-  ASSERT_TRUE(template_item);
-  ClickButton(template_item);
-
-  // We need to wait for the template to be fetched from the model.
-  ash::WaitForDesksTemplatesUI();
+  ClickFirstTemplateItem();
 
   // Wait for the tabs to load.
   content::RunAllTasksUntilIdle();
@@ -1088,10 +1132,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  views::Button* save_desk_as_template_button =
-      ash::GetSaveDeskAsTemplateButton();
-  ASSERT_TRUE(save_desk_as_template_button);
-  ClickButton(save_desk_as_template_button);
+
+  ClickSaveDeskAsTemplateButton();
 
   // Exit overview and close the settings window. We'll need to verify if it
   // reopens later.
@@ -1107,18 +1149,14 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   // template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
+
   views::Button* zero_state_templates_button =
       ash::GetZeroStateDesksTemplatesButton();
   ASSERT_TRUE(zero_state_templates_button);
   ClickButton(zero_state_templates_button);
-
   ash::WaitForDesksTemplatesUI();
-  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
-  ASSERT_TRUE(template_item);
-  ClickButton(template_item);
 
-  // We need to wait for the template to be fetched from the model.
-  ash::WaitForDesksTemplatesUI();
+  ClickFirstTemplateItem();
 
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
@@ -1157,10 +1195,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  views::Button* save_desk_as_template_button =
-      ash::GetSaveDeskAsTemplateButton();
-  ASSERT_TRUE(save_desk_as_template_button);
-  ClickButton(save_desk_as_template_button);
+
+  ClickSaveDeskAsTemplateButton();
 
   // Exit overview and move the settings window to a new place and stack it on
   // top so that we can later verify that it has been placed and stacked
@@ -1178,11 +1214,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
       ash::GetZeroStateDesksTemplatesButton();
   ASSERT_TRUE(zero_state_templates_button);
   ClickButton(zero_state_templates_button);
-
   ash::WaitForDesksTemplatesUI();
-  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
-  ASSERT_TRUE(template_item);
-  ClickButton(template_item);
+
+  ClickFirstTemplateItem();
 
   // Wait for the tabs to load.
   content::RunAllTasksUntilIdle();
@@ -1271,11 +1305,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
   // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  views::Button* save_desk_as_template_button =
-      ash::GetSaveDeskAsTemplateButton();
-  ASSERT_TRUE(save_desk_as_template_button);
-  ClickButton(save_desk_as_template_button);
-  ash::WaitForDesksTemplatesUI();
+
+  ClickSaveDeskAsTemplateButton();
   ASSERT_EQ(1, desk_model->GetEntryCount());
 
   // Exit overview and close the Arc window. We'll need to verify if it
@@ -1293,13 +1324,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
       ash::GetZeroStateDesksTemplatesButton();
   ASSERT_TRUE(zero_state_templates_button);
   ClickButton(zero_state_templates_button);
-
   ash::WaitForDesksTemplatesUI();
-  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
-  ASSERT_TRUE(template_item);
-  ClickButton(template_item);
 
-  ash::WaitForDesksTemplatesUI();
+  ClickFirstTemplateItem();
+
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
 
@@ -1388,39 +1416,4 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   EXPECT_EQ(get_templates_size(), 0);
-}
-
-// Tests that captured desk templates can be recalled as a JSON string.
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
-  // Test that Singleton was properly initialized.
-  ASSERT_TRUE(DesksTemplatesClient::Get());
-
-  // Change |browser|'s bounds.
-  const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  window->SetBounds(browser_bounds);
-  // Make window visible on all desks.
-  window->SetProperty(aura::client::kWindowWorkspaceKey,
-                      aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
-
-  // Create the settings app, which is a system web app.
-  web_app::AppId settings_app_id =
-      CreateSettingsSystemWebApp(browser()->profile());
-
-  // Change the Settings app's bounds too.
-  const gfx::Rect settings_app_bounds = gfx::Rect(100, 100, 800, 300);
-  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
-  ASSERT_TRUE(settings_window);
-  settings_window->SetBounds(settings_app_bounds);
-
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      CaptureActiveDeskAndSaveTemplate();
-
-  std::string template_json = GetTemplateJson(
-      desk_template->uuid().AsLowercaseString(), browser()->profile());
-
-  // content of the conversion is tested in:
-  // components/desks_storage/core/desk_template_conversion_unittests.cc in this
-  // case we're simply interested in whether or not we got content back.
-  ASSERT_TRUE(!template_json.empty());
 }
