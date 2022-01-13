@@ -2246,6 +2246,30 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
+<histogram name="Media.EME.MediaFoundationService.IsKeySystemSupported"
+    units="ms" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Time for MediaFoundationService.IsKeySystemSupported() to finish. Reported
+    once per browser session lifetime.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.Widevine.HardwareSecure.IsTypeSupported"
+    units="ms" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Time for IMFContentDecryptionModuleFactory::IsTypeSupported() to finish in
+    MediaFoundationService when using Widevine in hardware secure mode, which
+    are called by MediaFoundationService.IsKeySystemSupported() (called once per
+    browser session lifetime). IsKeySystemSupported() calls IsTypeSupported()
+    multiple times, for different audio/video codecs and encryption schemes.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MojoCdm.ConnectionError"
     enum="BooleanConnectionError" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
