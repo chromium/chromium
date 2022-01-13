@@ -1826,6 +1826,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 01/2022.
   profile_prefs->ClearPref(kHasSeenLiteModeInfoBar);
 
+  // Added 01/2022.
+  syncer::SyncTransportDataPrefs::MigrateInvalidationVersions(profile_prefs);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 }

@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/model_type.h"
 
 namespace syncer {
 
@@ -38,11 +39,26 @@ const char kSyncBirthday[] = "sync.birthday";
 const char kSyncBagOfChips[] = "sync.bag_of_chips";
 
 // Dictionary of last seen invalidation versions for each model type.
-const char kSyncInvalidationVersions[] = "sync.invalidation_versions";
+const char kDeprecatedSyncInvalidationVersions[] = "sync.invalidation_versions";
+const char kSyncInvalidationVersions2[] = "sync.invalidation_versions2";
 
 // Obsolete pref.
 const char kSyncObsoleteKeystoreEncryptionBootstrapToken[] =
     "sync.keystore_encryption_bootstrap_token";
+
+void UpdateInvalidationVersions(
+    const std::map<ModelType, int64_t>& invalidation_versions,
+    PrefService* pref_service) {
+  auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
+  for (const auto& map_iter : invalidation_versions) {
+    std::string version_str = base::NumberToString(map_iter.second);
+    invalidation_dictionary->SetString(
+        base::NumberToString(
+            GetSpecificsFieldNumberFromModelType(map_iter.first)),
+        version_str);
+  }
+  pref_service->Set(kSyncInvalidationVersions2, *invalidation_dictionary);
+}
 
 }  // namespace
 
@@ -61,7 +77,8 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
   registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
   registry->RegisterTimePref(kSyncLastPollTime, base::Time());
   registry->RegisterTimeDeltaPref(kSyncPollIntervalSeconds, base::TimeDelta());
-  registry->RegisterDictionaryPref(kSyncInvalidationVersions);
+  registry->RegisterDictionaryPref(kDeprecatedSyncInvalidationVersions);
+  registry->RegisterDictionaryPref(kSyncInvalidationVersions2);
 
   // Obsolete pref.
   registry->RegisterStringPref(kSyncObsoleteKeystoreEncryptionBootstrapToken,
@@ -74,7 +91,8 @@ void SyncTransportDataPrefs::ClearAll() {
   pref_service_->ClearPref(kSyncLastSyncedTime);
   pref_service_->ClearPref(kSyncLastPollTime);
   pref_service_->ClearPref(kSyncPollIntervalSeconds);
-  pref_service_->ClearPref(kSyncInvalidationVersions);
+  pref_service_->ClearPref(kSyncInvalidationVersions2);
+  pref_service_->ClearPref(kDeprecatedSyncInvalidationVersions);
   pref_service_->ClearPref(kSyncGaiaId);
   pref_service_->ClearPref(kSyncCacheGuid);
   pref_service_->ClearPref(kSyncBirthday);
@@ -171,14 +189,47 @@ std::string SyncTransportDataPrefs::GetBagOfChips() const {
   return decoded;
 }
 
+// static
+void SyncTransportDataPrefs::MigrateInvalidationVersions(
+    PrefService* pref_service) {
+  const base::Value* invalidation_dictionary =
+      pref_service->GetDictionary(kDeprecatedSyncInvalidationVersions);
+  if (invalidation_dictionary->DictEmpty()) {
+    // No data, or was already migrated. Nothing to do here.
+    return;
+  }
+
+  // Read data from the deprecated pref.
+  std::map<ModelType, int64_t> invalidation_versions;
+  for (ModelType type : ProtocolTypes()) {
+    // TODO(crbug.com/1173546): Fork a minimal version of ModelTypeToString in
+    // this file, so that ModelTypeToString itself (meant only for debugging
+    // purposes) can be changed without breaking this code.
+    std::string key = ModelTypeToString(type);
+    const std::string* version_str =
+        invalidation_dictionary->FindStringKey(key);
+    if (!version_str)
+      continue;
+    int64_t version = 0;
+    if (!base::StringToInt64(*version_str, &version))
+      continue;
+    invalidation_versions[type] = version;
+  }
+
+  // Write to the new pref and clear the deprecated one.
+  syncer::UpdateInvalidationVersions(invalidation_versions, pref_service);
+  pref_service->ClearPref(kDeprecatedSyncInvalidationVersions);
+}
+
 std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::map<ModelType, int64_t> invalidation_versions;
   const base::Value* invalidation_dictionary =
-      pref_service_->GetDictionary(kSyncInvalidationVersions);
+      pref_service_->GetDictionary(kSyncInvalidationVersions2);
   for (ModelType type : ProtocolTypes()) {
-    std::string key = ModelTypeToString(type);
+    std::string key =
+        base::NumberToString(GetSpecificsFieldNumberFromModelType(type));
     const std::string* version_str =
         invalidation_dictionary->FindStringKey(key);
     if (!version_str)
@@ -194,13 +245,7 @@ std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
 void SyncTransportDataPrefs::UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
-  for (const auto& map_iter : invalidation_versions) {
-    std::string version_str = base::NumberToString(map_iter.second);
-    invalidation_dictionary->SetString(ModelTypeToString(map_iter.first),
-                                       version_str);
-  }
-  pref_service_->Set(kSyncInvalidationVersions, *invalidation_dictionary);
+  syncer::UpdateInvalidationVersions(invalidation_versions, pref_service_);
 }
 
 void ClearObsoleteKeystoreBootstrapTokenPref(PrefService* pref_service) {
