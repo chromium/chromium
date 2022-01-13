@@ -562,7 +562,13 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
 }
 
-TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageTopics) {
+// TODO(crbug.com/1286473): Flaky on Chrome OS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_BatchAnnotate_PageTopics DISABLED_BatchAnnotate_PageTopics
+#else
+#define MAYBE_BatchAnnotate_PageTopics BatchAnnotate_PageTopics
+#endif
+TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_BatchAnnotate_PageTopics) {
   SetupPageTopicsV2ModelExecutor();
 
   // Running the actual model can take a while.
@@ -663,7 +669,14 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
 }
 
-TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageVisibility) {
+// TODO(crbug.com/1286473): Flaky on Chrome OS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_BatchAnnotate_PageVisibility DISABLED_BatchAnnotate_PageVisibility
+#else
+#define MAYBE_BatchAnnotate_PageVisibility BatchAnnotate_PageVisibility
+#endif
+TEST_F(PageContentAnnotationsModelManagerTest,
+       MAYBE_BatchAnnotate_PageVisibility) {
   proto::Any any_metadata;
   any_metadata.set_type_url(
       "type.googleapis.com/com.foo.PageTopicsModelMetadata");
@@ -745,7 +758,14 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
 }
 
-TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_CalledTwice) {
+// TODO(crbug.com/1286473): Flaky on Chrome OS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_BatchAnnotate_CalledTwice DISABLED_BatchAnnotate_CalledTwice
+#else
+#define MAYBE_BatchAnnotate_CalledTwice BatchAnnotate_CalledTwice
+#endif
+TEST_F(PageContentAnnotationsModelManagerTest,
+       MAYBE_BatchAnnotate_CalledTwice) {
   SetupPageTopicsV2ModelExecutor();
 
   base::HistogramTester histogram_tester;
