@@ -388,17 +388,17 @@ void It2MeHost::OnPolicyUpdate(
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
   }
 
-  std::string port_range_string;
-  if (policies->GetString(policy::key::kRemoteAccessHostUdpPortRange,
-                          &port_range_string)) {
-    UpdateHostUdpPortRangePolicy(port_range_string);
+  const std::string* port_range_string =
+      policies->FindStringKey(policy::key::kRemoteAccessHostUdpPortRange);
+  if (port_range_string) {
+    UpdateHostUdpPortRangePolicy(*port_range_string);
   }
 
-  int max_clipboard_size;
-  if (policies->GetInteger(policy::key::kRemoteAccessHostClipboardSizeBytes,
-                           &max_clipboard_size)) {
-    if (max_clipboard_size >= 0) {
-      max_clipboard_size_ = max_clipboard_size;
+  absl::optional<int> max_clipboard_size =
+      policies->FindIntKey(policy::key::kRemoteAccessHostClipboardSizeBytes);
+  if (max_clipboard_size.has_value()) {
+    if (max_clipboard_size.value() >= 0) {
+      max_clipboard_size_ = max_clipboard_size.value();
     }
   }
 }

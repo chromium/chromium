@@ -1357,15 +1357,15 @@ bool HostProcess::OnUdpPortPolicyUpdate(base::DictionaryValue* policies) {
   // Returns true if the host has to be restarted after this policy update.
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  std::string string_value;
-  if (!policies->GetString(policy::key::kRemoteAccessHostUdpPortRange,
-                           &string_value)) {
+  const std::string* string_value =
+      policies->FindStringKey(policy::key::kRemoteAccessHostUdpPortRange);
+  if (!string_value) {
     return false;
   }
 
-  if (!PortRange::Parse(string_value, &udp_port_range_)) {
+  if (!PortRange::Parse(*string_value, &udp_port_range_)) {
     // PolicyWatcher verifies that the value is formatted correctly.
-    LOG(FATAL) << "Invalid port range: " << string_value;
+    LOG(FATAL) << "Invalid port range: " << *string_value;
   }
   HOST_LOG << "Policy restricts UDP port range to: " << udp_port_range_;
   return true;

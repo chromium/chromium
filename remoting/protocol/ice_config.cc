@@ -122,10 +122,10 @@ IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
   IceConfig ice_config;
 
   // Parse lifetimeDuration field.
-  std::string lifetime_str;
+  const std::string* lifetime_str =
+      dictionary.FindStringKey("lifetimeDuration");
   base::TimeDelta lifetime;
-  if (!dictionary.GetString("lifetimeDuration", &lifetime_str) ||
-      !ParseLifetime(lifetime_str, &lifetime)) {
+  if (!lifetime_str || !ParseLifetime(*lifetime_str, &lifetime)) {
     LOG(ERROR) << "Received invalid lifetimeDuration value: " << lifetime_str;
 
     // If the |lifetimeDuration| field is missing or cannot be parsed then mark
