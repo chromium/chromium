@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -43,13 +43,13 @@ struct CONTENT_EXPORT ContentMainParams {
 
   ContentMainDelegate* delegate;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HINSTANCE instance = nullptr;
 
   // |sandbox_info| should be initialized using InitializeSandboxInfo from
   // content_main_win.h
   sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
   int argc = 0;
   const char** argv = nullptr;
 #endif
@@ -66,7 +66,7 @@ struct CONTENT_EXPORT ContentMainParams {
   // are left uninitialized.
   bool minimal_browser_mode = false;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The outermost autorelease pool to pass to main entry points.
   base::mac::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
 #endif
@@ -76,17 +76,17 @@ struct CONTENT_EXPORT ContentMainParams {
   // to launch main multiple times under the same conditions.
   ContentMainParams ShallowCopyForTesting() const {
     ContentMainParams copy(delegate);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     copy.instance = instance;
     copy.sandbox_info = sandbox_info;
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
     copy.argc = argc;
     copy.argv = argv;
 #endif
     DCHECK(!ui_task);
     DCHECK(!created_main_parts_closure);
     copy.minimal_browser_mode = minimal_browser_mode;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     copy.autorelease_pool = autorelease_pool;
 #endif
     return copy;
@@ -96,7 +96,7 @@ struct CONTENT_EXPORT ContentMainParams {
 CONTENT_EXPORT int RunContentProcess(ContentMainParams params,
                                      ContentMainRunner* content_main_runner);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // In the Android, the content main starts from ContentMain.java, This function
 // provides a way to set the |delegate| as ContentMainDelegate for
 // ContentMainRunner.

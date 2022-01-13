@@ -64,7 +64,7 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
     std::move(callback).Run(false);
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void SetThreadPriority(int32_t platform_thread_id,
                          base::ThreadPriority thread_priority) override {}
 #endif
@@ -229,7 +229,7 @@ bool MockRenderThread::IsUseZoomForDSF() {
   return zoom_for_dsf_;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void MockRenderThread::PreCacheFont(const LOGFONT& log_font) {
 }
 

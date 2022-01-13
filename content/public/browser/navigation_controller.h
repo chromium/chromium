@@ -217,7 +217,7 @@ class NavigationController {
     // data loads.
     GURL virtual_url_for_data_url;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Used in LOAD_TYPE_DATA loads only. The real data URI is represented
     // as a string to circumvent the restriction on GURL size. This is only
     // needed to pass URLs that exceed the IPC limit (kMaxURLChars). Short

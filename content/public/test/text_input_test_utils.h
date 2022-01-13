@@ -21,7 +21,7 @@
 #include "ui/events/event_constants.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/public/test/fake_local_frame.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #endif
@@ -314,7 +314,7 @@ class TestInputMethodObserver {
   TestInputMethodObserver();
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Helper class to test LocalFrame::GetStringForRange.
 class TextInputTestLocalFrame : public FakeLocalFrame {
  public:

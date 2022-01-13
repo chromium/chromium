@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "content/public/test/browser_test_base.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -47,7 +47,7 @@ class ContentBrowserTest : public BrowserTestBase {
  private:
   raw_ptr<Shell> shell_ = nullptr;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, without the following autorelease pool, code which is directly
   // executed (as opposed to executed inside a message loop) would autorelease
   // objects into a higher-level pool. This pool is not recycled in-sync with

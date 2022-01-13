@@ -79,7 +79,7 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Update BrowserAccessibilityState with the current status of caret browsing.
   virtual void SetCaretBrowsingState(bool enabled) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Update BrowserAccessibilityState with the current state of accessibility
   // image labels. Used exclusively on Android.
   virtual void SetImageLabelsModeForProfile(bool enabled,

@@ -96,11 +96,11 @@ bool RegisterTestPlugin(base::CommandLine* command_line) {
 bool RegisterTestPluginWithExtraParameters(
     base::CommandLine* command_line,
     const base::FilePath::StringType& extra_registration_parameters) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath::StringType plugin_library = L"ppapi_tests.dll";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::FilePath::StringType plugin_library = "ppapi_tests.plugin";
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType plugin_library = "libppapi_tests.so";
 #endif
   return RegisterPluginWithDefaultMimeType(command_line, plugin_library,
@@ -114,15 +114,15 @@ bool RegisterCorbTestPlugin(base::CommandLine* command_line) {
 }
 
 bool RegisterBlinkTestPlugin(base::CommandLine* command_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const CharType kPluginLibrary[] = L"blink_test_plugin.dll";
   static const CharType kDeprecatedPluginLibrary[] =
       L"blink_deprecated_test_plugin.dll";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   static const CharType kPluginLibrary[] = "blink_test_plugin.plugin";
   static const CharType kDeprecatedPluginLibrary[] =
       "blink_deprecated_test_plugin.plugin";
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   static const CharType kPluginLibrary[] = "libblink_test_plugin.so";
   static const CharType kDeprecatedPluginLibrary[] =
       "libblink_deprecated_test_plugin.so";

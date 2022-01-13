@@ -18,7 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ipc/ipc_channel_proxy.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/synchronization/lock.h"
 #endif
 

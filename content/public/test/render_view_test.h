@@ -242,7 +242,7 @@ class RenderViewTest : public testing::Test {
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
   mojo::BinderMap binders_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool_;
 #endif
 

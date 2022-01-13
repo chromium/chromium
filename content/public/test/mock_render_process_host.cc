@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -331,7 +332,7 @@ bool MockRenderProcessHost::HasPriorityOverride() {
 
 void MockRenderProcessHost::ClearPriorityOverride() {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 ChildProcessImportance MockRenderProcessHost::GetEffectiveImportance() {
   NOTIMPLEMENTED();
   return ChildProcessImportance::NORMAL;

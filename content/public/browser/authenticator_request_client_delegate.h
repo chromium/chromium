@@ -19,7 +19,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
 #endif
 
@@ -87,7 +87,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // that testing is possible.
   virtual bool IsFocused(WebContents* web_contents);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
 
   // Returns configuration data for the built-in Touch ID platform
@@ -96,7 +96,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // unavailable.
   virtual absl::optional<TouchIdAuthenticatorConfig>
   GetTouchIdAuthenticatorConfig(BrowserContext* browser_context);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Callback that should generate and return a unique request id.

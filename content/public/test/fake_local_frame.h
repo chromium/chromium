@@ -110,7 +110,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void GetSavableResourceLinks(
       GetSavableResourceLinksCallback callback) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const gfx::Point& point) override;
   void GetFirstRectForRange(const gfx::Range& range) override;
   void GetStringForRange(const gfx::Range& range,
@@ -132,7 +132,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver)
       override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ExtractSmartClipData(const gfx::Rect& rect,
                             ExtractSmartClipDataCallback callback) override;
 #endif

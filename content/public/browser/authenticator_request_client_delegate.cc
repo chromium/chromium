@@ -15,9 +15,9 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/webauthn_api.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -55,13 +55,13 @@ bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
   return true;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 absl::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
     BrowserContext* browser_context) {
   return absl::nullopt;
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 WebAuthenticationDelegate::ChromeOSGenerateRequestIdCallback

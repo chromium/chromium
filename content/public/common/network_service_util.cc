@@ -9,7 +9,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #endif
@@ -17,7 +17,7 @@
 namespace content {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kNetworkServiceOutOfProcessMemoryThreshold{
     "NetworkServiceOutOfProcessMemoryThreshold",
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -48,7 +48,7 @@ bool IsInProcessNetworkService() {
     return true;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::SysInfo::AmountOfPhysicalMemoryMB() <=
          kNetworkServiceOutOfProcessThresholdMb.Get();
 #else

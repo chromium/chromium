@@ -99,7 +99,7 @@ ContentRendererClient::GetProtocolHandlerSecurityLevel() {
   return blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool ContentRendererClient::HandleNavigation(
     RenderFrame* render_frame,
     bool render_view_was_created_by_renderer,
@@ -187,7 +187,7 @@ ContentRendererClient::CreateWorkerContentSettingsClient(
   return nullptr;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<media::SpeechRecognitionClient>
 ContentRendererClient::CreateSpeechRecognitionClient(
     RenderFrame* render_frame,

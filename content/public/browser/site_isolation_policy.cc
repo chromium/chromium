@@ -39,7 +39,7 @@ bool IsDisableSiteIsolationFlagPresent() {
   return site_isolation_disabled;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsDisableSiteIsolationForPolicyFlagPresent() {
   static const bool site_isolation_disabled_by_policy =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -57,7 +57,7 @@ bool IsSiteIsolationDisabled(SiteIsolationMode site_isolation_mode) {
     return true;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Desktop platforms no longer support disabling Site Isolation by policy.
   if (IsDisableSiteIsolationForPolicyFlagPresent()) {
     return true;

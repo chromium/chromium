@@ -13,7 +13,7 @@
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -76,7 +76,7 @@ class CONTENT_EXPORT ChildThread : public IPC::Sender {
   virtual void SetFieldTrialGroup(const std::string& trial_name,
                                   const std::string& group_name) = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Request that the given font be loaded by the browser so it's cached by the
   // OS. Please see ChildProcessHost::PreCacheFont for details.
   virtual void PreCacheFont(const LOGFONT& log_font) = 0;

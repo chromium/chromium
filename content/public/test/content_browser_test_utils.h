@@ -170,7 +170,7 @@ class ShellAddedObserver {
   std::unique_ptr<base::RunLoop> runner_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // An observer of the RenderWidgetHostViewCocoa which is the NSView
 // corresponding to the page.
 class RenderWidgetHostViewCocoaObserver {
@@ -259,12 +259,12 @@ void IsolateOriginsForTesting(
     WebContents* web_contents,
     std::vector<std::string> hostnames_to_isolate);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void SetMockCursorPositionForTesting(WebContents* web_contents,
                                      const gfx::Point& position);
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content
 

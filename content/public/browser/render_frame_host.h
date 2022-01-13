@@ -35,7 +35,7 @@
 class GURL;
 
 namespace base {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace android {
 template <typename T>
 class JavaRef;
@@ -157,7 +157,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       int render_process_id,
       const blink::RemoteFrameToken& placeholder_frame_token);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the RenderFrameHost object associated with a Java native pointer.
   static RenderFrameHost* FromJavaRenderFrameHost(
       const base::android::JavaRef<jobject>& jrender_frame_host_android);
@@ -805,7 +805,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void SetWebUIProperty(const std::string& name,
                                 const std::string& value) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the Java object of this instance.
   virtual base::android::ScopedJavaLocalRef<jobject>
   GetJavaRenderFrameHost() = 0;

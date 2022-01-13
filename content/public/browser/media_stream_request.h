@@ -117,7 +117,7 @@ class MediaStreamUI {
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Focuses the display surface represented by |media_id|.
   //
   // |is_from_microtask| and |is_from_timer| are used to distinguish:

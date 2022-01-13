@@ -142,7 +142,7 @@ class CONTENT_EXPORT ContentClient {
     std::vector<std::string> empty_document_schemes;
     // Registers a URL scheme as extension scheme.
     std::vector<std::string> extension_schemes;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Normally, non-standard schemes canonicalize to opaque origins. However,
     // Android WebView requires non-standard schemes to still be preserved.
     bool allow_non_standard_schemes_in_origins = false;
@@ -170,7 +170,7 @@ class CONTENT_EXPORT ContentClient {
   // Returns a native image given its id.
   virtual gfx::Image& GetNativeImageNamed(int resource_id);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Gets the path for an embedder-specific helper child process. The
   // |child_flags| is a value greater than
   // ChildProcessHost::CHILD_EMBEDDER_FIRST. The |helpers_path| is the location
@@ -178,7 +178,7 @@ class CONTENT_EXPORT ContentClient {
   virtual base::FilePath GetChildProcessPath(
       int child_flags,
       const base::FilePath& helpers_path);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Called by content::GetProcessTypeNameInEnglish for process types that it
   // doesn't know about because they're from the embedder.
@@ -188,7 +188,7 @@ class CONTENT_EXPORT ContentClient {
   // supported by the embedder.
   virtual blink::OriginTrialPolicy* GetOriginTrialPolicy();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns true for clients like Android WebView that uses synchronous
   // compositor. Note setting this to true will permit synchronous IPCs from
   // the browser UI thread.

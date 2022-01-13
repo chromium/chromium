@@ -35,10 +35,10 @@
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"  // nogncheck
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -240,7 +240,7 @@ void IsolateOriginsForTesting(
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void SetMockCursorPositionForTesting(WebContents* web_contents,
                                      const gfx::Point& position) {
@@ -250,6 +250,6 @@ void SetMockCursorPositionForTesting(WebContents* web_contents,
   host.SetMockCursorPositionForTesting(position);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

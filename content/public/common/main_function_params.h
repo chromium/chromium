@@ -12,11 +12,11 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace sandbox {
 struct SandboxInterfaceInfo;
 }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 namespace base {
 namespace mac {
 class ScopedNSAutoreleasePool;
@@ -44,11 +44,11 @@ struct CONTENT_EXPORT MainFunctionParams {
 
   const base::CommandLine* command_line;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   bool zygote_child = false;
 #endif
 

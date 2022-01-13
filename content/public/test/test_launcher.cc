@@ -48,11 +48,11 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_switches.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/policy/win/sandbox_win.h"
@@ -61,7 +61,7 @@
 
 // To avoid conflicts with the macro from the Windows SDK...
 #undef GetCommandLine
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
@@ -81,7 +81,7 @@ TestLauncherDelegate* g_launcher_delegate = nullptr;
 
 // ContentMain is not run on Android in the test process, and is run via
 // java for child processes. So ContentMainParams does not exist there.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The global ContentMainParams config to be copied in each test.
 const ContentMainParams* g_params = nullptr;
 #endif
@@ -334,7 +334,7 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
     return 0;
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // The ContentMainDelegate is set for browser tests on Android by the
   // browser test target and is not created by the |launcher_delegate|.
   std::unique_ptr<ContentMainDelegate> content_main_delegate(
@@ -349,23 +349,23 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   ContentMainParams params(content_main_delegate.get());
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   InitializeSandboxInfo(&sandbox_info);
 
   params.instance = GetModuleHandle(NULL);
   params.sandbox_info = &sandbox_info;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   sandbox::SeatbeltExecServer::CreateFromArgumentsResult seatbelt =
       sandbox::SeatbeltExecServer::CreateFromArguments(
           command_line->GetProgram().value().c_str(), argc, argv);
   if (seatbelt.sandbox_required) {
     CHECK(seatbelt.server->InitializeSandbox());
   }
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
   params.argc = argc;
   params.argv = const_cast<const char**>(argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Disable system tracing for browser tests by default. This prevents breakage
   // of tests that spin the run loop until idle on platforms with system tracing
@@ -373,7 +373,7 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   // custom system tracing service.
   tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // This needs to be before trying to run tests as otherwise utility processes
   // end up being launched as a test, which leads to rerunning the test.
   if (command_line->HasSwitch(switches::kProcessType) ||
@@ -391,7 +391,7 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
        command_line->HasSwitch(base::kGTestFilterFlag)) ||
       command_line->HasSwitch(base::kGTestListTestsFlag) ||
       command_line->HasSwitch(base::kGTestHelpFlag)) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     g_params = &params;
     // The call to RunTestSuite() below bypasses TestLauncher, which creates
     // a temporary directory that is used as the user-data-dir. Create a
@@ -430,7 +430,7 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   base::debug::VerifyDebugger();
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::FileDescriptorWatcher file_descriptor_watcher(executor.task_runner());
 #endif
 
@@ -447,7 +447,7 @@ TestLauncherDelegate* GetCurrentTestLauncherDelegate() {
   return g_launcher_delegate;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 ContentMainParams CopyContentMainParams() {
   return g_params->ShallowCopyForTesting();
 }

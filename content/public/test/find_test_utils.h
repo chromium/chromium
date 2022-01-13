@@ -66,7 +66,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
   // replies.
   const std::vector<FindResults>& GetReplyRecord();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Waits for all of the find match rects to be received.
   void WaitForMatchRects();
 
@@ -84,7 +84,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
     NOTHING,
     FINAL_REPLY,
     NEXT_REPLY,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     MATCH_RECTS
 #endif
   };
@@ -104,7 +104,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
   // Stop waiting for |waiting_for_|.
   void StopWaiting();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // WebContentsDelegate override.
   void FindMatchRectsReply(WebContents* web_contents,
                            int version,

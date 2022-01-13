@@ -22,7 +22,7 @@ CONTENT_EXPORT extern const base::Feature kAllowActivationDelegationAttr;
 CONTENT_EXPORT extern const base::Feature
     kAllowContentInitiatedDataUrlNavigations;
 CONTENT_EXPORT extern const base::Feature kAndroidDownloadableFontsMatching;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 CONTENT_EXPORT extern const base::Feature kAudioProcessHighPriorityWin;
 #endif
 CONTENT_EXPORT extern const base::Feature kAudioServiceLaunchOnStartup;
@@ -69,7 +69,7 @@ CONTENT_EXPORT extern const base::Feature kDesktopPWAsTabStrip;
 CONTENT_EXPORT extern const base::Feature kDevicePosture;
 CONTENT_EXPORT extern const base::Feature kDocumentPolicy;
 CONTENT_EXPORT extern const base::Feature kDocumentPolicyNegotiation;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 CONTENT_EXPORT extern const base::Feature kDWriteFontProxyOnIO;
 #endif
 CONTENT_EXPORT extern const base::Feature kEarlyEstablishGpuChannel;
@@ -91,7 +91,7 @@ CONTENT_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 CONTENT_EXPORT extern const base::Feature kFirstPartySetsV2ComponentFormat;
 CONTENT_EXPORT extern const base::Feature kFontManagerEarlyInit;
 CONTENT_EXPORT extern const base::Feature kFontSrcLocalMatching;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const base::Feature
     kForwardMemoryPressureEventsToGpuProcess;
 #endif
@@ -200,9 +200,9 @@ CONTENT_EXPORT extern const base::Feature kDisableProcessReuse;
 CONTENT_EXPORT extern const base::Feature
     kSkipEarlyCommitPendingForCrashedFrame;
 CONTENT_EXPORT extern const base::Feature kUserMediaCaptureOnFocus;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT extern const base::Feature kWebLockScreenApi;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT extern const base::Feature kWebOTP;
 CONTENT_EXPORT extern const base::Feature kWebOTPAssertionFeaturePolicy;
 CONTENT_EXPORT extern const base::Feature kSpareRendererForSitePerProcess;
@@ -238,7 +238,7 @@ CONTENT_EXPORT extern const base::Feature kTouchpadAsyncPinchEvents;
 CONTENT_EXPORT extern const base::Feature kTouchpadOverscrollHistoryNavigation;
 CONTENT_EXPORT extern const base::Feature kTrustedDOMTypes;
 CONTENT_EXPORT extern const base::Feature kUnrestrictedSharedArrayBuffer;
-#if defined(OS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
+#if BUILDFLAG(IS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
 CONTENT_EXPORT extern const base::Feature kUseContextSnapshot;
 #endif
 CONTENT_EXPORT extern const base::Feature kUserActivationSameOriginVisibility;
@@ -250,9 +250,9 @@ CONTENT_EXPORT extern const base::Feature
 CONTENT_EXPORT extern const base::Feature kWebAppWindowControlsOverlay;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyBaseline;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtection;
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
 CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtectionPku;
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 CONTENT_EXPORT extern const base::Feature kWebAssemblyDynamicTiering;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyLazyCompilation;
@@ -279,7 +279,7 @@ CONTENT_EXPORT extern const base::Feature kWebXrArModule;
 CONTENT_EXPORT extern const base::Feature
     kChangeServiceWorkerPriorityForClientForegroundStateChange;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
@@ -299,14 +299,14 @@ extern const char kBigLittleSchedulingRenderMainBigParam[];
 extern const char kBigLittleSchedulingNetworkMainBigParam[];
 extern const char kBigLittleSchedulingGpuMainBigParam[];
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT extern const base::Feature kDeviceMonitorMac;
 CONTENT_EXPORT extern const base::Feature kIOSurfaceCapturer;
 CONTENT_EXPORT extern const base::Feature kMacSyscallSandbox;
 CONTENT_EXPORT extern const base::Feature kRetryGetVideoCaptureDeviceInfos;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if defined(WEBRTC_USE_PIPEWIRE)
 CONTENT_EXPORT extern const base::Feature kWebRtcPipeWireCapturer;

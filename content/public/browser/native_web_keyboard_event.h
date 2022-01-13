@@ -11,7 +11,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -34,7 +34,7 @@ struct CONTENT_EXPORT NativeWebKeyboardEvent : public blink::WebKeyboardEvent {
                          gfx::NativeView native_view);
 
   explicit NativeWebKeyboardEvent(gfx::NativeEvent native_event);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Holds a global ref to android_key_event (allowed to be null).
   NativeWebKeyboardEvent(
       JNIEnv* env,
@@ -54,7 +54,7 @@ struct CONTENT_EXPORT NativeWebKeyboardEvent : public blink::WebKeyboardEvent {
 #endif
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(bokan): Temporarily added to debug https://crbug.com/1039833. This is
   // used to allow collecting Event.Latency.OS_NO_VALIDATION only in contexts
   // where the key event will be sent to the renderer.  The purpose is to avoid

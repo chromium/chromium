@@ -63,7 +63,7 @@
 #include "ui/events/types/event_type.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -87,7 +87,7 @@ class AXPlatformNodeDelegate;
 class AXTreeID;
 }  // namespace ui
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace Microsoft {
 namespace WRL {
 template <typename>
@@ -225,13 +225,13 @@ bool WaitForLoadStop(WebContents* web_contents);
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
                                      bool trigger_user_activation = true);
 
-#if defined(USE_AURA) || defined(OS_ANDROID)
+#if defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
 // If WebContent's view is currently being resized, this will wait for the ack
 // from the renderer that the resize is complete and for the
 // WindowEventDispatcher to release the pointer moves. If there's no resize in
 // progress, the method will return right away.
 void WaitForResizeComplete(WebContents* web_contents);
-#endif  // defined(USE_AURA) || defined(OS_ANDROID)
+#endif  // defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
 
 // Allows tests to set the last committed origin of |render_frame_host|, to
 // simulate a scenario that might happen with a compromised renderer or might
@@ -303,7 +303,7 @@ void SimulateMouseWheelEvent(WebContents* web_contents,
                              const gfx::Vector2d& delta,
                              const blink::WebMouseWheelEvent::Phase phase);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Simulate a mouse wheel event with the ctrl modifier set.
 void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
                                      const gfx::Point& point,
@@ -315,7 +315,7 @@ void SimulateTouchscreenPinch(WebContents* web_contents,
                               float scale_change,
                               base::OnceClosure on_complete);
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Sends a GesturePinch Begin/Update/End sequence.
 void SimulateGesturePinchSequence(WebContents* web_contents,
@@ -1037,7 +1037,7 @@ ui::AXPlatformNodeDelegate* FindAccessibilityNodeInSubtree(
     ui::AXPlatformNodeDelegate* node,
     const FindAccessibilityNodeCriteria& criteria);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Retrieve the specified interface from an accessibility node.
 template <typename T>
 Microsoft::WRL::ComPtr<T> QueryInterfaceFromNode(

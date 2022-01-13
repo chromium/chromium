@@ -229,7 +229,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveLazyLoadBehavior(
       blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Reports that a resource will be requested.
   virtual void WillSendRequest(const blink::WebURLRequest& request) {}
 #endif

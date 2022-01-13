@@ -18,7 +18,7 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/base/buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 #if BUILDFLAG(USE_ATK)
@@ -105,7 +105,7 @@ const TypeInfo kTypeInfos[] = {
             "@UIA-WIN-",
             FILE_PATH_LITERAL("-uia-win"),
             [](base::CommandLine* command_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
               command_line->AppendSwitch(
                   ::switches::kEnableExperimentalUIAutomation);
 #endif
@@ -118,7 +118,7 @@ const TypeInfo kTypeInfos[] = {
             "@WIN-",
             FILE_PATH_LITERAL("-win"),
             [](base::CommandLine* command_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
               command_line->RemoveSwitch(
                   ::switches::kEnableExperimentalUIAutomation);
 #endif
@@ -214,13 +214,13 @@ std::vector<ui::AXApiType::Type> DumpAccessibilityTestHelper::TreeTestPasses() {
   return
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
       {ui::AXApiType::kBlink};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       {ui::AXApiType::kBlink, ui::AXApiType::kWinIA2, ui::AXApiType::kWinUIA};
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       {ui::AXApiType::kBlink, ui::AXApiType::kMac};
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
       {ui::AXApiType::kAndroid};
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
       {ui::AXApiType::kFuchsia};
 #else  // linux
       {ui::AXApiType::kBlink, ui::AXApiType::kLinux};
@@ -231,9 +231,9 @@ std::vector<ui::AXApiType::Type> DumpAccessibilityTestHelper::TreeTestPasses() {
 std::vector<ui::AXApiType::Type>
 DumpAccessibilityTestHelper::EventTestPasses() {
   return
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       {ui::AXApiType::kWinIA2, ui::AXApiType::kWinUIA};
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       {ui::AXApiType::kMac};
 #elif BUILDFLAG(USE_ATK)
       {ui::AXApiType::kLinux};
@@ -321,7 +321,7 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
         base::JoinString(actual_lines, "\n") + "\n";
     CHECK(base::WriteFile(expected_file, actual_contents_for_output));
     LOG(INFO) << "Wrote expectations to: " << expected_file.LossyDisplayName();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     LOG(INFO) << "Generated expectations written to file on test device.";
     LOG(INFO) << "To fetch, run: adb pull " << expected_file.LossyDisplayName();
 #endif
@@ -348,7 +348,7 @@ FilePath::StringType DumpAccessibilityTestHelper::GetExpectedFileSuffix(
 FilePath::StringType
 DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
     const base::FilePath::StringType& expectations_qualifier) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (expectation_type_ == "uia" &&
       base::win::GetVersion() == base::win::Version::WIN7) {
     FilePath::StringType suffix;
@@ -378,7 +378,7 @@ DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
            FILE_PATH_LITERAL(".txt");
   }
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (expectation_type_ == "blink") {
     FilePath::StringType suffix;
     if (!expectations_qualifier.empty())

@@ -32,7 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_isolation_key.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -135,7 +135,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void SetPriorityOverride(bool foreground) override;
   bool HasPriorityOverride() override;
   void ClearPriorityOverride() override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance GetEffectiveImportance() override;
   void DumpProcessStack() override;
 #endif

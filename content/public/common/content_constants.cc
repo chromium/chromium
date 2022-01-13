@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 
 namespace content {
 
@@ -48,7 +49,7 @@ std::string GetCorsExemptRequestedWithHeaderName() {
   return base::JoinString(pieces, "-");
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const int kLowestRendererOomScore = 300;
 const int kHighestRendererOomScore = 1000;
 

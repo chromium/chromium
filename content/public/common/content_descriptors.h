@@ -15,7 +15,7 @@ enum {
   kMojoIPCChannel,
   kFieldTrialDescriptor,
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   kAndroidPropertyDescriptor,
   kAndroidICUDataDescriptor,
   kAndroidICUExtraDataDescriptor,

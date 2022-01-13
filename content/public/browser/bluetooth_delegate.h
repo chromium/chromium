@@ -19,7 +19,7 @@
 // Some OS Bluetooth stacks (macOS and Android) automatically bond to a device
 // when accessing a characteristic/descriptor which requires an authenticated
 // client. For other platforms Chrome does the on-demand pairing.
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define PAIR_BLUETOOTH_ON_DEMAND() true
 #else
 #define PAIR_BLUETOOTH_ON_DEMAND() false

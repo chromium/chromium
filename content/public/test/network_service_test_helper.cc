@@ -40,7 +40,7 @@
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/test/android/url_utils.h"
 #endif
 

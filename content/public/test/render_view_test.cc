@@ -77,11 +77,11 @@
 #include "ui/native_theme/native_theme_features.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h"
 #include "content/test/dwrite_font_fake_sender_win.h"
 #endif
@@ -461,7 +461,7 @@ void RenderViewTest::SetUp() {
   agent_scheduling_group_ = MockAgentSchedulingGroup::Create(*render_thread_);
   render_widget_host_ = CreateRenderWidgetHost();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This needs to happen sometime before PlatformInitialize.
   // This isn't actually necessary for most tests: most tests are able to
   // connect to their browser process which runs the real proxy host. However,
@@ -470,7 +470,7 @@ void RenderViewTest::SetUp() {
   SetDWriteFontProxySenderForTesting(CreateFakeCollectionSender());
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   autorelease_pool_ = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
 #endif
   command_line_ =
@@ -582,11 +582,11 @@ void RenderViewTest::TearDown() {
 
   RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(nullptr);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ClearDWriteFontProxySenderForTesting();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   autorelease_pool_.reset();
 #endif
 

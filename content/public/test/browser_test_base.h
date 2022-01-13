@@ -127,7 +127,7 @@ class BrowserTestBase : public ::testing::Test {
 
   bool set_up_called() { return set_up_called_; }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // This is only needed by a test that raises SIGTERM to ensure that a specific
   // codepath is taken.
   void DisableSIGTERMHandling() {
@@ -165,7 +165,7 @@ class BrowserTestBase : public ::testing::Test {
   void SetInitialWebContents(WebContents* web_contents);
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android browser tests need to wait for async initialization in Java code.
   // This waits for those to complete before we can continue with the test.
   void WaitUntilJavaIsReady(base::OnceClosure quit_closure,
@@ -229,7 +229,7 @@ class BrowserTestBase : public ::testing::Test {
 
   raw_ptr<BrowserMainParts> browser_main_parts_ = nullptr;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   bool handle_sigterm_;
 #endif
 };

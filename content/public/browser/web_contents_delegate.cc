@@ -186,7 +186,7 @@ void WebContentsDelegate::RequestKeyboardLock(WebContents* web_contents,
   web_contents->GotResponseToKeyboardLockRequest(false);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<ColorChooser> WebContentsDelegate::OpenColorChooser(
     WebContents* web_contents,
     SkColor color,
@@ -246,7 +246,7 @@ std::string WebContentsDelegate::GetTitleForMediaControls(
   return {};
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool WebContentsDelegate::ShouldBlockMediaRequest(const GURL& url) {
   return false;
 }

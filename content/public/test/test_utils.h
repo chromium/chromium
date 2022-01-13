@@ -26,7 +26,7 @@
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #endif
 

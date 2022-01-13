@@ -69,11 +69,11 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-#if (defined(OS_POSIX) && !defined(OS_MAC)) || defined(OS_FUCHSIA)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/posix/global_descriptors.h"
 #endif
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "content/public/browser/posix_file_descriptor_info.h"
 #endif
 
@@ -247,7 +247,7 @@ struct Referrer;
 struct ServiceWorkerVersionBaseInfo;
 struct SocketPermissionRequest;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TtsEnvironmentAndroid;
 #endif
 
@@ -862,7 +862,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // allow.
   virtual device::GeolocationManager* GetGeolocationManager();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Allows an embedder to decide whether to use the GmsCoreLocationProvider.
   virtual bool ShouldUseGmsCoreGeolocationProvider();
 #endif
@@ -1226,14 +1226,14 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Populates |mappings| with all files that need to be mapped before launching
   // a child process.
-#if (defined(OS_POSIX) && !defined(OS_MAC)) || defined(OS_FUCHSIA)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)
   virtual void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) {}
-#endif  // defined(OS_POSIX) && !defined(OS_MAC) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Defines flags that can be passed to PreSpawnChild.
   enum ChildSpawnFlags {
     NONE = 0,
@@ -1652,7 +1652,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // convention is to put new constants under a subdict at the key "clientInfo".
   virtual base::DictionaryValue GetNetLogConstants();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Only used by Android WebView.
   // Returns:
   //   true  - The check was successfully performed without throwing a
@@ -1696,7 +1696,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
           receiver);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Allows the embedder to provide an implementation of the Serial API.
   virtual SerialDelegate* GetSerialDelegate();
 #endif
@@ -1732,7 +1732,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // BrowserMainLoop, BrowserMainLoop itself is responsible for that.
   virtual bool CreateThreadPool(base::StringPiece name);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns an embedder-provided subclass of WebAuthenticationDelegate. This
   // allows the embedder to customize the implementation of the Web
   // Authentication API.
@@ -1931,7 +1931,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual ui::AXMode GetAXModeForBrowserContext(
       BrowserContext* browser_context);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Defines the heuristics we can use to enable wide color gamut (WCG).
   enum class WideColorGamutHeuristic {
     kUseDisplay,  // Use WCG if display supports it.
@@ -2119,14 +2119,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // unsuccessfully.
   virtual void OnKeepaliveRequestFinished();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Sets up the embedder sandbox parameters for the given sandbox type. Returns
   // true if parameters were successfully set up or false if no additional
   // parameters were set up.
   virtual bool SetupEmbedderSandboxParameters(
       sandbox::mojom::Sandbox sandbox_type,
       sandbox::SeatbeltExecClient* client);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   virtual void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>);

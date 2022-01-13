@@ -721,7 +721,7 @@ const char kSandboxIPCProcess[]             = "sandbox-ipc";
 
 // Enables shared array buffer on desktop, gated by an Enterprise Policy.
 // TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kSharedArrayBufferUnrestrictedAccessAllowed[] =
     "shared-array-buffer-unrestricted-access-allowed";
 #endif
@@ -824,7 +824,7 @@ const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
 // Texture target for CHROMIUM_image backed video frame textures.
 const char kVideoImageTextureTarget[] = "video-image-texture-target";
 
-#if defined(OS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
+#if BUILDFLAG(IS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
 // Switch supplied to the renderer if the feature `kUseContextSnapshot` is
 // enabled. A switch is used as at the time the renderer needs this information
 // features have not yet been loaded.
@@ -956,7 +956,7 @@ const char kWebXrRuntimeWMR[] = "windows-mixed-reality";
 const char kDisableAcceleratedVideoDecode[] =
     "disable-accelerated-video-decode";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Disable Media Session API
 const char kDisableMediaSessionAPI[] = "disable-media-session-api";
 
@@ -1004,14 +1004,14 @@ const char kEnableAutomation[] = "enable-automation";
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Allows sending text-to-speech requests to speech-dispatcher, a common
 // Linux speech service. Because it's buggy, the user must explicitly
 // enable it so that visiting a random webpage can't cause instability.
 const char kEnableSpeechDispatcher[] = "enable-speech-dispatcher";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // /prefetch:# arguments to use when launching various process types. It has
 // been observed that when file reads are consistent for 3 process launches with
 // the same /prefetch:# argument, the Windows prefetcher starts issuing reads in

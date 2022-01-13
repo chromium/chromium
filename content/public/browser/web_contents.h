@@ -51,7 +51,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -1037,7 +1037,7 @@ class WebContents : public PageNavigator,
   // Returns false if the request is no longer valid, otherwise true.
   virtual bool GotResponseToKeyboardLockRequest(bool allowed) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called when the user has selected a color in the color chooser.
   virtual void DidChooseColorInColorChooser(SkColor color) = 0;
 
@@ -1244,7 +1244,7 @@ class WebContents : public PageNavigator,
   // Tells the WebContents whether the context menu is showing.
   virtual void SetShowingContextMenu(bool showing) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CONTENT_EXPORT static WebContents* FromJavaWebContents(
       const base::android::JavaRef<jobject>& jweb_contents_android);
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents() = 0;

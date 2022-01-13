@@ -72,7 +72,7 @@ class NavigationEntry : public base::SupportsUserData {
   virtual void SetBaseURLForDataURL(const GURL& url) = 0;
   virtual const GURL& GetBaseURLForDataURL() = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The real data: URL when it is received via WebView.loadDataWithBaseUrl
   // method. Represented as a string to circumvent the size restriction
   // of GURLs for compatibility with legacy Android WebView apps.

@@ -65,17 +65,16 @@ bool IsURLHandledByNetworkStack(const GURL& url) {
 }
 
 bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url) {
-  static const auto kUnsafeSchemes =
-      base::MakeFixedFlatSet<base::StringPiece>({
-        url::kAboutScheme, url::kFileScheme,
-            url::kFileSystemScheme, url::kBlobScheme,
+  static const auto kUnsafeSchemes = base::MakeFixedFlatSet<base::StringPiece>({
+    url::kAboutScheme, url::kFileScheme, url::kFileSystemScheme,
+        url::kBlobScheme,
 #if !defined(CHROMECAST_BUILD)
-            url::kDataScheme,
+        url::kDataScheme,
 #endif
-#if defined(OS_ANDROID)
-            url::kContentScheme,
+#if BUILDFLAG(IS_ANDROID)
+        url::kContentScheme,
 #endif
-      });
+  });
   if (HasWebUIScheme(to_url))
     return false;
   if (!kUnsafeSchemes.contains(to_url.scheme_piece()))

@@ -26,7 +26,7 @@
 #include "ui/aura/env.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
@@ -83,7 +83,7 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
   feature_list->InitializeFromCommandLine(enabled, disabled);
   base::FeatureList::SetInstance(std::move(feature_list));
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Use headless ozone platform on Fuchsia by default.
   // TODO(crbug.com/865172): Remove this flag.
   if (!command_line->HasSwitch(switches::kOzonePlatform))

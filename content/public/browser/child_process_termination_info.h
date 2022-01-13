@@ -10,11 +10,11 @@
 #include "content/common/content_export.h"
 #include "content/public/common/result_codes.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -42,7 +42,7 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // the same as not having main frames.
   bool renderer_was_subframe = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // True if child service has strong or moderate binding at time of death.
   base::android::ChildBindingState binding_state =
       base::android::ChildBindingState::UNBOUND;
@@ -63,7 +63,7 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   int best_effort_reverse_rank = -1;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The LastError if there was a failure to launch the process.
   DWORD last_error;
 #endif

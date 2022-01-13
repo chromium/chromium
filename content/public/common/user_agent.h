@@ -89,7 +89,7 @@ CONTENT_EXPORT std::string BuildUserAgentFromProduct(
 // if on a codenamed (i.e. not a release) build of an Android.
 CONTENT_EXPORT std::string BuildModelInfo();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Helper function to generate a full user agent string given a short
 // product name and some extra text to be added to the OS info.
 // This is currently only used for Android Web View.

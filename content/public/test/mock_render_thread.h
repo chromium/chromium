@@ -85,7 +85,7 @@ class MockRenderThread : public RenderThread {
   blink::WebString GetReducedUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
   bool IsUseZoomForDSF() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void PreCacheFont(const LOGFONT& log_font) override;
   void ReleaseCachedFonts() override;
 #endif

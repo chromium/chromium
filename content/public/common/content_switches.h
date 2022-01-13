@@ -198,7 +198,7 @@ CONTENT_EXPORT extern const char kRendererProcessLimit[];
 CONTENT_EXPORT extern const char kRendererStartupDialog[];
 CONTENT_EXPORT extern const char kRunManualTestsFlag[];
 extern const char kSandboxIPCProcess[];
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const char kSharedArrayBufferUnrestrictedAccessAllowed[];
 #endif
 CONTENT_EXPORT extern const char kSharedFiles[];
@@ -219,7 +219,7 @@ CONTENT_EXPORT extern const char kTrustableWebBundleFileUrl[];
 CONTENT_EXPORT extern const char kUseFakeCodecForPeerConnection[];
 CONTENT_EXPORT extern const char kUseFakeUIForMediaStream[];
 CONTENT_EXPORT extern const char kVideoImageTextureTarget[];
-#if defined(OS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
+#if BUILDFLAG(IS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
 CONTENT_EXPORT extern const char kUseContextSnapshotSwitch[];
 #endif
 CONTENT_EXPORT extern const char kUseMobileUserAgent[];
@@ -261,7 +261,7 @@ CONTENT_EXPORT extern const char kWebXrRuntimeWMR[];
 
 CONTENT_EXPORT extern const char kDisableAcceleratedVideoDecode[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const char kDisableMediaSessionAPI[];
 CONTENT_EXPORT extern const char kDisableOoprDebugCrashDump[];
 CONTENT_EXPORT extern const char kDisableScreenOrientationLock[];
@@ -276,11 +276,11 @@ CONTENT_EXPORT extern const char kRendererWaitForJavaDebugger[];
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 CONTENT_EXPORT extern const char kEnableSpeechDispatcher[];
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 CONTENT_EXPORT extern const char kPrefetchArgumentRenderer[];
 CONTENT_EXPORT extern const char kPrefetchArgumentGpu[];
 CONTENT_EXPORT extern const char kPrefetchArgumentPpapi[];

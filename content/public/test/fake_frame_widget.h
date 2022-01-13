@@ -14,7 +14,7 @@
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "ui/base/ui_base_types.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/mojom/attributed_string.mojom.h"
 #endif
 
@@ -69,7 +69,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
                                                bool subtree_throttled,
                                                bool display_locked) override {}
   void SetIsInertForSubFrame(bool inert) override {}
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void GetStringAtPoint(const gfx::Point& point_in_local_root,
                         GetStringAtPointCallback callback) override;
 #endif

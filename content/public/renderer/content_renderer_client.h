@@ -30,7 +30,7 @@
 #include "ui/base/page_transition_types.h"
 #include "v8/include/v8-forward.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/base/speech_recognition_client.h"
 #endif
 
@@ -191,7 +191,7 @@ class CONTENT_EXPORT ContentRendererClient {
   // Returns the security level to use for Navigator.RegisterProtocolHandler().
   virtual blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(sgurun) This callback is deprecated and will be removed as soon
   // as android webview completes implementation of a resource throttle based
   // shouldoverrideurl implementation. See crbug.com/325351
@@ -274,7 +274,7 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual std::unique_ptr<blink::WebContentSettingsClient>
   CreateWorkerContentSettingsClient(RenderFrame* render_frame);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Creates a speech recognition client used to transcribe audio into captions.
   virtual std::unique_ptr<media::SpeechRecognitionClient>
   CreateSpeechRecognitionClient(

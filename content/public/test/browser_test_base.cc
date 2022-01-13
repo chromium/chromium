@@ -87,11 +87,11 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/platform_window/common/platform_window_defaults.h"  // nogncheck
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"  // nogncheck
 #include "content/app/content_main_runner_impl.h"
@@ -103,14 +103,14 @@
 #include "ui/base/ui_base_paths.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/sandbox_parameters_mac.h"
 #include "net/test/test_data_directory.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/event_generator_delegate_mac.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/process/process_handle.h"
 #endif
 
@@ -130,9 +130,9 @@
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace content {
 namespace {
@@ -141,7 +141,7 @@ namespace {
 // process. Browser tests should each be run in a new process.
 bool g_instance_already_created = false;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // On SIGSEGV or SIGTERM (sent by the runner on timeouts), dump a stack trace
 // (to make debugging easier) and also exit with a known error code (so that
 // the test framework considers this a failure -- http://crbug.com/57578).
@@ -160,14 +160,14 @@ void DumpStackTraceSignalHandler(int signal) {
     logging::RawLog(logging::LOG_ERROR, message.c_str());
     auto stack_trace = base::debug::StackTrace();
     stack_trace.OutputToStream(&std::cerr);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Also output the trace to logcat on Android.
     stack_trace.Print();
 #endif
   }
   _exit(128 + signal);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 void RunTaskOnRendererThread(base::OnceClosure task,
                              base::OnceClosure quit_task) {
@@ -247,11 +247,11 @@ BrowserTestBase::BrowserTestBase() {
          "a new browser test suite that runs on Android, please add it to "
          "//build/android/pylib/gtest/gtest_test_instance.py.";
   g_instance_already_created = true;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   handle_sigterm_ = true;
 #endif
 
@@ -265,7 +265,7 @@ BrowserTestBase::BrowserTestBase() {
 #if defined(USE_AURA)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       base::BindRepeating(&aura::test::EventGeneratorDelegateAura::Create));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       base::BindRepeating(&views::test::CreateEventGeneratorDelegateMac));
 #endif
@@ -370,7 +370,7 @@ void BrowserTestBase::SetUp() {
   if (command_line->HasSwitch("enable-gpu"))
     use_software_gl = false;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac we always use hardware GL.
   use_software_gl = false;
 
@@ -379,7 +379,7 @@ void BrowserTestBase::SetUp() {
   SetNetworkTestCertsDirectoryForTesting(net::GetTestCertsDirectory());
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we always use hardware GL.
   use_software_gl = false;
 #endif
@@ -391,7 +391,7 @@ void BrowserTestBase::SetUp() {
     use_software_gl = false;
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // GPU support is not available to tests.
   // TODO(crbug.com/1259462): Enable GPU support.
   command_line->AppendSwitch(switches::kDisableGpu);
@@ -562,7 +562,7 @@ void BrowserTestBase::SetUp() {
     });
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For all other platforms, we call ContentMain for browser tests which goes
   // through the normal browser initialization paths. For Android, we must set
   // things up manually. A meager re-implementation of ContentMainRunnerImpl
@@ -698,14 +698,14 @@ void BrowserTestBase::SetUp() {
   base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
   BrowserTaskExecutor::Shutdown();
 
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   auto ui_task = base::BindOnce(&BrowserTestBase::ProxyRunTestOnMainThreadLoop,
                                 base::Unretained(this));
   auto params = CopyContentMainParams();
   params.ui_task = std::move(ui_task);
   params.created_main_parts_closure = std::move(created_main_parts_closure);
   EXPECT_EQ(expected_exit_code_, ContentMain(std::move(params)));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   TearDownInProcessBrowserTestFixture();
 }
@@ -714,7 +714,7 @@ void BrowserTestBase::TearDown() {
   if (embedded_test_server()->Started())
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       ui::test::EventGeneratorDelegate::FactoryFunction());
 #endif
@@ -748,7 +748,7 @@ void BrowserTestBase::SimulateNetworkServiceCrash() {
   InitializeNetworkProcess();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BrowserTestBase::WaitUntilJavaIsReady(
     base::OnceClosure quit_closure,
     const base::TimeDelta& wait_retry_left) {
@@ -780,7 +780,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   // allowances for init/teardown phases.
   base::ScopedAllowUnresponsiveTasksForTesting allow_for_init;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // All FeatureList overrides should have been registered prior to browser test
   // SetUp(). Note that on Android, this scoper lives in SetUp() above.
   base::FeatureList::ScopedDisallowOverrides disallow_feature_overrides(
@@ -799,13 +799,13 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     scoped_run_timeout.emplace(FROM_HERE, TestTimeouts::action_max_timeout());
   }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   g_browser_process_pid = base::GetCurrentProcId();
   signal(SIGSEGV, DumpStackTraceSignalHandler);
 
   if (handle_sigterm_)
     signal(SIGTERM, DumpStackTraceSignalHandler);
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   {
     // This can be called from a posted task. Allow nested tasks here, because
@@ -813,7 +813,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     // waiting.
     base::CurrentThread::ScopedNestableTaskAllower allow;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Fail the test if a renderer crashes while the test is running.
     //
     // This cannot be enabled on Android, because of renderer kills triggered
@@ -884,7 +884,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
       GetDefaultTraceBasename(TraceBasenameType::kWithTestStatus),
       StartupTracingController::ExtensionType::kAppendAppropriate);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, browser main runner is not shut down, so stop trace recording
   // here.
   StartupTracingController::GetInstance().WaitUntilStopped();

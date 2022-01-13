@@ -136,7 +136,7 @@
 #include "ui/latency/latency_info.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <combaseapi.h>
 #include <uiautomation.h>
 #include <wrl/client.h>
@@ -931,7 +931,7 @@ void WaitForResizeComplete(WebContents* web_contents) {
     resize_observer.Wait();
   }
 }
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 bool IsResizeComplete(RenderWidgetHostImpl* widget_host) {
   return !widget_host->visual_properties_ack_pending_for_testing();
 }
@@ -1003,13 +1003,13 @@ void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
   gfx::Point point = gfx::ToFlooredPoint(
       GetCenterCoordinatesOfElementWithId(web_contents, id));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SimulateTapDownAt(web_contents, point);
   SimulateTapAt(web_contents, point);
 #else
   SimulateMouseClickAt(web_contents, 0, blink::WebMouseEvent::Button::kLeft,
                        point);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void SimulateMouseEvent(WebContents* web_contents,
@@ -1055,7 +1055,7 @@ void SimulateMouseWheelEvent(WebContents* web_contents,
   widget_host->ForwardWheelEvent(wheel_event);
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
                                      const gfx::Point& point,
                                      bool zoom_in,
@@ -1097,7 +1097,7 @@ void SimulateTouchscreenPinch(WebContents* web_contents,
           std::move(on_complete)));
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 void SimulateGesturePinchSequence(WebContents* web_contents,
                                   const gfx::Point& point,
@@ -2278,7 +2278,7 @@ ui::AXPlatformNodeDelegate* FindAccessibilityNodeInSubtree(
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <typename T>
 Microsoft::WRL::ComPtr<T> QueryInterfaceFromNode(
     ui::AXPlatformNodeDelegate* node) {
@@ -2513,7 +2513,7 @@ absl::optional<int> RenderProcessHostKillWaiter::Wait() {
 
   // Wait for the renderer kill.
   exit_watcher_.Wait();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Getting termination status on android is not reliable. To avoid flakiness,
   // we can skip this check and just check bad message. On other platforms we
   // want to verify that the renderer got killed, rather than exiting normally.

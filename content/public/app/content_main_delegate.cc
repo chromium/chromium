@@ -24,19 +24,19 @@ absl::variant<int, MainFunctionParams> ContentMainDelegate::RunProcess(
   return std::move(main_function_params);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 void ContentMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<ZygoteForkDelegate>>* delegates) {}
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 int ContentMainDelegate::TerminateForFatalInitializationError() {
   CHECK(false);
   return 0;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ContentMainDelegate::ShouldHandleConsoleControlEvents() {
   return false;
 }

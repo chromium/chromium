@@ -34,7 +34,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -402,7 +402,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called when color chooser should open. Returns the opened color chooser.
   // Returns nullptr if we failed to open the color chooser. The color chooser
   // is only supported/required for Android.
@@ -503,7 +503,7 @@ class CONTENT_EXPORT WebContentsDelegate {
                          int active_match_ordinal,
                          bool final_update) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Provides the rects of the current find-in-page matches.
   // Sent as a reply to RequestFindMatchRects.
   virtual void FindMatchRectsReply(WebContents* web_contents,
@@ -569,7 +569,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // url.
   virtual std::string GetTitleForMediaControls(WebContents* web_contents);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns true if the given media should be blocked to load.
   virtual bool ShouldBlockMediaRequest(const GURL& url);
 

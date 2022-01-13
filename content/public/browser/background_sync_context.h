@@ -11,7 +11,7 @@
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -27,7 +27,7 @@ class StoragePartition;
 // other components.
 class CONTENT_EXPORT BackgroundSyncContext {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Processes pending Background Sync registrations of |sync_type| for all the
   // storage partitions in |browser_context|, and then runs  the |j_runnable|
   // when done.

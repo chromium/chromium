@@ -50,7 +50,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -83,7 +83,7 @@ class RenderFrameHost;
 class RenderProcessHostObserver;
 class StoragePartition;
 struct GlobalRenderFrameHostId;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 enum class ChildProcessImportance;
 #endif
 
@@ -107,7 +107,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
     bool is_hidden;
     unsigned int frame_depth;
     bool intersects_viewport;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ChildProcessImportance importance;
 #endif
   };
@@ -315,7 +315,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual bool HasPriorityOverride() = 0;
   virtual void ClearPriorityOverride() = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Return the highest importance of all widgets in this process.
   virtual ChildProcessImportance GetEffectiveImportance() = 0;
 

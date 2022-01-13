@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/media_keys_listener_manager.h"
+
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -14,7 +16,7 @@ namespace content {
 
 // static
 bool MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return base::FeatureList::IsEnabled(media::kHardwareMediaKeyHandling);

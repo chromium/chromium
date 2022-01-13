@@ -26,7 +26,7 @@ CONTENT_EXPORT extern const char kViewSourceScheme[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 CONTENT_EXPORT extern const char kExternalFileScheme[];
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const char kAndroidAppScheme[];
 #endif
 
