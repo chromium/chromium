@@ -379,7 +379,7 @@ void ContentSettingMixedScriptBubbleModel::OnCustomLinkClicked() {
   }
 
   // Update renderer side settings to allow active mixed content.
-  web_contents()->ForEachFrame(
+  GetPage().GetMainDocument().ForEachRenderFrameHost(
       base::BindRepeating(&::SetAllowRunningInsecureContent));
 }
 
