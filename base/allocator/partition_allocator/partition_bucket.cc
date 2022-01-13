@@ -336,9 +336,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PA_DCHECK(!page->has_valid_span_after_this);
     PA_DCHECK(!page->slot_span_metadata_offset);
     PA_DCHECK(!page->slot_span_metadata.next_slot_span);
+    PA_DCHECK(!page->slot_span_metadata.marked_full);
     PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
     PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
-    PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
+    PA_DCHECK(!page->slot_span_metadata.in_empty_cache);
 
     PA_DCHECK(!metadata->subsequent_page.subsequent_page_metadata.raw_size);
     // Raw size is set later, by the caller.
@@ -703,7 +704,7 @@ template <bool thread_safe>
 ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   new (slot_span) SlotSpanMetadata<thread_safe>(this);
-  slot_span->empty_cache_index = -1;
+  slot_span->in_empty_cache = 0;
 
   slot_span->Reset();
 
@@ -723,15 +724,16 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span !=
             SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
-  uint16_t num_slots = slot_span->num_unprovisioned_slots;
+  size_t num_slots = slot_span->num_unprovisioned_slots;
   PA_DCHECK(num_slots);
+  PA_DCHECK(num_slots <= get_slots_per_span());
   // We should only get here when _every_ slot is either used or unprovisioned.
-  // (The third state is "on the freelist". If we have a non-empty freelist, we
-  // should not get here.)
+  // (The third possible state is "on the freelist". If we have a non-empty
+  // freelist, we should not get here.)
   PA_DCHECK(num_slots + slot_span->num_allocated_slots == get_slots_per_span());
   // Similarly, make explicitly sure that the freelist is empty.
   PA_DCHECK(!slot_span->get_freelist_head());
-  PA_DCHECK(slot_span->num_allocated_slots >= 0);
+  PA_DCHECK(!slot_span->is_full());
 
   size_t size = slot_size;
   uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
@@ -754,7 +756,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   slot_span->num_allocated_slots++;
   // Round down, because a slot that doesn't fully fit in the new page(s) isn't
   // provisioned.
-  uint16_t slots_to_provision = (commit_end - return_slot) / size;
+  size_t slots_to_provision = (commit_end - return_slot) / size;
   slot_span->num_unprovisioned_slots -= slots_to_provision;
   PA_DCHECK(slot_span->num_allocated_slots +
                 slot_span->num_unprovisioned_slots <=
@@ -850,11 +852,11 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
       slot_span->next_slot_span = decommitted_slot_spans_head;
       decommitted_slot_spans_head = slot_span;
     } else {
-      PA_DCHECK(slot_span->is_full());
       // If we get here, we found a full slot span. Skip over it too, and also
-      // mark it as full (via a negative value). We need it marked so that
-      // free'ing can tell, and move it back into the active list.
-      slot_span->num_allocated_slots = -slot_span->num_allocated_slots;
+      // mark it as full. We need it marked so that free'ing can tell, and move
+      // it back into the active list.
+      PA_DCHECK(slot_span->is_full());
+      slot_span->marked_full = 1;
       ++num_full_slot_spans;
       // num_full_slot_spans is a uint16_t for efficient packing so guard
       // against overflow to be safe.

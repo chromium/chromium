@@ -361,12 +361,11 @@ constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 // PartitionPurgeDecommitEmptySlotSpans flag will eagerly decommit all entries
 // in the ring buffer, so with periodic purge enabled, this typically happens
 // every few seconds.
-constexpr size_t kMaxFreeableSpans = std::numeric_limits<int8_t>::max();
+constexpr size_t kEmptyCacheIndexBits = 7;
+// kMaxFreeableSpans is the buffer size, but is never used as an index value,
+// hence <= is appropriate.
+constexpr size_t kMaxFreeableSpans = 1 << kEmptyCacheIndexBits;
 constexpr size_t kDefaultEmptySlotSpanRingSize = 16;
-
-constexpr int kEmptyCacheIndexBits = 8;
-// Has to fit into SlotSpanMetadata::empty_cache_index.
-static_assert(kMaxFreeableSpans < (1 << (kEmptyCacheIndexBits - 1)), "");
 
 // If the total size in bytes of allocated but not committed pages exceeds this
 // value (probably it is a "out of virtual address space" crash), a special

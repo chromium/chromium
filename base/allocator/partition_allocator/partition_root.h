@@ -931,9 +931,11 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             bits::IsPowerOfTwo(slot_span_alignment));
   SlotSpan* slot_span = bucket->active_slot_spans_head;
-  // Check that this slot span is neither full nor freed.
+  // There always must be a slot span on the active list (could be a sentinel).
   PA_DCHECK(slot_span);
-  PA_DCHECK(slot_span->num_allocated_slots >= 0);
+  // Check that it isn't marked full, which could only be true if the span was
+  // removed from the active list.
+  PA_DCHECK(!slot_span->marked_full);
 
   uintptr_t slot_start =
       reinterpret_cast<uintptr_t>(slot_span->get_freelist_head());

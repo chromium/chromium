@@ -122,37 +122,47 @@ struct __attribute__((packed)) SlotSpanMetadata {
   PartitionFreelistEntry* freelist_head = nullptr;
 
  public:
-  SlotSpanMetadata<thread_safe>* next_slot_span = nullptr;
-  PartitionBucket<thread_safe>* const bucket = nullptr;
-
   // TODO(lizeb): Make as many fields as possible private or const, to
   // encapsulate things more clearly.
-  //
-  // Deliberately signed, 0 for empty or decommitted slot spans, -n for full
-  // slot spans:
-  int16_t num_allocated_slots = 0;
-  uint16_t num_unprovisioned_slots = 0;
-  // -1 if not in the empty cache. < kMaxFreeableSpans.
-  int16_t empty_cache_index : kEmptyCacheIndexBits;
-  uint16_t can_store_raw_size : 1;
-  uint16_t freelist_is_sorted : 1;
-  uint16_t unused : (16 - kEmptyCacheIndexBits - 1 - 1);
-  // Cannot use the full 64 bits in this bitfield, as this structure is embedded
-  // in PartitionPage, which has other fields as well, and must fit in 32 bytes.
+  SlotSpanMetadata<thread_safe>* next_slot_span = nullptr;
+  PartitionBucket<thread_safe>* const bucket = nullptr;
 
   // CHECK()ed in AllocNewSlotSpan().
 #if defined(PA_HAS_64_BITS_POINTERS) && defined(OS_APPLE)
   // System page size is not a constant on Apple OSes, but is either 4 or 16kiB
   // (1 << 12 or 1 << 14), as checked in PartitionRoot::Init(). And
   // PartitionPageSize() is 4 times the OS page size.
-  static constexpr int16_t kMaxSlotsPerSlotSpan =
+  static constexpr size_t kMaxSlotsPerSlotSpan =
       4 * (1 << 14) / kSmallestBucket;
 #else
   // A slot span can "span" multiple PartitionPages, but then its slot size is
   // larger, so it doesn't have as many slots.
-  static constexpr int16_t kMaxSlotsPerSlotSpan =
+  static constexpr size_t kMaxSlotsPerSlotSpan =
       PartitionPageSize() / kSmallestBucket;
 #endif  // defined(PA_HAS_64_BITS_POINTERS) && defined(OS_APPLE)
+  // The maximum number of bits needed to cover all currently supported OSes.
+  static constexpr size_t kMaxSlotsPerSlotSpanBits = 13;
+  static_assert(kMaxSlotsPerSlotSpan < (1 << kMaxSlotsPerSlotSpanBits), "");
+
+  // |marked_full| isn't equivalent to being full. Slot span is marked as full
+  // iff it isn't on the active slot span list (or any other list).
+  uint32_t marked_full : 1;
+  // |num_allocated_slots| is 0 for empty or decommitted slot spans, which can
+  // be further differentiated by checking existence of the freelist.
+  uint32_t num_allocated_slots : kMaxSlotsPerSlotSpanBits;
+  uint32_t num_unprovisioned_slots : kMaxSlotsPerSlotSpanBits;
+
+  uint32_t can_store_raw_size : 1;
+  uint32_t freelist_is_sorted : 1;
+  uint32_t unused1 : (32 - 1 - 2 * kMaxSlotsPerSlotSpanBits - 1 - 1);
+
+  // If |in_empty_cache|==1, |empty_cache_index| is undefined and mustn't be
+  // used.
+  uint16_t in_empty_cache : 1;
+  uint16_t empty_cache_index : kEmptyCacheIndexBits;  // < kMaxFreeableSpans.
+  uint16_t unused2 : (16 - 1 - kEmptyCacheIndexBits);
+  // Can use only 48 bits (6B) in this bitfield, as this structure is embedded
+  // in PartitionPage which has 2B worth of fields and must fit in 32B.
 
   explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
@@ -252,15 +262,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // TODO(ajwong): Can this be made private?  https://crbug.com/787153
   BASE_EXPORT static SlotSpanMetadata* get_sentinel_slot_span();
 
-  // Page State accessors.
-  // Note that it's only valid to call these functions on pages found on one of
-  // the page lists. Specifically, you can't call these functions on full pages
-  // that were detached from the active list.
-  //
-  // This restriction provides the flexibity for some of the status fields to
-  // be repurposed when a page is taken off a list. See the negation of
-  // |num_allocated_slots| when a full page is removed from the active list
-  // for an example of such repurposing.
+  // Slot span state getters.
   ALWAYS_INLINE bool is_active() const;
   ALWAYS_INLINE bool is_full() const;
   ALWAYS_INLINE bool is_empty() const;
@@ -276,10 +278,15 @@ struct __attribute__((packed)) SlotSpanMetadata {
   static SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
-      : empty_cache_index(0),
+      : marked_full(0),
+        num_allocated_slots(0),
+        num_unprovisioned_slots(0),
         can_store_raw_size(false),
         freelist_is_sorted(true),
-        unused(0) {}
+        unused1(0),
+        in_empty_cache(1),
+        empty_cache_index(0),
+        unused2(0) {}
 };
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
@@ -651,7 +658,6 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Free(uintptr_t slot_start)
   root->lock_.AssertAcquired();
 #endif
 
-  PA_DCHECK(num_allocated_slots);
   auto* entry = reinterpret_cast<internal::PartitionFreelistEntry*>(slot_start);
   // Catches an immediate double free.
   PA_CHECK(entry != freelist_head);
@@ -660,8 +666,12 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Free(uintptr_t slot_start)
             entry != freelist_head->GetNext(bucket->slot_size));
   entry->SetNext(freelist_head);
   SetFreelistHead(entry);
+  // A best effort double-free check. Works only on empty slot spans.
+  PA_CHECK(num_allocated_slots);
   --num_allocated_slots;
-  if (UNLIKELY(num_allocated_slots <= 0)) {
+  // If the span is marked full, or became empty, take the slow path to update
+  // internal state.
+  if (UNLIKELY(marked_full || num_allocated_slots == 0)) {
     FreeSlowPath(1);
   } else {
     // All single-slot allocations must go through the slow path to
@@ -702,10 +712,11 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
 
   tail->SetNext(freelist_head);
   SetFreelistHead(head);
-  PA_DCHECK(static_cast<size_t>(num_allocated_slots) >= number_of_freed);
+  PA_DCHECK(num_allocated_slots >= number_of_freed);
   num_allocated_slots -= number_of_freed;
-
-  if (UNLIKELY(num_allocated_slots <= 0)) {
+  // If the span is marked full, or became empty, take the slow path to update
+  // internal state.
+  if (UNLIKELY(marked_full || num_allocated_slots == 0)) {
     FreeSlowPath(number_of_freed);
   } else {
     // All single-slot allocations must go through the slow path to
@@ -717,8 +728,13 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
 template <bool thread_safe>
 ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_active() const {
   PA_DCHECK(this != get_sentinel_slot_span());
-  return (num_allocated_slots > 0 &&
-          (freelist_head || num_unprovisioned_slots));
+  bool ret =
+      (num_allocated_slots > 0 && (freelist_head || num_unprovisioned_slots));
+  if (ret) {
+    PA_DCHECK(!marked_full);
+    PA_DCHECK(num_allocated_slots < bucket->get_slots_per_span());
+  }
+  return ret;
 }
 
 template <bool thread_safe>
@@ -728,6 +744,7 @@ ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_full() const {
   if (ret) {
     PA_DCHECK(!freelist_head);
     PA_DCHECK(!num_unprovisioned_slots);
+    // May or may not be marked full, so don't check for that.
   }
   return ret;
 }
@@ -735,7 +752,11 @@ ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_full() const {
 template <bool thread_safe>
 ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_empty() const {
   PA_DCHECK(this != get_sentinel_slot_span());
-  return (!num_allocated_slots && freelist_head);
+  bool ret = (!num_allocated_slots && freelist_head);
+  if (ret) {
+    PA_DCHECK(!marked_full);
+  }
+  return ret;
 }
 
 template <bool thread_safe>
@@ -743,8 +764,9 @@ ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_decommitted() const {
   PA_DCHECK(this != get_sentinel_slot_span());
   bool ret = (!num_allocated_slots && !freelist_head);
   if (ret) {
+    PA_DCHECK(!marked_full);
     PA_DCHECK(!num_unprovisioned_slots);
-    PA_DCHECK(empty_cache_index == -1);
+    PA_DCHECK(!in_empty_cache);
   }
   return ret;
 }

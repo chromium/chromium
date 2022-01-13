@@ -284,13 +284,15 @@ static size_t PartitionPurgeSlotSpan(
     }
     if (unprovisioned_bytes && discard) {
       PA_DCHECK(truncated_slots > 0);
-      size_t num_new_entries = 0;
-      slot_span->num_unprovisioned_slots +=
-          static_cast<uint16_t>(truncated_slots);
+      size_t new_unprovisioned_slots =
+          truncated_slots + slot_span->num_unprovisioned_slots;
+      PA_DCHECK(new_unprovisioned_slots <= bucket->get_slots_per_span());
+      slot_span->num_unprovisioned_slots = new_unprovisioned_slots;
 
       // Rewrite the freelist.
       internal::PartitionFreelistEntry* head = nullptr;
       internal::PartitionFreelistEntry* back = head;
+      size_t num_new_entries = 0;
       for (size_t slot_index = 0; slot_index < num_slots; ++slot_index) {
         if (slot_usage[slot_index])
           continue;

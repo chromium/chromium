@@ -59,12 +59,15 @@ struct __attribute__((packed)) SlotSpanMetadata {
   unsigned long freelist_head;
   unsigned long next_slot_span;
   unsigned long bucket;
-  int16_t num_allocated_slots;
-  uint16_t num_unprovisioned_slots;
-  int8_t empty_cache_index;
-  // new Chrome: bool can_store_raw_size;
-  // old Chrome (M89): MSB of empty_cache_index (actually int16)
-  char dummy0;
+  uint32_t marked_full : 1;
+  uint32_t num_allocated_slots : 13;
+  uint32_t num_unprovisioned_slots : 13;
+  uint32_t can_store_raw_size : 1;
+  uint32_t freelist_is_sorted : 1;
+  uint32_t unused1 : (32 - 1 - 2 * 13 - 1 - 1);
+  uint16_t in_empty_cache : 1;
+  uint16_t empty_cache_index : 7;
+  uint16_t unused2 : (16 - 1 - 7);
 };
 struct PartitionPage {
   union {
@@ -1572,11 +1575,9 @@ void render_buckets(struct task* task, struct task_state* state) {
       bucket_labels.push_back(bucket->size_str);
       unsigned int bucket_allocated = 0;
       for (struct SlotSpanMetadata* span : bucket->bucket_spans) {
-        unsigned long allocated_slots = (span->num_allocated_slots < 0)
-                                            ? -span->num_allocated_slots
-                                            : span->num_allocated_slots;
-        if (allocated_slots <= bucket->objects_per_span)  // sanity check
-          bucket_allocated += allocated_slots;
+        if (span->num_allocated_slots <=
+            bucket->objects_per_span)  // sanity check
+          bucket_allocated += span->num_allocated_slots;
       }
       bucket_vmem_allocated.push_back(bucket_allocated *
                                       bucket->data.slot_size / 1024.0);
@@ -1637,12 +1638,9 @@ void render_buckets(struct task* task, struct task_state* state) {
       // sizeof(allocated_histogram_values));
       std::vector<ImU32> allocated_slots_by_bucket;
       for (struct SlotSpanMetadata* span : bucket->bucket_spans) {
-        unsigned long allocated_slots = (span->num_allocated_slots < 0)
-                                            ? -span->num_allocated_slots
-                                            : span->num_allocated_slots;
-        if (allocated_slots <= bucket->objects_per_span)
+        if (span->num_allocated_slots <= bucket->objects_per_span)
           // allocated_histogram_values[allocated_slots]++;
-          allocated_slots_by_bucket.push_back(allocated_slots);
+          allocated_slots_by_bucket.push_back(span->num_allocated_slots);
       }
       // ImGui::PlotHistogram("##allocated", allocated_histogram_values,
       // IM_ARRAYSIZE(allocated_histogram_values),

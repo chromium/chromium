@@ -93,10 +93,8 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
   slot_span->ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
 
   // If the slot span is already registered as empty, give it another life.
-  if (slot_span->empty_cache_index != -1) {
-    PA_DCHECK(slot_span->empty_cache_index >= 0);
-    PA_DCHECK(static_cast<unsigned>(slot_span->empty_cache_index) <
-              kMaxFreeableSpans);
+  if (slot_span->in_empty_cache) {
+    PA_DCHECK(slot_span->empty_cache_index < kMaxFreeableSpans);
     PA_DCHECK(root->global_empty_slot_span_ring[slot_span->empty_cache_index] ==
               slot_span);
     root->global_empty_slot_span_ring[slot_span->empty_cache_index] = nullptr;
@@ -116,6 +114,7 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
   // which has subpar memory management performance.
   root->global_empty_slot_span_ring[current_index] = slot_span;
   slot_span->empty_cache_index = current_index;
+  slot_span->in_empty_cache = 1;
   ++current_index;
   if (current_index == root->global_empty_slot_span_ring_size)
     current_index = 0;
@@ -162,6 +161,32 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
   root->lock_.AssertAcquired();
 #endif
   PA_DCHECK(this != get_sentinel_slot_span());
+
+  // The caller has already modified |num_allocated_slots|. It is a
+  // responsibility of this function to react to it, and update the state. We
+  // can get here only if the slot span is marked full and/or is now empty. Both
+  // are possible at the same time, which can happen when the caller lowered
+  // |num_allocated_slots| from "all" to 0 (common for single-slot spans). First
+  // execute the "is marked full" path, as it sets up |active_slot_spans_head|
+  // in a way later needed for the "is empty" path.
+  if (marked_full) {
+    // Direct map slot spans aren't added to any lists, hence never marked full.
+    PA_DCHECK(!bucket->is_direct_mapped());
+    // Double check that the slot span was full.
+    PA_DCHECK(num_allocated_slots ==
+              bucket->get_slots_per_span() - number_of_freed);
+    marked_full = 0;
+    // Fully used slot span became partially used. It must be put back on the
+    // non-full list. Also make it the current slot span to increase the
+    // chances of it being filled up again. The old current slot span will be
+    // the next slot span.
+    PA_DCHECK(!next_slot_span);
+    if (LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
+      next_slot_span = bucket->active_slot_spans_head;
+    bucket->active_slot_spans_head = this;
+    --bucket->num_full_slot_spans;
+  }
+
   if (LIKELY(num_allocated_slots == 0)) {
     // Slot span became fully unused.
     if (UNLIKELY(bucket->is_direct_mapped())) {
@@ -181,31 +206,6 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
       SetRawSize(0);
 
     PartitionRegisterEmptySlotSpan(this);
-  } else {
-    PA_DCHECK(!bucket->is_direct_mapped());
-    // Ensure that the slot span is full. That's the only valid case if we
-    // arrive here.
-    PA_DCHECK(num_allocated_slots < 0);
-    // A transition of num_allocated_slots from 0 to a negative value is not
-    // legal, and likely indicates a double-free.
-    PA_CHECK(static_cast<intptr_t>(num_allocated_slots) <
-             -static_cast<intptr_t>(number_of_freed));
-    num_allocated_slots = -num_allocated_slots - 2 * number_of_freed;
-    PA_DCHECK(static_cast<size_t>(num_allocated_slots) ==
-              bucket->get_slots_per_span() - number_of_freed);
-    // Fully used slot span became partially used. It must be put back on the
-    // non-full list. Also make it the current slot span to increase the
-    // chances of it being filled up again. The old current slot span will be
-    // the next slot span.
-    PA_DCHECK(!next_slot_span);
-    if (LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
-      next_slot_span = bucket->active_slot_spans_head;
-    bucket->active_slot_spans_head = this;
-    --bucket->num_full_slot_spans;
-    // Special case: for a partition slot span with just a single slot, it may
-    // now be empty and we want to run it through the empty logic.
-    if (UNLIKELY(num_allocated_slots == 0))
-      FreeSlowPath(number_of_freed /*ignored*/);
   }
 }
 
@@ -244,10 +244,10 @@ template <bool thread_safe>
 void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
     PartitionRoot<thread_safe>* root) {
   root->lock_.AssertAcquired();
-  PA_DCHECK(empty_cache_index >= 0);
-  PA_DCHECK(static_cast<unsigned>(empty_cache_index) < kMaxFreeableSpans);
+  PA_DCHECK(in_empty_cache);
+  PA_DCHECK(empty_cache_index < kMaxFreeableSpans);
   PA_DCHECK(this == root->global_empty_slot_span_ring[empty_cache_index]);
-  empty_cache_index = -1;
+  in_empty_cache = 0;
   if (is_empty())
     Decommit(root);
 }
@@ -259,7 +259,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
 
   size_t num_provisioned_slots =
       bucket->get_slots_per_span() - num_unprovisioned_slots;
-  PA_CHECK(num_unprovisioned_slots <= kMaxSlotsPerSlotSpan);
+  PA_CHECK(num_provisioned_slots <= kMaxSlotsPerSlotSpan);
 
   size_t num_free_slots = 0;
   size_t slot_size = bucket->slot_size;
