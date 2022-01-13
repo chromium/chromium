@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #include "ios/web/public/web_client.h"
@@ -143,6 +144,11 @@ void WebSessionStateTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void WebSessionStateTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  // Don't record navigations that result in downloads, since these will be
+  // discarded and there's no simple callback when discarded.
+  if (navigation_context->IsDownload())
+    return;
+
   MarkStale();
 }
 
