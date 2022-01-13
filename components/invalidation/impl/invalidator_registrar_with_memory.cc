@@ -36,7 +36,7 @@ void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
     return;
   }
   {
-    DictionaryPrefUpdateDeprecated update(prefs, kTopicsToHandler);
+    DictionaryPrefUpdate update(prefs, kTopicsToHandler);
     update->SetKey(sender_id, old_prefs->Clone());
   }
   prefs->ClearPref(kTopicsToHandlerDeprecated);
@@ -82,8 +82,8 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
   const base::Value* pref_data =
       prefs_->Get(kTopicsToHandler)->FindDictKey(sender_id_);
   if (!pref_data) {
-    DictionaryPrefUpdateDeprecated update(prefs_, kTopicsToHandler);
-    update->SetKey(sender_id_, base::DictionaryValue());
+    DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
+    update->SetKey(sender_id_, base::Value(base::Value::Type::DICTIONARY));
     return;
   }
   // Restore |handler_name_to_subscribed_topics_map_| from prefs.
@@ -148,7 +148,7 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
     registered_handler_to_topics_map_[handler] = topics;
   }
 
-  DictionaryPrefUpdateDeprecated update(prefs_, kTopicsToHandler);
+  DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
   base::Value* pref_data = update->FindDictKey(sender_id_);
   // TODO(crbug.com/1020117): This does currently *not* remove subscribed
   // topics which are not registered, but it almost certainly should. It

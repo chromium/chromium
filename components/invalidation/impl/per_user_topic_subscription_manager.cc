@@ -84,11 +84,10 @@ static const net::BackoffEntry::Policy kBackoffPolicy = {
     false,
 };
 
-class PerProjectDictionaryPrefUpdateDeprecated {
+class PerProjectDictionaryPrefUpdate {
  public:
-  explicit PerProjectDictionaryPrefUpdateDeprecated(
-      PrefService* prefs,
-      const std::string& project_id)
+  explicit PerProjectDictionaryPrefUpdate(PrefService* prefs,
+                                          const std::string& project_id)
       : update_(prefs, kTypeSubscribedForInvalidations) {
     per_sender_pref_ = update_->FindDictKey(project_id);
     if (!per_sender_pref_) {
@@ -103,7 +102,7 @@ class PerProjectDictionaryPrefUpdateDeprecated {
   base::Value* operator->() { return per_sender_pref_; }
 
  private:
-  DictionaryPrefUpdateDeprecated update_;
+  DictionaryPrefUpdate update_;
   raw_ptr<base::Value> per_sender_pref_;
 };
 
@@ -113,16 +112,15 @@ void MigratePrefs(PrefService* prefs, const std::string& project_id) {
     return;
   }
   {
-    DictionaryPrefUpdateDeprecated token_update(prefs,
-                                                kActiveRegistrationTokens);
-    token_update->SetString(
+    DictionaryPrefUpdate token_update(prefs, kActiveRegistrationTokens);
+    token_update->SetStringKey(
         project_id, prefs->GetString(kActiveRegistrationTokenDeprecated));
   }
 
   auto* old_subscriptions =
       prefs->GetDictionary(kTypeSubscribedForInvalidationsDeprecated);
   {
-    PerProjectDictionaryPrefUpdateDeprecated update(prefs, project_id);
+    PerProjectDictionaryPrefUpdate update(prefs, project_id);
     *update = old_subscriptions->Clone();
   }
   prefs->ClearPref(kActiveRegistrationTokenDeprecated);
@@ -242,7 +240,7 @@ void PerUserTopicSubscriptionManager::Init() {
   if (migrate_prefs_) {
     MigratePrefs(pref_service_, project_id_);
   }
-  PerProjectDictionaryPrefUpdateDeprecated update(pref_service_, project_id_);
+  PerProjectDictionaryPrefUpdate update(pref_service_, project_id_);
   if (update->DictEmpty()) {
     return;
   }
@@ -322,8 +320,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
       it = topic_to_private_topic_.erase(it);
       // The decision to unsubscribe from invalidations for |topic| was
       // made, the preferences should be cleaned up immediately.
-      PerProjectDictionaryPrefUpdateDeprecated update(pref_service_,
-                                                      project_id_);
+      PerProjectDictionaryPrefUpdate update(pref_service_, project_id_);
       update->RemoveKey(topic);
     } else {
       // Topic is still wanted, nothing to do.
@@ -406,9 +403,8 @@ void PerUserTopicSubscriptionManager::ActOnSuccessfulSubscription(
     // unsubscription, we've already updated the prefs when scheduling the
     // request).
     {
-      PerProjectDictionaryPrefUpdateDeprecated update(pref_service_,
-                                                      project_id_);
-      update->SetKey(topic, base::Value(private_topic_name));
+      PerProjectDictionaryPrefUpdate update(pref_service_, project_id_);
+      update->SetStringKey(topic, private_topic_name);
       topic_to_private_topic_[topic] = private_topic_name;
       private_topic_to_topic_[private_topic_name] = topic;
     }
@@ -572,16 +568,17 @@ void PerUserTopicSubscriptionManager::DropAllSavedSubscriptionsOnTokenChange() {
 PerUserTopicSubscriptionManager::TokenStateOnSubscriptionRequest
 PerUserTopicSubscriptionManager::DropAllSavedSubscriptionsOnTokenChangeImpl() {
   {
-    DictionaryPrefUpdateDeprecated token_update(pref_service_,
-                                                kActiveRegistrationTokens);
+    DictionaryPrefUpdate token_update(pref_service_, kActiveRegistrationTokens);
     std::string previous_token;
-    token_update->GetString(project_id_, &previous_token);
+    if (const std::string* str_ptr = token_update->FindStringKey(project_id_)) {
+      previous_token = *str_ptr;
+    }
     if (previous_token == instance_id_token_) {
       // Note: This includes the case where the token was and still is empty.
       return TokenStateOnSubscriptionRequest::kTokenUnchanged;
     }
 
-    token_update->SetString(project_id_, instance_id_token_);
+    token_update->SetStringKey(project_id_, instance_id_token_);
     if (previous_token.empty()) {
       // If we didn't have a registration token before, we shouldn't have had
       // any subscriptions either, so no need to drop them.
@@ -593,7 +590,7 @@ PerUserTopicSubscriptionManager::DropAllSavedSubscriptionsOnTokenChangeImpl() {
   // subscriptions since they won't be valid anymore. (No need to send
   // unsubscribe requests - if the token was revoked, the server will drop the
   // subscriptions anyway.)
-  PerProjectDictionaryPrefUpdateDeprecated update(pref_service_, project_id_);
+  PerProjectDictionaryPrefUpdate update(pref_service_, project_id_);
   *update = base::Value(base::Value::Type::DICTIONARY);
   topic_to_private_topic_.clear();
   private_topic_to_topic_.clear();

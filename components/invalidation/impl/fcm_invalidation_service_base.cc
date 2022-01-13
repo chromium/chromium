@@ -29,9 +29,8 @@ void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
   if (!prefs->HasPrefPath(prefs::kFCMInvalidationClientIDCacheDeprecated)) {
     return;
   }
-  DictionaryPrefUpdateDeprecated update(prefs,
-                                        prefs::kInvalidationClientIDCache);
-  update->SetString(
+  DictionaryPrefUpdate update(prefs, prefs::kInvalidationClientIDCache);
+  update->SetStringKey(
       sender_id,
       prefs->GetString(prefs::kFCMInvalidationClientIDCacheDeprecated));
   prefs->ClearPref(prefs::kFCMInvalidationClientIDCacheDeprecated);
@@ -276,8 +275,7 @@ void FCMInvalidationServiceBase::ResetClientID() {
   // source of truth, and are responsible for ensuring that the deletion
   // actually happens.
   client_id_.clear();
-  DictionaryPrefUpdateDeprecated update(pref_service_,
-                                        prefs::kInvalidationClientIDCache);
+  DictionaryPrefUpdate update(pref_service_, prefs::kInvalidationClientIDCache);
   update->RemoveKey(sender_id_);
 
   // Also let the registrar (and its observers) know that the instance ID is
@@ -296,8 +294,8 @@ void FCMInvalidationServiceBase::OnInstanceIDReceived(
   diagnostic_info_.instance_id_received = base::Time::Now();
   if (client_id_ != instance_id) {
     client_id_ = instance_id;
-    DictionaryPrefUpdateDeprecated update(pref_service_,
-                                          prefs::kInvalidationClientIDCache);
+    DictionaryPrefUpdate update(pref_service_,
+                                prefs::kInvalidationClientIDCache);
     update->SetStringKey(sender_id_, instance_id);
     invalidator_registrar_.UpdateInvalidatorInstanceId(instance_id);
   }

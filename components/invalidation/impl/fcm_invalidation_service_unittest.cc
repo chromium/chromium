@@ -209,8 +209,8 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
 
   // Set up a cached InstanceID aka client ID stored in prefs.
   {
-    DictionaryPrefUpdateDeprecated update(&delegate->pref_service_,
-                                          prefs::kInvalidationClientIDCache);
+    DictionaryPrefUpdate update(&delegate->pref_service_,
+                                prefs::kInvalidationClientIDCache);
     update->SetStringKey(kSenderId, "InstanceIDFromPrefs");
   }
 
