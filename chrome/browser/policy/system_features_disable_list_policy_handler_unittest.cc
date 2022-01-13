@@ -71,12 +71,12 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleSomeSettings) {
 
 TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
   ApplyPolicySettings({"camera", "os_settings", "browser_settings", "scanning",
-                       "web_store", "canvas", "explore"});
+                       "web_store", "canvas", "explore", "crosh"});
 
   VerifyPrefList({SystemFeature::kCamera, SystemFeature::kOsSettings,
                   SystemFeature::kBrowserSettings, SystemFeature::kScanning,
                   SystemFeature::kWebStore, SystemFeature::kCanvas,
-                  SystemFeature::kExplore});
+                  SystemFeature::kExplore, SystemFeature::kCrosh});
 
   std::vector<base::Bucket> expected_histogram{
       base::Bucket(SystemFeature::kCamera, 1),
@@ -85,7 +85,8 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
       base::Bucket(SystemFeature::kScanning, 1),
       base::Bucket(SystemFeature::kWebStore, 1),
       base::Bucket(SystemFeature::kCanvas, 1),
-      base::Bucket(SystemFeature::kExplore, 1)};
+      base::Bucket(SystemFeature::kExplore, 1),
+      base::Bucket(SystemFeature::kCrosh, 1)};
 
   EXPECT_EQ(
       histogram_tester_.GetAllSamples(kSystemFeaturesDisableListHistogram),

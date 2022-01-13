@@ -27,6 +27,7 @@ const char kScanningFeature[] = "scanning";
 const char kWebStoreFeature[] = "web_store";
 const char kCanvasFeature[] = "canvas";
 const char kExploreFeature[] = "explore";
+const char kCroshFeature[] = "crosh";
 
 const char kBlockedDisableMode[] = "blocked";
 const char kHiddenDisableMode[] = "hidden";
@@ -116,6 +117,8 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
     return SystemFeature::kCanvas;
   if (system_feature == kExploreFeature)
     return SystemFeature::kExplore;
+  if (system_feature == kCroshFeature)
+    return SystemFeature::kCrosh;
 
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return kUnknownSystemFeature;
