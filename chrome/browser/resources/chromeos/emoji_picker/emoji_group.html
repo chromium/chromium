@@ -87,6 +87,11 @@
     background-color: var(--cros-button-background-color-secondary-hover);
     border: 2px solid var(--cros-button-background-color-secondary-hover);
   }
+
+  :host([v2-enabled]) {
+    --emoji-size: var(--v2-emoji-size);
+    --emoji-spacing: var(--v2-emoji-spacing);
+  }
 </style>
 
 <div id="heading" role="heading" aria-level="2" tabindex="-1">

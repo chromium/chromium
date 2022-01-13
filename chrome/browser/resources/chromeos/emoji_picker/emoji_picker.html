@@ -339,13 +339,15 @@
     -->
     <div data-group="history">
       <template is="dom-if" if="[[history.emoji.length]]">
-        <emoji-group data="[[history]]" preferred="{}" clearable>
+        <emoji-group data="[[history]]" preferred="{}" clearable
+          v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </template>
     </div>
     <template is="dom-repeat" items="[[emojiData]]">
       <div data-group$="[[index]]">
-        <emoji-group data="[[item]]" preferred="[[preferenceMapping]]">
+        <emoji-group data="[[item]]" preferred="[[preferenceMapping]]"
+          v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </div>
     </template>
