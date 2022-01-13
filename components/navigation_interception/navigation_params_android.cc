@@ -11,8 +11,7 @@ namespace navigation_interception {
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaNavigationParams(
     JNIEnv* env,
-    const NavigationParams& params,
-    bool has_user_gesture_carryover) {
+    const NavigationParams& params) {
   const GURL& url = params.base_url_for_data_url().is_empty()
                         ? params.url()
                         : params.base_url_for_data_url();
@@ -23,7 +22,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaNavigationParams(
       params.navigation_id(), params.is_post(), params.has_user_gesture(),
       params.transition_type(), params.is_redirect(),
       params.is_external_protocol(), params.is_main_frame(),
-      params.is_renderer_initiated(), has_user_gesture_carryover,
+      params.is_renderer_initiated(),
       params.initiator_origin() ? params.initiator_origin()->CreateJavaObject()
                                 : nullptr);
 }

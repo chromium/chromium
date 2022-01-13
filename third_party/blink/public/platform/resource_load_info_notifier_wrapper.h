@@ -42,9 +42,6 @@ class BLINK_PLATFORM_EXPORT ResourceLoadInfoNotifierWrapper {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~ResourceLoadInfoNotifierWrapper();
 
-#if defined(OS_ANDROID)
-  void NotifyUpdateUserGestureCarryoverInfo();
-#endif
   void NotifyResourceLoadInitiated(
       int64_t request_id,
       const GURL& request_url,

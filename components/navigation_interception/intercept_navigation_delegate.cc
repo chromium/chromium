@@ -32,8 +32,6 @@ namespace navigation_interception {
 
 namespace {
 
-const int kMaxValidityOfUserGestureCarryoverInSeconds = 10;
-
 const void* const kInterceptNavigationDelegateUserDataKey =
     &kInterceptNavigationDelegateUserDataKey;
 
@@ -119,20 +117,11 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
   if (jdelegate.is_null())
     return false;
 
-  bool has_user_gesture_carryover =
-      !navigation_params_to_use.has_user_gesture() &&
-      base::TimeTicks::Now() - last_user_gesture_carryover_timestamp_ <=
-          base::Seconds(kMaxValidityOfUserGestureCarryoverInSeconds);
-
-  ScopedJavaLocalRef<jobject> jobject_params = CreateJavaNavigationParams(
-      env, navigation_params_to_use, has_user_gesture_carryover);
+  ScopedJavaLocalRef<jobject> jobject_params =
+      CreateJavaNavigationParams(env, navigation_params_to_use);
 
   return Java_InterceptNavigationDelegate_shouldIgnoreNavigation(
       env, jdelegate, jobject_params);
-}
-
-void InterceptNavigationDelegate::UpdateLastUserGestureCarryoverTimestamp() {
-  last_user_gesture_carryover_timestamp_ = base::TimeTicks::Now();
 }
 
 }  // namespace navigation_interception

@@ -14,6 +14,8 @@ import android.text.TextUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.HashSet;
@@ -23,6 +25,8 @@ import java.util.List;
  * This class contains the logic to determine effective navigation/redirect.
  */
 public class RedirectHandler {
+    private static final String TAG = "RedirectHandler";
+
     /**
      * An invalid entry index.
      */
@@ -51,6 +55,8 @@ public class RedirectHandler {
     private boolean mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
     private boolean mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
     private boolean mExternalIntentStartedTask;
+
+    private long mLastUserInteractionTimeMillis;
 
     public static RedirectHandler create() {
         return new RedirectHandler();
@@ -168,6 +174,7 @@ public class RedirectHandler {
             boolean isInitialNavigation) {
         long prevNewUrlLoadingTime = mLastNewUrlLoadingTime;
         mLastNewUrlLoadingTime = SystemClock.elapsedRealtime();
+        mLastUserInteractionTimeMillis = lastUserInteractionTime;
 
         int pageTransitionCore = pageTransType & PageTransition.CORE_MASK;
 
@@ -345,5 +352,17 @@ public class RedirectHandler {
      */
     public Intent getInitialIntent() {
         return mInitialIntent;
+    }
+
+    public void maybeLogExternalRedirectBlockedWithMissingGesture() {
+        if (mInitialNavigationType == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE) {
+            long millisSinceLastGesture =
+                    SystemClock.elapsedRealtime() - mLastUserInteractionTimeMillis;
+            Log.w(TAG,
+                    "External navigation blocked due to missing gesture. Last input was "
+                            + millisSinceLastGesture + "ms ago.");
+            RecordHistogram.recordTimesHistogram(
+                    "Android.Intent.BlockedExternalNavLastGestureTime", millisSinceLastGesture);
+        }
     }
 }

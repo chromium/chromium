@@ -660,9 +660,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options) override;
-#if defined(OS_ANDROID)
-  void UpdateUserGestureCarryoverInfo() override;
-#endif
   bool ShouldRouteMessageEvent(
       RenderFrameHostImpl* target_rfh,
       SiteInstance* source_site_instance) const override;

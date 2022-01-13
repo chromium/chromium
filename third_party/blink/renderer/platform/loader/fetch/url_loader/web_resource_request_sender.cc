@@ -259,15 +259,6 @@ int WebResourceRequestSender::SendAsync(
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   CheckSchemeForReferrerPolicy(*request);
 
-#if defined(OS_ANDROID)
-  // Main frame shouldn't come here.
-  DCHECK(!(request->is_main_frame &&
-           IsRequestDestinationFrame(request->destination)));
-  if (request->has_user_gesture) {
-    resource_load_info_notifier_wrapper->NotifyUpdateUserGestureCarryoverInfo();
-  }
-#endif
-
   // Compute a unique request_id for this renderer process.
   int request_id = MakeRequestID();
   request_info_ = std::make_unique<PendingRequestInfo>(

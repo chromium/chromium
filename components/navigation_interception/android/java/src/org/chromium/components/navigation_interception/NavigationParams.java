@@ -44,12 +44,6 @@ public class NavigationParams {
     /** True if the target URL can't be handled by Chrome's internal protocol handlers. */
     public final boolean isExternalProtocol;
 
-    /**
-     * True if the navigation was originated from a navigation which had been
-     * initiated by the user.
-     */
-    public final boolean hasUserGestureCarryover;
-
     /** True if the navigation was originated from the main frame. */
     public final boolean isMainFrame;
 
@@ -62,7 +56,7 @@ public class NavigationParams {
     public NavigationParams(GURL url, GURL referrer, long navigationId, boolean isPost,
             boolean hasUserGesture, int pageTransitionType, boolean isRedirect,
             boolean isExternalProtocol, boolean isMainFrame, boolean isRendererInitiated,
-            boolean hasUserGestureCarryover, @Nullable Origin initiatorOrigin) {
+            @Nullable Origin initiatorOrigin) {
         this.url = url;
         this.referrer = referrer;
         this.navigationId = navigationId;
@@ -73,7 +67,6 @@ public class NavigationParams {
         this.isExternalProtocol = isExternalProtocol;
         this.isMainFrame = isMainFrame;
         this.isRendererInitiated = isRendererInitiated;
-        this.hasUserGestureCarryover = hasUserGestureCarryover;
         this.initiatorOrigin = initiatorOrigin;
     }
 
@@ -81,9 +74,9 @@ public class NavigationParams {
     public static NavigationParams create(GURL url, GURL referrer, long navigationId,
             boolean isPost, boolean hasUserGesture, int pageTransitionType, boolean isRedirect,
             boolean isExternalProtocol, boolean isMainFrame, boolean isRendererInitiated,
-            boolean hasUserGestureCarryover, @Nullable Origin initiatorOrigin) {
+            @Nullable Origin initiatorOrigin) {
         return new NavigationParams(url, referrer, navigationId, isPost, hasUserGesture,
                 pageTransitionType, isRedirect, isExternalProtocol, isMainFrame,
-                isRendererInitiated, hasUserGestureCarryover, initiatorOrigin);
+                isRendererInitiated, initiatorOrigin);
     }
 }

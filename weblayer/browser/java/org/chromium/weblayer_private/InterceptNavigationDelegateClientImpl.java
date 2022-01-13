@@ -142,7 +142,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     @Override
     public void onNavigationStarted(NavigationParams params) {
-        if (params.hasUserGesture || params.hasUserGestureCarryover) {
+        if (params.hasUserGesture) {
             mLastNavigationWithUserGestureTime = SystemClock.elapsedRealtime();
         }
     }

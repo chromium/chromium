@@ -128,8 +128,7 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
             return false;
         }
         redirectHandler.updateNewUrlLoading(navigationParams.pageTransitionType,
-                navigationParams.isRedirect,
-                navigationParams.hasUserGesture || navigationParams.hasUserGestureCarryover,
+                navigationParams.isRedirect, navigationParams.hasUserGesture,
                 lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation());
 
         boolean shouldCloseTab = shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent();

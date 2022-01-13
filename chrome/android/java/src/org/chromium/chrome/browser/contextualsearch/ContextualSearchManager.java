@@ -1255,8 +1255,7 @@ public class ContextualSearchManager
                 ExternalNavigationHandler externalNavHandler, NavigationParams navigationParams) {
             assert mSearchPanel != null;
             mRedirectHandler.updateNewUrlLoading(navigationParams.pageTransitionType,
-                    navigationParams.isRedirect,
-                    navigationParams.hasUserGesture || navigationParams.hasUserGestureCarryover,
+                    navigationParams.isRedirect, navigationParams.hasUserGesture,
                     mLastUserInteractionTimeSupplier.get(), RedirectHandler.INVALID_ENTRY_INDEX,
                     true /* isInitialNavigation */);
             ExternalNavigationParams params =

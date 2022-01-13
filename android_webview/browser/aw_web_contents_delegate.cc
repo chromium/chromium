@@ -300,14 +300,6 @@ bool AwWebContentsDelegate::IsFullscreenForTabOrPending(
   return is_fullscreen_;
 }
 
-void AwWebContentsDelegate::UpdateUserGestureCarryoverInfo(
-    content::WebContents* web_contents) {
-  auto* intercept_navigation_delegate =
-      navigation_interception::InterceptNavigationDelegate::Get(web_contents);
-  if (intercept_navigation_delegate)
-    intercept_navigation_delegate->UpdateLastUserGestureCarryoverTimestamp();
-}
-
 scoped_refptr<content::FileSelectListener>
 AwWebContentsDelegate::TakeFileSelectListener() {
   return std::move(file_select_listener_);

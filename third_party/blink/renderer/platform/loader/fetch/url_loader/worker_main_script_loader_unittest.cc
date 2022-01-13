@@ -115,9 +115,6 @@ class WorkerMainScriptLoaderTest : public testing::Test {
         const FakeResourceLoadInfoNotifier&) = delete;
 
     // blink::mojom::ResourceLoadInfoNotifier overrides.
-#if defined(OS_ANDROID)
-    void NotifyUpdateUserGestureCarryoverInfo() override {}
-#endif
     void NotifyResourceRedirectReceived(
         const net::RedirectInfo& redirect_info,
         network::mojom::URLResponseHeadPtr redirect_response) override {}

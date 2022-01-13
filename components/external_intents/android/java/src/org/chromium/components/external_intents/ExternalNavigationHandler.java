@@ -629,6 +629,7 @@ public class ExternalNavigationHandler {
         boolean shouldStayInApp = handler.shouldStayInApp(
                 isExternalProtocol, mDelegate.isIntentForTrustedCallingApp(targetIntent));
         if (shouldStayInApp || handler.shouldNotOverrideUrlLoading()) {
+            if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
             if (DEBUG) Log.i(TAG, "RedirectHandler decision");
             return true;
         }

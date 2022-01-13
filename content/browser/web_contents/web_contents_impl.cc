@@ -3606,15 +3606,6 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     SetVisibilityAndNotifyObservers(new_visibility);
 }
 
-#if defined(OS_ANDROID)
-void WebContentsImpl::UpdateUserGestureCarryoverInfo() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::UpdateUserGestureCarryoverInfo");
-  if (delegate_)
-    delegate_->UpdateUserGestureCarryoverInfo(this);
-}
-#endif
-
 bool WebContentsImpl::IsFullscreen() {
   return delegate_ ? delegate_->IsFullscreenForTabOrPending(this) : false;
 }
