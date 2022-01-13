@@ -104,17 +104,20 @@
   _accountManagerServiceObserver.reset();
 }
 
-- (void)
-    cancelSigninWithIdentitySigninState:(IdentitySigninState)signinStateOnStart
+- (void)cancelSyncAndRestoreSigninState:(IdentitySigninState)signinStateOnStart
                   signinIdentityOnStart:(ChromeIdentity*)signinIdentityOnStart {
+  [self.consumer setUIEnabled:NO];
   [self.authenticationFlow cancelAndDismissAnimated:NO];
 
   self.syncService->GetUserSettings()->SetSyncRequested(false);
   switch (signinStateOnStart) {
     case IdentitySigninStateSignedOut: {
-      self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                          /*force_clear_browsing_data=*/false,
-                                          nil);
+      __weak __typeof(self) weakSelf = self;
+      self.authenticationService->SignOut(
+          signin_metrics::ABORT_SIGNIN,
+          /*force_clear_browsing_data=*/false, ^{
+            [weakSelf onSigninStateRestorationCompleted];
+          });
       break;
     }
     case IdentitySigninStateSignedInWithSyncDisabled: {
@@ -124,6 +127,7 @@
               signin::ConsentLevel::kSignin) isEqual:signinIdentityOnStart]) {
         // Can't be synced in this option because sync has to be disabled.
         _syncService->StopAndClear();
+        [self onSigninStateRestorationCompleted];
       } else {
         __weak __typeof(self) weakSelf = self;
         self.authenticationService->SignOut(
@@ -139,6 +143,7 @@
                 // Sign back in with a valid identity.
                 authenticationService->SignIn(identity);
               }
+              [weakSelf onSigninStateRestorationCompleted];
             });
       }
       break;
@@ -301,6 +306,12 @@
 
   [self.delegate
       signinSyncMediatorDidSuccessfulyFinishSigninForAdvancedSettings:self];
+}
+
+- (void)onSigninStateRestorationCompleted {
+  // Stop the loading overlay and call back to the coordinator.
+  [self.consumer setUIEnabled:YES];
+  [self.delegate signinSyncMediatorDidSuccessfulyFinishSignout:self];
 }
 
 @end

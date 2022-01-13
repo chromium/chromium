@@ -67,11 +67,10 @@ class SyncSetupService;
 // Disconnect the mediator.
 - (void)disconnect;
 
-// Reverts the sign-in operation if needed.
+// Reverts the sign-in and sync operation if needed.
 // @param signinStateOnStart: Browser sign-in state when the coordinator starts.
 // @param signinIdentityOnStart: Sign-in identity when the coordinator starts.
-- (void)
-    cancelSigninWithIdentitySigninState:(IdentitySigninState)signinStateOnStart
+- (void)cancelSyncAndRestoreSigninState:(IdentitySigninState)signinStateOnStart
                   signinIdentityOnStart:(ChromeIdentity*)signinIdentityOnStart;
 
 // Starts the sync engine.

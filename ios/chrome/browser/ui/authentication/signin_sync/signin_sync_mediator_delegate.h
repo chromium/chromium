@@ -18,6 +18,11 @@
 - (void)signinSyncMediatorDidSuccessfulyFinishSigninForAdvancedSettings:
     (SigninSyncMediator*)signinSyncMediator;
 
+// Called when revert the sign-in and sync operation if needed did successfully
+// finish.
+- (void)signinSyncMediatorDidSuccessfulyFinishSignout:
+    (SigninSyncMediator*)signinSyncMediator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SYNC_SIGNIN_SYNC_MEDIATOR_DELEGATE_H_
