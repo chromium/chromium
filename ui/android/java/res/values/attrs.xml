@@ -27,6 +27,8 @@
     <attr name="default_bg_color_dynamic" format="color"/>
     <attr name="divider_line_bg_color_dynamic" format="color"/>
 
+    <attr name="default_icon_color_inverse" format="color" />
+
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>

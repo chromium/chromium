@@ -5,6 +5,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="ColorOverlay.Ui" parent="ColorOverlay.Ui.DayNight">
+        <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
     </style>
     <style name="ColorOverlay.Ui.DayNight" parent="">
         <!-- TODO(https://crbug.com/1216642): Move color attributes here. -->

@@ -58,6 +58,8 @@
         <!-- Supports dynamic colors now. -->
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
+
+        <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
     </style>
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
     <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
@@ -116,6 +118,8 @@
         <!-- Supports dynamic colors now. -->
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
+
+        <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
     </style>
     <style name="Theme.BrowserUI.DialogWhenLarge" parent="Base.Theme.BrowserUI.DialogWhenLarge"/>
 
