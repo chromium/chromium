@@ -829,7 +829,7 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   BrowserAccessibility::AXPosition next_word_start =
       position->CreateNextWordStartPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+          ui::AXBoundaryBehavior::kCrossBoundary);
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_start->IsNullPosition());
   } else {
@@ -841,7 +841,7 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   BrowserAccessibility::AXPosition next_word_end =
       position->CreateNextWordEndPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+          ui::AXBoundaryBehavior::kCrossBoundary);
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_end->IsNullPosition());
   } else {

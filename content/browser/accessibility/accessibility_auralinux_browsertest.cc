@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestParagraphTextAtOffsetWithBoundarySentence) {
+                       DISABLED_TestParagraphTextAtOffsetWithBoundarySentence) {
   LoadInitialAccessibilityTreeFromHtml(std::string(
       R"HTML(<!DOCTYPE html>
           <html>
