@@ -790,7 +790,10 @@ void CommandBufferProxyImpl::OnBufferPresented(
 void CommandBufferProxyImpl::OnGpuSyncReplyError() {
   CheckLock();
   last_state_.error = gpu::error::kLostContext;
-  last_state_.context_lost_reason = gpu::error::kInvalidGpuMessage;
+  // This error typically happens while waiting for a synchronous
+  // reply from the GPU process because the GPU process crashed.
+  // Report this as a lost GPU channel rather than invalid GPU message.
+  last_state_.context_lost_reason = gpu::error::kGpuChannelLost;
   // This method may be inside a callstack from the GpuControlClient (we got a
   // bad reply to something we are sending to the GPU process). So avoid
   // re-entering the GpuControlClient here.
