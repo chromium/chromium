@@ -110,7 +110,8 @@
     </cr-button>
   </div>
   <template is="dom-if"
-      if="[[shouldShowChangeMouseDeviceSettings_(device_.*)]]" restamp>
+      if="[[shouldShowChangeMouseDeviceSettings_(device_.*,
+          isDeviceConnected_)]]" restamp>
     <cr-link-row
         id="changeMouseSettings"
         class="hr settings-box"
@@ -119,7 +120,8 @@
     </cr-link-row>
   </template>
   <template is="dom-if"
-      if="[[shouldShowChangeKeyboardDeviceSettings_(device_.*)]]" restamp>
+      if="[[shouldShowChangeKeyboardDeviceSettings_(device_.*,
+          isDeviceConnected_)]]" restamp>
     <cr-link-row
         id="changeKeyboardSettings"
         class="hr settings-box"

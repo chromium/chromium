@@ -429,7 +429,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @private
    */
   shouldShowChangeMouseDeviceSettings_() {
-    if (!this.device_) {
+    if (!this.device_ || !this.isDeviceConnected_) {
       return false;
     }
     return this.device_.deviceProperties.deviceType === mojom.DeviceType.kMouse;
@@ -440,7 +440,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @private
    */
   shouldShowChangeKeyboardDeviceSettings_() {
-    if (!this.device_) {
+    if (!this.device_ || !this.isDeviceConnected_) {
       return false;
     }
     return this.device_.deviceProperties.deviceType ===

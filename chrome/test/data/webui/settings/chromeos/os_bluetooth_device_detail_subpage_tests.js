@@ -200,6 +200,18 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
             'bluetoothDeviceDetailChangeDeviceSettingsMouse'),
         getChangeMouseSettings().label);
 
+    device1.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kNotConnected;
+    bluetoothConfig.updatePairedDevice(device1);
+    await flushAsync();
+    assertFalse(!!getChangeMouseSettings());
+
+    device1.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kConnected;
+    bluetoothConfig.updatePairedDevice(device1);
+    await flushAsync();
+    assertTrue(!!getChangeMouseSettings());
+
     getChangeMouseSettings().click();
     await flushAsync();
 
@@ -226,6 +238,18 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
     await flushAsync();
     assertFalse(!!getChangeMouseSettings());
+    assertTrue(!!getChangeKeyboardSettings());
+
+    device1.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kNotConnected;
+    bluetoothConfig.updatePairedDevice(device1);
+    await flushAsync();
+    assertFalse(!!getChangeKeyboardSettings());
+
+    device1.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kConnected;
+    bluetoothConfig.updatePairedDevice(device1);
+    await flushAsync();
     assertTrue(!!getChangeKeyboardSettings());
 
     getChangeKeyboardSettings().click();
