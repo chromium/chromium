@@ -580,8 +580,7 @@ void NewTabPageHandler::SetModulesVisible(bool visible) {
 
 void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
                                           bool disabled) {
-  ListPrefUpdateDeprecated update(profile_->GetPrefs(),
-                                  prefs::kNtpDisabledModules);
+  ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value module_id_value(module_id);
   if (disabled) {
     if (!base::Contains(update->GetList(), module_id_value))
