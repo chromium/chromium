@@ -3198,6 +3198,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/file_manager/file_manager_jstest_base.h",
         "../browser/ash/file_manager/file_tasks_browsertest.cc",
         "../browser/ash/file_manager/image_loader_jstest.cc",
+        "../browser/ash/file_manager/open_with_browser_browsertest.cc",
         "../browser/ash/first_run/drive_first_run_browsertest.cc",
         "../browser/ash/guest_os/guest_os_registry_service_icon_browsertest.cc",
         "../browser/ash/input_method/input_method_engine_browsertests.cc",
