@@ -50,6 +50,8 @@ public interface AssistantDependencies extends AssistantStaticDependencies {
 
     AssistantSnackbarFactory getSnackbarFactory();
 
+    AssistantBrowserControlsFactory createBrowserControlsFactory();
+
     /**
      * Observes tab changes.
      * @return The destroyer that must be called to unregister the internal observer.

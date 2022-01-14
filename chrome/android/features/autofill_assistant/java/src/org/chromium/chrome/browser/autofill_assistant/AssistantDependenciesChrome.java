@@ -111,6 +111,11 @@ public class AssistantDependenciesChrome
     }
 
     @Override
+    public AssistantBrowserControlsFactory createBrowserControlsFactory() {
+        return () -> new AssistantBrowserControlsChrome(mBrowserControls);
+    }
+
+    @Override
     public Destroyable observeTabChanges(AssistantTabChangeObserver tabChangeObserver) {
         return new AssistantTabChangeObserverChrome(mActivityTabProvider, tabChangeObserver);
     }
