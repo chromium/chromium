@@ -24,15 +24,22 @@ PageInfoHistoryDataSource::~PageInfoHistoryDataSource() = default;
 
 // static
 std::u16string PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
-    base::Time last_visit) {
+    base::Time last_visit,
+    base::Time now) {
   if (last_visit.is_null())
     return std::u16string();
 
   constexpr base::TimeDelta kDay = base::Days(1);
 
-  const base::Time midnight_today = base::Time::Now().LocalMidnight();
+  const base::Time midnight_today = now.LocalMidnight();
   const base::Time mightnight_last_visited = last_visit.LocalMidnight();
-  const base::TimeDelta delta = midnight_today - mightnight_last_visited;
+  base::TimeDelta delta = midnight_today - mightnight_last_visited;
+  // Adjust delta for DST, add or remove one hour as need to make the delta
+  // divisible by 24 (in hours).
+  if (delta % kDay != base::Milliseconds(0)) {
+    DCHECK(delta % kDay == -base::Hours(23) || delta % kDay == base::Hours(1));
+    delta += delta % kDay == base::Hours(1) ? -base::Hours(1) : base::Hours(1);
+  }
 
   if (delta == base::Milliseconds(0))
     return l10n_util::GetStringUTF16(IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY);

@@ -28,7 +28,9 @@ class PageInfoHistoryDataSource {
   // string. If `last_visit` was today or yersterday, 'today' or 'yesterday'
   // will be used. If the visit was this week, 'x days ago' will be used.
   // Otherwise, the short date representation will be used.
-  static std::u16string FormatLastVisitedTimestamp(base::Time last_visit);
+  static std::u16string FormatLastVisitedTimestamp(
+      base::Time last_visit,
+      base::Time now = base::Time::Now());
 
   // Gets a version of the last time any webpage on the `site_url` host was
   // visited, formatted as a string, by using the min("last navigation time", x

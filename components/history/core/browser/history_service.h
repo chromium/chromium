@@ -359,7 +359,7 @@ class HistoryService : public KeyedService {
   // time range [`begin_time`, `end_time`). If the given host has not been
   // visited in the given time range, the callback will be called with a null
   // base::Time.
-  base::CancelableTaskTracker::TaskId GetLastVisitToHost(
+  virtual base::CancelableTaskTracker::TaskId GetLastVisitToHost(
       const std::string& host,
       base::Time begin_time,
       base::Time end_time,
