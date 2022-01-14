@@ -21,6 +21,8 @@ enum class EndpointType {
   kClipboardHistory = 2,  // Clipboard History UI has privileged access to any
                           // clipboard data.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1280545): Build VM DataTransferEndpoint endpoint types in
+  // Lacros.
   kUnknownVm = 3,  // The VM type is not identified.
   kArc = 4,        // ARC.
   kBorealis = 5,   // Borealis OS.

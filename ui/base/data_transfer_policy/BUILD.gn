@@ -9,6 +9,8 @@ component("data_transfer_policy") {
   sources = [
     "data_transfer_endpoint.cc",
     "data_transfer_endpoint.h",
+    "data_transfer_endpoint_serializer.cc",
+    "data_transfer_endpoint_serializer.h",
     "data_transfer_policy_controller.cc",
     "data_transfer_policy_controller.h",
   ]
@@ -24,9 +26,13 @@ component("data_transfer_policy") {
 
 source_set("unittests") {
   testonly = true
-  sources = [ "data_transfer_endpoint_unittest.cc" ]
+  sources = [
+    "data_transfer_endpoint_serializer_unittest.cc",
+    "data_transfer_endpoint_unittest.cc",
+  ]
   deps = [
     ":data_transfer_policy",
+    "//build:chromeos_buildflags",
     "//testing/gtest",
     "//url",
   ]
