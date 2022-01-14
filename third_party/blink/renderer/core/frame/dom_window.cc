@@ -90,25 +90,16 @@ bool DOMWindow::IsWindowOrWorkerGlobalScope() const {
 }
 
 Location* DOMWindow::location() const {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessLocation,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLocation);
   if (!location_)
     location_ = MakeGarbageCollected<Location>(const_cast<DOMWindow*>(this));
   return location_.Get();
 }
 
 bool DOMWindow::closed() const {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessClosed,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClosed);
   return window_is_closing_ || !GetFrame() || !GetFrame()->GetPage();
 }
 
 unsigned DOMWindow::length() const {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessLength,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLength);
   return GetFrame() ? GetFrame()->Tree().ScopedChildCount() : 0;
 }
 
@@ -116,40 +107,7 @@ DOMWindow* DOMWindow::self() const {
   if (!GetFrame())
     return nullptr;
 
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessSelf,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageSelf);
-
   return GetFrame()->DomWindow();
-}
-
-DOMWindow* DOMWindow::window() const {
-  if (!GetFrame())
-    return nullptr;
-
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessWindow,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageWindow);
-
-  return GetFrame()->DomWindow();
-}
-
-DOMWindow* DOMWindow::frames() const {
-  if (!GetFrame())
-    return nullptr;
-
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessFrames,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFrames);
-
-  return GetFrame()->DomWindow();
-}
-
-DOMWindow* DOMWindow::OpenerWithMetrics() const {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessOpener,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener);
-  return opener();
 }
 
 DOMWindow* DOMWindow::opener() const {
@@ -165,10 +123,6 @@ DOMWindow* DOMWindow::parent() const {
   if (!GetFrame())
     return nullptr;
 
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessParent,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageParent);
-
   Frame* parent = GetFrame()->Tree().Parent(FrameTreeBoundary::kFenced);
   return parent ? parent->DomWindow() : GetFrame()->DomWindow();
 }
@@ -176,10 +130,6 @@ DOMWindow* DOMWindow::parent() const {
 DOMWindow* DOMWindow::top() const {
   if (!GetFrame())
     return nullptr;
-
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessTop,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageTop);
 
   return GetFrame()->Tree().Top(FrameTreeBoundary::kFenced).DomWindow();
 }
@@ -189,9 +139,6 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
                             const String& target_origin,
                             HeapVector<ScriptValue>& transfer,
                             ExceptionState& exception_state) {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessPostMessage,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage);
   WindowPostMessageOptions* options = WindowPostMessageOptions::Create();
   options->setTargetOrigin(target_origin);
   if (!transfer.IsEmpty())
@@ -203,9 +150,6 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
                             const ScriptValue& message,
                             const WindowPostMessageOptions* options,
                             ExceptionState& exception_state) {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessPostMessage,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage);
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   UseCounter::Count(incumbent_window->document(),
                     WebFeature::kWindowPostMessage);
@@ -222,9 +166,6 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
 }
 
 DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessIndexedGetter,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageIndexedGetter);
   ReportCoopAccess("indexed");
 
   if (!GetFrame())
@@ -394,10 +335,6 @@ void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
     return;
   }
 
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessClose,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClose);
-
   Settings* settings = GetFrame()->GetSettings();
   bool allow_scripts_to_close_windows =
       settings && settings->GetAllowScriptsToCloseWindows();
@@ -439,10 +376,6 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   if (!page)
     return;
 
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessFocus,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFocus);
-
   // HTML standard doesn't require to check the incumbent realm, but Blink
   // historically checks it for some reasons, maybe the same reason as |close|.
   // (|close| checks whether the incumbent realm is eligible to close the window
@@ -477,12 +410,6 @@ void DOMWindow::focus(v8::Isolate* isolate) {
 
   page->GetFocusController().FocusDocumentView(GetFrame(),
                                                true /* notifyEmbedder */);
-}
-
-void DOMWindow::blur() {
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessBlur,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageBlur);
 }
 
 InputDeviceCapabilitiesConstants* DOMWindow::GetInputDeviceCapabilities() {
@@ -765,40 +692,6 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   posted_message->user_activation = user_activation;
   posted_message->delegate_payment_request = delegate_payment_request;
   SchedulePostMessage(posted_message);
-}
-
-void DOMWindow::RecordWindowProxyAccessMetrics(
-    WebFeature property_access,
-    WebFeature property_access_from_other_page) const {
-  if (!GetFrame())
-    return;
-
-  v8::Isolate* isolate = window_proxy_manager_->GetIsolate();
-  if (!isolate)
-    return;
-
-  LocalDOMWindow* accessing_window = CurrentDOMWindow(isolate);
-  if (!accessing_window)
-    return;
-
-  LocalFrame* accessing_frame = accessing_window->GetFrame();
-  if (!accessing_frame)
-    return;
-
-  // Note that SecurityOrigin can be null in unit tests.
-  if (!GetFrame()->GetSecurityContext()->GetSecurityOrigin() ||
-      !accessing_frame->GetSecurityContext()->GetSecurityOrigin() ||
-      accessing_frame->GetSecurityContext()
-          ->GetSecurityOrigin()
-          ->IsSameOriginWith(
-              GetFrame()->GetSecurityContext()->GetSecurityOrigin())) {
-    return;
-  }
-  UseCounter::Count(accessing_window->document(), property_access);
-
-  if (accessing_frame->GetPage() != GetFrame()->GetPage()) {
-    UseCounter::Count(accessing_window, property_access_from_other_page);
-  }
 }
 
 void DOMWindow::PostedMessage::Trace(Visitor* visitor) const {

@@ -21,6 +21,10 @@ void RemoteDOMWindow::Trace(Visitor* visitor) const {
   DOMWindow::Trace(visitor);
 }
 
+void RemoteDOMWindow::blur() {
+  // FIXME: Implement.
+}
+
 RemoteDOMWindow::RemoteDOMWindow(RemoteFrame& frame) : DOMWindow(frame) {}
 
 void RemoteDOMWindow::FrameDetached() {

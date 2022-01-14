@@ -269,6 +269,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   DOMSelection* getSelection();
 
+  void blur() override;
   void print(ScriptState*);
   void stop();
 

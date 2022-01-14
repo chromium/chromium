@@ -24,6 +24,7 @@ class RemoteDOMWindow final : public DOMWindow {
 
   // DOMWindow overrides:
   void Trace(Visitor*) const override;
+  void blur() override;
 
   void FrameDetached();
 
