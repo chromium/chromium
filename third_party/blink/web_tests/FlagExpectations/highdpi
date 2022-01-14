@@ -635,7 +635,7 @@ crbug.com/1179570 virtual/forced-high-contrast-colors/external/wpt/forced-colors
 crbug.com/1179570 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-04.html [ Failure ]
 crbug.com/1179570 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-32.html [ Failure ]
 crbug.com/1179570 virtual/layout_ng_printing/printing/block-width-relayout-shrink.html [ Failure ]
-crbug.com/1179570 virtual/layout_ng_printing/printing/multicol-2-pages.html [ Failure ]
+crbug.com/1287552 virtual/layout_ng_printing/printing/multicol-2-pages.html [ Failure Crash ]
 crbug.com/1179570 virtual/layout_ng_printing/printing/thead-repeats-with-translucent-text-and-borders.html [ Failure ]
 crbug.com/1286601 virtual/layout_ng_printing/printing/vertical-lr.html [ Crash Failure ]
 crbug.com/1286601 virtual/layout_ng_printing/printing/vertical-rl.html [ Crash Failure ]
