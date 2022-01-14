@@ -162,7 +162,6 @@ void RecordUserDataSize(const base::FilePath& path, int64_t size) {
   uma_name += GetUMAItemName(path);
 
   // Divide 10GB into 100 buckets. Unit in MB.
-  LOG(WARNING) << uma_name << ": " << size / 1024 / 1024 << "MB";
   base::UmaHistogramCustomCounts(uma_name, size / 1024 / 1024, 1, 10000, 100);
 }
 
