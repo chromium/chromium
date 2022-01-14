@@ -31,7 +31,7 @@ class CannedServiceWorkerHelperTest : public testing::Test {
   content::TestBrowserContext browser_context_;
 };
 
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_Empty DISABLED_Empty
 #else
 #define MAYBE_Empty Empty

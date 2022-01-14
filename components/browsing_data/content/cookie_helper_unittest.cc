@@ -592,7 +592,7 @@ TEST_F(CookieHelperTest, CannedDifferentFrames) {
                      base::Unretained(this)));
 }
 
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_CannedGetCookieCount DISABLED_CannedGetCookieCount
 #else
 #define MAYBE_CannedGetCookieCount CannedGetCookieCount

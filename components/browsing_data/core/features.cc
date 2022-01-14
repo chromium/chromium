@@ -12,7 +12,7 @@ namespace features {
 const base::Feature kEnableRemovingAllThirdPartyCookies{
     "EnableRemovingAllThirdPartyCookies", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kEnableBrowsingDataLifetimeManager{
     "BrowsingDataLifetimeManager", base::FEATURE_DISABLED_BY_DEFAULT};
 #else

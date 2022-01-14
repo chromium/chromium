@@ -159,7 +159,7 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::FEDERATED_IDENTITY_SHARING, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SERIAL_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
