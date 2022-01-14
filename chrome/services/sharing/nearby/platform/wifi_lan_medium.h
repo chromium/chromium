@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_socket.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -51,6 +52,9 @@ class WifiLanMedium : public api::WifiLanMedium {
  public:
   WifiLanMedium(const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
                     socket_factory,
+                const mojo::SharedRemote<
+                    chromeos::network_config::mojom::CrosNetworkConfig>&
+                    cros_network_config,
                 const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
                     firewall_hole_factory);
   WifiLanMedium(const WifiLanMedium&) = delete;
@@ -78,6 +82,10 @@ class WifiLanMedium : public api::WifiLanMedium {
     kSuccess,
     kCanceled,
     kErrorInvalidPort,
+    kErrorFetchIpFailedToGetNetworkStateList,
+    kErrorFetchIpFailedToGetManagedProperties,
+    kErrorFetchIpMissingIpConfigs,
+    kErrorFetchIpNoValidLocalIpAddress,
     kErrorFailedToCreateTcpServerSocket,
     kErrorUnexpectedTcpServerSocketIpEndpoint,
     kErrorFailedToCreateFirewallHole,
@@ -110,12 +118,19 @@ class WifiLanMedium : public api::WifiLanMedium {
           server_socket_parameters,
       base::WaitableEvent* listen_waitable_event,
       int port);
-  void OnLocalIpAddressFetched(
+  void OnGetNetworkStateList(
       absl::optional<WifiLanServerSocket::ServerSocketParameters>*
           server_socket_parameters,
       base::WaitableEvent* listen_waitable_event,
-      const net::IPAddress& ip_address,
-      const ash::nearby::TcpServerSocketPort& port);
+      const ash::nearby::TcpServerSocketPort& port,
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          result);
+  void OnGetNetworkProperties(
+      absl::optional<WifiLanServerSocket::ServerSocketParameters>*
+          server_socket_parameters,
+      base::WaitableEvent* listen_waitable_event,
+      const ash::nearby::TcpServerSocketPort& port,
+      chromeos::network_config::mojom::ManagedPropertiesPtr properties);
   void OnTcpServerSocketCreated(
       absl::optional<WifiLanServerSocket::ServerSocketParameters>*
           server_socket_parameters,
@@ -151,12 +166,14 @@ class WifiLanMedium : public api::WifiLanMedium {
   void FinishConnectAttempt(base::WaitableEvent* event, ConnectResult result);
   void FinishListenAttempt(base::WaitableEvent* event, ListenResult result);
 
-  // Resets the |tcp_socket_factory_| and finishes all pending connect/listen
-  // attempts with null results.
+  // Resets the SharedRemotes and finishes all pending connect/listen attempts
+  // with null results.
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::SharedRemote<sharing::mojom::TcpSocketFactory> socket_factory_;
+  mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+      cros_network_config_;
   mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_;
 
