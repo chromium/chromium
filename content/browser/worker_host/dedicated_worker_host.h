@@ -175,6 +175,8 @@ class DedicatedWorkerHost final
   blink::scheduler::WebSchedulerTrackedFeatures
   GetBackForwardCacheDisablingFeatures() const;
 
+  base::WeakPtr<ServiceWorkerContainerHost> GetServiceWorkerContainerHost();
+
   base::WeakPtr<DedicatedWorkerHost> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

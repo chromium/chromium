@@ -1680,6 +1680,9 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
     if (base::WeakPtr<ServiceWorkerContainerHost> host = entry.second)
       host->OnEnterBackForwardCache();
   }
+
+  DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(this)
+      ->OnEnterBackForwardCache();
 }
 
 // The frame as been restored from the BackForwardCache.
@@ -1696,6 +1699,9 @@ void RenderFrameHostImpl::WillLeaveBackForwardCache() {
     if (base::WeakPtr<ServiceWorkerContainerHost> host = entry.second)
       host->OnRestoreFromBackForwardCache();
   }
+
+  DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(this)
+      ->OnRestoreFromBackForwardCache();
 }
 
 mojom::DidCommitProvisionalLoadParamsPtr

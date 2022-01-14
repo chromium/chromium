@@ -905,4 +905,12 @@ DedicatedWorkerHost::GetBackForwardCacheDisablingFeatures() const {
   return bfcache_disabling_features_;
 }
 
+base::WeakPtr<ServiceWorkerContainerHost>
+DedicatedWorkerHost::GetServiceWorkerContainerHost() {
+  if (!service_worker_handle_) {
+    return nullptr;
+  }
+  return service_worker_handle_->container_host();
+}
+
 }  // namespace content

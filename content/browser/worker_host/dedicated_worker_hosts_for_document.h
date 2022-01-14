@@ -34,6 +34,12 @@ class CONTENT_EXPORT DedicatedWorkerHostsForDocument
   blink::scheduler::WebSchedulerTrackedFeatures
   GetBackForwardCacheDisablingFeatures() const;
 
+  // Called when the page is put into back/forward cache.
+  void OnEnterBackForwardCache();
+
+  // Called when the page is restored from back/forward cache.
+  void OnRestoreFromBackForwardCache();
+
  private:
   explicit DedicatedWorkerHostsForDocument(RenderFrameHost* rfh);
 

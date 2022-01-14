@@ -113,6 +113,16 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
 
   int port() const { return server_.server_address().port(); }
 
+  int CountWorkerClients(RenderFrameHostImpl* rfh) {
+    return EvalJs(rfh, JsReplace(R"(
+      new Promise(async (resolve) => {
+        const resp = await fetch('/service_worker/count_worker_clients');
+        resolve(parseInt(await resp.text(), 10));
+      });
+    )"))
+        .ExtractInt();
+  }
+
  private:
   WebTransportSimpleTestServer server_;
 };
@@ -812,6 +822,209 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout}, {},
       {}, {}, {}, FROM_HERE);
+}
+
+// Tests that dedicated workers in back/forward cache are not visible to a
+// service worker.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       ServiceWorkerClientMatchAll) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a1(https_server()->GetURL(
+      "a.test", "/service_worker/create_service_worker.html"));
+  GURL url_a2(https_server()->GetURL("a.test", "/service_worker/empty.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+  EXPECT_EQ(
+      "DONE",
+      EvalJs(current_frame_host(),
+             "register('/service_worker/fetch_event_worker_clients.js');"));
+
+  // Reload the page to enable fetch to be hooked by the service worker.
+  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Confirm there is no worker client.
+  EXPECT_EQ(0, CountWorkerClients(rfh_a.get()));
+
+  // Call fetch in a dedicated worker. Now the number of worker clients is 1.
+  std::string dedicated_worker_script = JsReplace(
+      R"(
+    (async() => {
+      const response = await fetch($1);
+      postMessage(await response.text());
+    })();
+  )",
+      https_server()->GetURL("a.test", "/service_worker/count_worker_clients"));
+  EXPECT_EQ("1", EvalJs(rfh_a.get(), JsReplace(R"(
+    new Promise(async (resolve) => {
+      const blobURL = URL.createObjectURL(new Blob([$1]));
+      const dedicatedWorker = new Worker(blobURL);
+      dedicatedWorker.addEventListener('message', e => {
+        resolve(e.data);
+      });
+    });
+  )",
+                                               dedicated_worker_script)));
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Confirm that the worker in back/forward cache is invisible from the service
+  // worker.
+  EXPECT_EQ(0, CountWorkerClients(current_frame_host()));
+
+  // Restore from the back/forward cache. Now the number of client is 1.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(1, CountWorkerClients(current_frame_host()));
+}
+
+// Tests that dedicated workers, including a nested dedicated workers, in
+// back/forward cache are not visible to a service worker.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       ServiceWorkerClientMatchAll_Nested) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a1(https_server()->GetURL(
+      "a.test", "/service_worker/create_service_worker.html"));
+  GURL url_a2(https_server()->GetURL("a.test", "/service_worker/empty.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+  EXPECT_EQ(
+      "DONE",
+      EvalJs(current_frame_host(),
+             "register('/service_worker/fetch_event_worker_clients.js');"));
+
+  // Reload the page to enable fetch to be hooked by the service worker.
+  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Confirm there is no worker client.
+  EXPECT_EQ(0, CountWorkerClients(rfh_a.get()));
+
+  // Call fetch in a dedicated worker. Now the number of worker clients is 2.
+  std::string child_worker_script = JsReplace(
+      R"(
+    (async() => {
+      const response = await fetch($1);
+      postMessage(await response.text());
+    })();
+  )",
+      https_server()->GetURL("a.test", "/service_worker/count_worker_clients"));
+  std::string parent_worker_script = JsReplace(
+      R"(
+    const blobURL = URL.createObjectURL(new Blob([$1]));
+    const dedicatedWorker = new Worker(blobURL);
+    dedicatedWorker.addEventListener('message', e => {
+      postMessage(e.data);
+    });
+  )",
+      child_worker_script);
+  EXPECT_EQ("2", EvalJs(rfh_a.get(), JsReplace(R"(
+    new Promise(async (resolve) => {
+      const blobURL = URL.createObjectURL(new Blob([$1]));
+      const dedicatedWorker = new Worker(blobURL);
+      dedicatedWorker.addEventListener('message', e => {
+        resolve(e.data);
+      });
+    });
+  )",
+                                               parent_worker_script)));
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Confirm that the worker in back/forward cache is invisible from the service
+  // worker.
+  EXPECT_EQ(0, CountWorkerClients(current_frame_host()));
+
+  // Restore from the back/forward cache. Now the number of client is 2.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(2, CountWorkerClients(current_frame_host()));
+}
+
+// Tests that dedicated workers in back/forward cache are not visible to a
+// service worker. This works correctly even if a dedicated worker is not loaded
+// completely when the page is put into back/forward cache,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       ServiceWorkerClientMatchAll_LoadWorkerAfterRestoring) {
+  CreateHttpsServer();
+
+  // Prepare a controllable HTTP response for a dedicated worker. Use
+  // /service_worker path to match with the service worker's scope.
+  net::test_server::ControllableHttpResponse dedicated_worker_response(
+      https_server(),
+      "/service_worker/dedicated_worker_using_service_worker.js");
+
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a1(https_server()->GetURL(
+      "a.test", "/service_worker/create_service_worker.html"));
+  GURL url_a2(https_server()->GetURL("a.test", "/service_worker/empty.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+  EXPECT_EQ(
+      "DONE",
+      EvalJs(current_frame_host(),
+             "register('/service_worker/fetch_event_worker_clients.js');"));
+
+  // Reload the page to enable fetch to be hooked by the service worker.
+  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Confirm there is no worker client.
+  EXPECT_EQ(0, CountWorkerClients(rfh_a.get()));
+
+  // Start to requet a worker URL.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    window.dedicatedWorkerUsingServiceWorker = new Worker(
+        '/service_worker/dedicated_worker_using_service_worker.js');
+  )"));
+
+  dedicated_worker_response.WaitForRequest();
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Return the dedicated worker script.
+  dedicated_worker_response.Send(net::HTTP_OK, "text/javascript");
+  dedicated_worker_response.Send(R"(
+    onmessage = e => {
+      postMessage(e.data);
+    };
+  )");
+  dedicated_worker_response.Done();
+
+  // Confirm that the worker in back/forward cache is invisible from the service
+  // worker.
+  EXPECT_EQ(0, CountWorkerClients(current_frame_host()));
+
+  // Restore from the back/forward cache. Now the number of client is 1.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // Confirm that the dedicated worker is completely loaded.
+  EXPECT_EQ("foo", EvalJs(current_frame_host(), JsReplace(R"(
+    new Promise(async (resolve) => {
+      window.dedicatedWorkerUsingServiceWorker.onmessage = e => {
+        resolve(e.data);
+      };
+      window.dedicatedWorkerUsingServiceWorker.postMessage("foo");
+    });
+  )")));
+
+  EXPECT_EQ(1, CountWorkerClients(current_frame_host()));
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
