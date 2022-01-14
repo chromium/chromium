@@ -773,11 +773,13 @@ std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 VaapiVideoEncodeAccelerator::CreateEncodeJob(
     scoped_refptr<VideoFrame> frame,
     bool force_keyframe,
-    scoped_refptr<VASurface> input_surface,
+    const VASurface& input_surface,
     scoped_refptr<VASurface> reconstructed_surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(frame);
-  DCHECK(input_surface && reconstructed_surface);
+  DCHECK_NE(input_surface.id(), VA_INVALID_ID);
+  DCHECK(!input_surface.size().IsEmpty());
+  DCHECK(reconstructed_surface);
 
   std::unique_ptr<ScopedVABuffer> coded_buffer;
   {
@@ -806,8 +808,8 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(
       return nullptr;
   }
 
-  return std::make_unique<EncodeJob>(frame, force_keyframe, input_surface,
-                                     std::move(picture),
+  return std::make_unique<EncodeJob>(frame, force_keyframe, input_surface.id(),
+                                     input_surface.size(), std::move(picture),
                                      std::move(coded_buffer));
 }
 
@@ -865,7 +867,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       const bool force_key =
           (spatial_idx == 0 ? input_frame->force_keyframe : false);
       job = CreateEncodeJob(input_frame->frame, force_key,
-                            std::move(input_surfaces[spatial_idx]),
+                            *input_surfaces[spatial_idx],
                             std::move(reconstructed_surfaces[spatial_idx]));
       if (!job)
         return;
