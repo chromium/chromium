@@ -12,7 +12,6 @@ import android.graphics.RectF;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -494,15 +493,15 @@ public class SimpleAnimationLayout extends Layout {
 
     @Override
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
-        super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
-                resourceManager, browserControls);
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {
+        super.updateSceneLayer(
+                viewport, contentViewport, tabContentManager, resourceManager, browserControls);
         assert mSceneLayer != null;
         // The content viewport is intentionally sent as both params below.
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
-                layerTitleCache, tabContentManager, resourceManager, browserControls,
-                SceneLayer.INVALID_RESOURCE_ID, 0, 0);
+                tabContentManager, resourceManager, browserControls, SceneLayer.INVALID_RESOURCE_ID,
+                0, 0);
     }
 
     @Override

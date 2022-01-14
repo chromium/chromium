@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -128,7 +127,6 @@ public class CompositorViewHolder extends FrameLayout
 
     private final Invalidator mInvalidator = new Invalidator();
     private LayoutManagerImpl mLayoutManager;
-    private LayerTitleCache mLayerTitleCache;
     private CompositorView mCompositorView;
 
     private boolean mContentOverlayVisiblity = true;
@@ -554,7 +552,6 @@ public class CompositorViewHolder extends FrameLayout
             mAutofillUiBottomInsetSupplier.removeObserver(mBottomInsetObserver);
         }
 
-        if (mLayerTitleCache != null) mLayerTitleCache.shutDown();
         mCompositorView.shutDown();
         if (mLayoutManager != null) mLayoutManager.destroy();
         if (mInsetObserverView != null) {
@@ -572,14 +569,8 @@ public class CompositorViewHolder extends FrameLayout
      */
     public void onNativeLibraryReady(
             WindowAndroid windowAndroid, TabContentManager tabContentManager) {
-        assert mLayerTitleCache == null : "Should be called once";
-
         mCompositorView.initNativeCompositor(
                 SysUtils.isLowEndDevice(), windowAndroid, tabContentManager);
-
-        if (DeviceClassManager.enableLayerDecorationCache()) {
-            mLayerTitleCache = new LayerTitleCache(getContext(), getResourceManager());
-        }
 
         if (mControlContainer != null) {
             mCompositorView.getResourceManager().getDynamicResourceLoader().registerResource(
@@ -1367,8 +1358,6 @@ public class CompositorViewHolder extends FrameLayout
             }
         });
 
-        mLayerTitleCache.setTabModelSelector(mTabModelSelector);
-
         onContentChanged();
     }
 
@@ -1515,16 +1504,6 @@ public class CompositorViewHolder extends FrameLayout
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
         webContents.setSize(view.getWidth(), view.getHeight() - controlsHeight);
-    }
-
-    @Override
-    public TitleCache getTitleCache() {
-        return mLayerTitleCache;
-    }
-
-    /** @return A cache responsible for title textures. */
-    public LayerTitleCache getLayerTitleCache() {
-        return mLayerTitleCache;
     }
 
     @Override

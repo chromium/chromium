@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.TitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -96,7 +95,6 @@ public class StripLayoutHelperManager implements SceneOverlay {
     private TabModelObserver mTabModelObserver;
 
     private final String mDefaultTitle;
-    private final Supplier<TitleCache> mTitleCacheSupplier;
     private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
 
     private class TabStripEventHandler implements GestureHandler {
@@ -162,10 +160,8 @@ public class StripLayoutHelperManager implements SceneOverlay {
      * @param layerTitleCacheSupplier A supplier of the cache that holds the title textures.
      */
     public StripLayoutHelperManager(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, Supplier<TitleCache> titleCacheSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier) {
+            LayoutRenderHost renderHost, Supplier<LayerTitleCache> layerTitleCacheSupplier) {
         mUpdateHost = updateHost;
-        mTitleCacheSupplier = titleCacheSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
         mTabStripEventHandler = new TabStripEventHandler();
@@ -330,7 +326,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
     /** Update the title cache for the available tabs in the model. */
     private void updateTitleCacheForInit() {
-        TitleCache titleCache = mTitleCacheSupplier.get();
+        LayerTitleCache titleCache = mLayerTitleCacheSupplier.get();
         if (mTabModelSelector == null || titleCache == null) return;
 
         // Make sure any tabs already restored get loaded into the title cache.
@@ -416,7 +412,9 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
             @Override
             public void tabClosureCommitted(Tab tab) {
-                if (mTitleCacheSupplier.hasValue()) mTitleCacheSupplier.get().remove(tab.getId());
+                if (mLayerTitleCacheSupplier.hasValue()) {
+                    mLayerTitleCacheSupplier.get().remove(tab.getId());
+                }
             }
 
             @Override
@@ -493,9 +491,9 @@ public class StripLayoutHelperManager implements SceneOverlay {
     }
 
     private void updateTitleForTab(Tab tab) {
-        if (mTitleCacheSupplier.get() == null) return;
+        if (mLayerTitleCacheSupplier.get() == null) return;
 
-        String title = mTitleCacheSupplier.get().getUpdatedTitle(tab, mDefaultTitle);
+        String title = mLayerTitleCacheSupplier.get().getUpdatedTitle(tab, mDefaultTitle);
         getStripLayoutHelper(tab.isIncognito()).tabTitleChanged(tab.getId(), title);
         mUpdateHost.requestUpdate();
     }

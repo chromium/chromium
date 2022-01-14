@@ -23,7 +23,6 @@ class ResourceManager;
 
 namespace android {
 
-class LayerTitleCache;
 class TabContentManager;
 class TabLayer;
 
@@ -117,7 +116,6 @@ class TabListSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jtab_content_manager,
-      const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void OnDetach() override;
@@ -133,7 +131,6 @@ class TabListSceneLayer : public SceneLayer {
 
   bool content_obscures_self_;
   raw_ptr<ui::ResourceManager> resource_manager_;
-  raw_ptr<LayerTitleCache> layer_title_cache_;
   raw_ptr<TabContentManager> tab_content_manager_;
   SkColor background_color_;
 

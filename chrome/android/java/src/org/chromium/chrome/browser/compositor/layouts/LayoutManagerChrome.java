@@ -20,8 +20,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.TitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -64,10 +62,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     // Event Filter Handlers
     private final SwipeHandler mToolbarSwipeHandler;
 
-    // Internal State
-    /** A {@link TitleCache} instance that stores all title/favicon bitmaps as CC resources. */
-    protected TitleCache mTitleCache;
-
     /** Whether or not animations are enabled.  This can disable certain layouts or effects. */
     private boolean mEnableAnimations = true;
     private boolean mCreatingNtp;
@@ -84,18 +78,15 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
             boolean createOverviewLayout, @Nullable StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
-        super(host, contentContainer, tabContentManagerSupplier, layerTitleCacheSupplier,
-                topUiThemeColorProvider);
+        super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
         Context context = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
 
@@ -173,9 +164,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 browserControlsStateProvider, this, topUiColorProvider);
 
         super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
-
-        // TODO: TitleCache should be a part of the ResourceManager.
-        mTitleCache = mHost.getTitleCache();
 
         // Initialize Layouts
         TabContentManager content = mTabContentManagerSupplier.get();
@@ -317,20 +305,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         if (!isOverviewLayout(getActiveLayout())) return false;
 
         return super.closeAllTabsRequest(incognito);
-    }
-
-    @Override
-    public void initLayoutTabFromHost(final int tabId) {
-        if (mTitleCache != null) {
-            mTitleCache.remove(tabId);
-        }
-        super.initLayoutTabFromHost(tabId);
-    }
-
-    @Override
-    public void releaseResourcesForTab(int tabId) {
-        super.releaseResourcesForTab(tabId);
-        mTitleCache.remove(tabId);
     }
 
     /**

@@ -11,7 +11,6 @@
 #include "chrome/android/chrome_jni_headers/TabListSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer/tab_layer.h"
-#include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
@@ -24,7 +23,6 @@ TabListSceneLayer::TabListSceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
       content_obscures_self_(false),
       resource_manager_(nullptr),
-      layer_title_cache_(nullptr),
       tab_content_manager_(nullptr),
       background_color_(SK_ColorWHITE),
       own_tree_(cc::Layer::Create()) {
@@ -129,8 +127,6 @@ void TabListSceneLayer::PutTabLayer(
     jboolean inset_border) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the TabLayer";
-  DCHECK(layer_title_cache_)
-      << "LayerTitleCache must be set before updating the TabLayer";
   DCHECK(resource_manager_)
       << "ResourceManager must be set before updating the TabLayer";
 
@@ -139,8 +135,8 @@ void TabListSceneLayer::PutTabLayer(
   if (iter != tab_map_.end()) {
     layer = iter->second;
   } else {
-    layer = TabLayer::Create(incognito, resource_manager_, layer_title_cache_,
-                             tab_content_manager_);
+    layer =
+        TabLayer::Create(incognito, resource_manager_, tab_content_manager_);
     tab_map_.insert(TabMap::value_type(id, layer));
   }
   own_tree_->AddChild(layer->layer());
@@ -208,14 +204,10 @@ void TabListSceneLayer::SetDependencies(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobj,
     const base::android::JavaParamRef<jobject>& jtab_content_manager,
-    const base::android::JavaParamRef<jobject>& jlayer_title_cache,
     const base::android::JavaParamRef<jobject>& jresource_manager) {
   if (!tab_content_manager_) {
     tab_content_manager_ =
         TabContentManager::FromJavaObject(jtab_content_manager);
-  }
-  if (!layer_title_cache_) {
-    layer_title_cache_ = LayerTitleCache::FromJavaObject(jlayer_title_cache);
   }
   if (!resource_manager_) {
     resource_manager_ =

@@ -30,8 +30,6 @@ class ResourceManager;
 namespace android {
 
 class ContentLayer;
-class DecorationTitle;
-class LayerTitleCache;
 class TabContentManager;
 class ToolbarLayer;
 
@@ -41,7 +39,6 @@ class TabLayer : public Layer {
  public:
   static scoped_refptr<TabLayer> Create(bool incognito,
                                         ui::ResourceManager* resource_manager,
-                                        LayerTitleCache* layer_title_cache,
                                         TabContentManager* tab_content_manager);
 
   TabLayer(const TabLayer&) = delete;
@@ -115,13 +112,10 @@ class TabLayer : public Layer {
  protected:
   TabLayer(bool incognito,
            ui::ResourceManager* resource_manager,
-           LayerTitleCache* layer_title_cache,
            TabContentManager* tab_content_manager);
   ~TabLayer() override;
 
  private:
-  void SetTitle(DecorationTitle* title);
-
   void SetContentProperties(int id,
                             const std::vector<int>& tab_ids,
                             bool can_use_live_layer,
@@ -137,11 +131,8 @@ class TabLayer : public Layer {
   const bool incognito_;
   raw_ptr<ui::ResourceManager> resource_manager_;
   raw_ptr<TabContentManager> tab_content_manager_;
-  raw_ptr<LayerTitleCache> layer_title_cache_;
 
   // [layer]-+-[toolbar]
-  //         +-[close button]
-  //         +-[title]
   //         +-[front border]
   //         +-[content]
   //         +-[back_logo]
@@ -152,11 +143,9 @@ class TabLayer : public Layer {
   // [back logo]
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<ToolbarLayer> toolbar_layer_;
-  scoped_refptr<cc::Layer> title_;
   scoped_refptr<ContentLayer> content_;
   scoped_refptr<cc::SolidColorLayer> side_padding_;
   scoped_refptr<cc::SolidColorLayer> bottom_padding_;
-  scoped_refptr<cc::UIResourceLayer> close_button_;
 
   scoped_refptr<cc::NinePatchLayer> front_border_;
   scoped_refptr<cc::NinePatchLayer> front_border_inner_shadow_;

@@ -74,11 +74,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
         // clang-format off
         LayoutManagerImpl layoutDriver = new LayoutManagerImpl(mCompositorViewHolder.get(),
                 contentContainer, mTabContentManagerSupplier,
-                () -> {
-                    if (mCompositorViewHolder.get() == null) return null;
-                    return mCompositorViewHolder.get().getLayerTitleCache();
-                },
-                () -> mTopUiThemeColorProvider);
+            () -> mTopUiThemeColorProvider);
         // clang-format on
 
         mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,

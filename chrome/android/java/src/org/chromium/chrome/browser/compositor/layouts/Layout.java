@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -746,7 +745,6 @@ public abstract class Layout {
      *
      * @param viewport          A viewport in which to display content in px.
      * @param visibleViewport   The visible section of the viewport in px.
-     * @param layerTitleCache   A layer title cache.
      * @param tabContentManager A tab content manager.
      * @param resourceManager   A resource manager.
      * @param browserControls   A browser controls state provider.
@@ -754,10 +752,10 @@ public abstract class Layout {
      *                          {@link Layout}.
      */
     public final SceneLayer getUpdatedSceneLayer(RectF viewport, RectF visibleViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
-        updateSceneLayer(viewport, visibleViewport, layerTitleCache, tabContentManager,
-                resourceManager, browserControls);
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {
+        updateSceneLayer(
+                viewport, visibleViewport, tabContentManager, resourceManager, browserControls);
         return getSceneLayer();
     }
 
@@ -793,8 +791,8 @@ public abstract class Layout {
      * should override this function in order for other functions to work.
      */
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {}
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {}
 
     /**
      * @return The {@link LayoutType}.

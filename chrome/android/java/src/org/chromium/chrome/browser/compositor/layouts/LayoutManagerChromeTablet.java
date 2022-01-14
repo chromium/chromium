@@ -13,6 +13,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -30,6 +31,10 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
 
+    // Internal State
+    /** A {@link TitleCache} instance that stores all title/favicon bitmaps as CC resources. */
+    protected LayerTitleCache mLayerTitleCache;
+
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
      * @param host                     A {@link LayoutManagerHost} instance.
@@ -43,16 +48,15 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
         super(host, contentContainer,
                 TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
-                tabContentManagerSupplier, layerTitleCacheSupplier, overviewModeBehaviorSupplier,
-                topUiThemeColorProvider, jankTracker);
+                tabContentManagerSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
+                jankTracker);
 
-        mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
-                mHost.getLayoutRenderHost(), () -> mTitleCache, layerTitleCacheSupplier);
+        mTabStripLayoutHelperManager = new StripLayoutHelperManager(
+                host.getContext(), this, mHost.getLayoutRenderHost(), () -> mLayerTitleCache);
         addSceneOverlay(mTabStripLayoutHelperManager);
 
         setNextLayout(null);
@@ -61,6 +65,11 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     public void destroy() {
         super.destroy();
+
+        if (mLayerTitleCache != null) {
+            mLayerTitleCache.shutDown();
+            mLayerTitleCache = null;
+        }
 
         if (mTabStripLayoutHelperManager != null) {
             mTabStripLayoutHelperManager.destroy();
@@ -90,9 +99,41 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             TopUiThemeColorProvider topUiColorProvider) {
         super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
 
+        if (DeviceClassManager.enableLayerDecorationCache()) {
+            mLayerTitleCache = new LayerTitleCache(mHost.getContext(), getResourceManager());
+            // TODO: TitleCache should be a part of the ResourceManager.
+            mLayerTitleCache.setTabModelSelector(selector);
+        }
+
         if (mTabStripLayoutHelperManager != null) {
             mTabStripLayoutHelperManager.setTabModelSelector(selector, creator);
         }
+    }
+
+    @Override
+    protected void emptyCachesExcept(int tabId) {
+        super.emptyCachesExcept(tabId);
+        if (mLayerTitleCache != null) mLayerTitleCache.clearExcept(tabId);
+    }
+
+    @Override
+    public void initLayoutTabFromHost(final int tabId) {
+        if (mLayerTitleCache != null) {
+            mLayerTitleCache.remove(tabId);
+        }
+        super.initLayoutTabFromHost(tabId);
+    }
+
+    @Override
+    public void releaseTabLayout(int id) {
+        mLayerTitleCache.remove(id);
+        super.releaseTabLayout(id);
+    }
+
+    @Override
+    public void releaseResourcesForTab(int tabId) {
+        super.releaseResourcesForTab(tabId);
+        mLayerTitleCache.remove(tabId);
     }
 
     @Override

@@ -11,7 +11,6 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -40,19 +39,16 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
         super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
-                layerTitleCacheSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
-                jankTracker);
+                overviewModeBehaviorSupplier, topUiThemeColorProvider, jankTracker);
     }
 
     @Override
@@ -93,12 +89,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 if (animate) tabClosing(tab.getId());
             }
         };
-    }
-
-    @Override
-    protected void emptyCachesExcept(int tabId) {
-        super.emptyCachesExcept(tabId);
-        if (mTitleCache != null) mTitleCache.clearExcept(tabId);
     }
 
     private void tabClosing(int id) {
@@ -187,11 +177,5 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             Tab newTab = TabModelUtils.getTabById(getTabModelSelector().getModel(isIncognito), id);
             if (newTab != null && newTab.getView() != null) newTab.getView().requestFocus();
         }
-    }
-
-    @Override
-    public void releaseTabLayout(int id) {
-        mTitleCache.remove(id);
-        super.releaseTabLayout(id);
     }
 }

@@ -217,7 +217,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 new OneshotSupplierImpl<>();
 
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container, mStartSurface,
-                tabContentManagerSupplier, null, overviewModeBehaviorSupplier,
+                tabContentManagerSupplier, overviewModeBehaviorSupplier,
                 () -> mTopUiThemeColorProvider, new DummyJankTracker());
         verify(mStartSurfaceController)
                 .addOverviewModeObserver(mStartSurfaceOverviewModeCaptor.capture());

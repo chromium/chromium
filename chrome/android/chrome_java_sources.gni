@@ -280,7 +280,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
   "java/src/org/chromium/chrome/browser/compositor/Invalidator.java",
   "java/src/org/chromium/chrome/browser/compositor/LayerTitleCache.java",
-  "java/src/org/chromium/chrome/browser/compositor/TitleCache.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayContentDelegate.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayContentProgressObserver.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanel.java",

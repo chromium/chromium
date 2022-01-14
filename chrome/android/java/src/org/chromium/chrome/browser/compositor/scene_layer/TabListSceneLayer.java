@@ -14,7 +14,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -42,11 +41,10 @@ public class TabListSceneLayer extends SceneLayer {
         mTabModelSelector = tabModelSelector;
     }
 
-    public void init(LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager) {
+    public void init(TabContentManager tabContentManager, ResourceManager resourceManager) {
         if (mNativePtr == 0 || mIsInitialized) return;
-        TabListSceneLayerJni.get().setDependencies(mNativePtr, TabListSceneLayer.this,
-                tabContentManager, layerTitleCache, resourceManager);
+        TabListSceneLayerJni.get().setDependencies(
+                mNativePtr, TabListSceneLayer.this, tabContentManager, resourceManager);
         mIsInitialized = true;
     }
 
@@ -59,7 +57,6 @@ public class TabListSceneLayer extends SceneLayer {
      * @param viewport The viewport for the screen.
      * @param contentViewport The visible viewport.
      * @param layout The {@link Layout} to push to the screen.
-     * @param layerTitleCache An object for accessing tab layer titles.
      * @param tabContentManager An object for accessing tab content.
      * @param resourceManager An object for accessing static and dynamic resources.
      * @param browserControls The provider for browser controls state.
@@ -70,9 +67,9 @@ public class TabListSceneLayer extends SceneLayer {
      *
      */
     public void pushLayers(Context context, RectF viewport, RectF contentViewport, Layout layout,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls,
-            int backgroundResourceId, float backgroundAlpha, int backgroundTopOffset) {
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls, int backgroundResourceId,
+            float backgroundAlpha, int backgroundTopOffset) {
         if (mNativePtr == 0) return;
 
         Resources res = context.getResources();
@@ -83,7 +80,7 @@ public class TabListSceneLayer extends SceneLayer {
         int tabsCount = tabs != null ? tabs.length : 0;
 
         if (!mIsInitialized) {
-            init(layerTitleCache, tabContentManager, resourceManager);
+            init(tabContentManager, resourceManager);
         }
 
         TabListSceneLayerJni.get().beginBuildingFrame(mNativePtr, TabListSceneLayer.this);
@@ -201,8 +198,7 @@ public class TabListSceneLayer extends SceneLayer {
         void beginBuildingFrame(long nativeTabListSceneLayer, TabListSceneLayer caller);
         void finishBuildingFrame(long nativeTabListSceneLayer, TabListSceneLayer caller);
         void setDependencies(long nativeTabListSceneLayer, TabListSceneLayer caller,
-                TabContentManager tabContentManager, LayerTitleCache layerTitleCache,
-                ResourceManager resourceManager);
+                TabContentManager tabContentManager, ResourceManager resourceManager);
         void updateLayer(long nativeTabListSceneLayer, TabListSceneLayer caller,
                 int backgroundColor, float viewportX, float viewportY, float viewportWidth,
                 float viewportHeight);
