@@ -734,7 +734,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:sessionToken") {
     replacements->push_back(Replacement(GOOGLE_SESSION_TOKEN, start));
   } else if (parameter == "google:sourceId") {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     url->insert(start, "sourceid=chrome-mobile&");
 #else
     url->insert(start, "sourceid=chrome&");
@@ -1289,7 +1289,7 @@ std::string TemplateURLRef::HandleReplacements(
         break;
 
       case GOOGLE_IOS_SEARCH_LANGUAGE:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
         HandleReplacement("hl", search_terms_data.GetApplicationLocale(), *i,
                           &url);
 #endif

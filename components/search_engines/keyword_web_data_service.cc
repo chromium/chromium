@@ -156,7 +156,7 @@ void KeywordWebDataService::AdjustBatchModeLevel(bool entering_batch_mode) {
       // When killing an app on Android/iOS, shutdown isn't guaranteed to be
       // called. Finishing this task immediately ensures the table is fully
       // populated even if the app is killed before the timer expires.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       CommitQueuedOperations();
 #else
       timer_.Reset();

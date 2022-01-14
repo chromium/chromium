@@ -33,7 +33,7 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/webdata/common/web_data_service_consumer.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -42,7 +42,7 @@ class PrefService;
 class TemplateURLServiceClient;
 class TemplateURLServiceObserver;
 struct TemplateURLData;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TemplateUrlServiceAndroid;
 #endif
 
@@ -139,7 +139,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Register Profile preferences in |registry|.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
 
@@ -830,7 +830,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   std::string current_token_;
   base::TimeTicks token_expiration_time_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this TemplateURLService on
   // android.
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;

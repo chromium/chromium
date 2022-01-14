@@ -22,6 +22,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -40,7 +41,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/search_engines/android/template_url_service_android.h"
 #endif
 
@@ -319,7 +320,7 @@ void TemplateURLService::LogSearchTemplateURLEvent(
 // static
 void TemplateURLService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;
 #else
   uint32_t flags = user_prefs::PrefRegistrySyncable::SYNCABLE_PREF;
@@ -332,7 +333,7 @@ void TemplateURLService::RegisterProfilePrefs(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> TemplateURLService::GetJavaObject() {
   if (!template_url_service_android_) {
     template_url_service_android_ =

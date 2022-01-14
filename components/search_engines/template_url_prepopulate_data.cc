@@ -1165,7 +1165,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulationSetFromCountryID(
     UNHANDLED_COUNTRY(G, N)  // Guinea
     UNHANDLED_COUNTRY(G, P)  // Guadeloupe
     UNHANDLED_COUNTRY(H, T)  // Haiti
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     UNHANDLED_COUNTRY(I, P)  // Clipperton Island ('IP' is an WinXP-ism; ISO
                              //                    includes it with France)
 #endif
@@ -1403,7 +1403,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService* prefs,
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
     const std::string& locale) {
