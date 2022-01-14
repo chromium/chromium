@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -426,79 +425,79 @@ class CONTENT_EXPORT IndexedDBBackingStore {
                                    const blink::StorageKey& storage_key,
                                    const std::string& message);
 
-  virtual leveldb::Status GetRecord(
+  [[nodiscard]] virtual leveldb::Status GetRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
-      IndexedDBValue* record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status PutRecord(
+      IndexedDBValue* record);
+  [[nodiscard]] virtual leveldb::Status PutRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       IndexedDBValue* value,
-      RecordIdentifier* record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status ClearObjectStore(
+      RecordIdentifier* record);
+  [[nodiscard]] virtual leveldb::Status ClearObjectStore(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
-      int64_t object_store_id) WARN_UNUSED_RESULT;
-  virtual leveldb::Status DeleteRecord(
-      IndexedDBBackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      const RecordIdentifier& record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status DeleteRange(
+      int64_t object_store_id);
+  [[nodiscard]] virtual leveldb::Status DeleteRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      const blink::IndexedDBKeyRange&) WARN_UNUSED_RESULT;
-  virtual leveldb::Status GetKeyGeneratorCurrentNumber(
+      const RecordIdentifier& record);
+  [[nodiscard]] virtual leveldb::Status DeleteRange(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      int64_t* current_number) WARN_UNUSED_RESULT;
-  virtual leveldb::Status MaybeUpdateKeyGeneratorCurrentNumber(
+      const blink::IndexedDBKeyRange&);
+  [[nodiscard]] virtual leveldb::Status GetKeyGeneratorCurrentNumber(
+      IndexedDBBackingStore::Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      int64_t* current_number);
+  [[nodiscard]] virtual leveldb::Status MaybeUpdateKeyGeneratorCurrentNumber(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t new_state,
-      bool check_current) WARN_UNUSED_RESULT;
-  virtual leveldb::Status KeyExistsInObjectStore(
+      bool check_current);
+  [[nodiscard]] virtual leveldb::Status KeyExistsInObjectStore(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       RecordIdentifier* found_record_identifier,
-      bool* found) WARN_UNUSED_RESULT;
+      bool* found);
 
-  virtual leveldb::Status ClearIndex(
+  [[nodiscard]] virtual leveldb::Status ClearIndex(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      int64_t index_id) WARN_UNUSED_RESULT;
-  virtual leveldb::Status PutIndexDataForRecord(
-      IndexedDBBackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      int64_t index_id,
-      const blink::IndexedDBKey& key,
-      const RecordIdentifier& record) WARN_UNUSED_RESULT;
-  virtual leveldb::Status GetPrimaryKeyViaIndex(
+      int64_t index_id);
+  [[nodiscard]] virtual leveldb::Status PutIndexDataForRecord(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
-      std::unique_ptr<blink::IndexedDBKey>* primary_key) WARN_UNUSED_RESULT;
-  virtual leveldb::Status KeyExistsInIndex(
+      const RecordIdentifier& record);
+  [[nodiscard]] virtual leveldb::Status GetPrimaryKeyViaIndex(
+      IndexedDBBackingStore::Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      int64_t index_id,
+      const blink::IndexedDBKey& key,
+      std::unique_ptr<blink::IndexedDBKey>* primary_key);
+  [[nodiscard]] virtual leveldb::Status KeyExistsInIndex(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
-      bool* exists) WARN_UNUSED_RESULT;
+      bool* exists);
 
   // Public for IndexedDBActiveBlobRegistry::MarkBlobInactive.
   virtual void ReportBlobUnused(int64_t database_id, int64_t blob_number);

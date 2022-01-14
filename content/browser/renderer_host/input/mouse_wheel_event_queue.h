@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
@@ -96,7 +95,7 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   // gestures.
   void OnGestureScrollEvent(const GestureEventWithLatencyInfo& gesture_event);
 
-  bool has_pending() const WARN_UNUSED_RESULT {
+  [[nodiscard]] bool has_pending() const {
     return !wheel_queue_.empty() || event_sent_for_gesture_ack_;
   }
 

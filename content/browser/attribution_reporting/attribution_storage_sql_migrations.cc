@@ -23,13 +23,11 @@ namespace content {
 
 namespace {
 
-WARN_UNUSED_RESULT
-StorableSource::Id NextImpressionId(StorableSource::Id id) {
+[[nodiscard]] StorableSource::Id NextImpressionId(StorableSource::Id id) {
   return StorableSource::Id(*id + 1);
 }
 
-WARN_UNUSED_RESULT
-AttributionReport::Id NextConversionId(AttributionReport::Id id) {
+[[nodiscard]] AttributionReport::Id NextConversionId(AttributionReport::Id id) {
   return AttributionReport::Id(*id + 1);
 }
 

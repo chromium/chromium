@@ -15,7 +15,6 @@
 #include "base/android/jni_android.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
@@ -108,8 +107,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       base::RepeatingCallback<SurfaceIdChangedCallbackType>;
   using SurfaceIdChangedCallbackList =
       base::RepeatingCallbackList<SurfaceIdChangedCallbackType>;
-  base::CallbackListSubscription SubscribeToSurfaceIdChanges(
-      const SurfaceIdChangedCallback& callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription SubscribeToSurfaceIdChanges(
+      const SurfaceIdChangedCallback& callback);
 
   // Called by DelegatedFrameHostClientAndroid
   void OnSurfaceIdChanged();

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -125,15 +124,15 @@ class CONTENT_EXPORT BrowserThread {
 
   // Callable on any thread.  Returns whether the given well-known thread is
   // initialized.
-  static bool IsThreadInitialized(ID identifier) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsThreadInitialized(ID identifier);
 
   // Callable on any thread.  Returns whether you're currently on a particular
   // thread.  To DCHECK this, use the DCHECK_CURRENTLY_ON() macro above.
-  static bool CurrentlyOn(ID identifier) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool CurrentlyOn(ID identifier);
 
   // If the current message loop is one of the known threads, returns true and
   // sets identifier to its ID.  Otherwise returns false.
-  static bool GetCurrentThreadIdentifier(ID* identifier) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool GetCurrentThreadIdentifier(ID* identifier);
 
   // Use these templates in conjunction with RefCountedThreadSafe or scoped_ptr
   // when you want to ensure that an object is deleted on a specific thread.

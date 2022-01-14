@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
@@ -68,43 +67,39 @@ class CONTENT_EXPORT StorableSource {
   StorableSource& operator=(StorableSource&& other);
   ~StorableSource();
 
-  uint64_t source_event_id() const WARN_UNUSED_RESULT {
-    return source_event_id_;
-  }
+  [[nodiscard]] uint64_t source_event_id() const { return source_event_id_; }
 
-  const url::Origin& impression_origin() const WARN_UNUSED_RESULT {
+  [[nodiscard]] const url::Origin& impression_origin() const {
     return impression_origin_;
   }
 
-  const url::Origin& conversion_origin() const WARN_UNUSED_RESULT {
+  [[nodiscard]] const url::Origin& conversion_origin() const {
     return conversion_origin_;
   }
 
-  const url::Origin& reporting_origin() const WARN_UNUSED_RESULT {
+  [[nodiscard]] const url::Origin& reporting_origin() const {
     return reporting_origin_;
   }
 
-  base::Time impression_time() const WARN_UNUSED_RESULT {
-    return impression_time_;
-  }
+  [[nodiscard]] base::Time impression_time() const { return impression_time_; }
 
-  base::Time expiry_time() const WARN_UNUSED_RESULT { return expiry_time_; }
+  [[nodiscard]] base::Time expiry_time() const { return expiry_time_; }
 
-  absl::optional<Id> source_id() const WARN_UNUSED_RESULT { return source_id_; }
+  [[nodiscard]] absl::optional<Id> source_id() const { return source_id_; }
 
-  SourceType source_type() const WARN_UNUSED_RESULT { return source_type_; }
+  [[nodiscard]] SourceType source_type() const { return source_type_; }
 
-  int64_t priority() const WARN_UNUSED_RESULT { return priority_; }
+  [[nodiscard]] int64_t priority() const { return priority_; }
 
-  AttributionLogic attribution_logic() const WARN_UNUSED_RESULT {
+  [[nodiscard]] AttributionLogic attribution_logic() const {
     return attribution_logic_;
   }
 
-  absl::optional<uint64_t> fake_trigger_data() const WARN_UNUSED_RESULT {
+  [[nodiscard]] absl::optional<uint64_t> fake_trigger_data() const {
     return fake_trigger_data_;
   }
 
-  const std::vector<int64_t>& dedup_keys() const WARN_UNUSED_RESULT {
+  [[nodiscard]] const std::vector<int64_t>& dedup_keys() const {
     return dedup_keys_;
   }
 
@@ -116,13 +111,13 @@ class CONTENT_EXPORT StorableSource {
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
   // that we avoid unnecessary copies of |conversion_origin_|.
-  net::SchemefulSite ConversionDestination() const WARN_UNUSED_RESULT;
+  [[nodiscard]] net::SchemefulSite ConversionDestination() const;
 
   // Returns the schemeful site of |impression_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
   // that we avoid unnecessary copies of |impression_origin_|.
-  net::SchemefulSite ImpressionSite() const WARN_UNUSED_RESULT;
+  [[nodiscard]] net::SchemefulSite ImpressionSite() const;
 
  private:
   uint64_t source_event_id_;

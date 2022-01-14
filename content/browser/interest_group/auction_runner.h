@@ -303,10 +303,10 @@ class CONTENT_EXPORT AuctionRunner {
   // Requests a WorkletHandle for the interest group identified by `bid_state`,
   // using the provided callbacks. Returns true if a worklet was received
   // synchronously.
-  bool RequestBidderWorklet(BidState& bid_state,
-                            base::OnceClosure worklet_available_callback,
-                            AuctionWorkletManager::FatalErrorCallback
-                                fatal_error_callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RequestBidderWorklet(
+      BidState& bid_state,
+      base::OnceClosure worklet_available_callback,
+      AuctionWorkletManager::FatalErrorCallback fatal_error_callback);
 
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<AuctionWorkletManager::Delegate>

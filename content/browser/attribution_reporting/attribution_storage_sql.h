@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -105,29 +104,30 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   // Deactivates active, converted sources with the given conversion destination
   // and reporting origin. Returns at most `limit` of those, or null on error.
-  absl::optional<std::vector<DeactivatedSource>> DeactivateSources(
-      const std::string& serialized_conversion_destination,
-      const std::string& serialized_reporting_origin,
-      int return_limit)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<std::vector<DeactivatedSource>>
+  DeactivateSources(const std::string& serialized_conversion_destination,
+                    const std::string& serialized_reporting_origin,
+                    int return_limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.
-  bool DeleteSources(const std::vector<StorableSource::Id>& source_ids)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool DeleteSources(
+      const std::vector<StorableSource::Id>& source_ids)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes all sources that have expired and have no pending
   // reports. Returns false on failure.
-  bool DeleteExpiredSources()
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool DeleteExpiredSources()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  bool DeleteReportInternal(AttributionReport::Id report_id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id report_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  bool HasCapacityForStoringSource(const std::string& serialized_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool HasCapacityForStoringSource(
+      const std::string& serialized_origin)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ReportAlreadyStoredStatus {
     kNotStored,
@@ -135,10 +135,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  ReportAlreadyStoredStatus ReportAlreadyStored(
+  [[nodiscard]] ReportAlreadyStoredStatus ReportAlreadyStored(
       StorableSource::Id source_id,
       absl::optional<int64_t> dedup_key)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ConversionCapacityStatus {
     kHasCapacity,
@@ -146,9 +146,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  ConversionCapacityStatus CapacityForStoringReport(
+  [[nodiscard]] ConversionCapacityStatus CapacityForStoringReport(
       const std::string& serialized_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class MaybeReplaceLowerPriorityReportResult {
     kError,
@@ -157,41 +157,41 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kDropNewReportSourceDeactivated,
     kReplaceOldReport,
   };
-  MaybeReplaceLowerPriorityReportResult MaybeReplaceLowerPriorityReport(
+  [[nodiscard]] MaybeReplaceLowerPriorityReportResult
+  MaybeReplaceLowerPriorityReport(
       const AttributionReport& report,
       int num_conversions,
       int64_t conversion_priority,
       absl::optional<AttributionReport>& replaced_report)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<AttributionReport> GetReport(
+      AttributionReport::Id report_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<std::vector<int64_t>> ReadDedupKeys(
-      StorableSource::Id source_id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<std::vector<int64_t>> ReadDedupKeys(
+      StorableSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // When storing an event source, deletes active event
   // sources in order by |impression_time| until there are sufficiently few
   // unique conversion destinations for the same |impression_site|.
-  bool EnsureCapacityForPendingDestinationLimit(const StorableSource& source)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool EnsureCapacityForPendingDestinationLimit(
+      const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Stores |report| in the database, but uses |source_id| rather than
   // |AttributionReport::source::source_id()|, which may be null.
-  bool StoreReport(const AttributionReport& report,
-                   StorableSource::Id source_id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StoreReport(const AttributionReport& report,
+                                 StorableSource::Id source_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.
-  bool LazyInit(DbCreationPolicy creation_policy)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
-  bool InitializeSchema(bool db_empty)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
-  bool CreateSchema()
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool LazyInit(DbCreationPolicy creation_policy)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  [[nodiscard]] bool InitializeSchema(bool db_empty)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  [[nodiscard]] bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void HandleInitializationFailure(const InitStatus status)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

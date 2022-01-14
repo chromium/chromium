@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,23 +34,23 @@ class CONTENT_EXPORT StorableTrigger {
   StorableTrigger& operator=(StorableTrigger&& other);
   ~StorableTrigger();
 
-  uint64_t trigger_data() const WARN_UNUSED_RESULT { return trigger_data_; }
+  [[nodiscard]] uint64_t trigger_data() const { return trigger_data_; }
 
-  const net::SchemefulSite& conversion_destination() const WARN_UNUSED_RESULT {
+  [[nodiscard]] const net::SchemefulSite& conversion_destination() const {
     return conversion_destination_;
   }
 
-  const url::Origin& reporting_origin() const WARN_UNUSED_RESULT {
+  [[nodiscard]] const url::Origin& reporting_origin() const {
     return reporting_origin_;
   }
 
-  uint64_t event_source_trigger_data() const WARN_UNUSED_RESULT {
+  [[nodiscard]] uint64_t event_source_trigger_data() const {
     return event_source_trigger_data_;
   }
 
-  int64_t priority() const WARN_UNUSED_RESULT { return priority_; }
+  [[nodiscard]] int64_t priority() const { return priority_; }
 
-  const absl::optional<int64_t>& dedup_key() const WARN_UNUSED_RESULT {
+  [[nodiscard]] const absl::optional<int64_t>& dedup_key() const {
     return dedup_key_;
   }
 

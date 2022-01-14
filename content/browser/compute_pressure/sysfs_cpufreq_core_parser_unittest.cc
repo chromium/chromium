@@ -38,8 +38,8 @@ class SysfsCpufreqCoreParserTest : public testing::Test {
     parser_ = std::make_unique<SysfsCpufreqCoreParser>(fake_core_path_);
   }
 
-  bool WriteFakeFile(base::StringPiece file_name,
-                     base::StringPiece contents) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WriteFakeFile(base::StringPiece file_name,
+                                   base::StringPiece contents) {
     base::FilePath file_path = fake_core_path_.AppendASCII(file_name);
     return base::WriteFile(file_path, contents);
   }

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/files/scoped_temp_dir.h"
@@ -131,17 +130,16 @@ class WebContents;
 // Returns true if the page was loaded successfully and the last committed URL
 // matches |url|.  This is a browser-initiated navigation that simulates a user
 // typing |url| into the address bar.
-WARN_UNUSED_RESULT bool NavigateToURL(WebContents* web_contents,
-                                      const GURL& url);
+[[nodiscard]] bool NavigateToURL(WebContents* web_contents, const GURL& url);
 
 // Same as above, but takes in an additional URL, |expected_commit_url|, to
 // which the navigation should eventually commit.  This is useful for cases
 // like redirects, where navigation starts on one URL but ends up committing a
 // different URL.  This function will return true if navigating to |url|
 // results in a successful commit to |expected_commit_url|.
-WARN_UNUSED_RESULT bool NavigateToURL(WebContents* web_contents,
-                                      const GURL& url,
-                                      const GURL& expected_commit_url);
+[[nodiscard]] bool NavigateToURL(WebContents* web_contents,
+                                 const GURL& url,
+                                 const GURL& expected_commit_url);
 
 // Navigates |web_contents| to |url|, blocking until the given number of
 // navigations finishes. If |ignore_uncommitted_navigations| is true, then an
@@ -156,17 +154,15 @@ void NavigateToURLBlockUntilNavigationsComplete(
 // until the navigation finishes.  The navigation is done by assigning
 // location.href in the frame |adapter|. Returns true if the page was loaded
 // successfully and the last committed URL matches |url|.
-WARN_UNUSED_RESULT bool NavigateToURLFromRenderer(
-    const ToRenderFrameHost& adapter,
-    const GURL& url);
+[[nodiscard]] bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
+                                             const GURL& url);
 // Similar to above but takes in an additional URL, |expected_commit_url|, to
 // which the navigation should eventually commit. (See the browser-initiated
 // counterpart for more details).
-WARN_UNUSED_RESULT bool NavigateToURLFromRenderer(
-    const ToRenderFrameHost& adapter,
-    const GURL& url,
-    const GURL& expected_commit_url);
-WARN_UNUSED_RESULT bool NavigateToURLFromRendererWithoutUserGesture(
+[[nodiscard]] bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
+                                             const GURL& url,
+                                             const GURL& expected_commit_url);
+[[nodiscard]] bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url);
 
@@ -174,7 +170,7 @@ WARN_UNUSED_RESULT bool NavigateToURLFromRendererWithoutUserGesture(
 // previous set of helpers, does not block. The navigation is done by assigning
 // location.href in the frame |adapter|. Returns the result of executing the IPC
 // to evaluate the JS that assigns location.href.
-WARN_UNUSED_RESULT bool BeginNavigateToURLFromRenderer(
+[[nodiscard]] bool BeginNavigateToURLFromRenderer(
     const ToRenderFrameHost& adapter,
     const GURL& url);
 
@@ -508,14 +504,14 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 // - EvalJs (if you want to retrieve a value)
 // - ExecuteScriptAsync (if you don't want to block for |script| completion)
 // - DOMMessageQueue (to manually wait for domAutomationController.send(...))
-bool ExecuteScript(const ToRenderFrameHost& adapter,
-                   const std::string& script) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ExecuteScript(const ToRenderFrameHost& adapter,
+                                 const std::string& script);
 
 // Same as content::ExecuteScript but doesn't send a user gesture to the
 // renderer.
-bool ExecuteScriptWithoutUserGesture(const ToRenderFrameHost& adapter,
-                                     const std::string& script)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool ExecuteScriptWithoutUserGesture(
+    const ToRenderFrameHost& adapter,
+    const std::string& script);
 
 // Similar to ExecuteScript above, but
 // - Doesn't modify the |script|.
@@ -531,28 +527,30 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
 // execution failed or did not evaluate to the expected type.
 //
 // Deprecated: Use EvalJs().
-bool ExecuteScriptAndExtractDouble(const ToRenderFrameHost& adapter,
-                                   const std::string& script,
-                                   double* result) WARN_UNUSED_RESULT;
-bool ExecuteScriptAndExtractInt(const ToRenderFrameHost& adapter,
-                                const std::string& script,
-                                int* result) WARN_UNUSED_RESULT;
-bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
-                                 const std::string& script,
-                                 bool* result) WARN_UNUSED_RESULT;
-bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
-                                   const std::string& script,
-                                   std::string* result) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ExecuteScriptAndExtractDouble(
+    const ToRenderFrameHost& adapter,
+    const std::string& script,
+    double* result);
+[[nodiscard]] bool ExecuteScriptAndExtractInt(const ToRenderFrameHost& adapter,
+                                              const std::string& script,
+                                              int* result);
+[[nodiscard]] bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
+                                               const std::string& script,
+                                               bool* result);
+[[nodiscard]] bool ExecuteScriptAndExtractString(
+    const ToRenderFrameHost& adapter,
+    const std::string& script,
+    std::string* result);
 
 // Same as above but the script executed without user gesture.
-bool ExecuteScriptWithoutUserGestureAndExtractBool(
+[[nodiscard]] bool ExecuteScriptWithoutUserGestureAndExtractBool(
     const ToRenderFrameHost& adapter,
     const std::string& script,
-    bool* result) WARN_UNUSED_RESULT;
-bool ExecuteScriptWithoutUserGestureAndExtractString(
+    bool* result);
+[[nodiscard]] bool ExecuteScriptWithoutUserGestureAndExtractString(
     const ToRenderFrameHost& adapter,
     const std::string& script,
-    std::string* result) WARN_UNUSED_RESULT;
+    std::string* result);
 
 // JsLiteralHelper is a helper class that determines what types are legal to
 // pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
@@ -701,11 +699,11 @@ struct EvalJsResult {
   // will fail with a CHECK. Use Extract methods only when accessing the
   // result value is necessary; prefer operator== and EXPECT_EQ() instead:
   // they don't CHECK, and give better error messages.
-  const std::string& ExtractString() const WARN_UNUSED_RESULT;
-  int ExtractInt() const WARN_UNUSED_RESULT;
-  bool ExtractBool() const WARN_UNUSED_RESULT;
-  double ExtractDouble() const WARN_UNUSED_RESULT;
-  base::Value ExtractList() const WARN_UNUSED_RESULT;
+  [[nodiscard]] const std::string& ExtractString() const;
+  [[nodiscard]] int ExtractInt() const;
+  [[nodiscard]] bool ExtractBool() const;
+  [[nodiscard]] double ExtractDouble() const;
+  [[nodiscard]] base::Value ExtractList() const;
 };
 
 // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
@@ -843,23 +841,22 @@ enum EvalJsOptions {
 //  - Lists, dicts, null values, etc. can be returned as base::Values.
 //
 // It is guaranteed that EvalJs works even when the target frame is frozen.
-EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
-                    const std::string& script,
-                    int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
+                                  const std::string& script,
+                                  int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                  int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
 // Like EvalJs(), but runs |raf_script| inside a requestAnimationFrame handler,
 // and runs |script| after the rendering update has completed. By the time
 // this method returns, any IPCs sent from the renderer process to the browser
 // process during the lifecycle update should already have been received and
 // processed by the browser.
-EvalJsResult EvalJsAfterLifecycleUpdate(
+[[nodiscard]] EvalJsResult EvalJsAfterLifecycleUpdate(
     const ToRenderFrameHost& execution_target,
     const std::string& raf_script,
     const std::string& script,
     int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) WARN_UNUSED_RESULT;
+    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
 // Run a script exactly the same as EvalJs(), but ignore the resulting value.
 //
@@ -873,11 +870,11 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
 // Unlike ExecuteScript(), this catches syntax errors and uncaught exceptions,
 // and gives more useful error messages when things go wrong. Prefer ExecJs to
 // ExecuteScript(), unless your page has a CSP.
-::testing::AssertionResult ExecJs(const ToRenderFrameHost& execution_target,
-                                  const std::string& script,
-                                  int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                                  int32_t world_id = ISOLATED_WORLD_ID_GLOBAL)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] ::testing::AssertionResult ExecJs(
+    const ToRenderFrameHost& execution_target,
+    const std::string& script,
+    int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
 // Walks the frame tree of the specified `page`, also descending into any inner
 // frame-trees (e.g. GuestView), and returns the sole frame that matches the
@@ -989,7 +986,7 @@ void SetFileSystemAccessPermissionContext(
 // When the load completes, this function sends a "pageLoadComplete" message
 // via domAutomationController. The caller should make sure this extra
 // message is handled properly.
-bool WaitForRenderFrameReady(RenderFrameHost* rfh) WARN_UNUSED_RESULT;
+[[nodiscard]] bool WaitForRenderFrameReady(RenderFrameHost* rfh);
 
 // Enable accessibility support for all of the frames in this WebContents
 void EnableAccessibilityForWebContents(WebContents* web_contents);
@@ -1103,7 +1100,7 @@ class TitleWatcher : public WebContentsObserver {
   // Waits until the title matches either expected_title or one of the titles
   // added with AlsoWaitForTitle. Returns the value of the most recently
   // observed matching title.
-  const std::u16string& WaitAndGetTitle() WARN_UNUSED_RESULT;
+  [[nodiscard]] const std::u16string& WaitAndGetTitle();
 
  private:
   // Overridden WebContentsObserver methods.
@@ -1188,7 +1185,7 @@ class RenderProcessHostKillWaiter {
   // message reason that should be logged in the |uma_name_| histogram.
   // Returns |absl::nullopt| if the renderer exited normally or didn't log
   // the |uma_name_| histogram.
-  absl::optional<int> Wait() WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<int> Wait();
 
  private:
   RenderProcessHostWatcher exit_watcher_;
@@ -1218,7 +1215,7 @@ class RenderProcessHostBadMojoMessageWaiter {
   // because of a bad/invalid mojo message and returns the associated error
   // string.  Returns absl::nullopt if the process was terminated for an
   // unrelated reason.
-  absl::optional<std::string> Wait() WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<std::string> Wait();
 
  private:
   void OnBadMojoMessage(int render_process_id, const std::string& error);
@@ -1256,11 +1253,11 @@ class DOMMessageQueue : public NotificationObserver,
 
   // Wait for the next message to arrive. |message| will be set to the next
   // message. Returns true on success.
-  bool WaitForMessage(std::string* message) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool WaitForMessage(std::string* message);
 
   // If there is a message in the queue, then copies it to |message| and returns
   // true.  Otherwise (if the queue is empty), returns false.
-  bool PopMessage(std::string* message) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool PopMessage(std::string* message);
 
   // Overridden NotificationObserver methods.
   void Observe(int type,
@@ -1616,13 +1613,13 @@ class TestNavigationManager : public WebContentsObserver {
   // prerender activation, BFCache restore). In those cases you should either
   // use WaitForFirstYieldAfterDidStartNavigation or WaitForResponse. See
   // TestNavigationManager class comment for more detail.
-  WARN_UNUSED_RESULT bool WaitForRequestStart();
+  [[nodiscard]] bool WaitForRequestStart();
 
   // Waits until the navigation response's headers have been received. This
   // will wait until all NavigationThrottles have proceeded through
   // WillProcessResponse. Returns false if the request was aborted before
   // getting a response.
-  WARN_UNUSED_RESULT bool WaitForResponse();
+  [[nodiscard]] bool WaitForResponse();
 
   // Waits until the navigation has been finished. Will automatically resume
   // navigations paused before this point.
@@ -2137,10 +2134,10 @@ class DidFinishNavigationObserver : public WebContentsObserver {
 
 // Functions to traverse history and wait until the traversal completes. These
 // are wrappers around the same-named methods of the `NavigationController`.
-WARN_UNUSED_RESULT bool HistoryGoToIndex(WebContents* wc, int index);
-WARN_UNUSED_RESULT bool HistoryGoToOffset(WebContents* wc, int offset);
-WARN_UNUSED_RESULT bool HistoryGoBack(WebContents* wc);
-WARN_UNUSED_RESULT bool HistoryGoForward(WebContents* wc);
+[[nodiscard]] bool HistoryGoToIndex(WebContents* wc, int index);
+[[nodiscard]] bool HistoryGoToOffset(WebContents* wc, int offset);
+[[nodiscard]] bool HistoryGoBack(WebContents* wc);
+[[nodiscard]] bool HistoryGoForward(WebContents* wc);
 
 }  // namespace content
 

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
@@ -77,9 +76,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   blink::mojom::AuthenticatorStatus ValidateAPrioriAuthenticatedUrl(
       const GURL& url);
 
-  bool DeduplicateCredentialDescriptorListAndValidateLength(
-      std::vector<device::PublicKeyCredentialDescriptor>* list)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(
+      std::vector<device::PublicKeyCredentialDescriptor>* list);
 
  protected:
   friend class base::RefCounted<WebAuthRequestSecurityChecker>;

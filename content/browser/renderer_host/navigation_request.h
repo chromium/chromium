@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -737,8 +736,9 @@ class CONTENT_EXPORT NavigationRequest
   // Take all cookie observers associated with this navigation.
   // Typically this is called when navigation commits to move these observers to
   // the committed document.
-  std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
-  TakeCookieObservers() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::vector<
+      mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
+  TakeCookieObservers();
 
   // Returns the coop status information relevant to the current navigation.
   CrossOriginOpenerPolicyStatus& coop_status() { return coop_status_; }

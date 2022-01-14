@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -102,14 +101,14 @@ leveldb::Status GetInt(DBOrTransaction* db,
   return InternalInconsistencyStatus();
 }
 
-WARN_UNUSED_RESULT leveldb::Status PutBool(
+[[nodiscard]] leveldb::Status PutBool(
     TransactionalLevelDBTransaction* transaction,
     const base::StringPiece& key,
     bool value);
 
 // Note - this uses EncodeInt, which is a 'dumb' varint encoder. See EncodeInt.
 template <typename TransactionOrWriteBatch>
-WARN_UNUSED_RESULT leveldb::Status PutInt(
+[[nodiscard]] leveldb::Status PutInt(
     TransactionOrWriteBatch* transaction_or_write_batch,
     const base::StringPiece& key,
     int64_t value) {
@@ -120,57 +119,55 @@ WARN_UNUSED_RESULT leveldb::Status PutInt(
 }
 
 template <typename DBOrTransaction>
-WARN_UNUSED_RESULT leveldb::Status GetVarInt(DBOrTransaction* db,
-                                             const base::StringPiece& key,
-                                             int64_t* found_int,
-                                             bool* found);
+[[nodiscard]] leveldb::Status GetVarInt(DBOrTransaction* db,
+                                        const base::StringPiece& key,
+                                        int64_t* found_int,
+                                        bool* found);
 
 template <typename TransactionOrWriteBatch>
-WARN_UNUSED_RESULT leveldb::Status PutVarInt(
-    TransactionOrWriteBatch* transaction,
-    const base::StringPiece& key,
-    int64_t value);
+[[nodiscard]] leveldb::Status PutVarInt(TransactionOrWriteBatch* transaction,
+                                        const base::StringPiece& key,
+                                        int64_t value);
 
 template <typename DBOrTransaction>
-WARN_UNUSED_RESULT leveldb::Status GetString(DBOrTransaction* db,
-                                             const base::StringPiece& key,
-                                             std::u16string* found_string,
-                                             bool* found);
+[[nodiscard]] leveldb::Status GetString(DBOrTransaction* db,
+                                        const base::StringPiece& key,
+                                        std::u16string* found_string,
+                                        bool* found);
 
-WARN_UNUSED_RESULT leveldb::Status PutString(
+[[nodiscard]] leveldb::Status PutString(
     TransactionalLevelDBTransaction* transaction,
     const base::StringPiece& key,
     const std::u16string& value);
 
-WARN_UNUSED_RESULT leveldb::Status PutIDBKeyPath(
+[[nodiscard]] leveldb::Status PutIDBKeyPath(
     TransactionalLevelDBTransaction* transaction,
     const base::StringPiece& key,
     const blink::IndexedDBKeyPath& value);
 
 template <typename DBOrTransaction>
-WARN_UNUSED_RESULT leveldb::Status GetMaxObjectStoreId(
-    DBOrTransaction* db,
-    int64_t database_id,
-    int64_t* max_object_store_id);
+[[nodiscard]] leveldb::Status GetMaxObjectStoreId(DBOrTransaction* db,
+                                                  int64_t database_id,
+                                                  int64_t* max_object_store_id);
 
-WARN_UNUSED_RESULT leveldb::Status SetMaxObjectStoreId(
+[[nodiscard]] leveldb::Status SetMaxObjectStoreId(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
     int64_t object_store_id);
 
-WARN_UNUSED_RESULT leveldb::Status GetNewVersionNumber(
+[[nodiscard]] leveldb::Status GetNewVersionNumber(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
     int64_t object_store_id,
     int64_t* new_version_number);
 
-WARN_UNUSED_RESULT leveldb::Status SetMaxIndexId(
+[[nodiscard]] leveldb::Status SetMaxIndexId(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id);
 
-WARN_UNUSED_RESULT leveldb::Status VersionExists(
+[[nodiscard]] leveldb::Status VersionExists(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
     int64_t object_store_id,
@@ -179,52 +176,51 @@ WARN_UNUSED_RESULT leveldb::Status VersionExists(
     bool* exists);
 
 template <typename Transaction>
-WARN_UNUSED_RESULT leveldb::Status GetNewDatabaseId(Transaction* transaction,
-                                                    int64_t* new_id);
+[[nodiscard]] leveldb::Status GetNewDatabaseId(Transaction* transaction,
+                                               int64_t* new_id);
 
-WARN_UNUSED_RESULT bool CheckObjectStoreAndMetaDataType(
+[[nodiscard]] bool CheckObjectStoreAndMetaDataType(
     const TransactionalLevelDBIterator* it,
     const std::string& stop_key,
     int64_t object_store_id,
     int64_t meta_data_type);
 
-WARN_UNUSED_RESULT bool CheckIndexAndMetaDataKey(
+[[nodiscard]] bool CheckIndexAndMetaDataKey(
     const TransactionalLevelDBIterator* it,
     const std::string& stop_key,
     int64_t index_id,
     unsigned char meta_data_type);
 
-WARN_UNUSED_RESULT bool FindGreatestKeyLessThanOrEqual(
+[[nodiscard]] bool FindGreatestKeyLessThanOrEqual(
     TransactionalLevelDBTransaction* transaction,
     const std::string& target,
     std::string* found_key,
     leveldb::Status* s);
 
-WARN_UNUSED_RESULT bool GetBlobNumberGeneratorCurrentNumber(
+[[nodiscard]] bool GetBlobNumberGeneratorCurrentNumber(
     LevelDBDirectTransaction* leveldb_transaction,
     int64_t database_id,
     int64_t* blob_number_generator_current_number);
 
-WARN_UNUSED_RESULT bool UpdateBlobNumberGeneratorCurrentNumber(
+[[nodiscard]] bool UpdateBlobNumberGeneratorCurrentNumber(
     LevelDBDirectTransaction* leveldb_transaction,
     int64_t database_id,
     int64_t blob_number_generator_current_number);
 
-WARN_UNUSED_RESULT leveldb::Status GetEarliestSweepTime(
+[[nodiscard]] leveldb::Status GetEarliestSweepTime(
     TransactionalLevelDBDatabase* db,
     base::Time* earliest_sweep);
 
 template <typename Transaction>
-WARN_UNUSED_RESULT leveldb::Status SetEarliestSweepTime(
-    Transaction* txn,
-    base::Time earliest_sweep);
+[[nodiscard]] leveldb::Status SetEarliestSweepTime(Transaction* txn,
+                                                   base::Time earliest_sweep);
 
-WARN_UNUSED_RESULT leveldb::Status GetEarliestCompactionTime(
+[[nodiscard]] leveldb::Status GetEarliestCompactionTime(
     TransactionalLevelDBDatabase* db,
     base::Time* earliest_compaction);
 
 template <typename Transaction>
-WARN_UNUSED_RESULT leveldb::Status SetEarliestCompactionTime(
+[[nodiscard]] leveldb::Status SetEarliestCompactionTime(
     Transaction* txn,
     base::Time earliest_compaction);
 

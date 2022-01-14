@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -140,12 +139,12 @@ void RecordReportsDeleted(int count) {
                             count);
 }
 
-WARN_UNUSED_RESULT int SerializeAttributionLogic(
+[[nodiscard]] int SerializeAttributionLogic(
     StorableSource::AttributionLogic val) {
   return static_cast<int>(val);
 }
 
-WARN_UNUSED_RESULT absl::optional<StorableSource::AttributionLogic>
+[[nodiscard]] absl::optional<StorableSource::AttributionLogic>
 DeserializeAttributionLogic(int val) {
   switch (val) {
     case static_cast<int>(StorableSource::AttributionLogic::kNever):
@@ -159,12 +158,12 @@ DeserializeAttributionLogic(int val) {
   }
 }
 
-WARN_UNUSED_RESULT int SerializeSourceType(StorableSource::SourceType val) {
+[[nodiscard]] int SerializeSourceType(StorableSource::SourceType val) {
   return static_cast<int>(val);
 }
 
-WARN_UNUSED_RESULT absl::optional<StorableSource::SourceType>
-DeserializeSourceType(int val) {
+[[nodiscard]] absl::optional<StorableSource::SourceType> DeserializeSourceType(
+    int val) {
   switch (val) {
     case static_cast<int>(StorableSource::SourceType::kNavigation):
       return StorableSource::SourceType::kNavigation;
@@ -180,7 +179,7 @@ struct SourceToAttribute {
   int num_conversions;
 };
 
-WARN_UNUSED_RESULT absl::optional<SourceToAttribute> ReadSourceToAttribute(
+[[nodiscard]] absl::optional<SourceToAttribute> ReadSourceToAttribute(
     sql::Database* db,
     StorableSource::Id source_id,
     const url::Origin& reporting_origin) {

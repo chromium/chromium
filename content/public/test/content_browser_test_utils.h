@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -77,16 +76,16 @@ GURL GetTestUrl(const char* dir, const char* file);
 // version below which also takes the expected commit URL.  If the navigation
 // will not result in a commit, such as a download or a 204 response, use
 // NavigateToURLAndExpectNoCommit() instead.
-WARN_UNUSED_RESULT bool NavigateToURL(Shell* window, const GURL& url);
+[[nodiscard]] bool NavigateToURL(Shell* window, const GURL& url);
 
 // Same as above, but takes in an additional URL, |expected_commit_url|, to
 // which the navigation should eventually commit.  This is useful for cases
 // like redirects, where navigation starts on one URL but ends up committing a
 // different URL.  This function will return true if navigating to |url|
 // results in a successful commit to |expected_commit_url|.
-WARN_UNUSED_RESULT bool NavigateToURL(Shell* window,
-                                      const GURL& url,
-                                      const GURL& expected_commit_url);
+[[nodiscard]] bool NavigateToURL(Shell* window,
+                                 const GURL& url,
+                                 const GURL& expected_commit_url);
 
 // Navigates |window| to |url|, blocking until the given number of navigations
 // finishes. If |ignore_uncommitted_navigations| is true, then an aborted
@@ -100,8 +99,8 @@ void NavigateToURLBlockUntilNavigationsComplete(
 // Navigates |window| to |url|, blocks until the navigation finishes, and
 // checks that the navigation did not commit (e.g., due to a crash or
 // download).
-WARN_UNUSED_RESULT bool NavigateToURLAndExpectNoCommit(Shell* window,
-                                                       const GURL& url);
+[[nodiscard]] bool NavigateToURLAndExpectNoCommit(Shell* window,
+                                                  const GURL& url);
 
 // Reloads |window|, blocking until the given number of navigations finishes.
 void ReloadBlockUntilNavigationsComplete(Shell* window,

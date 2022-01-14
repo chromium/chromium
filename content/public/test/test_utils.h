@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -390,7 +389,7 @@ class RenderFrameHostWrapper {
   // See RenderFrameDeletedObserver for notes on the difference between
   // RenderFrame being deleted and RenderFrameHost being destroyed.
   // Returns true if the frame was deleted before the timeout.
-  WARN_UNUSED_RESULT bool WaitUntilRenderFrameDeleted();
+  [[nodiscard]] bool WaitUntilRenderFrameDeleted();
   bool IsRenderFrameDeleted() const;
 
   // Pointerish operators. Feel free to add more if you need them.

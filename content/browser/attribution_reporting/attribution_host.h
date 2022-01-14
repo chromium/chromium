@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -58,8 +57,8 @@ class CONTENT_EXPORT AttributionHost
       const url::Origin& impression_origin,
       const blink::Impression& impression);
 
-  static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
-      const blink::Impression& impression) WARN_UNUSED_RESULT;
+  [[nodiscard]] static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
+      const blink::Impression& impression);
 
   // Overrides the target object to bind |receiver| to in BindReceiver().
   static void SetReceiverImplForTesting(AttributionHost* impl);

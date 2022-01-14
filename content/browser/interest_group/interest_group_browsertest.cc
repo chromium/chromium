@@ -244,8 +244,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         SetBrowserClientForTesting(&content_browser_client_);
   }
 
-  bool JoinInterestGroupInJS(url::Origin owner,
-                             std::string name) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool JoinInterestGroupInJS(url::Origin owner,
+                                           std::string name) {
     return "done" ==
            EvalJs(shell(),
                   base::StringPrintf(R"(
@@ -261,10 +261,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   // ignored in favor of the passed in values.
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
   // shell().
-  bool JoinInterestGroupInJS(
+  [[nodiscard]] bool JoinInterestGroupInJS(
       const blink::InterestGroup& group,
-      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
-      WARN_UNUSED_RESULT {
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
     // TODO(qingxin): Use base::Value to replace ostringstream.
     std::ostringstream buf;
     buf << "{"
@@ -392,10 +392,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
   // shell().
-  bool JoinInterestGroupAndWaitInJs(
+  [[nodiscard]] bool JoinInterestGroupAndWaitInJs(
       const blink::InterestGroup& group,
-      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
-      WARN_UNUSED_RESULT {
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
     int initial_count = GetJoinCount(group.owner, group.name);
     if (!JoinInterestGroupInJS(group, execution_target)) {
       return false;
@@ -437,10 +437,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
   // shell().
-  content::EvalJsResult RunAuctionAndWait(
+  [[nodiscard]] content::EvalJsResult RunAuctionAndWait(
       const std::string& auction_config_json,
-      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
-      WARN_UNUSED_RESULT {
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
     return EvalJs(execution_target ? *execution_target : shell(),
                   base::StringPrintf(
                       R"(
@@ -456,10 +456,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // Wrapper around RunAuctionAndWait that assumes the result is a URN URL and
   // returns the mapped URL.
-  std::string RunAuctionAndWaitForURL(
+  [[nodiscard]] std::string RunAuctionAndWaitForURL(
       const std::string& auction_config_json,
-      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
-      WARN_UNUSED_RESULT {
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
     auto result = RunAuctionAndWait(auction_config_json, execution_target);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
@@ -509,9 +509,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
   // shell().
-  content::EvalJsResult CreateAdRequestAndWait(
-      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] content::EvalJsResult CreateAdRequestAndWait(
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
     return EvalJs(execution_target ? *execution_target : shell(),
                   R"(
 (async function() {
@@ -534,9 +534,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
   // shell().
-  content::EvalJsResult FinalizeAdAndWait(
-      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] content::EvalJsResult FinalizeAdAndWait(
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
     return EvalJs(execution_target ? *execution_target : shell(),
                   R"(
 (async function() {

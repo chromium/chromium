@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -326,8 +325,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Called when the renderer process has notified us of tree changes. Returns
   // false in fatal-error conditions, in which case the caller should destroy
   // the manager.
-  virtual bool OnAccessibilityEvents(const AXEventNotificationDetails& details)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool OnAccessibilityEvents(
+      const AXEventNotificationDetails& details);
 
   // Allows derived classes to do event pre-processing
   virtual void BeforeAccessibilityEvents();

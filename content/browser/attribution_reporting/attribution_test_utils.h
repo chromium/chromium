@@ -10,7 +10,6 @@
 #include <iosfwd>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -211,34 +210,33 @@ class SourceBuilder {
   explicit SourceBuilder(base::Time time = base::Time::Now());
   ~SourceBuilder();
 
-  SourceBuilder& SetExpiry(base::TimeDelta delta) WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetExpiry(base::TimeDelta delta);
 
-  SourceBuilder& SetSourceEventId(uint64_t source_event_id) WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetSourceEventId(uint64_t source_event_id);
 
-  SourceBuilder& SetImpressionOrigin(url::Origin origin) WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetImpressionOrigin(url::Origin origin);
 
-  SourceBuilder& SetConversionOrigin(url::Origin domain) WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetConversionOrigin(url::Origin domain);
 
-  SourceBuilder& SetReportingOrigin(url::Origin origin) WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetReportingOrigin(url::Origin origin);
 
-  SourceBuilder& SetSourceType(StorableSource::SourceType source_type)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetSourceType(
+      StorableSource::SourceType source_type);
 
-  SourceBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetPriority(int64_t priority);
 
-  SourceBuilder& SetAttributionLogic(
-      StorableSource::AttributionLogic attribution_logic) WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetAttributionLogic(
+      StorableSource::AttributionLogic attribution_logic);
 
-  SourceBuilder& SetFakeTriggerData(absl::optional<uint64_t> fake_trigger_data)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetFakeTriggerData(
+      absl::optional<uint64_t> fake_trigger_data);
 
-  SourceBuilder& SetSourceId(absl::optional<StorableSource::Id> source_id)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetSourceId(
+      absl::optional<StorableSource::Id> source_id);
 
-  SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys);
 
-  StorableSource Build() const WARN_UNUSED_RESULT;
+  [[nodiscard]] StorableSource Build() const;
 
  private:
   uint64_t source_event_id_ = 123;
@@ -259,7 +257,7 @@ class SourceBuilder {
 
 // Returns a StorableTrigger with default data which matches the default
 // impressions created by SourceBuilder.
-StorableTrigger DefaultTrigger() WARN_UNUSED_RESULT;
+[[nodiscard]] StorableTrigger DefaultTrigger();
 
 // Helper class to construct a StorableTrigger for tests using default data.
 // StorableTrigger members are not mutable after construction requiring a
@@ -269,23 +267,22 @@ class TriggerBuilder {
   TriggerBuilder();
   ~TriggerBuilder();
 
-  TriggerBuilder& SetTriggerData(uint64_t trigger_data) WARN_UNUSED_RESULT;
+  [[nodiscard]] TriggerBuilder& SetTriggerData(uint64_t trigger_data);
 
-  TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] TriggerBuilder& SetEventSourceTriggerData(
+      uint64_t event_source_trigger_data);
 
-  TriggerBuilder& SetConversionDestination(
-      net::SchemefulSite conversion_destination) WARN_UNUSED_RESULT;
+  [[nodiscard]] TriggerBuilder& SetConversionDestination(
+      net::SchemefulSite conversion_destination);
 
-  TriggerBuilder& SetReportingOrigin(url::Origin reporting_origin)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] TriggerBuilder& SetReportingOrigin(
+      url::Origin reporting_origin);
 
-  TriggerBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
+  [[nodiscard]] TriggerBuilder& SetPriority(int64_t priority);
 
-  TriggerBuilder& SetDedupKey(absl::optional<int64_t> dedup_key)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] TriggerBuilder& SetDedupKey(absl::optional<int64_t> dedup_key);
 
-  StorableTrigger Build() const WARN_UNUSED_RESULT;
+  [[nodiscard]] StorableTrigger Build() const;
 
  private:
   uint64_t trigger_data_ = 111;
@@ -303,21 +300,21 @@ class ReportBuilder {
   explicit ReportBuilder(StorableSource source);
   ~ReportBuilder();
 
-  ReportBuilder& SetTriggerData(uint64_t trigger_data) WARN_UNUSED_RESULT;
+  [[nodiscard]] ReportBuilder& SetTriggerData(uint64_t trigger_data);
 
-  ReportBuilder& SetTriggerTime(base::Time time) WARN_UNUSED_RESULT;
+  [[nodiscard]] ReportBuilder& SetTriggerTime(base::Time time);
 
-  ReportBuilder& SetReportTime(base::Time time) WARN_UNUSED_RESULT;
+  [[nodiscard]] ReportBuilder& SetReportTime(base::Time time);
 
-  ReportBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
+  [[nodiscard]] ReportBuilder& SetPriority(int64_t priority);
 
-  ReportBuilder& SetExternalReportId(base::GUID external_report_id)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ReportBuilder& SetExternalReportId(
+      base::GUID external_report_id);
 
-  ReportBuilder& SetReportId(absl::optional<AttributionReport::Id> id)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ReportBuilder& SetReportId(
+      absl::optional<AttributionReport::Id> id);
 
-  AttributionReport Build() const WARN_UNUSED_RESULT;
+  [[nodiscard]] AttributionReport Build() const;
 
  private:
   StorableSource source_;
@@ -367,9 +364,9 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionStorage::DeactivatedSource& deactivated_source);
 
-std::vector<AttributionReport> GetAttributionsToReportForTesting(
+[[nodiscard]] std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,
-    base::Time max_report_time) WARN_UNUSED_RESULT;
+    base::Time max_report_time);
 
 }  // namespace content
 

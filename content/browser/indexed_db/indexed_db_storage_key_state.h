@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
@@ -190,7 +189,7 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
 
   // Returns a new handle to this factory. If this object was in its closing
   // sequence, then that sequence will be halted by this call.
-  IndexedDBStorageKeyStateHandle CreateHandle() WARN_UNUSED_RESULT;
+  [[nodiscard]] IndexedDBStorageKeyStateHandle CreateHandle();
 
   void OnHandleDestruction();
 

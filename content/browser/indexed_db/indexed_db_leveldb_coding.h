@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock_range.h"
@@ -65,43 +64,41 @@ CONTENT_EXPORT void EncodeIDBKeyPath(const blink::IndexedDBKeyPath& value,
 CONTENT_EXPORT void EncodeBlobJournal(const BlobJournalType& journal,
                                       std::string* into);
 
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeByte(base::StringPiece* slice,
-                                                  unsigned char* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeBool(base::StringPiece* slice,
-                                                  bool* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeInt(base::StringPiece* slice,
-                                                 int64_t* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeString(base::StringPiece* slice,
-                                                    std::u16string* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeStringWithLength(
+[[nodiscard]] CONTENT_EXPORT bool DecodeByte(base::StringPiece* slice,
+                                             unsigned char* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeBool(base::StringPiece* slice,
+                                             bool* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeInt(base::StringPiece* slice,
+                                            int64_t* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeString(base::StringPiece* slice,
+                                               std::u16string* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeStringWithLength(
     base::StringPiece* slice,
     std::u16string* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeBinary(base::StringPiece* slice,
-                                                    std::string* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeBinary(base::StringPiece* slice,
+                                               std::string* value);
 // The returned span is only valid as long as the date behind |slice| is
 // still valid.
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeBinary(
+[[nodiscard]] CONTENT_EXPORT bool DecodeBinary(
     base::StringPiece* slice,
     base::span<const uint8_t>* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeDouble(base::StringPiece* slice,
-                                                    double* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeIDBKey(
+[[nodiscard]] CONTENT_EXPORT bool DecodeDouble(base::StringPiece* slice,
+                                               double* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeIDBKey(
     base::StringPiece* slice,
     std::unique_ptr<blink::IndexedDBKey>* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeIDBKeyPath(
+[[nodiscard]] CONTENT_EXPORT bool DecodeIDBKeyPath(
     base::StringPiece* slice,
     blink::IndexedDBKeyPath* value);
-CONTENT_EXPORT WARN_UNUSED_RESULT bool DecodeBlobJournal(
-    base::StringPiece* slice,
-    BlobJournalType* journal);
+[[nodiscard]] CONTENT_EXPORT bool DecodeBlobJournal(base::StringPiece* slice,
+                                                    BlobJournalType* journal);
 
 CONTENT_EXPORT int CompareEncodedStringsWithLength(base::StringPiece* slice1,
                                                    base::StringPiece* slice2,
                                                    bool* ok);
 
-CONTENT_EXPORT WARN_UNUSED_RESULT bool ExtractEncodedIDBKey(
-    base::StringPiece* slice,
-    std::string* result);
+[[nodiscard]] CONTENT_EXPORT bool ExtractEncodedIDBKey(base::StringPiece* slice,
+                                                       std::string* result);
 
 CONTENT_EXPORT int CompareEncodedIDBKeys(base::StringPiece* slice1,
                                          base::StringPiece* slice2,

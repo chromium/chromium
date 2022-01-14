@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,23 +31,22 @@ class CONTENT_EXPORT AttributionPolicy {
   AttributionPolicy& operator=(AttributionPolicy&& other) = delete;
   virtual ~AttributionPolicy();
 
-  uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                               StorableSource::SourceType source_type) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] uint64_t SanitizeTriggerData(
+      uint64_t trigger_data,
+      StorableSource::SourceType source_type) const;
 
-  bool IsTriggerDataInRange(uint64_t trigger_data,
-                            StorableSource::SourceType source_type) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool IsTriggerDataInRange(
+      uint64_t trigger_data,
+      StorableSource::SourceType source_type) const;
 
-  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] uint64_t SanitizeSourceEventId(uint64_t source_event_id) const;
 
   // Returns the expiry time for an impression that is clamped to a maximum
   // value of 30 days from |impression_time|.
-  base::Time GetExpiryTimeForImpression(
+  [[nodiscard]] base::Time GetExpiryTimeForImpression(
       const absl::optional<base::TimeDelta>& declared_expiry,
       base::Time impression_time,
-      StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
+      StorableSource::SourceType source_type) const;
 
   // Both bounds are inclusive.
   struct OfflineReportDelayConfig {
@@ -60,16 +58,16 @@ class CONTENT_EXPORT AttributionPolicy {
   // open, or internet being disconnected. This given them a noisy report time
   // to help disassociate them from other reports. Returns null if no delay
   // should be applied, e.g. because the policy is in debug mode.
-  virtual absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
-      const WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual absl::optional<OfflineReportDelayConfig>
+  GetOfflineReportDelayConfig() const;
 
   // Gets the delay for a report that has failed to be sent
   // `failed_send_attempts` times.
   // Returns `absl::nullopt` to indicate that no more attempts should be made.
   // Otherwise, the return value must be positive. `failed_send_attempts` is
   // guaranteed to be positive.
-  absl::optional<base::TimeDelta> GetFailedReportDelay(
-      int failed_send_attempts) const WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<base::TimeDelta> GetFailedReportDelay(
+      int failed_send_attempts) const;
 
   class CONTENT_EXPORT AttributionMode {
    public:
@@ -85,12 +83,12 @@ class CONTENT_EXPORT AttributionPolicy {
     AttributionMode& operator=(const AttributionMode&);
     AttributionMode& operator=(AttributionMode&&);
 
-    WARN_UNUSED_RESULT
-    StorableSource::AttributionLogic logic() const { return logic_; }
+    [[nodiscard]] StorableSource::AttributionLogic logic() const {
+      return logic_;
+    }
 
     // `absl::nullopt` when `logic()` is not `AttributionLogic::kFalsely`.
-    WARN_UNUSED_RESULT
-    absl::optional<uint64_t> fake_trigger_data() const {
+    [[nodiscard]] absl::optional<uint64_t> fake_trigger_data() const {
       return fake_trigger_data_;
     }
 
@@ -101,13 +99,13 @@ class CONTENT_EXPORT AttributionPolicy {
 
   // Selects how to handle the given source type; may involve RNG or other
   // dynamic criteria.
-  AttributionMode GetAttributionMode(
-      StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
+  [[nodiscard]] AttributionMode GetAttributionMode(
+      StorableSource::SourceType source_type) const;
 
  protected:
-  virtual bool ShouldNoiseTriggerData() const WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool ShouldNoiseTriggerData() const;
 
-  virtual uint64_t MakeNoisedTriggerData(uint64_t max) const WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual uint64_t MakeNoisedTriggerData(uint64_t max) const;
 
  private:
   // Whether the API is running in debug mode. No noise or delay should be used.

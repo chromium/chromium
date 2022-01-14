@@ -53,7 +53,7 @@ class CpuProbeLinuxTest : public testing::Test {
         fake_stat_path_, fake_cpufreq_root_path_.value().data());
   }
 
-  bool WriteFakeStat(const std::string& contents) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WriteFakeStat(const std::string& contents) {
     if (!stat_file_.SetLength(0))
       return false;
     if (contents.size() > 0) {
@@ -63,9 +63,9 @@ class CpuProbeLinuxTest : public testing::Test {
     return true;
   }
 
-  bool WriteFakeCpufreqFile(int core_id,
-                            base::StringPiece file_name,
-                            const std::string& contents) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WriteFakeCpufreqFile(int core_id,
+                                          base::StringPiece file_name,
+                                          const std::string& contents) {
     DCHECK_GE(core_id, 0);
 
     base::FilePath core_root(
@@ -77,8 +77,8 @@ class CpuProbeLinuxTest : public testing::Test {
     return base::WriteFile(core_root.AppendASCII(file_name), contents);
   }
 
-  bool DeleteFakeCpufreqFile(int core_id,
-                             base::StringPiece file_name) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool DeleteFakeCpufreqFile(int core_id,
+                                           base::StringPiece file_name) {
     DCHECK_GE(core_id, 0);
 
     base::FilePath core_root(
@@ -87,11 +87,11 @@ class CpuProbeLinuxTest : public testing::Test {
     return base::DeleteFile(core_root.AppendASCII(file_name));
   }
 
-  bool WriteFakeCpufreqCore(int core_id,
-                            int64_t min_frequency_khz,
-                            int64_t max_frequency_khz,
-                            int64_t base_frequency_khz,
-                            int64_t current_frequency_khz) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WriteFakeCpufreqCore(int core_id,
+                                          int64_t min_frequency_khz,
+                                          int64_t max_frequency_khz,
+                                          int64_t base_frequency_khz,
+                                          int64_t current_frequency_khz) {
     DCHECK_GE(core_id, 0);
     DCHECK_GE(min_frequency_khz, kDeleteFakeFile);
     DCHECK_GE(max_frequency_khz, kDeleteFakeFile);

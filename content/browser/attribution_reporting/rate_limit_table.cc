@@ -28,8 +28,8 @@ constexpr AttributionType kAttributionTypes[] = {
     AttributionType::kAggregate,
 };
 
-WARN_UNUSED_RESULT AttributionType
-AttributionTypeFromSourceType(StorableSource::SourceType source_type) {
+[[nodiscard]] AttributionType AttributionTypeFromSourceType(
+    StorableSource::SourceType source_type) {
   switch (source_type) {
     case StorableSource::SourceType::kNavigation:
       return AttributionType::kNavigation;
@@ -38,8 +38,7 @@ AttributionTypeFromSourceType(StorableSource::SourceType source_type) {
   }
 }
 
-WARN_UNUSED_RESULT int SerializeAttributionType(
-    AttributionType attribution_type) {
+[[nodiscard]] int SerializeAttributionType(AttributionType attribution_type) {
   return static_cast<int>(attribution_type);
 }
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -73,7 +72,7 @@ class CONTENT_EXPORT Navigator {
   //   then the renderer process is misbehaving and must be terminated.
   // TODO(nasko): Remove the is_renderer_initiated_check parameter when callers
   // of this method are migrated to use CHECK instead of DumpWithoutCrashing.
-  static WARN_UNUSED_RESULT bool CheckWebUIRendererDoesNotDisplayNormalURL(
+  [[nodiscard]] static bool CheckWebUIRendererDoesNotDisplayNormalURL(
       RenderFrameHostImpl* render_frame_host,
       const UrlInfo& url_info,
       bool is_renderer_initiated_check);

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/weak_ptr.h"
@@ -227,10 +226,9 @@ namespace {
 // Name and owner are optional in `value` (parsed server JSON response), but
 // must match `name` and `owner`, respectively, if either is specified. Returns
 // true if the check passes, and false otherwise.
-WARN_UNUSED_RESULT bool ValidateNameAndOwnerIfPresent(
-    const url::Origin& owner,
-    const std::string& name,
-    const base::Value& value) {
+[[nodiscard]] bool ValidateNameAndOwnerIfPresent(const url::Origin& owner,
+                                                 const std::string& name,
+                                                 const base::Value& value) {
   const std::string* maybe_owner = value.FindStringKey("owner");
   if (maybe_owner && url::Origin::Create(GURL(*maybe_owner)) != owner)
     return false;
@@ -243,7 +241,7 @@ WARN_UNUSED_RESULT bool ValidateNameAndOwnerIfPresent(
 // Copies the trustedBiddingSignals list JSON field into
 // `interest_group_update`, returns true iff the JSON is valid and the copy
 // completed.
-WARN_UNUSED_RESULT bool TryToCopyTrustedBiddingSignalsKeys(
+[[nodiscard]] bool TryToCopyTrustedBiddingSignalsKeys(
     blink::InterestGroup& interest_group_update,
     const base::Value& value) {
   const base::Value* maybe_update_trusted_bidding_signals_keys =
@@ -265,9 +263,8 @@ WARN_UNUSED_RESULT bool TryToCopyTrustedBiddingSignalsKeys(
 
 // Copies the `ads` list  JSON field into `interest_group_update`, returns true
 // iff the JSON is valid and the copy completed.
-WARN_UNUSED_RESULT bool TryToCopyAds(
-    blink::InterestGroup& interest_group_update,
-    const base::Value& value) {
+[[nodiscard]] bool TryToCopyAds(blink::InterestGroup& interest_group_update,
+                                const base::Value& value) {
   const base::Value* maybe_ads = value.FindListKey("ads");
   if (!maybe_ads)
     return true;

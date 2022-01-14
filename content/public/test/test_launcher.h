@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -65,10 +64,10 @@ class TestLauncherDelegate {
 
 // Launches tests using |launcher_delegate|. |parallel_jobs| is the number
 // of test jobs to be run in parallel.
-int LaunchTests(TestLauncherDelegate* launcher_delegate,
-                size_t parallel_jobs,
-                int argc,
-                char** argv) WARN_UNUSED_RESULT;
+[[nodiscard]] int LaunchTests(TestLauncherDelegate* launcher_delegate,
+                              size_t parallel_jobs,
+                              int argc,
+                              char** argv);
 
 TestLauncherDelegate* GetCurrentTestLauncherDelegate();
 

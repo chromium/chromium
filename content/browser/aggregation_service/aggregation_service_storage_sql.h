@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -118,14 +117,13 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   // Initializes the database if necessary, and returns whether the database is
   // open. `creation_policy` indicates whether the database should be created if
   // it is not already.
-  bool EnsureDatabaseOpen(DbCreationPolicy creation_policy)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool EnsureDatabaseOpen(DbCreationPolicy creation_policy)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  bool InitializeSchema(bool db_empty)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InitializeSchema(bool db_empty)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  bool CreateSchema()
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void HandleInitializationFailure(InitStatus status)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

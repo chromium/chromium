@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/input/touch_action.h"
@@ -180,8 +179,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // not attempt to bubble the rest of the scroll sequence in this case.
   // Otherwise, returns true.
   // Made virtual for test override.
-  virtual bool BubbleScrollEvent(const blink::WebGestureEvent& event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool BubbleScrollEvent(
+      const blink::WebGestureEvent& event);
 
   // Determines whether the root RenderWidgetHostView (and thus the current
   // page) has focus.

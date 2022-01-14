@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -166,25 +165,24 @@ class AuctionV8Helper
   // the corresponding value type and append it to the passed in argument
   // vector. Useful for assembling arguments to a Javascript function. Return
   // false on failure.
-  bool AppendUtf8StringValue(base::StringPiece utf8_string,
-                             std::vector<v8::Local<v8::Value>>* args)
-      WARN_UNUSED_RESULT;
-  bool AppendJsonValue(v8::Local<v8::Context> context,
-                       base::StringPiece utf8_json,
-                       std::vector<v8::Local<v8::Value>>* args)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AppendUtf8StringValue(
+      base::StringPiece utf8_string,
+      std::vector<v8::Local<v8::Value>>* args);
+  [[nodiscard]] bool AppendJsonValue(v8::Local<v8::Context> context,
+                                     base::StringPiece utf8_json,
+                                     std::vector<v8::Local<v8::Value>>* args);
 
   // Convenience wrapper that adds the specified value into the provided Object.
-  bool InsertValue(base::StringPiece key,
-                   v8::Local<v8::Value> value,
-                   v8::Local<v8::Object> object) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InsertValue(base::StringPiece key,
+                                 v8::Local<v8::Value> value,
+                                 v8::Local<v8::Object> object);
 
   // Convenience wrapper that creates an Object by parsing `utf8_json` as JSON
   // and then inserts it into the provided Object.
-  bool InsertJsonValue(v8::Local<v8::Context> context,
-                       base::StringPiece key,
-                       base::StringPiece utf8_json,
-                       v8::Local<v8::Object> object) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InsertJsonValue(v8::Local<v8::Context> context,
+                                     base::StringPiece key,
+                                     base::StringPiece utf8_json,
+                                     v8::Local<v8::Object> object);
 
   // Attempts to convert |value| to JSON and write it to |out|. Returns false on
   // failure.

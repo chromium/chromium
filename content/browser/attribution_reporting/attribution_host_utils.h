@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 
-#include "base/compiler_specific.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,11 +40,11 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                       AttributionManager& attribution_manager,
                                       base::Time impression_time);
 
-CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
-    const std::string& attribution_source_event_id,
-    const std::string& attribution_destination,
-    const std::string& attribution_report_to,
-    int64_t attribution_expiry) WARN_UNUSED_RESULT;
+[[nodiscard]] CONTENT_EXPORT absl::optional<blink::Impression>
+ParseImpressionFromApp(const std::string& attribution_source_event_id,
+                       const std::string& attribution_destination,
+                       const std::string& attribution_report_to,
+                       int64_t attribution_expiry);
 
 }  // namespace attribution_host_utils
 

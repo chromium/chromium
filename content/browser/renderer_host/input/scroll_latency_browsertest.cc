@@ -191,7 +191,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 
   // Returns true if the given histogram has recorded the expected number of
   // samples.
-  WARN_UNUSED_RESULT bool VerifyRecordedSamplesForHistogram(
+  [[nodiscard]] bool VerifyRecordedSamplesForHistogram(
       const size_t num_samples,
       const std::string& histogram_name) const {
     return num_samples == GetSampleCountForHistogram(histogram_name);

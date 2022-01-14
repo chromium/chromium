@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/observer_list_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -98,8 +97,8 @@ class AttributionManager {
 
   // Returns the AttributionPolicy that is used to control API policies such
   // as noise.
-  virtual const AttributionPolicy& GetAttributionPolicy() const
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual const AttributionPolicy& GetAttributionPolicy()
+      const = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time.

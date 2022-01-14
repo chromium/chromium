@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -111,10 +110,10 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   // Returns false if the router is unable to bubble the scroll event. The
   // caller must not attempt to bubble the rest of the scroll sequence in this
   // case. Otherwise, returns true.
-  bool BubbleScrollEvent(RenderWidgetHostViewBase* target_view,
-                         RenderWidgetHostViewChildFrame* resending_view,
-                         const blink::WebGestureEvent& event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool BubbleScrollEvent(
+      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewChildFrame* resending_view,
+      const blink::WebGestureEvent& event);
   void WillDetachChildView(
       const RenderWidgetHostViewChildFrame* detaching_view);
 

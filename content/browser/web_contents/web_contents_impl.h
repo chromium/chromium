@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -392,11 +391,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const std::string& GetEncoding() override;
   bool WasDiscarded() override;
   void SetWasDiscarded(bool was_discarded) override;
-  base::ScopedClosureRunner IncrementCapturerCount(
+  [[nodiscard]] base::ScopedClosureRunner IncrementCapturerCount(
       const gfx::Size& capture_size,
       bool stay_hidden,
       bool stay_awake,
-      bool is_activity = true) override WARN_UNUSED_RESULT;
+      bool is_activity = true) override;
   const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() override;
   bool IsBeingCaptured() override;
   bool IsBeingVisiblyCaptured() override;
@@ -534,9 +533,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsFullscreen() override;
   bool ShouldShowStaleContentOnEviction() override;
   void ExitFullscreen(bool will_cause_resize) override;
-  base::ScopedClosureRunner ForSecurityDropFullscreen(
-      int64_t display_id = display::kInvalidDisplayId) override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] base::ScopedClosureRunner ForSecurityDropFullscreen(
+      int64_t display_id = display::kInvalidDisplayId) override;
   void ResumeLoadingCreatedWebContents() override;
   void SetIsOverlayContent(bool is_overlay_content) override;
   bool IsFocusedElementEditable() override;

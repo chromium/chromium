@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_SERVICE_IMPL_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -46,7 +45,7 @@ class BackgroundFetchRegistrationServiceImpl
       BackgroundFetchRegistrationId registration_id,
       base::WeakPtr<BackgroundFetchContext> background_fetch_context);
 
-  bool ValidateTitle(const std::string& title) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ValidateTitle(const std::string& title);
 
   BackgroundFetchRegistrationId registration_id_;
   base::WeakPtr<BackgroundFetchContext> background_fetch_context_;

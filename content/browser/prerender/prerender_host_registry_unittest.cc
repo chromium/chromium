@@ -183,9 +183,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
   // params match the potential activation navigation params. Use setup_callback
   // to set the parameters. Returns true if the host was selected as a
   // potential candidate for activation, and false otherwise.
-  bool CheckIsActivatedForParams(
-      base::OnceCallback<void(NavigationSimulatorImpl*)> setup_callback)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool CheckIsActivatedForParams(
+      base::OnceCallback<void(NavigationSimulatorImpl*)> setup_callback) {
     const GURL kOriginalUrl("https://example.com/");
 
     std::unique_ptr<TestWebContents> web_contents =

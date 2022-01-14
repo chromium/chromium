@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
@@ -174,19 +173,19 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // after `worklet_available_callback` has been invoked), before the
   // WorkletHandle is destroyed. It is called to indicate the worklet failed to
   // load or crashed.
-  bool RequestBidderWorklet(
+  [[nodiscard]] bool RequestBidderWorklet(
       const GURL& bidding_logic_url,
       const absl::optional<GURL>& wasm_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
-      std::unique_ptr<WorkletHandle>& out_worklet_handle) WARN_UNUSED_RESULT;
-  bool RequestSellerWorklet(
+      std::unique_ptr<WorkletHandle>& out_worklet_handle);
+  [[nodiscard]] bool RequestSellerWorklet(
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
-      std::unique_ptr<WorkletHandle>& out_worklet_handle) WARN_UNUSED_RESULT;
+      std::unique_ptr<WorkletHandle>& out_worklet_handle);
 
  private:
   // Enough information to uniquely ID a worklet. If these fields match for two

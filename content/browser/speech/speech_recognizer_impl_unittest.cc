@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -135,20 +134,21 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     audio_manager_->Shutdown();
   }
 
-  bool GetUpstreamRequest(const network::TestURLLoaderFactory::PendingRequest**
-                              pending_request_out) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool GetUpstreamRequest(
+      const network::TestURLLoaderFactory::PendingRequest**
+          pending_request_out) {
     return GetPendingRequest(pending_request_out, "/up");
   }
 
-  bool GetDownstreamRequest(
-      const network::TestURLLoaderFactory::PendingRequest** pending_request_out)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool GetDownstreamRequest(
+      const network::TestURLLoaderFactory::PendingRequest**
+          pending_request_out) {
     return GetPendingRequest(pending_request_out, "/down");
   }
 
-  bool GetPendingRequest(
+  [[nodiscard]] bool GetPendingRequest(
       const network::TestURLLoaderFactory::PendingRequest** pending_request_out,
-      const char* url_substring) WARN_UNUSED_RESULT {
+      const char* url_substring) {
     for (const auto& pending_request :
          *url_loader_factory_.pending_requests()) {
       if (pending_request.request.url.spec().find(url_substring) !=

@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -661,11 +660,11 @@ class WebContents : public PageNavigator,
   //
   // |is_activity| means the capture will cause the last active time to be
   // updated.
-  virtual base::ScopedClosureRunner IncrementCapturerCount(
+  [[nodiscard]] virtual base::ScopedClosureRunner IncrementCapturerCount(
       const gfx::Size& capture_size,
       bool stay_hidden,
       bool stay_awake,
-      bool is_activity = true) WARN_UNUSED_RESULT = 0;
+      bool is_activity = true) = 0;
 
   // Getter for the capture handle, which allows a captured application to
   // opt-in to exposing information to its capturer(s).
@@ -1215,8 +1214,8 @@ class WebContents : public PageNavigator,
   // exit fullscreen; the scoped prohibition will still apply to all displays.
   // This supports sites using cross-screen window placement capabilities to
   // retain fullscreen and open or place a window on another screen.
-  virtual base::ScopedClosureRunner ForSecurityDropFullscreen(
-      int64_t display_id = display::kInvalidDisplayId) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual base::ScopedClosureRunner ForSecurityDropFullscreen(
+      int64_t display_id = display::kInvalidDisplayId) = 0;
 
   // Unblocks requests from renderer for a newly created window. This is
   // used in showCreatedWindow() or sometimes later in cases where

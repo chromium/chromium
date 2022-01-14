@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_PROVIDER_H_
 
-#include "base/compiler_specific.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -60,8 +59,8 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   // Discarding the returned RefCountedVideoSourceProvider indicates that the
   // caller no longer requires the connection to the service and allows it to
   // disconnect.
-  scoped_refptr<RefCountedVideoSourceProvider> LazyConnectToService()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] scoped_refptr<RefCountedVideoSourceProvider>
+  LazyConnectToService();
 
   void GetDeviceInfosAsyncForRetry(GetDeviceInfosCallback result_callback,
                                    int retry_count);
