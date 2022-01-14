@@ -150,8 +150,9 @@ void FeatureNotificationGuideServiceImpl::BeforeShowNotification(
     return;
   }
 #endif
-
-  std::move(callback).Run(std::move(notification_data));
+  std::move(callback).Run(config_.feature_notification_tracking_only
+                              ? nullptr
+                              : std::move(notification_data));
 }
 
 void FeatureNotificationGuideServiceImpl::OnClick(FeatureType feature) {
