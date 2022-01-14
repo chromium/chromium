@@ -44,7 +44,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 
   void AboutThisSiteSourceClicked(GURL url, const ui::Event& event);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If PageInfo should show a link to the site or app's settings page, this
   // will return true and set the params to the appropriate resource IDs (IDS_*).
   // Otherwise, it will return false.
@@ -57,7 +57,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // PageInfoUiDelegate implementation
   bool IsBlockAutoPlayEnabled() override;
   bool IsMultipleTabsOpen() override;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type) override;
 

@@ -52,7 +52,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
       ContentSettingsType type,
       const GURL& site_url) override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool CreateInfoBarDelegate() override;
   // In Chrome's case, this may show the site settings page or an app settings
   // page, depending on context.
@@ -78,7 +78,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>
   GetPageSpecificContentSettingsDelegate() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const std::u16string GetClientApplicationName() override;
 #endif
 
@@ -89,7 +89,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   GetChromePasswordProtectionService() const;
 #endif
   raw_ptr<content::WebContents> web_contents_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // The sentiment service is owned by the profile and will outlive this. The
   // service cannot be retrieved via |web_contents_| as that may be destroyed
   // before this is.

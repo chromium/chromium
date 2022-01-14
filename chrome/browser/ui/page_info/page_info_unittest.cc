@@ -65,7 +65,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #else
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -310,7 +310,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<PageInfo> incognito_page_info_;
   std::unique_ptr<NiceMock<MockPageInfoUI>> incognito_mock_ui_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ChromeLayoutProvider layout_provider_;
 #endif
 
@@ -358,12 +358,12 @@ TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
       case ContentSettingsType::MIDI_SYSEX:
       case ContentSettingsType::NFC:
       case ContentSettingsType::USB_GUARD:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       case ContentSettingsType::HID_GUARD:
 #endif
         EXPECT_EQ(normal, mid_sentence);
         break;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
       case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
         EXPECT_NE(normal, mid_sentence);
         EXPECT_EQ(base::ToLowerASCII(normal), base::ToLowerASCII(mid_sentence));
@@ -381,7 +381,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   page_info()->PresentSitePermissions();
   std::set<ContentSettingsType> expected_visible_permissions;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Geolocation is always allowed to pass through to Android-specific logic to
   // check for DSE settings (so expect 1 item), but isn't actually shown later
   // on because this test isn't testing with a default search engine origin.
@@ -463,7 +463,7 @@ TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
   page_info()->PresentSitePermissions();
   std::set<ContentSettingsType> expected_permissions;
   std::set<ContentSettingsType> expected_incognito_permissions;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Geolocation is always allowed to pass through to Android-specific logic to
   // check for DSE settings (so expect 1 item), but isn't actually shown later
   // on because this test isn't testing with a default search engine origin.
@@ -702,7 +702,7 @@ TEST_F(PageInfoTest, HTTPSConnection) {
 }
 
 // Define some dummy constants for Android-only resources.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #define IDR_PAGEINFO_BAD 0
 #define IDR_PAGEINFO_GOOD 0
 #endif
@@ -901,7 +901,7 @@ TEST_F(PageInfoTest, InsecureContent) {
               page_info()->site_connection_status());
     EXPECT_EQ(test.expected_site_identity_status,
               page_info()->site_identity_status());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(
         test.expected_connection_icon_id,
         PageInfoUI::GetConnectionIconID(page_info()->site_connection_status()));
@@ -993,13 +993,13 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
             page_info()->site_connection_status());
   EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM,
             page_info()->site_identity_status());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(IDR_PAGEINFO_BAD,
             PageInfoUI::GetIdentityIconID(page_info()->site_identity_status()));
 #endif
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PageInfoTest, NoInfoBar) {
   SetDefaultUIExpectations(mock_ui());
   EXPECT_EQ(0u, infobar_manager()->infobar_count());
@@ -1060,7 +1060,7 @@ TEST_F(PageInfoTest, AboutBlankPage) {
 
 // On desktop, internal URLs aren't handled by PageInfo class. Instead, a
 // custom and simpler bubble is shown, so no need to test.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PageInfoTest, InternalPage) {
   SetURL("chrome://bookmarks");
   SetDefaultUIExpectations(mock_ui());
@@ -1200,7 +1200,7 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
 // Tests that metrics are recorded on a PageInfo for pages with
 // various Safety Tip statuses.
 // See https://crbug.com/1114659 for why the test is disabled on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SafetyTipMetrics DISABLED_SafetyTipMetrics
 #else
 #define MAYBE_SafetyTipMetrics SafetyTipMetrics
@@ -1350,7 +1350,7 @@ TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   EXPECT_TRUE(showing_setting(last_permission_info_list()));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Unit tests with the unified autoplay sound settings UI enabled. When enabled
 // the sound settings dropdown on the page info UI will have custom wording.
@@ -1493,7 +1493,7 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
           /*is_one_time=*/false));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Unit tests for logic in the PageInfoUI that toggles permission between
 // allow/block and remember/forget.
