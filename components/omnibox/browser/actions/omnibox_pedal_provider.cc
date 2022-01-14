@@ -423,8 +423,9 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
     std::u16string synonyms_csv) {
   base::RemoveChars(synonyms_csv, kRemoveChars, &synonyms_csv);
   OmniboxPedal::SynonymGroup group(required, match_once, 0);
-  // Note, 'ar' language uses '،' instead of ',' to delimit synonyms.
-  StringTokenizer16 tokenizer(synonyms_csv, u",،");
+  // Note, 'ar' language uses '،' instead of ',' to delimit synonyms and
+  // in some cases the 'ja' language data uses '、' to delimit synonyms.
+  StringTokenizer16 tokenizer(synonyms_csv, u",،、");
   while (tokenizer.GetNext()) {
     OmniboxPedal::TokenSequence sequence(0);
     TokenizeAndExpandDictionary(sequence, tokenizer.token());
