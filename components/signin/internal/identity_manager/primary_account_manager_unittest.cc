@@ -365,12 +365,12 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdateDeprecated update(client_prefs, prefs::kAccountInfo);
+  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
   update->ClearList();
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email);
-  dict->SetString("email", email);
-  dict->SetString("gaia", gaia_id);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email);
+  dict.SetStringKey("email", email);
+  dict.SetStringKey("gaia", gaia_id);
   update->Append(std::move(dict));
 
   account_tracker()->ResetForTesting();
@@ -398,12 +398,12 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdateDeprecated update(client_prefs, prefs::kAccountInfo);
+  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
   update->ClearList();
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email);
-  dict->SetString("email", email);
-  dict->SetString("gaia", gaia_id);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email);
+  dict.SetStringKey("email", email);
+  dict.SetStringKey("gaia", gaia_id);
   update->Append(std::move(dict));
 
   account_tracker()->ResetForTesting();
@@ -431,11 +431,11 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration_ForceAllAccounts) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdateDeprecated update(client_prefs, prefs::kAccountInfo);
+  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
   update->ClearList();
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email);
-  dict->SetString("email", email);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email);
+  dict.SetStringKey("email", email);
   update->Append(std::move(dict));
 
   account_tracker()->ResetForTesting();

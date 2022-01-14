@@ -1027,18 +1027,18 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
             account_tracker()
                 ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
                 .is_child_account);
-  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
-  base::Value* dict = nullptr;
-  update->Get(0, &dict);
-  ASSERT_TRUE(dict && dict->is_dict());
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ASSERT_FALSE(update->GetList().empty());
+  base::Value& dict = update->GetList()[0];
+  ASSERT_TRUE(dict.is_dict());
   const char kDeprecatedChildKey[] = "is_child_account";
   const char kNewChildKey[] = "is_supervised_child";
   // The deprecated key is not set.
-  EXPECT_FALSE(dict->FindBoolKey(kDeprecatedChildKey));
+  EXPECT_FALSE(dict.FindBoolKey(kDeprecatedChildKey));
 
   // Set the child status using the deprecated key, and reload the account.
-  dict->SetBoolKey(kDeprecatedChildKey, true);
-  dict->RemoveKey(kNewChildKey);
+  dict.SetBoolKey(kDeprecatedChildKey, true);
+  dict.RemoveKey(kNewChildKey);
   ClearAccountTrackerEvents();
   ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
   EXPECT_TRUE(CheckAccountTrackerEvents(
@@ -1053,9 +1053,9 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
   // The deprecated key has been read.
   EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
   // The deprecated key has been removed.
-  EXPECT_FALSE(dict->FindBoolKey(kDeprecatedChildKey));
+  EXPECT_FALSE(dict.FindBoolKey(kDeprecatedChildKey));
   // The new key has been written.
-  absl::optional<int> new_key = dict->FindIntKey(kNewChildKey);
+  absl::optional<int> new_key = dict.FindIntKey(kNewChildKey);
   ASSERT_TRUE(new_key.has_value());
   EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
 }
@@ -1283,7 +1283,7 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
-  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1331,7 +1331,7 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
 
-  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1380,7 +1380,7 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
-  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1713,7 +1713,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
-  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1741,7 +1741,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccountsOneInvalid) {
   const std::string email_foobar = AccountKeyToEmail(kAccountKeyFooDotBar);
   const std::string gaia_foobar = AccountKeyToGaiaId(kAccountKeyFooDotBar);
 
-  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);

@@ -523,7 +523,7 @@ void AccountTrackerService::OnAccountImageUpdated(
     return;
 
   base::DictionaryValue* dict = nullptr;
-  ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
+  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
     base::Value& dict_value = update->GetList()[i];
     if (dict_value.is_dict()) {
@@ -594,7 +594,7 @@ void AccountTrackerService::LoadFromPrefs() {
                                               ? signin::Tribool::kTrue
                                               : signin::Tribool::kFalse;
           // Migrate to kAccountChildAttributePath.
-          ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
+          ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
           base::Value* update_dict = &update->GetList()[i];
           DCHECK(update_dict->is_dict());
           SetAccountCapabilityPath(update_dict, kAccountChildAttributePath,
@@ -662,7 +662,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
     return;
 
   base::DictionaryValue* dict = nullptr;
-  ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
+  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
     base::Value& dict_value = update->GetList()[i];
     if (dict_value.is_dict()) {
@@ -676,9 +676,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   }
 
   if (!dict) {
-    dict = new base::DictionaryValue();
-    update->Append(base::WrapUnique(dict));
-    // |dict| is invalidated at this point, so it needs to be reset.
+    update->Append(base::Value(base::Value::Type::DICTIONARY));
     base::Value& dict_value = update->GetList().back();
     DCHECK(dict_value.is_dict());
     dict = static_cast<base::DictionaryValue*>(&dict_value);
@@ -708,7 +706,7 @@ void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
   if (!pref_service_)
     return;
 
-  ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
+  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   const std::string account_id = account_info.account_id.ToString();
   update->EraseListValueIf([&account_id](const base::Value& value) {
     if (!value.is_dict())
