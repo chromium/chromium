@@ -242,10 +242,10 @@ TEST_F(WebTriggeredIsolatedOriginsPolicyTest, PersistIsolatedOrigin) {
 TEST_F(WebTriggeredIsolatedOriginsPolicyTest, UpdatedMaxSize) {
   // Populate the pref manually with more entries than the 3 allowed by the
   // field trial param.
-  DictionaryPrefUpdateDeprecated update(
+  DictionaryPrefUpdate update(
       user_prefs::UserPrefs::Get(browser_context()),
       site_isolation::prefs::kWebTriggeredIsolatedOrigins);
-  base::DictionaryValue* dict = update.Get();
+  base::Value* dict = update.Get();
   dict->SetKey("https://foo1.com", base::TimeToValue(base::Time::Now()));
   dict->SetKey("https://foo2.com", base::TimeToValue(base::Time::Now()));
   dict->SetKey("https://foo3.com", base::TimeToValue(base::Time::Now()));
@@ -345,9 +345,8 @@ TEST_F(PasswordSiteIsolationPolicyTest, ApplyPersistedIsolatedOrigins) {
 
   // Add foo.com and bar.com to stored isolated origins.
   {
-    ListPrefUpdateDeprecated update(prefs(),
-                                    prefs::kUserTriggeredIsolatedOrigins);
-    base::ListValue* list = update.Get();
+    ListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
+    base::Value* list = update.Get();
     list->Append("http://foo.com");
     list->Append("https://bar.com");
   }
@@ -427,9 +426,8 @@ TEST_F(NoPasswordSiteIsolationPolicyTest,
 
   // Add foo.com to stored isolated origins.
   {
-    ListPrefUpdateDeprecated update(prefs(),
-                                    prefs::kUserTriggeredIsolatedOrigins);
-    base::ListValue* list = update.Get();
+    ListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
+    base::Value* list = update.Get();
     list->Append("http://foo.com");
   }
 
