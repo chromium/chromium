@@ -20,7 +20,7 @@ namespace blocked_content {
 class PopupBlockedInfoBarDelegate;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace offline_pages {
 class OfflinePageInfoBarDelegate;
 }
@@ -275,7 +275,7 @@ class InfoBarDelegate {
   AsPopupBlockedInfoBarDelegate();
   virtual ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate();
   virtual translate::TranslateInfoBarDelegate* AsTranslateInfoBarDelegate();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual offline_pages::OfflinePageInfoBarDelegate*
   AsOfflinePageInfoBarDelegate();
 #endif

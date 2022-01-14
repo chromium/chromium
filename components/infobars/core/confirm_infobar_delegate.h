@@ -65,7 +65,7 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // Windows.
   virtual bool OKButtonTriggersUACPrompt() const;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Returns whether or not a tint should be applied to the icon background.
   // Defaults to true.
   virtual bool UseIconBackgroundTint() const;

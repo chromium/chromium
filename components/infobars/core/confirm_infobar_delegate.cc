@@ -54,7 +54,7 @@ bool ConfirmInfoBarDelegate::OKButtonTriggersUACPrompt() const {
   return false;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 bool ConfirmInfoBarDelegate::UseIconBackgroundTint() const {
   return true;
 }
