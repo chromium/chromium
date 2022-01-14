@@ -10,12 +10,7 @@
 
 namespace switches {
 
-// Clears the token service before using it. This allows simulating the
-// expiration of credentials during testing.
-const char kClearTokenService[] = "clear-token-service";
-
-// Disables sending signin scoped device id to LSO with refresh token request.
-const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
+// All switches in alphabetical order.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kAccountIdMigration{"AccountIdMigration",
@@ -29,12 +24,21 @@ const base::Feature kAllowSyncOffForChildAccounts{
     "AllowSyncOffForChildAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Clears the token service before using it. This allows simulating the
+// expiration of credentials during testing.
+const char kClearTokenService[] = "clear-token-service";
+
+// Disables sending signin scoped device id to LSO with refresh token request.
+const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
+
+// This feature disables all extended sync promos.
+const base::Feature kForceDisableExtendedSyncPromos{
+    "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_ANDROID) || defined(OS_IOS)
+// Features to trigger the startup sign-in promo at boot.
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
-
-const base::Feature kForceDisableExtendedSyncPromos{
-    "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace switches

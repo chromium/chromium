@@ -18,8 +18,6 @@ namespace switches {
 
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
-extern const char kClearTokenService[];
-extern const char kDisableSigninScopedDeviceId[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const base::Feature kAccountIdMigration;
@@ -27,18 +25,17 @@ extern const base::Feature kAccountIdMigration;
 
 #if defined(OS_ANDROID)
 extern const base::Feature kAllowSyncOffForChildAccounts;
-
-// This feature flag is used to wipe device data on child account signin.
-extern const base::Feature kWipeDataOnChildAccountSignin;
-#endif  // defined(OS_ANDROID)
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-// Features to trigger the startup sign-in promo at boot.
-extern const base::Feature kForceStartupSigninPromo;
 #endif
 
-// This feature disables all extended sync promos.
+extern const char kClearTokenService[];
+
+extern const char kDisableSigninScopedDeviceId[];
+
 extern const base::Feature kForceDisableExtendedSyncPromos;
+
+#if defined(OS_ANDROID) || defined(OS_IOS)
+extern const base::Feature kForceStartupSigninPromo;
+#endif
 
 }  // namespace switches
 
