@@ -685,8 +685,9 @@ bool SolidColorBuffer::ProduceTransferableResource(
     viz::TransferableResource* resource,
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
-  std::move(per_commit_explicit_release_callback)
-      .Run(/*release_fence=*/gfx::GpuFenceHandle());
+  if (per_commit_explicit_release_callback)
+    std::move(per_commit_explicit_release_callback)
+        .Run(/*release_fence=*/gfx::GpuFenceHandle());
   return false;
 }
 
