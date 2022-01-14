@@ -80,7 +80,6 @@ def _Parse(elf_path, tool_prefix):
       path_util.GetDwarfdumpPath(tool_prefix),
       elf_path,
       '--debug-info',
-      '--summarize-types',
       '--recurse-depth=0',
   ]
   stdout = subprocess.check_output(cmd,
