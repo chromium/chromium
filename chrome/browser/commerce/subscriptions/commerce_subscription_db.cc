@@ -33,43 +33,32 @@ using TrackingIdTypeProto =
 
 SubscriptionManagementTypeProto getManagementTypeForString(
     const std::string& management_type_string) {
-  static constexpr auto stringToManagementTypeMap = base::MakeFixedFlatMap<
-      base::StringPiece, SubscriptionManagementTypeProto>(
-      {{"TYPE_UNSPECIFIED",
-        commerce_subscription_db::
-            CommerceSubscriptionContentProto_SubscriptionManagementType_MANAGE_TYPE_UNSPECIFIED},
-       {"CHROME_MANAGED",
-        commerce_subscription_db::
-            CommerceSubscriptionContentProto_SubscriptionManagementType_CHROME_MANAGED},
-       {"USER_MANAGED",
-        commerce_subscription_db::
-            CommerceSubscriptionContentProto_SubscriptionManagementType_USER_MANAGED}});
-  return stringToManagementTypeMap.at(management_type_string);
+  SubscriptionManagementTypeProto management_type = commerce_subscription_db::
+      CommerceSubscriptionContentProto_SubscriptionManagementType_MANAGE_TYPE_UNSPECIFIED;
+  bool success = commerce_subscription_db::
+      CommerceSubscriptionContentProto_SubscriptionManagementType_Parse(
+          management_type_string, &management_type);
+  DCHECK(success)
+      << "There was an error getting the management type from given string";
+  return management_type;
 }
 
-const base::StringPiece& getStringForManagementType(
+const std::string& getStringForManagementType(
     SubscriptionManagementTypeProto management_type) {
-  static constexpr auto managementTypeToStringMap = base::MakeFixedFlatMap<
-      SubscriptionManagementTypeProto, base::StringPiece>(
-      {{commerce_subscription_db::
-            CommerceSubscriptionContentProto_SubscriptionManagementType_MANAGE_TYPE_UNSPECIFIED,
-        "TYPE_UNSPECIFIED"},
-       {commerce_subscription_db::
-            CommerceSubscriptionContentProto_SubscriptionManagementType_CHROME_MANAGED,
-        "CHROME_MANAGED"},
-       {commerce_subscription_db::
-            CommerceSubscriptionContentProto_SubscriptionManagementType_USER_MANAGED,
-        "USER_MANAGED"}});
-  return managementTypeToStringMap.at(management_type);
+  return commerce_subscription_db::
+      CommerceSubscriptionContentProto_SubscriptionManagementType_Name(
+          management_type);
 }
 
 SubscriptionTypeProto getSubscriptionTypeForString(
     const std::string& subscription_type_string) {
   SubscriptionTypeProto subscription_type = commerce_subscription_db::
       CommerceSubscriptionContentProto_SubscriptionType_TYPE_UNSPECIFIED;
-  DCHECK(commerce_subscription_db::
-             CommerceSubscriptionContentProto_SubscriptionType_Parse(
-                 subscription_type_string, &subscription_type));
+  bool success = commerce_subscription_db::
+      CommerceSubscriptionContentProto_SubscriptionType_Parse(
+          subscription_type_string, &subscription_type);
+  DCHECK(success)
+      << "There was an error getting the subscription type from given string";
   return subscription_type;
 }
 
@@ -83,9 +72,11 @@ TrackingIdTypeProto getTrackingIdTypeForString(
     const std::string& tracking_id_type_string) {
   TrackingIdTypeProto tracking_id_type = commerce_subscription_db::
       CommerceSubscriptionContentProto_TrackingIdType_IDENTIFIER_TYPE_UNSPECIFIED;
-  DCHECK(commerce_subscription_db::
-             CommerceSubscriptionContentProto_TrackingIdType_Parse(
-                 tracking_id_type_string, &tracking_id_type));
+  bool success = commerce_subscription_db::
+      CommerceSubscriptionContentProto_TrackingIdType_Parse(
+          tracking_id_type_string, &tracking_id_type);
+  DCHECK(success)
+      << "There was an error getting the tracking id type from given string";
   return tracking_id_type;
 }
 
