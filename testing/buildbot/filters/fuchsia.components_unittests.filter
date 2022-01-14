@@ -14,8 +14,6 @@
 -HistoryBackendDBTest.*
 -LevelDBSiteDataStoreTest.DatabaseOpeningFailure
 -OfflinePageMetadataStoreTest.*
--PaintPreviewSerialUtils.TestSerialTypeface
--PaintPreviewSubsetFontTest.TestBasicSubset
 -ProfilingJsonExporterTest.MemoryMaps
 -SslCastSocketTest.TestConnectEndToEndWithRealSSL
 -UIDevToolsServerTest.ConnectionToViewsServer
