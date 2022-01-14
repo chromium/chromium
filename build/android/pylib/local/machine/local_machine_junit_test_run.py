@@ -157,6 +157,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       for index, cmd in enumerate(cmd_list):
         # First process prints to stdout, the rest write to files.
         if index == 0:
+          sys.stdout.write('\nShard 0 output:\n')
           procs.append(
               cmd_helper.Popen(
                   cmd,
@@ -285,7 +286,8 @@ def PrintProcessesStdout(procs, temp_files):
   # Print out files in order.
   for i, f in enumerate(temp_files):
     f.seek(0)
-    sys.stdout.write('\nShard %d output:\n' % i)
+    # Add one to index to account for first shard (which outputs to stdout).
+    sys.stdout.write('\nShard %d output:\n' % (i + 1))
     sys.stdout.write(f.read().decode('utf-8'))
     f.close()
 
