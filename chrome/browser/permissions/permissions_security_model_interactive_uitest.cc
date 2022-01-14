@@ -20,7 +20,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 
@@ -186,6 +188,43 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
     return popup_contents;
   }
 
+  void VerifyPermissionsAllowed(content::WebContents* web_contents,
+                                const std::string& request_permission_script,
+                                const std::string& check_permission_script) {
+    content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
+    ASSERT_FALSE(
+        content::EvalJs(main_rfh, check_permission_script).value.GetBool());
+
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents);
+    std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+    // Enable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+    // Move the web contents to the foreground.
+    main_rfh->GetView()->Focus();
+    ASSERT_TRUE(main_rfh->GetView()->HasFocus());
+
+    bool is_notification = request_permission_script == kRequestNotifications;
+    EXPECT_EQ("granted",
+              content::EvalJs(main_rfh, request_permission_script,
+                              is_notification
+                                  ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                  : content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString());
+    EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+
+    // Disable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+    EXPECT_TRUE(
+        content::EvalJs(main_rfh, check_permission_script).value.GetBool());
+  }
+
   void VerifyPermission(content::WebContents* opener_or_embedder_contents,
                         content::RenderFrameHost* test_rfh,
                         const std::string& request_permission_script,
@@ -247,8 +286,7 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
     EXPECT_EQ(1, bubble_factory->TotalRequestCount());
   }
 
-  // Permissions are not allowed from FencedFrame contents.
-  void VerifyPermissionForFencedFrame(
+  void VerifyPermissionsDeniedForFencedFrame(
       content::WebContents* embedder_contents,
       content::RenderFrameHost* fenced_rfh,
       const std::string& request_permission_script,
@@ -349,8 +387,46 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
     EXPECT_TRUE(content::EvalJs(opener_rfh, kCheckCamera).value.GetBool());
   }
 
-  void VerifyPermissionsForFencedFrame(content::WebContents* embedder_contents,
-                                       content::RenderFrameHost* fenced_rfh) {
+  void VerifyPermissionsDeniedForPortal(
+      content::WebContents* portal_contents,
+      const std::string& request_permission_script,
+      const std::string& check_permission_script) {
+    content::RenderFrameHost* portal_main_rfh = portal_contents->GetMainFrame();
+    bool is_notification = request_permission_script == kRequestNotifications;
+    ASSERT_FALSE(content::EvalJs(portal_main_rfh, check_permission_script)
+                     .value.GetBool());
+
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(portal_contents);
+    std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+    // Enable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+    // Move the web contents to the foreground.
+    portal_main_rfh->GetView()->Focus();
+    ASSERT_TRUE(portal_main_rfh->GetView()->HasFocus());
+
+    // Request permission on the portal contents.
+    EXPECT_EQ("denied",
+              content::EvalJs(portal_main_rfh, request_permission_script,
+                              is_notification
+                                  ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                  : content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString());
+    EXPECT_EQ(0, bubble_factory->TotalRequestCount());
+
+    // Disable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+    EXPECT_FALSE(content::EvalJs(portal_main_rfh, check_permission_script)
+                     .value.GetBool());
+  }
+
+  void VerifyPermissionsDeniedForPortal(content::WebContents* portal_contents) {
     const struct {
       std::string check_permission;
       std::string request_permission;
@@ -361,9 +437,59 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
     };
 
     for (const auto& test : kTests) {
-      VerifyPermissionForFencedFrame(embedder_contents, fenced_rfh,
-                                     test.request_permission,
-                                     test.check_permission);
+      VerifyPermissionsDeniedForPortal(portal_contents, test.request_permission,
+                                       test.check_permission);
+    }
+  }
+
+  void VerifyPermissionsAllowed(content::WebContents* web_contents) {
+    const struct {
+      std::string check_permission;
+      std::string request_permission;
+    } kTests[] = {
+        {kCheckNotifications, kRequestNotifications},
+        {kCheckGeolocation, kRequestGeolocation},
+        {kCheckCamera, kRequestCamera},
+    };
+
+    for (const auto& test : kTests) {
+      VerifyPermissionsAllowed(web_contents, test.request_permission,
+                               test.check_permission);
+    }
+  }
+
+  void VerifyPermissionsAlreadyGranted(content::WebContents* web_contents) {
+    const struct {
+      std::string check_permission;
+      std::string request_permission;
+    } kTests[] = {
+        {kCheckNotifications, kRequestNotifications},
+        {kCheckGeolocation, kRequestGeolocation},
+        {kCheckCamera, kRequestCamera},
+    };
+
+    for (const auto& test : kTests) {
+      ASSERT_TRUE(
+          content::EvalJs(web_contents, test.check_permission).value.GetBool());
+    }
+  }
+
+  void VerifyPermissionsDeniedForFencedFrame(
+      content::WebContents* embedder_contents,
+      content::RenderFrameHost* fenced_rfh) {
+    const struct {
+      std::string check_permission;
+      std::string request_permission;
+    } kTests[] = {
+        {kCheckNotifications, kRequestNotifications},
+        {kCheckGeolocation, kRequestGeolocation},
+        {kCheckCamera, kRequestCamera},
+    };
+
+    for (const auto& test : kTests) {
+      VerifyPermissionsDeniedForFencedFrame(embedder_contents, fenced_rfh,
+                                            test.request_permission,
+                                            test.check_permission);
     }
   }
 
@@ -931,6 +1057,78 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                                    fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
-  VerifyPermissionsForFencedFrame(web_contents, fenced_frame_host);
+  VerifyPermissionsDeniedForFencedFrame(web_contents, fenced_frame_host);
+}
+
+class PermissionRequestWithPortalTest
+    : public PermissionsSecurityModelInteractiveUITest {
+ public:
+  PermissionRequestWithPortalTest() = default;
+  ~PermissionRequestWithPortalTest() override = default;
+
+  PermissionRequestWithPortalTest(const PermissionRequestWithPortalTest&) =
+      delete;
+  PermissionRequestWithPortalTest& operator=(
+      const PermissionRequestWithPortalTest&) = delete;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kPortals,
+                              blink::features::kPortalsCrossOrigin},
+        /*disabled_features=*/{});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestWithPortalTest, PortalActivation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* contents = tab_strip_model->GetActiveWebContents();
+  EXPECT_EQ(1, tab_strip_model->count());
+
+  // `contents` is in a default state.
+  EXPECT_FALSE(contents->IsPortal());
+  VerifyPermissionsAllowed(contents);
+
+  EXPECT_EQ(true, content::EvalJs(contents, "loadPromise"));
+  std::vector<content::WebContents*> inner_web_contents =
+      contents->GetInnerWebContents();
+  EXPECT_EQ(1u, inner_web_contents.size());
+  content::WebContents* portal_contents = inner_web_contents[0];
+
+  // `portal_contents` is in a portal state. All permissions will be
+  // automatically denied.
+  EXPECT_TRUE(portal_contents->IsPortal());
+  VerifyPermissionsDeniedForPortal(portal_contents);
+
+  EXPECT_EQ(true, content::EvalJs(contents, "activate()"));
+  EXPECT_EQ(1, tab_strip_model->count());
+  // After a portal activation, `portal_contents` became a top-level
+  // web_contents in a tab.
+  EXPECT_EQ(portal_contents, tab_strip_model->GetActiveWebContents());
+
+  // Because `portal_contents` was activated, it stopped being a portal and its
+  // predecessor (i.e. the page that was previously embedding the portal) got
+  // put into a portal itself. So `contents` here is the predecessor and is a
+  // portal now, and `portal_contents` is now a top-level web_contents and isn't
+  // a portal anymore.
+  EXPECT_TRUE(contents->IsPortal());
+  EXPECT_FALSE(portal_contents->IsPortal());
+
+  // All permissoins are automatically denied for `contents`
+  VerifyPermissionsDeniedForPortal(contents);
+  // Permissions were previously granted to `contents`, hence they are now
+  // granted to `portal_contents` as well because they have the same origin.
+  VerifyPermissionsAlreadyGranted(portal_contents);
 }
 }  // anonymous namespace
