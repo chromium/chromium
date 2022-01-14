@@ -124,8 +124,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   // For gpu testing only. Return status for the watchdog tests
   bool IsGpuHangDetectedForTesting();
 
-  void WaitForPowerObserverAddedForTesting();
-
   // Implements base::Thread.
   void Init() override;
   void CleanUp() override;
@@ -285,10 +283,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
 
   // The GPU watchdog is paused. The timeout task is temporarily stopped.
   bool is_paused_ = false;
-
-  // Whether the watchdog thread has added the power monitor observer.
-  // Read/Write by the watchdog thread only.
-  bool is_power_observer_added_ = false;
 
   // whether GpuWatchdogThreadEvent::kGpuWatchdogStart has been recorded.
   bool is_watchdog_start_histogram_recorded = false;
