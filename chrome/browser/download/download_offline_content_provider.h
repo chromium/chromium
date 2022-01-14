@@ -137,6 +137,13 @@ class DownloadOfflineContentProvider
   // Ensure that download core service is started.
   void EnsureDownloadCoreServiceStarted();
 
+  // Helper method to run callbacks with the latest download information.
+  void RunGetAllItemsCallback(
+      OfflineContentProvider::MultipleItemCallback callback);
+  void RunGetItemByIdCallback(
+      const ContentId& id,
+      OfflineContentProvider::SingleItemCallback callback);
+
   raw_ptr<OfflineContentAggregator> aggregator_;
   std::string name_space_;
   raw_ptr<SimpleDownloadManagerCoordinator> manager_;
