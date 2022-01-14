@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
@@ -100,7 +101,7 @@ void BackgroundLoaderContents::AddNewContents(
     *was_blocked = true;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool BackgroundLoaderContents::ShouldBlockMediaRequest(const GURL& url) {
   // Background pages should not have access to media.
   return true;

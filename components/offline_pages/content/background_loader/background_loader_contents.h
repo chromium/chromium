@@ -77,7 +77,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
                       bool user_gesture,
                       bool* was_blocked) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool ShouldBlockMediaRequest(const GURL& url) override;
 #endif
 

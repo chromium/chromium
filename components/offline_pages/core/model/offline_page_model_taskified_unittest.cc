@@ -1046,7 +1046,7 @@ TEST_F(OfflinePageModelTaskifiedTest, GetOfflineIdsForClientId) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CheckTempPagesSavedInCorrectDir \
   DISABLED_CheckTempPagesSavedInCorrectDir
 #else
@@ -1084,7 +1084,7 @@ TEST_F(OfflinePageModelTaskifiedTest, MAYBE_CheckTempPagesSavedInCorrectDir) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CheckPersistenPagesSavedInCorrectDir \
   DISABLED_CheckPersistenPagesSavedInCorrectDir
 #else
@@ -1124,7 +1124,7 @@ TEST_F(OfflinePageModelTaskifiedTest,
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PublishPageFailure DISABLED_PublishPageFailure
 #else
 #define MAYBE_PublishPageFailure PublishPageFailure
@@ -1155,7 +1155,7 @@ TEST_F(OfflinePageModelTaskifiedTest, MAYBE_PublishPageFailure) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CheckPublishInternalArchive DISABLED_CheckPublishInternalArchive
 #else
 #define MAYBE_CheckPublishInternalArchive CheckPublishInternalArchive
@@ -1239,7 +1239,7 @@ TEST_F(OfflinePageModelTaskifiedTest, GetAllPages) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_StartupMaintenanceTaskExecuted \
   DISABLED_StartupMaintenanceTaskExecuted
 #else
@@ -1361,7 +1361,7 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PersistentPageConsistencyCheckExecuted \
   DISABLED_PersistentPageConsistencyCheckExecuted
 #else

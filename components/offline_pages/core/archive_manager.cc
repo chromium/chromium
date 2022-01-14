@@ -72,7 +72,7 @@ void GetStorageStatsImpl(const base::FilePath& temporary_archives_dir,
     base::FileEnumerator file_enumerator(public_archives_dir, false,
                                          base::FileEnumerator::FILES);
     while (!file_enumerator.Next().empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       std::string extension = base::WideToUTF8(
           file_enumerator.GetInfo().GetName().FinalExtension());
 #else
