@@ -8,9 +8,19 @@
 
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+
+namespace {
+
+void UmaHistogramFinchConfigValidation(bool valid) {
+  base::UmaHistogramBoolean(
+      "PrivacyBudget.Identifiability.FinchConfigValidationResult", valid);
+}
+
+}  // namespace
 
 // static
 IdentifiabilityStudyGroupSettings
@@ -55,7 +65,9 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
           features::kMaxIdentifiabilityStudyActiveSurfaceBudget)),
       blocks_(std::move(blocks)),
       blocks_weights_(std::move(blocks_weights)) {
-  if (!Validate())
+  bool validates = Validate();
+  UmaHistogramFinchConfigValidation(validates);
+  if (!validates)
     enabled_ = false;
 }
 
