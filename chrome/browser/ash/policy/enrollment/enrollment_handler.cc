@@ -106,7 +106,7 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
   return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
 }
 
-// A utility function of base::ReadFileToString which returns an optional
+// A utility funciton of base::ReadFileToString which returns an optional
 // string.
 // TODO(mukai): move this to base/files.
 absl::optional<std::string> ReadFileToOptionalString(
@@ -284,7 +284,7 @@ void EnrollmentHandler::StartEnrollment() {
 
   // Currently reven devices don't support sever-backed state keys, but they
   // also don't support FRE/AutoRE so don't block enrollment on the
-  // availability of state keys.
+  // availablility of state keys.
   // TODO(b/208705225): Remove this special case when reven supports state keys.
   if (ash::switches::IsRevenBranding()) {
     LOG(WARNING) << "Skipping state keys.";
