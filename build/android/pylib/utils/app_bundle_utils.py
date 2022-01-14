@@ -6,8 +6,9 @@ import json
 import logging
 import os
 import re
+import shutil
 import sys
-import tempfile
+import zipfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'gyp'))
 
@@ -40,6 +41,19 @@ def _CreateDeviceSpec(bundle_path, sdk_version, locales):
       'supportedAbis': _ALL_ABIS,  # Our .aab files are already split on abi.
       'supportedLocales': locales,
   }
+
+
+def _CreateSystemBundle(src_bundle, dst_bundle):
+  # Modifies the BundleConfig.pb of the given .aab to remove the "classes*.dex"
+  # entry from the "uncompressedGlob" list (or rather, replace it with X's).
+  with zipfile.ZipFile(src_bundle) as src, \
+      zipfile.ZipFile(dst_bundle, 'w') as dst:
+    for info in src.infolist():
+      data = src.read(info)
+      if info.filename == 'BundleConfig.pb':
+        entry = b'classes*.dex'
+        data = data.replace(entry, b'X' * len(entry))
+      dst.writestr(info, data)
 
 
 def GenerateBundleApks(bundle_path,
@@ -98,17 +112,23 @@ def GenerateBundleApks(bundle_path,
 
   def rebuild():
     logging.info('Building %s', bundle_apks_path)
-    with tempfile.NamedTemporaryFile(suffix='.apks') as tmp_apks_file:
+    with build_utils.TempDir() as tmp_dir:
+      tmp_apks_file = os.path.join(tmp_dir, 'output.apks')
       cmd_args = [
           'build-apks',
           '--aapt2=%s' % aapt2_path,
-          '--output=%s' % tmp_apks_file.name,
-          '--bundle=%s' % bundle_path,
+          '--output=%s' % tmp_apks_file,
           '--ks=%s' % keystore_path,
           '--ks-pass=pass:%s' % keystore_password,
           '--ks-key-alias=%s' % keystore_alias,
           '--overwrite',
       ]
+      input_bundle_path = bundle_path
+      if mode in _SYSTEM_MODES:
+        input_bundle_path = os.path.join(tmp_dir, 'system.aab')
+        _CreateSystemBundle(bundle_path, input_bundle_path)
+
+      cmd_args += ['--bundle=%s' % input_bundle_path]
 
       if local_testing:
         cmd_args += ['--local-testing']
@@ -126,18 +146,15 @@ def GenerateBundleApks(bundle_path,
                           (mode, OPTIMIZE_FOR_OPTIONS))
         cmd_args += ['--optimize-for=' + optimize_for]
 
-      with tempfile.NamedTemporaryFile(mode='w', suffix='.json') as spec_file:
-        if device_spec:
-          json.dump(device_spec, spec_file)
-          spec_file.flush()
-          cmd_args += ['--device-spec=' + spec_file.name]
-        bundletool.RunBundleTool(cmd_args)
+      if device_spec:
+        spec_file = os.path.join(tmp_dir, 'device.json')
+        with open(spec_file, 'w') as f:
+          json.dump(device_spec, f)
+        cmd_args += ['--device-spec=' + spec_file]
 
-      # Make the resulting .apks file hermetic.
-      with build_utils.TempDir() as temp_dir, \
-        build_utils.AtomicOutput(bundle_apks_path, only_if_changed=False) as f:
-        files = build_utils.ExtractAll(tmp_apks_file.name, temp_dir)
-        build_utils.DoZip(files, f, base_dir=temp_dir)
+      bundletool.RunBundleTool(cmd_args)
+
+      shutil.move(tmp_apks_file, bundle_apks_path)
 
   if check_for_noop:
     input_paths = [

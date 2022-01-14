@@ -203,7 +203,7 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
   if not compress_dex:
     # Explicit glob required only when using bundletool. Play Store looks for
     # "uncompressDexFiles" set below.
-    uncompressed_globs.extend('classes*.dex')
+    uncompressed_globs.append('classes*.dex')
 
   data = {
       'optimizations': {
