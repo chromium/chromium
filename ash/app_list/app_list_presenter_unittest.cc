@@ -1865,6 +1865,18 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   EXPECT_TRUE(apps_grid_view_->GetItemViewAt(3)->item()->is_folder());
   EXPECT_EQ(dragged_item->folder_id(),
             apps_grid_view_->GetItemViewAt(3)->item()->id());
+
+  // With productivity launcher enabled, newly created folder should open and
+  // have the name input focused.
+  EXPECT_EQ(productivity_launcher_param(),
+            GetAppListTestHelper()->IsInFolderView());
+  if (productivity_launcher_param()) {
+    EXPECT_EQ(dragged_item->folder_id(), folder_view()->folder_item()->id());
+    EXPECT_TRUE(folder_view()
+                    ->folder_header_view()
+                    ->GetFolderNameViewForTest()
+                    ->HasFocus());
+  }
 }
 
 // Tests that an item can be removed just after creating a folder that contains

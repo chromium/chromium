@@ -408,8 +408,8 @@ void AppsContainerView::OnActiveAppListModelsChanged(
   UpdateForActiveAppListModel();
 }
 
-void AppsContainerView::ShowFolderForItemView(
-    AppListItemView* folder_item_view) {
+void AppsContainerView::ShowFolderForItemView(AppListItemView* folder_item_view,
+                                              bool focus_name_input) {
   // Prevent new animations from starting if there are currently animations
   // pending. This fixes crbug.com/357099.
   if (app_list_folder_view_->IsAnimationRunning())
@@ -427,9 +427,12 @@ void AppsContainerView::ShowFolderForItemView(
   // silently focus the first item in the folder to avoid showing the selection
   // highlight or announcing to A11y, but still ensuring the arrow keys navigate
   // from the first item.
-  const bool silently = !apps_grid_view()->has_selected_view();
-  app_list_folder_view_->FocusFirstItem(silently);
-
+  if (focus_name_input) {
+    app_list_folder_view_->FocusNameInput();
+  } else {
+    const bool silently = !apps_grid_view()->has_selected_view();
+    app_list_folder_view_->FocusFirstItem(silently);
+  }
   // Disable all the items behind the folder so that they will not be reached
   // during focus traversal.
   DisableFocusForShowingActiveFolder(true);
@@ -960,10 +963,10 @@ void AppsContainerView::OnShown() {
 
 void AppsContainerView::OnWillBeHidden() {
   DVLOG(1) << __FUNCTION__;
-  if (show_state_ == SHOW_APPS || show_state_ == SHOW_ITEM_REPARENT)
-    apps_grid_view_->EndDrag(true);
-  else if (show_state_ == SHOW_ACTIVE_FOLDER)
+  if (show_state_ == SHOW_ACTIVE_FOLDER)
     app_list_folder_view_->CloseFolderPage();
+  else
+    apps_grid_view_->CancelDragWithNoDropAnimation();
 }
 
 void AppsContainerView::OnHidden() {

@@ -23,7 +23,10 @@ class AppListFolderController {
   // Shows a folder view for the provided app list folder item view. The folder
   // will be anchored at `folder_item_view`, and it will show the contents of
   // the associated folder item (`folder_item_view->item()`).
-  virtual void ShowFolderForItemView(AppListItemView* folder_item_view) = 0;
+  // `focus_name_input` indicates whether the folder name textfield should
+  // receive focus by default.
+  virtual void ShowFolderForItemView(AppListItemView* folder_item_view,
+                                     bool focus_name_input) = 0;
 
   // Shows the root level apps list. Called when the UI navigates back from the
   // folder for `folder_item_view`. If `folder_item_view` is nullptr skips

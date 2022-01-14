@@ -127,6 +127,9 @@ IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemMerge) {
   const size_t default_top_level_item_count =
       app_list_test_api()->GetTopLevelViewIdList().size();
 
+  base::RunLoop run_loop;
+  app_list_test_api()->SetFolderViewAnimationCallback(run_loop.QuitClosure());
+
   // Merge the first item with the second one.
   StartAppListItemDrag(
       root_apps_grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/0));
@@ -137,6 +140,11 @@ IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemMerge) {
   event_generator_->ReleaseLeftButton();
   root_apps_grid_test_api_->WaitForItemMoveAnimationDone();
 
+  // The folder created by dragging one item on another should automatically
+  // open the new folder - wait for the folder show animation to complete.
+  run_loop.Run();
+  EXPECT_FALSE(app_list_test_api()->IsFolderViewAnimating());
+
   // Verify that the top level item count decreases by one.
   EXPECT_EQ(default_top_level_item_count - 1,
             app_list_test_api()->GetTopLevelViewIdList().size());
@@ -145,19 +153,6 @@ IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemMerge) {
   ash::AppListItemView* folder_item =
       root_apps_grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/0);
   EXPECT_TRUE(folder_item->is_folder());
-
-  // Click at the folder item and wait until the animation completes.
-  event_generator_->MoveMouseTo(
-      root_apps_grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/0)
-          ->GetBoundsInScreen()
-          .CenterPoint());
-  base::RunLoop run_loop;
-  app_list_test_api()->SetFolderViewAnimationCallback(run_loop.QuitClosure());
-  event_generator_->ClickLeftButton();
-  run_loop.Run();
-
-  // Verify that the folder view animation ends.
-  EXPECT_FALSE(app_list_test_api()->IsFolderViewAnimating());
 
   // Verify that the folder apps grid contains two items.
   ash::AppsGridView* folder_apps_grid_view =

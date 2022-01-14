@@ -465,8 +465,8 @@ bool AppListBubbleView::CanSelectSearchResults() {
          search_page_->search_view()->CanSelectSearchResults();
 }
 
-void AppListBubbleView::ShowFolderForItemView(
-    AppListItemView* folder_item_view) {
+void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
+                                              bool focus_name_input) {
   DVLOG(1) << __FUNCTION__;
   if (folder_view_->IsAnimationRunning())
     return;
@@ -481,7 +481,9 @@ void AppListBubbleView::ShowFolderForItemView(
   folder_background_view_->SetVisible(true);
   folder_view_->ScheduleShowHideAnimation(/*show=*/true,
                                           /*hide_for_reparent=*/false);
-  if (apps_page_->scrollable_apps_grid_view()->has_selected_view()) {
+  if (focus_name_input) {
+    folder_view_->FocusNameInput();
+  } else if (apps_page_->scrollable_apps_grid_view()->has_selected_view()) {
     // If the user is keyboard navigating, move focus into the folder.
     folder_view_->FocusFirstItem(/*silently=*/false);
   } else {

@@ -132,6 +132,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the maximum size of the entire tile grid.
   gfx::Size GetMaximumTileGridSize(int cols, int rows_per_page) const;
 
+  // Cancels any in progress drag without running icon drop animation. If an
+  // icon drop animation is in progress, it will be canceled, too.
+  void CancelDragWithNoDropAnimation();
+
   // This resets the grid view to a fresh state for showing the app list.
   void ResetForShowApps();
 
@@ -618,10 +622,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // On success, `folder_id` will be set to the ID of the folder to which the
   // item was moved. This may be a folder that was created by the move, or a
   // preexisting folder.
+  // `is_new_folder` indicates whether the move created a new folder.
   bool MoveItemToFolder(AppListItem* item,
                         const GridIndex& target,
                         AppListAppMovingType move_type,
-                        std::string* folder_id);
+                        std::string* folder_id,
+                        bool* is_new_folder);
 
   // Updates data model for re-parenting a folder item to a new position in top
   // level item list. The view model is will get updated in response to the data
@@ -885,6 +891,12 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // True if the drag_view_ item is a folder item being dragged for reparenting.
   bool dragging_for_reparent_item_ = false;
+
+  // The folder that should be opened after drag icon drop animation finishes.
+  // This is set when an item drag ends in a folder creation, in which case the
+  // created folder is expected to open after drag (assuming productivity
+  // launcher feature is enabled).
+  std::string folder_to_open_after_drag_icon_animation_;
 
   // When dragging for reparent in the root view, a callback registered by the
   // originating, hidden grid that when called will cancel drag operation in the

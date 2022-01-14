@@ -103,6 +103,9 @@ class ASH_EXPORT AppListFolderView
   // Closes the folder page and goes back the top level page.
   void CloseFolderPage();
 
+  // Focuses the name input text-field in the folder header.
+  void FocusNameInput();
+
   // Focuses the first app item. Does not set the selection or perform a11y
   // announce if `silently` is true.
   void FocusFirstItem(bool silently);

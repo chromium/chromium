@@ -1135,7 +1135,7 @@ void AppListFolderView::HideViewImmediately() {
 
 void AppListFolderView::ResetItemsGridForClose() {
   if (items_grid_view()->has_dragged_item())
-    items_grid_view()->EndDrag(true);
+    items_grid_view()->CancelDragWithNoDropAnimation();
   items_grid_view()->ClearSelectedView();
 }
 
@@ -1146,6 +1146,10 @@ void AppListFolderView::CloseFolderPage() {
   const bool select_folder = items_grid_view()->has_selected_view();
   ResetItemsGridForClose();
   folder_controller_->ShowApps(folder_item_view_, select_folder);
+}
+
+void AppListFolderView::FocusNameInput() {
+  folder_header_view_->SetTextFocus();
 }
 
 void AppListFolderView::FocusFirstItem(bool silent) {

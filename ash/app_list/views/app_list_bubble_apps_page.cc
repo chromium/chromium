@@ -316,6 +316,12 @@ void AppListBubbleAppsPage::Layout() {
     gradient_helper_->UpdateGradientZone();
 }
 
+void AppListBubbleAppsPage::VisibilityChanged(views::View* starting_from,
+                                              bool is_visible) {
+  if (!is_visible)
+    scrollable_apps_grid_view_->CancelDragWithNoDropAnimation();
+}
+
 void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {

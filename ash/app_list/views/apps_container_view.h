@@ -143,7 +143,8 @@ class ASH_EXPORT AppsContainerView
                                     SearchModel* search_model) override;
 
   // AppListFolderController:
-  void ShowFolderForItemView(AppListItemView* folder_item_view) override;
+  void ShowFolderForItemView(AppListItemView* folder_item_view,
+                             bool focus_name_input) override;
   void ShowApps(AppListItemView* folder_item_view, bool select_folder) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;

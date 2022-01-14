@@ -349,6 +349,7 @@ AppsGridView::~AppsGridView() {
   // `OnBoundsAnimatorDone`, which uses `bounds_animator_`, is called on
   // `drag_icon_proxy_` destruction. Reset `drag_icon_proxy_` early, while
   // `bounds_animator_` is still around.
+  folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
 }
 
@@ -403,10 +404,7 @@ gfx::Size AppsGridView::GetMaximumTileGridSize(int cols,
 }
 
 void AppsGridView::ResetForShowApps() {
-  ClearDragState();
-  drag_view_hider_.reset();
-  folder_icon_item_hider_.reset();
-  drag_icon_proxy_.reset();
+  CancelDragWithNoDropAnimation();
 
   layer()->SetOpacity(1.0f);
   SetVisible(true);
@@ -420,6 +418,14 @@ void AppsGridView::ResetForShowApps() {
     }
     CHECK_EQ(item_count, view_model_.view_size());
   }
+}
+
+void AppsGridView::CancelDragWithNoDropAnimation() {
+  EndDrag(/*cancel=*/true);
+  drag_view_hider_.reset();
+  folder_icon_item_hider_.reset();
+  folder_to_open_after_drag_icon_animation_.clear();
+  drag_icon_proxy_.reset();
 }
 
 void AppsGridView::DisableFocusForShowingActiveFolder(bool disabled) {
@@ -491,6 +497,7 @@ bool AppsGridView::InitiateDrag(AppListItemView* view,
   // Finalize previous drag icon animation if it's still in progress.
   drag_view_hider_.reset();
   folder_icon_item_hider_.reset();
+  folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
 
   items_need_layer_for_drag_ = true;
@@ -674,12 +681,15 @@ void AppsGridView::EndDrag(bool cancel) {
       UpdateDropTargetRegion();
       if (drop_target_region_ == ON_ITEM && DraggedItemCanEnterFolder() &&
           DropTargetIsValidFolder()) {
+        bool is_new_folder = false;
         if (MoveItemToFolder(drag_item_, drop_target_, kMoveByDragIntoFolder,
-                             &target_folder_id)) {
+                             &target_folder_id, &is_new_folder)) {
           MaybeCreateFolderDroppingAccessibilityEvent();
           // If move to folder created a folder, layout the grid to ensure the
           // created folder's bounds are correct.
           Layout();
+          if (is_new_folder && features::IsProductivityLauncherEnabled())
+            folder_to_open_after_drag_icon_animation_ = target_folder_id;
         }
       } else if (IsValidReorderTargetIndex(drop_target_)) {
         // Ensure reorder event has already been announced by the end of drag.
@@ -1397,6 +1407,16 @@ void AppsGridView::OnDragIconDropDone() {
   folder_icon_item_hider_.reset();
   drag_icon_proxy_.reset();
   OnBoundsAnimatorDone(nullptr);
+
+  if (!folder_to_open_after_drag_icon_animation_.empty()) {
+    AppListItemView* folder_view =
+        GetItemViewForItem(folder_to_open_after_drag_icon_animation_);
+    folder_to_open_after_drag_icon_animation_.clear();
+    if (folder_view && folder_view->is_folder()) {
+      folder_controller_->ShowFolderForItemView(folder_view,
+                                                /*focus_name_input=*/true);
+    }
+  }
 }
 
 bool AppsGridView::DraggedItemCanEnterFolder() {
@@ -1584,14 +1604,21 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
   const bool target_view_is_folder = target_view->is_folder();
 
   std::string folder_id;
+  bool is_new_folder = false;
   if (MoveItemToFolder(selected_view_->item(), target_index,
-                       kMoveByKeyboardIntoFolder, &folder_id)) {
+                       kMoveByKeyboardIntoFolder, &folder_id, &is_new_folder)) {
     a11y_announcer_->AnnounceKeyboardFoldering(
         moving_view_title, target_view_title, target_view_is_folder);
     Layout();
     AppListItemView* folder_view = GetItemViewForItem(folder_id);
-    if (folder_view)
-      folder_view->RequestFocus();
+    if (folder_view) {
+      if (is_new_folder && features::IsProductivityLauncherEnabled()) {
+        folder_controller_->ShowFolderForItemView(folder_view,
+                                                  /*focus_name_input=*/true);
+      } else {
+        folder_view->RequestFocus();
+      }
+    }
   }
 }
 
@@ -1731,13 +1758,16 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
     UpdateDropTargetRegion();
     if (drop_target_region_ == ON_ITEM && DropTargetIsValidFolder() &&
         DraggedItemCanEnterFolder()) {
+      bool is_new_folder = false;
       if (MoveItemToFolder(drag_item, drop_target_, kMoveIntoAnotherFolder,
-                           &target_folder_id)) {
+                           &target_folder_id, &is_new_folder)) {
         // Announce folder dropping event before end of drag of reparented item.
         MaybeCreateFolderDroppingAccessibilityEvent();
         // If move to folder created a folder, layout the grid to ensure the
         // created folder's bounds are correct.
         Layout();
+        if (is_new_folder && features::IsProductivityLauncherEnabled())
+          folder_to_open_after_drag_icon_animation_ = target_folder_id;
       } else {
         cancel_reparent = true;
       }
@@ -1989,7 +2019,8 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
 bool AppsGridView::MoveItemToFolder(AppListItem* item,
                                     const GridIndex& target,
                                     AppListAppMovingType move_type,
-                                    std::string* folder_id) {
+                                    std::string* folder_id,
+                                    bool* is_new_folder) {
   const std::string source_item_id = item->id();
   const std::string source_folder_id = item->folder_id();
 
@@ -2002,6 +2033,8 @@ bool AppsGridView::MoveItemToFolder(AppListItem* item,
   // reparent.
   if (target_view_item_id == source_folder_id)
     return false;
+
+  *is_new_folder = !target_view->is_folder();
 
   {
     ScopedModelUpdate update(this);
@@ -2635,7 +2668,8 @@ void AppsGridView::OnAppListItemViewActivated(
     // Note that `folder_controller_` will be null inside a folder apps grid,
     // but those grid are not expected to contain folder items.
     DCHECK(folder_controller_);
-    folder_controller_->ShowFolderForItemView(pressed_item_view);
+    folder_controller_->ShowFolderForItemView(pressed_item_view,
+                                              /*focus_name_input=*/false);
     return;
   }
 
