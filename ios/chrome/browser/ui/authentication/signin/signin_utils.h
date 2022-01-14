@@ -36,10 +36,14 @@ void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
 
 // Returns a boolean indicating whether browser sign-in is allowed across the
 // app.
+// DEPRECATED. Needs to use AuthenticationService::GetServiceStatus().
+// TODO(crbug.com/1242320): Need to remove this method.
 bool IsSigninAllowed(const PrefService* prefs);
 
 // TODO(crbug.com/1271785): Move this to enterprise_utils.
 // Returns a boolean indicating whether policy allows browser sign-in.
+// DEPRECATED. Needs to use AuthenticationService::GetServiceStatus().
+// TODO(crbug.com/1242320): Need to remove this method.
 bool IsSigninAllowedByPolicy();
 
 // Returns the current sign-in state of primary identity.

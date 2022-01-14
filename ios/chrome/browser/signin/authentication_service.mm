@@ -21,7 +21,9 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service_observer.h"
@@ -134,6 +136,22 @@ void AuthenticationService::Initialize(
       ios::GetChromeBrowserProvider().GetChromeIdentityService());
   account_manager_service_observation_.Observe(account_manager_service_);
 
+  // Register for prefs::kSigninAllowed.
+  pref_change_registrar_.Init(pref_service_);
+  PrefChangeRegistrar::NamedChangeCallback signin_allowed_callback =
+      base::BindRepeating(&AuthenticationService::OnSigninAllowedChanged,
+                          base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kSigninAllowed, signin_allowed_callback);
+
+  // Register for prefs::kBrowserSigninPolicy.
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+  local_pref_change_registrar_.Init(local_pref_service);
+  PrefChangeRegistrar::NamedChangeCallback browser_signin_policy_callback =
+      base::BindRepeating(&AuthenticationService::OnBrowserSigninPolicyChanged,
+                          base::Unretained(this));
+  local_pref_change_registrar_.Add(prefs::kBrowserSigninPolicy,
+                                   browser_signin_policy_callback);
+
   // Reload credentials to ensure the accounts from the token service are
   // up-to-date.
   // As UpdateHaveAccountsChangedAtColdStart is only called while the
@@ -190,6 +208,27 @@ void AuthenticationService::AddObserver(
 void AuthenticationService::RemoveObserver(
     AuthenticationServiceObserver* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus() {
+  if (!account_manager_service_->IsServiceSupported()) {
+    return ServiceStatus::SigninDisabledByInternal;
+  }
+  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
+      GetApplicationContext()->GetLocalState()->GetInteger(
+          prefs::kBrowserSigninPolicy));
+  switch (policy_mode) {
+    case BrowserSigninMode::kDisabled:
+      return ServiceStatus::SigninDisabledByPolicy;
+    case BrowserSigninMode::kForced:
+      return ServiceStatus::SigninForcedByPolicy;
+    case BrowserSigninMode::kEnabled:
+      break;
+  }
+  if (!pref_service_->GetBoolean(prefs::kSigninAllowed)) {
+    return ServiceStatus::SigninDisabledByUser;
+  }
+  return ServiceStatus::SigninAllowed;
 }
 
 void AuthenticationService::OnApplicationWillEnterForeground() {
@@ -323,7 +362,10 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
 }
 
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
-  CHECK(signin::IsSigninAllowed(pref_service_));
+  ServiceStatus status = GetServiceStatus();
+  CHECK(status == ServiceStatus::SigninAllowed ||
+        status == ServiceStatus::SigninForcedByPolicy)
+      << "Service status " << static_cast<int>(status);
   DCHECK(account_manager_service_->IsValidIdentity(identity));
 
   primary_account_was_restricted_ = false;
@@ -666,5 +708,22 @@ void AuthenticationService::FirePrimaryAccountRestricted() {
   primary_account_was_restricted_ = true;
   for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountRestricted();
+  }
+}
+
+void AuthenticationService::OnSigninAllowedChanged(const std::string& name) {
+  DCHECK_EQ(prefs::kSigninAllowed, name);
+  FireServiceStatusNotification();
+}
+
+void AuthenticationService::OnBrowserSigninPolicyChanged(
+    const std::string& name) {
+  DCHECK_EQ(prefs::kBrowserSigninPolicy, name);
+  FireServiceStatusNotification();
+}
+
+void AuthenticationService::FireServiceStatusNotification() {
+  for (auto& observer : observer_list_) {
+    observer.OnServiceStatusChanged();
   }
 }

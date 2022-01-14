@@ -85,6 +85,9 @@ class ChromeAccountManagerService : public KeyedService,
   UIImage* GetIdentityAvatarWithIdentity(ChromeIdentity* identity,
                                          IdentityAvatarSize size);
 
+  // Returns true if the service can be used.
+  bool IsServiceSupported() const;
+
   // KeyedService implementation.
   void Shutdown() override;
 

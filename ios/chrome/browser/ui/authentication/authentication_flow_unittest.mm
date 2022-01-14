@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -121,6 +122,7 @@ class AuthenticationFlowTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AuthenticationFlow* authentication_flow_ = nullptr;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;

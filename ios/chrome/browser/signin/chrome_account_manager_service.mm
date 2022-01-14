@@ -260,6 +260,12 @@ UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
   return [avatar_cache resizedAvatarForIdentity:identity];
 }
 
+bool ChromeAccountManagerService::IsServiceSupported() const {
+  ios::ChromeIdentityService* identity_service =
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
+  return identity_service->IsServiceSupported();
+}
+
 void ChromeAccountManagerService::Shutdown() {
   if (pref_service_) {
     registrar_.RemoveAll();

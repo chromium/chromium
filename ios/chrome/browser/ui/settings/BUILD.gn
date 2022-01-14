@@ -258,6 +258,7 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/settings/password",
     "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",

@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/chrome/test/testing_application_context.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -57,20 +58,18 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             std::move(policy_service_), &schema_registry_));
-    std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
 
     InitPolicyMap();
 
-    authentication_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state.get());
-    account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state.get());
-
     scoped_browser_state_manager_ =
         std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
-            std::make_unique<TestChromeBrowserStateManager>(
-                std::move(browser_state)));
+            std::make_unique<TestChromeBrowserStateManager>(builder.Build()));
+
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            GetBrowserState());
   }
 
   ProfileReportGeneratorIOSTest(const ProfileReportGeneratorIOSTest&) = delete;
@@ -118,6 +117,12 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
     EXPECT_TRUE(report->is_detail_available());
 
     return report;
+  }
+
+  ChromeBrowserState* GetBrowserState() {
+    return GetApplicationContext()
+        ->GetChromeBrowserStateManager()
+        ->GetLastUsedBrowserState();
   }
 
   ReportingDelegateFactoryIOS delegate_factory_;

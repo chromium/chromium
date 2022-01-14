@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "testing/platform_test.h"
@@ -107,6 +108,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   base::test::TaskEnvironment environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeChromeIdentity* identity_ = nullptr;
 

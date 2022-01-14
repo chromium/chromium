@@ -15,6 +15,7 @@
 @protocol AuthenticationServiceObserving <NSObject>
 @optional
 - (void)onPrimaryAccountRestricted;
+- (void)onServiceStatusChanged;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -28,6 +29,7 @@ class AuthenticationServiceObserverBridge
 
   // AuthenticationServiceObserver implementation.
   void OnPrimaryAccountRestricted() override;
+  void OnServiceStatusChanged() override;
 
  private:
   __weak id<AuthenticationServiceObserving> observer_ = nil;

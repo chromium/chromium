@@ -25,6 +25,7 @@
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/credential_provider/memory_credential_store.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -115,6 +116,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   TestingPrefServiceSimple testing_pref_service_;
   base::ScopedTempDir temp_dir_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   scoped_refptr<PasswordStore> password_store_;
   id<CredentialStore> credential_store_;
   AuthenticationServiceFake* auth_service_;
