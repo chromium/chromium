@@ -22,10 +22,6 @@ class FollowProvider;
 class MailtoHandlerProvider;
 class UserFeedbackProvider;
 
-namespace base {
-class CommandLine;
-}
-
 namespace web {
 class WebState;
 }
@@ -80,11 +76,6 @@ class ChromeBrowserProvider {
   ChromeBrowserProvider();
   virtual ~ChromeBrowserProvider();
 
-  // Appends additional command-line flags. Called before web startup.
-  virtual void AppendSwitchesFromExperimentalSettings(
-      NSUserDefaults* experimental_settings,
-      base::CommandLine* command_line) const;
-
   // This is called after web startup.
   virtual void Initialize() const;
 
@@ -97,9 +88,6 @@ class ChromeBrowserProvider {
   virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
   // Creates and returns a new styled text field.
   virtual UITextField* CreateStyledTextField() const NS_RETURNS_RETAINED;
-
-  // Attaches any embedder-specific browser agents to the given |browser|.
-  virtual void AttachBrowserAgents(Browser* browser) const;
 
   virtual id<LogoVendor> CreateLogoVendor(Browser* browser,
                                           web::WebState* web_state) const

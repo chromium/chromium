@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "components/metrics/metrics_provider.h"
-#import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
@@ -47,13 +46,6 @@ ChromeBrowserProvider::~ChromeBrowserProvider() {
     observer.OnChromeBrowserProviderWillBeDestroyed();
 }
 
-void ChromeBrowserProvider::AppendSwitchesFromExperimentalSettings(
-    NSUserDefaults* experimental_settings,
-    base::CommandLine* command_line) const {
-  provider::AppendSwitchesFromExperimentalSettings(experimental_settings,
-                                                   command_line);
-}
-
 void ChromeBrowserProvider::Initialize() const {
   provider::InitializeUI();
 }
@@ -78,10 +70,6 @@ ChromeBrowserProvider::GetChromeTrustedVaultService() {
 
 UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
   return provider::CreateStyledTextField();
-}
-
-void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {
-  provider::AttachBrowserAgents(browser);
 }
 
 id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
