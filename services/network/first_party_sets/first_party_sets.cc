@@ -103,6 +103,13 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
 void FirstPartySets::ParseAndSet(base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enabled_ || component_sets_parse_progress_ != Progress::kNotStarted) {
+    if (sets_file.IsValid()) {
+      auto delete_file =
+          base::BindOnce([](base::File) {}, std::move(sets_file));
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          std::move(delete_file));
+    }
     return;
   }
 
