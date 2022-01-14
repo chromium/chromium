@@ -4,11 +4,13 @@
 
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
 
-#if defined(OS_WIN)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <aclapi.h>
 #include <sddl.h>
 #include <windows.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #include <algorithm>
 #include <array>
@@ -75,19 +77,19 @@
 #include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_switching_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
-#endif  // OS_MAC
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "ui/display/win/screen_win.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMECAST)
 #include "chromecast/chromecast_buildflags.h"
 #endif
@@ -108,7 +110,7 @@ bool CanUpdateGmbGpuPreferences() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // NOINLINE to ensure this function is used in crash reports.
 NOINLINE void FatalGpuProcessLaunchFailureOnBackground() {
   if (!base::android::ApplicationStatusListener::HasVisibleActivities()) {
@@ -124,7 +126,7 @@ NOINLINE void FatalGpuProcessLaunchFailureOnBackground() {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This function checks the created file to ensure it wasn't redirected
 // to another location using a symbolic link or a hard link.
 bool ValidateFileHandle(HANDLE cache_file_handle,
@@ -222,7 +224,7 @@ void EnableIntelShaderCache() {
     }
   }
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // These values are persistent to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -352,7 +354,7 @@ void UpdateDriverBugListStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void DisplayReconfigCallback(CGDirectDisplayID display,
                              CGDisplayChangeSummaryFlags flags,
                              void* gpu_data_manager) {
@@ -365,7 +367,7 @@ void DisplayReconfigCallback(CGDirectDisplayID display,
 
   manager->HandleGpuSwitch();
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 // Block all domains' use of 3D APIs for this many milliseconds if
 // approaching a threshold where system stability might be compromised.
@@ -425,7 +427,7 @@ bool ALLOW_UNUSED_TYPE VulkanAllowed() {
 
 // Determines if Metal is available for the GPU process.
 bool ALLOW_UNUSED_TYPE MetalAllowed() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(features::kMetal);
 #else
   return false;
@@ -516,7 +518,7 @@ gpu::VideoCodecProfile ToGpuVideoCodecProfile(
   return gpu::VIDEO_CODEC_PROFILE_UNKNOWN;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void CollectExtraDevicePerfInfo(const gpu::GPUInfo& gpu_info,
                                 gpu::DevicePerfInfo* device_perf_info) {
   device_perf_info->intel_gpu_generation = gpu::GetIntelGpuGeneration(gpu_info);
@@ -555,7 +557,7 @@ class HDRProxy {
   }
 };
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }  // anonymous namespace
 
 GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
@@ -563,9 +565,9 @@ GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
       observer_list_(base::MakeRefCounted<GpuDataManagerObserverList>()) {
   DCHECK(owner_);
   InitializeGpuModes();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EnableIntelShaderCache();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableGpuCompositing)) {
     SetGpuCompositingDisabled();
@@ -576,9 +578,9 @@ GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
     AppendGpuCommandLine(command_line, GPU_PROCESS_KIND_SANDBOXED);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   CGDisplayRegisterReconfigurationCallback(DisplayReconfigCallback, owner_);
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   // For testing only.
   if (command_line->HasSwitch(switches::kDisableDomainBlockingFor3DAPIs))
@@ -586,7 +588,7 @@ GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
 }
 
 GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   CGDisplayRemoveReconfigurationCallback(DisplayReconfigCallback, owner_);
 #endif
 }
@@ -605,7 +607,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   // Android and Chrome OS can't switch to software compositing. If the GPU
   // process initialization fails or GPU process is too unstable then crash the
   // browser process to reset everything.
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
   if (SwiftShaderAllowed())
     fallback_modes_.push_back(gpu::GpuMode::SWIFTSHADER);
@@ -620,13 +622,13 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     fallback_modes_.clear();
     fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
 #endif
-#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     CHECK(false) << "GPU acceleration is required on certain platforms!";
 #endif  // IS_CHROMECAST
   } else {
     // On Fuchsia Vulkan must be used when it's enabled by the WebEngine
     // embedder. Falling back to SW compositing in that case is not supported.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     fallback_modes_.clear();
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_VULKAN);
 #else
@@ -636,7 +638,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
       fallback_modes_.push_back(gpu::GpuMode::HARDWARE_VULKAN);
     if (MetalAllowed())
       fallback_modes_.push_back(gpu::GpuMode::HARDWARE_METAL);
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
   }
 
   FallBackToNextGpuMode();
@@ -730,7 +732,7 @@ void GpuDataManagerImplPrivate::RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
 }
 
 void GpuDataManagerImplPrivate::RequestDxDiagNodeData() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu_info_dx_diag_requested_)
     return;
   gpu_info_dx_diag_requested_ = true;
@@ -770,7 +772,7 @@ void GpuDataManagerImplPrivate::RequestDxDiagNodeData() {
 }
 
 void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::TimeDelta delta;
   if (delayed &&
@@ -837,7 +839,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
 }
 
 void GpuDataManagerImplPrivate::RequestGpuSupportedVulkanVersion(bool delayed) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::TimeDelta delta;
   if (delayed &&
@@ -942,7 +944,7 @@ bool GpuDataManagerImplPrivate::IsEssentialGpuInfoAvailable() const {
 }
 
 bool GpuDataManagerImplPrivate::IsDx12VulkanVersionAvailable() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Certain gpu_integration_test needs dx12/Vulkan info. If this info is
   // needed, --no-delay-for-dx12-vulkan-info-collection should be added to the
   // browser command line, so that the collection of this info isn't delayed.
@@ -1013,7 +1015,7 @@ void GpuDataManagerImplPrivate::UnblockDomainFrom3DAPIs(const GURL& url) {
 void GpuDataManagerImplPrivate::UpdateGpuInfo(
     const gpu::GPUInfo& gpu_info,
     const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If GPU process crashes and launches again, GPUInfo will be sent back from
   // the new GPU process again, and may overwrite the DX12, Vulkan, DxDiagNode
   // info we already collected. This is to make sure it doesn't happen.
@@ -1027,7 +1029,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
       base::Milliseconds(5), base::Seconds(5), 50);
   UMA_HISTOGRAM_EXACT_LINEAR("GPU.GpuCount", gpu_info_.GpuCount(), 10);
   RecordDiscreteGpuHistograms(gpu_info_);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!dx_diagnostics.IsEmpty()) {
     gpu_info_.dx_diagnostics = dx_diagnostics;
   }
@@ -1037,7 +1039,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   if (vulkan_version != 0) {
     gpu_info_.vulkan_version = vulkan_version;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   bool needs_to_update_gpu_info_for_hardware_gpu =
       !gpu_info_for_hardware_gpu_.IsInitialized();
@@ -1049,7 +1051,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
     const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info_.active_gpu();
     const gpu::GPUInfo::GPUDevice& cached_active_gpu =
         gpu_info_for_hardware_gpu_.active_gpu();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (active_gpu.luid.HighPart != cached_active_gpu.luid.HighPart &&
         active_gpu.luid.LowPart != cached_active_gpu.luid.LowPart) {
       needs_to_update_gpu_info_for_hardware_gpu = true;
@@ -1059,7 +1061,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
         active_gpu.device_id != cached_active_gpu.device_id) {
       needs_to_update_gpu_info_for_hardware_gpu = true;
     }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   if (needs_to_update_gpu_info_for_hardware_gpu) {
@@ -1084,7 +1086,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   NotifyGpuInfoUpdate();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuDataManagerImplPrivate::UpdateDxDiagNode(
     const gpu::DxDiagNode& dx_diagnostics) {
   gpu_info_.dx_diagnostics = dx_diagnostics;
@@ -1226,7 +1228,7 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     const absl::optional<gpu::GpuFeatureInfo>&
         gpu_feature_info_for_hardware_gpu) {
   gpu_feature_info_ = gpu_feature_info;
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // With Vulkan or Metal, GL might be blocked, so make sure we don't fallback
   // to it later.
   if (HardwareAccelerationEnabled() &&
@@ -1341,7 +1343,7 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
       break;
     case gpu::GpuMode::SWIFTSHADER: {
       bool legacy_software_gl = true;
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
       // This setting makes WebGL run on SwANGLE instead of SwiftShader GL.
       legacy_software_gl = false;
 #endif
@@ -1382,14 +1384,14 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   gpu_preferences->gpu_startup_dialog =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       (kind == GPU_PROCESS_KIND_INFO_COLLECTION &&
        command_line->HasSwitch(switches::kGpu2StartupDialog)) ||
 #endif
       (kind == GPU_PROCESS_KIND_SANDBOXED &&
        command_line->HasSwitch(switches::kGpuStartupDialog));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (kind == GPU_PROCESS_KIND_INFO_COLLECTION) {
     gpu_preferences->disable_gpu_watchdog = true;
     gpu_preferences->enable_perf_data_collection = true;
@@ -1402,7 +1404,7 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
                                            .message_pump_type_for_gpu;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (gpu_mode_ != gpu::GpuMode::HARDWARE_METAL)
     gpu_preferences->enable_metal = false;
 #elif BUILDFLAG(ENABLE_VULKAN)
@@ -1490,7 +1492,7 @@ void GpuDataManagerImplPrivate::HandleGpuSwitch() {
 
 void GpuDataManagerImplPrivate::OnDisplayAdded(
     const display::Display& new_display) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu_info_dx_diag_requested_) {
     // Reset DxDiag flags so the data can be updated again
     gpu_info_dx_diag_requested_ = false;
@@ -1515,7 +1517,7 @@ void GpuDataManagerImplPrivate::OnDisplayAdded(
 
 void GpuDataManagerImplPrivate::OnDisplayRemoved(
     const display::Display& old_display) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu_info_dx_diag_requested_) {
     // Reset DxDiag flags so the data can be updated again
     gpu_info_dx_diag_requested_ = false;
@@ -1541,7 +1543,7 @@ void GpuDataManagerImplPrivate::OnDisplayRemoved(
 void GpuDataManagerImplPrivate::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu_info_dx_diag_requested_) {
     // Reset DxDiag flags so the data can be updated again
     gpu_info_dx_diag_requested_ = false;
@@ -1688,7 +1690,7 @@ gpu::GpuMode GpuDataManagerImplPrivate::GetGpuMode() const {
 
 void GpuDataManagerImplPrivate::FallBackToNextGpuMode() {
   if (fallback_modes_.empty()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     FatalGpuProcessLaunchFailureOnBackground();
 #endif
     IntentionallyCrashBrowserForUnusableGpuProcess();

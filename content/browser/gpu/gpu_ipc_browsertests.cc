@@ -151,7 +151,7 @@ class BrowserGpuChannelHostFactoryTest : public ContentBrowserTest {
 // establishes a GPU channel.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_Basic Basic
 #else
 #define MAYBE_Basic DISABLED_Basic
@@ -162,12 +162,12 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest, MAYBE_Basic) {
   EXPECT_TRUE(GetGpuChannel() != nullptr);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Test fails on Chromeos + Mac, flaky on Windows because UI Compositor
 // establishes a GPU channel.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AlreadyEstablished AlreadyEstablished
 #else
 #define MAYBE_AlreadyEstablished DISABLED_AlreadyEstablished
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 #endif
 
 // Test fails on Windows because GPU Channel set-up fails.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define MAYBE_GrContextKeepsGpuChannelAlive GrContextKeepsGpuChannelAlive
 #else
 #define MAYBE_GrContextKeepsGpuChannelAlive \
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 // establishes a GPU channel.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CrashAndRecover CrashAndRecover
 #else
 #define MAYBE_CrashAndRecover DISABLED_CrashAndRecover
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 // crbug.com/1224892: the test if flaky on linux and lacros.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
                        DISABLED_CreateTransferBuffer) {
   DCHECK(!IsChannelEstablished());

@@ -88,7 +88,7 @@ class TestGpuService : public viz::mojom::GpuService {
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) override {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RegisterDCOMPSurfaceHandle(
       mojo::PlatformHandle surface_handle,
       RegisterDCOMPSurfaceHandleCallback callback) override {}
@@ -126,11 +126,11 @@ class TestGpuService : public viz::mojom::GpuService {
   void OnBackgroundCleanup() override {}
   void OnBackgrounded() override {}
   void OnForegrounded() override {}
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level) override {}
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void BeginCATransaction() override {}
   void CommitCATransaction(CommitCATransactionCallback callback) override {}
 #endif

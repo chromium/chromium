@@ -107,7 +107,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
       const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
   void UpdateDx12Info(uint32_t d3d12_feature_level);
   void UpdateVulkanInfo(uint32_t vulkan_version);

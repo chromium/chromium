@@ -17,7 +17,7 @@
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
@@ -45,7 +45,7 @@ bool ShouldSetBufferFormatsFromGpuExtraInfo() {
 #endif
 
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return ui::WindowResizeHelperMac::Get()->task_runner();
 #else
   return GetUIThreadTaskRunner({});

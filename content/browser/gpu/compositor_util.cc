@@ -145,11 +145,11 @@ const GpuFeatureData GetGpuFeatureData(
     {"video_decode",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE),
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
      !base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux),
 #else
      command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode),
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
      DisableInfo::Problem(
          "Accelerated video decode has been disabled, either via blocklist, "
          "about:flags or the command line."),
@@ -157,11 +157,11 @@ const GpuFeatureData GetGpuFeatureData(
     {"video_encode",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE),
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
      !base::FeatureList::IsEnabled(media::kVaapiVideoEncodeLinux),
 #else
      command_line.HasSwitch(switches::kDisableAcceleratedVideoEncode),
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
      DisableInfo::Problem(
          "Accelerated video encode has been disabled, either via blocklist, "
          "about:flags or the command line."),
@@ -184,7 +184,7 @@ const GpuFeatureData GetGpuFeatureData(
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_GL),
      false /* disabled */, DisableInfo::NotProblem(),
      false /* fallback_to_software */},
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {"metal",
      SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_METAL),
      !base::FeatureList::IsEnabled(features::kMetal) /* disabled */,
@@ -200,7 +200,7 @@ const GpuFeatureData GetGpuFeatureData(
     {"multiple_raster_threads", gpu::kGpuFeatureStatusEnabled,
      NumberOfRendererRasterThreads() == 1,
      DisableInfo::Problem("Raster is using a single thread."), false},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {"surface_control",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL),
@@ -407,8 +407,8 @@ std::vector<std::string> GetDriverBugWorkaroundsImpl(GpuFeatureInfoType type) {
 int NumberOfRendererRasterThreads() {
   int num_processors = base::SysInfo::NumberOfProcessors();
 
-#if defined(OS_ANDROID) || \
-    (defined(OS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY))
+#if BUILDFLAG(IS_ANDROID) || \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY))
   // Android and ChromeOS ARM devices may report 6 to 8 CPUs for big.LITTLE
   // configurations. Limit the number of raster threads based on maximum of
   // 4 big cores.
@@ -417,7 +417,7 @@ int NumberOfRendererRasterThreads() {
 
   int num_raster_threads = num_processors / 2;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Limit the number of raster threads to 1 on Android.
   // TODO(reveman): Remove this when we have a better mechanims to prevent
   // pre-paint raster work from slowing down non-raster work. crbug.com/504515
@@ -442,7 +442,7 @@ int NumberOfRendererRasterThreads() {
 bool IsZeroCopyUploadEnabled() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return !command_line.HasSwitch(blink::switches::kDisableZeroCopy);
 #else
   return command_line.HasSwitch(blink::switches::kEnableZeroCopy);
@@ -474,7 +474,7 @@ bool IsGpuMemoryBufferCompositorResourcesEnabled() {
     return false;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return true;
 #else
   return false;
@@ -487,7 +487,7 @@ int GpuRasterizationMSAASampleCount() {
 
   if (!command_line.HasSwitch(
           blink::switches::kGpuRasterizationMSAASampleCount))
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return 4;
 #else
     // Desktop platforms will compute this automatically based on DPI.
