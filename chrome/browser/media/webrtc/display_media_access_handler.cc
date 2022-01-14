@@ -209,26 +209,6 @@ void DisplayMediaAccessHandler::HandleRequest(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
-void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
-    content::WebContents* web_contents,
-    const content::MediaStreamRequest& request,
-    content::MediaResponseCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Ensure we are observing the deletion of |web_contents|.
-  web_contents_collection_.StartObserving(web_contents);
-
-  RequestsQueue& queue = pending_requests_[web_contents];
-  queue.push_back(std::make_unique<PendingAccessRequest>(
-      /*picker=*/nullptr, request, std::move(callback),
-      GetApplicationTitle(web_contents), display_notification_,
-      /*is_allowlisted_extension=*/false));
-  // If this is the only request then pop it. Otherwise, there is already a task
-  // scheduled to pop the next request.
-  if (queue.size() == 1)
-    ProcessQueuedAccessRequest(queue, web_contents);
-}
-
 void DisplayMediaAccessHandler::UpdateMediaRequestState(
     int render_process_id,
     int render_frame_id,
@@ -252,6 +232,26 @@ void DisplayMediaAccessHandler::UpdateMediaRequestState(
   // This method only gets called with the above checked states when all
   // requests are to be canceled. Therefore, we don't need to process the
   // next queued request.
+}
+
+void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
+
+  RequestsQueue& queue = pending_requests_[web_contents];
+  queue.push_back(std::make_unique<PendingAccessRequest>(
+      /*picker=*/nullptr, request, std::move(callback),
+      GetApplicationTitle(web_contents), display_notification_,
+      /*is_allowlisted_extension=*/false));
+  // If this is the only request then pop it. Otherwise, there is already a task
+  // scheduled to pop the next request.
+  if (queue.size() == 1)
+    ProcessQueuedAccessRequest(queue, web_contents);
 }
 
 void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
@@ -279,45 +279,6 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
     ProcessQueuedPickerRequest(pending_request, web_contents, capture_level,
                                request_origin);
   }
-}
-
-void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
-    const content::MediaStreamRequest& request,
-    content::WebContents* web_contents) {
-  DCHECK(!request.requested_video_device_id.empty());
-  content::WebContentsMediaCaptureId web_contents_id;
-  if (!content::WebContentsMediaCaptureId::Parse(
-          request.requested_video_device_id, &web_contents_id)) {
-    RejectRequest(web_contents,
-                  blink::mojom::MediaStreamRequestResult::INVALID_STATE);
-    return;
-  }
-  content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_WEB_CONTENTS,
-                                   content::DesktopMediaID::kNullId,
-                                   web_contents_id);
-  media_id.audio_share =
-      request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
-  OnDisplaySurfaceSelected(web_contents, media_id);
-}
-
-void DisplayMediaAccessHandler::RejectRequest(
-    content::WebContents* web_contents,
-    blink::mojom::MediaStreamRequestResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(web_contents);
-
-  auto it = pending_requests_.find(web_contents);
-  if (it == pending_requests_.end())
-    return;
-  RequestsQueue& mutable_queue = it->second;
-  if (mutable_queue.empty())
-    return;
-  PendingAccessRequest& mutable_request = *mutable_queue.front();
-  std::move(mutable_request.callback)
-      .Run(blink::MediaStreamDevices(), result, /*ui=*/nullptr);
-  mutable_queue.pop_front();
-  if (!mutable_queue.empty())
-    ProcessQueuedAccessRequest(mutable_queue, web_contents);
 }
 
 void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
@@ -375,6 +336,45 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
+}
+
+void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
+    const content::MediaStreamRequest& request,
+    content::WebContents* web_contents) {
+  DCHECK(!request.requested_video_device_id.empty());
+  content::WebContentsMediaCaptureId web_contents_id;
+  if (!content::WebContentsMediaCaptureId::Parse(
+          request.requested_video_device_id, &web_contents_id)) {
+    RejectRequest(web_contents,
+                  blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+    return;
+  }
+  content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                                   content::DesktopMediaID::kNullId,
+                                   web_contents_id);
+  media_id.audio_share =
+      request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
+  OnDisplaySurfaceSelected(web_contents, media_id);
+}
+
+void DisplayMediaAccessHandler::RejectRequest(
+    content::WebContents* web_contents,
+    blink::mojom::MediaStreamRequestResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
+
+  auto it = pending_requests_.find(web_contents);
+  if (it == pending_requests_.end())
+    return;
+  RequestsQueue& mutable_queue = it->second;
+  if (mutable_queue.empty())
+    return;
+  PendingAccessRequest& mutable_request = *mutable_queue.front();
+  std::move(mutable_request.callback)
+      .Run(blink::MediaStreamDevices(), result, /*ui=*/nullptr);
+  mutable_queue.pop_front();
+  if (!mutable_queue.empty())
+    ProcessQueuedAccessRequest(mutable_queue, web_contents);
 }
 
 void DisplayMediaAccessHandler::AcceptRequest(
@@ -464,13 +464,6 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
 #endif  // !BUILDFLAG(OS_CHROMEOS)
 }
 
-void DisplayMediaAccessHandler::WebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  pending_requests_.erase(web_contents);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
     base::WeakPtr<content::WebContents> web_contents,
@@ -506,4 +499,11 @@ void DisplayMediaAccessHandler::DeletePendingAccessRequest(
       }
     }
   }
+}
+
+void DisplayMediaAccessHandler::WebContentsDestroyed(
+    content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  pending_requests_.erase(web_contents);
 }
