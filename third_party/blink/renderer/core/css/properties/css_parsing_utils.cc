@@ -84,6 +84,8 @@ using cssvalue::CSSGridLineNamesValue;
 namespace css_parsing_utils {
 namespace {
 
+const char kTwoDashes[] = "--";
+
 bool IsLeftOrRightKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kLeft, CSSValueID::kRight>(id);
 }
@@ -1173,6 +1175,18 @@ CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange& range,
   }
   return ConsumeCustomIdentWithToken(range.ConsumeIncludingWhitespace(),
                                      context);
+}
+
+CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange& range,
+                                        const CSSParserContext& context) {
+  CSSCustomIdentValue* custom_ident = ConsumeCustomIdent(range, context);
+  if (!custom_ident)
+    return nullptr;
+
+  if (!custom_ident->Value().StartsWith(kTwoDashes))
+    return nullptr;
+
+  return custom_ident;
 }
 
 CSSStringValue* ConsumeString(CSSParserTokenRange& range) {

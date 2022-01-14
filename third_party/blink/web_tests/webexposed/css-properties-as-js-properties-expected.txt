@@ -176,6 +176,7 @@ fontFamily
 fontFeatureSettings
 fontKerning
 fontOpticalSizing
+fontPalette
 fontSize
 fontSizeAdjust
 fontStretch

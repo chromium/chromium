@@ -58056,6 +58056,7 @@ Called by update_use_counter_css.py.-->
   <int value="706" label="text-emphasis-color"/>
   <int value="707" label="text-emphasis-position"/>
   <int value="708" label="text-emphasis-style"/>
+  <int value="709" label="font-palette"/>
 </enum>
 
 <enum name="MappedEditingCommands">

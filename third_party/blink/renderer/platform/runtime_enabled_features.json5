@@ -1113,6 +1113,10 @@
       // be enabled to make the whole feature work.
     },
     {
+      name: "FontPalette",
+      status: "test",
+    },
+    {
       name: "FontSrcLocalMatching",
       // No status, as the web platform runtime enabled feature is controlled by
       // a Chromium level feature.

@@ -348,6 +348,32 @@ StyleBuilderConverter::ConvertFontVariationSettings(
   return settings;
 }
 
+scoped_refptr<FontPalette> StyleBuilderConverter::ConvertFontPalette(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kNormal) {
+    return nullptr;
+  }
+
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kDark) {
+    return FontPalette::Create(FontPalette::kDarkPalette);
+  }
+
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kLight) {
+    return FontPalette::Create(FontPalette::kLightPalette);
+  }
+
+  auto* custom_identifier = DynamicTo<CSSCustomIdentValue>(value);
+  if (custom_identifier) {
+    return FontPalette::Create(custom_identifier->Value());
+  }
+
+  return nullptr;
+}
+
 float MathScriptScaleFactor(StyleResolverState& state) {
   int a = state.ParentStyle()->MathDepth();
   int b = state.Style()->MathDepth();

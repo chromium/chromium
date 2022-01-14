@@ -124,6 +124,9 @@ class StyleBuilderConverter {
   static scoped_refptr<FontVariationSettings> ConvertFontVariationSettings(
       const StyleResolverState&,
       const CSSValue&);
+  static scoped_refptr<FontPalette> ConvertFontPalette(
+      StyleResolverState& state,
+      const CSSValue& value);
   static FontDescription::Size ConvertFontSize(StyleResolverState&,
                                                const CSSValue&);
   static float ConvertFontSizeAdjust(StyleResolverState&, const CSSValue&);

@@ -215,6 +215,11 @@ void FontBuilder::SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
   font_description_.SetFontOpticalSizing(font_optical_sizing);
 }
 
+void FontBuilder::SetFontPalette(scoped_refptr<FontPalette> palette) {
+  Set(PropertySetFlag::kFontPalette);
+  font_description_.SetFontPalette(palette);
+}
+
 void FontBuilder::SetFontSmoothing(FontSmoothingMode foont_smoothing_mode) {
   Set(PropertySetFlag::kFontSmoothing);
 
@@ -431,6 +436,8 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetKerning(font_description_.GetKerning());
   if (IsSet(PropertySetFlag::kFontOpticalSizing))
     description.SetFontOpticalSizing(font_description_.FontOpticalSizing());
+  if (IsSet(PropertySetFlag::kFontPalette))
+    description.SetFontPalette(font_description_.GetFontPalette());
   if (IsSet(PropertySetFlag::kFontSmoothing))
     description.SetFontSmoothing(font_description_.FontSmoothing());
   if (IsSet(PropertySetFlag::kTextOrientation) ||

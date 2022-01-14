@@ -2913,6 +2913,47 @@ const CSSValue* FontOpticalSizing::CSSValueFromComputedStyleInternal(
       style.GetFontDescription().FontOpticalSizing());
 }
 
+const CSSValue* FontPalette::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  DCHECK(RuntimeEnabledFeatures::FontPaletteEnabled());
+
+  blink::FontPalette* palette = style.GetFontDescription().GetFontPalette();
+
+  if (!palette)
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+
+  switch (palette->GetPaletteNameKind()) {
+    case blink::FontPalette::kNormalPalette:
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    case blink::FontPalette::kLightPalette:
+      return CSSIdentifierValue::Create(CSSValueID::kLight);
+    case blink::FontPalette::kDarkPalette:
+      return CSSIdentifierValue::Create(CSSValueID::kDark);
+    case blink::FontPalette::kCustomPalette:
+      return MakeGarbageCollected<CSSCustomIdentValue>(
+          palette->GetPaletteValuesName());
+    default:
+      NOTREACHED();
+  }
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
+const CSSValue* FontPalette::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  DCHECK(RuntimeEnabledFeatures::FontPaletteEnabled());
+  if (range.Peek().Id() == CSSValueID::kNormal ||
+      range.Peek().Id() == CSSValueID::kLight ||
+      range.Peek().Id() == CSSValueID::kDark) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+
+  return css_parsing_utils::ConsumeDashedIdent(range, context);
+}
+
 const CSSValue* FontSizeAdjust::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
