@@ -89,6 +89,14 @@ class CameraSuspendedError extends Error {
   }
 }
 
+interface ConfigureCandidate {
+  deviceId: string;
+  mode: Mode;
+  captureResolution: Resolution;
+  constraints: StreamConstraints;
+  videoSnapshotResolution: Resolution;
+}
+
 /**
  * Camera-view controller.
  */
@@ -132,12 +140,6 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   private activeDeviceId: string|null = null;
 
   /**
-   * The last time of all screen state turning from OFF to ON during the app
-   * execution. Sets to -Infinity for no such time since app is opened.
-   */
-  private lastScreenOnTime = -Infinity;
-
-  /**
    * Modes for the camera.
    */
   private readonly modes: Modes;
@@ -162,7 +164,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   private take: Promise<void>|null = null;
 
   private readonly openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
-  private readonly configureCompleteListener = new Set<() => void>();
+  private readonly configureCompleteListeners = new Set<() => void>();
 
   /**
    * Preview constraints saved for temporarily close/restore preview
@@ -314,7 +316,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
       if (this.screenOff) {
         this.start();
       } else {
-        this.lastScreenOnTime = performance.now();
+        this.preview.onScreenOn();
       }
     };
 
@@ -439,11 +441,11 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   }
 
   private addConfigureCompleteListener(listener: () => void) {
-    this.configureCompleteListener.add(listener);
+    this.configureCompleteListeners.add(listener);
   }
 
   private removeConfigureCompleteListener(listener: () => void) {
-    this.configureCompleteListener.delete(listener);
+    this.configureCompleteListeners.delete(listener);
   }
 
   /**
@@ -986,6 +988,52 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
     return false;
   }
 
+  protected async getModeCandidates(deviceId: string|null): Promise<Mode[]> {
+    const supportedModes = await this.modes.getSupportedModes(deviceId);
+    return this.modes.getModeCandidates().filter(
+        (m) => supportedModes.includes(m));
+  }
+
+  private async *
+      getConfigurationCandidates(): AsyncIterable<ConfigureCandidate> {
+    const deviceOperator = await DeviceOperator.getInstance();
+
+    for (const deviceId of this.options.videoDeviceIds(this.facingMode)) {
+      for (const mode of await this.getModeCandidates(deviceId)) {
+        let resolCandidates;
+        let photoRs;
+        if (deviceOperator !== null) {
+          resolCandidates = this.modes.getResolutionCandidates(mode, deviceId);
+          photoRs = await deviceOperator.getPhotoResolutions(deviceId);
+        } else {
+          resolCandidates =
+              this.modes.getFakeResolutionCandidates(mode, deviceId);
+          photoRs = resolCandidates.map((c) => c.resolution);
+        }
+        const maxResolution =
+            photoRs.reduce((maxR, r) => r.area > maxR.area ? r : maxR);
+        for (const {
+               resolution: captureResolution,
+               previewCandidates,
+             } of resolCandidates) {
+          const videoSnapshotResolution =
+              state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
+              maxResolution :
+              captureResolution;
+          for (const constraints of previewCandidates) {
+            yield {
+              deviceId,
+              mode,
+              captureResolution,
+              constraints,
+              videoSnapshotResolution,
+            };
+          }
+        }
+      }
+    }
+  }
+
   /**
    * Stops camera and tries to start camera stream again if possible.
    * @return Promise resolved to whether start camera successfully.
@@ -1014,125 +1062,43 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   }
 
   /**
-   * Try start stream reconfiguration with specified mode and device id.
-   * @return If found suitable stream and reconfigure successfully.
+   * Checks if PTZ can be enabled.
    */
-  protected async startWithMode(deviceId: string, mode: Mode):
-      Promise<boolean> {
-    const deviceOperator = await DeviceOperator.getInstance();
-    state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
-    let resolCandidates;
-    let photoRs;
-    if (deviceOperator) {
-      resolCandidates = this.modes.getResolutionCandidates(mode, deviceId);
-      photoRs = await deviceOperator.getPhotoResolutions(deviceId);
-    } else {
-      resolCandidates = this.modes.getFakeResolutionCandidates(mode, deviceId);
-      photoRs = resolCandidates.map((c) => c.resolution);
-    }
-    const maxResolution =
-        photoRs.reduce((maxR, r) => r.area > maxR.area ? r : maxR);
-    for (const {resolution: captureR, previewCandidates} of resolCandidates) {
-      for (const constraints of previewCandidates) {
-        if (this.isSuspended()) {
-          throw new CameraSuspendedError();
-        }
-        const videoSnapshotResolution =
-            state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
-            maxResolution :
-            captureR;
-        this.modes.setCaptureParams(
-            mode, constraints, captureR, videoSnapshotResolution);
-        try {
-          await this.modes.prepareDevice();
-          const factory = this.modes.getModeFactory(mode);
-
-          // Sets 2500 ms delay between screen resumed and open camera preview.
-          // TODO(b/173679752): Removes this workaround after fix delay on
-          // kernel side.
-          if (loadTimeData.getBoard() === 'zork') {
-            const screenOnTime = performance.now() - this.lastScreenOnTime;
-            const delay = 2500 - screenOnTime;
-            if (delay > 0) {
-              await util.sleep(delay);
-            }
-          }
-          const stream = await this.preview.open(constraints);
-          this.facingMode = this.preview.getFacing();
-
-          let enablePTZ = this.preview.isSupportPTZ();
-          if (enablePTZ) {
-            const modeSupport = deviceOperator === null ||
-                this.modes.isSupportPTZ(
-                    mode,
-                    captureR,
-                    this.preview.getResolution(),
-                );
-            if (!modeSupport) {
-              await this.preview.resetPTZ();
-              enablePTZ = false;
-            }
-          }
-          state.set(state.State.ENABLE_PTZ, enablePTZ);
-
-          this.options.updateValues(stream, this.facingMode);
-          factory.setPreviewStream(stream);
-          factory.setFacing(this.facingMode);
-
-          await this.modes.updateModeSelectionUI(deviceId);
-          await this.modes.updateMode(
-              factory, stream, this.facingMode, deviceId);
-          await this.scanOptions.attachPreview(this.preview.getVideoElement());
-          for (const l of this.configureCompleteListener) {
-            l();
-          }
-          nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
-          return true;
-        } catch (e) {
-          await this.stopStreams();
-
-          let errorToReport = e;
-          // Since OverconstrainedError is not an Error instance.
-          if (e instanceof OverconstrainedError) {
-            errorToReport =
-                new Error(`${e.message} (constraint = ${e.constraint})`);
-            errorToReport.name = 'OverconstrainedError';
-          } else if (e.name === 'NotReadableError') {
-            // TODO(b/187879603): Remove this hacked once we understand more
-            // about such error.
-            // We cannot get the camera facing from stream since it might not be
-            // successfully opened. Therefore, we asked the camera facing via
-            // Mojo API.
-            let facing = Facing.NOT_SET;
-            if (deviceOperator !== null) {
-              facing = await deviceOperator.getCameraFacing(deviceId);
-            }
-            errorToReport = new Error(`${e.message} (facing = ${facing})`);
-            errorToReport.name = 'NotReadableError';
-          }
-          error.reportError(
-              ErrorType.START_CAMERA_FAILURE, ErrorLevel.ERROR,
-              assertInstanceof(errorToReport, Error));
-        }
+  private async checkEnablePTZ(c: ConfigureCandidate): Promise<void> {
+    const enablePTZ = await (async () => {
+      if (!this.preview.isSupportPTZ()) {
+        return false;
       }
-    }
-    return false;
+      const modeSupport = state.get(state.State.USE_FAKE_CAMERA) ||
+          this.modes.isSupportPTZ(
+              c.mode,
+              c.captureResolution,
+              this.preview.getResolution(),
+          );
+      if (!modeSupport) {
+        await this.preview.resetPTZ();
+        return false;
+      }
+      return true;
+    })();
+    state.set(state.State.ENABLE_PTZ, enablePTZ);
   }
 
   /**
-   * Try start stream reconfiguration with specified device id.
-   * @return If found suitable stream and reconfigure successfully.
+   * Updates |this.activeDeviceId|.
    */
-  protected async startWithDevice(deviceId: string): Promise<boolean> {
-    const supportedModes = await this.modes.getSupportedModes(deviceId);
-    const modes = this.modes.getModeCandidates().filter(
-        (m) => supportedModes.includes(m));
-    for (const mode of modes) {
-      if (await this.startWithMode(deviceId, mode)) {
-        return true;
-      }
+  private updateActiveCamera() {
+    // Make the different active camera announced by screen reader.
+    const currentId = this.options.currentDeviceId;
+    assert(currentId !== null);
+    if (currentId === this.activeDeviceId) {
+      return;
     }
-    return false;
+    this.activeDeviceId = currentId;
+    const info = this.infoUpdater.getDeviceInfo(currentId);
+    if (info !== null) {
+      toast.speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
+    }
   }
 
   /**
@@ -1143,25 +1109,76 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   private async startInternal(): Promise<boolean> {
     try {
       await this.infoUpdater.lockDeviceInfo(async () => {
-        if (!this.isSuspended()) {
-          for (const id of this.options.videoDeviceIds(this.facingMode)) {
-            if (await this.startWithDevice(id)) {
-              // Make the different active camera announced by screen reader.
-              const currentId = this.options.currentDeviceId;
-              assert(currentId !== null);
-              if (currentId === this.activeDeviceId) {
-                return;
+        if (this.isSuspended()) {
+          throw new CameraSuspendedError();
+        }
+        const congfigureSucceed = await (async () => {
+          const deviceOperator = await DeviceOperator.getInstance();
+          state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
+
+          for await (const c of this.getConfigurationCandidates()) {
+            if (this.isSuspended()) {
+              throw new CameraSuspendedError();
+            }
+            this.modes.setCaptureParams(
+                c.mode, c.constraints, c.captureResolution,
+                c.videoSnapshotResolution);
+            try {
+              await this.modes.prepareDevice();
+              const factory = this.modes.getModeFactory(c.mode);
+              const stream = await this.preview.open(c.constraints);
+              this.facingMode = this.preview.getFacing();
+
+              await this.checkEnablePTZ(c);
+              this.options.updateValues(stream, this.facingMode);
+              factory.setPreviewStream(stream);
+              factory.setFacing(this.facingMode);
+              await this.modes.updateModeSelectionUI(c.deviceId);
+              await this.modes.updateMode(
+                  factory, stream, this.facingMode, c.deviceId);
+              await this.scanOptions.attachPreview(
+                  this.preview.getVideoElement());
+              for (const l of this.configureCompleteListeners) {
+                l();
               }
-              this.activeDeviceId = currentId;
-              const info = this.infoUpdater.getDeviceInfo(currentId);
-              if (info !== null) {
-                toast.speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
+              nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
+              this.updateActiveCamera();
+
+              return true;
+            } catch (e) {
+              await this.stopStreams();
+
+              let errorToReport = e;
+              // Since OverconstrainedError is not an Error instance.
+              if (e instanceof OverconstrainedError) {
+                errorToReport =
+                    new Error(`${e.message} (constraint = ${e.constraint})`);
+                errorToReport.name = 'OverconstrainedError';
+              } else if (e.name === 'NotReadableError') {
+                // TODO(b/187879603): Remove this hacked once we understand more
+                // about such error.
+                // We cannot get the camera facing from stream since it might
+                // not be successfully opened. Therefore, we asked the camera
+                // facing via Mojo API.
+                let facing = Facing.NOT_SET;
+                if (deviceOperator !== null) {
+                  facing = await deviceOperator.getCameraFacing(c.deviceId);
+                }
+                errorToReport = new Error(`${e.message} (facing = ${facing})`);
+                errorToReport.name = 'NotReadableError';
               }
-              return;
+              error.reportError(
+                  ErrorType.START_CAMERA_FAILURE, ErrorLevel.ERROR,
+                  assertInstanceof(errorToReport, Error));
             }
           }
+
+          return false;
+        })();
+
+        if (!congfigureSucceed) {
+          throw new CameraSuspendedError();
         }
-        throw new CameraSuspendedError();
       });
       this.configuring = null;
       state.set(state.State.CAMERA_CONFIGURING, false);

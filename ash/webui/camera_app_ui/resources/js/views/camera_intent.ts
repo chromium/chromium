@@ -134,7 +134,7 @@ export class CameraIntent extends Camera {
         {resolution: videoResult.resolution, duration: videoResult.duration});
   }
 
-  async startWithDevice(deviceId: string): Promise<boolean> {
-    return this.startWithMode(deviceId, this.defaultMode);
+  protected async getModeCandidates(): Promise<Mode[]> {
+    return [this.defaultMode];
   }
 }

@@ -416,6 +416,8 @@ module.exports = {
     // code should be formatted properly by clang-format, as we required
     // `git cl format --js` before uploading.
     'indent': 'off',
+    // To resolve the conflict with clang-format.
+    'generator-star-spacing': ['error', 'both'],
   }),
   'overrides': [{
     'files': ['**/*.ts'],
