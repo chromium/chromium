@@ -86,6 +86,7 @@ void DlpContentManagerAsh::OnWindowOcclusionChanged(aura::Window* window) {
 
 void DlpContentManagerAsh::OnWindowDestroying(aura::Window* window) {
   window_observers_.erase(window);
+  confidential_windows_.erase(window);
   MaybeChangeOnScreenRestrictions();
 }
 
