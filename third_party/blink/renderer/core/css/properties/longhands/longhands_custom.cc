@@ -1533,6 +1533,7 @@ const CSSValue* Color::CSSValueFromComputedStyleInternal(
 
 void Color::ApplyInitial(StyleResolverState& state) const {
   state.Style()->SetColor(state.Style()->InitialColorForColorScheme());
+  state.Style()->SetColorIsInherited(false);
 }
 
 void Color::ApplyInherit(StyleResolverState& state) const {
@@ -1543,6 +1544,7 @@ void Color::ApplyInherit(StyleResolverState& state) const {
   } else {
     style->SetColor(state.ParentStyle()->GetColor());
   }
+  style->SetColorIsInherited(true);
 }
 
 void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
@@ -1556,10 +1558,11 @@ void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
   if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     state.Style()->SetColor(state.Style()->InitialColorForColorScheme());
-    return;
+  } else {
+    state.Style()->SetColor(
+        StyleBuilderConverter::ConvertStyleColor(state, value));
   }
-  state.Style()->SetColor(
-      StyleBuilderConverter::ConvertStyleColor(state, value));
+  state.Style()->SetColorIsInherited(false);
 }
 
 const CSSValue* ColorInterpolation::CSSValueFromComputedStyleInternal(
