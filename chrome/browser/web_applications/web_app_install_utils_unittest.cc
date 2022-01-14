@@ -28,7 +28,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/test/mock_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -1055,7 +1055,7 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
 
 INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class RegisterOsSettingsTest : public testing::Test {
  public:
   RegisterOsSettingsTest() {
@@ -1196,6 +1196,6 @@ TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsSettings_NoUnregistration) {
   MaybeUnregisterOsUninstall(web_app2.get(), Source::kDefault, manager);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace web_app

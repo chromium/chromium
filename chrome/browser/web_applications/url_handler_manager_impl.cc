@@ -20,7 +20,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util_win.h"
 #endif
 
@@ -46,7 +46,7 @@ absl::optional<GURL> UrlHandlerManagerImpl::GetUrlFromCommandLine(
   if (command_line.GetArgs().size() != 1)
     return absl::nullopt;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   GURL url(base::AsStringPiece16(command_line.GetArgs().front()));
 #else
   GURL url(command_line.GetArgs().front());

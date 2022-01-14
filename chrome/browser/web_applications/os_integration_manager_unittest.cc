@@ -24,20 +24,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
 namespace web_app {
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kFakeProfilePath[] =
     FILE_PATH_LITERAL("\\profile\\path");
 #else
 const base::FilePath::CharType kFakeProfilePath[] =
     FILE_PATH_LITERAL("/profile/path");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 const char kFakeAppUrl[] = "https://fake.com";
 const std::u16string kFakeAppTitle(u"fake title");
@@ -211,7 +211,7 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
 }
 
 TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // UpdateProtocolHandlers is a no-op on Win7
   if (base::win::GetVersion() == base::win::Version::WIN7)
     return;
@@ -222,7 +222,7 @@ TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
       std::make_unique<WebAppProtocolHandlerManager>(nullptr));
   base::RunLoop run_loop;
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   EXPECT_CALL(manager, UpdateShortcuts(app_id, base::StringPiece(), testing::_))
       .WillOnce([](const AppId& app_id, base::StringPiece old_name,
                    base::OnceClosure update_finished_callback) {

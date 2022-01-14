@@ -20,9 +20,9 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
 extern const base::Feature kDefaultCalculatorWebApp;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
 // corresponds to |feature_name|. Used by external app install configs to gate

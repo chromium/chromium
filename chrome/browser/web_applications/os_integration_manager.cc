@@ -31,11 +31,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -137,7 +137,7 @@ void OsIntegrationManager::Start() {
 
   registrar_observation_.Observe(registrar_.get());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Ensure that all installed apps are included in the AppShimRegistry when the
   // profile is loaded. This is redundant, because apps are registered when they
   // are installed. It is necessary, however, because app registration was added
@@ -180,7 +180,7 @@ void OsIntegrationManager::InstallOsHooks(
       &OsIntegrationManager::OnShortcutsCreated, weak_ptr_factory_.GetWeakPtr(),
       app_id, std::move(web_app_info), options, barrier);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This has to happen before creating shortcuts on Mac because the shortcut
   // creation step uses the file type associations which are marked for enabling
   // by `RegisterFileHandlers()`.
@@ -429,12 +429,12 @@ void OsIntegrationManager::RegisterProtocolHandlers(const AppId& app_id,
   // Disable protocol handler unregistration on Win7 due to bad interactions
   // between preinstalled app scenarios and the need for elevation to unregister
   // protocol handlers on that platform. See crbug.com/1224327 for context.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() == base::win::Version::WIN7) {
     std::move(callback).Run(Result::kOk);
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (!protocol_handler_manager_) {
     std::move(callback).Run(Result::kOk);
@@ -498,7 +498,7 @@ void OsIntegrationManager::RegisterRunOnOsLogin(
 
 void OsIntegrationManager::MacAppShimOnAppInstalledForProfile(
     const AppId& app_id) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   AppShimRegistry::Get()->OnAppInstalledForProfile(app_id, profile_->GetPath());
 #endif
 }
@@ -564,12 +564,12 @@ void OsIntegrationManager::UnregisterProtocolHandlers(const AppId& app_id,
   // Disable protocol handler unregistration on Win7 due to bad interactions
   // between preinstalled app scenarios and the need for elevation to unregister
   // protocol handlers on that platform. See crbug.com/1224327 for context.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() == base::win::Version::WIN7) {
     std::move(callback).Run(Result::kOk);
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (!protocol_handler_manager_) {
     std::move(callback).Run(Result::kOk);
@@ -671,18 +671,18 @@ void OsIntegrationManager::UpdateProtocolHandlers(
   // Disable protocol handler unregistration on Win7 due to bad interactions
   // between preinstalled app scenarios and the need for elevation to unregister
   // protocol handlers on that platform. See crbug.com/1224327 for context.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() == base::win::Version::WIN7) {
     std::move(callback).Run();
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   auto shortcuts_callback = base::BindOnce(
       &OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers,
       weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Windows handles protocol registration through the registry. For other
   // OS's we also need to regenerate the shortcut file before we call into
   // the OS. Since `UpdateProtocolHandlers` function is also called in
@@ -754,7 +754,7 @@ void OsIntegrationManager::OnShortcutsCreated(
   if (shortcut_creation_failure)
     barrier->OnError(OsHookType::kShortcuts);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // This step happens before shortcut creation on Mac.
   if (options.os_hooks[OsHookType::kFileHandlers]) {
     RegisterFileHandlers(app_id, barrier->CreateBarrierCallbackForType(
@@ -808,7 +808,7 @@ void OsIntegrationManager::OnShortcutsCreated(
 void OsIntegrationManager::OnShortcutsDeleted(const AppId& app_id,
                                               ResultCallback callback,
                                               Result result) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool delete_multi_profile_shortcuts =
       AppShimRegistry::Get()->OnAppUninstalledForProfile(app_id,
                                                          profile_->GetPath());

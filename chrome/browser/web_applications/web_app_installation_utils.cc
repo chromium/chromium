@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -149,7 +150,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
                                const AppId& app_id,
                                InstallOsHooksOptions* options) {
-#if !defined(OS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
   DCHECK(app_registrar);
 
   // Disable OS integration if the app was installed by default only, and not
@@ -165,7 +166,7 @@ void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
     options->os_hooks[OsHookType::kProtocolHandlers] = false;
     options->os_hooks[OsHookType::kUrlHandlers] = false;
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {

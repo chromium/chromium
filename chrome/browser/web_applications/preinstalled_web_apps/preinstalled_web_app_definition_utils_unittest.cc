@@ -20,7 +20,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
 };
 
 // https://crbug.com/1198780 tracks test failures on Linux and ChromeOS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_GetTranslatedName DISABLED_GetTranslatedName
 #else
 #define MAYBE_GetTranslatedName GetTranslatedName

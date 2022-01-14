@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
@@ -100,11 +102,11 @@ ExternalInstallOptions GetConfigForGoogleCalendar() {
   ExternalInstallOptions options(
       /*install_url=*/GURL("https://calendar.google.com/calendar/"
                            "installwebapp?usp=chrome_default"),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       /*user_display_mode=*/DisplayMode::kStandalone,
 #else
       /*user_display_mode=*/DisplayMode::kBrowser,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
@@ -116,7 +118,7 @@ ExternalInstallOptions GetConfigForGoogleCalendar() {
 
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
+    auto info = std::make_unique<WebApplicationInfo>();
     info->title = base::UTF8ToUTF16(
         GetTranslatedName("Google Calendar", kNameTranslations));
     info->start_url = GURL("https://calendar.google.com/calendar/r");

@@ -19,6 +19,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -35,7 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/profile_policy_connector.h"
 #endif
 
@@ -52,7 +53,7 @@ namespace {
 
 constexpr char kUserTypesTestDir[] = "user_types";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kGoodJsonTestDir[] = "good_json";
 
 constexpr char kAppAllUrl[] = "https://www.google.com/all";
@@ -101,7 +102,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
                                                Profile* profile = nullptr) {
     std::unique_ptr<TestingProfile> testing_profile;
     if (!profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       testing_profile = CreateProfileAndLogin();
       profile = testing_profile.get();
 #else
@@ -157,7 +158,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     return profile_builder.Build();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Helper that creates simple test guest profile.
   std::unique_ptr<TestingProfile> CreateGuestProfile() {
     return CreateProfile(/*is_guest=*/true);
@@ -193,7 +194,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     for (const auto& install_options : install_options_list)
       ASSERT_EQ(1u, expectations.count(install_options.install_url));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void ExpectHistograms(int enabled, int disabled, int errors) {
     histograms_.ExpectUniqueSample(
@@ -281,7 +282,7 @@ TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
 }
 
 // Only Chrome OS parses config files.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
   const auto install_options_list = LoadApps(kGoodJsonTestDir);
 
@@ -499,7 +500,7 @@ TEST_F(PreinstalledWebAppManagerTest, ManagedUser) {
 TEST_F(PreinstalledWebAppManagerTest, NoApp) {
   EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/1252273): Enable test for Lacros.

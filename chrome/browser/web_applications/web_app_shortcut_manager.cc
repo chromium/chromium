@@ -35,10 +35,10 @@ namespace web_app {
 
 namespace {
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // Aligns with other platform implementations that only support 10 items.
 constexpr int kMaxApplicationDockMenuItems = 10;
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 // UMA metric name for shortcuts creation result.
 constexpr const char* kCreationResultMetric =
@@ -120,7 +120,7 @@ void WebAppShortcutManager::SetShortcutUpdateCallbackForTesting(
 }
 
 bool WebAppShortcutManager::CanCreateShortcuts() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return true;
@@ -382,7 +382,7 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
     }
   }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos =
       app->shortcuts_menu_item_infos();
   int num_entries = std::min(static_cast<int>(shortcuts_menu_item_infos.size()),
@@ -400,7 +400,7 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
           shortcuts_menu_item_info.url);
     }
   }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   return shortcut_info;
 }
