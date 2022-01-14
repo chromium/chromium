@@ -15,7 +15,8 @@
 
 namespace base {
 namespace internal {
-namespace {
+// Don't use an anonymous namespace for the constants because it can inhibit
+// collapsing them together, even when they are tagged as inline.
 
 // Precalculate some shift and mask constants used in the hot path.
 // Example: malloc(41) == 101001 binary.
@@ -46,7 +47,7 @@ static_assert(kBitsPerSizeT == 64, "");
 static_assert(kBitsPerSizeT == 32, "");
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-constexpr uint8_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
+constexpr inline uint8_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
     OrderIndexShift(3),  OrderIndexShift(4),  OrderIndexShift(5),
     OrderIndexShift(6),  OrderIndexShift(7),  OrderIndexShift(8),
@@ -73,7 +74,7 @@ constexpr uint8_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
 #endif
 };
 
-constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
+constexpr inline size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
     OrderSubIndexMask(0),  OrderSubIndexMask(1),  OrderSubIndexMask(2),
     OrderSubIndexMask(3),  OrderSubIndexMask(4),  OrderSubIndexMask(5),
     OrderSubIndexMask(6),  OrderSubIndexMask(7),  OrderSubIndexMask(8),
@@ -99,8 +100,6 @@ constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
     OrderSubIndexMask(63), OrderSubIndexMask(64)
 #endif
 };
-
-}  // namespace
 
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
