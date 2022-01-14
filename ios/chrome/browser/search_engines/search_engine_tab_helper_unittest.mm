@@ -17,7 +17,6 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/web_state_test_util.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -60,7 +59,7 @@ class SearchEngineTabHelperTest : public ChromeWebTest {
       : ChromeWebTest(web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
 
   void SetUp() override {
-    WebTestWithWebState::SetUp();
+    ChromeWebTest::SetUp();
     favicon::WebFaviconDriver::CreateForWebState(
         web_state(),
         ios::FaviconServiceFactory::GetForBrowserState(

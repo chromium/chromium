@@ -6,8 +6,8 @@
 #include <stddef.h>
 
 #include "base/ios/ios_util.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/js_test_util.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/device_form_factor.h"
@@ -17,9 +17,9 @@
 #endif
 
 // Test fixture for accessibility.js testing.
-class FontSizeJsTest : public web::WebTestWithWebState {
+class FontSizeJsTest : public ChromeWebTest {
  public:
-  FontSizeJsTest() : web::WebTestWithWebState() {}
+  FontSizeJsTest() {}
 
   FontSizeJsTest(const FontSizeJsTest&) = delete;
   FontSizeJsTest& operator=(const FontSizeJsTest&) = delete;
@@ -41,7 +41,7 @@ class FontSizeJsTest : public web::WebTestWithWebState {
   // viewport and '-webkit-text-size-adjust=auto'). Setting
   // '-webkit-text-size-adjust=none' also works.
   void LoadHtml(NSString* html) {
-    web::WebTestWithWebState::LoadHtml(
+    ChromeWebTest::LoadHtml(
         [NSString stringWithFormat:@"<html><style>"
                                    @"html { -webkit-text-size-adjust: none }"
                                    @"</style><meta name='viewport' "

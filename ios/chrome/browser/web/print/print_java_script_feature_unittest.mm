@@ -53,8 +53,7 @@ class PrintJavaScriptFeatureTest : public ChromeWebTest {
   }
 
   web::FakeWebClient* GetWebClient() override {
-    return static_cast<web::FakeWebClient*>(
-        WebTestWithWebState::GetWebClient());
+    return static_cast<web::FakeWebClient*>(ChromeWebTest::GetWebClient());
   }
 
   PrintJavaScriptFeatureTestPrinter* printer_;

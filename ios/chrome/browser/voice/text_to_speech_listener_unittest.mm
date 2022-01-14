@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/voice/text_to_speech_listener.h"
 
-#include "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -67,10 +67,10 @@ NSString* const kValidVoiceSearchScript =
 
 #pragma mark - TextToSpeechListenerTest
 
-class TextToSpeechListenerTest : public web::WebTestWithWebState {
+class TextToSpeechListenerTest : public ChromeWebTest {
  public:
   void SetUp() override {
-    web::WebTestWithWebState::SetUp();
+    ChromeWebTest::SetUp();
     // Load Html is triggering several callbacks when called the first time.
     // Call it a first time before setting the |delegate_| to make sure that it
     // is working as expected in tests.

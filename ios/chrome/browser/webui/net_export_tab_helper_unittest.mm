@@ -7,9 +7,9 @@
 #import <Foundation/Foundation.h>
 
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
@@ -38,7 +38,7 @@
 @end
 
 // Test fixture for testing NetExportTabHelper.
-class NetExportTabHelperTest : public web::WebTestWithWebState {
+class NetExportTabHelperTest : public ChromeWebTest {
  public:
   NetExportTabHelperTest()
       : delegate_([[TestNetExportTabHelperDelegate alloc] init]) {}
@@ -48,7 +48,7 @@ class NetExportTabHelperTest : public web::WebTestWithWebState {
 
  protected:
   void SetUp() override {
-    web::WebTestWithWebState::SetUp();
+    ChromeWebTest::SetUp();
     NetExportTabHelper::CreateForWebState(web_state(), delegate_);
   }
 

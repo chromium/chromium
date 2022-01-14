@@ -91,7 +91,7 @@ class FontSizeTabHelperTest : public ChromeWebTest {
     ChromeWebTest::SetUp();
 
     web::FakeWebClient* web_client =
-        static_cast<web::FakeWebClient*>(WebTestWithWebState::GetWebClient());
+        static_cast<web::FakeWebClient*>(ChromeWebTest::GetWebClient());
     web_client->SetJavaScriptFeatures(
         {FontSizeJavaScriptFeature::GetInstance()});
 

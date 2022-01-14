@@ -98,8 +98,7 @@ class ImageFetchJavaScriptFeatureTest
   }
 
   web::FakeWebClient* GetWebClient() override {
-    return static_cast<web::FakeWebClient*>(
-        WebTestWithWebState::GetWebClient());
+    return static_cast<web::FakeWebClient*>(ChromeWebTest::GetWebClient());
   }
 
   void HandleJsSuccess(int call_id,
@@ -160,7 +159,7 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetSameDomainImageData) {
 // cross-domain.
 TEST_F(ImageFetchJavaScriptFeatureTest, TestGetCrossDomainImageData) {
   const GURL image_url = server_.GetURL("/image");
-  // WebTestWithWebState::LoadHtml uses an HTTPS url for webpage as default. Use
+  // ChromeWebTest::LoadHtml uses an HTTPS url for webpage as default. Use
   // an HTTP url instead, because XMLHttpRequest with HTTP url sent from HTTPS
   // website is forbidden due to the CORS policy.
   const GURL page_url("http://chrooooome.com");

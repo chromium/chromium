@@ -5,17 +5,17 @@
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
 
 #include "base/time/time.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-class IOSTaskTabHelperTest : public web::WebTestWithWebState {
+class IOSTaskTabHelperTest : public ChromeWebTest {
  protected:
   web::NavigationItem* AddItemToFakeNavigationManager(
       web::FakeNavigationManager* test_navigation_manager,

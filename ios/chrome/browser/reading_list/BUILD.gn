@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/web:test_support",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/test",

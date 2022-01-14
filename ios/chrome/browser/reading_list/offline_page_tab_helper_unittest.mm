@@ -13,10 +13,10 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/fake_reading_list_model.h"
+#include "ios/chrome/browser/web/chrome_test.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,11 +33,11 @@ const char kTestDirectory[] = "ios/testing/data/";
 }
 
 // Test fixture to test loading of Reading list offline pages.
-class OfflinePageTabHelperTest : public web::WebTest {
+class OfflinePageTabHelperTest : public ChromeTest {
  public:
   void SetUp() override {
     // Ensure that the EXPECT_TRUE in CreateBrowserState() passed.
-    ASSERT_NO_FATAL_FAILURE(web::WebTest::SetUp());
+    ASSERT_NO_FATAL_FAILURE(ChromeTest::SetUp());
 
     fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetNavigationManager(
@@ -51,13 +51,12 @@ class OfflinePageTabHelperTest : public web::WebTest {
                                             reading_list_model_.get());
   }
 
-  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
+  void CustomizeBrowserStateBuilder(
+      TestChromeBrowserState::Builder& builder) override {
     base::FilePath test_data_dir;
     EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
     test_data_dir = test_data_dir.AppendASCII(kTestDirectory);
-    test_cbs_builder.SetPath(test_data_dir);
-    return test_cbs_builder.Build();
+    builder.SetPath(test_data_dir);
   }
 
  protected:
@@ -67,10 +66,10 @@ class OfflinePageTabHelperTest : public web::WebTest {
 
 // Test fixture to test loading of Reading list offline pages with a delayed
 // ReadingListModel.
-class OfflinePageTabHelperDelayedModelTest : public web::WebTest {
+class OfflinePageTabHelperDelayedModelTest : public ChromeTest {
   void SetUp() override {
     // Ensure that the EXPECT_TRUE in CreateBrowserState() passed.
-    ASSERT_NO_FATAL_FAILURE(web::WebTest::SetUp());
+    ASSERT_NO_FATAL_FAILURE(ChromeTest::SetUp());
 
     fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetNavigationManager(
@@ -87,13 +86,12 @@ class OfflinePageTabHelperDelayedModelTest : public web::WebTest {
                                             fake_reading_list_model_.get());
   }
 
-  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
+  void CustomizeBrowserStateBuilder(
+      TestChromeBrowserState::Builder& builder) override {
     base::FilePath test_data_dir;
     EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
     test_data_dir = test_data_dir.AppendASCII(kTestDirectory);
-    test_cbs_builder.SetPath(test_data_dir);
-    return test_cbs_builder.Build();
+    builder.SetPath(test_data_dir);
   }
 
  protected:

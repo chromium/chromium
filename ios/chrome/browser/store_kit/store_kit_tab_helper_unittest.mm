@@ -4,22 +4,14 @@
 
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 
-#import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-class StoreKitTabHelperTest : public web::WebTestWithWebState {
- public:
-  StoreKitTabHelperTest() = default;
-
-  StoreKitTabHelperTest(const StoreKitTabHelperTest&) = delete;
-  StoreKitTabHelperTest& operator=(const StoreKitTabHelperTest&) = delete;
-
-  ~StoreKitTabHelperTest() override = default;
-};
+using StoreKitTabHelperTest = ChromeWebTest;
 
 TEST_F(StoreKitTabHelperTest, Constructor) {
   StoreKitTabHelper::CreateForWebState(web_state());

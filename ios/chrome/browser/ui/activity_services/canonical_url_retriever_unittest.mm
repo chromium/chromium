@@ -9,7 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ui_metrics/canonical_url_share_metrics_types.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -18,7 +18,7 @@
 #endif
 
 // Test fixture for the retrieving canonical URLs.
-class CanonicalURLRetrieverTest : public web::WebTestWithWebState {
+class CanonicalURLRetrieverTest : public ChromeWebTest {
  public:
   CanonicalURLRetrieverTest() = default;
 

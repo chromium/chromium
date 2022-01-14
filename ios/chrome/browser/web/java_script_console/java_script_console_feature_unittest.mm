@@ -111,8 +111,7 @@ class JavaScriptConsoleFeatureTest : public ChromeWebTest {
   }
 
   web::FakeWebClient* GetWebClient() override {
-    return static_cast<web::FakeWebClient*>(
-        WebTestWithWebState::GetWebClient());
+    return static_cast<web::FakeWebClient*>(ChromeWebTest::GetWebClient());
   }
 
   bool IsDelegateStateEmpty() {

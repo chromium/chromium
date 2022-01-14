@@ -8,10 +8,10 @@
 
 #include "base/files/file_path.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/web/public/test/web_test.h"
+#include "ios/chrome/browser/web/chrome_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using TestChromeBrowserStateManagerTest = web::WebTest;
+using TestChromeBrowserStateManagerTest = ChromeTest;
 
 // Tests that the list of loaded browser states is empty after invoking the
 // constructor that accepts a user data directory path.

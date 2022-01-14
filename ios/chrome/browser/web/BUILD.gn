@@ -277,6 +277,8 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "chrome_test.h",
+    "chrome_test.mm",
     "chrome_web_test.h",
     "chrome_web_test.mm",
   ]

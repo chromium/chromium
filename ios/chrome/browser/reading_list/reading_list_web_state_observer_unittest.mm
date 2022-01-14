@@ -9,11 +9,11 @@
 #include "base/time/default_clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
+#include "ios/chrome/browser/web/chrome_test.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_test.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,7 +62,7 @@ class FakeWebState : public web::FakeWebState {
 }  // namespace
 
 // Test fixture to test loading of Reading list entries.
-class ReadingListWebStateObserverTest : public web::WebTest {
+class ReadingListWebStateObserverTest : public ChromeTest {
  public:
   ReadingListWebStateObserverTest() {
     auto fake_navigation_manager = std::make_unique<FakeNavigationManager>();

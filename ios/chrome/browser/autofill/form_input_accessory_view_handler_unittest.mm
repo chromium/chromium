@@ -5,14 +5,14 @@
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 
 #include "base/mac/foundation_util.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-class FormInputAccessoryViewHandlerTest : public web::WebTestWithWebState {};
+using FormInputAccessoryViewHandlerTest = ChromeWebTest;
 
 // Tests that trying to programmatically dismiss the keyboard when it isn't
 // visible doesn't crash the browser.

@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -122,12 +122,11 @@ TEST_F(PriceAlertUtilTest, TestPriceAlertsEligibleThenSignOut) {
 }
 
 TEST_F(PriceAlertUtilTest, TestIncognito) {
-  web::FakeBrowserState fake_browser_state;
-  fake_browser_state.SetOffTheRecord(true);
   SignIn();
   SetFeatureFlag(true);
   SetMSBB(true);
-  EXPECT_FALSE(IsPriceAlertsEligible(&fake_browser_state));
+  EXPECT_FALSE(IsPriceAlertsEligible(
+      browser_state_->GetOffTheRecordChromeBrowserState()));
 }
 
 TEST_F(PriceAlertUtilTest, TestUserSettingOn) {

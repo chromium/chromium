@@ -46,7 +46,7 @@ class IOSSSLErrorHandlerWithoutTabHelpersTest : public ChromeWebTest {
   // Returns certificate.
   scoped_refptr<net::X509Certificate> cert() { return cert_; }
 
-  // web::WebTestWithWebState overrides:
+  // ChromeWebTest overrides:
   void SetUp() override {
     ChromeWebTest::SetUp();
 
@@ -88,7 +88,7 @@ class IOSSSLErrorHandlerTest : public IOSSSLErrorHandlerWithoutTabHelpersTest {
  protected:
   IOSSSLErrorHandlerTest() {}
 
-  // web::WebTestWithWebState overrides:
+  // IOSSSLErrorHandlerWithoutTabHelpersTest overrides:
   void SetUp() override {
     IOSSSLErrorHandlerWithoutTabHelpersTest::SetUp();
 
