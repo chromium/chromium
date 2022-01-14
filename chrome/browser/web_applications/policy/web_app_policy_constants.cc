@@ -15,6 +15,7 @@ const char kFallbackAppNameKey[] = "fallback_app_name";
 const char kCustomNameKey[] = "custom_name";
 const char kCustomIconKey[] = "custom_icon";
 const char kCustomIconURLKey[] = "url";
+const char kCustomIconHashKey[] = "hash";
 
 const char kWildcard[] = "*";
 

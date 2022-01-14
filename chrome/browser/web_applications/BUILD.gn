@@ -624,7 +624,10 @@ source_set("web_applications_browser_tests") {
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {
-    sources += [ "system_web_apps/test/system_web_app_manager_browsertest.cc" ]
+    sources += [
+      "policy/web_app_policy_manager_browsertest.cc",
+      "system_web_apps/test/system_web_app_manager_browsertest.cc",
+    ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

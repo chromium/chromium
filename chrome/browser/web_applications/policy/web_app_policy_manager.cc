@@ -23,6 +23,8 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -398,30 +400,63 @@ void WebAppPolicyManager::SetRefreshPolicySettingsCompletedCallbackForTesting(
   refresh_policy_settings_completed_ = std::move(callback);
 }
 
-// TODO(crbug.com/1243711): Add browser-test for this.
-void WebAppPolicyManager::MaybeOverrideManifest(
-    content::RenderFrameHost* frame_host,
-    blink::mojom::ManifestPtr& manifest) {
-#if defined(OS_CHROMEOS)
-  if (!manifest)
-    return;
-  const webapps::PreRedirectionURLObserver* const pre_redirect =
-      webapps::PreRedirectionURLObserver::FromWebContents(
-          content::WebContents::FromRenderFrameHost(frame_host));
-  if (!pre_redirect)
-    return;
-  GURL last_url = pre_redirect->last_url();
-  if (!base::Contains(custom_manifest_values_by_url_, last_url))
-    return;
-  CustomManifestValues& custom_values =
-      custom_manifest_values_by_url_[last_url];
+void WebAppPolicyManager::OverrideManifest(
+    const GURL& custom_values_key,
+    blink::mojom::ManifestPtr& manifest) const {
+  const CustomManifestValues& custom_values =
+      custom_manifest_values_by_url_.at(custom_values_key);
   if (custom_values.name) {
     manifest->name = custom_values.name.value();
   }
   if (custom_values.icons) {
     manifest->icons = custom_values.icons.value();
   }
-#endif
+}
+
+void WebAppPolicyManager::MaybeOverrideManifest(
+    content::RenderFrameHost* frame_host,
+    blink::mojom::ManifestPtr& manifest) const {
+#if defined(OS_CHROMEOS)
+
+  if (!manifest)
+    return;
+
+  // For policy-installed apps there are two ways for getting to the manifest:
+  // via the policy install URL, or via the manifest-specified start_url
+  // of an already installed app. Websites without a manifest will use the
+  // policy-installed URL as start_url, so they are covered by the first case.
+  // Second case first:
+  if (!manifest->start_url.is_empty()) {
+    const absl::optional<std::string> manifest_id =
+        manifest->id.has_value() ? absl::optional<std::string>(
+                                       base::UTF16ToUTF8(manifest->id.value()))
+                                 : absl::nullopt;
+    const AppId& app_id = GenerateAppId(manifest_id, manifest->start_url);
+    // List of policy-installed apps and their install URLs:
+    std::map<AppId, GURL> policy_installed_apps =
+        app_registrar_->GetExternallyInstalledApps(
+            ExternalInstallSource::kExternalPolicy);
+    if (base::Contains(policy_installed_apps, app_id)) {
+      const auto& policy_install_url = policy_installed_apps[app_id];
+      if (base::Contains(custom_manifest_values_by_url_, policy_install_url))
+        OverrideManifest(policy_install_url, manifest);
+      return;
+    }
+  }
+
+  // And now the first case: assume we got here from the policy install URL.
+  // We might have been redirected in between, so check where we started
+  // the current navigation.
+  const webapps::PreRedirectionURLObserver* const pre_redirect =
+      webapps::PreRedirectionURLObserver::FromWebContents(
+          content::WebContents::FromRenderFrameHost(frame_host));
+  if (!pre_redirect)
+    return;
+  GURL install_url = pre_redirect->last_url();
+  if (base::Contains(custom_manifest_values_by_url_, install_url))
+    OverrideManifest(install_url, manifest);
+
+#endif  // if defined(OS_CHROMEOS)
 }
 
 void WebAppPolicyManager::OnAppsSynchronized(

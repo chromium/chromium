@@ -17,6 +17,7 @@ extern const char kFallbackAppNameKey[];
 extern const char kCustomNameKey[];
 extern const char kCustomIconKey[];
 extern const char kCustomIconURLKey[];
+extern const char kCustomIconHashKey[];
 
 extern const char kWildcard[];
 

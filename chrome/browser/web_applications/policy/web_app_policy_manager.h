@@ -95,7 +95,7 @@ class WebAppPolicyManager {
 
   // Changes the manifest to conform to the WebAppInstallForceList policy.
   void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
-                             blink::mojom::ManifestPtr& manifest);
+                             blink::mojom::ManifestPtr& manifest) const;
 
  private:
   friend class WebAppPolicyManagerTest;
@@ -135,6 +135,9 @@ class WebAppPolicyManager {
           install_results,
       std::map<GURL, bool> uninstall_results);
   void ApplyPolicySettings();
+
+  void OverrideManifest(const GURL& custom_values_key,
+                        blink::mojom::ManifestPtr& manifest) const;
 
   // Parses install options from a Value, which represents one entry of the
   // kWepAppInstallForceList. If the value contains a custom_name or
