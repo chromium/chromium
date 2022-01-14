@@ -147,8 +147,8 @@ class NET_EXPORT HttpUtil {
   // unescaped actually is a valid quoted string. Returns false for an empty
   // string, a string without quotes, a string with mismatched quotes, and
   // a string with unescaped embeded quotes.
-  static bool StrictUnquote(base::StringPiece str,
-                            std::string* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool StrictUnquote(base::StringPiece str,
+                                          std::string* out);
 
   // The reverse of Unquote() -- escapes and surrounds with "
   static std::string Quote(base::StringPiece str);

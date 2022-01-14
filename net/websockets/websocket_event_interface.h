@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"  // for WARN_UNUSED_RESULT
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"

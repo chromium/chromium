@@ -4,7 +4,6 @@
 
 #include "net/cert/internal/verify_signed_data.h"
 
-#include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/internal/cert_errors.h"
@@ -22,7 +21,7 @@ namespace net {
 namespace {
 
 // Converts a DigestAlgorithm to an equivalent EVP_MD*.
-WARN_UNUSED_RESULT bool GetDigest(DigestAlgorithm digest, const EVP_MD** out) {
+[[nodiscard]] bool GetDigest(DigestAlgorithm digest, const EVP_MD** out) {
   *out = nullptr;
 
   switch (digest) {
@@ -49,8 +48,8 @@ WARN_UNUSED_RESULT bool GetDigest(DigestAlgorithm digest, const EVP_MD** out) {
 }
 
 // Sets the RSASSA-PSS parameters on |pctx|. Returns true on success.
-WARN_UNUSED_RESULT bool ApplyRsaPssOptions(const RsaPssParameters* params,
-                                           EVP_PKEY_CTX* pctx) {
+[[nodiscard]] bool ApplyRsaPssOptions(const RsaPssParameters* params,
+                                      EVP_PKEY_CTX* pctx) {
   // BoringSSL takes a signed int for the salt length, and interprets
   // negative values in a special manner. Make sure not to silently underflow.
   base::CheckedNumeric<int> salt_length_bytes_int(params->salt_length());

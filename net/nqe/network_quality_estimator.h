@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -296,20 +295,20 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // observations since |start_time|. Virtualized for testing. |rtt| should not
   // be null. If |observations_count| is not null, then it is set to the number
   // of RTT observations that were used for computing the RTT estimate.
-  virtual bool GetRecentRTT(
+  [[nodiscard]] virtual bool GetRecentRTT(
       nqe::internal::ObservationCategory observation_category,
       const base::TimeTicks& start_time,
       base::TimeDelta* rtt,
-      size_t* observations_count) const WARN_UNUSED_RESULT;
+      size_t* observations_count) const;
 
   // Returns true if median downstream throughput is available and sets |kbps|
   // to the median of downstream throughput (in kilobits per second)
   // observations since |start_time|. Virtualized for testing. |kbps|
   // should not be null. Virtualized for testing.
   // TODO(tbansal): Change it to return throughput as int32.
-  virtual bool GetRecentDownlinkThroughputKbps(
+  [[nodiscard]] virtual bool GetRecentDownlinkThroughputKbps(
       const base::TimeTicks& start_time,
-      int32_t* kbps) const WARN_UNUSED_RESULT;
+      int32_t* kbps) const;
 
   // Overrides the tick clock used by |this| for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -359,20 +358,19 @@ class EmbeddedTestServer {
   // StartAcceptingConnectionsAndReturnHandle().
   // Returns a "handle" which will ShutdownAndWaitUntilComplete() when
   // destroyed, or null if the listening socket could not be created.
-  EmbeddedTestServerHandle StartAndReturnHandle(int port = 0)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] EmbeddedTestServerHandle StartAndReturnHandle(int port = 0);
 
   // Equivalent of StartAndReturnHandle(), but requires manual Shutdown() by
   // the caller.
-  bool Start(int port = 0) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Start(int port = 0);
 
   // Starts listening for incoming connections but will not yet accept them.
   // Returns whether a listening socket has been succesfully created.
-  bool InitializeAndListen(int port = 0) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InitializeAndListen(int port = 0);
 
   // Starts the Accept IO Thread and begins accepting connections.
-  EmbeddedTestServerHandle StartAcceptingConnectionsAndReturnHandle()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] EmbeddedTestServerHandle
+  StartAcceptingConnectionsAndReturnHandle();
 
   // Equivalent of StartAcceptingConnectionsAndReturnHandle(), but requires
   // manual Shutdown() by the caller.
@@ -381,7 +379,7 @@ class EmbeddedTestServer {
   // Shuts down the http server and waits until the shutdown is complete.
   // Prefer to use the Start*AndReturnHandle() APIs to manage shutdown, if
   // possible.
-  bool ShutdownAndWaitUntilComplete() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ShutdownAndWaitUntilComplete();
 
   // Checks if the server has started listening for incoming connections.
   bool Started() const { return listen_socket_.get() != nullptr; }
@@ -415,7 +413,7 @@ class EmbeddedTestServer {
       const absl::optional<std::string>& hostname = absl::nullopt) const;
 
   // Returns the address list needed to connect to the server.
-  bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetAddressList(AddressList* address_list) const;
 
   // Returns the IP Address to connect to the server as a string.
   std::string GetIPLiteralString() const;
@@ -548,23 +546,23 @@ class EmbeddedTestServer {
 
   // Reads server certificate and private key from file. May only be called if
   // |cert_| refers to a file-based cert & key.
-  bool InitializeCertAndKeyFromFile() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InitializeCertAndKeyFromFile();
 
   // Generate server certificate and private key. May only be called if |cert_|
   // refers to a generated cert & key.
-  bool GenerateCertAndKey() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GenerateCertAndKey();
 
   // Initializes the SSLServerContext so that SSLServerSocket connections may
   // share the same cache
-  bool InitializeSSLServerContext() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InitializeSSLServerContext();
 
   // Posts a task to the |io_thread_| and waits for a reply.
-  bool PostTaskToIOThreadAndWait(base::OnceClosure closure) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool PostTaskToIOThreadAndWait(base::OnceClosure closure);
 
   // Posts a task that returns a true/false success/fail value to the
   // |io_thread_| and waits for a reply.
-  bool PostTaskToIOThreadAndWaitWithResult(base::OnceCallback<bool()> task)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool PostTaskToIOThreadAndWaitWithResult(
+      base::OnceCallback<bool()> task);
 
   const bool is_using_ssl_;
   const HttpConnection::Protocol protocol_;

@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
@@ -119,7 +118,7 @@ class BaseTestServer {
   BaseTestServer& operator=(const BaseTestServer&) = delete;
 
   // Starts the server blocking until the server is ready.
-  bool Start() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Start();
 
   // Start the test server without blocking. Use this if you need multiple test
   // servers (such as WebSockets and HTTP, or HTTP and HTTPS). You must call
@@ -135,11 +134,11 @@ class BaseTestServer {
   //   RunMyTest();
   //
   // Returns true on success.
-  virtual bool StartInBackground() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool StartInBackground() = 0;
 
   // Block until the test server is ready. Returns true on success. See
   // StartInBackground() documentation for more information.
-  virtual bool BlockUntilStarted() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool BlockUntilStarted() = 0;
 
   // Returns the host port pair used by current Python based test server only
   // if the server is started.
@@ -148,7 +147,7 @@ class BaseTestServer {
   const base::FilePath& document_root() const { return document_root_; }
   const base::Value& server_data() const;
   std::string GetScheme() const;
-  bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetAddressList(AddressList* address_list) const;
 
   GURL GetURL(const std::string& path) const;
   GURL GetURL(const std::string& hostname,
@@ -184,7 +183,7 @@ class BaseTestServer {
 
   // Marks the root certificate of an HTTPS test server as trusted for
   // the duration of tests.
-  bool LoadTestRootCert() const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool LoadTestRootCert() const;
 
   // Returns the certificate that the server is using.
   scoped_refptr<X509Certificate> GetCertificate() const;
@@ -204,7 +203,7 @@ class BaseTestServer {
   void SetPort(uint16_t port);
 
   // Set up internal status when the server is started.
-  bool SetupWhenServerStarted() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetupWhenServerStarted();
 
   // Clean up internal status when starting to stop server.
   void CleanUpWhenStoppingServer();
@@ -218,18 +217,17 @@ class BaseTestServer {
   // different from the local port set in |host_port_pair_|, specifically when
   // using RemoteTestServer (which proxies connections from 127.0.0.1 to a
   // different IP). Returns true on success.
-  bool SetAndParseServerData(const std::string& server_data,
-                             int* port) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetAndParseServerData(const std::string& server_data,
+                                           int* port);
 
   // Generates a DictionaryValue with the arguments for launching the external
   // Python test server.
-  bool GenerateArguments(base::DictionaryValue* arguments) const
-    WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GenerateArguments(base::DictionaryValue* arguments) const;
 
   // Subclasses can override this to add arguments that are specific to their
   // own test servers.
-  virtual bool GenerateAdditionalArguments(
-      base::DictionaryValue* arguments) const WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool GenerateAdditionalArguments(
+      base::DictionaryValue* arguments) const;
 
  private:
   void Init(const std::string& host);

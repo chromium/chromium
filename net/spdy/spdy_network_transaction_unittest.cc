@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -302,7 +301,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
 
   void ConnectStatusHelper(const MockRead& status);
 
-  HttpRequestInfo CreateGetPushRequest() const WARN_UNUSED_RESULT {
+  [[nodiscard]] HttpRequestInfo CreateGetPushRequest() const {
     HttpRequestInfo request;
     request.method = "GET";
     request.url = GURL(kPushedUrl);

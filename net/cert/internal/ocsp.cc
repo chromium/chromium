@@ -548,7 +548,7 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
 // Checks that the ResponderID |id| matches the certificate |cert| either
 // by verifying the name matches that of the certificate or that the hash
 // matches the certificate's public key hash (RFC 6960, 4.2.2.3).
-WARN_UNUSED_RESULT bool CheckResponderIDMatchesCertificate(
+[[nodiscard]] bool CheckResponderIDMatchesCertificate(
     const OCSPResponseData::ResponderID& id,
     const ParsedCertificate* cert) {
   switch (id.type) {
@@ -581,7 +581,7 @@ WARN_UNUSED_RESULT bool CheckResponderIDMatchesCertificate(
 // TODO(eroman): Not all properties of the certificate are verified, only the
 //     signature and EKU. Can full RFC 5280 validation be used, or are there
 //     compatibility concerns?
-WARN_UNUSED_RESULT bool VerifyAuthorizedResponderCert(
+[[nodiscard]] bool VerifyAuthorizedResponderCert(
     const ParsedCertificate* responder_certificate,
     const ParsedCertificate* issuer_certificate) {
   // The Authorized Responder must be directly signed by the issuer of the
@@ -606,7 +606,7 @@ WARN_UNUSED_RESULT bool VerifyAuthorizedResponderCert(
   return true;
 }
 
-WARN_UNUSED_RESULT bool VerifyOCSPResponseSignatureGivenCert(
+[[nodiscard]] bool VerifyOCSPResponseSignatureGivenCert(
     const OCSPResponse& response,
     const ParsedCertificate* cert) {
   // TODO(eroman): Must check the signature algorithm against policy.
@@ -617,7 +617,7 @@ WARN_UNUSED_RESULT bool VerifyOCSPResponseSignatureGivenCert(
 // Verifies that the OCSP response has a valid signature using
 // |issuer_certificate|, or an authorized responder issued by
 // |issuer_certificate| for OCSP signing.
-WARN_UNUSED_RESULT bool VerifyOCSPResponseSignature(
+[[nodiscard]] bool VerifyOCSPResponseSignature(
     const OCSPResponse& response,
     const OCSPResponseData& response_data,
     const ParsedCertificate* issuer_certificate) {

@@ -179,9 +179,9 @@ class NET_EXPORT ConfiguredProxyResolutionService
   base::Value GetProxyNetLogValues() override;
 
   // ProxyResolutionService
-  bool CastToConfiguredProxyResolutionService(
+  [[nodiscard]] bool CastToConfiguredProxyResolutionService(
       ConfiguredProxyResolutionService** configured_proxy_resolution_service)
-      override WARN_UNUSED_RESULT;
+      override;
 
   // Same as CreateProxyResolutionServiceUsingV8ProxyResolver, except it uses
   // system libraries for evaluating the PAC script if available, otherwise

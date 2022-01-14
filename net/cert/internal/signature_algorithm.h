@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -52,8 +51,8 @@ enum class SignatureAlgorithmId {
 //         { IDENTIFIER id-sha384 PARAMS TYPE NULL ARE preferredPresent } |
 //         { IDENTIFIER id-sha512 PARAMS TYPE NULL ARE preferredPresent }
 //     }
-WARN_UNUSED_RESULT bool ParseHashAlgorithm(const der::Input& input,
-                                           DigestAlgorithm* out);
+[[nodiscard]] bool ParseHashAlgorithm(const der::Input& input,
+                                      DigestAlgorithm* out);
 
 // Base class for describing algorithm parameters.
 class NET_EXPORT SignatureAlgorithmParameters {

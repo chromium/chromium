@@ -168,9 +168,9 @@ const uint8_t kOidMgf1[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
 //     AlgorithmIdentifier  ::=  SEQUENCE  {
 //          algorithm               OBJECT IDENTIFIER,
 //          parameters              ANY DEFINED BY algorithm OPTIONAL  }
-WARN_UNUSED_RESULT bool ParseAlgorithmIdentifier(const der::Input& input,
-                                                 der::Input* algorithm,
-                                                 der::Input* parameters) {
+[[nodiscard]] bool ParseAlgorithmIdentifier(const der::Input& input,
+                                            der::Input* algorithm,
+                                            der::Input* parameters) {
   der::Parser parser(input);
 
   der::Parser algorithm_identifier_parser;
@@ -201,12 +201,12 @@ WARN_UNUSED_RESULT bool ParseAlgorithmIdentifier(const der::Input& input,
 }
 
 // Returns true if |input| is empty.
-WARN_UNUSED_RESULT bool IsEmpty(const der::Input& input) {
+[[nodiscard]] bool IsEmpty(const der::Input& input) {
   return input.Length() == 0;
 }
 
 // Returns true if the entirety of the input is a NULL value.
-WARN_UNUSED_RESULT bool IsNull(const der::Input& input) {
+[[nodiscard]] bool IsNull(const der::Input& input) {
   der::Parser parser(input);
   der::Input null_value;
   if (!parser.ReadTag(der::kNull, &null_value))
@@ -363,8 +363,8 @@ std::unique_ptr<SignatureAlgorithm> ParseEcdsa(DigestAlgorithm digest,
 // Note that the possible mask gen algorithms is extensible. However at present
 // the only function supported is MGF1, as that is the singular mask gen
 // function defined by RFC 4055 / RFC 5912.
-WARN_UNUSED_RESULT bool ParseMaskGenAlgorithm(const der::Input input,
-                                              DigestAlgorithm* mgf1_hash) {
+[[nodiscard]] bool ParseMaskGenAlgorithm(const der::Input input,
+                                         DigestAlgorithm* mgf1_hash) {
   der::Input oid;
   der::Input params;
   if (!ParseAlgorithmIdentifier(input, &oid, &params))
@@ -382,7 +382,7 @@ WARN_UNUSED_RESULT bool ParseMaskGenAlgorithm(const der::Input input,
 // rejected.
 //
 // Returns true on success.
-WARN_UNUSED_RESULT bool ReadOptionalContextSpecificUint32(
+[[nodiscard]] bool ReadOptionalContextSpecificUint32(
     der::Parser* parser,
     uint8_t class_number,
     absl::optional<uint32_t>* out) {
@@ -545,8 +545,8 @@ DEFINE_CERT_ERROR_ID(kUnknownAlgorithmIdentifierOid,
 
 }  // namespace
 
-WARN_UNUSED_RESULT bool ParseHashAlgorithm(const der::Input& input,
-                                           DigestAlgorithm* out) {
+[[nodiscard]] bool ParseHashAlgorithm(const der::Input& input,
+                                      DigestAlgorithm* out) {
   CBS cbs;
   CBS_init(&cbs, input.UnsafeData(), input.Length());
   const EVP_MD* md = EVP_parse_digest_algorithm(&cbs);

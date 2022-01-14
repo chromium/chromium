@@ -26,8 +26,8 @@ der::Input IssuingDistributionPointOid() {
   return der::Input(oid);
 }
 
-WARN_UNUSED_RESULT bool NormalizeNameTLV(const der::Input& name_tlv,
-                                         std::string* out_normalized_name) {
+[[nodiscard]] bool NormalizeNameTLV(const der::Input& name_tlv,
+                                    std::string* out_normalized_name) {
   der::Parser parser(name_tlv);
   der::Input name_rdn;
   net::CertErrors unused_errors;

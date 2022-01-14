@@ -354,8 +354,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
   void CompleteDelayedTransactions();
   // If there are any pending transactions of the given type,
   // completes one and returns true. Otherwise, returns false.
-  bool CompleteOneDelayedTransactionOfType(DnsQueryType type)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CompleteOneDelayedTransactionOfType(DnsQueryType type);
 
   bool doh_probes_running() { return !running_doh_probe_runners_.empty(); }
   void CompleteDohProbeRuners() { running_doh_probe_runners_.clear(); }
@@ -413,8 +412,7 @@ class MockDnsClient : public DnsClient {
   void CompleteDelayedTransactions();
   // If there are any pending transactions of the given type,
   // completes one and returns true. Otherwise, returns false.
-  bool CompleteOneDelayedTransactionOfType(DnsQueryType type)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CompleteOneDelayedTransactionOfType(DnsQueryType type);
 
   void set_max_fallback_failures(int max_fallback_failures) {
     max_fallback_failures_ = max_fallback_failures;

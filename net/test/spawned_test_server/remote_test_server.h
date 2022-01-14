@@ -79,8 +79,8 @@ class RemoteTestServer : public BaseTestServer {
   ~RemoteTestServer() override;
 
   // BaseTestServer overrides.
-  bool StartInBackground() override WARN_UNUSED_RESULT;
-  bool BlockUntilStarted() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartInBackground() override;
+  [[nodiscard]] bool BlockUntilStarted() override;
 
   // Stops the Python test server that is running on the host machine.
   bool Stop();

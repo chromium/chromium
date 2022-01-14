@@ -67,17 +67,17 @@ class NET_EXPORT CertNetFetcher
   //     size is exceeded then the request will fail. To use a default timeout
   //     pass DEFAULT.
 
-  virtual WARN_UNUSED_RESULT std::unique_ptr<Request> FetchCaIssuers(
+  [[nodiscard]] virtual std::unique_ptr<Request> FetchCaIssuers(
       const GURL& url,
       int timeout_milliseconds,
       int max_response_bytes) = 0;
 
-  virtual WARN_UNUSED_RESULT std::unique_ptr<Request> FetchCrl(
+  [[nodiscard]] virtual std::unique_ptr<Request> FetchCrl(
       const GURL& url,
       int timeout_milliseconds,
       int max_response_bytes) = 0;
 
-  virtual WARN_UNUSED_RESULT std::unique_ptr<Request> FetchOcsp(
+  [[nodiscard]] virtual std::unique_ptr<Request> FetchOcsp(
       const GURL& url,
       int timeout_milliseconds,
       int max_response_bytes) = 0;

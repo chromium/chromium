@@ -91,7 +91,7 @@ void VerifyNoUnconsumedCriticalExtensions(const ParsedCertificate& cert,
 //    support key rollover or changes in certificate policies.  These
 //    self-issued certificates are not counted when evaluating path length
 //    or name constraints.
-WARN_UNUSED_RESULT bool IsSelfIssued(const ParsedCertificate& cert) {
+[[nodiscard]] bool IsSelfIssued(const ParsedCertificate& cert) {
   return cert.normalized_subject() == cert.normalized_issuer();
 }
 

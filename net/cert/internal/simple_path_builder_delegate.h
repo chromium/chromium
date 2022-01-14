@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/path_builder.h"
 #include "net/cert/internal/signature_algorithm.h"
@@ -59,7 +58,7 @@ class NET_EXPORT SimplePathBuilderDelegate : public CertPathBuilderDelegate {
                                   CertPathBuilderResultPath* path) override;
 
  private:
-  bool IsAcceptableDigest(DigestAlgorithm digest) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool IsAcceptableDigest(DigestAlgorithm digest) const;
 
   const size_t min_rsa_modulus_length_bits_;
   const DigestPolicy digest_policy_;

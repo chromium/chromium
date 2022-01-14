@@ -7,7 +7,6 @@
 
 #include <cstddef>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/net_export.h"
@@ -54,7 +53,7 @@ class NET_EXPORT_PRIVATE AlpsDecoder {
   // Returns an error code, or Error::kNoError if no error has occurred.
   // The requirement that the first frame MUST be SETTINGS is not enforced,
   // because that only applies to HTTP/2 connections, not ALPS data.
-  Error Decode(base::span<const char> data) WARN_UNUSED_RESULT;
+  [[nodiscard]] Error Decode(base::span<const char> data);
 
   // The number of SETTINGS frames received.
   int settings_frame_count() const;

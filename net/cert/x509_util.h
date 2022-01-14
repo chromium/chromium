@@ -144,8 +144,9 @@ NET_EXPORT ParseCertificateOptions DefaultParseCertificateOptions();
 // On success, returns true and updates |hash| to be the SHA-256 hash of the
 // subjectPublicKeyInfo of the certificate in |buffer|. If |buffer| is not a
 // valid certificate, returns false and |hash| is in an undefined state.
-NET_EXPORT bool CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer,
-                                        HashValue* hash) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool CalculateSha256SpkiHash(
+    const CRYPTO_BUFFER* buffer,
+    HashValue* hash);
 
 // Calls |verifier->VerifyInit|, using the public key from |certificate|,
 // checking if the digitalSignature key usage bit is present, and returns true

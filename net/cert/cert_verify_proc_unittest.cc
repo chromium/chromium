@@ -1107,7 +1107,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
   // On some platforms trying to import a certificate with mismatched signature
   // will fail. Consequently the rest of the tests can't be performed.
-  WARN_UNUSED_RESULT bool SupportsImportingMismatchedAlgorithms() const {
+  [[nodiscard]] bool SupportsImportingMismatchedAlgorithms() const {
 #if BUILDFLAG(IS_IOS)
     LOG(INFO) << "Skipping test on iOS because certs with mismatched "
                  "algorithms cannot be imported";
@@ -1126,7 +1126,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
   // Shorthand for VerifyChain() where only the leaf's parameters need
   // to be specified.
-  WARN_UNUSED_RESULT int VerifyLeaf(const CertParams& leaf_params) {
+  [[nodiscard]] int VerifyLeaf(const CertParams& leaf_params) {
     return VerifyChain({// Target
                         leaf_params,
                         // Root
@@ -1135,8 +1135,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
   // Shorthand for VerifyChain() where only the intermediate's parameters need
   // to be specified.
-  WARN_UNUSED_RESULT int VerifyIntermediate(
-      const CertParams& intermediate_params) {
+  [[nodiscard]] int VerifyIntermediate(const CertParams& intermediate_params) {
     return VerifyChain({// Target
                         {DigestAlgorithm::Sha256, DigestAlgorithm::Sha256},
                         // Intermediate
@@ -1147,7 +1146,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
   // Shorthand for VerifyChain() where only the root's parameters need to be
   // specified.
-  WARN_UNUSED_RESULT int VerifyRoot(const CertParams& root_params) {
+  [[nodiscard]] int VerifyRoot(const CertParams& root_params) {
     return VerifyChain({// Target
                         {DigestAlgorithm::Sha256, DigestAlgorithm::Sha256},
                         // Intermediate
@@ -1161,8 +1160,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
   //
   // TODO(eroman): Instead of building certificates at runtime, move their
   //               generation to external scripts.
-  WARN_UNUSED_RESULT int VerifyChain(
-      const std::vector<CertParams>& chain_params) {
+  [[nodiscard]] int VerifyChain(const std::vector<CertParams>& chain_params) {
     auto chain = CreateChain(chain_params);
     if (!chain) {
       ADD_FAILURE() << "Failed creating certificate chain";
@@ -1185,7 +1183,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
  private:
   // Overwrites the AlgorithmIdentifier pointed to by |algorithm_sequence| with
   // |algorithm|. Note this violates the constness of StringPiece.
-  WARN_UNUSED_RESULT static bool SetAlgorithmSequence(
+  [[nodiscard]] static bool SetAlgorithmSequence(
       DigestAlgorithm algorithm,
       base::StringPiece* algorithm_sequence) {
     // This string of bytes is the full SEQUENCE for an AlgorithmIdentifier.
@@ -1226,7 +1224,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
   }
 
   // Locate the serial number bytes.
-  WARN_UNUSED_RESULT static bool ExtractSerialNumberFromDERCert(
+  [[nodiscard]] static bool ExtractSerialNumberFromDERCert(
       base::StringPiece der_cert,
       base::StringPiece* serial_value) {
     der::Parser parser((der::Input(der_cert)));

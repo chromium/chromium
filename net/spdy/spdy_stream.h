@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -194,7 +193,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // Returns true if successful.  Returns false if |send_window_size_|
   // would exceed 2^31-1 after the update, see RFC7540 Section 6.9.2.
   // Note that |send_window_size_| should not possibly underflow.
-  bool AdjustSendWindowSize(int32_t delta_window_size) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AdjustSendWindowSize(int32_t delta_window_size);
 
   // Called when bytes are consumed from a SpdyBuffer for a DATA frame
   // that is to be written or is being written. Increases the send

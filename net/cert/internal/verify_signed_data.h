@@ -5,7 +5,6 @@
 #ifndef NET_CERT_INTERNAL_VERIFY_SIGNED_DATA_H_
 #define NET_CERT_INTERNAL_VERIFY_SIGNED_DATA_H_
 
-#include "base/compiler_specific.h"
 #include "crypto/openssl_util.h"
 #include "net/base/net_export.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -28,22 +27,23 @@ class SignatureAlgorithm;
 //   |public_key| - The parsed (non-null) public key.
 //
 // Returns true if verification was successful.
-NET_EXPORT bool VerifySignedData(const SignatureAlgorithm& algorithm,
-                                 const der::Input& signed_data,
-                                 const der::BitString& signature_value,
-                                 EVP_PKEY* public_key) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool VerifySignedData(
+    const SignatureAlgorithm& algorithm,
+    const der::Input& signed_data,
+    const der::BitString& signature_value,
+    EVP_PKEY* public_key);
 
 // Same as above overload, only the public key is inputted as an SPKI and will
 // be parsed internally.
-NET_EXPORT bool VerifySignedData(const SignatureAlgorithm& algorithm,
-                                 const der::Input& signed_data,
-                                 const der::BitString& signature_value,
-                                 const der::Input& public_key_spki)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool VerifySignedData(
+    const SignatureAlgorithm& algorithm,
+    const der::Input& signed_data,
+    const der::BitString& signature_value,
+    const der::Input& public_key_spki);
 
-NET_EXPORT bool ParsePublicKey(const der::Input& public_key_spki,
-                               bssl::UniquePtr<EVP_PKEY>* public_key)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParsePublicKey(
+    const der::Input& public_key_spki,
+    bssl::UniquePtr<EVP_PKEY>* public_key);
 
 }  // namespace net
 

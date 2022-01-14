@@ -332,7 +332,7 @@ void MapAlgorithmToBool(DigestAlgorithm hash, CertVerifyResult* verify_result) {
 //   * Sets |verify_result->has_sha1| to true if the certificate uses SHA1.
 //
 // Returns false if the signature algorithm was unknown or mismatched.
-WARN_UNUSED_RESULT bool InspectSignatureAlgorithmForCert(
+[[nodiscard]] bool InspectSignatureAlgorithmForCert(
     const CRYPTO_BUFFER* cert,
     CertVerifyResult* verify_result) {
   base::StringPiece cert_algorithm_sequence;
@@ -397,7 +397,7 @@ WARN_UNUSED_RESULT bool InspectSignatureAlgorithmForCert(
 // algorithm, they may end up reporting algorithm B, which was not used to
 // verify the certificate. This function enforces that the two signatures match
 // in order to prevent such confusion.
-WARN_UNUSED_RESULT bool InspectSignatureAlgorithmsInChain(
+[[nodiscard]] bool InspectSignatureAlgorithmsInChain(
     CertVerifyResult* verify_result) {
   const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& intermediates =
       verify_result->verified_cert->intermediate_buffers();

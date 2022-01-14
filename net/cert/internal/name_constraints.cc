@@ -112,9 +112,9 @@ bool DNSNameMatches(base::StringPiece name,
 // NOTE: |subtrees| is not pre-initialized by the function(it is expected to be
 // a default initialized object), and it will be modified regardless of the
 // return value.
-WARN_UNUSED_RESULT bool ParseGeneralSubtrees(const der::Input& value,
-                                             GeneralNames* subtrees,
-                                             CertErrors* errors) {
+[[nodiscard]] bool ParseGeneralSubtrees(const der::Input& value,
+                                        GeneralNames* subtrees,
+                                        CertErrors* errors) {
   DCHECK(errors);
 
   // GeneralSubtrees ::= SEQUENCE SIZE (1..MAX) OF GeneralSubtree

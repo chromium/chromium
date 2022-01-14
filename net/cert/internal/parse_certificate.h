@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/general_names.h"
 #include "net/der/input.h"
@@ -56,9 +55,9 @@ struct ParsedTbsCertificate;
 // |errors| must be a non-null destination for any errors/warnings. If
 // |warnings_only| is set to true, then what would ordinarily be errors are
 // instead added as warnings.
-NET_EXPORT bool VerifySerialNumber(const der::Input& value,
-                                   bool warnings_only,
-                                   CertErrors* errors) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool VerifySerialNumber(const der::Input& value,
+                                                 bool warnings_only,
+                                                 CertErrors* errors);
 
 // Consumes a "Time" value (as defined by RFC 5280) from |parser|. On success
 // writes the result to |*out| and returns true. On failure no guarantees are
@@ -69,9 +68,9 @@ NET_EXPORT bool VerifySerialNumber(const der::Input& value,
 //     Time ::= CHOICE {
 //          utcTime        UTCTime,
 //          generalTime    GeneralizedTime }
-NET_EXPORT bool ReadUTCOrGeneralizedTime(der::Parser* parser,
-                                         der::GeneralizedTime* out)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ReadUTCOrGeneralizedTime(
+    der::Parser* parser,
+    der::GeneralizedTime* out);
 
 // Parses a DER-encoded "Validity" as specified by RFC 5280. Returns true on
 // success and sets the results in |not_before| and |not_after|:
@@ -81,10 +80,9 @@ NET_EXPORT bool ReadUTCOrGeneralizedTime(der::Parser* parser,
 //            notAfter       Time }
 //
 // Note that upon success it is NOT guaranteed that |*not_before <= *not_after|.
-NET_EXPORT bool ParseValidity(const der::Input& validity_tlv,
-                              der::GeneralizedTime* not_before,
-                              der::GeneralizedTime* not_after)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseValidity(const der::Input& validity_tlv,
+                                            der::GeneralizedTime* not_before,
+                                            der::GeneralizedTime* not_after);
 
 struct NET_EXPORT ParseCertificateOptions {
   // If set to true, then parsing will skip checks on the certificate's serial
@@ -131,11 +129,12 @@ struct NET_EXPORT ParseCertificateOptions {
 //         signatureValue       BIT STRING  }
 //
 // Parsing guarantees that this is a valid BIT STRING.
-NET_EXPORT bool ParseCertificate(const der::Input& certificate_tlv,
-                                 der::Input* out_tbs_certificate_tlv,
-                                 der::Input* out_signature_algorithm_tlv,
-                                 der::BitString* out_signature_value,
-                                 CertErrors* out_errors) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseCertificate(
+    const der::Input& certificate_tlv,
+    der::Input* out_tbs_certificate_tlv,
+    der::Input* out_signature_algorithm_tlv,
+    der::BitString* out_signature_value,
+    CertErrors* out_errors);
 
 // Parses a DER-encoded "TBSCertificate" as specified by RFC 5280. Returns true
 // on success and sets the results in |out|. Certain invalid inputs may
@@ -169,10 +168,11 @@ NET_EXPORT bool ParseCertificate(const der::Input& certificate_tlv,
 //            extensions      [3]  EXPLICIT Extensions OPTIONAL
 //                                 -- If present, version MUST be v3
 //            }
-NET_EXPORT bool ParseTbsCertificate(const der::Input& tbs_tlv,
-                                    const ParseCertificateOptions& options,
-                                    ParsedTbsCertificate* out,
-                                    CertErrors* errors) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseTbsCertificate(
+    const der::Input& tbs_tlv,
+    const ParseCertificateOptions& options,
+    ParsedTbsCertificate* out,
+    CertErrors* errors);
 
 // Represents a "Version" from RFC 5280:
 //         Version  ::=  INTEGER  {  v1(0), v2(1), v3(2)  }
@@ -323,8 +323,8 @@ struct NET_EXPORT ParsedExtension {
 //
 // On failure |out| has an undefined state. Some of its fields may have been
 // updated during parsing, whereas others may not have been changed.
-NET_EXPORT bool ParseExtension(const der::Input& extension_tlv,
-                               ParsedExtension* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseExtension(const der::Input& extension_tlv,
+                                             ParsedExtension* out);
 
 // From RFC 5280:
 //
@@ -425,17 +425,17 @@ NET_EXPORT der::Input CrlDistributionPointsOid();
 // Returns true on success and fills |extensions|. The output will reference
 // bytes in |extensions_tlv|, so that data must be kept alive.
 // On failure |extensions| may be partially written to and should not be used.
-NET_EXPORT bool ParseExtensions(
+[[nodiscard]] NET_EXPORT bool ParseExtensions(
     const der::Input& extensions_tlv,
-    std::map<der::Input, ParsedExtension>* extensions) WARN_UNUSED_RESULT;
+    std::map<der::Input, ParsedExtension>* extensions);
 
 // Removes the extension with OID |oid| from |unconsumed_extensions| and fills
 // |extension| with the matching extension value. If there was no extension
 // matching |oid| then returns |false|.
-NET_EXPORT bool ConsumeExtension(
+[[nodiscard]] NET_EXPORT bool ConsumeExtension(
     const der::Input& oid,
     std::map<der::Input, ParsedExtension>* unconsumed_extensions,
-    ParsedExtension* extension) WARN_UNUSED_RESULT;
+    ParsedExtension* extension);
 
 struct ParsedBasicConstraints {
   bool is_ca = false;
@@ -451,9 +451,9 @@ struct ParsedBasicConstraints {
 //
 // The maximum allowed value of pathLenConstraints will be whatever can fit
 // into a uint8_t.
-NET_EXPORT bool ParseBasicConstraints(const der::Input& basic_constraints_tlv,
-                                      ParsedBasicConstraints* out)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseBasicConstraints(
+    const der::Input& basic_constraints_tlv,
+    ParsedBasicConstraints* out);
 
 // KeyUsageBit contains the index for a particular key usage. The index is
 // measured from the most significant bit of a bit string.
@@ -493,8 +493,8 @@ enum KeyUsageBit {
 //
 // To test if a particular key usage is set, call, e.g.:
 //     key_usage->AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE);
-NET_EXPORT bool ParseKeyUsage(const der::Input& key_usage_tlv,
-                              der::BitString* key_usage) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseKeyUsage(const der::Input& key_usage_tlv,
+                                            der::BitString* key_usage);
 
 struct AuthorityInfoAccessDescription {
   // The accessMethod DER OID value.
@@ -509,10 +509,9 @@ struct AuthorityInfoAccessDescription {
 //
 // No validation is performed on the contents of the
 // AuthorityInfoAccessDescription fields.
-NET_EXPORT bool ParseAuthorityInfoAccess(
+[[nodiscard]] NET_EXPORT bool ParseAuthorityInfoAccess(
     const der::Input& authority_info_access_tlv,
-    std::vector<AuthorityInfoAccessDescription>* out_access_descriptions)
-    WARN_UNUSED_RESULT;
+    std::vector<AuthorityInfoAccessDescription>* out_access_descriptions);
 
 // Parses the Authority Information Access extension defined by RFC 5280,
 // extracting the caIssuers URIs and OCSP URIs.
@@ -532,10 +531,10 @@ NET_EXPORT bool ParseAuthorityInfoAccess(
 // accessMethods other than id-ad-caIssuers and id-ad-ocsp are silently ignored.
 // accessLocation types other than uniformResourceIdentifier are silently
 // ignored.
-NET_EXPORT bool ParseAuthorityInfoAccessURIs(
+[[nodiscard]] NET_EXPORT bool ParseAuthorityInfoAccessURIs(
     const der::Input& authority_info_access_tlv,
     std::vector<base::StringPiece>* out_ca_issuers_uris,
-    std::vector<base::StringPiece>* out_ocsp_uris) WARN_UNUSED_RESULT;
+    std::vector<base::StringPiece>* out_ocsp_uris);
 
 // ParsedDistributionPoint represents a parsed DistributionPoint from RFC 5280.
 //
@@ -568,10 +567,9 @@ struct NET_EXPORT ParsedDistributionPoint {
 // Parses the value of a CRL Distribution Points extension (sequence of
 // DistributionPoint). Return true on success, and fills |distribution_points|
 // with values that reference data in |distribution_points_tlv|.
-NET_EXPORT bool ParseCrlDistributionPoints(
+[[nodiscard]] NET_EXPORT bool ParseCrlDistributionPoints(
     const der::Input& distribution_points_tlv,
-    std::vector<ParsedDistributionPoint>* distribution_points)
-    WARN_UNUSED_RESULT;
+    std::vector<ParsedDistributionPoint>* distribution_points);
 
 // Represents the AuthorityKeyIdentifier extension defined by RFC 5280 section
 // 4.2.1.1.
@@ -605,16 +603,16 @@ struct NET_EXPORT ParsedAuthorityKeyIdentifier {
 // success and fills |authority_key_identifier| with values that reference data
 // in |extension_value|. On failure the state of |authority_key_identifier| is
 // not guaranteed.
-NET_EXPORT bool ParseAuthorityKeyIdentifier(
+[[nodiscard]] NET_EXPORT bool ParseAuthorityKeyIdentifier(
     const der::Input& extension_value,
-    ParsedAuthorityKeyIdentifier* authority_key_identifier) WARN_UNUSED_RESULT;
+    ParsedAuthorityKeyIdentifier* authority_key_identifier);
 
 // Parses the value of a subjectKeyIdentifier extension. Returns true on
 // success and |subject_key_identifier| references data in |extension_value|.
 // On failure the state of |subject_key_identifier| is not guaranteed.
-NET_EXPORT bool ParseSubjectKeyIdentifier(const der::Input& extension_value,
-                                          der::Input* subject_key_identifier)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseSubjectKeyIdentifier(
+    const der::Input& extension_value,
+    der::Input* subject_key_identifier);
 
 }  // namespace net
 

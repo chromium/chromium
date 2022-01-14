@@ -5,7 +5,6 @@
 #ifndef NET_BASE_PARSE_NUMBER_H_
 #define NET_BASE_PARSE_NUMBER_H_
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -82,31 +81,31 @@ enum class ParseIntError {
 // On failure, it is guaranteed that |*output| was not modified. If
 // |optional_error| was non-null, then it is filled with the reason for the
 // failure.
-NET_EXPORT bool ParseInt32(const base::StringPiece& input,
-                           ParseIntFormat format,
-                           int32_t* output,
-                           ParseIntError* optional_error = nullptr)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseInt32(
+    const base::StringPiece& input,
+    ParseIntFormat format,
+    int32_t* output,
+    ParseIntError* optional_error = nullptr);
 
-NET_EXPORT bool ParseInt64(const base::StringPiece& input,
-                           ParseIntFormat format,
-                           int64_t* output,
-                           ParseIntError* optional_error = nullptr)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseInt64(
+    const base::StringPiece& input,
+    ParseIntFormat format,
+    int64_t* output,
+    ParseIntError* optional_error = nullptr);
 
 // The ParseUint*() functions parse a string representing a number.
 //
 // These are equivalent to calling ParseInt*() with a format string of
 // ParseIntFormat::NON_NEGATIVE and unsigned output types.
-NET_EXPORT bool ParseUint32(const base::StringPiece& input,
-                            uint32_t* output,
-                            ParseIntError* optional_error = nullptr)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseUint32(
+    const base::StringPiece& input,
+    uint32_t* output,
+    ParseIntError* optional_error = nullptr);
 
-NET_EXPORT bool ParseUint64(const base::StringPiece& input,
-                            uint64_t* output,
-                            ParseIntError* optional_error = nullptr)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseUint64(
+    const base::StringPiece& input,
+    uint64_t* output,
+    ParseIntError* optional_error = nullptr);
 
 }  // namespace net
 

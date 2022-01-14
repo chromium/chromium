@@ -10,7 +10,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
@@ -65,15 +64,15 @@ class NET_EXPORT IPEndPoint {
   //    size of data in |address| available.  On output, it is the size of
   //    the address that was copied into |address|.
   // Returns true on success, false on failure.
-  bool ToSockAddr(struct sockaddr* address,
-                  socklen_t* address_length) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ToSockAddr(struct sockaddr* address,
+                                socklen_t* address_length) const;
 
   // Convert from a sockaddr struct.
   // |address| is the address.
   // |address_length| is the length of |address|.
   // Returns true on success, false on failure.
-  bool FromSockAddr(const struct sockaddr* address,
-                    socklen_t address_length) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool FromSockAddr(const struct sockaddr* address,
+                                  socklen_t address_length);
 
   // Returns value as a string (e.g. "127.0.0.1:80"). Returns the empty string
   // when |address_| is invalid (the port will be ignored). This function will

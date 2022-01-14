@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -137,11 +136,12 @@ class CookieChangeDispatcher {
   // partitioned cookies with the same provided key.
   // Unpartitioned cookies are not affected by the `cookie_partition_key`
   // parameter.
-  virtual std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
+  [[nodiscard]] virtual std::unique_ptr<CookieChangeSubscription>
+  AddCallbackForCookie(
       const GURL& url,
       const std::string& name,
       const absl::optional<CookiePartitionKey>& cookie_partition_key,
-      CookieChangeCallback callback) WARN_UNUSED_RESULT = 0;
+      CookieChangeCallback callback) = 0;
 
   // Observe changes to the cookies that would be sent for a request to `url`.
   //
@@ -150,18 +150,19 @@ class CookieChangeDispatcher {
   // partitioned cookies with the same provided key.
   // Unpartitioned cookies are not affected by the `cookie_partition_key`
   // parameter.
-  virtual std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
+  [[nodiscard]] virtual std::unique_ptr<CookieChangeSubscription>
+  AddCallbackForUrl(
       const GURL& url,
       const absl::optional<CookiePartitionKey>& cookie_partition_key,
-      CookieChangeCallback callback) WARN_UNUSED_RESULT = 0;
+      CookieChangeCallback callback) = 0;
 
   // Observe all the CookieStore's changes.
   //
   // The callback will not observe a few bookkeeping changes.
   // See kChangeCauseMapping in cookie_monster.cc for details.
   // TODO(crbug.com/1225444): Add support for Partitioned cookies.
-  virtual std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
-      CookieChangeCallback callback) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual std::unique_ptr<CookieChangeSubscription>
+  AddCallbackForAllChanges(CookieChangeCallback callback) = 0;
 };
 
 }  // namespace net

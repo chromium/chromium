@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 #include "net/der/input.h"
 
@@ -68,14 +67,15 @@ struct ParsedPolicyConstraints {
 
 // Parses a PolicyConstraints SEQUENCE as defined by RFC 5280. Returns true on
 // success, and sets |out|.
-NET_EXPORT bool ParsePolicyConstraints(const der::Input& policy_constraints_tlv,
-                                       ParsedPolicyConstraints* out)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParsePolicyConstraints(
+    const der::Input& policy_constraints_tlv,
+    ParsedPolicyConstraints* out);
 
 // Parses an InhibitAnyPolicy as defined by RFC 5280. Returns true on success,
 // and sets |num_certs|.
-NET_EXPORT bool ParseInhibitAnyPolicy(const der::Input& inhibit_any_policy_tlv,
-                                      uint8_t* num_certs) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseInhibitAnyPolicy(
+    const der::Input& inhibit_any_policy_tlv,
+    uint8_t* num_certs);
 
 struct ParsedPolicyMapping {
   der::Input issuer_domain_policy;
@@ -84,9 +84,9 @@ struct ParsedPolicyMapping {
 
 // Parses a PolicyMappings SEQUENCE as defined by RFC 5280. Returns true on
 // success, and sets |mappings|.
-NET_EXPORT bool ParsePolicyMappings(const der::Input& policy_mappings_tlv,
-                                    std::vector<ParsedPolicyMapping>* mappings)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParsePolicyMappings(
+    const der::Input& policy_mappings_tlv,
+    std::vector<ParsedPolicyMapping>* mappings);
 
 }  // namespace net
 

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -50,8 +49,8 @@ NET_EXPORT bool VerifyNameInSubtree(const der::Input& name_rdn_sequence,
 // If the return value is true, |*contained_email_address| will be set to
 // indicate whether an emailAddress attribute was present.
 // Returns false if there was a parsing error.
-bool NameContainsEmailAddress(const der::Input& name_rdn_sequence,
-                              bool* contained_email_address) WARN_UNUSED_RESULT;
+[[nodiscard]] bool NameContainsEmailAddress(const der::Input& name_rdn_sequence,
+                                            bool* contained_email_address);
 
 }  // namespace net
 

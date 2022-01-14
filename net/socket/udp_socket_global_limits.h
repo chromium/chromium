@@ -5,7 +5,6 @@
 #ifndef NET_SOCKET_UDP_SOCKET_GLOBAL_LIMITS_H_
 #define NET_SOCKET_UDP_SOCKET_GLOBAL_LIMITS_H_
 
-#include "base/compiler_specific.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 
@@ -64,8 +63,7 @@ class NET_EXPORT OwnedUDPSocketCount {
 // successfully called Open(), and has not yet called Close(). This is
 // analogous to the number of open platform socket handles, and in practice
 // should also be a good proxy for the number of consumed UDP ports.
-NET_EXPORT OwnedUDPSocketCount TryAcquireGlobalUDPSocketCount()
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT OwnedUDPSocketCount TryAcquireGlobalUDPSocketCount();
 
 // Returns the current count of open UDP sockets (for testing only).
 NET_EXPORT int GetGlobalUDPSocketCountForTesting();

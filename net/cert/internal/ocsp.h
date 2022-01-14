@@ -285,26 +285,26 @@ NET_EXPORT_PRIVATE bool ParseOCSPResponse(const der::Input& raw_tlv,
 //        the |this_update| field in OCSPSingleResponse. Responses older than
 //        |max_age| will be considered invalid.
 //  * |response_details|: Additional details about failures.
-NET_EXPORT OCSPRevocationStatus CheckOCSP(
-    base::StringPiece raw_response,
-    base::StringPiece certificate_der,
-    base::StringPiece issuer_certificate_der,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
-    OCSPVerifyResult::ResponseStatus* response_details) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT OCSPRevocationStatus
+CheckOCSP(base::StringPiece raw_response,
+          base::StringPiece certificate_der,
+          base::StringPiece issuer_certificate_der,
+          const base::Time& verify_time,
+          const base::TimeDelta& max_age,
+          OCSPVerifyResult::ResponseStatus* response_details);
 
 // Checks the revocation status of |certificate| by using the DER-encoded
 // |raw_response|.
 //
 // Arguments are the same as above, except that it takes already parsed
 // instances of the certificate and issuer certificate.
-NET_EXPORT OCSPRevocationStatus CheckOCSP(
-    base::StringPiece raw_response,
-    const ParsedCertificate* certificate,
-    const ParsedCertificate* issuer_certificate,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
-    OCSPVerifyResult::ResponseStatus* response_details) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT OCSPRevocationStatus
+CheckOCSP(base::StringPiece raw_response,
+          const ParsedCertificate* certificate,
+          const ParsedCertificate* issuer_certificate,
+          const base::Time& verify_time,
+          const base::TimeDelta& max_age,
+          OCSPVerifyResult::ResponseStatus* response_details);
 
 // Creates a DER-encoded OCSPRequest for |cert|. The request is fairly basic:
 //  * No signature

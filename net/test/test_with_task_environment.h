@@ -5,7 +5,6 @@
 #ifndef NET_TEST_TEST_WITH_TASK_ENVIRONMENT_H_
 #define NET_TEST_TEST_WITH_TASK_ENVIRONMENT_H_
 
-#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +33,7 @@ class WithTaskEnvironment {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           time_source) {}
 
-  bool MainThreadIsIdle() const WARN_UNUSED_RESULT {
+  [[nodiscard]] bool MainThreadIsIdle() const {
     return task_environment_.MainThreadIsIdle();
   }
 
@@ -53,15 +52,15 @@ class WithTaskEnvironment {
     task_environment_.AdvanceClock(delta);
   }
 
-  const base::TickClock* GetMockTickClock() WARN_UNUSED_RESULT {
+  [[nodiscard]] const base::TickClock* GetMockTickClock() {
     return task_environment_.GetMockTickClock();
   }
 
-  size_t GetPendingMainThreadTaskCount() const WARN_UNUSED_RESULT {
+  [[nodiscard]] size_t GetPendingMainThreadTaskCount() const {
     return task_environment_.GetPendingMainThreadTaskCount();
   }
 
-  base::TimeDelta NextMainThreadPendingTaskDelay() const WARN_UNUSED_RESULT {
+  [[nodiscard]] base::TimeDelta NextMainThreadPendingTaskDelay() const {
     return task_environment_.NextMainThreadPendingTaskDelay();
   }
 

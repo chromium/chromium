@@ -71,7 +71,7 @@ DEFINE_CERT_ERROR_ID(kSerialNumberNotValidInteger,
                      "Serial number is not a valid INTEGER");
 
 // Returns true if |input| is a SEQUENCE and nothing else.
-WARN_UNUSED_RESULT bool IsSequenceTLV(const der::Input& input) {
+[[nodiscard]] bool IsSequenceTLV(const der::Input& input) {
   der::Parser parser(input);
   der::Parser unused_sequence_parser;
   if (!parser.ReadSequence(&unused_sequence_parser))
@@ -82,7 +82,7 @@ WARN_UNUSED_RESULT bool IsSequenceTLV(const der::Input& input) {
 
 // Reads a SEQUENCE from |parser| and writes the full tag-length-value into
 // |out|. On failure |parser| may or may not have been advanced.
-WARN_UNUSED_RESULT bool ReadSequenceTLV(der::Parser* parser, der::Input* out) {
+[[nodiscard]] bool ReadSequenceTLV(der::Parser* parser, der::Input* out) {
   return parser->ReadRawTLV(out) && IsSequenceTLV(*out);
 }
 
@@ -97,8 +97,8 @@ WARN_UNUSED_RESULT bool ReadSequenceTLV(der::Parser* parser, der::Input* out) {
 //     Implementations SHOULD be prepared to accept any version certificate.
 //     At a minimum, conforming implementations MUST recognize version 3
 //     certificates.
-WARN_UNUSED_RESULT bool ParseVersion(const der::Input& in,
-                                     CertificateVersion* version) {
+[[nodiscard]] bool ParseVersion(const der::Input& in,
+                                CertificateVersion* version) {
   der::Parser parser(in);
   uint64_t version64;
   if (!parser.ReadUint64(&version64))
@@ -125,7 +125,7 @@ WARN_UNUSED_RESULT bool ParseVersion(const der::Input& in,
 }
 
 // Returns true if every bit in |bits| is zero (including empty).
-WARN_UNUSED_RESULT bool BitStringIsAllZeros(const der::BitString& bits) {
+[[nodiscard]] bool BitStringIsAllZeros(const der::BitString& bits) {
   // Note that it is OK to read from the unused bits, since BitString parsing
   // guarantees they are all zero.
   for (size_t i = 0; i < bits.bytes().Length(); ++i) {

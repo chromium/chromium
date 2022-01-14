@@ -40,15 +40,16 @@ class NET_EXPORT CookiePartitionKey {
   //
   // TODO(crbug.com/1225444) Investigate ways to persist partition keys with
   // opaque origins if a browser session is restored.
-  static bool Serialize(const absl::optional<CookiePartitionKey>& in,
-                        std::string& out) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool Serialize(
+      const absl::optional<CookiePartitionKey>& in,
+      std::string& out);
   // Deserializes the result of the method above.
   // If the result is absl::nullopt, the resulting cookie is not partitioned.
   //
   // Returns if the resulting partition key is valid.
-  static bool Deserialize(const std::string& in,
-                          absl::optional<CookiePartitionKey>& out)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool Deserialize(
+      const std::string& in,
+      absl::optional<CookiePartitionKey>& out);
 
   static CookiePartitionKey FromURLForTesting(
       const GURL& url,

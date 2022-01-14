@@ -89,9 +89,9 @@ base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
 // Converts a NetworkIsolationKey to a string for serializing to disk. Returns
 // false on failure, which happens for transient keys that should not be
 // serialized to disk.
-bool WARN_UNUSED_RESULT
-NetworkIsolationKeyToString(const NetworkIsolationKey& network_isolation_key,
-                            std::string* out_string) {
+[[nodiscard]] bool NetworkIsolationKeyToString(
+    const NetworkIsolationKey& network_isolation_key,
+    std::string* out_string) {
   base::Value value;
   if (!network_isolation_key.ToValue(&value))
     return false;
@@ -100,9 +100,9 @@ NetworkIsolationKeyToString(const NetworkIsolationKey& network_isolation_key,
 
 // Attempts to convert a string returned by NetworkIsolationKeyToString() to
 // a NetworkIsolationKey. Returns false on failure.
-bool WARN_UNUSED_RESULT
-NetworkIsolationKeyFromString(const std::string& string,
-                              NetworkIsolationKey* out_network_isolation_key) {
+[[nodiscard]] bool NetworkIsolationKeyFromString(
+    const std::string& string,
+    NetworkIsolationKey* out_network_isolation_key) {
   absl::optional<base::Value> value = base::JSONReader::Read(string);
   if (!value)
     return false;

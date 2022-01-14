@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_extension.h"
@@ -43,15 +42,15 @@ class NET_EXPORT_PRIVATE WebSocketExtensionParser {
   }
 
  private:
-  WARN_UNUSED_RESULT bool Consume(char c);
-  WARN_UNUSED_RESULT bool ConsumeExtension(WebSocketExtension* extension);
-  WARN_UNUSED_RESULT bool ConsumeExtensionParameter(
+  [[nodiscard]] bool Consume(char c);
+  [[nodiscard]] bool ConsumeExtension(WebSocketExtension* extension);
+  [[nodiscard]] bool ConsumeExtensionParameter(
       WebSocketExtension::Parameter* parameter);
-  WARN_UNUSED_RESULT bool ConsumeToken(base::StringPiece* token);
-  WARN_UNUSED_RESULT bool ConsumeQuotedToken(std::string* token);
+  [[nodiscard]] bool ConsumeToken(base::StringPiece* token);
+  [[nodiscard]] bool ConsumeQuotedToken(std::string* token);
   void ConsumeSpaces();
-  WARN_UNUSED_RESULT bool Lookahead(char c);
-  WARN_UNUSED_RESULT bool ConsumeIfMatch(char c);
+  [[nodiscard]] bool Lookahead(char c);
+  [[nodiscard]] bool ConsumeIfMatch(char c);
 
   // The current position in the input string.
   const char* current_;

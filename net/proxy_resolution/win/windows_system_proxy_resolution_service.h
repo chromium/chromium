@@ -12,7 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
@@ -31,7 +30,7 @@ class WindowsSystemProxyResolver;
 class NET_EXPORT WindowsSystemProxyResolutionService
     : public ProxyResolutionService {
  public:
-  static bool IsSupported() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsSupported();
 
   // Creates a WindowsSystemProxyResolutionService or returns nullptr if the
   // runtime dependencies are not satisfied.
@@ -65,9 +64,9 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   void ClearBadProxiesCache() override;
   const ProxyRetryInfoMap& proxy_retry_info() const override;
   base::Value GetProxyNetLogValues() override;
-  bool CastToConfiguredProxyResolutionService(
+  [[nodiscard]] bool CastToConfiguredProxyResolutionService(
       ConfiguredProxyResolutionService** configured_proxy_resolution_service)
-      override WARN_UNUSED_RESULT;
+      override;
 
  private:
   friend class WindowsSystemProxyResolutionRequest;
@@ -78,8 +77,8 @@ class NET_EXPORT WindowsSystemProxyResolutionService
 
   typedef std::set<WindowsSystemProxyResolutionRequest*> PendingRequests;
 
-  bool ContainsPendingRequest(WindowsSystemProxyResolutionRequest* req)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ContainsPendingRequest(
+      WindowsSystemProxyResolutionRequest* req);
   void RemovePendingRequest(WindowsSystemProxyResolutionRequest* req);
 
   size_t PendingRequestSizeForTesting() const {

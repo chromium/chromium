@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
@@ -117,12 +116,12 @@ class NET_EXPORT_PRIVATE ByteReader {
   // Reads a single byte from the input source, putting the byte read in
   // |*byte_p|. If a byte cannot be read from the input (because there is
   // no input left), then this method returns false.
-  bool ReadByte(uint8_t* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadByte(uint8_t* out);
 
   // Reads |len| bytes from the input source, and initializes an Input to
   // point to that data. If there aren't enough bytes left in the input source,
   // then this method returns false.
-  bool ReadBytes(size_t len, Input* out) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadBytes(size_t len, Input* out);
 
   // Returns how many bytes are left to read.
   size_t BytesLeft() const { return len_; }

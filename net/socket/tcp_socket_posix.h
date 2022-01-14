@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -123,8 +122,7 @@ class NET_EXPORT TCPSocketPosix {
 
   // Gets the estimated RTT. Returns false if the RTT is
   // unavailable. May also return false when estimated RTT is 0.
-  bool GetEstimatedRoundTripTime(base::TimeDelta* out_rtt) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetEstimatedRoundTripTime(base::TimeDelta* out_rtt) const;
 
   // Closes the socket.
   void Close();

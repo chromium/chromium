@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -87,9 +86,9 @@ class NET_EXPORT NameConstraints {
   const GeneralNames& excluded_subtrees() const { return excluded_subtrees_; }
 
  private:
-  bool Parse(const der::Input& extension_value,
-             bool is_critical,
-             CertErrors* errors) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Parse(const der::Input& extension_value,
+                           bool is_critical,
+                           CertErrors* errors);
 
   GeneralNames permitted_subtrees_;
   GeneralNames excluded_subtrees_;
