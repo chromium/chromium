@@ -84,13 +84,13 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
       // refilling the whole form with something else. E.g. the same name with a
       // work and a home address would appear twice but a click would be a noop.
       // TODO(fhorschig): Consider refilling form instead (at on least Android).
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) &&
         field_is_autofilled &&
         profile->GetRawInfo(type.GetStorableType()) == raw_field_contents) {
       continue;
     }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
     std::u16string value =
         GetInfoInOneLine(profile, type, comparator.app_locale());
@@ -107,13 +107,13 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
       if (type.group() == FieldTypeGroup::kPhoneHome) {
         bool format_phone;
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
         format_phone = base::FeatureList::IsEnabled(
             autofill::features::kAutofillUseMobileLabelDisambiguation);
 #else
         format_phone = base::FeatureList::IsEnabled(
             autofill::features::kAutofillUseImprovedLabelDisambiguation);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
         if (format_phone) {
           // Formats, e.g., the US phone numbers 15084880800, 508 488 0800, and

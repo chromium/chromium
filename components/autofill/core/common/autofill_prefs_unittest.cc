@@ -80,7 +80,7 @@ TEST_F(AutofillPrefsTest, MigrateDeprecatedAutofillPrefs) {
 // expected.
 // On mobile, no dedicated opt-in is required for WalletSyncTransport - the
 // user is always considered opted-in and thus this test doesn't make sense.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
   const CoreAccountId account1("account1");
   const CoreAccountId account2("account2");
@@ -129,7 +129,7 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
                     ->GetDictionary(prefs::kAutofillSyncTransportOptIn)
                     ->DictSize());
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that AutofillSyncTransportOptIn is not stored using the plain text
 // account id.

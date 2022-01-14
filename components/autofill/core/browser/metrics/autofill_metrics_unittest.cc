@@ -72,7 +72,7 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #endif
 
@@ -440,7 +440,7 @@ void AutofillMetricsTest::SetUp() {
   browser_autofill_manager_->SetExternalDelegateForTest(
       std::move(external_delegate));
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   browser_autofill_manager_->credit_card_access_manager()
       ->set_fido_authenticator_for_testing(
           std::make_unique<TestCreditCardFIDOAuthenticator>(
@@ -500,7 +500,7 @@ void AutofillMetricsTest::RecreateProfile(bool is_server) {
 void AutofillMetricsTest::SetFidoEligibility(bool is_verifiable) {
   CreditCardAccessManager* access_manager =
       browser_autofill_manager_->credit_card_access_manager();
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   static_cast<TestCreditCardFIDOAuthenticator*>(
       access_manager->GetOrCreateFIDOAuthenticator())
       ->SetUserVerifiable(is_verifiable);
@@ -5869,7 +5869,7 @@ TEST_F(AutofillMetricsTest, CreditCardUnmaskingPreflightCall) {
         browser_autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
     // Preflight call is made only if a masked server card is available and the
     // user is eligible for FIDO authentication (except iOS).
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
     histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
 #else
@@ -5896,7 +5896,7 @@ TEST_F(AutofillMetricsTest, CreditCardUnmaskingPreflightCall) {
         browser_autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
     // Preflight call is made only if a masked server card is available and the
     // user is eligible for FIDO authentication (except iOS).
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     histogram_tester.ExpectTotalCount(preflight_call_metric, 0);
     histogram_tester.ExpectTotalCount(preflight_latency_metric, 0);
 #else
@@ -11518,7 +11518,7 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHavePhoneNumberField) {
 
 // ContentAutofillDriver is not visible to TestAutofillDriver on iOS.
 // In addition, WebOTP will not ship on iOS.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Verify that we correctly log PhoneCollectionMetricState::kNone.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateNone) {
   FormData form;
@@ -11775,7 +11775,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
   }
 }
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(AutofillMetricsTest, LogAutocompleteSuggestionAcceptedIndex_WithIndex) {
   base::HistogramTester histogram_tester;

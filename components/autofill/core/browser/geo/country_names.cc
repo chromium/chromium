@@ -47,7 +47,7 @@ std::map<std::string, std::string> GetCommonNames() {
   common_names.insert(std::make_pair("UK", "GB"));
   common_names.insert(std::make_pair("BRASIL", "BR"));
   common_names.insert(std::make_pair("DEUTSCHLAND", "DE"));
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS uses the Foundation API to get the localized display name, in which
   // "China" is named "Chine mainland".
   common_names.insert(std::make_pair("CHINA", "CN"));

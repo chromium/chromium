@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
@@ -74,7 +75,7 @@ void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 AutofillClient::CreateCreditCardInternalAuthenticator(
     content::RenderFrameHost* rfh) {

@@ -346,7 +346,7 @@ void SetAutofillOfferSpecificsFromOfferData(
       (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
   offer_specifics->mutable_display_strings()->set_value_prop_text(
       offer_data.display_strings.value_prop_text);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   offer_specifics->mutable_display_strings()->set_see_details_text_mobile(
       offer_data.display_strings.see_details_text);
   offer_specifics->mutable_display_strings()
@@ -358,7 +358,7 @@ void SetAutofillOfferSpecificsFromOfferData(
   offer_specifics->mutable_display_strings()
       ->set_usage_instructions_text_desktop(
           offer_data.display_strings.usage_instructions_text);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Because card_linked_offer_data and promo_code_offer_data are a oneof,
   // setting one will clear the other. We should figure out which one we care
@@ -401,7 +401,7 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
   }
   offer_data.display_strings.value_prop_text =
       offer_specifics.display_strings().value_prop_text();
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   offer_data.display_strings.see_details_text =
       offer_specifics.display_strings().see_details_text_mobile();
   offer_data.display_strings.usage_instructions_text =
@@ -411,7 +411,7 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
       offer_specifics.display_strings().see_details_text_desktop();
   offer_data.display_strings.usage_instructions_text =
       offer_specifics.display_strings().usage_instructions_text_desktop();
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Card-linked offer fields:
   offer_data.offer_reward_amount =

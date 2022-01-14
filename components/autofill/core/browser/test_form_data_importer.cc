@@ -19,9 +19,9 @@ TestFormDataImporter::TestFormDataImporter(
                        personal_data_manager,
                        app_locale) {
   set_credit_card_save_manager(std::move(credit_card_save_manager));
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   set_local_card_migration_manager(std::move(local_card_migration_manager));
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 }  // namespace autofill

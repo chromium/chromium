@@ -66,7 +66,7 @@ class CreditCardCVCAuthenticator
     virtual void OnCVCAuthenticationComplete(
         const CVCAuthenticationResponse& response) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Returns whether or not the user, while on the CVC prompt, should be
     // offered to switch to FIDO authentication for card unmasking. This will
     // always be false for Desktop since FIDO authentication is offered as a
@@ -109,7 +109,7 @@ class CreditCardCVCAuthenticator
                         base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(
       AutofillClient::PaymentsRpcResult result) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuth() const override;
   bool UserOptedInToFidoFromSettingsPageOnMobile() const override;
 #endif

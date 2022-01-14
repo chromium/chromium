@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
@@ -234,7 +235,7 @@ auto IdentityTuple(const FormFieldData& f) {
       std::tie(
 // TODO(crbug.com/896689): On iOS the unique_id member uniquely addresses
 // this field in the DOM.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
           f.unique_id,
 #endif
           f.autocomplete_attribute, f.placeholder, f.max_length, f.css_classes,

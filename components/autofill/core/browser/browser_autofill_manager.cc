@@ -100,7 +100,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
 #endif
 
@@ -309,7 +309,7 @@ bool ContainsAutofillableValue(const autofill::FormStructure& form) {
   });
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Retrieves all valid credit card candidates for virtual card selection. A
 // valid candidate must have exactly one cloud token.
 std::vector<CreditCard*> GetVirtualCardCandidates(
@@ -603,7 +603,7 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
       /*autoselect_first_suggestion=*/false, should_display_gpay_logo);
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void BrowserAutofillManager::FetchVirtualCardCandidates() {
   const std::vector<CreditCard*>& candidates =
       GetVirtualCardCandidates(personal_data_);
@@ -2080,7 +2080,7 @@ void BrowserAutofillManager::OnAfterProcessParsedForms(
       AutofillMetrics::FORMS_LOADED, form_types,
       client()->GetSecurityLevelForUmaHistograms(),
       /*profile_form_bitmask=*/0);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Log this from same location as AutofillMetrics::FORMS_LOADED to ensure
   // that KeyboardAccessoryButtonsIOS and UserHappiness UMA metrics will be
   // directly comparable.
@@ -2664,7 +2664,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   if (suggestions->empty() || !context->is_filling_credit_card)
     return;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // This section adds the "Use a virtual card number" option in the autofill
   // dropdown menu, if applicable.
   if (ShouldShowVirtualCardOption(context->form_structure)) {
@@ -2689,7 +2689,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   }
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // TODO(crbug.com/1020740): Add metrics logging.
 bool BrowserAutofillManager::ShouldShowVirtualCardOption(
     FormStructure* form_structure) {

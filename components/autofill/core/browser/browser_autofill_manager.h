@@ -114,7 +114,7 @@ class BrowserAutofillManager : public AutofillManager,
                                           const FormData& form,
                                           const FormFieldData& field_data);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the list of credit cards that have associated cloud token data.
   virtual void FetchVirtualCardCandidates();
 
@@ -662,7 +662,7 @@ class BrowserAutofillManager : public AutofillManager,
       const std::vector<AutofillProfile>& profiles,
       FormStructure* form_structure);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Whether to show the option to use virtual card in the autofill popup.
   bool ShouldShowVirtualCardOption(FormStructure* form_structure);
 #endif

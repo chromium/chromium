@@ -942,7 +942,7 @@ std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
   return networkAndLastFourDigits;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
   std::u16string obfuscated_number = ObfuscatedLastFourDigits();
   if (record_type_ == VIRTUAL_CARD) {
@@ -952,7 +952,7 @@ std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
   }
   return obfuscated_number;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
     const std::string& app_locale,

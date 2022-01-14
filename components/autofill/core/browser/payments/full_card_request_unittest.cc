@@ -65,7 +65,7 @@ class MockUIDelegate : public FullCardRequest::UIDelegate,
               OnUnmaskVerificationResult,
               (AutofillClient::PaymentsRpcResult),
               (override));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, ShouldOfferFidoAuth, (), (const override));
   MOCK_METHOD(bool,
               UserOptedInToFidoFromSettingsPageOnMobile,

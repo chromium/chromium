@@ -50,7 +50,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/messages_feature.h"
 #endif
 
@@ -219,7 +219,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       DetectedValue::USER_PROVIDED_EXPIRATION_DATE) {
     upload_decision_metrics_ |=
         AutofillMetrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // iOS should always provide a valid expiration date when attempting to
     // upload a Saved Card. Calling LogSaveCardRequestExpirationDateReasonMetric
     // would trigger a DCHECK.
@@ -234,7 +234,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     should_request_expiration_date_from_user_ = true;
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillSaveCardInfobarEditSupport)) {
     // iOS's new credit card save dialog requires the user to enter both
@@ -245,7 +245,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     should_request_name_from_user_ = false;
     should_request_expiration_date_from_user_ = false;
   }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // The cardholder name and expiration date fix flows cannot both be
   // active at the same time. If they are, abort offering upload.
@@ -292,13 +292,13 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 }
 
 bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // If observer_for_testing_ is set, assume we are in a browsertest and
   // credit card upload should be enabled by default.
   // TODO(crbug.com/859761): Remove dependency from iOS tests on this behavior.
   if (observer_for_testing_)
     return true;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
   return ::autofill::IsCreditCardUploadEnabled(
       client_->GetPrefs(), client_->GetSyncService(),
       personal_data_manager_->GetAccountInfoForPaymentsServer().email,
@@ -362,7 +362,7 @@ CreditCardSaveManager::GetCreditCardSaveStrikeDatabase() {
   return credit_card_save_strike_database_.get();
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 LocalCardMigrationStrikeDatabase*
 CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
   if (local_card_migration_strike_database_.get() == nullptr) {
@@ -372,7 +372,7 @@ CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
   }
   return local_card_migration_strike_database_.get();
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void CreditCardSaveManager::OnDidGetUploadDetails(
     AutofillClient::PaymentsRpcResult result,
@@ -451,11 +451,11 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
 }
 
 void CreditCardSaveManager::OfferCardLocalSave() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool is_mobile_build = true;
 #else
   bool is_mobile_build = false;
-#endif  // #if defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // If |show_save_prompt_|'s value is false, desktop builds will still offer
   // save in the omnibox without popping-up the bubble. Mobile builds, however,
@@ -484,11 +484,11 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 }
 
 void CreditCardSaveManager::OfferCardUploadSave() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool is_mobile_build = true;
 #else
   bool is_mobile_build = false;
-#endif  // #if defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // If |show_save_prompt_|'s value is false, desktop builds will still offer
   // save in the omnibox without popping-up the bubble. Mobile builds, however,
   // should not display the offer-to-save infobar at all.
@@ -551,12 +551,12 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
       GetCreditCardSaveStrikeDatabase()->ClearStrikes(
           base::UTF16ToUTF8(local_card_save_candidate_.LastFourDigits()));
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Clear some local card migration strikes, as there is now a new card
       // eligible for migration.
       GetLocalCardMigrationStrikeDatabase()->RemoveStrikes(
           LocalCardMigrationStrikeDatabase::kStrikesToRemoveWhenLocalCardAdded);
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
       personal_data_manager_->OnAcceptedLocalCreditCardSave(
           local_card_save_candidate_);
@@ -791,13 +791,13 @@ int CreditCardSaveManager::GetDetectedValues() const {
 // On iOS if the new Infobar UI is enabled, it won't be possible to save the
 // card unless the user provides both a valid cardholder name and expiration
 // date.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillSaveCardInfobarEditSupport)) {
     detected_values |= DetectedValue::USER_PROVIDED_NAME;
     detected_values |= DetectedValue::USER_PROVIDED_EXPIRATION_DATE;
   }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   return detected_values;
 }
@@ -808,14 +808,14 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
   switch (user_decision) {
     case AutofillClient::SaveCardOfferUserDecision::kAccepted:
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       if (messages::IsSaveCardMessagesUiEnabled()) {
         OnUserDidAcceptUploadHelper(user_provided_card_details);
         break;
       }
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       // On mobile, requesting cardholder name is a two step flow.
       if (should_request_name_from_user_) {
         client_->ConfirmAccountNameFixFlow(base::BindOnce(
@@ -833,7 +833,7 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
       }
 #else
       OnUserDidAcceptUploadHelper(user_provided_card_details);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       break;
 
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
@@ -845,7 +845,7 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
   personal_data_manager_->OnUserAcceptedUpstreamOffer();
 }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void CreditCardSaveManager::OnUserDidAcceptAccountNameFixFlow(
     const std::u16string& cardholder_name) {
   DCHECK(should_request_name_from_user_);
@@ -861,7 +861,7 @@ void CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow(
   OnUserDidAcceptUploadHelper(
       {/*cardholder_name=*/std::u16string(), month, year});
 }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
@@ -870,7 +870,7 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
   // that it is possible a name already existed on the card if conflicting names
   // were found, which this intentionally overwrites.)
   if (!user_provided_card_details.cardholder_name.empty()) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // On iOS if the new Infobar UI is enabled, cardholder name was provided by
     // the user, but not through the fix flow triggered via
     // |should_request_name_from_user_|.
@@ -890,7 +890,7 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
   // the expiration date on |upload_request_.card| with the selected date.
   if (!user_provided_card_details.expiration_date_month.empty() &&
       !user_provided_card_details.expiration_date_year.empty()) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // On iOS if the new Infobar UI is enabled, expiration date was provided by
     // the user, but not through the fix flow triggered via
     // |should_request_expiration_date_from_user_|.

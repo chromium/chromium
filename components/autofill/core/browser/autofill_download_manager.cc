@@ -849,7 +849,7 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   // On iOS we have a single, shared URLLoaderFactory provided by BrowserState.
   // As it is shared, it is not trusted and we cannot assign trusted_params
   // to the network request.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Do not call IsolationInfo() for REQUEST_UPLOADs because Password Manager
   // uploads when RenderFrameHostImpl::DidCommitNavigation() is called, in which
   // case IsolationInfo() may crash because there is no committing

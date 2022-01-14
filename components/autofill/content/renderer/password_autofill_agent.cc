@@ -1272,7 +1272,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     }
   }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Provide warnings about the accessibility of password forms on the page.
   if (!password_forms_data.empty() &&
       (frame->GetDocument().Url().ProtocolIs(url::kHttpScheme) ||
@@ -1640,7 +1640,7 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   last_updated_field_renderer_id_ = FieldRendererId();
   last_updated_form_renderer_id_ = FormRendererId();
   touch_to_fill_state_ = TouchToFillState::kShouldShow;
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif
 }

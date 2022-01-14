@@ -235,7 +235,7 @@ struct FormData {
   std::vector<FieldRendererId> username_predictions;
   // True if this is a Gaia form which should be skipped on saving.
   bool is_gaia_with_skip_save_password_form = false;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   std::string frame_id;
 #endif
 };

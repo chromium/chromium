@@ -32,7 +32,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_input_element.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/autofill/content/renderer/page_passwords_analyser.h"
 #endif
 
@@ -555,7 +555,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PagePasswordsAnalyser page_passwords_analyser_;
 #endif
 

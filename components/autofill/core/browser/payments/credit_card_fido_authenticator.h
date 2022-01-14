@@ -153,7 +153,7 @@ class CreditCardFIDOAuthenticator
   // and in the FullCardRequest if any.
   void CancelVerification();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Invoked when a Webauthn offer dialog is about to be shown.
   void OnWebauthnOfferDialogRequested(std::string card_authorization_token);
 

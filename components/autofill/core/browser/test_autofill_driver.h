@@ -14,7 +14,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/origin.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
@@ -22,7 +22,7 @@
 namespace autofill {
 
 // This class is only for easier writing of tests.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 class TestAutofillDriver : public AutofillDriver {
 #else
 class TestAutofillDriver : public ContentAutofillDriver {
@@ -41,7 +41,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
   ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   webauthn::InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator()
       override;
 #endif
@@ -91,7 +91,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
 
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   void SetAuthenticator(webauthn::InternalAuthenticator* authenticator_);
 #endif
 
@@ -105,7 +105,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
       bool(const url::Origin&, FieldGlobalId, ServerFieldType)>
       field_type_map_filter_;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator> test_authenticator_;
 #endif
 };

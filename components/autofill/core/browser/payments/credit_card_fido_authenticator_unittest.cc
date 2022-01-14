@@ -274,7 +274,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, IsUserOptedIn_True) {
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(CreditCardFIDOAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Android) {
   scoped_feature_list_.InitAndEnableFeature(
@@ -624,7 +624,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
       AutofillMetrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This test is not applicable for Android (we won't opt-in with Register).
 TEST_F(CreditCardFIDOAuthenticatorTest,
        Register_OptInAttemptReturnsRequestOptions) {

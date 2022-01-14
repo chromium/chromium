@@ -39,7 +39,7 @@ void CountryComboboxModel::SetCountries(
   if (filter.is_null() || filter.Run(default_country_code)) {
     countries_.push_back(
         std::make_unique<AutofillCountry>(default_country_code, app_locale));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // The separator item. On Android, there are separators after all items, so
     // this is unnecessary.
     countries_.push_back(nullptr);

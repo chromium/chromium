@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/common/autofill_features.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace autofill {
@@ -432,7 +433,7 @@ const base::FeatureParam<bool> kAutofillAblationStudyEnabledForPaymentsParam{
 const base::FeatureParam<int> kAutofillAblationStudyAblationWeightPerMilleParam{
     &kAutofillEnableAblationStudy, "ablation_weight_per_mille", 10};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.
 const base::Feature kAutofillManualFallbackAndroid{
@@ -448,17 +449,17 @@ const base::Feature kAutofillTouchToFillForCreditCardsAndroid{
     "AutofillTouchToFillForCreditCardsAndroid",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const base::Feature kAutofillUseMobileLabelDisambiguation{
     "AutofillUseMobileLabelDisambiguation", base::FEATURE_DISABLED_BY_DEFAULT};
 const char kAutofillUseMobileLabelDisambiguationParameterName[] = "variant";
 const char kAutofillUseMobileLabelDisambiguationParameterShowAll[] = "show-all";
 const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Controls whether the creation of new address profiles is enabled in settings
 // on IOS.
 // TODO(crbug/1167105): Remove once it's launched.
@@ -467,14 +468,14 @@ const base::Feature kAutofillEnableNewAddressProfileCreationInSettingsOnIOS{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsAutofillManualFallbackEnabled() {
   return base::FeatureList::IsEnabled(
              autofill::features::kAutofillKeyboardAccessory) &&
          base::FeatureList::IsEnabled(
              autofill::features::kAutofillManualFallbackAndroid);
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
 }  // namespace autofill

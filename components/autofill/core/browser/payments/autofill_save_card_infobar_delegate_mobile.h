@@ -103,14 +103,14 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   bool Accept() override;
   bool Cancel() override;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Updates and then saves the card using |cardholder_name|,
   // |expiration_date_month| and |expiration_date_year|, which were provided
   // as part of the iOS save card Infobar dialog.
   virtual bool UpdateAndAccept(std::u16string cardholder_name,
                                std::u16string expiration_date_month,
                                std::u16string expiration_date_year);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
  private:
   // Runs the appropriate local or upload save callback with the given

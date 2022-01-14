@@ -24,7 +24,7 @@ namespace prefs {
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 extern const char kAutofillCreditCardEnabled[];
 extern const char kAutofillCreditCardFidoAuthEnabled[];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
 #endif
 extern const char kAutofillCreditCardSigninPromoImpressionCount[];

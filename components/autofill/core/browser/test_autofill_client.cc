@@ -5,13 +5,14 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/version_info/channel.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #endif
 
@@ -101,7 +102,7 @@ translate::TranslateDriver* TestAutofillClient::GetTranslateDriver() {
   return &mock_translate_driver_;
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 TestAutofillClient::CreateCreditCardInternalAuthenticator(
     content::RenderFrameHost* rfh) {
@@ -118,7 +119,7 @@ void TestAutofillClient::ShowUnmaskPrompt(
 
 void TestAutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {}
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::vector<std::string>
 TestAutofillClient::GetAllowedMerchantsForVirtualCards() {
   return allowed_merchants_;
@@ -173,7 +174,7 @@ void TestAutofillClient::OfferVirtualCardOptions(
     const std::vector<CreditCard*>& candidates,
     base::OnceCallback<void(const std::string&)> callback) {}
 
-#else  // defined(OS_ANDROID) || defined(OS_IOS)
+#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void TestAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
   credit_card_name_fix_flow_bubble_was_shown_ = true;
@@ -291,7 +292,7 @@ void TestAutofillClient::LoadRiskData(
   std::move(callback).Run("some risk data");
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 bool TestAutofillClient::IsQueryIDRelevant(int query_id) {
   return true;
 }

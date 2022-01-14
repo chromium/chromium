@@ -338,7 +338,7 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
                                           /*is_autocomplete_enabled=*/true);
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Tests that fields that are no longer focusable but still have user typed
 // input are sent to the WebDatabase to be saved. Will not work for iOS
 // because |properties_mask| is not set on iOS.

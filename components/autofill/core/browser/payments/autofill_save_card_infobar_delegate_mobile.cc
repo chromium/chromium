@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_utils_mobile.h"
@@ -129,7 +130,7 @@ AutofillSaveCardInfoBarDelegateMobile::GetIdentifier() const {
 
 bool AutofillSaveCardInfoBarDelegateMobile::ShouldExpire(
     const NavigationDetails& details) const {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillSaveCardDismissOnNavigation)) {
     // Expire the Infobar unless the navigation was triggered by the form that
@@ -139,12 +140,12 @@ bool AutofillSaveCardInfoBarDelegateMobile::ShouldExpire(
     // Use the default behavior used by Android.
     return false;
   }
-#else   // defined(OS_IOS)
+#else   // BUILDFLAG(IS_IOS)
   // The user has submitted a form, causing the page to navigate elsewhere. We
   // don't want the infobar to be expired at this point, because the user won't
   // get a chance to answer the question.
   return false;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void AutofillSaveCardInfoBarDelegateMobile::InfoBarDismissed() {
@@ -196,7 +197,7 @@ bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
   return true;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
     std::u16string cardholder_name,
     std::u16string expiration_date_month,
@@ -211,7 +212,7 @@ bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
   LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
   return true;
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 void AutofillSaveCardInfoBarDelegateMobile::RunSaveCardPromptCallback(
     AutofillClient::SaveCardOfferUserDecision user_decision,

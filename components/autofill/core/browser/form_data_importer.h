@@ -79,11 +79,11 @@ class FormDataImporter {
   // them.
   void CacheFetchedVirtualCard(const std::u16string& last_four);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   LocalCardMigrationManager* local_card_migration_manager() {
     return local_card_migration_manager_.get();
   }
-#endif  // #if !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
  protected:
   // Exposed for testing.
@@ -92,13 +92,13 @@ class FormDataImporter {
     credit_card_save_manager_ = std::move(credit_card_save_manager);
   }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Exposed for testing.
   void set_local_card_migration_manager(
       std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager) {
     local_card_migration_manager_ = std::move(local_card_migration_manager);
   }
-#endif  // #if !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
  private:
   // Defines a candidate for address profile import.
@@ -209,13 +209,13 @@ class FormDataImporter {
   // Responsible for managing address profiles save flows.
   std::unique_ptr<AddressProfileSaveManager> address_profile_save_manager_;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Responsible for migrating locally saved credit cards to Google Pay.
   std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager_;
 
   // Responsible for managing UPI/VPA save flows.
   std::unique_ptr<UpiVpaSaveManager> upi_vpa_save_manager_;
-#endif  // #if !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.  This is overridden by the BrowserAutofillManagerTest.

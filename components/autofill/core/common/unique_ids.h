@@ -55,7 +55,7 @@ using FrameToken = absl::variant<RemoteFrameToken, LocalFrameToken>;
 
 namespace internal {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 using FormRendererIdType = ::base::IdTypeU32<class FormRendererIdMarker>;
 using FieldRendererIdType = ::base::IdTypeU32<class FieldRendererIdMarker>;
 #else

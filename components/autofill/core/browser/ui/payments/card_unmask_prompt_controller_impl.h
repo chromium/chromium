@@ -59,7 +59,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   int GetCvcImageRid() const override;
   bool ShouldRequestExpirationDate() const override;
   bool GetStoreLocallyStartState() const override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int GetGooglePayImageRid() const override;
   bool ShouldOfferWebauthn() const override;
   bool GetWebauthnOfferStartState() const override;

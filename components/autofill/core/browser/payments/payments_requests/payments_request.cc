@@ -16,7 +16,7 @@ PaymentsRequest::~PaymentsRequest() = default;
 base::Value PaymentsRequest::BuildRiskDictionary(
     const std::string& encoded_risk_data) {
   base::Value risk_data(base::Value::Type::DICTIONARY);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Browser fingerprinting is not available on iOS. Instead, we generate
   // RiskAdvisoryData.
   risk_data.SetKey("message_type", base::Value("RISK_ADVISORY_DATA"));

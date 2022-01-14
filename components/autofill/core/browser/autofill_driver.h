@@ -17,7 +17,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
 
@@ -60,7 +60,7 @@ class AutofillDriver {
   // Returns true iff the renderer is available for communication.
   virtual bool RendererIsAvailable() = 0;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Gets or creates a pointer to an implementation of InternalAuthenticator.
   virtual webauthn::InternalAuthenticator*
   GetOrCreateCreditCardInternalAuthenticator() = 0;

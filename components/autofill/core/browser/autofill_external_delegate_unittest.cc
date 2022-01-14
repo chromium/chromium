@@ -364,7 +364,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   auto element_ids = testing::ElementsAre(
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
@@ -419,7 +419,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   auto element_ids = testing::ElementsAre(
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
@@ -470,7 +470,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   auto element_ids = testing::ElementsAre(
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
@@ -510,7 +510,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
       // We are expecting only two data list entries.
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       static_cast<int>(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY));
@@ -858,7 +858,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
       true);
 
   // On Desktop, the GPay icon should be stored in the store indicator icon.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIconsAre(element_icons));
 #else
   EXPECT_THAT(open_args.suggestions,
@@ -980,7 +980,7 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Tests that outdated returned suggestions are discarded.
 TEST_F(AutofillExternalDelegateCardsFromAccountTest,
        ShouldDiscardOutdatedSuggestions) {

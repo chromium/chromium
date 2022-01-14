@@ -207,7 +207,7 @@ class PaymentsClientTest : public testing::Test {
     upload_card_response_details_ = upload_card_respone_details;
   }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void OnDidMigrateLocalCards(
       AutofillClient::PaymentsRpcResult result,
       std::unique_ptr<std::unordered_map<std::string, std::string>>
@@ -217,7 +217,7 @@ class PaymentsClientTest : public testing::Test {
     migration_save_results_ = std::move(migration_save_results);
     display_text_ = display_text;
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void OnDidSelectChallengeOption(AutofillClient::PaymentsRpcResult result,
                                   const std::string& updated_context_token) {
@@ -315,7 +315,7 @@ class PaymentsClientTest : public testing::Test {
                                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void StartMigrating(bool has_cardholder_name,
                       bool set_nickname_for_first_card = false) {
     PaymentsClient::MigrationRequestDetails request_details;
@@ -339,7 +339,7 @@ class PaymentsClientTest : public testing::Test {
         base::BindOnce(&PaymentsClientTest::OnDidMigrateLocalCards,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void StartSelectingChallengeOption(
       CardUnmaskChallengeOptionType challenge_type =
@@ -457,7 +457,7 @@ class PaymentsClientTest : public testing::Test {
   // The opaque token used to chain consecutive payments requests together.
   std::string context_token_;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Credit cards to be upload saved during a local credit card migration call.
   std::vector<MigratableCreditCard> migratable_credit_cards_;
   // A mapping of results from a local credit card migration call.
@@ -465,7 +465,7 @@ class PaymentsClientTest : public testing::Test {
       migration_save_results_;
   // A tip message to be displayed during local card migration.
   std::string display_text_;
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -1388,7 +1388,7 @@ TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
 }
 
 // Tests for the local card migration flow. Desktop only.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PaymentsClientTest, GetDetailsFollowedByMigrationSuccess) {
   StartGettingUploadDetails();
   ReturnResponse(

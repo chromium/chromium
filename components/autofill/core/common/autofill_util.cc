@@ -57,9 +57,9 @@ bool IsShowAutofillSignaturesEnabled() {
 }
 
 bool IsKeyboardAccessoryEnabled() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(kAutofillKeyboardAccessory);
-#else  // !defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
   return false;
 #endif
 }
@@ -153,8 +153,8 @@ bool SanitizedFieldIsEmpty(const std::u16string& value) {
 }
 
 bool ShouldAutoselectFirstSuggestionOnArrowDown() {
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;

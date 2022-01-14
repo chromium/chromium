@@ -65,11 +65,11 @@ struct Suggestion {
   // Contains an image to display for the suggestion.
   gfx::Image custom_icon;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The url for the custom icon. This is used by android to fetch the image as
   // android does not support gfx::Image directly.
   GURL custom_icon_url;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // TODO(crbug.com/1019660): Identify icons with enum instead of strings.
   // If |custom_icon| is empty, the name of the fallback built-in icon.

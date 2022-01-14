@@ -135,7 +135,7 @@ struct FormFieldData {
   bool HadFocus() const;
   bool WasAutofilled() const;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // The identifier which uniquely addresses this field in the DOM. This is an
   // ephemeral value which is not guaranteed to be stable across page loads. It
   // serves to allow a given field to be found during the current navigation.

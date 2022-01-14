@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
-#if defined(OS_ANDROID)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 #include "base/base64.h"
@@ -148,7 +150,7 @@ void CreditCardFIDOAuthenticator::IsUserVerifiable(
     std::move(callback).Run(false);
     return;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Because Payments servers only accept WebAuthn credentials for Android P
   // and above, this returns false if the build version is O or below.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
@@ -156,7 +158,7 @@ void CreditCardFIDOAuthenticator::IsUserVerifiable(
     std::move(callback).Run(false);
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   authenticator()->IsUserVerifyingPlatformAuthenticatorAvailable(
       std::move(callback));
 }
@@ -178,7 +180,7 @@ UserOptInIntention CreditCardFIDOAuthenticator::GetUserOptInIntention(
   // If payments is offering to opt-in, then that means user is not opted in
   // from Payments. Only take action if the local pref mismatches.
   if (unmask_details.offer_fido_opt_in && user_local_opt_in_status) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // For Android, if local pref says user is opted in while payments not, it
     // denotes that user intended to opt in from settings page. We will opt user
     // in and hide the checkbox in the next checkout flow.
@@ -217,7 +219,7 @@ void CreditCardFIDOAuthenticator::CancelVerification() {
     full_card_request_->OnFIDOVerificationCancelled();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void CreditCardFIDOAuthenticator::OnWebauthnOfferDialogRequested(
     std::string card_authorization_token) {
   card_authorization_token_ = card_authorization_token;
@@ -278,7 +280,7 @@ CreditCardFIDOAuthenticator::GetOrCreateFidoAuthenticationStrikeDatabase() {
 
 void CreditCardFIDOAuthenticator::GetAssertion(
     PublicKeyCredentialRequestOptionsPtr request_options) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // On desktop, during an opt-in flow, close the WebAuthn offer dialog and get
   // ready to show the OS level authentication dialog. If dialog is already
   // closed, then the offer was declined during the fetching challenge process,
@@ -304,7 +306,7 @@ void CreditCardFIDOAuthenticator::GetAssertion(
 
 void CreditCardFIDOAuthenticator::MakeCredential(
     PublicKeyCredentialCreationOptionsPtr creation_options) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // On desktop, close the WebAuthn offer dialog and get ready to show the OS
   // level authentication dialog. If dialog is already closed, then the offer
   // was declined during the fetching challenge process, and thus returned
@@ -408,11 +410,11 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     // Treat failure to perform user verification as a strong signal not to
     // offer opt-in in the future.
     if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // For Android, even if GetAssertion fails for opting-in, we still report
       // success to |requester_| to fill the form with the fetched card info.
       requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
       GetOrCreateFidoAuthenticationStrikeDatabase()->AddStrikes(
           FidoAuthenticationStrikeDatabase::
               kStrikesToAddWhenUserVerificationFailsOnOptInAttempt);
@@ -449,7 +451,7 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     // reported so that the form can be filled.
     bool should_respond_to_requester =
         (current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // For Android, opt-in flow (OPT_IN_WITH_CHALLENGE_FLOW) also delays form
     // filling.
     should_respond_to_requester |=
@@ -509,7 +511,7 @@ void CreditCardFIDOAuthenticator::OnDidGetOptChangeResult(
 
   // End the flow if the server responded with an error.
   if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW)
       autofill_client_->UpdateWebauthnOfferDialogWithError();
 #endif

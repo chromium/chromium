@@ -1846,7 +1846,7 @@ INSTANTIATE_TEST_SUITE_P(
         ShouldUpdateExpirationTestCase{false, kOneYear,
                                        CreditCard::FULL_SERVER_CARD}));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class CreditCardTestForKeyboardAccessory : public testing::Test {
  public:
   void SetUp() override {
@@ -1868,6 +1868,6 @@ TEST_F(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
   EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
                           digits, /*obfuscation_length=*/2));
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

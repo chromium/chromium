@@ -29,7 +29,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
 
@@ -369,7 +369,7 @@ class AutofillClient : public RiskDataLoader {
   // Returns the profile type of the session.
   virtual profile_metrics::BrowserProfileType GetProfileType() const;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Creates the appropriate implementation of InternalAuthenticator. May be
   // null for platforms that don't support this, in which case standard CVC
   // authentication will be used instead.
@@ -411,7 +411,7 @@ class AutofillClient : public RiskDataLoader {
   // and we can move on to the next portion of this flow.
   virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the list of allowed merchants and BIN ranges for virtual cards.
   virtual std::vector<std::string> GetAllowedMerchantsForVirtualCards() = 0;
   virtual std::vector<std::string> GetAllowedBinRangesForVirtualCards() = 0;
@@ -480,7 +480,7 @@ class AutofillClient : public RiskDataLoader {
       const std::vector<CreditCard*>& candidates,
       base::OnceCallback<void(const std::string&)> callback) = 0;
 
-#else  // defined(OS_ANDROID) || defined(OS_IOS)
+#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.
   virtual void ConfirmAccountNameFixFlow(
@@ -652,7 +652,7 @@ class AutofillClient : public RiskDataLoader {
 
   virtual const AutofillAblationStudy& GetAblationStudy() const;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Checks whether the current query is the most recent one.
   virtual bool IsQueryIDRelevant(int query_id) = 0;
 #endif

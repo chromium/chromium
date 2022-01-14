@@ -33,7 +33,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/fido_authentication_strike_database.h"
 #endif
 
@@ -164,7 +164,7 @@ CreditCard* CreditCardAccessManager::GetCreditCard(std::string guid) {
 }
 
 void CreditCardAccessManager::PrepareToFetchCreditCard() {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // No need to fetch details if there are no server cards.
   if (!ServerCardsAvailable())
     return;
@@ -244,7 +244,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
       delay_ms = request_timeout->GetInt();
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   opt_in_intention_ =
       GetOrCreateFIDOAuthenticator()->GetUserOptInIntention(unmask_details);
 #endif
@@ -313,7 +313,7 @@ void CreditCardAccessManager::FetchCreditCard(
   if (card->record_type() != CreditCard::MASKED_SERVER_CARD &&
       card->record_type() != CreditCard::VIRTUAL_CARD) {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card);
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     // Latency metrics should only be logged if the user is verifiable.
     if (is_user_verifiable_.value_or(false)) {
       AutofillMetrics::LogUserPerceivedLatencyOnCardSelection(
@@ -339,7 +339,7 @@ void CreditCardAccessManager::FetchCreditCard(
 }
 
 void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return;
 #else
   if (opt_in) {
@@ -355,7 +355,7 @@ void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
 }
 
 void CreditCardAccessManager::OnSettingsPageFIDOAuthToggled(bool opt_in) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return;
 #else
   // TODO(crbug/949269): Add a rate limiter to counter spam clicking.
@@ -379,7 +379,7 @@ void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
 }
 
 void CreditCardAccessManager::GetAuthenticationType(bool fido_auth_enabled) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // There is no FIDO auth available on iOS and there are no virtual cards on
   // iOS either, so offer CVC auth immediately.
   OnDidGetAuthenticationType(UnmaskAuthFlowType::kCvc);
@@ -400,7 +400,7 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
   // auth was provided by issuer, we prefer FIDO auth. Remove FIDO preference
   // and allow user selections later.
   if (fido_auth_enabled) {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     ShowVerifyPendingDialog();
 #endif
     OnDidGetAuthenticationType(UnmaskAuthFlowType::kFido);
@@ -430,7 +430,7 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
 void CreditCardAccessManager::GetAuthenticationTypeForMaskedServerCard(
     bool fido_auth_enabled) {
   UnmaskAuthFlowType flow_type;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // There is no FIDO auth available on iOS, so offer CVC auth immediately.
   flow_type = UnmaskAuthFlowType::kCvc;
 #else
@@ -493,7 +493,7 @@ void CreditCardAccessManager::Authenticate() {
 
   switch (unmask_auth_flow_type_) {
     case UnmaskAuthFlowType::kFido: {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       NOTREACHED();
 #else
       // If |is_authentication_in_progress_| is false, it means the process has
@@ -529,7 +529,7 @@ void CreditCardAccessManager::Authenticate() {
     case UnmaskAuthFlowType::kCvcThenFido:
     case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kCvcFallbackFromFido: {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Close the Webauthn verify pending dialog if it enters CVC
       // authentication flow since the card unmask prompt will pop up.
       client_->CloseWebauthnDialog();
@@ -587,7 +587,7 @@ CreditCardAccessManager::GetOrCreateCVCAuthenticator() {
   return cvc_authenticator_.get();
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 CreditCardFIDOAuthenticator*
 CreditCardAccessManager::GetOrCreateFIDOAuthenticator() {
   if (!fido_authenticator_)
@@ -637,7 +637,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
   // immediately.
   bool should_respond_immediately =
       !response.did_succeed || response.card_authorization_token.empty();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // GetRealPan did not return RequestOptions (user did not specify intent to
   // opt-in) AND flow is not registering a new card, also fill the form
   // directly.
@@ -659,7 +659,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
   // both be true).
   bool should_authorize_with_fido =
       unmask_auth_flow_type_ == UnmaskAuthFlowType::kCvcThenFido;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For Android, we will delay the form filling for both intent-to-opt-in user
   // opting in and opted-in user registering a new card (kCvcThenFido). So we
   // check one more scenario for Android here. If the GetRealPan response
@@ -680,7 +680,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
   bool should_offer_fido_auth = false;
   // For iOS, FIDO auth is not supported yet. For Android, users have already
   // been offered opt-in at this point.
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   should_offer_fido_auth = unmask_details_.offer_fido_opt_in &&
                            !response.card_authorization_token.empty() &&
                            !GetOrCreateFIDOAuthenticator()
@@ -713,7 +713,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
   // remove the two variables and use a function.
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool CreditCardAccessManager::ShouldOfferFidoAuth() const {
   // If the user opted-in through the settings page, do not show checkbox.
   return unmask_details_.offer_fido_opt_in &&
@@ -726,10 +726,10 @@ bool CreditCardAccessManager::UserOptedInToFidoFromSettingsPageOnMobile()
 }
 #endif
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Close the Webauthn verify pending dialog. If FIDO authentication succeeded,
   // card is filled to the form, otherwise fall back to CVC authentication which
   // does not need the verify pending dialog either.
@@ -863,7 +863,7 @@ bool CreditCardAccessManager::IsLocalCard(const CreditCard* card) {
 }
 
 bool CreditCardAccessManager::IsUserOptedInToFidoAuth() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return false;
 #else
   return is_user_verifiable_.value_or(false) &&
@@ -887,7 +887,7 @@ bool CreditCardAccessManager::IsSelectedCardFidoAuthorized() {
 
 void CreditCardAccessManager::ShowWebauthnOfferDialog(
     std::string card_authorization_token) {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetOrCreateFIDOAuthenticator()->OnWebauthnOfferDialogRequested(
       card_authorization_token);
   client_->ShowWebauthnOfferDialog(
@@ -896,7 +896,7 @@ void CreditCardAccessManager::ShowWebauthnOfferDialog(
 #endif
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void CreditCardAccessManager::ShowVerifyPendingDialog() {
   client_->ShowWebauthnVerifyPendingDialog(
       base::BindRepeating(&CreditCardAccessManager::HandleDialogUserResponse,
@@ -936,7 +936,7 @@ void CreditCardAccessManager::HandleDialogUserResponse(
 void CreditCardAccessManager::AdditionallyPerformFidoAuth(
     const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response,
     base::Value request_options) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Save credit card for after authorization.
   card_ = std::make_unique<CreditCard>(*(response.card));
   cvc_ = response.cvc;
@@ -963,7 +963,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
       IsUserOptedInToFidoAuth() && !get_unmask_details_returned;
 
   // Latency metrics should only be logged if the user is verifiable.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   if (is_user_verifiable_.value_or(false)) {
     AutofillMetrics::LogUserPerceivedLatencyOnCardSelection(
         get_unmask_details_returned
@@ -975,7 +975,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
   }
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // On desktop, show the verify pending dialog for opted-in user, unless it is
   // already known that selected card requires CVC.
   if (IsUserOptedInToFidoAuth() &&
@@ -1190,7 +1190,7 @@ void CreditCardAccessManager::Reset() {
   preflight_call_timestamp_ = absl::nullopt;
   card_selected_without_unmask_details_timestamp_ = absl::nullopt;
   is_user_verifiable_called_timestamp_ = absl::nullopt;
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   opt_in_intention_ = UserOptInIntention::kUnspecified;
 #endif
   unmask_details_ = payments::PaymentsClient::UnmaskDetails();
@@ -1206,7 +1206,7 @@ void CreditCardAccessManager::Reset() {
 }
 
 void CreditCardAccessManager::HandleFidoOptInStatusChange() {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // If user intended to opt out, we will opt user out after CVC/OTP auth
   // completes (no matter it succeeded or failed).
   if (opt_in_intention_ == UserOptInIntention::kIntentToOptOut) {

@@ -83,7 +83,7 @@ void CreditCardCVCAuthenticator::OnUnmaskVerificationResult(
   client_->OnUnmaskVerificationResult(result);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool CreditCardCVCAuthenticator::ShouldOfferFidoAuth() const {
   return requester_ && requester_->ShouldOfferFidoAuth();
 }

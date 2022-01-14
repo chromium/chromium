@@ -32,7 +32,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "ui/native_theme/native_theme.h"  // nogncheck
 #endif
 
@@ -89,7 +89,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     bool is_all_server_suggestions) {
   if (query_id != query_id_)
     return;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (!manager_->client()->IsQueryIDRelevant(query_id))
     return;
 #endif
@@ -129,8 +129,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
     // Append the "Hide Suggestions" menu item for only Autofill Address and
     // Autocomplete popups.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_APPLE) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableHideSuggestionsUI)) {
     // If the user has selected a suggestion, it indicates the suggestions are
@@ -286,7 +286,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // No-op as the popup will be closed in the end of the method.
     manager_->OnUserHideSuggestions(query_form_, query_field_);
   } else if (frontend_id == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     manager_->FetchVirtualCardCandidates();
 #else
     NOTREACHED();
@@ -428,7 +428,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   if (query_field_.is_autofilled) {
     std::u16string value =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (IsKeyboardAccessoryEnabled())
       value = base::i18n::ToUpper(value);
 #endif
@@ -454,7 +454,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // On Android and Desktop, Google Pay branding is shown along with Settings.
   // So Google Pay Icon is just attached to an existing menu item.
   if (is_all_server_suggestions) {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     suggestions->back().icon = "googlePay";
 #else
     suggestions->back().store_indicator_icon =
@@ -479,7 +479,7 @@ void AutofillExternalDelegate::InsertDataListValues(
            base::Contains(data_list_set, suggestion.value);
   });
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Insert the separator between the datalist and Autofill/Autocomplete values
   // (if there are any).
   if (!suggestions->empty()) {
