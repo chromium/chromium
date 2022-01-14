@@ -241,7 +241,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   RenderFrameHostImpl* creator_render_frame_host = nullptr;
   if (creator_render_frame_host_id_) {
     creator_render_frame_host =
-        RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value());
+        RenderFrameHostImpl::FromID(*creator_render_frame_host_id_);
     if (!creator_render_frame_host) {
       ScriptLoadStartFailed(
           script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
@@ -263,13 +263,10 @@ void DedicatedWorkerHost::StartScriptLoad(
   // For blob URL workers, inherit the controller from the worker's parent.
   // See https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
   if (script_url.SchemeIsBlob()) {
-    if (creator_render_frame_host_id_) {
+    if (creator_render_frame_host) {
       // The creator of this worker is a frame.
-      base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
-          RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
-              ->GetLastCommittedServiceWorkerHost();
-
-      service_worker_handle_->set_parent_container_host(creator_container_host);
+      service_worker_handle_->set_parent_container_host(
+          creator_render_frame_host->GetLastCommittedServiceWorkerHost());
     } else {
       // The creator of this worker is a dedicated worker.
       DCHECK(creator_worker_token_);
