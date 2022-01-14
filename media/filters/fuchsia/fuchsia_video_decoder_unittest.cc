@@ -302,7 +302,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
 
   ~FuchsiaVideoDecoderTest() override = default;
 
-  bool InitializeDecoder(VideoDecoderConfig config) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool InitializeDecoder(VideoDecoderConfig config) {
     base::RunLoop run_loop;
     bool init_cb_result = false;
     decoder_->Initialize(

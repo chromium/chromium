@@ -686,7 +686,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Tries to allocate the requisite amount of memory for this frame. Returns
   // false if this would cause an out of memory error.
-  WARN_UNUSED_RESULT bool AllocateMemory(bool zero_initialize_memory);
+  [[nodiscard]] bool AllocateMemory(bool zero_initialize_memory);
 
   // Calculates plane size.
   // It first considers buffer size layout_ object provides. If layout's

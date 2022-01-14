@@ -52,8 +52,8 @@ class CallbackRegistry<void(Args...)> {
 
   ~CallbackRegistry() = default;
 
-  std::unique_ptr<CallbackRegistration> Register(CallbackType cb)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] std::unique_ptr<CallbackRegistration> Register(
+      CallbackType cb) {
     base::AutoLock lock(lock_);
     DCHECK(cb);
     uint32_t registration_id = ++next_registration_id_;

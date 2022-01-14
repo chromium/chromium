@@ -224,11 +224,11 @@ class CAPTURE_EXPORT VideoCaptureDevice
     //
     // The buffer stays reserved for use by the caller as long as it
     // holds on to the contained |buffer_read_write_permission|.
-    virtual ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
-                                              VideoPixelFormat format,
-                                              int frame_feedback_id,
-                                              Buffer* buffer)
-        WARN_UNUSED_RESULT = 0;
+    [[nodiscard]] virtual ReserveResult ReserveOutputBuffer(
+        const gfx::Size& dimensions,
+        VideoPixelFormat format,
+        int frame_feedback_id,
+        Buffer* buffer) = 0;
 
     // Provides VCD::Client with a populated Buffer containing the content of
     // the next video frame. The |buffer| must originate from an earlier call to

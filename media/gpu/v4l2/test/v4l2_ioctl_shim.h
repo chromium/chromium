@@ -126,80 +126,79 @@ class V4L2IoctlShim {
 
   // Enumerates all frame sizes that the device supports
   // via VIDIOC_ENUM_FRAMESIZES.
-  bool EnumFrameSizes(uint32_t fourcc) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool EnumFrameSizes(uint32_t fourcc) const;
 
   // Configures the underlying V4L2 queue via VIDIOC_S_FMT. Returns true
   // if the configuration was successful.
-  bool SetFmt(const std::unique_ptr<V4L2Queue>& queue) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetFmt(const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Retrieves the format of |queue| (via VIDIOC_G_FMT) and returns true if
   // successful, filling in |coded_size| and |num_planes| in that case.
-  bool GetFmt(const enum v4l2_buf_type type,
-              gfx::Size* coded_size,
-              uint32_t* num_planes) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetFmt(const enum v4l2_buf_type type,
+                            gfx::Size* coded_size,
+                            uint32_t* num_planes) const;
 
   // Tries to configure |queue|. This does not modify the underlying
   // driver state.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/vidioc-g-fmt.html?highlight=vidioc_try_fmt#description
-  bool TryFmt(const std::unique_ptr<V4L2Queue>& queue) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TryFmt(const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Allocates buffers via VIDIOC_REQBUFS for |queue|.
-  bool ReqBufs(std::unique_ptr<V4L2Queue>& queue) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReqBufs(std::unique_ptr<V4L2Queue>& queue) const;
 
   // Enqueues an empty (capturing) or filled (output) buffer
   // in the driver's incoming |queue|.
-  bool QBuf(const std::unique_ptr<V4L2Queue>& queue,
-            const uint32_t index) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool QBuf(const std::unique_ptr<V4L2Queue>& queue,
+                          const uint32_t index) const;
 
   // Dequeues a filled (capturing) or decoded (output) buffer
   // from the driver’s outgoing |queue|.
-  bool DQBuf(const std::unique_ptr<V4L2Queue>& queue,
-             uint32_t* index) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool DQBuf(const std::unique_ptr<V4L2Queue>& queue,
+                           uint32_t* index) const;
 
   // Starts streaming |queue| (via VIDIOC_STREAMON).
-  bool StreamOn(const enum v4l2_buf_type type) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StreamOn(const enum v4l2_buf_type type) const;
 
   // Sets the value of a control which specifies VP9 decoding parameters
   // for each frame.
-  bool SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
-                   v4l2_ctrl_vp9_frame_decode_params& frame_params) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetExtCtrls(
+      const std::unique_ptr<V4L2Queue>& queue,
+      v4l2_ctrl_vp9_frame_decode_params& frame_params) const;
 
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.
-  bool MediaIocRequestAlloc(int* req_fd) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MediaIocRequestAlloc(int* req_fd) const;
 
   // Submits a request for the given OUTPUT |queue| by queueing
   // the request with |queue|'s media_request_fd().
-  bool MediaRequestIocQueue(const std::unique_ptr<V4L2Queue>& queue) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MediaRequestIocQueue(
+      const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Re-initializes the previously allocated request for reuse.
-  bool MediaRequestIocReinit(const std::unique_ptr<V4L2Queue>& queue) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MediaRequestIocReinit(
+      const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Verifies |v4l_fd| supports |compressed_format| for OUTPUT queues
   // and |uncompressed_format| for CAPTURE queues, respectively.
-  bool VerifyCapabilities(uint32_t compressed_format,
-                          uint32_t uncompressed_format) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool VerifyCapabilities(uint32_t compressed_format,
+                                        uint32_t uncompressed_format) const;
 
   // Allocates buffers for the given |queue|.
-  bool QueryAndMmapQueueBuffers(std::unique_ptr<V4L2Queue>& queue) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool QueryAndMmapQueueBuffers(
+      std::unique_ptr<V4L2Queue>& queue) const;
 
  private:
   // Queries |v4l_fd| to see if it can use the specified |fourcc| format
   // for the given buffer |type|.
-  bool QueryFormat(enum v4l2_buf_type type,
-                   uint32_t fourcc) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool QueryFormat(enum v4l2_buf_type type,
+                                 uint32_t fourcc) const;
 
   // Uses a specialized function template to execute V4L2 ioctl request
   // for |request_code| and returns the output of the ioctl() in |arg|
   // if this is a pointer, otherwise |arg| is considered a file descriptor
   // for said ioctl().
   template <typename T>
-  bool Ioctl(int request_code, T arg) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Ioctl(int request_code, T arg) const;
 
   // Decode device file descriptor used for ioctl requests.
   const base::File decode_fd_;

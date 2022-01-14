@@ -164,9 +164,9 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
 
   // Fills the given input buffer. Returns false if |data_size| exceeds the
   // input buffer's capacity (and doesn't touch the input buffer in that case).
-  bool FillInputBuffer(int index,
-                       const uint8_t* data,
-                       size_t data_size) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool FillInputBuffer(int index,
+                                     const uint8_t* data,
+                                     size_t data_size);
 
   // Gets the address of the data in the given output buffer given by |index|
   // and |offset|. The number of bytes available to read is written to

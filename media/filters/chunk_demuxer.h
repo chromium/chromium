@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
@@ -257,15 +256,13 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // the caller must provide valid, supported decoder configs; those overloads'
   // usage indicates that we intend to append WebCodecs encoded audio or video
   // chunks for this ID.
-  Status AddId(const std::string& id,
-               const std::string& content_type,
-               const std::string& codecs) WARN_UNUSED_RESULT;
-  Status AddId(const std::string& id,
-               std::unique_ptr<AudioDecoderConfig> audio_config)
-      WARN_UNUSED_RESULT;
-  Status AddId(const std::string& id,
-               std::unique_ptr<VideoDecoderConfig> video_config)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] Status AddId(const std::string& id,
+                             const std::string& content_type,
+                             const std::string& codecs);
+  [[nodiscard]] Status AddId(const std::string& id,
+                             std::unique_ptr<AudioDecoderConfig> audio_config);
+  [[nodiscard]] Status AddId(const std::string& id,
+                             std::unique_ptr<VideoDecoderConfig> video_config);
 
   // Notifies a caller via |tracks_updated_cb| that the set of media tracks
   // for a given |id| has changed. This callback must be set before any calls to
@@ -303,22 +300,23 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // similarly named source buffer attributes that are used in coded frame
   // processing. Returns true on success, false if the caller needs to run the
   // append error algorithm with decode error parameter set to true.
-  bool AppendData(const std::string& id,
-                  const uint8_t* data,
-                  size_t length,
-                  base::TimeDelta append_window_start,
-                  base::TimeDelta append_window_end,
-                  base::TimeDelta* timestamp_offset) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AppendData(const std::string& id,
+                                const uint8_t* data,
+                                size_t length,
+                                base::TimeDelta append_window_start,
+                                base::TimeDelta append_window_end,
+                                base::TimeDelta* timestamp_offset);
 
   // Appends webcodecs encoded chunks (already converted by caller into a
   // BufferQueue of StreamParserBuffers) to the source buffer associated with
   // |id|, with same semantic for other parameters and return value as
   // AppendData().
-  bool AppendChunks(const std::string& id,
-                    std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
-                    base::TimeDelta append_window_start,
-                    base::TimeDelta append_window_end,
-                    base::TimeDelta* timestamp_offset) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AppendChunks(
+      const std::string& id,
+      std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
+      base::TimeDelta append_window_start,
+      base::TimeDelta append_window_end,
+      base::TimeDelta* timestamp_offset);
 
   // Aborts parsing the current segment and reset the parser to a state where
   // it can accept a new segment.
@@ -358,9 +356,9 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // the "Coded Frame Eviction Algorithm" in the Media Source Extensions Spec.
   // Returns false iff buffer is still full after running eviction.
   // https://w3c.github.io/media-source/#sourcebuffer-coded-frame-eviction
-  bool EvictCodedFrames(const std::string& id,
-                        base::TimeDelta currentMediaTime,
-                        size_t newDataSize) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool EvictCodedFrames(const std::string& id,
+                                      base::TimeDelta currentMediaTime,
+                                      size_t newDataSize);
 
   void OnMemoryPressure(
       base::TimeDelta currentMediaTime,

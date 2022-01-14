@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_switches.h"
@@ -93,9 +92,9 @@ class CdmWrapper {
   // Returns whether GetStatusForPolicy() is supported. If true, the CDM should
   // resolve or reject the promise. If false, the caller will reject the
   // promise.
-  virtual bool GetStatusForPolicy(uint32_t promise_id,
-                                  cdm::HdcpVersion min_hdcp_version)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool GetStatusForPolicy(
+      uint32_t promise_id,
+      cdm::HdcpVersion min_hdcp_version) = 0;
 
   virtual void CreateSessionAndGenerateRequest(uint32_t promise_id,
                                                cdm::SessionType session_type,
