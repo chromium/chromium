@@ -88,15 +88,10 @@ export function wrapupRestockPageTest() {
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
+    component.shadowRoot.querySelector('#continue').click();
+    await resolver;
 
     assertEquals(1, callCounter);
-    assertDeepEquals(expectedResult, savedResult);
   });
 
   test('RestockPageOnShutdownCallsShutdownForRestock', async () => {
