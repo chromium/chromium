@@ -98,8 +98,8 @@ bool ApkWebAppService::IsWebOnlyTwa(const web_app::AppId& app_id) {
   if (!IsWebAppInstalledFromArc(app_id))
     return false;
 
-  DictionaryPrefUpdateDeprecated web_apps_to_apks(profile_->GetPrefs(),
-                                                  kWebAppToApkDictPref);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
 
   // Find the entry associated with the provided web app id.
   const base::Value* v = web_apps_to_apks->FindPathOfType(
@@ -116,8 +116,8 @@ bool ApkWebAppService::IsWebAppInstalledFromArc(
 
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const web_app::AppId& app_id) {
-  DictionaryPrefUpdateDeprecated web_apps_to_apks(profile_->GetPrefs(),
-                                                  kWebAppToApkDictPref);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
 
   // Find the entry associated with the provided web app id.
   const base::Value* v = web_apps_to_apks->FindPathOfType(
@@ -145,8 +145,8 @@ absl::optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
   if (!IsWebAppInstalledFromArc(app_id))
     return absl::nullopt;
 
-  DictionaryPrefUpdateDeprecated web_apps_to_apks(profile_->GetPrefs(),
-                                                  kWebAppToApkDictPref);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
 
   // Find the entry associated with the provided web app id.
   const base::Value* v = web_apps_to_apks->FindPathOfType(
@@ -266,8 +266,8 @@ void ApkWebAppService::OnPackageInstalled(
   // packages are updated. In (b), there are two cases to handle: the package
   // could previously have been an Android app and has now become a web app, and
   // vice-versa.
-  DictionaryPrefUpdateDeprecated web_apps_to_apks(profile_->GetPrefs(),
-                                                  kWebAppToApkDictPref);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
 
   // Search the pref dict for any |web_app_id| that has a value matching the
   // provided package name.
@@ -343,8 +343,8 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
   if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
     return;
 
-  DictionaryPrefUpdateDeprecated web_apps_to_apks(profile_->GetPrefs(),
-                                                  kWebAppToApkDictPref);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
 
   // Search the pref dict for any |web_app_id| that has a value matching the
   // provided package name. We need to uninstall that |web_app_id|.
@@ -373,8 +373,8 @@ void ApkWebAppService::OnPackageListInitialRefreshed() {
 
   // Scan through the list of apps to see if any were uninstalled while ARC
   // wasn't running.
-  DictionaryPrefUpdateDeprecated web_apps_to_apks(profile_->GetPrefs(),
-                                                  kWebAppToApkDictPref);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
 
   // If ARC isn't unavailable, it's not going to become available since we're
   // occupying the UI thread. We'll try again later.
@@ -423,8 +423,8 @@ void ApkWebAppService::OnWebAppWillBeUninstalled(
   if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
     return;
 
-  DictionaryPrefUpdateDeprecated web_apps_to_apks(profile_->GetPrefs(),
-                                                  kWebAppToApkDictPref);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
 
   // Find the package name associated with the provided web app id.
   const base::Value* package_name_value = web_apps_to_apks->FindPathOfType(
@@ -480,8 +480,7 @@ void ApkWebAppService::OnDidFinishInstall(
     return;
 
   // Set a pref to map |web_app_id| to |package_name| for future uninstallation.
-  DictionaryPrefUpdateDeprecated dict_update(profile_->GetPrefs(),
-                                             kWebAppToApkDictPref);
+  DictionaryPrefUpdate dict_update(profile_->GetPrefs(), kWebAppToApkDictPref);
   dict_update->SetPath({web_app_id, kPackageNameKey},
                        base::Value(package_name));
 
@@ -510,8 +509,7 @@ void ApkWebAppService::OnDidFinishInstall(
 void ApkWebAppService::UpdatePackageInfo(
     const std::string& app_id,
     const arc::mojom::WebAppInfoPtr& web_app_info) {
-  DictionaryPrefUpdateDeprecated dict_update(profile_->GetPrefs(),
-                                             kWebAppToApkDictPref);
+  DictionaryPrefUpdate dict_update(profile_->GetPrefs(), kWebAppToApkDictPref);
   dict_update->SetPath({app_id, kIsWebOnlyTwaKey},
                        base::Value(web_app_info->is_web_only_twa));
   dict_update->SetPath(
