@@ -469,8 +469,10 @@ void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   uint8_t* target_data = static_cast<uint8_t*>(buffer->shm->memory());
   size_t data_size = 0;
+  // vaSyncSurface() is not necessary because GetEncodedChunkSize() has been
+  // called in VaapiVideoEncoderDelegate::Encode().
   if (!vaapi_wrapper_->DownloadFromVABuffer(
-          encode_result->coded_buffer_id(), encode_result->input_surface_id(),
+          encode_result->coded_buffer_id(), /*sync_surface_id=*/absl::nullopt,
           target_data, buffer->shm->size(), &data_size)) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed downloading coded buffer");
     return;
