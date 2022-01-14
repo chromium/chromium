@@ -61,6 +61,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 // it. The view should only be lazily instanciated when read externally.
 @property(nonatomic, strong, readwrite) UIView* topSpecificContentView;
 
+// Whether the image is currently being calculated; used to prevent infinite
+// recursions caused by |viewDidLayoutSubviews|.
+@property(nonatomic, assign) BOOL calculatingImageSize;
 @end
 
 @implementation PromoStyleViewController
@@ -295,12 +298,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // Rescale image here as on iPad the view height isn't correctly set during
-  // -viewDidLoad.
-  self.imageView.image = [self scaleSourceImage:self.bannerImage
-                                   currentImage:self.imageView.image
-                                         toSize:[self computeBannerImageSize]];
-
   // Reset |didReachBottom| to make sure that its value is correctly updated
   // to reflect the scrolling state when the view reappears and is refreshed
   // (e.g., when getting back from a full screen view that was hidding this
@@ -330,6 +327,22 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
       [self setReadMoreText];
     }
   });
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  // Prevents potential recursive calls to |viewDidLayoutSubviews|.
+  if (self.calculatingImageSize) {
+    return;
+  }
+  // Rescale image here as on iPad the view height isn't correctly set before
+  // subviews are laid out.
+  self.calculatingImageSize = YES;
+  self.imageView.image = [self scaleSourceImage:self.bannerImage
+                                   currentImage:self.imageView.image
+                                         toSize:[self computeBannerImageSize]];
+  self.calculatingImageSize = NO;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
