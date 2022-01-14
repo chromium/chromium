@@ -74,7 +74,10 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
      PIIType::kSerial},
     {"Serial", "( Serial Number )(\\d+)(\\b)", PIIType::kSerial},
     // The attested device id, a serial number, that comes from vpd_2.0.txt.
-    {"Serial", "(\"attested_device_id\"=\")([0-9a-zA-Z]+)(\")",
+    // The pattern was recently clarified as being a case insensitive string of
+    // ASCII letters and digits, plus the dash/hyphen character. The dash cannot
+    // appear first or last
+    {"Serial", "(\"attested_device_id\"=\")([^-][0-9a-zA-Z-]+[^-])(\")",
      PIIType::kSerial},
 
     // GAIA IDs

@@ -391,6 +391,13 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   // redact attested device id that is also a serial number
   EXPECT_EQ("\"attested_device_id\"=\"<Serial: 12>\"",
             RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ\""));
+  EXPECT_EQ("\"attested_device_id\"=\"<Serial: 13>\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"5CD04-5B0DZ\""));
+  // The dash cannot appear first or last.
+  EXPECT_EQ("\"attested_device_id\"=\"-5CD045B0DZ\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"-5CD045B0DZ\""));
+  EXPECT_EQ("\"attested_device_id\"=\"5CD045B0DZ-\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ-\""));
 
   EXPECT_EQ("\"gaia_id\":\"<GAIA: 1>\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));
