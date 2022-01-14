@@ -20,6 +20,10 @@
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-isolate.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace gin {
 
 template<typename KeyType>
@@ -130,6 +134,14 @@ struct GIN_EXPORT Converter<std::u16string> {
   static bool FromV8(v8::Isolate* isolate,
                      v8::Local<v8::Value> val,
                      std::u16string* out);
+};
+
+// Converter for C++ TimeTicks to Javascript BigInt (unit: microseconds).
+// TimeTicks can't be converted using the existing Converter<int64_t> because
+// the target type will be Number and will lose precision.
+template <>
+struct GIN_EXPORT Converter<base::TimeTicks> {
+  static v8::Local<v8::Value> ToV8(v8::Isolate* isolate, base::TimeTicks val);
 };
 
 template <>
