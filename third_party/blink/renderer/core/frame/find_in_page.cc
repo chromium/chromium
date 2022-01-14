@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -342,13 +343,23 @@ void FindInPage::ReportFindInPageMatchCount(int request_id,
                    : mojom::blink::FindMatchUpdateType::kMoreUpdatesComing);
 }
 
-void FindInPage::ReportFindInPageSelection(int request_id,
-                                           int active_match_ordinal,
-                                           const gfx::Rect& selection_rect,
-                                           bool final_update) {
+void FindInPage::ReportFindInPageSelection(
+    int request_id,
+    int active_match_ordinal,
+    const gfx::Rect& local_selection_rect,
+    bool final_update) {
   // In tests, |client_| might not be set.
   if (!client_)
     return;
+
+  float device_scale_factor = 1.f;
+  if (LocalFrame* local_frame = frame_->GetFrame()) {
+    device_scale_factor =
+        local_frame->GetPage()->GetChromeClient().WindowToViewportScalar(
+            local_frame, 1.0f);
+  }
+  auto selection_rect = gfx::ScaleToEnclosingRect(local_selection_rect,
+                                                  1.f / device_scale_factor);
   client_->SetActiveMatch(
       request_id, selection_rect, active_match_ordinal,
       final_update ? mojom::blink::FindMatchUpdateType::kFinalUpdate

@@ -46,6 +46,12 @@ const url::Origin& GetOriginForFrameTreeNode(FrameTreeNode* node) {
   return node->current_frame_host()->GetLastCommittedOrigin();
 }
 
+#if defined(OS_ANDROID)
+double GetFrameDeviceScaleFactor(const ToRenderFrameHost& adapter) {
+  return EvalJs(adapter, "window.devicePixelRatio;").ExtractDouble();
+}
+#endif  // defined(OS_ANDROID)
+
 }  // namespace
 
 class FindRequestManagerTest : public ContentBrowserTest,
@@ -957,8 +963,7 @@ class ZoomToFindInPageRectMessageFilter
 
 // Tests activating the find match nearest to a given point.
 // TODO(crbug.com/1285135): Fix flaky failures.
-IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
-                       DISABLED_ActivateNearestFindMatch) {
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ActivateNearestFindMatch) {
   LoadAndWait("/find_in_page.html");
   bool test_with_oopif = GetParam();
   if (test_with_oopif)
@@ -985,6 +990,8 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
   delegate()->WaitForMatchRects();
   const std::vector<gfx::RectF>& rects = delegate()->find_match_rects();
 
+  double device_scale_factor = GetFrameDeviceScaleFactor(contents());
+
   // Activate matches via points inside each of the find match rects, in an
   // arbitrary order. Check that the correct match becomes active after each
   // activation.
@@ -1000,8 +1007,11 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
     // Check widget message rect to make sure it matches.
     if (is_match_in_oopif) {
       message_interceptor_child->WaitForWidgetHostMessage();
+      auto expected_rect = gfx::ScaleToEnclosingRect(
+          message_interceptor_child->widget_message_rect(),
+          1.f / device_scale_factor);
       EXPECT_EQ(find_request_manager->GetSelectionRectForTesting(),
-                message_interceptor_child->widget_message_rect());
+                expected_rect);
       message_interceptor_child->Reset();
     }
 
