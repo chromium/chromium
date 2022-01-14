@@ -17,9 +17,9 @@
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/public/child/dwrite_font_proxy_init_win.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/cpp/font_loader.h"
 #endif
 
@@ -48,7 +48,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   // Adapted from content::InitializeSkia().
   // TODO(crbug/1199857): Tune these limits.
   constexpr int kMB = 1024 * 1024;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SkGraphics::SetFontCacheLimit(base::SysInfo::IsLowEndDevice() ? kMB
                                                                 : 8 * kMB);
   SkGraphics::SetResourceCacheTotalByteLimit(
@@ -56,15 +56,15 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(16 * kMB);
 #else
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(64 * kMB);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (!initialize_environment_)
     return;
 
     // Initialize font access for Skia.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   content::InitializeDWriteFontProxy();
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   mojo::PendingRemote<font_service::mojom::FontService> font_service;
   content::UtilityThread::Get()->BindHostReceiver(
       font_service.InitWithNewPipeAndPassReceiver());
@@ -87,7 +87,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
                              base::BindOnce([] { SkFontMgr::RefDefault(); }));
 
   // Sanity check that fonts are working.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // No WebSandbox is provided on Linux so the local fonts aren't accessible.
   // This is fine since since the subsetted fonts are provided in the SkPicture.
   // However, we still need to check that the SkFontMgr starts as it is used by
@@ -100,7 +100,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
 
 PaintPreviewCompositorCollectionImpl::~PaintPreviewCompositorCollectionImpl() {
   g_in_shutdown_key.Set("true");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   content::UninitializeDWriteFontProxy();
 #endif
 }

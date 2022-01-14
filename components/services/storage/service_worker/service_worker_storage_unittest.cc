@@ -913,7 +913,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_OpenedFileExists) {
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, deleting the directory containing an opened file should fail.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorIOError, *status);
   EXPECT_TRUE(storage()->IsDisabled());

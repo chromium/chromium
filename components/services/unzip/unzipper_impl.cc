@@ -38,7 +38,7 @@ class DudWriterDelegate : public zip::WriterDelegate {
 };
 
 std::string PathToMojoString(const base::FilePath& path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(path.value());
 #else
   return path.value();

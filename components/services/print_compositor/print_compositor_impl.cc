@@ -29,12 +29,12 @@
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
 #include "ui/accessibility/ax_tree_update.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/public/child/dwrite_font_proxy_init_win.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/platform/platform.h"
 #endif
 
@@ -51,7 +51,7 @@ PrintCompositorImpl::PrintCompositorImpl(
   if (!initialize_environment)
     return;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Initialize direct write font proxy so skia can use it.
   content::InitializeDWriteFontProxy();
 #endif
@@ -60,7 +60,7 @@ PrintCompositorImpl::PrintCompositorImpl(
   SkGraphics::SetImageGeneratorFromEncodedDataFactory(
       blink::WebImageGenerator::CreateAsSkImageGenerator);
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   content::UtilityThread::Get()->EnsureBlinkInitializedWithSandboxSupport();
   // Check that we have sandbox support on this platform.
   DCHECK(blink::Platform::Current()->GetSandboxSupport());
@@ -68,7 +68,7 @@ PrintCompositorImpl::PrintCompositorImpl(
   content::UtilityThread::Get()->EnsureBlinkInitialized();
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Check that font access is granted.
   // This doesn't do comprehensive tests to make sure fonts can work properly.
   // It is just a quick and simple check to catch things like improper sandbox
@@ -78,7 +78,7 @@ PrintCompositorImpl::PrintCompositorImpl(
 }
 
 PrintCompositorImpl::~PrintCompositorImpl() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   content::UninitializeDWriteFontProxy();
 #endif
 }

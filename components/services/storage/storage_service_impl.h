@@ -45,7 +45,7 @@ class StorageServiceImpl : public mojom::StorageService {
 
   // mojom::StorageService implementation:
   void EnableAggressiveDomStorageFlushing() override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetDataDirectory(
       const base::FilePath& path,
       mojo::PendingRemote<mojom::Directory> directory) override;
@@ -60,7 +60,7 @@ class StorageServiceImpl : public mojom::StorageService {
   // Removes a partition from the set of tracked partitions.
   void RemovePartition(PartitionImpl* partition);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Binds a Directory receiver to the same remote implementation to which
   // |remote_data_directory_| is bound. It is invalid to call this when
   // |remote_data_directory_| is unbound.
@@ -71,7 +71,7 @@ class StorageServiceImpl : public mojom::StorageService {
   const mojo::Receiver<mojom::StorageService> receiver_;
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If bound, the service will assume it should not perform certain filesystem
   // operations directly and will instead go through this interface.
   base::FilePath remote_data_directory_path_;

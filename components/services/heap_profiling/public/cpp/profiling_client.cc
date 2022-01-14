@@ -21,16 +21,16 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
 #endif
 
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
 #include "base/trace_event/cfi_backtrace_android.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/allocator/allocator_interception_mac.h"
 #endif
 
@@ -51,14 +51,14 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
   started_profiling_ = true;
   base::trace_event::MallocDumpProvider::GetInstance()->DisableMetrics();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On macOS, this call is necessary to shim malloc zones that were created
   // after startup. This cannot be done during shim initialization because the
   // task scheduler has not yet been initialized.
   base::allocator::PeriodicallyShimNewMallocZones();
 #endif
 
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
   // On Android the unwinder initialization requires file reading before
   // initializing shim. So, post task on background thread.
@@ -78,7 +78,7 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
   StartProfilingInternal(std::move(params), std::move(callback));
 #endif
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Create trace source so that it registers itself to the tracing system.
   HeapProfilingTraceSource::GetInstance();
 #endif
@@ -215,7 +215,7 @@ void ProfilingClient::AddHeapProfileToTrace(
   std::vector<base::SamplingHeapProfiler::Sample> samples =
       profiler->GetSamples(/*profile_id=*/0);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   bool success =
       HeapProfilingTraceSource::GetInstance()->AddToTraceIfEnabled(samples);
 #else

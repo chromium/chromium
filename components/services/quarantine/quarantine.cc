@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace quarantine {
 

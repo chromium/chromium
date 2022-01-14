@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_WIN) && !defined(OS_APPLE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 
 namespace quarantine {
 

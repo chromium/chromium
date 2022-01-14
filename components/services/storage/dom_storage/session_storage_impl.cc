@@ -41,7 +41,7 @@ const int kSessionStorageCommitErrorThreshold = 8;
 
 // Limits on the cache size and number of areas in memory, over which the areas
 // are purged.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const unsigned kMaxSessionStorageAreaCount = 10;
 const size_t kMaxSessionStorageCacheSize = 2 * 1024 * 1024;
 #else

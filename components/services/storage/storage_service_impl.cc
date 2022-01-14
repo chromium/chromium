@@ -25,7 +25,7 @@ namespace {
 
 // We don't use out-of-process Storage Service on Android, so we can avoid
 // pulling all the related code (including Directory mojom) into the build.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The name under which we register our own sandboxed VFS instance when running
 // out-of-process.
 constexpr char kVfsName[] = "storage_service";
@@ -61,7 +61,7 @@ void StorageServiceImpl::EnableAggressiveDomStorageFlushing() {
   StorageAreaImpl::EnableAggressiveCommitDelay();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void StorageServiceImpl::SetDataDirectory(
     const base::FilePath& path,
     mojo::PendingRemote<mojom::Directory> directory) {
@@ -91,7 +91,7 @@ void StorageServiceImpl::SetDataDirectory(
       kVfsName, std::make_unique<SandboxedVfsDelegate>(CreateFilesystemProxy()),
       /*make_default=*/true);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void StorageServiceImpl::BindPartition(
     const absl::optional<base::FilePath>& path,
@@ -132,7 +132,7 @@ void StorageServiceImpl::RemovePartition(PartitionImpl* partition) {
     partitions_.erase(iter);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void StorageServiceImpl::BindDataDirectoryReceiver(
     mojo::PendingReceiver<mojom::Directory> receiver) {
   DCHECK(remote_data_directory_.is_bound());

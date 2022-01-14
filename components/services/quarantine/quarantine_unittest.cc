@@ -18,7 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -39,7 +39,7 @@ void CheckQuarantineResult(QuarantineFileResult result,
 class QuarantineTest : public testing::Test {
  public:
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(com_initializer_.Succeeded());
 #endif
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
@@ -54,7 +54,7 @@ class QuarantineTest : public testing::Test {
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
   base::test::SingleThreadTaskEnvironment task_environment_;

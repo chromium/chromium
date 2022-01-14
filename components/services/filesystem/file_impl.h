@@ -41,7 +41,7 @@ class FileImpl : public mojom::File {
   // Returns whether the underlying file handle is valid.
   bool IsValid() const;
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // Attempts to perform the native operating system's locking operations on
   // the internal mojom::File handle. Not supported on Fuchsia.
   base::File::Error RawLockFile();

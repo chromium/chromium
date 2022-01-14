@@ -41,7 +41,7 @@ class LocalFileLockImpl : public FilesystemProxy::FileLock {
   // FilesystemProxy::FileLock implementation:
   base::File::Error Release() override {
     base::File::Error error = base::File::FILE_OK;
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     error = lock_.Unlock();
 #endif
     lock_.Close();

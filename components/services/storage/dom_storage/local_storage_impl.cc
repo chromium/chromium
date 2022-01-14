@@ -79,7 +79,7 @@ const int kCommitErrorThreshold = 8;
 
 // Limits on the cache size and number of areas in memory, over which the areas
 // are purged.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const unsigned kMaxLocalStorageAreaCount = 10;
 const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
 #else
@@ -213,7 +213,7 @@ class LocalStorageImpl::StorageAreaHolder final
     options.default_commit_delay = kCommitDefaultDelaySecs;
     options.max_bytes_per_hour = kMaxBytesPerHour;
     options.max_commits_per_hour = kMaxCommitsPerHour;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
 #else
     options.cache_mode = StorageAreaImpl::CacheMode::KEYS_AND_VALUES;
