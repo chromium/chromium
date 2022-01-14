@@ -71,7 +71,9 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   frame_data->mojo_from_viewer = openxr_->GetViewerPose();
 
-  UpdateStageParameters();
+  if (openxr_->StageParametersEnabled()) {
+    UpdateStageParameters();
+  }
 
   if (openxr_->HasFrameState()) {
     if (IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {

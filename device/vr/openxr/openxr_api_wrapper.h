@@ -86,6 +86,7 @@ class OpenXrApiWrapper {
                    LUID& luid) const;
   bool GetStageParameters(XrExtent2Df& stage_bounds,
                           gfx::Transform& local_from_stage);
+  bool StageParametersEnabled() const;
 
   device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
       device::mojom::XRSessionMode session_mode);
@@ -188,6 +189,7 @@ class OpenXrApiWrapper {
   XrSpace stage_space_;
   XrSpace view_space_;
   XrSpace unbounded_space_;
+  bool stage_parameters_enabled_;
   std::unordered_set<mojom::XRSessionFeature> enabled_features_;
 
   // When shared images are being used, there is a corresponding MailboxHolder

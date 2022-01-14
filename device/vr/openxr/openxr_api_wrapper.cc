@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/base/features.h"
 #include "device/vr/openxr/openxr_input_helper.h"
@@ -120,6 +121,7 @@ void OpenXrApiWrapper::Reset() {
   stage_bounds_ = {};
   system_ = kInvalidSystem;
   instance_ = XR_NULL_HANDLE;
+  stage_parameters_enabled_ = false;
   enabled_features_.clear();
 
   primary_view_config_ = OpenXrViewConfiguration();
@@ -381,6 +383,16 @@ XrResult OpenXrApiWrapper::InitSession(
   DCHECK(IsInitialized());
 
   enabled_features_ = enabled_features;
+
+  // These are the only features that use stage parameters. If none of them were
+  // requested for the session, we can avoid querying this every frame.
+  stage_parameters_enabled_ = base::ranges::any_of(
+      enabled_features_, [](mojom::XRSessionFeature feature) {
+        return feature == mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR ||
+               feature == mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR ||
+               feature == mojom::XRSessionFeature::ANCHORS;
+      });
+
   on_session_ended_callback_ = std::move(on_session_ended_callback);
   visibility_changed_callback_ = std::move(visibility_changed_callback);
 
@@ -1324,11 +1336,16 @@ bool OpenXrApiWrapper::CanEnableAntiAliasing() const {
 // XrEventDataReferenceSpaceChangePending
 XrResult OpenXrApiWrapper::UpdateStageBounds() {
   DCHECK(HasSession());
-  XrResult xr_result = xrGetReferenceSpaceBoundsRect(
-      session_, XR_REFERENCE_SPACE_TYPE_STAGE, &stage_bounds_);
-  if (XR_FAILED(xr_result)) {
-    stage_bounds_.height = 0;
-    stage_bounds_.width = 0;
+
+  XrResult xr_result = XR_SUCCESS;
+
+  if (StageParametersEnabled()) {
+    xr_result = xrGetReferenceSpaceBoundsRect(
+        session_, XR_REFERENCE_SPACE_TYPE_STAGE, &stage_bounds_);
+    if (XR_FAILED(xr_result)) {
+      stage_bounds_.height = 0;
+      stage_bounds_.width = 0;
+    }
   }
 
   return xr_result;
@@ -1371,6 +1388,10 @@ bool OpenXrApiWrapper::GetStageParameters(XrExtent2Df& stage_bounds,
 
   local_from_stage = gfx::ComposeTransform(local_from_stage_decomp);
   return true;
+}
+
+bool OpenXrApiWrapper::StageParametersEnabled() const {
+  return stage_parameters_enabled_;
 }
 
 VRTestHook* OpenXrApiWrapper::test_hook_ = nullptr;
