@@ -68,8 +68,7 @@ class SANDBOX_EXPORT SandboxBPF {
   //
   // |enable_ibpb| controls if the sandbox will forcibly enable indirect branch
   // prediction barrier through prctl(2) to mitigate Spectre variant 2.
-  bool StartSandbox(SeccompLevel level,
-                    bool enable_ibpb = true) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartSandbox(SeccompLevel level, bool enable_ibpb = true);
 
   // The sandbox needs to be able to access files in "/proc/self/". If
   // this directory is not accessible when "StartSandbox()" gets called, the

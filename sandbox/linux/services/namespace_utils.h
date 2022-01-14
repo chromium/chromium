@@ -9,7 +9,6 @@
 
 #include <type_traits>
 
-#include "base/compiler_specific.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
@@ -28,8 +27,8 @@ class SANDBOX_EXPORT NamespaceUtils {
 
   // Write a uid or gid mapping from |id| to |id| in |map_file|. This function
   // is async-signal-safe.
-  static bool WriteToIdMapFile(const char* map_file,
-                               generic_id_t id) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool WriteToIdMapFile(const char* map_file,
+                                             generic_id_t id);
 
   // Returns true if unprivileged namespaces of type |type| is supported
   // (meaning that both CLONE_NEWUSER and type are are supported).  |type| must
@@ -47,7 +46,7 @@ class SANDBOX_EXPORT NamespaceUtils {
   // later, this is required in order to write to /proc/self/gid_map without
   // having CAP_SETGID. Callers can determine whether is this needed with
   // KernelSupportsDenySetgroups. This function is async-signal-safe.
-  static bool DenySetgroups() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool DenySetgroups();
 };
 
 }  // namespace sandbox

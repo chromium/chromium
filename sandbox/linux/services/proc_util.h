@@ -30,8 +30,8 @@ class SANDBOX_EXPORT ProcUtil {
   // /proc/. The file descriptor in |proc_fd| will be ignored by
   // HasOpenDirectory() and remains owned by the caller. It is very important
   // for the caller to close it.
-  static bool HasOpenDirectory(int proc_fd) WARN_UNUSED_RESULT;
-  static bool HasOpenDirectory() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool HasOpenDirectory(int proc_fd);
+  [[nodiscard]] static bool HasOpenDirectory();
 
   // Open /proc/ or crash if not possible.
   static base::ScopedFD OpenProc();
