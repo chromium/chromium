@@ -551,7 +551,7 @@ void InProcessBrowserTest::RunUntilBrowserProcessQuits() {
 // TODO(alexmos): This function should expose success of the underlying
 // navigation to tests, which should make sure navigations succeed when
 // appropriate. See https://crbug.com/425335
-void InProcessBrowserTest::AddTabAtIndexToBrowser(
+bool InProcessBrowserTest::AddTabAtIndexToBrowser(
     Browser* browser,
     int index,
     const GURL& url,
@@ -562,18 +562,13 @@ void InProcessBrowserTest::AddTabAtIndexToBrowser(
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
 
-  if (check_navigation_success) {
-    content::WaitForLoadStop(params.navigated_or_inserted_contents);
-  } else {
-    content::WaitForLoadStopWithoutSuccessCheck(
-        params.navigated_or_inserted_contents);
-  }
+  return content::WaitForLoadStop(params.navigated_or_inserted_contents);
 }
 
-void InProcessBrowserTest::AddTabAtIndex(int index,
+bool InProcessBrowserTest::AddTabAtIndex(int index,
                                          const GURL& url,
                                          ui::PageTransition transition) {
-  AddTabAtIndexToBrowser(browser(), index, url, transition, true);
+  return AddTabAtIndexToBrowser(browser(), index, url, transition, true);
 }
 
 bool InProcessBrowserTest::SetUpUserDataDirectory() {
