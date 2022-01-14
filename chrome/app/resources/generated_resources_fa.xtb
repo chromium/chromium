@@ -4169,7 +4169,7 @@
 <translation id="5305145881844743843">این حساب تحت‌مدیریت <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> است</translation>
 <translation id="5307030433605830021">منبع پشتیبانی نمی‌شود</translation>
 <translation id="5307386115243749078">مرتبط‌سازی کلید بلوتوث</translation>
-<translation id="5308380583665731573">اتصال</translation>
+<translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5309418307557605830">‏«دستیار Google» در اینجا هم کار می‌کند</translation>
 <translation id="5310281978693206542">ارسال پیوند به دستگاه‌هایتان</translation>
 <translation id="5311304534597152726">ورود به سیستم به‌عنوان</translation>
@@ -7184,7 +7184,7 @@
 <translation id="8438566539970814960">بهبود جستجوها و مرور</translation>
 <translation id="8439506636278576865">ترجمه صفحات نوشته شده به این زبان پیشنهاد داده شود</translation>
 <translation id="8440630305826533614">‏برنامه‌های Linux</translation>
-<translation id="8446884382197647889">بیشتر بیاموزید</translation>
+<translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8447409163267621480">‏باید شامل Ctrl یا Alt باشد</translation>
 <translation id="8448729345478502352">بزرگ‌تر با کوچک‌تر کردن موارد روی صفحه</translation>
 <translation id="8449008133205184768">شیوه انطباق و جاگذاری</translation>
@@ -7483,7 +7483,7 @@
 <translation id="8757203080302669031">این برگه به‌طور فعال درحال اسکن کردن دستگاه‌های بلوتوث است.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> برداشته شد</translation>
 <translation id="8758418656925882523">فعال کردن املا (صحبت برای تایپ)</translation>
-<translation id="8759753423332885148">بیشتر بیاموزید.</translation>
+<translation id="8759753423332885148">بیشتر بدانید.</translation>
 <translation id="8761945298804995673">این کاربر از قبل وجود دارد</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> شما باید به‌روزرسانی شود</translation>
 <translation id="8763927697961133303">‏دستگاه USB</translation>

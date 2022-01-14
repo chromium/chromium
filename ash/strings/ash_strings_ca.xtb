@@ -236,7 +236,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
 <translation id="2570734079541893434">Gestiona la configuració</translation>
-<translation id="2573588302192866788">No s'ha pogut connectar <ph name="NAME" /></translation>
+<translation id="2573588302192866788">No s'han pogut connectar els <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'inici de sessió múltiple s'ha desactivat</translation>
 <translation id="2582112259361606227">Reinicia per actualitzar</translation>
 <translation id="2595239820337756193">5 km en milles</translation>
@@ -404,7 +404,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3630697955794050612">desactivat</translation>
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Desa el dispositiu <ph name="NAME" /></translation>
+<translation id="3640092422335864171">Desa els <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3665889125180354336">Grava el micròfon</translation>
@@ -422,7 +422,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
-<translation id="3779139509281456663">S'està connectant <ph name="NAME" /></translation>
+<translation id="3779139509281456663">S'estan connectant els <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
 <translation id="3796746699333205839">Una aplicació està utilitzant la càmera i el micròfon</translation>
@@ -487,7 +487,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4215497585250573029">Configuració de VPN</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
-<translation id="4223947355273782392">Desa el dispositiu <ph name="NAME" /> al compte <ph name="EMAIL" /> perquè es vinculi ràpidament als teus altres dispositius</translation>
+<translation id="4223947355273782392">Desa els <ph name="NAME" /> a <ph name="EMAIL" /> perquè es vinculin ràpidament als teus altres dispositius</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -1210,7 +1210,7 @@ Instal·lació nova</translation>
 <translation id="9193626018745640770">S'està emetent contingut en un receptor desconegut</translation>
 <translation id="9194617393863864469">Inicia la sessió amb un altre usuari...</translation>
 <translation id="9198992156681343238">La resolució de la pantalla <ph name="DISPLAY_NAME" /> ha canviat a <ph name="RESOLUTION" />. Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="9201044636667689546">Connecta <ph name="NAME" /> a aquest Chromebook</translation>
+<translation id="9201044636667689546">Connecta els <ph name="NAME" /> a aquest Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestionada per l'administrador</translation>
 <translation id="9210037371811586452">S'està sortint del mode d'escriptori unificat</translation>
 <translation id="9211490828691860325">Tots els escriptoris</translation>

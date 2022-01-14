@@ -236,7 +236,7 @@
 <translation id="255671100581129685">সর্বজনীন সেশনে Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>
 <translation id="256712445991462162">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2570734079541893434">সেটিংস ম্যানেজ করুন</translation>
-<translation id="2573588302192866788">কানেক্ট যায়নি <ph name="NAME" /></translation>
+<translation id="2573588302192866788"><ph name="NAME" />-এ কানেক্ট করা যায়নি</translation>
 <translation id="2575685495496069081">একাধিক সাইন-ইন বিকল্প বন্ধ করা হয়েছে</translation>
 <translation id="2582112259361606227">আপডেট করার জন্য রিস্টার্ট করুন</translation>
 <translation id="2595239820337756193">মাইলের হিসেবে ৫ হাজার</translation>
@@ -649,7 +649,7 @@
 <translation id="5297423144044956168">কোনও মোবাইল ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="5297704307811127955">বন্ধ করা আছে</translation>
 <translation id="5302048478445481009">ভাষা</translation>
-<translation id="5308380583665731573">সংযুক্ত করুন</translation>
+<translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5313326810920013265">ব্লুটুথ সেটিংস</translation>
 <translation id="5314219114274263156">স্ক্রিন রেকর্ডিং করা হয়েছে</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>

@@ -366,7 +366,7 @@
 <translation id="2079545284768500474">لغو</translation>
 <translation id="20817612488360358">تنظیمات پروکسی سیستم تنظیم شده تا مورد استفاده قرار گیرد، اما یک پیکربندی مشخص برای پروکسی نیز تعیین شده است.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2085876078937250610">ذخیره…</translation>
+<translation id="2085876078937250610">ذخیره کردن…</translation>
 <translation id="2088086323192747268">‏دکمه مدیریت همگام‌سازی، کلید «ورود» را فشار دهید تا اطلاعاتی را که همگام‌سازی می‌کنید در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="2091887806945687916">صدا</translation>
 <translation id="2094505752054353250">عدم تطابق دامنه</translation>
@@ -1378,7 +1378,7 @@
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5306593769196050043">هر دو برگ</translation>
 <translation id="5307166000025436103">تأیید</translation>
-<translation id="5308380583665731573">اتصال</translation>
+<translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5308689395849655368">گزارش خرابی غیر فعال است.</translation>
 <translation id="5314967030527622926">دفترچه‌ساز</translation>
 <translation id="5316812925700871227">چرخش خلاف جهت عقربه‌های ساعت</translation>
@@ -1912,7 +1912,7 @@
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> از استانداردهای امنیتی پیروی نمی‌کند.</translation>
 <translation id="7210993021468939304">‏فعالیت Linux در محتوی و می‌توانید برنامه‌های Linux را در محتوی نصب و اجرا کنید</translation>
-<translation id="721197778055552897">دربارهٔ این مشکل <ph name="BEGIN_LINK" />بیشتر بیاموزید<ph name="END_LINK" />.</translation>
+<translation id="721197778055552897">دربارهٔ این مشکل <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />.</translation>
 <translation id="7215025035562547931">لحظه‌ای تأمل کنید و صحت اطلاعات را بسنجید</translation>
 <translation id="7217745192097460130">از «شناسه لمسی» برای تأیید و تکمیل خرید استفاده شود؟</translation>
 <translation id="7219179957768738017">اتصال از <ph name="SSL_VERSION" /> استفاده می‌کند.</translation>
@@ -2307,7 +2307,7 @@
 <translation id="8437238597147034694">&amp;واگرد انتقال</translation>
 <translation id="8438476240229491014">این تنظیم به‌خاطر سپرده شود</translation>
 <translation id="8438786541497918448">از دوربین و میکروفون استفاده شود؟</translation>
-<translation id="8446884382197647889">بیشتر بیاموزید</translation>
+<translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8449836157089738489">باز کردن همه در گروه برگه جدید</translation>
 <translation id="8457125768502047971">نامشخص</translation>
 <translation id="8461694314515752532">رمزگذاری داده‌های همگام‌سازی‌شده با گذرعبارت همگام‌سازی خودتان</translation>

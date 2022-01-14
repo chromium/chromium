@@ -404,7 +404,7 @@
 <translation id="3630697955794050612">خاموش</translation>
 <translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم‌خصوصی. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">ذخیره <ph name="NAME" /></translation>
+<translation id="3640092422335864171">ذخیره کردن <ph name="NAME" /></translation>
 <translation id="3649505501900178324">به‌روزرسانی عقب‌افتاده</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3665889125180354336">ضبط میکروفون</translation>
@@ -649,7 +649,7 @@
 <translation id="5297423144044956168">دستگاه همراهی پیدا نشد</translation>
 <translation id="5297704307811127955">خاموش</translation>
 <translation id="5302048478445481009">زبان</translation>
-<translation id="5308380583665731573">اتصال</translation>
+<translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5313326810920013265">تنظیمات بلوتوث</translation>
 <translation id="5314219114274263156">ضبط صفحه‌نمایش انجام شد</translation>
 <translation id="5317780077021120954">ذخیره</translation>
@@ -933,7 +933,7 @@
 <translation id="7348093485538360975">صفحه‌کلید مجازی</translation>
 <translation id="735745346212279324">‏VPN قطع است</translation>
 <translation id="7360036564632145207">تغییر تنظیم محافظت از دسترسی به داده‌ها برای لوازم جانبی ممکن است عملکرد را بهینه‌سازی کند</translation>
-<translation id="7366890467478514168">اتصال <ph name="NAME" /></translation>
+<translation id="7366890467478514168">متصل کردن <ph name="NAME" /></translation>
 <translation id="7371404428569700291">پنجره ضبط</translation>
 <translation id="7377169924702866686">‏Caps Lock روشن است.</translation>
 <translation id="7378203170292176219">برای انتخاب ناحیه ضبط، بکشید</translation>
@@ -1102,7 +1102,7 @@
 <translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="8433977262951327081">میان‌بر نمایش حبابک گزینه‌های ورودی در قفسه تغییر کرده است. لطفاً به‌جای <ph name="OLD_SHORTCUT" /> از <ph name="NEW_SHORTCUT" /> استفاده کنید.</translation>
 <translation id="8444246603146515890">میز <ph name="DESK_TITILE" /> فعال شد</translation>
-<translation id="8446884382197647889">بیشتر بیاموزید</translation>
+<translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + ر</translation>
 <translation id="8462305545768648477">بستن «انتخاب برای شنیدن»</translation>
 <translation id="847056008324733326">تنظیمات مقیاس نمایش</translation>

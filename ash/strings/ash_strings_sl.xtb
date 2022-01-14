@@ -508,7 +508,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Pritisnili ste bližnjično tipko za visoki kontrast. Ali ga želite vklopiti?</translation>
 <translation id="4322742403972824594">Bližnjica na tipkovnici ctrl + alt + puščica gor je spremenjena. Če želite uporabiti tipko Home, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico levo.</translation>
-<translation id="4331809312908958774">OS Chrome</translation>
+<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
 <translation id="4351433414020964307">Pomočnik se nalaga ...</translation>
@@ -933,7 +933,7 @@ Nova namestitev</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>
 <translation id="7360036564632145207">S spremembo nastavitve zaščite dostopa do podatkov za zunanje dodatne opreme lahko optimizirate delovanje.</translation>
-<translation id="7366890467478514168">Poveži <ph name="NAME" /></translation>
+<translation id="7366890467478514168">Povežite <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Okno za snemanje</translation>
 <translation id="7377169924702866686">Tipka Caps Lock je vklopljena.</translation>
 <translation id="7378203170292176219">Povlecite, če želite izbrati območje za posnetek</translation>
@@ -1210,7 +1210,7 @@ Nova namestitev</translation>
 <translation id="9193626018745640770">Predvajanje v neznanem sprejemniku</translation>
 <translation id="9194617393863864469">Prijava drugega uporabnika ...</translation>
 <translation id="9198992156681343238">Ločljivost zaslona <ph name="DISPLAY_NAME" /> je bila spremenjena na: <ph name="RESOLUTION" />. Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="9201044636667689546">Poveži <ph name="NAME" /> s tem Chromebookom</translation>
+<translation id="9201044636667689546">Povežite <ph name="NAME" /> s tem Chromebookom</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, upravlja ga vaš skrbnik</translation>
 <translation id="9210037371811586452">Izhod iz načina enotnega namizja</translation>
 <translation id="9211490828691860325">Vsa namizja</translation>

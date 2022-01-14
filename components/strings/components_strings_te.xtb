@@ -368,7 +368,7 @@
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="20817612488360358">సిస్టమ్ ప్రాక్సీ సెట్టింగ్‌లు ఉపయోగించడానికి సెట్ చేయబడ్డాయి కానీ స్పష్టమైన ప్రాక్సీ కాన్ఫిగరేషన్ కూడా పేర్కొనబడింది.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
-<translation id="2085876078937250610">సేవ్ చేయి…</translation>
+<translation id="2085876078937250610">సేవ్ చేయండి…</translation>
 <translation id="2088086323192747268">'సింక్‌ను మేనేజ్ చేయి' బటన్, Chrome సెట్టింగ్‌లలో మీరు ఏ సమాచారాన్ని సింక్ చేయాలనుకుంటున్నారో మేనేజ్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="2091887806945687916">ధ్వని</translation>
 <translation id="2094505752054353250">డొమైన్ సరిపోలలేదు</translation>
@@ -1246,7 +1246,7 @@
 <translation id="4892518386797173871">వెనుక భాగం</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">నైన్త్ రోల్</translation>
-<translation id="4901778704868714008">సేవ్ చేయి...</translation>
+<translation id="4901778704868714008">సేవ్ చేయండి...</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
 <translation id="4923459931733593730">చెల్లింపు</translation>
@@ -1384,7 +1384,7 @@
 <translation id="5308689395849655368">క్రాష్ రిపోర్ట్‌ నిలిపివేయ‌బడింది.</translation>
 <translation id="5314967030527622926">బుక్‌లెట్ తయారీ దారు</translation>
 <translation id="5316812925700871227">అపసవ్య దిశలో తిప్పు</translation>
-<translation id="5317780077021120954">సేవ్ చేయి</translation>
+<translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />లో <ph name="MATCH_POSITION" /></translation>
 <translation id="5324080437450482387">సంప్రదింపు సమాచారాన్ని ఎంచుకోండి</translation>
 <translation id="5329858041417644019">మీ బ్రౌజర్ నిర్వహించబడటం లేదు</translation>
@@ -2062,7 +2062,7 @@
 <translation id="7653957176542370971">చెల్లింపు హ్యాండ్లర్ షీట్ మూసివేయబడింది</translation>
 <translation id="7654909834015434372">మీరు అదనపు గమనికలను ఎడిట్ చేసినప్పుడు, ఈ డాక్యుమెంట్, దాని ఒరిజినల్ రొటేషన్‌కు తిరిగి వస్తుంది</translation>
 <translation id="765676359832457558">అధునాతన సెట్టింగ్‌లను దాచు...</translation>
-<translation id="7658239707568436148">రద్దు చేయి</translation>
+<translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7659878911471462949">ఆనంద భాష్పాలు</translation>
 <translation id="7662298039739062396">ఎక్స్‌టెన్షన్‌ ద్వారా సెట్టింగ్ నియంత్రించబడుతోంది</translation>
 <translation id="7663736086183791259">సర్టిఫికెట్ <ph name="CERTIFICATE_VALIDITY" /></translation>
