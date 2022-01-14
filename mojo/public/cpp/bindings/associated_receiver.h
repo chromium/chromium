@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -177,9 +176,8 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // Any incoming method calls or disconnection notifications will be scheduled
   // to run on |task_runner|. If |task_runner| is null, this defaults to the
   // current SequencedTaskRunner.
-  PendingAssociatedRemote<Interface> BindNewEndpointAndPassRemote(
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedRemote<Interface> BindNewEndpointAndPassRemote(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
 
     PendingAssociatedRemote<Interface> remote;
@@ -215,8 +213,8 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // be ordered with respect to any other mojom interfaces. This is generally
   // useful for ignoring calls on an associated remote or for binding associated
   // endpoints in tests.
-  PendingAssociatedRemote<Interface> BindNewEndpointAndPassDedicatedRemote()
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedRemote<Interface>
+  BindNewEndpointAndPassDedicatedRemote() {
     DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
 
     PendingAssociatedRemote<Interface> remote = BindNewEndpointAndPassRemote();
@@ -241,7 +239,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // AssociatedReceiver is unbound those response callbacks are no longer valid
   // and the AssociatedRemote will never be able to receive its expected
   // responses.
-  PendingAssociatedReceiver<Interface> Unbind() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedReceiver<Interface> Unbind() {
     DCHECK(is_bound());
     // TODO(dcheng): Consider moving implementation into base class:
     //   std::exchange(endpoint_client_, nullptr)->PassHandle();

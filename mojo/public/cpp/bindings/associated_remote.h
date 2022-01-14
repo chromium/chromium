@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
@@ -181,9 +180,9 @@ class AssociatedRemote {
   // Any response callbacks or disconnection notifications will be scheduled to
   // run on |task_runner|. If |task_runner| is null, defaults to the current
   // SequencedTaskRunner.
-  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedReceiver<Interface>
+  BindNewEndpointAndPassReceiver(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     DCHECK(!is_bound()) << "AssociatedRemote is already bound";
 
     ScopedInterfaceEndpointHandle remote_handle;
@@ -230,8 +229,8 @@ class AssociatedRemote {
   // be ordered with respect to any other mojom interfaces. This is generally
   // useful for ignoring calls on an associated remote or for binding associated
   // endpoints in tests.
-  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassDedicatedReceiver()
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedReceiver<Interface>
+  BindNewEndpointAndPassDedicatedReceiver() {
     DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
 
     PendingAssociatedReceiver<Interface> receiver =
@@ -251,7 +250,7 @@ class AssociatedRemote {
   // be considered in cases where satisfaction of that constraint can be proven.
   //
   // Must only be called on a bound AssociatedRemote.
-  PendingAssociatedRemote<Interface> Unbind() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedRemote<Interface> Unbind() {
     DCHECK(is_bound());
     CHECK(!internal_state_.has_pending_callbacks());
     State state;

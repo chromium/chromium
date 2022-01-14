@@ -115,7 +115,7 @@ class ScopedHandleBase {
 
   void swap(ScopedHandleBase& other) { handle_.swap(other.handle_); }
 
-  HandleType release() WARN_UNUSED_RESULT {
+  [[nodiscard]] HandleType release() {
     HandleType rv;
     rv.swap(handle_);
     return rv;

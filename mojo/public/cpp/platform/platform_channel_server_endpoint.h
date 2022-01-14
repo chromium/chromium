@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelServerEndpoint {
 
   const PlatformHandle& platform_handle() const { return handle_; }
 
-  PlatformHandle TakePlatformHandle() WARN_UNUSED_RESULT {
+  [[nodiscard]] PlatformHandle TakePlatformHandle() {
     return std::move(handle_);
   }
 

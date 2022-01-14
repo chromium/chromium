@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
@@ -125,7 +124,7 @@ class Receiver {
   // notifications on the default SequencedTaskRunner (i.e.
   // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
   // be called on an unbound Receiver.
-  PendingRemote<Interface> BindNewPipeAndPassRemote() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingRemote<Interface> BindNewPipeAndPassRemote() {
     return BindNewPipeAndPassRemote(nullptr);
   }
 
@@ -133,8 +132,8 @@ class Receiver {
   // disconnection notifications on |task_runner| rather than on the default
   // SequencedTaskRunner. Must only be called on an unbound Receiver.
   // |task_runner| must run tasks on the same sequence that owns this Receiver.
-  PendingRemote<Interface> BindNewPipeAndPassRemote(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingRemote<Interface> BindNewPipeAndPassRemote(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(!is_bound()) << "Receiver is already bound";
     PendingRemote<Interface> remote;
     Bind(remote.InitWithNewPipeAndPassReceiver(), std::move(task_runner));
@@ -142,9 +141,8 @@ class Receiver {
   }
 
   // Like above, but the returned PendingRemote has the version annotated.
-  PendingRemote<Interface> BindNewPipeAndPassRemoteWithVersion(
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingRemote<Interface> BindNewPipeAndPassRemoteWithVersion(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     auto remote = BindNewPipeAndPassRemote(task_runner);
     remote.internal_state()->version = Interface::Version_;
     return remote;
@@ -191,7 +189,7 @@ class Receiver {
   // response callbacks that haven't been invoked, as once the Receiver is
   // unbound those response callbacks are no longer valid and the Remote will
   // never be able to receive its expected responses.
-  PendingReceiver<Interface> Unbind() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingReceiver<Interface> Unbind() {
     DCHECK(is_bound());
     CHECK(!internal_state_.HasAssociatedInterfaces());
     return PendingReceiver<Interface>(

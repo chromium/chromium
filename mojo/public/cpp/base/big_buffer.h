@@ -166,7 +166,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
   void SetSharedMemory(internal::BigBufferSharedMemoryRegion shared_memory);
 
   // Converts to a BigBuffer which owns the viewed data. May have to copy data.
-  static BigBuffer ToBigBuffer(BigBufferView view) WARN_UNUSED_RESULT;
+  [[nodiscard]] static BigBuffer ToBigBuffer(BigBufferView view);
 
   BigBuffer::StorageType storage_type() const { return storage_type_; }
 

@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
@@ -149,7 +148,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   };
 
   // Returns true if the recursion depth limit has been reached.
-  bool ExceedsMaxDepth() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool ExceedsMaxDepth() {
     return stack_depth_ > kMaxRecursionDepth;
   }
 

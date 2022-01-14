@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
     type_ = Type::kNone;
     return std::move(handle_);
   }
-  HANDLE ReleaseHandle() WARN_UNUSED_RESULT {
+  [[nodiscard]] HANDLE ReleaseHandle() {
     DCHECK_EQ(type_, Type::kHandle);
     type_ = Type::kNone;
     return handle_.Take();
@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
       type_ = Type::kNone;
     return std::move(handle_);
   }
-  zx_handle_t ReleaseHandle() WARN_UNUSED_RESULT {
+  [[nodiscard]] zx_handle_t ReleaseHandle() {
     if (type_ == Type::kHandle)
       type_ = Type::kNone;
     return handle_.release();
@@ -148,7 +148,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
       type_ = Type::kNone;
     return std::move(mach_send_);
   }
-  mach_port_t ReleaseMachSendRight() WARN_UNUSED_RESULT {
+  [[nodiscard]] mach_port_t ReleaseMachSendRight() {
     return TakeMachSendRight().release();
   }
 
@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
       type_ = Type::kNone;
     return std::move(mach_receive_);
   }
-  mach_port_t ReleaseMachReceiveRight() WARN_UNUSED_RESULT {
+  [[nodiscard]] mach_port_t ReleaseMachReceiveRight() {
     return TakeMachReceiveRight().release();
   }
 #elif defined(OS_POSIX)
@@ -180,7 +180,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
       type_ = Type::kNone;
     return std::move(fd_);
   }
-  int ReleaseFD() WARN_UNUSED_RESULT {
+  [[nodiscard]] int ReleaseFD() {
     if (type_ == Type::kFd)
       type_ = Type::kNone;
     return fd_.release();
@@ -205,7 +205,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 #error "Unsupported platform"
 #endif
   }
-  base::PlatformFile ReleasePlatformFile() WARN_UNUSED_RESULT {
+  [[nodiscard]] base::PlatformFile ReleasePlatformFile() {
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
     return ReleaseFD();
 #elif defined(OS_WIN)

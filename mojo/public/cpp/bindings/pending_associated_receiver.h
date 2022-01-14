@@ -94,8 +94,8 @@ class PendingAssociatedReceiver {
     handle_.ResetWithReason(custom_reason, description);
   }
 
-  REINITIALIZES_AFTER_MOVE PendingAssociatedRemote<Interface>
-  InitWithNewEndpointAndPassRemote() WARN_UNUSED_RESULT;
+  [[nodiscard]] REINITIALIZES_AFTER_MOVE PendingAssociatedRemote<Interface>
+  InitWithNewEndpointAndPassRemote();
 
   // Associates this endpoint with a dedicated message pipe. This allows the
   // entangled AssociatedReceiver/AssociatedRemote endpoints to be used without

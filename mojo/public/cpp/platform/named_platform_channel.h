@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   //
   // Use the handle to send or receive an invitation, with the endpoint type as
   // |MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER|.
-  PlatformChannelServerEndpoint TakeServerEndpoint() WARN_UNUSED_RESULT {
+  [[nodiscard]] PlatformChannelServerEndpoint TakeServerEndpoint() {
     return std::move(server_endpoint_);
   }
 
@@ -100,13 +100,13 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
 
   // Recovers a functioning client endpoint handle by creating a new endpoint
   // and connecting it to |server_name| if possible.
-  static PlatformChannelEndpoint ConnectToServer(const ServerName& server_name)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static PlatformChannelEndpoint ConnectToServer(
+      const ServerName& server_name);
 
   // Like above, but extracts the server name from |command_line| using the
   // common |kNamedHandleSwitch| flag.
-  static PlatformChannelEndpoint ConnectToServer(
-      const base::CommandLine& command_line) WARN_UNUSED_RESULT;
+  [[nodiscard]] static PlatformChannelEndpoint ConnectToServer(
+      const base::CommandLine& command_line);
 
  private:
   static PlatformChannelServerEndpoint CreateServerEndpoint(

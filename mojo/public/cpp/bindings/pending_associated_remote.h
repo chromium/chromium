@@ -89,8 +89,8 @@ class PendingAssociatedRemote {
   uint32_t version() const { return version_; }
   void set_version(uint32_t version) { version_ = version; }
 
-  REINITIALIZES_AFTER_MOVE PendingAssociatedReceiver<Interface>
-  InitWithNewEndpointAndPassReceiver() WARN_UNUSED_RESULT;
+  [[nodiscard]] REINITIALIZES_AFTER_MOVE PendingAssociatedReceiver<Interface>
+  InitWithNewEndpointAndPassReceiver();
 
   // Associates this endpoint with a dedicated message pipe. This allows the
   // entangled AssociatedReceiver/AssociatedRemote endpoints to be used

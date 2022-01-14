@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -235,7 +234,7 @@ class Remote {
   // will schedule any response callbacks or disconnection notifications on the
   // default SequencedTaskRunner (i.e. base::SequencedTaskRunnerHandle::Get() at
   // the time of this call). Must only be called on an unbound Remote.
-  PendingReceiver<Interface> BindNewPipeAndPassReceiver() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingReceiver<Interface> BindNewPipeAndPassReceiver() {
     DCHECK(!is_bound()) << "Remote is already bound";
     return BindNewPipeAndPassReceiver(nullptr);
   }
@@ -244,8 +243,8 @@ class Remote {
   // disconnection notifications on |task_runner| instead of the default
   // SequencedTaskRunner. |task_runner| must run tasks on the same sequence that
   // owns this Remote.
-  PendingReceiver<Interface> BindNewPipeAndPassReceiver(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingReceiver<Interface> BindNewPipeAndPassReceiver(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(!is_bound()) << "Remote is already bound";
     MessagePipe pipe;
     Bind(PendingRemote<Interface>(std::move(pipe.handle0), 0),
@@ -297,7 +296,7 @@ class Remote {
   // considered in cases where satisfaction of that constraint can be proven.
   //
   // Must only be called on a bound Remote.
-  PendingRemote<Interface> Unbind() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingRemote<Interface> Unbind() {
     DCHECK(is_bound());
     CHECK(!internal_state_.has_pending_callbacks());
     State state;
