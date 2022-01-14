@@ -128,7 +128,6 @@ void DeviceCacheImpl::DeviceConnectedStateChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool is_now_connected) {
-  DCHECK(device->IsPaired());
   DeviceChanged(adapter, device);
 }
 
