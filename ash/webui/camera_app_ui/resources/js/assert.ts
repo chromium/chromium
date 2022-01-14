@@ -107,3 +107,17 @@ export function assertBoolean(value: unknown, optMessage?: string): boolean {
   }
   return value;
 }
+
+/**
+ * Verify that the value is not null or undefined.
+ *
+ * @param value The value to check
+ * @param optMessage A message to show when this is hit.
+ */
+export function assertExists<T>(
+    value: T|null|undefined, optMessage?: string): T {
+  if (value === null || value === undefined) {
+    assertNotReached(optMessage ?? `Value is ${value}`);
+  }
+  return value;
+}
