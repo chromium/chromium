@@ -12,8 +12,11 @@
 
 @protocol BrowserCommands;
 
+@protocol PageInfoViewControllerPermissionsDelegate;
+
 // View Controller for displaying the page info.
-@interface PageInfoViewController : ChromeTableViewController
+@interface PageInfoViewController
+    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
 // Designated initializer.
 - (instancetype)initWithSiteSecurityDescription:
@@ -24,6 +27,11 @@
 
 // Handler used to navigate outside the page info.
 @property(nonatomic, weak) id<BrowserCommands> handler;
+
+// Delegate used to get current states for permissions and to respond to user
+// toggling the switch for a permission.
+@property(nonatomic, weak) id<PageInfoViewControllerPermissionsDelegate>
+    permissionsDelegate API_AVAILABLE(ios(15.0));
 
 @end
 

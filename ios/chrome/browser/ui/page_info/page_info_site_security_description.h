@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_SITE_SECURITY_DESCRIPTION_H_
 #define IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_SITE_SECURITY_DESCRIPTION_H_
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 // Config for the information displayed by the page info Site Security section.
 @interface PageInfoSiteSecurityDescription : NSObject

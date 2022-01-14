@@ -9,6 +9,7 @@ source_set("page_info") {
     "page_info_site_security_description.mm",
     "page_info_view_controller.h",
     "page_info_view_controller.mm",
+    "page_info_view_controller_permissions_delegate.h",
   ]
   deps = [
     "resources:security_icon_dangerous",
@@ -39,8 +40,7 @@ source_set("page_info") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/components/webui:url_constants",
-    "//ios/web",
-    "//ios/web/public/security",
+    "//ios/web/public/permissions",
     "//ui/base",
     "//ui/gfx",
     "//url",
@@ -57,16 +57,28 @@ source_set("constants") {
   ]
 }
 
+source_set("permission_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "NSNumber+Permission.h",
+    "NSNumber+Permission.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("coordinator") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "page_info_coordinator.h",
     "page_info_coordinator.mm",
+    "page_info_permissions_mediator.h",
+    "page_info_permissions_mediator.mm",
     "page_info_site_security_mediator.h",
     "page_info_site_security_mediator.mm",
   ]
   deps = [
     ":page_info",
+    ":permission_util",
     "resources:page_info_bad",
     "resources:page_info_good",
     "resources:page_info_info",
@@ -94,7 +106,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/web_state_list",
     "//ios/components/webui:url_constants",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/public",
+    "//ios/web/public/permissions",
     "//ios/web/public/security",
     "//ui/base",
   ]
