@@ -400,7 +400,8 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
 
   // Even if we are a layout root, our baseline may have shifted. In this
   // (rare) case, mark our containing-block for layout.
-  if (is_layout_root && previous_result) {
+  // The baseline of SVG <text> doesn't affect other boxes.
+  if (is_layout_root && previous_result && !Base::IsNGSVGText()) {
     if (To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment())
             .Baseline() != physical_fragment.Baseline()) {
       if (auto* containing_block = Base::ContainingBlock()) {

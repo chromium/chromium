@@ -3,12 +3,36 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 
 namespace blink {
 
+class LayoutCounts : public EmptyLocalFrameClient {
+ public:
+  uint32_t AllCallCount() const { return all_call_count_; }
+
+ private:
+  void DidObserveLayoutNg(uint32_t all_block_count,
+                          uint32_t ng_block_count,
+                          uint32_t all_call_count,
+                          uint32_t ng_call_count,
+                          uint32_t flexbox_ng_block_count,
+                          uint32_t grid_ng_block_count) override {
+    all_call_count_ += all_call_count;
+  }
+
+  uint32_t all_call_count_ = 0;
+};
+
 class LayoutNGSVGTextTest : public NGLayoutTest {
  public:
-  LayoutNGSVGTextTest() : svg_text_ng_(true) {}
+  LayoutNGSVGTextTest()
+      : NGLayoutTest(MakeGarbageCollected<LayoutCounts>()),
+        svg_text_ng_(true) {}
+
+  uint32_t AllLayoutCallCount() const {
+    return static_cast<LayoutCounts*>(GetFrame().Client())->AllCallCount();
+  }
 
  private:
   ScopedSVGTextNGForTest svg_text_ng_;
@@ -70,6 +94,29 @@ qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq</text>
   EXPECT_FALSE(std::isinf(box.origin().y()));
   EXPECT_FALSE(std::isinf(box.width()));
   EXPECT_FALSE(std::isinf(box.height()));
+}
+
+// crbug.com/1285666
+TEST_F(LayoutNGSVGTextTest, SubtreeLayout) {
+  SetBodyInnerHTML(R"HTML(
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360">
+<text x="240" y="25" font-size="16" id="t">foo</text>
+<text x="240" y="50" font-size="16" id="t2">bar</text>
+</svg>
+</body>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  LocalFrameView* frame_view = GetFrame().View();
+  LayoutView& view = GetLayoutView();
+  ASSERT_FALSE(view.NeedsLayout());
+
+  GetElementById("t")->setAttribute("transform", "scale(0.5)");
+  EXPECT_TRUE(frame_view->IsSubtreeLayout());
+
+  uint32_t pre_layout_count = AllLayoutCallCount();
+  UpdateAllLifecyclePhasesForTest();
+  // Only the <text> and its parent <svg> should be laid out again.
+  EXPECT_EQ(2u, AllLayoutCallCount() - pre_layout_count);
 }
 
 }  // namespace blink
