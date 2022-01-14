@@ -64,6 +64,8 @@ extern const base::Feature kCertificateTransparencyAndroid;
 extern const base::Feature kLargeFaviconFromGoogle;
 extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
 
+extern const base::Feature kObserverBasedPostProfileInit;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

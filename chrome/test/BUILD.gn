@@ -2377,6 +2377,7 @@ if (!is_android && !is_fuchsia) {
 
     if (!is_chromeos_ash) {
       sources += [
+        "../browser/chrome_multiprofile_startup_browsertest.cc",
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
         "../browser/policy/test/variation_restrict_parameter_policy_browsertest.cc",
         "../browser/profiles/profile_window_browsertest.cc",

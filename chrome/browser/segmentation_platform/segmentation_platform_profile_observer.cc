@@ -55,6 +55,13 @@ SegmentationPlatformProfileObserver::~SegmentationPlatformProfileObserver() {
 }
 
 void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
+  // We might call this method for the same profile more than once, but should
+  // not process the same profile twice. That can be the case during the
+  // construction of this `SegmentationPlatformProfileObserver`, which can be
+  // called from within another `ProfileManagerObserver::OnProfileAdded`.
+  if (observed_profiles_.IsObservingSource(profile))
+    return;
+
   observed_profiles_.AddObservation(profile);
 
   // Check if we have any OTR profiles.

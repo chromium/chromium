@@ -27,6 +27,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -54,6 +55,8 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/active_use_util.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -84,6 +87,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 #include "chrome/browser/shell_integration.h"
@@ -493,6 +497,61 @@ bool ProcessSingletonNotificationCallback(
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace
+
+// ChromeBrowserMainParts::ProfileInitManager ----------------------------------
+
+class ChromeBrowserMainParts::ProfileInitManager
+    : public ProfileManagerObserver {
+ public:
+  explicit ProfileInitManager(ChromeBrowserMainParts* browser_main);
+  ~ProfileInitManager() override;
+
+  ProfileInitManager(const ProfileInitManager&) = delete;
+  ProfileInitManager& operator=(const ProfileInitManager&) = delete;
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
+
+ private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
+  // Raw pointer. This is safe because `ChromeBrowserMainParts` owns `this`.
+  const base::raw_ptr<ChromeBrowserMainParts> browser_main_;
+};
+
+ChromeBrowserMainParts::ProfileInitManager::ProfileInitManager(
+    ChromeBrowserMainParts* browser_main)
+    : browser_main_(browser_main) {
+  profile_manager_observer_.Observe(g_browser_process->profile_manager());
+}
+
+ChromeBrowserMainParts::ProfileInitManager::~ProfileInitManager() = default;
+
+void ChromeBrowserMainParts::ProfileInitManager::OnProfileAdded(
+    Profile* profile) {
+  if (profile->IsSystemProfile()) {
+    // Ignore the system profile that is used for displaying the profile picker.
+    // `CallPostProfileInit()` should be called only for profiles that are used
+    // for browsing.
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Ignore ChromeOS helper profiles (sign-in, lockscreen, etc).
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+    // Notify of new profile initialization only for regular profiles. The
+    // startup profile initialization is triggered by another code path.
+    return;
+  }
+#endif
+
+  browser_main_->CallPostProfileInit(profile);
+}
+
+void ChromeBrowserMainParts::ProfileInitManager::OnProfileManagerDestroying() {
+  profile_manager_observer_.Reset();
+}
 
 // BrowserMainParts ------------------------------------------------------------
 
@@ -1481,6 +1540,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.
   // (requires supporting early exit).
   CallPostProfileInit(profile_);
+  if (base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)) {
+    // Set up PostProfileInit triggering for profiles created later.
+    profile_init_manager_ = std::make_unique<ProfileInitManager>(this);
+  }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Execute first run specific code after the PrefService has been initialized

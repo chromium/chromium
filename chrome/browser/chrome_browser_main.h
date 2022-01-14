@@ -108,6 +108,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   }
 
  private:
+  class ProfileInitManager;
   friend class ChromeBrowserMainPartsTestApi;
 
   // Constructs the metrics service and initializes metrics recording.
@@ -217,6 +218,10 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Indicates that the initial profile has been created and we started
   // executing `PostProfileInit()` for it.
   bool initialized_initial_profile_ = false;
+
+  // Observer that triggers `PostProfileInit()` when new user profiles are
+  // created.
+  std::unique_ptr<ProfileInitManager> profile_init_manager_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_
