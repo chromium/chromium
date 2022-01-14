@@ -9,8 +9,8 @@
 -DevToolsFileWatcher*
 -DiagnosticsController*
 -DiagnosticsModelTest.Run*
--DialServiceTest.TestMultiple*
--DialServiceTest.TestSend*
+-DialServiceImplTest.TestMultipleNetworkInterfaces
+-DialServiceImplTest.TestSendMultipleRequests
 -DiceWebSigninInterceptorForcedSeparationTest.ShouldEnforceEnterpriseProfileSeparationReauth
 -DiceWebSigninInterceptorTest.DeclineCreation*
 -DiceWebSigninInterceptorTest.ShouldShowEnterpriseBubble
