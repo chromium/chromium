@@ -6,6 +6,11 @@
  * @fileoverview Handles auto scrolling on navigation.
  */
 
+// setTimeout and its clean-up are referencing each other. So, we need to set
+// "ignoreReadBeforeAssign" in this file. ESLint doesn't support per-line rule
+// option modification.
+/* eslint prefer-const: ["error", {"ignoreReadBeforeAssign": true}] */
+
 goog.provide('AutoScrollHandler');
 
 goog.require('AutomationPredicate');
@@ -14,13 +19,20 @@ goog.require('constants');
 
 goog.scope(function() {
 const Dir = constants.Dir;
+const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 
 /**
  * Handler of auto scrolling. Most logics are for supporting ARC++.
  */
 AutoScrollHandler = class {
-  constructor() {}
+  constructor() {
+    /** @private {boolean} */
+    this.isScrolling_ = false;
+
+    /** @private {AutomationNode} */
+    this.scrollingNode_ = null;
+  }
 
   /**
    * This should be called before any command triggers ChromeVox navigation.
@@ -38,6 +50,11 @@ AutoScrollHandler = class {
    *     the command instead.
    */
   onCommandNavigation(target, dir, pred, speechProps, retryCommandFunc) {
+    if (this.isScrolling_) {
+      // Prevent interrupting the current scrolling.
+      return false;
+    }
+
     if (!target.start || !target.start.node ||
         !ChromeVoxState.instance.currentRange.start.node) {
       return true;
@@ -60,59 +77,106 @@ AutoScrollHandler = class {
     // TODO(crbug/761415): handle more precise positioning after scroll.
     // e.g. list with 10 items showing 1-7, scroll forward, should position at
     // item 8.
-    const callback = function(result) {
-      if (!result) {
+    this.isScrolling_ = true;
+    this.scrollingNode_ = scrollable;
+
+    (async () => {
+      const scrollResult = await new Promise(resolve => {
+        if (dir === Dir.FORWARD) {
+          scrollable.scrollForward(resolve);
+        } else {
+          scrollable.scrollBackward(resolve);
+        }
+      });
+      if (!scrollResult) {
         ChromeVoxState.instance.navigateToRange(target, false, speechProps);
         return;
       }
 
-      const innerCallback = function(currentNode, evt) {
-        scrollable.removeEventListener(
-            EventType.SCROLL_POSITION_CHANGED, innerCallback);
-        scrollable.removeEventListener(
-            EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback);
-        scrollable.removeEventListener(
-            EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback);
-
-        if (pred || (currentNode && currentNode.root)) {
-          // Jump or if there is a valid current range, then move from it
-          // since we have refreshed node data.
-          retryCommandFunc();
-          return;
-        }
-
-        // Otherwise, sync to the directed deepest child.
-        let sync = scrollable;
-        if (dir === Dir.FORWARD) {
-          while (sync.firstChild) {
-            sync = sync.firstChild;
+      // Wait for a scrolled event or timeout.
+      await new Promise((resolve, reject) => {
+        let cleanUp;
+        let timeoutId;
+        const onTimeout = () => {
+          cleanUp();
+          reject('timeout to wait for scrolled event.');
+        };
+        const onScrolled = () => {
+          cleanUp();
+          resolve();
+        };
+        cleanUp = () => {
+          for (const e of AutoScrollHandler.RELATED_SCROLL_EVENT_TYPES) {
+            scrollable.removeEventListener(e, onScrolled, true);
           }
-        } else {
-          while (sync.lastChild) {
-            sync = sync.lastChild;
-          }
-        }
-        ChromeVoxState.instance.navigateToRange(
-            cursors.Range.fromNode(sync), false, speechProps);
-      }.bind(this, target.start.node);
-      // This is sent by ARC++.
-      scrollable.addEventListener(
-          EventType.SCROLL_POSITION_CHANGED, innerCallback, true);
-      // These two events are sent by Web and Views via AXEventGenerator.
-      scrollable.addEventListener(
-          EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback, true);
-      scrollable.addEventListener(
-          EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback, true);
-    };
+          clearTimeout(timeoutId);
+        };
 
-    if (dir === Dir.FORWARD) {
-      scrollable.scrollForward(callback);
-    } else {
-      scrollable.scrollBackward(callback);
-    }
+        for (const e of AutoScrollHandler.RELATED_SCROLL_EVENT_TYPES) {
+          scrollable.addEventListener(e, onScrolled, true);
+        }
+        timeoutId =
+            setTimeout(onTimeout, AutoScrollHandler.TIMEOUT_SCROLLED_EVENT_MS);
+      });
+
+      this.isScrolling_ = false;
+
+      if (!this.scrollingNode_) {
+        throw Error(
+            'Illegal state in AutoScrollHandler. |scrollingNode_| is null.');
+      }
+
+      if (pred || (target.start.node && target.start.node.root)) {
+        // Jump or if there is a valid current range, then move from it
+        // since we have refreshed node data.
+        retryCommandFunc();
+        return;
+      }
+
+      // Otherwise, sync to the directed deepest child.
+      let sync = this.scrollingNode_;
+      if (dir === Dir.FORWARD) {
+        while (sync.firstChild) {
+          sync = sync.firstChild;
+        }
+      } else {
+        while (sync.lastChild) {
+          sync = sync.lastChild;
+        }
+      }
+      ChromeVoxState.instance.navigateToRange(
+          cursors.Range.fromNode(sync), false, speechProps);
+    })().catch(e => {
+      this.isScrolling_ = false;
+    });
+
     return false;
   }
 };
+
+/**
+ * An array of Automation event types that AutoScrollHandler observes when
+ * performing a scroll action.
+ * @private
+ * @const {!Array<EventType>}
+ */
+AutoScrollHandler.RELATED_SCROLL_EVENT_TYPES = [
+  // This is sent by ARC++.
+  EventType.SCROLL_POSITION_CHANGED,
+  // These two events are sent by Web and Views via AXEventGenerator.
+  EventType.SCROLL_HORIZONTAL_POSITION_CHANGED,
+  EventType.SCROLL_VERTICAL_POSITION_CHANGED
+];
+
+/**
+ * The timeout that we wait for scroll event since scrolling action's callback
+ * is executed.
+ * TODO(hirokisato): Find an appropriate timeout in our case. TalkBack uses 500
+ * milliseconds. See
+ * https://github.com/google/talkback/blob/acd0bc7631a3dfbcf183789c7557596a45319e1f/talkback/src/main/java/ScrollEventInterpreter.java#L169
+ * @const {number}
+ */
+AutoScrollHandler.TIMEOUT_SCROLLED_EVENT_MS = 1500;
 
 goog.addSingletonGetter(AutoScrollHandler);
 });  // goog.scope

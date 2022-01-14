@@ -422,6 +422,7 @@ if (is_chromeos_ash) {
   js2gtest("chromevox_extension_js_tests") {
     test_type = "extension"
     sources = [
+      "background/auto_scroll_handler_test.js",
       "background/background_test.js",
       "background/braille_command_data_test.js",
       "background/color_test.js",
