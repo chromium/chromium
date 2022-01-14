@@ -18,7 +18,7 @@ const char kRecoveryComponentVersion[] = "recovery_component.version";
 // Full path where last recovery component CRX was unpacked to.
 const char kRecoveryComponentUnpackPath[] = "recovery_component.unpack_path";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The last exit code integer value returned by the SwReporter. Saved in local
 // state.
 const char kSwReporterLastExitCode[] = "software_reporter.last_exit_code";

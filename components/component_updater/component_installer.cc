@@ -40,7 +40,7 @@
 #include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/backup_util.h"
 #endif
 
@@ -168,7 +168,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
   DCHECK(!base::PathExists(unpack_path));
   DCHECK(base::PathExists(local_install_path));
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Since components can be large and can be re-downloaded when needed, they
   // are excluded from backups.
   base::mac::SetBackupExclusion(local_install_path);

@@ -39,10 +39,10 @@ const char kSwitchDisableDeltaUpdates[] = "disable-delta-updates";
 // value is in seconds.
 const char kInitialDelay[] = "initial-delay";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Disables background downloads.
 const char kSwitchDisableBackgroundDownloads[] = "disable-background-downloads";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // If there is an element of |vec| of the form |test|=.*, returns the right-
 // hand side of that assignment. Otherwise, returns an empty string.
@@ -76,7 +76,7 @@ ComponentUpdaterCommandLineConfigPolicy::
       cmdline->GetSwitchValueASCII(switches::kComponentUpdater), ",",
       base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   background_downloads_enabled_ =
       !base::Contains(switch_values, kSwitchDisableBackgroundDownloads);
 #else

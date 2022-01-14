@@ -21,9 +21,9 @@
 #include "components/update_client/utils.h"
 #include "components/version_info/version_info.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif  // OS_WIN
+#endif
 
 namespace component_updater {
 
