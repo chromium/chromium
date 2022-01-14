@@ -46,7 +46,6 @@
   "fuchsia-angle-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -63,9 +62,7 @@
   "fuchsia-angle-try": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
-      "enable_nacl": false,
       "is_component_build": true,
       "is_debug": false,
       "symbol_level": 0,
@@ -77,9 +74,7 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "build_angle_deqp_tests": true,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
-      "enable_nacl": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
@@ -106,7 +101,6 @@
   "linux-angle-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -122,12 +116,10 @@
   "linux-angle-try": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
-      "enable_nacl": false,
       "is_component_build": true,
       "is_debug": false,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "use_goma": true
     }
   },
@@ -171,12 +163,10 @@
   "win-angle-x64-try": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
-      "enable_nacl": false,
       "is_component_build": true,
       "is_debug": false,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "use_goma": true
     }
   }
