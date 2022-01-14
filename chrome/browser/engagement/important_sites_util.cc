@@ -102,7 +102,7 @@ enum CrossedReason {
   CROSSED_REASON_BOUNDARY
 };
 
-void RecordIgnore(base::DictionaryValue* dict) {
+void RecordIgnore(base::Value* dict) {
   int times_ignored = dict->FindIntKey(kNumTimesIgnoredName).value_or(0);
   dict->SetIntKey(kNumTimesIgnoredName, ++times_ignored);
   dict->SetDoubleKey(kTimeLastIgnored, base::Time::Now().ToDoubleT());
@@ -411,8 +411,7 @@ std::string ImportantSitesUtil::GetRegisterableDomainOrIPFromHost(
 
 bool ImportantSitesUtil::IsDialogDisabled(Profile* profile) {
   PrefService* service = profile->GetPrefs();
-  DictionaryPrefUpdateDeprecated update(service,
-                                        prefs::kImportantSitesDialogHistory);
+  DictionaryPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
 
   return ShouldSuppressItem(update.Get());
 }
@@ -553,8 +552,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   } else {
     // Record that the user did not interact with the dialog.
     PrefService* service = profile->GetPrefs();
-    DictionaryPrefUpdateDeprecated update(service,
-                                          prefs::kImportantSitesDialogHistory);
+    DictionaryPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
     RecordIgnore(update.Get());
   }
 
