@@ -337,6 +337,13 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     // blocklist rules.
     gpu_info->gpu.driver_vendor = "SwANGLE";
 
+    GPUInfo swangle_gpu_info(*gpu_info);
+    if (CollectBasicGraphicsInfo(&swangle_gpu_info)) {
+      // Also store the machine model and version
+      gpu_info->machine_model_name = swangle_gpu_info.machine_model_name;
+      gpu_info->machine_model_version = swangle_gpu_info.machine_model_version;
+    }
+
     return true;
   }
 
