@@ -16,7 +16,7 @@ import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT
 import {EmojiButton} from './emoji_button.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
-import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK, V2_CONTENT_LOADED} from './events.js';
+import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
 import {EMPTY_EMOTICON_DATA, V2_SUBCATEGORY_TABS} from './metadata_extension.js';
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji, SubcategoryData} from './types.js';
@@ -264,7 +264,6 @@ export class EmojiPicker extends PolymerElement {
           // TODO(b/211520561): remove below line after the emoticon loading
           // logic is finished.
           this.emojiData = this.emojiData.concat(EMPTY_EMOTICON_DATA);
-          this.dispatchEvent(createCustomEvent(V2_CONTENT_LOADED));
         }
       });
     });
@@ -393,9 +392,6 @@ export class EmojiPicker extends PolymerElement {
       const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
       const maxPagination = this.getPaginationArray(this.emojiGroupTabs).pop();
       this.pagination = Math.min(this.pagination + 1, maxPagination);
-      const nextTab =
-          this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
-      this.scrollToGroup(nextTab.groupId);
       this.$.tabs.scrollLeft =
           (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
       this.groupTabsMoving = true;
@@ -417,9 +413,6 @@ export class EmojiPicker extends PolymerElement {
       const chevronMargin = V2_TAB_BUTTON_MARGIN;
       const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
       this.pagination = Math.max(this.pagination - 1, 1);
-      const nextTab =
-          this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
-      this.scrollToGroup(nextTab.groupId);
       this.$.tabs.scrollLeft = this.pagination === 1 ?
           0 :
           (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
@@ -750,13 +743,6 @@ export class EmojiPicker extends PolymerElement {
    */
   isNotFirstPage(pageNumber) {
     return pageNumber !== 1;
-  }
-
-  /**
-   * @return {boolean}
-   */
-  isHighlightBarMoving() {
-    return this.highlightBarMoving;
   }
 }
 
