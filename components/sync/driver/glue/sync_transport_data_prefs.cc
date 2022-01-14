@@ -58,6 +58,95 @@ void UpdateInvalidationVersions(
   pref_service->Set(kSyncInvalidationVersions2, *invalidation_dictionary);
 }
 
+std::string GetLegacyModelTypeNameForInvalidationVersions(ModelType type) {
+  switch (type) {
+    case UNSPECIFIED:
+      NOTREACHED();
+      break;
+    case BOOKMARKS:
+      return "Bookmarks";
+    case PREFERENCES:
+      return "Preferences";
+    case PASSWORDS:
+      return "Passwords";
+    case AUTOFILL_PROFILE:
+      return "Autofill Profiles";
+    case AUTOFILL:
+      return "Autofill";
+    case AUTOFILL_WALLET_DATA:
+      return "Autofill Wallet";
+    case AUTOFILL_WALLET_METADATA:
+      return "Autofill Wallet Metadata";
+    case AUTOFILL_WALLET_OFFER:
+      return "Autofill Wallet Offer";
+    case THEMES:
+      return "Themes";
+    case TYPED_URLS:
+      return "Typed URLs";
+    case EXTENSIONS:
+      return "Extensions";
+    case SEARCH_ENGINES:
+      return "Search Engines";
+    case SESSIONS:
+      return "Sessions";
+    case APPS:
+      return "Apps";
+    case APP_SETTINGS:
+      return "App settings";
+    case EXTENSION_SETTINGS:
+      return "Extension settings";
+    case HISTORY_DELETE_DIRECTIVES:
+      return "History Delete Directives";
+    case DICTIONARY:
+      return "Dictionary";
+    case DEVICE_INFO:
+      return "Device Info";
+    case PRIORITY_PREFERENCES:
+      return "Priority Preferences";
+    case SUPERVISED_USER_SETTINGS:
+      return "Managed User Settings";
+    case APP_LIST:
+      return "App List";
+    case ARC_PACKAGE:
+      return "Arc Package";
+    case PRINTERS:
+      return "Printers";
+    case READING_LIST:
+      return "Reading List";
+    case USER_EVENTS:
+      return "User Events";
+    case SECURITY_EVENTS:
+      return "Security Events";
+    case USER_CONSENTS:
+      return "User Consents";
+    case SEND_TAB_TO_SELF:
+      return "Send Tab To Self";
+    case PROXY_TABS:
+      NOTREACHED();
+      break;
+    case NIGORI:
+      return "Encryption Keys";
+    case WEB_APPS:
+      return "Web Apps";
+    case WIFI_CONFIGURATIONS:
+      return "Wifi Configurations";
+    case WORKSPACE_DESK:
+      return "Workspace Desk";
+    case OS_PREFERENCES:
+      return "OS Preferences";
+    case OS_PRIORITY_PREFERENCES:
+      return "OS Priority Preferences";
+    case SHARING_MESSAGE:
+      return "Sharing Message";
+    default:
+      // Note: There is no need to add new data types here. This code is only
+      // used for a migration, so data types introduced after the migration
+      // don't need to be handled.
+      break;
+  }
+  return std::string();
+}
+
 }  // namespace
 
 SyncTransportDataPrefs::SyncTransportDataPrefs(PrefService* pref_service)
@@ -200,10 +289,11 @@ void SyncTransportDataPrefs::MigrateInvalidationVersions(
   // Read data from the deprecated pref.
   std::map<ModelType, int64_t> invalidation_versions;
   for (ModelType type : ProtocolTypes()) {
-    // TODO(crbug.com/1173546): Fork a minimal version of ModelTypeToString in
-    // this file, so that ModelTypeToString itself (meant only for debugging
-    // purposes) can be changed without breaking this code.
-    std::string key = ModelTypeToString(type);
+    std::string key = GetLegacyModelTypeNameForInvalidationVersions(type);
+    // The key may be empty, e.g. for data types introduced after this
+    // migration.
+    if (key.empty())
+      continue;
     const std::string* version_str =
         invalidation_dictionary->FindStringKey(key);
     if (!version_str)
