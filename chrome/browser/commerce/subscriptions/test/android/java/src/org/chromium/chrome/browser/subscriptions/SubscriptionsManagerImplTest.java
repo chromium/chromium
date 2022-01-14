@@ -409,6 +409,76 @@ public class SubscriptionsManagerImplTest {
         assertEquals(localSubscriptions, resultCaptor.getValue());
     }
 
+    @MediumTest
+    @Test
+    public void testIsSubscribedDifferentTrackingIdType() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        List<CommerceSubscription> localSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription2));
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
+        CommerceSubscription subscriptionToCheck =
+                new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
+                        mSubscription1.getTrackingId(), mSubscription1.getType(),
+                        CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID);
+
+        Callback<Boolean> isSubscribedCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.isSubscribed(subscriptionToCheck, isSubscribedCallback);
+
+        ArgumentCaptor<Boolean> resultCaptor = ArgumentCaptor.forClass(Boolean.class);
+        verify(isSubscribedCallback, times(1)).onResult(resultCaptor.capture());
+        assertEquals(false, resultCaptor.getValue());
+    }
+
+    @MediumTest
+    @Test
+    public void testIsSubscribedDifferentTimestamps() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        CommerceSubscription subscription3 =
+                new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
+                        mSubscription1.getTrackingId(), mSubscription1.getType(),
+                        mSubscription1.getTrackingIdType(), 1234L);
+        List<CommerceSubscription> localSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription1, subscription3));
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
+        CommerceSubscription subscriptionToCheck =
+                new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
+                        mSubscription1.getTrackingId(), mSubscription1.getType(),
+                        mSubscription1.getTrackingIdType(), 222L);
+
+        Callback<Boolean> isSubscribedCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.isSubscribed(subscriptionToCheck, isSubscribedCallback);
+
+        ArgumentCaptor<Boolean> resultCaptor = ArgumentCaptor.forClass(Boolean.class);
+        verify(isSubscribedCallback, times(1)).onResult(resultCaptor.capture());
+        assertEquals(true, resultCaptor.getValue());
+    }
+
+    @MediumTest
+    @Test
+    public void testIsSubscribed() {
+        mSubscriptionsManager.setCanHandlerequests(true);
+        List<CommerceSubscription> localSubscriptions =
+                new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2));
+
+        setLoadWithPrefixMockResponse(localSubscriptions);
+
+        CommerceSubscription subscriptionToCheck =
+                new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
+                        mSubscription1.getTrackingId(), mSubscription1.getType(),
+                        mSubscription1.getTrackingIdType());
+
+        Callback<Boolean> isSubscribedCallback = Mockito.mock(Callback.class);
+        mSubscriptionsManager.isSubscribed(subscriptionToCheck, isSubscribedCallback);
+
+        ArgumentCaptor<Boolean> resultCaptor = ArgumentCaptor.forClass(Boolean.class);
+        verify(isSubscribedCallback, times(1)).onResult(resultCaptor.capture());
+        assertEquals(true, resultCaptor.getValue());
+    }
+
     private void setLoadWithPrefixMockResponse(List<CommerceSubscription> subscriptions) {
         doAnswer(new Answer<Void>() {
             @Override
