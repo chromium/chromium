@@ -171,7 +171,7 @@ namespace {
 
 // The delay, in seconds, after starting recording before doing expensive
 // initialization work.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // On mobile devices, a significant portion of sessions last less than a minute.
 // Use a shorter timer on these platforms to avoid losing data.
 // TODO(dfalcantara): To avoid delaying startup, tighten up initialization so
@@ -392,7 +392,7 @@ void MetricsService::RecordCompletedSessionEnd() {
   LogCleanShutdown(true);
 }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
   is_in_foreground_ = false;
   if (!keep_recording_in_background) {
@@ -438,7 +438,7 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
 void MetricsService::LogNeedForCleanShutdown() {
   state_manager_->LogHasSessionShutdownCleanly(false);
 }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();
@@ -562,7 +562,7 @@ void MetricsService::InitializeMetricsState() {
   if (!was_last_shutdown_clean) {
     provider.LogCrash(
         state_manager_->clean_exit_beacon()->browser_last_live_timestamp());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (!state_manager_->is_foreground_session()) {
       // Android can have background sessions in which the app may not come to
       // the foreground, so signal that Chrome should stop watching for crashes
@@ -580,7 +580,7 @@ void MetricsService::InitializeMetricsState() {
       // TODO(crbug/1245676): Ditto for WebView.
       state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // HasPreviousSessionData is called first to ensure it is never bypassed.

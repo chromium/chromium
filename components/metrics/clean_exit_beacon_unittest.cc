@@ -110,11 +110,11 @@ struct BeaconConsistencyTestParams {
 
 // Used for testing the logic that emits CleanExitBeaconConsistency to
 // histograms.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 class BackupBeaconConsistencyTest
     : public testing::WithParamInterface<BeaconConsistencyTestParams>,
       public CleanExitBeaconTest {};
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 class BeaconFileConsistencyTest
     : public testing::WithParamInterface<BeaconConsistencyTestParams>,
       public CleanExitBeaconTest {};
@@ -283,7 +283,7 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
 
 // TODO(crbug/1248239): Enable these tests on Android when the Extended
 // Variations Safe Mode experiment is fully enabled on Android Chrome.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Verify that successfully reading the beacon file's contents results in
 // correctly (a) setting the |did_previous_session_exit_cleanly_| field and (b)
 // recording metrics when the last session exited cleanly.
@@ -332,7 +332,7 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        updated_num_crashes, 1);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The below CleanExitBeaconTest.BeaconState*ExtendedSafeMode tests verify that
 // the logic for recording UMA.CleanExitBeacon.BeaconFileConsistency is correct
@@ -417,7 +417,7 @@ TEST_P(BeaconFileConsistencyTest, BeaconConsistency) {
       1);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug/1248239): Remove this test once the Extended Variations Safe Mode
 // experiment is fully enabled on Android Chrome.
 
@@ -451,7 +451,7 @@ TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        expected_num_crashes, 1);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Verify that attempting to write synchronously DCHECKs for clients that do not
 // belong to the SignalAndWriteViaFileUtil experiment group.
@@ -474,7 +474,7 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValue_SynchronousWriteDcheck) {
 
 // The below CleanExitBeaconTest.BeaconState_* tests verify that the logic for
 // recording UMA.CleanExitBeaconConsistency2 is correct.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackupBeaconConsistencyTest,
@@ -542,6 +542,6 @@ TEST_P(BackupBeaconConsistencyTest, BeaconConsistency) {
   histogram_tester_.ExpectUniqueSample("UMA.CleanExitBeaconConsistency2",
                                        params.expected_consistency, 1);
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace metrics

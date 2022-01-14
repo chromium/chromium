@@ -16,9 +16,9 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class PrefService;
 
@@ -31,7 +31,7 @@ class ExtensionsHelper;
 class ContentStabilityMetricsProvider
     : public MetricsProvider,
       public content::BrowserChildProcessObserver,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       public crash_reporter::CrashMetricsReporter::Observer,
 #endif
       public content::NotificationObserver {
@@ -80,7 +80,7 @@ class ContentStabilityMetricsProvider
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // crash_reporter::CrashMetricsReporter::Observer:
   void OnCrashDumpProcessed(
       int rph_id,
@@ -90,7 +90,7 @@ class ContentStabilityMetricsProvider
   base::ScopedObservation<crash_reporter::CrashMetricsReporter,
                           crash_reporter::CrashMetricsReporter::Observer>
       scoped_observation_{this};
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   StabilityMetricsHelper helper_;
 

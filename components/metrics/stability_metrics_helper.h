@@ -11,7 +11,7 @@
 #include "base/process/kill.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -74,7 +74,7 @@ class StabilityMetricsHelper {
   // |last_error| is also supplied to help diagnose the launch failure.
   void BrowserUtilityProcessLaunchFailed(const std::string& metrics_name,
                                          int launch_error_code
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                                          ,
                                          DWORD last_error
 #endif

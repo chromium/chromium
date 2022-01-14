@@ -150,7 +150,7 @@ void CallStackProfileBuilder::OnSampleCompleted(
 
     // Write CallStackProfile::Location protobuf message.
     uintptr_t instruction_pointer = frame.instruction_pointer;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #if !TARGET_IPHONE_SIMULATOR
     // Some iOS devices enable pointer authentication, which uses the
     // higher-order bits of pointers to store a signature. Strip that signature
@@ -159,7 +159,7 @@ void CallStackProfileBuilder::OnSampleCompleted(
     // available.
     instruction_pointer &= 0xFFFFFFFFF;
 #endif  // !TARGET_IPHONE_SIMULATOR
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
     ptrdiff_t module_offset =
         reinterpret_cast<const char*>(instruction_pointer) -

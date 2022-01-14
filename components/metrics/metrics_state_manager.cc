@@ -272,7 +272,7 @@ MetricsStateManager::MetricsStateManager(
     ForceClientIdCreation();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ALLOW_UNUSED_LOCAL(is_first_run);
 #else
   if (is_first_run) {
@@ -295,7 +295,7 @@ MetricsStateManager::MetricsStateManager(
     if (client_id_.empty())
       provisional_client_id_ = base::GenerateGUID();
   }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   // The |initial_client_id_| should only be set if UMA is enabled or there's a
   // provisional client id.

@@ -73,7 +73,7 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 class TestingStabilityMetricsProvider : public StabilityMetricsProvider {

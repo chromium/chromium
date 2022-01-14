@@ -127,7 +127,7 @@ class MetricsService : public base::HistogramFlattener {
   // that session end was successful.
   void RecordCompletedSessionEnd();
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Called when the application is going into background mode.
   // If |keep_recording_in_background| is true, UMA is still recorded and
   // reported while in the background.
@@ -139,7 +139,7 @@ class MetricsService : public base::HistogramFlattener {
   // Signals that the session has not yet exited cleanly. Calling this later
   // requires a call to LogCleanShutdown().
   void LogNeedForCleanShutdown();
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   bool recording_active() const;
   bool reporting_active() const;
@@ -223,7 +223,7 @@ class MetricsService : public base::HistogramFlattener {
     return &delegating_provider_;
   }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool IsInForegroundForTesting() const { return is_in_foreground_; }
 #endif
 
@@ -437,7 +437,7 @@ class MetricsService : public base::HistogramFlattener {
   // Indicates if loading of independent metrics is currently active.
   bool independent_loader_active_ = false;
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Indicates whether OnAppEnterForeground() (true) or OnAppEnterBackground
   // (false) was called.
   bool is_in_foreground_ = false;

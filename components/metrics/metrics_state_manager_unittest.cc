@@ -320,7 +320,7 @@ TEST_F(MetricsStateManagerTest,
   EXPECT_EQ(client_info_load_count_, 1);
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 TEST_F(MetricsStateManagerTest, ProvisionalClientId_PromotedToClientId) {
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
 
@@ -383,7 +383,7 @@ TEST_F(MetricsStateManagerTest, ProvisionalClientId_NotPersisted) {
               MetricsStateManager::ENTROPY_SOURCE_LOW);
   }
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(MetricsStateManagerTest, LoadPrefs) {
   ClientInfo client_info;

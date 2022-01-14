@@ -20,13 +20,13 @@
 #include "chromeos/network/network_handler_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "ios/web/public/test/web_task_environment.h"
 using MetricsTaskEnvironment = web::WebTaskEnvironment;
-#else  // !defined(OS_IOS)
+#else  // !BUILDFLAG(IS_IOS)
 #include "content/public/test/browser_task_environment.h"
 using MetricsTaskEnvironment = content::BrowserTaskEnvironment;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace metrics {
 

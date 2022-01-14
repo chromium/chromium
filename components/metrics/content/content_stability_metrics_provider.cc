@@ -17,7 +17,7 @@
 #include "content/public/common/process_type.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 #endif
 
@@ -38,11 +38,11 @@ ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
                  content::NotificationService::AllSources());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto* crash_manager = crash_reporter::CrashMetricsReporter::GetInstance();
   DCHECK(crash_manager);
   scoped_observation_.Observe(crash_manager);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ContentStabilityMetricsProvider::~ContentStabilityMetricsProvider() {
@@ -135,14 +135,14 @@ void ContentStabilityMetricsProvider::BrowserChildProcessLaunchFailed(
   DCHECK_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
   if (data.process_type == content::PROCESS_TYPE_UTILITY)
     helper_.BrowserUtilityProcessLaunchFailed(data.metrics_name, info.exit_code
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                                               ,
                                               info.last_error
 #endif
     );
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ContentStabilityMetricsProvider::OnCrashDumpProcessed(
     int rph_id,
     const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
@@ -156,6 +156,6 @@ void ContentStabilityMetricsProvider::OnCrashDumpProcessed(
     helper_.IncreaseGpuCrashCount();
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace metrics

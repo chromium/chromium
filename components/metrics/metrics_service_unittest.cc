@@ -442,12 +442,12 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
 
   // Verify that Chrome is (or is not) watching for crashes by checking the
   // beacon value.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(local_state->GetBoolean(prefs::kStabilityExitedCleanly),
             params.expected_beacon_value);
 #else
   EXPECT_FALSE(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // The initial stability log should be generated and persisted in unsent logs.
   MetricsLogStore* test_log_store = service.LogStoreForTest();

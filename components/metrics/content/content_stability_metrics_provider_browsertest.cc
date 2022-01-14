@@ -26,7 +26,7 @@
 #include "content/public/test/test_service.mojom.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "sandbox/win/src/sandbox_types.h"
@@ -38,7 +38,7 @@ template <>
 sandbox::mojom::Sandbox GetServiceSandboxType<content::mojom::TestService>() {
   // On Windows, the sandbox does not like having a different binary name
   // 'non_existent_path' from the browser process, so set no sandbox here.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return sandbox::mojom::Sandbox::kNoSandbox;
 #else
   return sandbox::mojom::Sandbox::kService;
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ContentStabilityProviderBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ChildProcess.LaunchFailed.UtilityProcessHash",
       variations::HashName(content::mojom::TestService::Name_), 1);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   int expected_error_code =
       sandbox::SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS;
 #else
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(ContentStabilityProviderBrowserTest,
       "ChildProcess.LaunchFailed.UtilityProcessErrorCode", expected_error_code,
       1);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Last Error is only recorded on Windows.
   histogram_tester.ExpectUniqueSample("ChildProcess.LaunchFailed.WinLastError",
                                       DWORD{ERROR_FILE_NOT_FOUND}, 1);

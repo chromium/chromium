@@ -44,11 +44,11 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/metrics_proto/user_action_event.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/current_module.h"
 #endif
@@ -313,7 +313,7 @@ void MetricsLog::RecordCoreSystemProfile(
   if (!app_os_arch.empty())
     hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Remove any trailing null characters.
   // TODO(crbug/1247379): Verify that this is WAI. If so, inline this into
   // iOS's implementation of HardwareModelName().
@@ -322,8 +322,8 @@ void MetricsLog::RecordCoreSystemProfile(
       hardware_class.substr(0, strlen(hardware_class.c_str())));
 #else
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
-#endif  // defined(OS_IOS)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
 
@@ -343,20 +343,20 @@ void MetricsLog::RecordCoreSystemProfile(
 // OperatingSystemVersion refers to the ChromeOS release version.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   os->set_kernel_version(base::SysInfo::KernelVersion());
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Linux operating system version is copied over into kernel version to be
   // consistent.
   os->set_kernel_version(base::SysInfo::OperatingSystemVersion());
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const auto* build_info = base::android::BuildInfo::GetInstance();
   os->set_build_fingerprint(build_info->android_build_fp());
   if (!package_name.empty() && package_name != "com.android.chrome")
     system_profile->set_app_package_name(package_name);
   system_profile->set_installer_package(
       internal::ToInstallerPackage(build_info->installer_package_name()));
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   os->set_build_number(base::SysInfo::GetIOSBuildNumber());
 #endif
 }
