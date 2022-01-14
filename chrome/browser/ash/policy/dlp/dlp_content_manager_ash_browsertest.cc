@@ -630,6 +630,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureNotStoppedWhenConfidentialWindowHidden) {
   SetupReporting();
+  SetWarnNotifier();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
 
@@ -653,6 +654,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
   // Make first window content as confidential.
   helper_->ChangeConfidentiality(web_contents1, kScreenshotRestricted);
+  // Check that the warning is not shown.
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
@@ -668,12 +671,142 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // Check that capture was not requested to be stopped via callback.
   run_loop.RunUntilIdle();
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
+  // Check that the warning is still not shown: this is to ensure that
+  // RunUntilIdle doesn't succeed just because it's waiting for the dialog to be
+  // dismissed.
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
   browser2->window()->Close();
   histogram_tester_.ExpectTotalCount(
       GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, 0);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       VideoCaptureWarnedAtEndAllowed) {
+  SetupReporting();
+  SetWarnNotifier();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+
+  // Open first browser window.
+  Browser* browser1 = browser();
+  chrome::NewTab(browser1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
+  content::WebContents* web_contents1 =
+      browser1->tab_strip_model()->GetActiveWebContents();
+
+  // Open second browser window.
+  Browser* browser2 =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  chrome::NewTab(browser2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
+
+  // Resize browsers so that second window covers the first one.
+  // Browser window can't have width less than 500.
+  browser1->window()->SetBounds(gfx::Rect(100, 100, 500, 500));
+  browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
+
+  // Make first window content as confidential.
+  helper_->ChangeConfidentiality(web_contents1, kScreenshotWarned);
+
+  // Start capture of the whole screen.
+  base::RunLoop run_loop;
+  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
+  capture_mode_delegate->StartObservingRestrictedContent(
+      root_window, root_window->bounds(), base::BindOnce([] {
+        FAIL() << "Video capture stop callback shouldn't be called";
+      }));
+
+  // Move first window with confidential content to make it visible.
+  browser1->window()->SetBounds(gfx::Rect(100, 100, 700, 700));
+  // Check that the warning is still not shown.
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+
+  // Check that capture was not requested to be stopped via callback.
+  run_loop.RunUntilIdle();
+
+  base::MockCallback<ash::OnCaptureModeDlpRestrictionChecked>
+      on_dlp_checked_at_video_end_cb;
+  EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(true)).Times(1);
+  EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(false)).Times(0);
+  capture_mode_delegate->StopObservingRestrictedContent(
+      on_dlp_checked_at_video_end_cb.Get());
+  // Check that the warning is now shown.
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  std::unique_ptr<ui::test::EventGenerator> event_generator =
+      GetEventGenerator();
+  // Hit Enter to "Save anyway".
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+
+  browser2->window()->Close();
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       VideoCaptureWarnedAtEndCancelled) {
+  SetupReporting();
+  SetWarnNotifier();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+
+  // Open first browser window.
+  Browser* browser1 = browser();
+  chrome::NewTab(browser1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
+  content::WebContents* web_contents1 =
+      browser1->tab_strip_model()->GetActiveWebContents();
+
+  // Open second browser window.
+  Browser* browser2 =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  chrome::NewTab(browser2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
+
+  // Resize browsers so that second window covers the first one.
+  // Browser window can't have width less than 500.
+  browser1->window()->SetBounds(gfx::Rect(100, 100, 500, 500));
+  browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
+
+  // Make first window content as confidential.
+  helper_->ChangeConfidentiality(web_contents1, kScreenshotWarned);
+
+  // Start capture of the whole screen.
+  base::RunLoop run_loop;
+  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
+  capture_mode_delegate->StartObservingRestrictedContent(
+      root_window, root_window->bounds(), base::BindOnce([] {
+        FAIL() << "Video capture stop callback shouldn't be called";
+      }));
+
+  // Move first window with confidential content to make it visible.
+  browser1->window()->SetBounds(gfx::Rect(100, 100, 700, 700));
+  // Check that the warning is still not shown.
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+
+  // Check that capture was not requested to be stopped via callback.
+  run_loop.RunUntilIdle();
+
+  base::MockCallback<ash::OnCaptureModeDlpRestrictionChecked>
+      on_dlp_checked_at_video_end_cb;
+  EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(true)).Times(0);
+  EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(false)).Times(1);
+  capture_mode_delegate->StopObservingRestrictedContent(
+      on_dlp_checked_at_video_end_cb.Get());
+  // Check that the warning is now shown.
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  std::unique_ptr<ui::test::EventGenerator> event_generator =
+      GetEventGenerator();
+  // Hit Enter to "Cancel".
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+
+  browser2->window()->Close();
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
