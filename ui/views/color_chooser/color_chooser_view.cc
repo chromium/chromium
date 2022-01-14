@@ -14,10 +14,10 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -53,9 +53,7 @@ constexpr int kBorderWidth = 1;
 constexpr int kTextfieldLengthInChars = 14;
 
 std::u16string GetColorText(SkColor color) {
-  return base::ASCIIToUTF16(
-      base::StringPrintf("#%02x%02x%02x", SkColorGetR(color),
-                         SkColorGetG(color), SkColorGetB(color)));
+  return base::ASCIIToUTF16(skia::SkColorToHexString(color));
 }
 
 bool GetColorFromText(const std::u16string& text, SkColor* result) {

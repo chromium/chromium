@@ -12,10 +12,10 @@
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/public/common/content_client.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -646,11 +646,7 @@ std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
   if (GetRole() == ax::mojom::Role::kColorWell) {
     unsigned int color = static_cast<unsigned int>(
         GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
-    unsigned int red = SkColorGetR(color);
-    unsigned int green = SkColorGetG(color);
-    unsigned int blue = SkColorGetB(color);
-    return base::UTF8ToUTF16(
-        base::StringPrintf("#%02X%02X%02X", red, green, blue));
+    return base::UTF8ToUTF16(skia::SkColorToHexString(color));
   }
 
   std::u16string text = GetNameAsString16();

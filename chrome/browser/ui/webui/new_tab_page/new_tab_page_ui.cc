@@ -59,6 +59,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "skia/ext/skia_utils_base.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -596,11 +597,8 @@ void NewTabPageUI::OnThemeChanged() {
   auto background_color =
       ThemeService::GetThemeProviderForProfile(profile_).GetColor(
           ThemeProperties::COLOR_NTP_BACKGROUND);
-  update->SetString(
-      "backgroundColor",
-      base::StringPrintf("#%02X%02X%02X", SkColorGetR(background_color),
-                         SkColorGetG(background_color),
-                         SkColorGetB(background_color)));
+  update->SetString("backgroundColor",
+                    skia::SkColorToHexString(background_color));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }

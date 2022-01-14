@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/pickle.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkEncodedImageFormat.h"
@@ -115,4 +116,8 @@ bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out) {
   return true;
 }
 
+std::string SkColorToHexString(SkColor color) {
+  return base::StringPrintf("#%02X%02X%02X", SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color));
+}
 }  // namespace skia
