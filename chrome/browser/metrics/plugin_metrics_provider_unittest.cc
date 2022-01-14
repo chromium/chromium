@@ -91,14 +91,14 @@ TEST_F(PluginMetricsProviderTest, Plugins) {
   EXPECT_TRUE(system_profile.plugin(1).is_pepper());
 
   // Now set some plugin stability stats for p2 and verify they're recorded.
-  std::unique_ptr<base::DictionaryValue> plugin_dict(new base::DictionaryValue);
-  plugin_dict->SetString(prefs::kStabilityPluginName, "p2");
-  plugin_dict->SetInteger(prefs::kStabilityPluginLaunches, 1);
-  plugin_dict->SetInteger(prefs::kStabilityPluginCrashes, 2);
-  plugin_dict->SetInteger(prefs::kStabilityPluginInstances, 3);
-  plugin_dict->SetInteger(prefs::kStabilityPluginLoadingErrors, 4);
+  base::Value plugin_dict(base::Value::Type::DICTIONARY);
+  plugin_dict.SetStringKey(prefs::kStabilityPluginName, "p2");
+  plugin_dict.SetIntKey(prefs::kStabilityPluginLaunches, 1);
+  plugin_dict.SetIntKey(prefs::kStabilityPluginCrashes, 2);
+  plugin_dict.SetIntKey(prefs::kStabilityPluginInstances, 3);
+  plugin_dict.SetIntKey(prefs::kStabilityPluginLoadingErrors, 4);
   {
-    ListPrefUpdateDeprecated update(prefs(), prefs::kStabilityPluginStats);
+    ListPrefUpdate update(prefs(), prefs::kStabilityPluginStats);
     update.Get()->Append(std::move(plugin_dict));
   }
 

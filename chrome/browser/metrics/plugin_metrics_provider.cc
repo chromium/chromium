@@ -204,8 +204,8 @@ void PluginMetricsProvider::ClearSavedStabilityMetrics() {
 // Saves plugin-related updates from the in-object buffer to Local State
 // for retrieval next time we send a Profile log (generally next launch).
 void PluginMetricsProvider::RecordCurrentState() {
-  ListPrefUpdateDeprecated update(local_state_, prefs::kStabilityPluginStats);
-  base::ListValue* plugins = update.Get();
+  ListPrefUpdate update(local_state_, prefs::kStabilityPluginStats);
+  base::Value* plugins = update.Get();
   DCHECK(plugins);
 
   for (auto& value : plugins->GetList()) {
@@ -268,17 +268,16 @@ void PluginMetricsProvider::RecordCurrentState() {
     if (!IsPluginProcess(stats.process_type))
       continue;
 
-    std::unique_ptr<base::DictionaryValue> plugin_dict(
-        new base::DictionaryValue);
+    base::Value plugin_dict(base::Value::Type::DICTIONARY);
 
-    plugin_dict->SetString(prefs::kStabilityPluginName, cache_iter->first);
-    plugin_dict->SetIntKey(prefs::kStabilityPluginLaunches,
-                           stats.process_launches);
-    plugin_dict->SetIntKey(prefs::kStabilityPluginCrashes,
-                           stats.process_crashes);
-    plugin_dict->SetIntKey(prefs::kStabilityPluginInstances, stats.instances);
-    plugin_dict->SetIntKey(prefs::kStabilityPluginLoadingErrors,
-                           stats.loading_errors);
+    plugin_dict.SetStringKey(prefs::kStabilityPluginName, cache_iter->first);
+    plugin_dict.SetIntKey(prefs::kStabilityPluginLaunches,
+                          stats.process_launches);
+    plugin_dict.SetIntKey(prefs::kStabilityPluginCrashes,
+                          stats.process_crashes);
+    plugin_dict.SetIntKey(prefs::kStabilityPluginInstances, stats.instances);
+    plugin_dict.SetIntKey(prefs::kStabilityPluginLoadingErrors,
+                          stats.loading_errors);
     plugins->Append(std::move(plugin_dict));
   }
   child_process_stats_buffer_.clear();
