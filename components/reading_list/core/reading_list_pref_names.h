@@ -14,9 +14,9 @@ namespace prefs {
 
 extern const char kReadingListHasUnseenEntries[];
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 extern const char kReadingListDesktopFirstUseExperienceShown[];
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace prefs
 }  // namespace reading_list
