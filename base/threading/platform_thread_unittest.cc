@@ -346,9 +346,9 @@ TEST(PlatformThreadTest, CanChangeThreadPriority) {
             kCanIncreasePriority);
 }
 
-// This tests internal PlatformThread APIs used under some POSIX platforms,
-// with the exception of Mac OS X, iOS and Fuchsia.
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_FUCHSIA)
+// This tests internal PlatformThread APIs used on POSIX platforms except
+// macOS and  iOS.
+#if defined(OS_POSIX) && !defined(OS_APPLE)
 TEST(PlatformThreadTest, GetNiceValueToThreadPriority) {
   using internal::NiceValueToThreadPriority;
   using internal::kThreadPriorityToNiceValueMap;
@@ -403,8 +403,7 @@ TEST(PlatformThreadTest, GetNiceValueToThreadPriority) {
   EXPECT_EQ(ThreadPriority::REALTIME_AUDIO,
             NiceValueToThreadPriority(kLowestNiceValue));
 }
-#endif  // defined(OS_POSIX) && !defined(OS_APPLE) &&
-        // !defined(OS_FUCHSIA)
+#endif  // defined(OS_POSIX) && !defined(OS_APPLE)
 
 TEST(PlatformThreadTest, SetHugeThreadName) {
   // Construct an excessively long thread name.
