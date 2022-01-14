@@ -337,15 +337,18 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testRedirectFromFormSubmit_NoUserGesture_OnIntentRedirectChain() {
+    public void testRedirectFromFormSubmit_NoUserGesture_OnIntentRedirectChain() throws Exception {
         mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
 
-        RedirectHandler redirectHandler = new RedirectHandler() {
-            @Override
-            public boolean isOnEffectiveIntentRedirectChain() {
-                return true;
-            }
-        };
+        RedirectHandler redirectHandler = RedirectHandler.create();
+
+        redirectHandler.updateIntent(
+                Intent.parseUri("http://example.test", Intent.URI_INTENT_SCHEME),
+                !IS_CUSTOM_TAB_INTENT, !SEND_TO_EXTERNAL_APPS,
+                IS_CCT_EXTERNAL_LINK_HANDLING_ENABLED, !INTENT_STARTED_TASK);
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.LINK | PageTransition.FROM_API, false, false, 0, 0, true);
+        redirectHandler.updateNewUrlLoading(PageTransition.FORM_SUBMIT, false, false, 0, 0, false);
 
         // If the redirect is not associated with a user gesture but came from an incoming intent,
         // then allow those to launch external intents.
@@ -356,7 +359,7 @@ public class ExternalNavigationHandlerTest {
                 .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
-        checkUrl("http://youtube.com://")
+        checkUrl("http://youtube.com")
                 .withPageTransition(PageTransition.FORM_SUBMIT)
                 .withIsRedirect(true)
                 .withHasUserGesture(false)
@@ -2011,6 +2014,7 @@ public class ExternalNavigationHandlerTest {
     @SmallTest
     public void testAutofillAssistantIntentWithFallback_InRegular() {
         RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, true);
 
         mDelegate.setIsIntentToAutofillAssistant(true);
         checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITH_FALLBACK)
@@ -2075,6 +2079,7 @@ public class ExternalNavigationHandlerTest {
         mDelegate.add(new IntentActivity("https://someapp.com", "someapp"));
 
         RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, true);
 
         mUrlHandler.mIsGoogleReferrer = true;
         mDelegate.setIsIntentToAutofillAssistant(true);
