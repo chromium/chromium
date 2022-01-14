@@ -16,6 +16,8 @@ extern const char kDirectUrlInputMetricSuffix[];
 
 bool IsDirectUrlInputPrerenderEnabled();
 
+bool IsSearchSuggestionPrerenderEnabled();
+
 }  // namespace prerender_utils
 
 #endif  // CHROME_BROWSER_PRERENDER_PRERENDER_UTILS_H_

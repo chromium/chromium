@@ -16,4 +16,17 @@ bool IsDirectUrlInputPrerenderEnabled() {
          base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2);
 }
 
+bool IsSearchSuggestionPrerenderEnabled() {
+  // This is a tentative flag combination. Currently we haven't decided how to
+  // run the two experiments of DirectUrlInput Prerender and SearchSuggestion
+  // Prerender parallelly, so we simply make the feature flag of
+  // kSupportSearchSuggestionForPrerender2 a FeatureParam of
+  // kOmniboxTriggerForPrerender2 to reuse the existing feature structure.
+  // TODO(https://crbug.com/1278634): Update the restriction after we finalize
+  // the experiment design.
+  return blink::features::IsPrerender2Enabled() &&
+         base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2) &&
+         features::kSupportSearchSuggestionForPrerender2.Get();
+}
+
 }  // namespace prerender_utils
