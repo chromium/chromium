@@ -20,11 +20,11 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/os_crypt/os_crypt_mocker_linux.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/random.h"
 #endif
@@ -165,7 +165,7 @@ class OSCryptConcurrencyTest : public testing::Test {
 };
 
 // Flaky on Win 7 (dbg) and win-asan, see https://crbug.com/1066699
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ConcurrentInitialization DISABLED_ConcurrentInitialization
 #else
 #define MAYBE_ConcurrentInitialization ConcurrentInitialization
@@ -198,7 +198,7 @@ TEST_F(OSCryptConcurrencyTest, MAYBE_ConcurrentInitialization) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 class OSCryptTestWin : public testing::Test {
  public:
@@ -307,6 +307,6 @@ TEST_F(OSCryptTestWin, PrefsKeyTest) {
   EXPECT_EQ(plaintext, decrypted);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace

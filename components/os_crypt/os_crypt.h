@@ -14,11 +14,11 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 class KeyStorageLinux;
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 class PrefRegistrySimple;
 class PrefService;
 #endif
@@ -37,13 +37,13 @@ class OSCrypt {
   OSCrypt(const OSCrypt&) = delete;
   OSCrypt& operator=(const OSCrypt&) = delete;
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Set the configuration of OSCrypt.
   // This method, or SetRawEncryptionKey(), must be called before using
   // EncryptString() and DecryptString().
   static COMPONENT_EXPORT(OS_CRYPT) void SetConfig(
       std::unique_ptr<os_crypt::Config> config);
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // On Linux returns true iff the real secret key (not hardcoded one) is
   // available. On MacOS returns true if Keychain is available (for mock
@@ -78,7 +78,7 @@ class OSCrypt {
       const std::string& ciphertext,
       std::string* plaintext);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Registers preferences used by OSCrypt.
   static COMPONENT_EXPORT(OS_CRYPT) void RegisterLocalPrefs(
       PrefRegistrySimple* registry);
@@ -103,7 +103,7 @@ class OSCrypt {
       InitWithExistingKey(PrefService* local_state);
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // For unit testing purposes we instruct the Encryptor to use a mock Keychain
   // on the Mac. The default is to use the real Keychain. Use OSCryptMocker,
   // instead of calling this method directly.
@@ -133,7 +133,7 @@ class OSCrypt {
   static COMPONENT_EXPORT(OS_CRYPT) void SetRawEncryptionKey(
       const std::string& key);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // For unit testing purposes we instruct the Encryptor to use a mock Key. The
   // default is to use the real Key bound to profile. Use OSCryptMocker, instead
   // of calling this method directly.
@@ -149,7 +149,7 @@ class OSCrypt {
   static COMPONENT_EXPORT(OS_CRYPT) void ResetStateForTesting();
 #endif
 
-#if (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
   // For unit testing purposes, inject methods to be used.
   // |get_key_storage_mock| provides the desired |KeyStorage| implementation.
   // If the provider returns |nullptr|, a hardcoded password will be used.
@@ -164,7 +164,7 @@ class OSCrypt {
   // Sets the password with which the encryption key is derived, e.g. "peanuts".
   static COMPONENT_EXPORT(OS_CRYPT) void SetEncryptionPasswordForTesting(
       const std::string& password);
-#endif  // (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
 };
 
 #endif  // COMPONENTS_OS_CRYPT_OS_CRYPT_H_

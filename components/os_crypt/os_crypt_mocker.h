@@ -17,12 +17,12 @@ class OSCryptMocker {
   // Inject mocking into OSCrypt.
   static void SetUp();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Pretend that backend for storing keys is unavailable.
   static void SetBackendLocked(bool locked);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Store data using the older DPAPI interface rather than session key.
   static void SetLegacyEncryption(bool legacy);
 
