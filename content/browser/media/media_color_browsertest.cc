@@ -10,7 +10,7 @@
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -41,7 +41,7 @@ class MediaColorTest : public MediaBrowserTest {
 };
 
 // Android doesn't support Theora.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pTheora) {
   RunColorTest("yuv420p.ogv");
 }
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pTheora) {
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pTheora) {
   RunColorTest("yuv444p.ogv");
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pVp8) {
   RunColorTest("yuv420p.webm");
@@ -67,13 +67,13 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pVp9) {
 
 // This test fails on Android: http://crbug.com/938320
 // It also fails on ChromeOS https://crbug.com/938618
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Yuv420pH264 DISABLED_Yuv420pH264
 #else
 #define MAYBE_Yuv420pH264 Yuv420pH264
 #endif
 IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pH264) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // https://crbug.com/907572
   if (base::android::BuildInfo::GetInstance()->sdk_int() <=
       base::android::SDK_VERSION_KITKAT) {
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pH264) {
 }
 
 // This test fails on Android: http://crbug.com/647818
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Yuvj420pH264 DISABLED_Yuvj420pH264
 #else
 #define MAYBE_Yuvj420pH264 Yuvj420pH264
@@ -96,13 +96,13 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuvj420pH264) {
 
 // This fails on ChromeOS: http://crbug.com/647400,
 // This fails on Android: http://crbug.com/938320,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Yuv420pRec709H264 DISABLED_Yuv420pRec709H264
 #else
 #define MAYBE_Yuv420pRec709H264 Yuv420pRec709H264
 #endif
 IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pRec709H264) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // https://crbug.com/907572
   if (base::android::BuildInfo::GetInstance()->sdk_int() <=
       base::android::SDK_VERSION_KITKAT) {
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pRec709H264) {
 
 // Android doesn't support 10bpc.
 // This test flakes on mac: http://crbug.com/810908
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_Yuv420pHighBitDepth DISABLED_Yuv420pHighBitDepth
 #else
 #define MAYBE_Yuv420pHighBitDepth Yuv420pHighBitDepth
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pHighBitDepth) {
 }
 
 // Android devices usually only support baseline, main and high.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pH264) {
   RunColorTest("yuv422p.mp4");
 }
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pH264) {
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pH264) {
   RunColorTest("yuv444p.mp4");
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pMpeg4) {

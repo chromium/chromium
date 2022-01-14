@@ -124,7 +124,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // WebContentsFrameTracker because the WebContentsFrameTracker deleter task
   // will be posted to the UI thread before the MouseCursorOverlayController
   // deleter task.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MouseCursorOverlayController> cursor_controller_ = nullptr;
 #endif
 

@@ -27,7 +27,7 @@
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/key_system_support_win.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -156,7 +156,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
     return absl::nullopt;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(GpuDataManagerImpl::GetInstance()->IsGpuFeatureInfoAvailable());
   if (GpuDataManagerImpl::GetInstance()
           ->GetGpuFeatureInfo()
@@ -167,7 +167,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
 
     return absl::nullopt;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kHardwareSecure);
@@ -240,7 +240,7 @@ void KeySystemSupportImpl::LazyInitializeHardwareSecureCapability(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kHardwareSecure);
   DCHECK(cdm_info && !cdm_info->capability);
@@ -248,7 +248,7 @@ void KeySystemSupportImpl::LazyInitializeHardwareSecureCapability(
       key_system, cdm_info->path, std::move(cdm_capability_cb));
 #else
   std::move(cdm_capability_cb).Run(absl::nullopt);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void KeySystemSupportImpl::SetHardwareSecureCapabilityCBForTesting(

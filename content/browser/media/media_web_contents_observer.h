@@ -32,7 +32,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
 #endif  // OS_ANDROID
 

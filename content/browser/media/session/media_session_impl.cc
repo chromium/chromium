@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"
@@ -39,9 +40,9 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/gfx/favicon_size.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/session/media_session_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -277,7 +278,7 @@ MediaSessionImpl::~MediaSessionImpl() {
   DCHECK(audio_focus_state_ == State::INACTIVE);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MediaSessionImpl::ClearMediaSessionAndroid() {
   session_android_.reset();
 }
@@ -336,7 +337,7 @@ void MediaSessionImpl::DidFinishNavigation(
 void MediaSessionImpl::OnWebContentsFocused(RenderWidgetHost*) {
   focused_ = true;
 
-#if !defined(OS_ANDROID) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   // If we have just gained focus and we have audio focus we should re-request
   // system audio focus. This will ensure this media session is towards the top
   // of the stack if we have multiple sessions active at the same time.
@@ -771,7 +772,7 @@ bool MediaSessionImpl::IsControllable() const {
   if (audio_focus_state_ == State::INACTIVE || HasOnlyOneShotPlayers())
     return false;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (routed_service_ && routed_service_->playback_state() !=
                              blink::mojom::MediaSessionPlaybackState::NONE) {
     return true;
@@ -979,10 +980,10 @@ MediaSessionImpl::MediaSessionImpl(WebContents* web_contents)
       is_ducking_(false),
       ducking_volume_multiplier_(kDefaultDuckingVolumeMultiplier),
       routed_service_(nullptr) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   session_android_ = std::make_unique<MediaSessionAndroid>(this);
   should_throttle_duration_update_ = true;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   if (web_contents && web_contents->GetMainFrame() &&
       web_contents->GetMainFrame()->GetView()) {
     focused_ = web_contents->GetMainFrame()->GetView()->HasFocus();

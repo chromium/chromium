@@ -16,9 +16,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/timer/timer.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace system_media_controls {
 class SystemMediaControls;
@@ -66,7 +66,7 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
 
   // We want to hide the controls on the lock screen on Windows in certain
   // cases. We don't want this functionality on other OSes.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Polls the current idle state of the system.
   void CheckLockState();
 
@@ -85,7 +85,7 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   bool screen_locked_ = false;
   base::RepeatingTimer lock_polling_timer_;
   base::OneShotTimer hide_smtc_timer_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Our connection to the System Media Controls. We don't own it since it's a
   // global instance.

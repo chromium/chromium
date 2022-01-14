@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
@@ -21,20 +22,20 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/mac/seatbelt_extension.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 // TODO(xhwang): Move this to a common place.
 const base::FilePath::CharType kSignatureFileExtension[] =
@@ -94,7 +95,7 @@ class SeatbeltExtensionTokenProviderImpl final
  private:
   base::FilePath cdm_path_;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // How long an instance of the service is allowed to sit idle before we
 // disconnect and effectively kill it.
@@ -117,12 +118,12 @@ struct ServiceTraits<media::mojom::CdmService> {
   using BrokerType = media::mojom::CdmServiceBroker;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct ServiceTraits<media::mojom::MediaFoundationService> {
   using BrokerType = media::mojom::MediaFoundationServiceBroker;
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // A map hosts all service remotes, each of which corresponds to one service
 // process. There should be only one instance of this class stored in
@@ -200,7 +201,7 @@ T& GetService(const base::Token& cdm_type,
     ServiceProcessHost::Launch(broker_remote.BindNewPipeAndPassReceiver(),
                                options.Pass());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
         token_provider_remote;
     mojo::MakeSelfOwnedReceiver(
@@ -210,7 +211,7 @@ T& GetService(const base::Token& cdm_type,
                               remote.BindNewPipeAndPassReceiver());
 #else
     broker_remote->GetService(cdm_path, remote.BindNewPipeAndPassReceiver());
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     // The idle handler must be set on the `remote` because the `broker_remote`
     // will never idle when the `remote` is bound.
@@ -232,7 +233,7 @@ media::mojom::CdmService& GetCdmService(const base::Token& cdm_type,
                                               cdm_info.name, cdm_info.path);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 media::mojom::MediaFoundationService& GetMediaFoundationService(
     BrowserContext* browser_context,
     const GURL& site,
@@ -241,6 +242,6 @@ media::mojom::MediaFoundationService& GetMediaFoundationService(
       base::Token(), browser_context, site, "Media Foundation Service",
       cdm_path);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

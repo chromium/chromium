@@ -26,7 +26,7 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #endif
 
@@ -34,7 +34,7 @@ namespace content {
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 constexpr int32_t kMouseCursorStackingIndex = 1;
 #endif
 
@@ -67,7 +67,7 @@ void BindWakeLockProvider(
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 FrameSinkVideoCaptureDevice::FrameSinkVideoCaptureDevice()
     : cursor_controller_(
           RescopeToUIThread(std::make_unique<MouseCursorOverlayController>())) {
@@ -123,7 +123,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
     capturer_->ChangeTarget(target_);
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MouseCursorOverlayController::Start,
@@ -191,7 +191,7 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
     wake_lock_.reset();
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MouseCursorOverlayController::Stop,
                                 cursor_controller_->GetWeakPtr()));
@@ -255,7 +255,7 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   }
   const BufferId buffer_id = static_cast<BufferId>(index);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   info->metadata.interactive_content =
       cursor_controller_->IsUserInteractingWithView();
 #else

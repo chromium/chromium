@@ -16,7 +16,7 @@
 #include "media/media_buildflags.h"
 #include "ui/display/display_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_AvcLevels) {
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mp4aVariants) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // xHE-AAC support is currently only available on P+.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mp4aVariants) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_HLS) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ExecuteTest("testHls(true)");  // has_hls_support=true
 #else
   ExecuteTest("testHls(false)");            // has_hls_support=false
@@ -158,9 +158,10 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mpeg2Ts) {
 // See more complete codec string testing in media/base/video_codecs_unittest.cc
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_NewVp9Variants) {
 // Profile 2 and 3 support is currently disabled on Android prior to P and MIPS.
-#if (defined(ARCH_CPU_ARM_FAMILY) && !defined(OS_WIN) && !defined(OS_MAC)) || \
+#if (defined(ARCH_CPU_ARM_FAMILY) && !BUILDFLAG(IS_WIN) && \
+     !BUILDFLAG(IS_MAC)) ||                                \
     defined(ARCH_CPU_MIPS_FAMILY)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
     ExecuteTest("testNewVp9Variants(true)");  // has_profile_2_3_support=true

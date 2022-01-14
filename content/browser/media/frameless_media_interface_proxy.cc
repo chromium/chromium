@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "content/public/browser/media_service.h"
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/media_service.mojom.h"
@@ -69,7 +70,7 @@ void FramelessMediaInterfaceProxy::CreateCastRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FramelessMediaInterfaceProxy::CreateFlingingRenderer(
     const std::string& audio_device_id,
     mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
@@ -82,9 +83,9 @@ void FramelessMediaInterfaceProxy::CreateMediaPlayerRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
         renderer_extension_receiver) {}
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Unimplemented method as this requires CDM and media::Renderer services with
 // frame context.
 void FramelessMediaInterfaceProxy::CreateMediaFoundationRenderer(
@@ -92,7 +93,7 @@ void FramelessMediaInterfaceProxy::CreateMediaFoundationRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {}
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void FramelessMediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
                                              CreateCdmCallback callback) {

@@ -30,9 +30,9 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace media_session {
 struct MediaMetadata;
@@ -49,9 +49,9 @@ class MediaSessionPlayerObserver;
 class MediaSessionServiceImpl;
 class MediaSessionServiceImplBrowserTest;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class MediaSessionAndroid;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // MediaSessionImpl is the implementation of MediaSession. It manages the media
 // session and audio focus for a given WebContents. It is requesting the audio
@@ -86,10 +86,10 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT void SetDelegateForTests(
       std::unique_ptr<AudioFocusDelegate> delegate);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ClearMediaSessionAndroid();
   MediaSessionAndroid* GetMediaSessionAndroid();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void NotifyMediaSessionMetadataChange();
 
@@ -525,9 +525,9 @@ class MediaSessionImpl : public MediaSession,
   url::Origin origin_;
   absl::optional<std::string> audio_device_id_for_origin_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MediaSessionAndroid> session_android_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // MediaSessionService-related fields
   using ServicesMap =

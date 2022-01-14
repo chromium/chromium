@@ -40,7 +40,7 @@ void MediaInternalsProxy::GetEverything() {
 
   MediaInternals::GetInstance()->SendHistoricalMediaEvents();
   MediaInternals::GetInstance()->SendGeneralAudioInformation();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   MediaInternals::GetInstance()->SendAudioFocusState();
 #endif
   MediaInternals::GetInstance()->GetRegisteredCdms();

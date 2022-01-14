@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -27,7 +28,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #endif
 
@@ -92,7 +93,7 @@ WebContentsFrameTracker::WebContentsFrameTracker(
       device_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(device_task_runner_);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   cursor_controller_ = cursor_controller;
   DCHECK(cursor_controller_);
 #endif
@@ -287,7 +288,7 @@ void WebContentsFrameTracker::SetTargetView(gfx::NativeView view) {
   if (view == target_native_view_)
     return;
   target_native_view_ = view;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   cursor_controller_->SetTargetView(view);
 #endif
 }

@@ -168,14 +168,14 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
   media::VideoCaptureDeviceDescriptor descriptor;
   descriptor.device_id = "dummy";
   descriptor.set_display_name("dummy");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   descriptor.capture_api = media::VideoCaptureApi::MACOSX_AVFOUNDATION;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   descriptor.capture_api = media::VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   descriptor.device_id = "/dev/dummy";
   descriptor.capture_api = media::VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   descriptor.capture_api = media::VideoCaptureApi::ANDROID_API2_LEGACY;
 #endif
   std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
@@ -190,7 +190,7 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
   media_internals()->UpdateVideoCaptureDeviceCapabilities(
       descriptors_and_formats);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ExpectString("id", "/dev/dummy");
 #else
   ExpectString("id", "dummy");
@@ -199,13 +199,13 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
   base::ListValue expected_list;
   expected_list.Append(media::VideoCaptureFormat::ToString(format_hd));
   ExpectListOfStrings("formats", expected_list);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ExpectString("captureApi", "V4L2 SPLANE");
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ExpectString("captureApi", "Direct Show");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   ExpectString("captureApi", "AV Foundation");
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   ExpectString("captureApi", "Camera API2 Legacy");
 #endif
 }
@@ -305,7 +305,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // TODO(https://crbug.com/873320): AudioFocusManager is not available on
 // Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -498,6 +498,6 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   }
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

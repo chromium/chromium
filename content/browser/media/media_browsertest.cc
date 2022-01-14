@@ -29,7 +29,7 @@
 
 namespace content {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Title set by android cleaner page after short timeout.
 const char16_t kClean[] = u"CLEAN";
 #endif
@@ -41,7 +41,7 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kExposeInternalsForTesting);
 
   std::vector<base::Feature> enabled_features = {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
   };
@@ -51,13 +51,13 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     // the fallback path.
     media::kFallbackAfterDecodeError,
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Disable out of process audio on Linux due to process spawn
     // failures. http://crbug.com/986021
     features::kAudioServiceOutOfProcess,
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     media::kDeprecateLowUsageCodecs,
 #endif
   };
@@ -99,7 +99,7 @@ std::string MediaBrowserTest::RunTest(const GURL& gurl,
 }
 
 void MediaBrowserTest::CleanupTest() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // We only do this cleanup on Android, as a workaround for a test-only OOM
   // bug. See http://crbug.com/727542
   const std::u16string cleaner_title = kClean;
@@ -175,7 +175,7 @@ class MediaTest : public testing::WithParamInterface<bool>,
   }
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class AndroidPlayerMediaTest : public MediaTest {
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -193,10 +193,10 @@ INSTANTIATE_TEST_SUITE_P(File,
                          AndroidPlayerMediaTest,
                          ::testing::Values(false));
 INSTANTIATE_TEST_SUITE_P(Http, AndroidPlayerMediaTest, ::testing::Values(true));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Android doesn't support Theora.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearTheora) {
   PlayVideo("bear.ogv", GetParam());
 }
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearTheora) {
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentTheora) {
   PlayVideo("bear_silent.ogv", GetParam());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm) {
   PlayVideo("bear.webm", GetParam());
@@ -227,9 +227,9 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentWebm) {
 }
 
 // We don't expect android devices to support highbit yet.
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_ANDROID)
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/1270792): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_VideoBearHighBitDepthVP9 DISABLED_VideoBearHighBitDepthVP9
 #else
 #define MAYBE_VideoBearHighBitDepthVP9 VideoBearHighBitDepthVP9
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearHighBitDepthVP9) {
 }
 
 // TODO(crbug.com/1222748): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_VideoBear12DepthVP9 DISABLED_VideoBear12DepthVP9
 #else
 #define MAYBE_VideoBear12DepthVP9 VideoBear12DepthVP9
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(MediaTest, VideoBearRotated270) {
   RunVideoSizeTest("bear_rotate_270.mp4", 720, 1280);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Android devices usually only support baseline, main and high.
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthMp4) {
   PlayVideo("bear-320x180-hi10p.mp4", GetParam());
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthMp4) {
 // Android can't reliably load lots of videos on a page.
 // See http://crbug.com/749265
 // TODO(crbug.com/1222852): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadManyVideos DISABLED_LoadManyVideos
 #else
 #define MAYBE_LoadManyVideos LoadManyVideos
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(MediaTest, MAYBE_LoadManyVideos) {
   RunMediaTestPage("load_many_videos.html", query_params, media::kEndedTitle,
                    true);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4) {

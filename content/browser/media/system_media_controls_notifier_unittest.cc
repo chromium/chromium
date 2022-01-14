@@ -15,9 +15,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/idle/scoped_set_idle_state.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -89,13 +89,13 @@ class SystemMediaControlsNotifierTest : public testing::Test {
     return mock_system_media_controls_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::RepeatingTimer& lock_polling_timer() {
     return notifier_->lock_polling_timer_;
   }
 
   base::OneShotTimer& hide_smtc_timer() { return notifier_->hide_smtc_timer_; }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   BrowserTaskEnvironment task_environment_;
@@ -147,7 +147,7 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesImage) {
   SimulateImageChanged();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(SystemMediaControlsNotifierTest, DisablesOnLockAndEnablesOnUnlock) {
   EXPECT_CALL(mock_system_media_controls(), SetEnabled(false));
 
@@ -222,6 +222,6 @@ TEST_F(SystemMediaControlsNotifierTest, DisablesAfterPausingOnLockScreen) {
   // Force the timer to fire now. This should disable the service.
   hide_smtc_timer().FireNow();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

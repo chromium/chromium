@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class AuraWindowVideoCaptureDeviceBrowserTestWin
     : public AuraWindowVideoCaptureDeviceBrowserTest {
  public:

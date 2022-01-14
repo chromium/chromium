@@ -20,12 +20,12 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "media/base/android/media_codec_util.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
 }
 
 // TODO(https://crbug.com/1239633): Flaky on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoAudio_WebM DISABLED_Playback_VideoAudio_WebM
 #else
 #define MAYBE_Playback_VideoAudio_WebM Playback_VideoAudio_WebM
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
 }
 
 // TODO(https://crbug.com/1239633): Flaky on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoAudio_WebM_Opus \
   DISABLED_Playback_VideoAudio_WebM_Opus
 #else
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
 #endif
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
                        MAYBE_Playback_VideoAudio_WebM_Opus) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
 #endif
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
 #endif
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
 #endif
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
 #endif
@@ -302,9 +302,9 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
 }
 
 // TODO(crbug.com/707127): Decide when it's supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1222685
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1270792
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.mp4");
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
 }
 
 // Failed on Android, see https://crbug.com/1014540.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ConfigChangeVideo_ClearToEncrypted \
   DISABLED_ConfigChangeVideo_ClearToEncrypted
 #else
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 }
 
 // Fails on Android (https://crbug.com/778245 and https://crbug.com/1023638).
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FrameSizeChangeVideo DISABLED_FrameSizeChangeVideo
 #else
 #define MAYBE_FrameSizeChangeVideo FrameSizeChangeVideo

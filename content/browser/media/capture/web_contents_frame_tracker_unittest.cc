@@ -155,7 +155,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   // The controller is ignored on Android, and must be initialized on all
   // other platforms.
   MouseCursorOverlayController* controller() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return nullptr;
 #else
     return &controller_;
@@ -166,7 +166,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   StrictMock<MockCaptureDevice>* device() { return device_.get(); }
 
  private:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   MouseCursorOverlayController controller_;
 #endif
 

@@ -33,7 +33,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/task/sequenced_task_runner.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
 #endif
@@ -67,7 +67,7 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       const base::UnguessableToken& overlay_plane_id,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) final;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
@@ -79,14 +79,14 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
           renderer_extension_request) final;
-#endif  // defined(OS_ANDROID)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   void CreateMediaFoundationRenderer(
       mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver) final;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   void CreateCdm(const media::CdmConfig& cdm_config,
                  CreateCdmCallback create_cdm_cb) final;
 
@@ -117,7 +117,7 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
   void OnCdmServiceConnectionError(const media::CdmType& cdm_type);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Callback for for Chrome OS CDM creation to facilitate falling back to the
   // library CDM if the daemon is unavailable or other settings prevent usage of
   // it.
@@ -127,9 +127,9 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
       media::mojom::CdmContextPtr cdm_context,
       const std::string& error_message);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Gets the InterfaceFactory from MediaFoundationService. May return null if
   // MediaFoundationService cannot be used or connection failed.
   InterfaceFactory* GetMediaFoundationServiceInterfaceFactory(
@@ -140,7 +140,7 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       const media::CdmConfig& cdm_config);
 
   mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   mojo::UniqueReceiverSet<media::mojom::FrameInterfaceFactory> frame_factories_;
 

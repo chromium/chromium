@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 }
 
 // This behaviour is specific to desktop.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
                        ControlsNoShowForTransientAndRoutedService) {
@@ -984,7 +984,7 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   EXPECT_TRUE(IsActive());
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
                        ControlsHideWhenStopped) {
@@ -2962,7 +2962,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/1000400): Re-enable this test.
 #define MAYBE_PositionStateRouteWithOnePlayer \
   DISABLED_PositionStateRouteWithOnePlayer
@@ -3239,7 +3239,7 @@ class MediaSessionImplWithBackForwardCacheBrowserTest
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
     std::map<std::string, std::string> params;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     params["process_binding_strength"] = "NORMAL";
 #endif
     enabled_features.emplace_back(features::kBackForwardCache, params);
