@@ -1,0 +1,17 @@
+<!doctype html>
+<title>CSS Values Test: Relative url() with HTML base with dangling href removed</title>
+<link rel="help" href="https://crbug.com/1276384">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<base id="base_elm" href='test/">
+<'>
+<div id="target"></div>
+<script>
+  test(() => {
+    const url_without_base = `url("${new URL("img.gif", location.href)}")`;
+    target.style.listStyleImage = "url(img.gif)";
+    base_elm.remove();
+    assert_equals(getComputedStyle(target).listStyleImage, url_without_base,
+                  "The url is re-resolved after the base change");
+  }, "Removing the base element should not crash.");
+</script>
