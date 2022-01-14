@@ -294,8 +294,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
 }
 
 // Verifies that when the URL of the document to commit is `blob:.*`, the
-// bundle's final policies are copied from the initiator, with the exception of
-// cross-origin-opener-policy.
+// bundle's final policies are copied from the initiator.
 TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesBlobWithInitiator) {
   std::unique_ptr<PolicyContainerPolicies> initiator_policies =
       MakeTestPolicies();
@@ -306,15 +305,8 @@ TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesBlobWithInitiator) {
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
 
-  // Set a delivered cross-origin-opener-policy.
-  network::CrossOriginOpenerPolicy coop;
-  coop.value = network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
-  bundle.SetCrossOriginOpenerPolicy(coop);
-
   bundle.ComputePolicies(
       GURL("blob:https://example.com/016ece86-b7f9-4b07-88c2-a0e36b7f1dd6"));
-
-  initiator_policies->cross_origin_opener_policy = coop;
 
   EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }

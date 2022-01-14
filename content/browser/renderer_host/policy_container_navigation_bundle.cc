@@ -199,14 +199,6 @@ PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
     policies->ip_address_space = delivered_policies_->ip_address_space;
   }
 
-  // Ignore inheritance of COOP for blobs or filesystem schemes as this
-  // conflicts with COEP.
-  // TODO(https://crbug.com/1057296) properly implement inheritance for blobs
-  if (url.SchemeIs(url::kBlobScheme) || url.SchemeIs(url::kFileSystemScheme)) {
-    policies->cross_origin_opener_policy =
-        delivered_policies_->cross_origin_opener_policy;
-  }
-
   return policies;
 }
 

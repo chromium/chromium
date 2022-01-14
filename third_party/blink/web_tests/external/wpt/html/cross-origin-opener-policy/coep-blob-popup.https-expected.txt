@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL COOP+COEP blob URL popup: window.open() assert_true: opener expected true got false
-FAIL COOP+COEP blob URL popup: <a> assert_true: opener expected true got false
-PASS COOP+COEP blob URL popup: <a rel=noopener>
-Harness: the test ran to completion.
-
