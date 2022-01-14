@@ -248,7 +248,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
   imageHeightConstraint.active = YES;
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewDidDisappear:(BOOL)animated {
   if (self.navigationBar) {
     self.navigationItem.rightBarButtonItem = nil;
     [self.navigationBar setBackgroundImage:nil
