@@ -65,7 +65,7 @@ GetActiveFieldTrialsAllowedForFetch() {
 }
 
 std::string FilePathToString(const base::FilePath& file_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(file_path.value());
 #else
   return file_path.value();
@@ -90,7 +90,7 @@ absl::optional<
     std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
 GetModelOverrideForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug/1227996): The parsing below is not supported on Windows because
   // ':' is used as a delimiter, but this must be used in the absolute file path
   // on Windows.

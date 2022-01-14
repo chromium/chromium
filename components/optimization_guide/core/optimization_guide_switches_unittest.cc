@@ -14,7 +14,7 @@
 namespace optimization_guide {
 namespace switches {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 TEST(OptimizationGuideSwitchesTest, ParseHintsFetchOverrideFromCommandLine) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kFetchHintsOverride,

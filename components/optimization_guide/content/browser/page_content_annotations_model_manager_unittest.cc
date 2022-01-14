@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/page_entities_model_executor.h"
@@ -563,7 +564,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 // TODO(crbug.com/1286473): Flaky on Chrome OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BatchAnnotate_PageTopics DISABLED_BatchAnnotate_PageTopics
 #else
 #define MAYBE_BatchAnnotate_PageTopics BatchAnnotate_PageTopics
@@ -670,7 +671,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
 }
 
 // TODO(crbug.com/1286473): Flaky on Chrome OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BatchAnnotate_PageVisibility DISABLED_BatchAnnotate_PageVisibility
 #else
 #define MAYBE_BatchAnnotate_PageVisibility BatchAnnotate_PageVisibility
@@ -759,7 +760,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 // TODO(crbug.com/1286473): Flaky on Chrome OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BatchAnnotate_CalledTwice DISABLED_BatchAnnotate_CalledTwice
 #else
 #define MAYBE_BatchAnnotate_CalledTwice BatchAnnotate_CalledTwice

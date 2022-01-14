@@ -191,7 +191,7 @@ bool ShouldValidateModel() {
 }
 
 absl::optional<std::string> GetModelOverride() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug/1227996): The parsing below is not supported on Windows because
   // ':' is used as a delimiter, but this must be used in the absolute file path
   // on Windows.

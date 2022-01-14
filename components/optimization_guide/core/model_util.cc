@@ -64,7 +64,7 @@ absl::optional<base::FilePath> StringToFilePath(const std::string& str_path) {
   if (str_path.empty())
     return absl::nullopt;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(str_path));
 #else
   return base::FilePath(str_path);

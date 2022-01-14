@@ -20,7 +20,7 @@ namespace {
 // TODO(crbug.com/1283494): Remove this duplicate implementation when
 // model_util.cc is stablized and this function can be moved there.
 std::string FilePathToString(const base::FilePath& file_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(file_path.value());
 #else
   return file_path.value();

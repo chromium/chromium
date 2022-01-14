@@ -29,11 +29,11 @@ namespace features {
 // hints for what optimizations can be applied on a page load.
 const base::Feature kOptimizationHints {
   "OptimizationHints",
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       base::FEATURE_DISABLED_BY_DEFAULT
-#else   // !defined(OS_IOS)
+#else   // !BUILDFLAG(IS_IOS)
       base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 // Feature flag that contains a feature param that specifies the field trials
@@ -47,11 +47,11 @@ const base::Feature kRemoteOptimizationGuideFetching{
 
 const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent {
   "OptimizationHintsFetchingAnonymousDataConsent",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
-#else   // !defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 // Enables performance info in the context menu and fetching from a remote
@@ -505,7 +505,7 @@ bool ShouldMetadataValidationFetchHostKeyed() {
 bool ShouldDeferStartupActiveTabsHintsFetch() {
   return GetFieldTrialParamByFeatureAsBool(
       kOptimizationHints, "defer_startup_active_tabs_hints_fetch",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       true
 #else
       false

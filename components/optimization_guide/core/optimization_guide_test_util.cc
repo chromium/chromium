@@ -9,7 +9,7 @@
 
 namespace optimization_guide {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kTestAbsoluteFilePath[] = "C:\\absolute/file/path";
 const char kTestRelativeFilePath[] = "relative/file/path";
 #else

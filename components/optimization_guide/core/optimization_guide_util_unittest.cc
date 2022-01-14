@@ -63,7 +63,7 @@ TEST(OptimizationGuideUtilTest, ParsedAnyMetadataTest) {
   EXPECT_TRUE(parsed_subresource.preconnect_only());
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 TEST(OptimizationGuideUtilTest,
      GetModelOverrideForOptimizationTargetSwitchNotSet) {
