@@ -114,7 +114,7 @@ bool HardwareVideoDecodingPreSandboxHook(
       return false;
     }
   }
-#elif BUILDFLAG(USE_LIBV4L2)
+#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(USE_LIBV4L2)
 #if defined(__aarch64__)
   dlopen("/usr/lib64/libv4l2.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
 #else
