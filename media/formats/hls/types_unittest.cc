@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/formats/hls/types.h"
+#include "base/location.h"
 #include "media/formats/hls/parse_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -10,19 +11,23 @@ namespace media {
 namespace hls {
 
 TEST(HlsFormatParserTest, ParseDecimalIntegerTest) {
-  auto const error_test = [](base::StringPiece input) {
+  auto const error_test = [](base::StringPiece input,
+                             const base::Location& from =
+                                 base::Location::Current()) {
     auto result =
         types::ParseDecimalInteger(SourceString::CreateForTesting(1, 1, input));
-    EXPECT_TRUE(result.has_error());
+    ASSERT_TRUE(result.has_error()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalInteger);
   };
 
   auto const ok_test = [](base::StringPiece input,
-                          types::DecimalInteger expected) {
+                          types::DecimalInteger expected,
+                          const base::Location& from =
+                              base::Location::Current()) {
     auto result =
         types::ParseDecimalInteger(SourceString::CreateForTesting(1, 1, input));
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value()) << from.ToString();
     auto value = std::move(result).value();
     EXPECT_EQ(value, expected);
   };
@@ -60,20 +65,24 @@ TEST(HlsFormatParserTest, ParseDecimalIntegerTest) {
 }
 
 TEST(HlsFormatParserTest, ParseDecimalFloatingPointTest) {
-  auto const error_test = [](base::StringPiece input) {
+  auto const error_test = [](base::StringPiece input,
+                             const base::Location& from =
+                                 base::Location::Current()) {
     auto result = types::ParseDecimalFloatingPoint(
         SourceString::CreateForTesting(1, 1, input));
-    EXPECT_TRUE(result.has_error());
+    ASSERT_TRUE(result.has_error()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(),
               ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   };
 
   auto const ok_test = [](base::StringPiece input,
-                          types::DecimalFloatingPoint expected) {
+                          types::DecimalFloatingPoint expected,
+                          const base::Location& from =
+                              base::Location::Current()) {
     auto result = types::ParseDecimalFloatingPoint(
         SourceString::CreateForTesting(1, 1, input));
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value()) << from.ToString();
     auto value = std::move(result).value();
     EXPECT_DOUBLE_EQ(value, expected);
   };
@@ -108,20 +117,24 @@ TEST(HlsFormatParserTest, ParseDecimalFloatingPointTest) {
 }
 
 TEST(HlsFormatParserTest, ParseSignedDecimalFloatingPointTest) {
-  auto const error_test = [](base::StringPiece input) {
+  auto const error_test = [](base::StringPiece input,
+                             const base::Location& from =
+                                 base::Location::Current()) {
     auto result = types::ParseSignedDecimalFloatingPoint(
         SourceString::CreateForTesting(1, 1, input));
-    EXPECT_TRUE(result.has_error());
+    ASSERT_TRUE(result.has_error()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(),
               ParseStatusCode::kFailedToParseSignedDecimalFloatingPoint);
   };
 
   auto const ok_test = [](base::StringPiece input,
-                          types::SignedDecimalFloatingPoint expected) {
+                          types::SignedDecimalFloatingPoint expected,
+                          const base::Location& from =
+                              base::Location::Current()) {
     auto result = types::ParseSignedDecimalFloatingPoint(
         SourceString::CreateForTesting(1, 1, input));
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value()) << from.ToString();
     auto value = std::move(result).value();
     EXPECT_DOUBLE_EQ(value, expected);
   };
@@ -155,6 +168,244 @@ TEST(HlsFormatParserTest, ParseSignedDecimalFloatingPointTest) {
   ok_test("-75.", -75.0);
   ok_test("12312309123.908908234", 12312309123.908908234);
   ok_test("0000000.000001", 0.000001);
+}
+
+TEST(HlsFormatParserTest, AttributeListIteratorTest) {
+  using Items =
+      std::initializer_list<std::pair<base::StringPiece, base::StringPiece>>;
+
+  auto run_test = [](auto str, Items items, ParseStatusCode error,
+                     const auto& from) {
+    types::AttributeListIterator iter(SourceString::CreateForTesting(str));
+    for (auto item : items) {
+      auto result = iter.Next();
+      ASSERT_TRUE(result.has_value()) << from.ToString();
+      auto value = std::move(result).value();
+      EXPECT_EQ(value.name.Str(), item.first);
+      EXPECT_EQ(value.value.Str(), item.second);
+    }
+
+    // Afterwards, iterator should fail
+    auto result = iter.Next();
+    ASSERT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(), error);
+    result = iter.Next();
+    ASSERT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(), error);
+  };
+
+  // Checks for valid items, followed by an error
+  auto error_test = [=](auto str, Items items,
+                        const base::Location& from =
+                            base::Location::Current()) {
+    run_test(str, items, ParseStatusCode::kMalformedAttributeList, from);
+  };
+
+  // Checks for valid items, followed by EOF
+  auto ok_test = [=](auto str, Items items,
+                     const base::Location& from = base::Location::Current()) {
+    run_test(str, items, ParseStatusCode::kReachedEOF, from);
+  };
+
+  ok_test("", {});
+  ok_test(R"(HELLO=WORLD)", {{"HELLO", "WORLD"}});
+  ok_test(R"(HELLO=WORLD,)", {{"HELLO", "WORLD"}});
+  ok_test(R"(HELLO="WORLD")", {{"HELLO", "\"WORLD\""}});
+  ok_test(R"(HE-LLO=foo,WORLD=2134)", {{"HE-LLO", "foo"}, {"WORLD", "2134"}});
+  ok_test(R"(-HELLO-="",WORLD=.21-34,)",
+          {{"-HELLO-", "\"\""}, {"WORLD", ".21-34"}});
+  ok_test(R"(1HELLO=".zxc09,1,23%${}",2WORLD=3)",
+          {{"1HELLO", "\".zxc09,1,23%${}\""}, {"2WORLD", "3"}});
+  ok_test(R"(HELLO=" W O R L D ")", {{"HELLO", "\" W O R L D \""}});
+  ok_test(R"(HELLO="x",WORLD="y")", {{"HELLO", "\"x\""}, {"WORLD", "\"y\""}});
+
+  // Attribute names may not be empty
+  error_test(R"(=BAR,HELLO=WORLD)", {});
+
+  // Attribute values may not be empty
+  error_test(R"(FOO=,HELLO=WORLD)", {});
+  error_test(R"(FOO=BAR,HELLO=)", {{"FOO", "BAR"}});
+
+  // Attribute names may not have lowercase letters
+  error_test(R"(FOO=BAR,HeLLO=WORLD)", {{"FOO", "BAR"}});
+  error_test(R"(FOO=BAR,hello=WORLD)", {{"FOO", "BAR"}});
+
+  // Attribute names may not have other characters
+  error_test(R"(FOO=BAR,HEL.LO=WORLD)", {{"FOO", "BAR"}});
+  error_test(R"(FOO=BAR,HEL$LO=WORLD)", {{"FOO", "BAR"}});
+  error_test(R"(FOO=BAR,HEL(LO=WORLD)", {{"FOO", "BAR"}});
+
+  // Attribute names may not have leading, trailing, or interior whitespace
+  error_test(R"(FOO=BAR, HELLO=WORLD)", {{"FOO", "BAR"}});
+  error_test(R"(FOO=BAR,HELLO =WORLD)", {{"FOO", "BAR"}});
+  error_test(R"(FOO=BAR,HE LLO=WORLD)", {{"FOO", "BAR"}});
+
+  // Attribute names must be followed by an equals sign
+  error_test(R"(FOO=BAR,HELLOWORLD,)", {{"FOO", "BAR"}});
+
+  // Attribute values may not contain leading, interior, or trailing whitespace
+  error_test(R"(FOO=BAR,HELLO= WORLD,)", {{"FOO", "BAR"}});
+  error_test(R"(FOO=BAR,HELLO=WO RLD,)", {{"FOO", "BAR"}});
+  error_test(R"(FOO=BAR,HELLO=WORLD ,)", {{"FOO", "BAR"}});
+
+  // Leading commas are not allowed
+  error_test(R"(,FOO=BAR,HELLO=WORLD,)", {});
+
+  // A single trailing comma is allowed, multiple are not
+  error_test(R"(FOO=BAR,HELLO=WORLD,,)", {{"FOO", "BAR"}, {"HELLO", "WORLD"}});
+
+  // Single-quotes are not allowed unquoted
+  error_test(R"(FOO='hahaha')", {});
+  ok_test(R"(FOO="'hahaha'")", {{"FOO", "\"'hahaha'\""}});
+
+  // Unmatched double-quote is not allowed
+  error_test(R"(FOO=")", {});
+  error_test(R"(FOO=BAR"BAZ)", {});
+  error_test(R"(FOO=BAR")", {});
+
+  // Double-quote (even escaped) inside double-quotes is not allowed
+  error_test(R"(FOO=""")", {});
+  error_test(R"(FOO="\"")", {});
+
+  // Empty quoted-string is allowed
+  ok_test(R"(FOO="")", {{"FOO", "\"\""}});
+
+  // Tabs inside quotes are allowed
+  ok_test("FOO=\"\t\"", {{"FOO", "\"\t\""}});
+
+  // Linefeed or carriage return inside quotes are not allowed
+  error_test("FOO=\"as\rdf\"", {});
+  error_test("FOO=\"as\ndf\"", {});
+}
+
+TEST(HlsFormatParserTest, AttributeMapTest) {
+  auto make_iter = [](auto str) {
+    return types::AttributeListIterator(SourceString::CreateForTesting(str));
+  };
+
+  auto run_fill = [](auto& storage, auto* iter) {
+    types::AttributeMap map(storage);
+    return map.Fill(iter);
+  };
+
+  // Test that AttributeMap fills all entries
+  {
+    auto storage = types::AttributeMap::MakeStorage("BAR", "BAZ", "FOO");
+    auto iter = make_iter("FOO=foo,BAR=bar,BAZ=baz");
+
+    auto result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(), ParseStatusCode::kReachedEOF);
+
+    EXPECT_TRUE(storage[0].second.has_value());
+    EXPECT_EQ(storage[0].second.value().Str(), "bar");
+    EXPECT_TRUE(storage[1].second.has_value());
+    EXPECT_EQ(storage[1].second.value().Str(), "baz");
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "foo");
+  }
+
+  // Test that AttributeMap doesn't touch missing entries
+  {
+    auto storage = types::AttributeMap::MakeStorage("CAR", "CAZ", "COO", "GOO");
+    auto iter = make_iter("COO=coo,CAR=car,CAZ=caz");
+
+    auto result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(), ParseStatusCode::kReachedEOF);
+
+    EXPECT_TRUE(storage[0].second.has_value());
+    EXPECT_EQ(storage[0].second.value().Str(), "car");
+    EXPECT_TRUE(storage[1].second.has_value());
+    EXPECT_EQ(storage[1].second.value().Str(), "caz");
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "coo");
+    EXPECT_FALSE(storage[3].second.has_value());
+  }
+
+  // Test that attribute map returns unexpected entries
+  {
+    auto storage = types::AttributeMap::MakeStorage("DAR", "DAZ", "DOO");
+    auto iter = make_iter("DOO=doo,GOO=goo,DAR=dar,DAZ=daz,");
+
+    auto result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_value());
+    auto item = std::move(result).value();
+    EXPECT_EQ(item.name.Str(), "GOO");
+    EXPECT_EQ(item.value.Str(), "goo");
+
+    EXPECT_FALSE(storage[0].second.has_value());
+    EXPECT_FALSE(storage[1].second.has_value());
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "doo");
+
+    result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(), ParseStatusCode::kReachedEOF);
+
+    EXPECT_TRUE(storage[0].second.has_value());
+    EXPECT_EQ(storage[0].second.value().Str(), "dar");
+    EXPECT_TRUE(storage[1].second.has_value());
+    EXPECT_EQ(storage[1].second.value().Str(), "daz");
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "doo");
+  }
+
+  // Test that the attribute map handles duplicate entries
+  {
+    auto storage = types::AttributeMap::MakeStorage("EAR", "EAZ", "EOO");
+    auto iter = make_iter("EOO=eoo,EAR=ear,EOO=eoo2,EAZ=eaz,");
+
+    auto result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(),
+              ParseStatusCode::kAttributeListHasDuplicateNames);
+
+    EXPECT_TRUE(storage[0].second.has_value());
+    EXPECT_EQ(storage[0].second.value().Str(), "ear");
+    EXPECT_FALSE(storage[1].second.has_value());
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "eoo");
+
+    // Calling again should result in the same error
+    result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(),
+              ParseStatusCode::kAttributeListHasDuplicateNames);
+
+    EXPECT_TRUE(storage[0].second.has_value());
+    EXPECT_EQ(storage[0].second.value().Str(), "ear");
+    EXPECT_FALSE(storage[1].second.has_value());
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "eoo");
+  }
+
+  // Test that the attribute map forwards errors to the caller
+  {
+    auto storage = types::AttributeMap::MakeStorage("FAR", "FAZ", "FOO");
+    auto iter = make_iter("FOO=foo,FAR=far   ,FAZ=faz,");
+
+    auto result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(),
+              ParseStatusCode::kMalformedAttributeList);
+
+    EXPECT_FALSE(storage[0].second.has_value());
+    EXPECT_FALSE(storage[1].second.has_value());
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "foo");
+
+    // Calling again should return same error
+    result = run_fill(storage, &iter);
+    EXPECT_TRUE(result.has_error());
+    EXPECT_EQ(std::move(result).error().code(),
+              ParseStatusCode::kMalformedAttributeList);
+
+    EXPECT_FALSE(storage[0].second.has_value());
+    EXPECT_FALSE(storage[1].second.has_value());
+    EXPECT_TRUE(storage[2].second.has_value());
+    EXPECT_EQ(storage[2].second.value().Str(), "foo");
+  }
 }
 
 }  // namespace hls

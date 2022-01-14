@@ -42,6 +42,15 @@ SourceString SourceString::Substr(size_t pos, size_t count) const {
   return SourceString(line_, column, str_.substr(pos, count));
 }
 
+SourceString SourceString::Consume(size_t count) {
+  count = std::min(count, str_.size());
+
+  auto consumed = Substr(0, count);
+  *this = Substr(count);
+
+  return consumed;
+}
+
 SourceLineIterator::SourceLineIterator(base::StringPiece source)
     : current_line_(1), source_(source) {}
 

@@ -318,6 +318,15 @@ fuzzer_test("hls_items_fuzzer") {
   ]
 }
 
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_attribute_list_fuzzer") {
+  sources = [ "hls/attribute_list_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
 if (proprietary_codecs) {
   fuzzer_test("h264_annex_b_converter_fuzzer") {
     sources = [ "mp4/h264_annex_b_to_avc_bitstream_converter_fuzztest.cc" ]
