@@ -8478,6 +8478,25 @@
             ]
         }
     ],
+    "V8VirtualMemoryCage": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8VirtualMemoryCage"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8WasmDynamicTiering": [
         {
             "platforms": [
