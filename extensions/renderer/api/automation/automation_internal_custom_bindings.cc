@@ -901,9 +901,9 @@ void AutomationInternalCustomBindings::AddRoutes() {
         if (GetRootOfChildTree(&node, &tree_wrapper)) {
           child_ids.push_back(node->id());
         } else {
-          size_t child_count = node->GetUnignoredChildCount();
-          for (size_t i = 0; i < child_count; ++i)
-            child_ids.push_back(node->GetUnignoredChildAtIndex(i)->id());
+          for (auto iter = node->UnignoredChildrenBegin();
+               iter != node->UnignoredChildrenEnd(); ++iter)
+            child_ids.push_back(iter->id());
         }
 
         gin::DataObjectBuilder response(isolate);
@@ -2251,9 +2251,11 @@ bool AutomationInternalCustomBindings::GetRootOfChildTree(
 ui::AXNode* AutomationInternalCustomBindings::GetNextInTreeOrder(
     ui::AXNode* start,
     AutomationAXTreeWrapper** in_out_tree_wrapper) const {
+  auto iter = start->UnignoredChildrenBegin();
+  if (iter != start->UnignoredChildrenEnd())
+    return &(*iter);
+
   ui::AXNode* walker = start;
-  if (walker->GetUnignoredChildCount())
-    return walker->GetUnignoredChildAtIndex(0);
 
   // We also have to check child tree id.
   if (GetRootOfChildTree(&walker, in_out_tree_wrapper))
@@ -2262,6 +2264,7 @@ ui::AXNode* AutomationInternalCustomBindings::GetNextInTreeOrder(
   // Find the next branch forward.
   ui::AXNode* parent;
   while ((parent = GetParent(walker, in_out_tree_wrapper))) {
+    // TODO(accessibility): convert below to use UnignoredChildIterator.
     if ((walker->GetUnignoredIndexInParent() + 1) <
         parent->GetUnignoredChildCount()) {
       return parent->GetUnignoredChildAtIndex(
@@ -2293,9 +2296,10 @@ ui::AXNode* AutomationInternalCustomBindings::GetPreviousInTreeOrder(
 
   // Walks to deepest last child.
   while (true) {
-    if (walker->GetUnignoredChildCount()) {
-      walker = walker->GetUnignoredChildAtIndex(
-          walker->GetUnignoredChildCount() - 1);
+    auto iter = walker->UnignoredChildrenBegin();
+    if (iter != walker->UnignoredChildrenEnd() &&
+        --iter != walker->UnignoredChildrenEnd()) {
+      walker = &(*iter);
     } else if (!GetRootOfChildTree(&walker, in_out_tree_wrapper)) {
       break;
     }
