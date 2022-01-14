@@ -491,8 +491,6 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       // Allow only terminal_ssh.html in Terminal System Web App.
-      // TODO(crbug.com/1283153): remove nassh.html when the migration is done.
-      "chrome-untrusted://terminal/html/nassh.html",
       "chrome-untrusted://terminal/html/terminal_ssh.html"
     ]
   }],
@@ -563,8 +561,6 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       // Allow only terminal_ssh.html in Terminal System Web App.
-      // TODO(1283153): remove nassh.html when the migration is done.
-      "chrome-untrusted://terminal/html/nassh.html",
       "chrome-untrusted://terminal/html/terminal_ssh.html"
     ]
   }],

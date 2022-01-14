@@ -123,17 +123,8 @@ void TerminalSource::StartDataRequest(
   if (path.empty())
     path = default_file_;
 
-  // TODO(crbug.com/1283153): Remove this redirect when the migration is
-  // complete.
-  if (path == "html/nassh.html") {
-    path = "html/terminal_ssh.html";
-  }
-
-  // Refresh the $i8n{themeColor} replacement for css and html files.
-  if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)
-      // TODO(crbug.com/1283153): We don't need to do it for html files when the
-      // migration is complete and we don't use nassh.html any more.
-      || base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII)) {
+  // Refresh the $i8n{themeColor} replacement for css files.
+  if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     replacements_["themeColor"] = net::EscapeForHTML(
         crostini::GetTerminalSettingBackgroundColor(profile_));
   }
