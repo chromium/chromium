@@ -110,6 +110,11 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // Saves |window_info| to |profile_path_to_restore_data_|.
   void SaveWindowInfo(const app_restore::WindowInfo& window_info);
 
+  // Invoked when Lacros window is created. `browser_session_id` is the
+  // current browser session id for `window`.
+  void OnLacrosBrowserWindowAdded(aura::Window* const window,
+                                  uint32_t browser_session_id);
+
   // Invoked when an Chrome app Lacros window is created. `app_id` is the
   // AppService id, and `window_id` is the wayland app_id property for the
   // window.

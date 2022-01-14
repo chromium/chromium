@@ -11,6 +11,7 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -201,7 +202,10 @@ void OnLacrosWindowAdded(aura::Window* const window,
     return;
   }
 
-  // TODO(https://crbug.com/1239984): Save and restore Lacros windows.
+  full_restore::FullRestoreSaveHandler::GetInstance()
+      ->OnLacrosBrowserWindowAdded(window, browser_session_id);
+
+  // TODO(https://crbug.com/1239984): Restore Lacros windows.
 }
 
 }  // namespace app_restore

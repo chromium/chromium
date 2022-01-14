@@ -31,6 +31,12 @@ LacrosSaveHandler::~LacrosSaveHandler() = default;
 
 void LacrosSaveHandler::OnWindowInitialized(aura::Window* window) {
   const std::string lacros_window_id = GetLacrosWindowId(window);
+
+  // If `window` has been saved by OnBrowserWindowAdded, we don't need to save
+  // again.
+  if (base::Contains(window_candidates_, lacros_window_id))
+    return;
+
   std::string app_id;
   int32_t window_id = ++window_id_;
   std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info;
@@ -68,6 +74,39 @@ void LacrosSaveHandler::OnWindowDestroyed(aura::Window* window) {
       profile_path_, it->second.app_id, it->second.window_id);
 
   window_candidates_.erase(it);
+}
+
+void LacrosSaveHandler::OnBrowserWindowAdded(aura::Window* const window,
+                                             uint32_t browser_session_id) {
+  const std::string lacros_window_id = GetLacrosWindowId(window);
+  std::unique_ptr<app_restore::WindowInfo> window_info;
+  auto* save_handler = FullRestoreSaveHandler::GetInstance();
+  DCHECK(save_handler);
+
+  auto it = window_candidates_.find(lacros_window_id);
+  if (it != window_candidates_.end() &&
+      it->second.window_id != browser_session_id) {
+    // If the window has been created and saved using different window id, get
+    // the current window info, then remove the restore data for the old window
+    // id, and re-save the restore data with the new `browser_session_id`.
+    window_info = save_handler->GetWindowInfo(profile_path_, it->second.app_id,
+                                              it->second.window_id);
+
+    save_handler->RemoveAppRestoreData(profile_path_, it->second.app_id,
+                                       it->second.window_id);
+  }
+
+  window_candidates_[lacros_window_id].app_id = extension_misc::kLacrosAppId;
+  window_candidates_[lacros_window_id].window_id = browser_session_id;
+
+  save_handler->AddAppLaunchInfo(
+      profile_path_, std::make_unique<app_restore::AppLaunchInfo>(
+                         extension_misc::kLacrosAppId, browser_session_id));
+
+  if (window_info) {
+    save_handler->ModifyWindowInfo(profile_path_, extension_misc::kLacrosAppId,
+                                   browser_session_id, *window_info);
+  }
 }
 
 void LacrosSaveHandler::OnAppWindowAdded(const std::string& app_id,

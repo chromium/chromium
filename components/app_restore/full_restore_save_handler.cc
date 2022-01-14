@@ -333,6 +333,13 @@ void FullRestoreSaveHandler::SaveWindowInfo(
   ModifyWindowInfo(window_id, window_info);
 }
 
+void FullRestoreSaveHandler::OnLacrosBrowserWindowAdded(
+    aura::Window* const window,
+    uint32_t browser_session_id) {
+  if (lacros_save_handler_)
+    lacros_save_handler_->OnBrowserWindowAdded(window, browser_session_id);
+}
+
 void FullRestoreSaveHandler::OnLacrosChromeAppWindowAdded(
     const std::string& app_id,
     const std::string& window_id) {
