@@ -184,7 +184,8 @@ void SupportToolHandler::ExportIntoTempDir(
 
   for (auto& data_collector : data_collectors_) {
     data_collector->ExportCollectedDataWithPII(
-        pii_types_to_keep, temp_dir_,
+        pii_types_to_keep, temp_dir_, task_runner_for_redaction_tool_,
+        redaction_tool_container_,
         base::BindOnce(&SupportToolHandler::OnDataCollectorDoneExporting,
                        weak_ptr_factory_.GetWeakPtr(),
                        export_data_barrier_closure));

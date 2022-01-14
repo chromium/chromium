@@ -69,6 +69,8 @@ class DataCollector {
   virtual void ExportCollectedDataWithPII(
       std::set<feedback::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
+      scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
+      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) = 0;
 };
 

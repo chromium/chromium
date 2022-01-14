@@ -51,6 +51,8 @@ class SystemLogSourceDataCollectorAdaptor : public DataCollector {
   void ExportCollectedDataWithPII(
       std::set<feedback::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
+      scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
+      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:
@@ -62,7 +64,17 @@ class SystemLogSourceDataCollectorAdaptor : public DataCollector {
       std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response);
 
   void OnPIIDetected(DataCollectorDoneCallback on_data_collected_callback,
-                     PIIMap detected_pii);
+                     std::pair<std::unique_ptr<system_logs::SystemLogsResponse>,
+                               PIIMap> detection_result);
+
+  void OnPIIRedacted(
+      base::FilePath target_directory,
+      DataCollectorDoneCallback on_exported_callback,
+      std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response);
+
+  void OnFilesWritten(base::FilePath target_directory,
+                      DataCollectorDoneCallback on_exported_callback,
+                      bool success);
 
   SEQUENCE_CHECKER(sequence_checker_);
   // Description for the DataCollector.
