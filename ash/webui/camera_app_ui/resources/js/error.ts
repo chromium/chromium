@@ -45,7 +45,7 @@ function toStackFrame(callsite: CallSite): StackFrame {
  */
 function getStackFrames(error: Error): StackFrame[]|null {
   const prevPrepareStackTrace = Error.prepareStackTrace;
-  Error.prepareStackTrace = (error, stack) => {
+  Error.prepareStackTrace = (_error, stack) => {
     try {
       return stack.map(toStackFrame);
     } catch (e) {

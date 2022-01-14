@@ -620,7 +620,7 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
   }
 
   updateValues(
-      deviceId: string, stream: MediaStream, facing: Facing,
+      deviceId: string, _stream: MediaStream, _facing: Facing,
       resolution: Resolution): void {
     this.deviceId = deviceId;
     this.prefResolution.set(deviceId, resolution);

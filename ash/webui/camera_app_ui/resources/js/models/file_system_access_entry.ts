@@ -140,9 +140,7 @@ export interface DirectoryAccessEntry {
  * The directory entry implementation for SWA.
  */
 export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
-  constructor(
-      private readonly handle: FileSystemDirectoryHandle,
-      private readonly parent: DirectoryAccessEntryImpl|null = null) {}
+  constructor(private readonly handle: FileSystemDirectoryHandle) {}
 
   get name(): string {
     return this.handle.name;
@@ -162,7 +160,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     const results = [];
     for await (const handle of this.handle.values()) {
       if (handle.kind === 'directory') {
-        results.push(new DirectoryAccessEntryImpl(handle, this));
+        results.push(new DirectoryAccessEntryImpl(handle));
       }
     }
     return results;
@@ -208,7 +206,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
       const handle = await this.handle.getDirectoryHandle(
           name, {create: createIfNotExist});
       assert(handle !== null);
-      return new DirectoryAccessEntryImpl(handle, this);
+      return new DirectoryAccessEntryImpl(handle);
     } catch (error) {
       if (!createIfNotExist && error.name === 'NotFoundError') {
         return null;

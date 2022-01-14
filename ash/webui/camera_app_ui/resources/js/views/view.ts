@@ -105,8 +105,7 @@ export class View {
    * @param key Key to be handled.
    * @return Whether the key has been handled or not.
    */
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  handlingKey(key: string): boolean {
+  handlingKey(_key: string): boolean {
     return false;
   }
 
@@ -146,8 +145,7 @@ export class View {
    * Hook of the subclass for entering the view.
    * @param options Optional rest parameters for entering the view.
    */
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  entering(options?: EnterOptions): void {
+  entering(_options?: EnterOptions): void {
     // To be overridden by subclasses.
   }
 
@@ -171,8 +169,7 @@ export class View {
    * @param condition Optional condition for leaving the view.
    * @return Whether able to leaving the view or not.
    */
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  leaving(condition?: unknown): boolean {
+  leaving(_condition?: unknown): boolean {
     return true;
   }
 
