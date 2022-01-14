@@ -28,7 +28,7 @@ extern const char kPreferredLanguagesSyncable[];
 // the user selected, if applicable.
 extern const char kApplicationLocale[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAppLanguagePromptShown[];
 #endif
 

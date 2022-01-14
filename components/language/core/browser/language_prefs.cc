@@ -48,7 +48,7 @@ void LanguagePrefs::RegisterProfilePrefs(
       language::prefs::kPreferredLanguagesSyncable, "",
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       language::prefs::kAppLanguagePromptShown, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
