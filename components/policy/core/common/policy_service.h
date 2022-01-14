@@ -20,7 +20,7 @@ namespace policy {
 
 class ConfigurationPolicyProvider;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace android {
 class PolicyServiceAndroid;
 }
@@ -128,7 +128,7 @@ class POLICY_EXPORT PolicyService {
   // GetPolicies() is guaranteed to return the updated values at that point.
   virtual void RefreshPolicies(base::OnceClosure callback) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Get the PolicyService JNI bridge instance.
   virtual android::PolicyServiceAndroid* GetPolicyServiceAndroid() = 0;
 #endif

@@ -480,7 +480,7 @@ TEST_F(URLBlocklistManagerTest, DefaultBlocklistExceptions) {
   EXPECT_FALSE(
       blocklist.IsURLBlocked(GURL("chrome-search://most-visited/title.html")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome-native://ntp")));
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Ensure that the NTP is not blocked on iOS by "*".
   // TODO(crbug.com/1073291): On iOS, the NTP can not be blocked even by
   // explicitly listing it as a blocked URL. This is due to the usage of

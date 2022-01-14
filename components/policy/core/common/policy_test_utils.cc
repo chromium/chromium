@@ -16,7 +16,7 @@
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/mac/scoped_cftyperef.h"
@@ -50,14 +50,14 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
     for (auto it = map.begin(); it != map.end(); ++it)
       dict.SetKey(it->first, it->second.value()->Clone());
     LOG(WARNING) << "There are pre-existing policies in this machine: " << dict;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     LOG(WARNING) << "From: " << kRegistryChromePolicyKey;
 #endif
   }
   return map.empty();
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 CFPropertyListRef ValueToProperty(const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::NONE:
@@ -124,7 +124,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
 
   return NULL;
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace policy
 

@@ -332,19 +332,19 @@ class PolicyTestCase {
   }
 
   bool IsOsSupported() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const std::string os("android");
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
     const std::string os("chromeos_ash");
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     const std::string os("chromeos_lacros");
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
     const std::string os("ios");
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
     const std::string os("linux");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     const std::string os("mac");
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     const std::string os("win");
 #else
 #error "Unknown platform"
@@ -353,7 +353,7 @@ class PolicyTestCase {
   }
 
   bool IsOsCovered() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     return base::Contains(supported_os_, "chromeos_ash") ||
            base::Contains(supported_os_, "chromeos_lacros");
 #else
@@ -482,9 +482,9 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
                        const base::Value& policies_settings,
                        PolicyLevel level) {
   PolicyMap policy_map;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_map);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   for (auto it : policies.DictItems()) {
     const PolicyDetails* policy_details = GetChromePolicyDetails(it.first);
     const PolicySettings policy_settings =

@@ -26,9 +26,9 @@ POLICY_EXPORT extern const char kUserPolicyRefreshRate[];
 POLICY_EXPORT extern const char kIntensiveWakeUpThrottlingEnabled[];
 POLICY_EXPORT extern const char kTargetBlankImpliesNoOpener[];
 POLICY_EXPORT extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 POLICY_EXPORT extern const char kBackForwardCacheEnabled[];
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 POLICY_EXPORT extern const char kWebSQLInThirdPartyContextEnabled[];
 
 }  // namespace policy_prefs

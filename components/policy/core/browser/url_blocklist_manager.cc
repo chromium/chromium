@@ -69,7 +69,7 @@ const char* kBypassBlocklistWildcardForSchemes[] = {
     "chrome-search",
 };
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // The two schemes used on iOS for the NTP.
 constexpr char kIosNtpAboutScheme[] = "about";
 constexpr char kIosNtpChromeScheme[] = "chrome";
@@ -92,7 +92,7 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
     if (scheme == bypass_scheme)
       return true;
   }
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Compare the chrome scheme and host against the chrome://newtab version of
   // the NTP URL.
   if (scheme == kIosNtpChromeScheme && url.host() == kIosNtpHost) {

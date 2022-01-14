@@ -85,7 +85,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
     EXPECT_TRUE(GetChromePolicyDetails(it.key()));
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   subschema = schema.GetProperty(key::kDefaultCookiesSetting);
   ASSERT_TRUE(subschema.valid());
   EXPECT_EQ(base::Value::Type::INTEGER, subschema.type());
@@ -132,7 +132,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
   EXPECT_TRUE(*next == nullptr);
 #endif  // !OS_IOS
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   subschema = schema.GetProperty(key::kExtensionSettings);
   ASSERT_TRUE(subschema.valid());
   ASSERT_EQ(base::Value::Type::DICTIONARY, subschema.type());
@@ -194,7 +194,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
   EXPECT_EQ(6, details->id);
   EXPECT_EQ(0u, details->max_external_data_size);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   details = GetChromePolicyDetails(key::kJavascriptEnabled);
   ASSERT_TRUE(details);
   EXPECT_TRUE(details->is_deprecated);
@@ -222,7 +222,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
 #endif
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(GeneratePolicySource, SetEnterpriseDefaults) {
   PolicyMap policy_map;
 

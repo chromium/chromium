@@ -183,7 +183,7 @@ TEST(RegistryDictTest, Swap) {
   EXPECT_FALSE(dict_a.GetKey("two"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(RegistryDictTest, ConvertToJSON) {
   RegistryDict test_dict;
 

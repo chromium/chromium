@@ -219,7 +219,7 @@ TEST_F(ResourceCacheTest, StoreWithEnabledCacheLimit) {
   EXPECT_FALSE(cache.Store(kKey1, kSubB, kData1).empty());
 }
 
-#if defined(OS_POSIX)  // Because of symbolic links.
+#if BUILDFLAG(IS_POSIX)  // Because of symbolic links.
 
 TEST_F(ResourceCacheTest, StoreInDirectoryWithCycleSymlinks) {
   base::FilePath inner_dir = temp_dir_.GetPath().AppendASCII("inner");
@@ -250,6 +250,6 @@ TEST_F(ResourceCacheTest, StoreInDirectoryWithSymlinkToRoot) {
   EXPECT_FALSE(cache.Store(kKey1, kSubA, kData10Kb).empty());
 }
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace policy

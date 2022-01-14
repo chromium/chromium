@@ -20,7 +20,7 @@
 
 namespace policy {
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 const int64_t CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs =
     24 * 60 * 60 * 1000;  // 1 day.
@@ -244,7 +244,7 @@ void CloudPolicyRefreshScheduler::UpdateLastRefreshFromPolicy() {
     return;
   }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Refreshing on mobile platforms:
   // - if no user is signed-in then the |client_| is never registered and
   //   nothing happens here.

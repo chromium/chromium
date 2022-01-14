@@ -94,7 +94,7 @@ void MachineLevelUserCloudPolicyStore::LoadImmediately() {
   // succeeded.
   if (!machine_dm_token_.is_valid()) {
     VLOG(1) << "LoadImmediately ignored, no DM token present.";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android, some dependencies (e.g. FirstRunActivity) are blocked until
     // the PolicyService is initialized, which waits on all policy providers to
     // indicate that policies are available.
@@ -110,7 +110,7 @@ void MachineLevelUserCloudPolicyStore::LoadImmediately() {
     PolicyLoadResult result;
     result.status = policy::LOAD_RESULT_NO_POLICY_FILE;
     PolicyLoaded(/*validate_in_background=*/false, result);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     return;
   }
   VLOG(1) << "Load policy cache Immediately.";

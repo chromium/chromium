@@ -156,7 +156,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 
   void CheckInitialRefresh(CloudPolicyRefreshScheduler* const scheduler,
                            bool with_invalidations) const {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // The mobile platforms take the cache age into account for the initial
     // fetch. Usually the cache age is ignored for the initial refresh, but on
     // mobile it's used to restrain from refreshing on every startup.

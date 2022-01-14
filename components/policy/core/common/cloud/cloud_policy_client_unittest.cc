@@ -101,8 +101,8 @@ constexpr char kEnrollmentCertificate[] = "fake-enrollment-certificate";
 constexpr char kEnrollmentId[] = "fake-enrollment-id";
 constexpr char kOsName[] = "fake-os-name";
 
-#if defined(OS_WIN) || defined(OS_APPLE) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 constexpr char kEnrollmentToken[] = "enrollment_token";
 #endif
 
@@ -340,8 +340,8 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
   return request;
 }
 
-#if defined(OS_WIN) || defined(OS_APPLE) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 em::DeviceManagementRequest GetEnrollmentRequest() {
   em::DeviceManagementRequest request;
 
@@ -648,8 +648,8 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   CheckPolicyResponse(policy_response);
 }
 
-#if defined(OS_WIN) || defined(OS_APPLE) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -1068,7 +1068,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidationNoPayload) {
   EXPECT_EQ(-12345, client_->fetched_invalidation_version());
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(CloudPolicyClientTest, PolicyFetchWithBrowserDeviceIdentifier) {
   RegisterClient();
 
@@ -1743,8 +1743,8 @@ INSTANTIATE_TEST_SUITE_P(
         em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE,
         em::DeviceRegisterRequest::PSM_RESULT_ERROR));
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 
 class CloudPolicyClientUploadSecurityEventTest
     : public CloudPolicyClientTest,

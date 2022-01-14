@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/strings/grit/components_strings.h"
@@ -40,7 +41,7 @@ PolicyConversions::PolicyConversions(
 
 PolicyConversions::~PolicyConversions() = default;
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 PolicyConversions& PolicyConversions::WithUpdaterPolicies(
     std::unique_ptr<PolicyMap> policies) {
   client()->SetUpdaterPolicies(std::move(policies));
@@ -51,7 +52,7 @@ PolicyConversions& PolicyConversions::WithUpdaterPolicySchemas(
   client()->SetUpdaterPolicySchemas(std::move(schemas));
   return *this;
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 PolicyConversions& PolicyConversions::EnableConvertTypes(bool enabled) {
   client_->EnableConvertTypes(enabled);
@@ -109,7 +110,7 @@ Value DictionaryPolicyConversions::ToValue() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (client()->HasUpdaterPolicies())
     all_policies.SetKey("updaterPolicies", client()->GetUpdaterPolicies());
 #endif
@@ -167,13 +168,13 @@ Value ArrayPolicyConversions::ToValue() {
   if (client()->HasUserPolicies()) {
     all_policies.Append(GetChromePolicies());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
     // Precedence policies do not apply to Chrome OS, so the Policy Precedence
     // table is not shown in chrome://policy.
     all_policies.Append(GetPrecedencePolicies());
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (client()->HasUpdaterPolicies())
       all_policies.Append(GetUpdaterPolicies());
 #endif
@@ -208,7 +209,7 @@ Value ArrayPolicyConversions::ToValue() {
   return all_policies;
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 Value ArrayPolicyConversions::GetUpdaterPolicies() {
   Value chrome_policies_data(Value::Type::DICTIONARY);
   chrome_policies_data.SetKey("name", Value("Google Update Policies"));
@@ -216,7 +217,7 @@ Value ArrayPolicyConversions::GetUpdaterPolicies() {
   chrome_policies_data.SetKey("policies", client()->GetUpdaterPolicies());
   return chrome_policies_data;
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 Value ArrayPolicyConversions::GetChromePolicies() {
   Value chrome_policies_data(Value::Type::DICTIONARY);

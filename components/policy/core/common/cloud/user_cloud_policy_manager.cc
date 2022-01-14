@@ -118,7 +118,7 @@ void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
   // user.
   SetEnterpriseUsersProfileDefaults(policy_map);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (store()->has_policy() &&
       !policy_map->Get(key::kNTPContentSuggestionsEnabled)) {
     policy_map->Set(key::kNTPContentSuggestionsEnabled, POLICY_LEVEL_MANDATORY,

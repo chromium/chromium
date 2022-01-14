@@ -14,15 +14,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/schema.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 
 using base::win::RegistryKeyIterator;
 using base::win::RegistryValueIterator;
-#endif  // #if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace policy {
 
@@ -234,7 +235,7 @@ void RegistryDict::Swap(RegistryDict* other) {
   values_.swap(other->values_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
   ClearKeys();
   ClearValues();
@@ -356,5 +357,5 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
 
   return nullptr;
 }
-#endif  // #if defined(OS_WIN)
+#endif  // #if BUILDFLAG(IS_WIN)
 }  // namespace policy

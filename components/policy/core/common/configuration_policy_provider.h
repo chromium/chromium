@@ -85,9 +85,9 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
   void OnSchemaRegistryReady() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ShutdownForTesting();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
  protected:
   // Subclasses must invoke this to update the policies currently served by

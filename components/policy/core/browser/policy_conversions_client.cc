@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_details.h"
@@ -55,12 +56,12 @@ void PolicyConversionsClient::EnableUserPolicies(bool enabled) {
   user_policies_enabled_ = enabled;
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void PolicyConversionsClient::SetUpdaterPolicies(
     std::unique_ptr<PolicyMap> policies) {
   updater_policies_ = std::move(policies);
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 std::string PolicyConversionsClient::ConvertValueToJSON(
     const Value& value) const {
@@ -416,7 +417,7 @@ bool PolicyConversionsClient::GetUserPoliciesEnabled() const {
   return user_policies_enabled_;
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 Value PolicyConversionsClient::GetUpdaterPolicies() {
   return updater_policies_
              ? GetPolicyValues(*updater_policies_, nullptr, PoliciesSet(),
@@ -433,6 +434,6 @@ void PolicyConversionsClient::SetUpdaterPolicySchemas(
     PolicyConversions::PolicyToSchemaMap schemas) {
   updater_policy_schemas_ = std::move(schemas);
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace policy

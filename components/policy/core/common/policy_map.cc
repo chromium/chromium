@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/policy/policy_constants.h"
@@ -53,7 +54,7 @@ base::flat_set<std::string> CombineIds(
   return combined_ids;
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Returns the calculated priority of the policy entry based on the policy's
 // scope and source, in addition to external factors such as precedence
 // metapolicy values. Used for browser policies.
@@ -100,7 +101,7 @@ PolicyPriorityBrowser GetPriority(
       return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -429,13 +430,13 @@ void PolicyMap::MergePolicy(const std::string& policy_name,
     return;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   const bool other_is_higher_priority =
       EntryHasHigherPriority(other_policy_copy, *policy);
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS)
   const bool other_is_higher_priority = EntryHasHigherPriority(
       other_policy_copy, *policy, using_default_precedence);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   Entry& higher_policy = other_is_higher_priority ? other_policy_copy : *policy;
   Entry& conflicting_policy =
@@ -566,10 +567,10 @@ bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
 bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                                        const PolicyMap::Entry& rhs,
                                        bool using_default_precedence) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::tie(lhs.level, lhs.scope, lhs.source) >
          std::tie(rhs.level, rhs.scope, rhs.source);
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS)
   PolicyPriorityBrowser lhs_priority =
       using_default_precedence
           ? GetPriority(lhs.source, lhs.scope, false, false, false)
@@ -585,7 +586,7 @@ bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                         cloud_user_policy_overrides_cloud_machine_policy_,
                         is_user_affiliated_);
   return std::tie(lhs.level, lhs_priority) > std::tie(rhs.level, rhs_priority);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool PolicyMap::IsUserAffiliated() const {

@@ -13,7 +13,7 @@
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -78,7 +78,7 @@ class POLICY_EXPORT RegistryDict {
   // Swap with |other|.
   void Swap(RegistryDict* other);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Read a Windows registry subtree into this registry dictionary object.
   void ReadRegistry(HKEY hive, const std::wstring& root);
 

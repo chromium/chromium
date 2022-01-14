@@ -31,7 +31,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/android/policy_service_android.h"
 #endif
 
@@ -62,9 +62,9 @@ void RemapRenamedPolicies(PolicyMap* policies) {
        policy::key::kSpellcheckLanguageBlocklist},
       {policy::key::kURLBlacklist, policy::key::kURLBlocklist},
       {policy::key::kURLWhitelist, policy::key::kURLAllowlist},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       {policy::key::kAutoplayWhitelist, policy::key::kAutoplayAllowlist},
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       {policy::key::kExtensionInstallBlacklist,
        policy::key::kExtensionInstallBlocklist},
@@ -75,10 +75,10 @@ void RemapRenamedPolicies(PolicyMap* policies) {
       {policy::key::kNativeMessagingWhitelist,
        policy::key::kNativeMessagingAllowlist},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       {policy::key::kAttestationExtensionWhitelist,
        policy::key::kAttestationExtensionAllowlist},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       {policy::key::kExternalPrintServersWhitelist,
        policy::key::kExternalPrintServersAllowlist},
@@ -285,7 +285,7 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 android::PolicyServiceAndroid* PolicyServiceImpl::GetPolicyServiceAndroid() {
   if (!policy_service_android_)
     policy_service_android_ =

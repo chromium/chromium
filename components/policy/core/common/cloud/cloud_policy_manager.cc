@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/core/common/cloud/resource_cache.h"
 #endif
 
@@ -130,7 +130,7 @@ void CloudPolicyManager::CreateComponentCloudPolicyService(
     const base::FilePath& policy_cache_path,
     CloudPolicyClient* client,
     SchemaRegistry* schema_registry) {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Init() must have been called.
   CHECK(schema_registry);
   // Called at most once.
@@ -155,16 +155,16 @@ void CloudPolicyManager::CreateComponentCloudPolicyService(
   component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
       policy_type, this, schema_registry, core(), client,
       std::move(resource_cache), task_runner);
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void CloudPolicyManager::ClearAndDestroyComponentCloudPolicyService() {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (component_policy_service_) {
     component_policy_service_->ClearCache();
     component_policy_service_.reset();
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void CloudPolicyManager::OnRefreshComplete(bool success) {

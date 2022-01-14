@@ -29,7 +29,7 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/registry_dict.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #else
 // Registry data type constants.
