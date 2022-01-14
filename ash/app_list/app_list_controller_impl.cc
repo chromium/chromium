@@ -483,6 +483,9 @@ void AppListControllerImpl::Show(int64_t display_id,
     LogAppListShowSource(show_source.value(), show_app_list_bubble);
 
   if (show_app_list_bubble) {
+    // Clamshell ProductivityLauncher does not support app list drags.
+    if (show_source.has_value())
+      DCHECK_NE(show_source.value(), AppListShowSource::kSwipeFromShelf);
     bubble_presenter_->Show(display_id);
     return;
   }

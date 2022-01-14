@@ -2322,7 +2322,12 @@ bool ShelfLayoutManager::StartAppListDrag(
     float scroll_y_hint) {
   // In tablet mode, home launcher gestures are handled by
   // `swipe_home_to_overview_controller_`.
-  if (Shell::Get()->IsInTabletMode() && event_in_screen.IsGestureEvent())
+  const bool is_tablet_mode = Shell::Get()->IsInTabletMode();
+  if (is_tablet_mode && event_in_screen.IsGestureEvent())
+    return false;
+
+  // Clamshell ProductivityLauncher does not support app list drags.
+  if (!is_tablet_mode && features::IsProductivityLauncherEnabled())
     return false;
 
   // Fullscreen app list can only be dragged from bottom alignment shelf.
@@ -2507,6 +2512,9 @@ void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
 
 void ShelfLayoutManager::CompleteAppListDrag(
     const ui::LocatedEvent& event_in_screen) {
+  // ProductivityLauncher does not support app list dragging.
+  DCHECK(!features::IsProductivityLauncherEnabled());
+
   // Change the shelf alignment to vertical during drag will reset
   // |drag_status_| to |kDragNone|.
   if (drag_status_ == kDragNone)

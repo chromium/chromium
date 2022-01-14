@@ -1498,6 +1498,8 @@ TEST_F(ShelfLayoutManagerTest, ShelfWidgetLayoutUpdatedAfterAlignmentChange) {
   EXPECT_EQ(ShelfConfig::Get()->shelf_size(), cross_axis_visible_pixels);
 }
 
+// Tests swipe gestures in a various of shelf alignments and shelf auto hide
+// configurations.
 TEST_F(ShelfLayoutManagerTest, GestureDrag) {
   // Slop is an implementation detail of gesture recognition, and complicates
   // these tests. Ignore it.
@@ -1533,7 +1535,11 @@ TEST_F(ShelfLayoutManagerTest, GestureDrag) {
   }
 }
 
-TEST_F(ShelfLayoutManagerTest, MouseDrag) {
+TEST_F(ShelfLayoutManagerTest, MouseDragOnShelfShowsAppList) {
+  // ProductivityLauncher does not support shelf drags to show app list.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   Shelf* shelf = GetPrimaryShelf();
   gfx::Rect shelf_bounds_in_screen = GetVisibleShelfWidgetBoundsInScreen();
 
@@ -1597,6 +1603,10 @@ TEST_F(ShelfLayoutManagerTest, MouseDrag) {
 // If swiping up on shelf ends with fling event, the app list state should
 // depends on the fling velocity.
 TEST_F(ShelfLayoutManagerTest, FlingUpOnShelfForAppList) {
+  // ProductivityLauncher does not support shelf drags to show app list.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
@@ -1639,11 +1649,18 @@ TEST_F(ShelfLayoutManagerTest, FlingUpOnShelfForAppList) {
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
+
+  // Dismiss the app list to avoid cleanup issues with ProductivityLauncher.
+  GetAppListTestHelper()->Dismiss();
 }
 
 // Tests that duplicate swipe up from bottom bezel should not make app list
 // undraggable. (See https://crbug.com/896934)
 TEST_F(ShelfLayoutManagerTest, DuplicateDragUpFromBezel) {
+  // ProductivityLauncher does not support shelf drags to show app list.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   GetAppListTestHelper()->CheckVisibility(false);
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
 
@@ -1684,6 +1701,10 @@ TEST_F(ShelfLayoutManagerTest, DuplicateDragUpFromBezel) {
 
 // Change the shelf alignment during dragging should dismiss the app list.
 TEST_F(ShelfLayoutManagerTest, ChangeShelfAlignmentDuringAppListDragging) {
+  // ProductivityLauncher does not support shelf drags to show app list.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
@@ -1702,9 +1723,9 @@ TEST_F(ShelfLayoutManagerTest, ChangeShelfAlignmentDuringAppListDragging) {
 }
 
 TEST_F(ShelfLayoutManagerTest, SwipingUpOnShelfInLaptopModeShowsAppList) {
-  // ProductivityLauncher does not support swipe-to-show.
-  if (features::IsProductivityLauncherEnabled())
-    return;
+  // ProductivityLauncher does not support shelf drags to show app list.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
 
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
@@ -3193,6 +3214,28 @@ TEST_F(AppListBubbleShelfLayoutManagerTest, NoBackgroundChange) {
   EXPECT_EQ(shelf_background_type, GetShelfWidget()->GetBackgroundType());
 }
 
+TEST_F(AppListBubbleShelfLayoutManagerTest, SwipeUpOnShelfDoesNotShowAppList) {
+  Shelf* shelf = GetPrimaryShelf();
+  ASSERT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+  ASSERT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  // Start the drag from the center of the shelf's bottom.
+  gfx::Rect shelf_widget_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
+  gfx::Point start = shelf_widget_bounds.bottom_center();
+
+  // Fling up with velocity about the threshold that would show the historical
+  // peeking launcher.
+  StartScroll(start);
+  UpdateScroll(-AppListView::kDragSnapToPeekingThreshold);
+  EndScroll(/*is_fling=*/true,
+            -(AppListView::kDragVelocityFromShelfThreshold + 10));
+  GetAppListTestHelper()->WaitUntilIdle();
+
+  // Launcher did not show.
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
+}
+
 class ShelfLayoutManagerWindowDraggingTest : public ShelfLayoutManagerTestBase {
  public:
   ShelfLayoutManagerWindowDraggingTest() = default;
@@ -4330,6 +4373,10 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
 // Tests that the mousewheel scroll and the two finger gesture when the mouse is
 // over the shelf shows the app list in peeking state.
 TEST_F(ShelfLayoutManagerTest, ScrollUpFromShelfToShowPeekingAppList) {
+  // ProductivityLauncher does not support shelf drags to show app list.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   const struct {
     views::View* view;
     bool with_mousewheel_scroll;
