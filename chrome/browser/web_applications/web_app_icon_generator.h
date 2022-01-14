@@ -38,10 +38,10 @@ enum {
 
 }  // namespace icon_size
 
-#if BUILDFLAG(IS_MAC)
+#if defined(OS_MAC)
 constexpr int kInstallIconSize = icon_size::k96;
 constexpr int kLauncherIconSize = icon_size::k256;
-#elif BUILDFLAG(IS_CHROMEOS)
+#elif defined(OS_CHROMEOS)
 constexpr int kInstallIconSize = icon_size::k96;
 constexpr int kLauncherIconSize = icon_size::k128;
 #else

@@ -19,7 +19,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
@@ -599,14 +598,14 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 }
 
 bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   // OS integration should always be enabled on ChromeOS.
   return true;
 #else
   // If the app being updated was installed by default and not also manually
   // installed by the user or an enterprise policy, disable os integration.
   return !GetWebAppRegistrar().WasInstalledByDefaultOnly(app_id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(

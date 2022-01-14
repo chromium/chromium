@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 
 #include "base/feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -37,22 +36,22 @@ bool IsMigrationFeature(const base::Feature& feature) {
 // web apps.
 const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite{
   "MigrateDefaultChromeAppToWebAppsGSuite",
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 };
 
 // Enables migration of default installed non-GSuite apps over to their
 // replacement web apps.
 const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
   "MigrateDefaultChromeAppToWebAppsNonGSuite",
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 };
 
 // Enables installing the PWA version of the chrome os calculator instead of the
@@ -60,7 +59,7 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
 const base::Feature kDefaultCalculatorWebApp{"DefaultCalculatorWebApp",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
 // Whether to allow the MigrateDefaultChromeAppToWebAppsGSuite and
 // MigrateDefaultChromeAppToWebAppsNonGSuite flags for managed users.
 // Without this flag enabled managed users will not undergo the default web app
@@ -75,7 +74,7 @@ const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
     "AllowDefaultWebAppMigrationForChromeOsManagedUsers",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 
 bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
                                             const Profile& profile) {
@@ -83,7 +82,7 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
     return true;
 
   for (const base::Feature* feature : kPreinstalledAppInstallFeatures) {
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
     // See |kAllowDefaultWebAppMigrationForChromeOsManagedUsers| comment above.
     if (base::FeatureList::IsEnabled(*feature) &&
         feature->name == feature_name && IsMigrationFeature(*feature) &&
@@ -91,7 +90,7 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
       return base::FeatureList::IsEnabled(
           kAllowDefaultWebAppMigrationForChromeOsManagedUsers);
     }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 
     if (feature->name == feature_name)
       return base::FeatureList::IsEnabled(*feature);

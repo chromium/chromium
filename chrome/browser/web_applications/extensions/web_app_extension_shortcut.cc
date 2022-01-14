@@ -34,11 +34,11 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if BUILDFLAG(IS_WIN)
+#if defined(OS_WIN)
 #include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if defined(OS_MAC)
 #include "chrome/common/chrome_switches.h"
 #endif
 
@@ -295,13 +295,13 @@ void UpdateAllShortcuts(const std::u16string& old_app_title,
                                        old_app_title, std::move(callback)));
 }
 
-#if !BUILDFLAG(IS_MAC)
+#if !defined(OS_MAC)
 void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
   std::move(callback).Run();
 }
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if defined(OS_WIN)
 void UpdateRelaunchDetailsForApp(Profile* profile,
                                  const extensions::Extension* extension,
                                  HWND hwnd) {

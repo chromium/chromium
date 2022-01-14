@@ -260,7 +260,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
     std::unique_ptr<WebAppInstallInfo> web_application_info,
     OnceInstallCallback callback) {
   DCHECK(started_);
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   DCHECK(AreAppsLocallyInstalledBySync());
 #endif
 

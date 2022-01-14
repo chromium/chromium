@@ -32,7 +32,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
@@ -68,7 +68,7 @@ void UninstallImpl(WebAppProvider* provider,
                    gfx::NativeWindow parent_window);
 
 class WebAppPublisherHelper : public AppRegistrarObserver,
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
                               public NotificationDisplayService::Observer,
                               public MediaCaptureDevicesDispatcher::Observer,
                               public apps::AppWebContentsData::Client,
@@ -235,7 +235,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   bool IsShuttingDown() const;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   class BadgeManagerDelegate : public badging::BadgeManagerDelegate {
    public:
     explicit BadgeManagerDelegate(
@@ -264,7 +264,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const base::Time& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                       DisplayMode user_display_mode) override;
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
@@ -278,7 +278,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       NotificationDisplayService* service) override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   // MediaCaptureDevicesDispatcher::Observer:
   void OnRequestUpdate(int render_process_id,
                        int render_frame_id,
@@ -311,7 +311,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       int64_t display_id,
       base::OnceCallback<void(content::WebContents*)> callback);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
 
@@ -368,7 +368,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   apps::PausedApps paused_apps_;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(OS_CHROMEOS)
   base::ScopedObservation<NotificationDisplayService,
                           NotificationDisplayService::Observer>
       notification_display_service_{this};
