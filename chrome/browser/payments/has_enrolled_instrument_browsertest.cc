@@ -196,17 +196,8 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentPaymentHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentPaymentHandlerTest,
                        TrueWithInstalledPaymentHandler) {
-  std::string payment_handler_host = "nickpay.com";
-  NavigateTo(payment_handler_host, "/payment_handler_installer.html");
-  std::string sw_url = https_server()
-                           ->GetURL(payment_handler_host, "/nickpay.com/app.js")
-                           .spec();
-  std::string payment_method =
-      https_server()->GetURL(payment_handler_host, "/nickpay.com/pay").spec();
-  EXPECT_EQ("success",
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("install($1, [$2])", sw_url,
-                                               payment_method)));
+  std::string payment_method;
+  InstallPaymentApp("nickpay.com", "/nickpay.com/app.js", &payment_method);
   NavigateTo("/has_enrolled_instrument.html");
 
   ExpectHasEnrolledInstrumentIs(true, payment_method);
