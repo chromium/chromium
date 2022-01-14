@@ -129,7 +129,7 @@ void NotifierStateTracker::SetNotifierEnabled(
   }
   DCHECK(pref_name != NULL);
 
-  ListPrefUpdateDeprecated update(profile_->GetPrefs(), pref_name);
+  ListPrefUpdate update(profile_->GetPrefs(), pref_name);
   if (add_new_item) {
     if (!base::Contains(update->GetList(), id))
       update->Append(std::move(id));
