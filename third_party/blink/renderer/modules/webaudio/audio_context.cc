@@ -289,7 +289,7 @@ ScriptPromise AudioContext::resumeContext(ScriptState* script_state,
   DCHECK(IsMainThread());
 
   if (IsContextCleared()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "cannot resume a closed AudioContext");
     return ScriptPromise();
   }
