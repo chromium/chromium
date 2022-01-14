@@ -128,9 +128,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   void CreatePageAccessSubmenu(const Extension* extension);
 
-  MenuEntries GetCurrentPageAccess(const Extension* extension,
-                                   content::WebContents* web_contents) const;
-
   // Returns true if the given page access command is enabled in the menu.
   bool IsPageAccessCommandEnabled(const Extension& extension,
                                   const GURL& url,

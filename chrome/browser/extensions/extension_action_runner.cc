@@ -128,13 +128,14 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
   return ExtensionAction::ACTION_NONE;
 }
 
-void ExtensionActionRunner::HandlePageAccessModified(const Extension* extension,
-                                                     PageAccess current_access,
-                                                     PageAccess new_access) {
+void ExtensionActionRunner::HandlePageAccessModified(
+    const Extension* extension,
+    SitePermissionsHelper::SiteAccess current_access,
+    SitePermissionsHelper::SiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
 
   // If we are restricting page access, just change permissions.
-  if (new_access == PageAccess::RUN_ON_CLICK) {
+  if (new_access == SitePermissionsHelper::SiteAccess::kOnClick) {
     UpdatePageAccessSettings(extension, current_access, new_access);
     return;
   }
@@ -391,12 +392,12 @@ void ExtensionActionRunner::OnBlockedActionBubbleForRunActionClosed(
 void ExtensionActionRunner::OnBlockedActionBubbleForPageAccessGrantClosed(
     const std::string& extension_id,
     const GURL& page_url,
-    PageAccess current_access,
-    PageAccess new_access,
+    SitePermissionsHelper::SiteAccess current_access,
+    SitePermissionsHelper::SiteAccess new_access,
     ToolbarActionsBarBubbleDelegate::CloseAction action) {
-  DCHECK(new_access == PageAccess::RUN_ON_SITE ||
-         new_access == PageAccess::RUN_ON_ALL_SITES);
-  DCHECK_EQ(PageAccess::RUN_ON_CLICK, current_access);
+  DCHECK(new_access == SitePermissionsHelper::SiteAccess::kOnSite ||
+         new_access == SitePermissionsHelper::SiteAccess::kOnAllSites);
+  DCHECK_EQ(SitePermissionsHelper::SiteAccess::kOnClick, current_access);
 
   // Don't change permissions if the user chose to not refresh the page.
   if (action != ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE)
@@ -416,9 +417,10 @@ void ExtensionActionRunner::OnBlockedActionBubbleForPageAccessGrantClosed(
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
-void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
-                                                     PageAccess current_access,
-                                                     PageAccess new_access) {
+void ExtensionActionRunner::UpdatePageAccessSettings(
+    const Extension* extension,
+    SitePermissionsHelper::SiteAccess current_access,
+    SitePermissionsHelper::SiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
 
   const GURL& url = web_contents()->GetLastCommittedURL();
@@ -426,7 +428,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
   DCHECK(modifier.CanAffectExtension());
 
   switch (new_access) {
-    case PageAccess::RUN_ON_CLICK:
+    case SitePermissionsHelper::SiteAccess::kOnClick:
       if (modifier.HasBroadGrantedHostPermissions())
         modifier.RemoveBroadGrantedHostPermissions();
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
@@ -435,7 +437,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
       if (modifier.HasGrantedHostPermission(url))
         modifier.RemoveGrantedHostPermission(url);
       break;
-    case PageAccess::RUN_ON_SITE:
+    case SitePermissionsHelper::SiteAccess::kOnSite:
       if (modifier.HasBroadGrantedHostPermissions())
         modifier.RemoveBroadGrantedHostPermissions();
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
@@ -444,7 +446,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
       if (!modifier.HasGrantedHostPermission(url))
         modifier.GrantHostPermission(url);
       break;
-    case PageAccess::RUN_ON_ALL_SITES:
+    case SitePermissionsHelper::SiteAccess::kOnAllSites:
       modifier.SetWithholdHostPermissions(false);
       break;
   }

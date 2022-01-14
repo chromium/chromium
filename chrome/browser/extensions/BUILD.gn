@@ -661,6 +661,8 @@ static_library("extensions") {
     "settings_api_helpers.h",
     "shared_module_service.cc",
     "shared_module_service.h",
+    "site_permissions_helper.cc",
+    "site_permissions_helper.h",
     "standard_management_policy_provider.cc",
     "standard_management_policy_provider.h",
     "startup_helper.cc",
