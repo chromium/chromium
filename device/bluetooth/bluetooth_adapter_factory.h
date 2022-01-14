@@ -71,7 +71,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   // GetAdapter(), as the default adapter already supports Bluetooth classic.
   void GetClassicAdapter(AdapterCallback callback);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Calls |BluetoothAdapter::Shutdown| on the adapter if
   // present.
   static void Shutdown();
@@ -137,7 +137,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
       BluetoothSerialDeviceEnumerator_DeleteBeforeAdapterInit);
 
   void AdapterInitialized();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void ClassicAdapterInitialized();
 #endif
 
@@ -151,7 +151,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   std::vector<AdapterCallback> adapter_callbacks_;
   base::WeakPtr<BluetoothAdapter> adapter_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows different implementations of BluetoothAdapter are used for
   // supporting Classic and Low Energy devices. The factory logic is duplicated.
   scoped_refptr<BluetoothAdapter> classic_adapter_under_initialization_;

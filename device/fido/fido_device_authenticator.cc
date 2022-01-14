@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/fido/appid_exclude_probe_task.h"
 #include "device/fido/authenticator_supported_options.h"
@@ -1107,17 +1108,17 @@ bool FidoDeviceAuthenticator::RequiresBlePairingPin() const {
   return device_->RequiresBlePairingPin();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool FidoDeviceAuthenticator::IsWinNativeApiAuthenticator() const {
   return false;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool FidoDeviceAuthenticator::IsTouchIdAuthenticator() const {
   return false;
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool FidoDeviceAuthenticator::IsChromeOSAuthenticator() const {

@@ -21,7 +21,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #endif
 
@@ -91,7 +91,7 @@ FidoRequestHandlerBase::FidoRequestHandlerBase(
 void FidoRequestHandlerBase::InitDiscoveries(
     FidoDiscoveryFactory* fido_discovery_factory,
     base::flat_set<FidoTransportProtocol> available_transports) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Try to instantiate the discovery for proxying requests to the native
   // Windows WebAuthn API; or fall back to using the regular device transport
   // discoveries if the API is unavailable.
@@ -121,7 +121,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
              FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
     });
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   transport_availability_info_.available_transports = available_transports;
   for (const auto transport : available_transports) {
@@ -329,7 +329,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
     VLOG(2) << "Embedder controls the dispatch.";
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator()) {
     DCHECK(transport_availability_info_.has_win_native_api_authenticator);
     transport_availability_info_.win_native_api_authenticator_id =
@@ -339,7 +339,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
         static_cast<WinWebAuthnApiAuthenticator*>(authenticator)
             ->ShowsPrivacyNotice();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void FidoRequestHandlerBase::GetPlatformCredentialStatus(

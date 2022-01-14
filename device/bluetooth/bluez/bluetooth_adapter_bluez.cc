@@ -2114,7 +2114,7 @@ void BluetoothAdapterBlueZ::OnConnectDeviceError(
 
 void BluetoothAdapterBlueZ::UpdateDeviceAdminPolicyFromAdminPolicyClient(
     const dbus::ObjectPath& object_path) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   BluetoothDevice* device = GetDeviceWithPath(object_path);
 
   if (!device) {

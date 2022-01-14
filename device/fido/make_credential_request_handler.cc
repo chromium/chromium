@@ -25,7 +25,7 @@
 #include "device/fido/filter.h"
 #include "device/fido/make_credential_task.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/type_conversions.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
@@ -452,7 +452,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
       IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
                                         observer());
   if (post_touch_status != MakeCredentialStatus::kSuccess) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // If the Windows API cannot handle a request, just reject the request
     // outright. There are no other authenticators to attempt, so calling
     // GetTouch() would not make sense.
@@ -460,7 +460,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
       HandleInapplicableAuthenticator(authenticator, post_touch_status);
       return;
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     if (authenticator->Options() &&
         authenticator->Options()->is_platform_device) {
@@ -720,7 +720,7 @@ void MakeCredentialRequestHandler::HandleResponse(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator()) {
     state_ = State::kFinished;
     if (status != CtapDeviceResponseCode::kSuccess) {
@@ -959,7 +959,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       // storage space for another credential, and we can obtain UV via client
       // PIN or an internal modality.
       request->resident_key_required =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           // Windows does not yet support rk=preferred.
           !authenticator->IsWinNativeApiAuthenticator() &&
 #endif

@@ -11,24 +11,24 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "device/bluetooth/test/bluetooth_test_android.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "device/bluetooth/test/bluetooth_test_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "device/bluetooth/test/bluetooth_test_win.h"
 #elif defined(USE_CAST_BLUETOOTH_ADAPTER)
 #include "device/bluetooth/test/bluetooth_test_cast.h"
-#elif defined(OS_CHROMEOS) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "device/bluetooth/test/bluetooth_test_bluez.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "device/bluetooth/test/bluetooth_test_fuchsia.h"
 #endif
 
 namespace device {
 
 class BluetoothRemoteGattDescriptorTest :
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     public BluetoothTestWinrt {
 #else
     public BluetoothTest {
@@ -71,17 +71,17 @@ class BluetoothRemoteGattDescriptorTest :
   raw_ptr<BluetoothRemoteGattDescriptor> descriptor2_ = nullptr;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 using BluetoothRemoteGattDescriptorTestWinrtOnly =
     BluetoothRemoteGattDescriptorTest;
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetIdentifier GetIdentifier
 #else
 #define MAYBE_GetIdentifier DISABLED_GetIdentifier
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, GetIdentifier) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetIdentifier) {
@@ -169,12 +169,12 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetIdentifier) {
   EXPECT_NE(desc5->GetIdentifier(), desc6->GetIdentifier());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetUUID GetUUID
 #else
 #define MAYBE_GetUUID DISABLED_GetUUID
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, GetUUID) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetUUID) {
@@ -224,13 +224,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetUUID) {
   EXPECT_EQ(uuid2, descriptor2->GetUUID());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReadRemoteDescriptor_Empty ReadRemoteDescriptor_Empty
 #else
 #define MAYBE_ReadRemoteDescriptor_Empty DISABLED_ReadRemoteDescriptor_Empty
 #endif
 // Tests ReadRemoteDescriptor and GetValue with empty value buffer.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadRemoteDescriptor_Empty) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Empty) {
@@ -256,13 +256,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Empty) {
   EXPECT_EQ(empty_vector, descriptor1_->GetValue());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_WriteRemoteDescriptor_Empty WriteRemoteDescriptor_Empty
 #else
 #define MAYBE_WriteRemoteDescriptor_Empty DISABLED_WriteRemoteDescriptor_Empty
 #endif
 // Tests WriteRemoteDescriptor with empty value buffer.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        WriteRemoteDescriptor_Empty) {
 #else
@@ -288,7 +288,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Empty) {
   EXPECT_EQ(empty_vector, last_write_value_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ReadRemoteDescriptor_AfterDeleted \
   ReadRemoteDescriptor_AfterDeleted
 #else
@@ -319,7 +319,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_TRUE("Did not crash!");
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WriteRemoteDescriptor_AfterDeleted \
   WriteRemoteDescriptor_AfterDeleted
 #else
@@ -350,13 +350,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_TRUE("Did not crash!");
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReadRemoteDescriptor ReadRemoteDescriptor
 #else
 #define MAYBE_ReadRemoteDescriptor DISABLED_ReadRemoteDescriptor
 #endif
 // Tests ReadRemoteDescriptor and GetValue with non-empty value buffer.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadRemoteDescriptor) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor) {
@@ -385,13 +385,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor) {
   EXPECT_EQ(test_vector, descriptor1_->GetValue());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_WriteRemoteDescriptor WriteRemoteDescriptor
 #else
 #define MAYBE_WriteRemoteDescriptor DISABLED_WriteRemoteDescriptor
 #endif
 // Tests WriteRemoteDescriptor with non-empty value buffer.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, WriteRemoteDescriptor) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor) {
@@ -414,13 +414,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor) {
   EXPECT_EQ(test_vector, last_write_value_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReadRemoteDescriptor_Twice ReadRemoteDescriptor_Twice
 #else
 #define MAYBE_ReadRemoteDescriptor_Twice DISABLED_ReadRemoteDescriptor_Twice
 #endif
 // Tests ReadRemoteDescriptor and GetValue multiple times.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadRemoteDescriptor_Twice) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Twice) {
@@ -458,13 +458,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Twice) {
   EXPECT_EQ(empty_vector, descriptor1_->GetValue());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_WriteRemoteDescriptor_Twice WriteRemoteDescriptor_Twice
 #else
 #define MAYBE_WriteRemoteDescriptor_Twice DISABLED_WriteRemoteDescriptor_Twice
 #endif
 // Tests WriteRemoteDescriptor multiple times.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        WriteRemoteDescriptor_Twice) {
 #else
@@ -501,7 +501,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Twice) {
   EXPECT_EQ(empty_vector, last_write_value_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReadRemoteDescriptor_MultipleDescriptors \
   ReadRemoteDescriptor_MultipleDescriptors
 #else
@@ -509,7 +509,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Twice) {
   DISABLED_ReadRemoteDescriptor_MultipleDescriptors
 #endif
 // Tests ReadRemoteDescriptor on two descriptors.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        ReadRemoteDescriptor_MultipleDescriptors) {
 #else
@@ -548,7 +548,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_EQ(test_vector2, descriptor2_->GetValue());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_WriteRemoteDescriptor_MultipleDescriptors \
   WriteRemoteDescriptor_MultipleDescriptors
 #else
@@ -556,7 +556,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   DISABLED_WriteRemoteDescriptor_MultipleDescriptors
 #endif
 // Tests WriteRemoteDescriptor on two descriptors.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        WriteRemoteDescriptor_MultipleDescriptors) {
 #else
@@ -593,13 +593,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_EQ(0, error_callback_count_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReadError ReadError
 #else
 #define MAYBE_ReadError DISABLED_ReadError
 #endif
 // Tests ReadRemoteDescriptor asynchronous error.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadError) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadError) {
@@ -621,13 +621,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadError) {
             last_gatt_error_code_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_WriteError WriteError
 #else
 #define MAYBE_WriteError DISABLED_WriteError
 #endif
 // Tests WriteRemoteDescriptor asynchronous error.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, WriteError) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteError) {
@@ -652,7 +652,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteError) {
             last_gatt_error_code_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ReadSynchronousError ReadSynchronousError
 #else
 #define MAYBE_ReadSynchronousError DISABLED_ReadSynchronousError
@@ -688,7 +688,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadSynchronousError) {
   EXPECT_EQ(0, error_callback_count_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WriteSynchronousError WriteSynchronousError
 #else
 #define MAYBE_WriteSynchronousError DISABLED_WriteSynchronousError
@@ -725,14 +725,14 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteSynchronousError) {
   EXPECT_EQ(0, error_callback_count_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReadRemoteDescriptor_ReadPending ReadRemoteDescriptor_ReadPending
 #else
 #define MAYBE_ReadRemoteDescriptor_ReadPending \
   DISABLED_ReadRemoteDescriptor_ReadPending
 #endif
 // Tests ReadRemoteDescriptor error with a pending read operation.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        ReadRemoteDescriptor_ReadPending) {
 #else
@@ -766,7 +766,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_EQ(0, error_callback_count_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_WriteRemoteDescriptor_WritePending \
   WriteRemoteDescriptor_WritePending
 #else
@@ -774,7 +774,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   DISABLED_WriteRemoteDescriptor_WritePending
 #endif
 // Tests WriteRemoteDescriptor error with a pending write operation.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        WriteRemoteDescriptor_WritePending) {
 #else
@@ -809,7 +809,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_EQ(0, error_callback_count_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReadRemoteDescriptor_WritePending \
   ReadRemoteDescriptor_WritePending
 #else
@@ -817,7 +817,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   DISABLED_ReadRemoteDescriptor_WritePending
 #endif
 // Tests ReadRemoteDescriptor error with a pending write operation.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        ReadRemoteDescriptor_WritePending) {
 #else
@@ -851,7 +851,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_EQ(0, error_callback_count_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_WriteRemoteDescriptor_ReadPending \
   WriteRemoteDescriptor_ReadPending
 #else
@@ -859,7 +859,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   DISABLED_WriteRemoteDescriptor_ReadPending
 #endif
 // Tests WriteRemoteDescriptor error with a pending Read operation.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
        WriteRemoteDescriptor_ReadPending) {
 #else
@@ -893,7 +893,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
   EXPECT_EQ(0, error_callback_count_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ReadDuringDisconnect ReadDuringDisconnect
 #else
 #define MAYBE_ReadDuringDisconnect DISABLED_ReadDuringDisconnect
@@ -920,7 +920,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadDuringDisconnect) {
   // TODO(crbug.com/621901): Test error callback was called.
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WriteDuringDisconnect WriteDuringDisconnect
 #else
 #define MAYBE_WriteDuringDisconnect DISABLED_WriteDuringDisconnect
@@ -948,7 +948,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteDuringDisconnect) {
   // TODO(crbug.com/621901): Test that an error was returned.
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Tests NSString for descriptor value for macOS.
 // https://developer.apple.com/reference/corebluetooth/cbdescriptor
 TEST_F(BluetoothRemoteGattDescriptorTest, ReadRemoteDescriptor_NSString) {
@@ -993,13 +993,13 @@ TEST_F(BluetoothRemoteGattDescriptorTest, ReadRemoteDescriptor_NSNumber) {
   EXPECT_EQ(test_vector, last_read_value_);
   EXPECT_EQ(test_vector, descriptor1_->GetValue());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 INSTANTIATE_TEST_SUITE_P(
     All,
     BluetoothRemoteGattDescriptorTestWinrtOnly,
     ::testing::ValuesIn(kBluetoothTestWinrtParamWinrtOnly));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device

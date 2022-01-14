@@ -30,11 +30,11 @@
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/type_conversions.h"
 #endif
@@ -410,7 +410,7 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // In tests the platform authenticator may be a virtual device.
   if (!platform_authenticator->IsTouchIdAuthenticator()) {
     FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
@@ -564,7 +564,7 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator()) {
     state_ = State::kFinished;
     CancelActiveAuthenticators(authenticator->GetId());

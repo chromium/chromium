@@ -82,7 +82,7 @@ OpenXrDevice::OpenXrDevice(
   mojom::VRDisplayInfoPtr display_info = CreateFakeVRDisplayInfo();
   SetVRDisplayInfo(std::move(display_info));
   SetArBlendModeSupported(IsArBlendModeSupported());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SetLuid(OpenXrStatics::GetInstance()->GetLuid(extension_helper_));
 #endif
 

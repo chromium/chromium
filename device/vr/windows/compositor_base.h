@@ -23,7 +23,7 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/vr/windows/d3d11_texture_helper.h"
 #endif
 
@@ -97,7 +97,7 @@ class XRCompositorCommon : public base::Thread,
   void SetVisibilityState(mojom::XRVisibilityState visibility_state);
   const mojom::VRStageParametersPtr& GetCurrentStageParameters() const;
   void SetStageParameters(mojom::VRStageParametersPtr stage_parameters);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   D3D11TextureHelper texture_helper_;
 #endif
   int16_t next_frame_id_ = 0;

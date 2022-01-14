@@ -6,10 +6,12 @@
 #define DEVICE_BLUETOOTH_TEST_TEST_BLUETOOTH_ADAPTER_OBSERVER_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace device {
@@ -57,7 +59,7 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
       const device::BluetoothDevice::ServiceDataMap& service_data_map,
       const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map)
       override;
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
                            device::BluetoothDevice* device,
                            bool new_paired_status) override;
@@ -149,7 +151,7 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
     return last_manufacturer_data_map_;
   }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count() const {
     return device_paired_changed_count_;
   }
@@ -258,7 +260,7 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   base::RepeatingClosure discovering_changed_callback_;
   base::RepeatingClosure discovery_change_completed_callback_;
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count_;
   bool device_new_paired_status_;
   int device_mtu_changed_count_;

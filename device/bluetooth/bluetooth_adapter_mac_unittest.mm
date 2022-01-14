@@ -30,11 +30,11 @@
 #import "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #import <CoreBluetooth/CoreBluetooth.h>
-#else  // !defined(OS_IOS)
+#else  // !BUILDFLAG(IS_IOS)
 #import <IOBluetooth/IOBluetooth.h>
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 // List of undocumented IOBluetooth APIs used for BluetoothAdapterMac.
 extern "C" {

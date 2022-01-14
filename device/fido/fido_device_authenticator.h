@@ -138,12 +138,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   bool IsInPairingMode() const override;
   bool IsPaired() const override;
   bool RequiresBlePairingPin() const override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool IsWinNativeApiAuthenticator() const override;
-#endif  // defined(OS_WIN)
-#if defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
   bool IsTouchIdAuthenticator() const override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsChromeOSAuthenticator() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "device/bluetooth/test/bluetooth_gatt_server_test.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +57,7 @@ class BluetoothLocalGattCharacteristicTest : public BluetoothGattServerTest {
   raw_ptr<BluetoothDevice> device_;
 };
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ReadLocalCharacteristicValue ReadLocalCharacteristicValue
 #else
 #define MAYBE_ReadLocalCharacteristicValue DISABLED_ReadLocalCharacteristicValue
@@ -71,7 +73,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   EXPECT_EQ(device_->GetIdentifier(), delegate_->last_seen_device_);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WriteLocalCharacteristicValue WriteLocalCharacteristicValue
 #else
 #define MAYBE_WriteLocalCharacteristicValue \
@@ -88,7 +90,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   EXPECT_EQ(device_->GetIdentifier(), delegate_->last_seen_device_);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PrepareWriteLocalCharacteristicValue \
   PrepareWriteLocalCharacteristicValue
 #else
@@ -118,7 +120,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   EXPECT_EQ(device_->GetIdentifier(), delegate_->last_seen_device_);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ReadLocalCharacteristicValueFail ReadLocalCharacteristicValueFail
 #else
 #define MAYBE_ReadLocalCharacteristicValueFail \
@@ -136,7 +138,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   EXPECT_NE(device_->GetIdentifier(), delegate_->last_seen_device_);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ReadLocalCharacteristicValueWrongPermission \
   ReadLocalCharacteristicValueWrongPermission
 #else
@@ -154,7 +156,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   EXPECT_NE(device_->GetIdentifier(), delegate_->last_seen_device_);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WriteLocalCharacteristicValueFail \
   WriteLocalCharacteristicValueFail
 #else
@@ -173,7 +175,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   EXPECT_NE(device_->GetIdentifier(), delegate_->last_seen_device_);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WriteLocalCharacteristicValueWrongPermission \
   WriteLocalCharacteristicValueWrongPermission
 #else
@@ -191,7 +193,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   EXPECT_NE(device_->GetIdentifier(), delegate_->last_seen_device_);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_StartAndStopNotifications StartAndStopNotifications
 #else
 #define MAYBE_StartAndStopNotifications DISABLED_StartAndStopNotifications
@@ -218,7 +220,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest, MAYBE_StartAndStopNotifications) {
       notify_characteristic_.get()));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SendNotifications SendNotifications
 #else
 #define MAYBE_SendNotifications DISABLED_SendNotifications
@@ -239,7 +241,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest, MAYBE_SendNotifications) {
                                 indicate_characteristic_.get())));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SendNotificationsWrongProperties SendNotificationsWrongProperties
 #else
 #define MAYBE_SendNotificationsWrongProperties \
@@ -275,7 +277,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
                                 indicate_characteristic_.get())));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SendNotificationsServiceNotRegistered \
   SendNotificationsServiceNotRegistered
 #else

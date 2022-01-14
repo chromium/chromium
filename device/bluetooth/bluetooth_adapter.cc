@@ -30,8 +30,8 @@ namespace device {
 BluetoothAdapter::ServiceOptions::ServiceOptions() = default;
 BluetoothAdapter::ServiceOptions::~ServiceOptions() = default;
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS) && !defined(OS_MAC) && \
-    !defined(OS_WIN) && !defined(OS_LINUX)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC) && \
+    !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
   return nullptr;
@@ -42,7 +42,7 @@ base::WeakPtr<BluetoothAdapter> BluetoothAdapter::GetWeakPtrForTesting() {
   return GetWeakPtr();
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void BluetoothAdapter::Shutdown() {
   NOTIMPLEMENTED();
 }
@@ -317,7 +317,7 @@ void BluetoothAdapter::NotifyAdapterDiscoveryChangeCompletedForTesting() {
     observer.DiscoveryChangeCompletedForTesting();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void BluetoothAdapter::NotifyDevicePairedChanged(BluetoothDevice* device,
                                                  bool new_paired_status) {
   for (auto& observer : observers_)
@@ -325,7 +325,7 @@ void BluetoothAdapter::NotifyDevicePairedChanged(BluetoothDevice* device,
 }
 #endif
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void BluetoothAdapter::NotifyDeviceBatteryChanged(
     BluetoothDevice* device,
     BluetoothDevice::BatteryType type) {
@@ -337,7 +337,7 @@ void BluetoothAdapter::NotifyDeviceBatteryChanged(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothAdapter::NotifyDeviceIsBlockedByPolicyChanged(
     BluetoothDevice* device,
     bool new_blocked_status) {

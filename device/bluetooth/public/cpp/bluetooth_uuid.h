@@ -11,11 +11,11 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <rpc.h>
 
 #include "base/strings/string_piece_forward.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace device {
 
@@ -45,11 +45,11 @@ class BluetoothUUID {
   // after construction.
   explicit BluetoothUUID(const std::string& uuid);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows exclusive constructor converting a GUID structure to a
   // BluetoothUUID. This will always result in a 128 bit Format.
   explicit BluetoothUUID(GUID uuid);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Default constructor does nothing. Since BluetoothUUID is copyable, this
   // constructor is useful for initializing member variables and assigning a
@@ -58,10 +58,10 @@ class BluetoothUUID {
   BluetoothUUID();
   ~BluetoothUUID();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The canonical UUID string format is device::BluetoothUUID.value().
   static GUID GetCanonicalValueAsGUID(base::StringPiece uuid);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Returns true, if the UUID is in a valid canonical format.
   bool IsValid() const;

@@ -16,7 +16,7 @@
 #include "device/bluetooth/bluetooth_device_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 

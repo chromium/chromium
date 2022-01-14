@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
@@ -587,7 +588,7 @@ void FakeCentral::RegisterAdvertisement(
   NOTREACHED();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void FakeCentral::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,

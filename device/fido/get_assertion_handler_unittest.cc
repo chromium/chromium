@@ -34,9 +34,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/u2f/u2f_client.h"
@@ -778,7 +778,7 @@ TEST(GetAssertionRequestHandlerTest, IncorrectTransportType) {
   EXPECT_FALSE(cb.was_called());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 class TestObserver : public FidoRequestHandlerBase::Observer {
  public:
@@ -858,6 +858,6 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device

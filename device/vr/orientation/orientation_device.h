@@ -30,7 +30,7 @@ class VROrientationSession;
 // TODO(crbug.com/730440) If RELATIVE_ORIENTATION_QUATERNION is ever
 // implemented on Windows, use that instead.
 static constexpr mojom::SensorType kOrientationSensorType =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION;
 #else
     mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION;

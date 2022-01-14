@@ -33,18 +33,18 @@
 #include "device/bluetooth/test/test_bluetooth_advertisement_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "device/bluetooth/test/bluetooth_test_android.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "device/bluetooth/test/bluetooth_test_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "device/bluetooth/test/bluetooth_test_win.h"
 #elif defined(USE_CAST_BLUETOOTH_ADAPTER)
 #include "device/bluetooth/test/bluetooth_test_cast.h"
-#elif defined(OS_CHROMEOS) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "device/bluetooth/test/bluetooth_test_bluez.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "device/bluetooth/test/bluetooth_test_fuchsia.h"
 #endif
 
@@ -118,7 +118,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override {}
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
       const base::TimeDelta& max,
@@ -704,13 +704,13 @@ TEST_F(BluetoothAdapterTest, StartDiscoverySessionError_Destroy) {
 }
 
 // TODO(scheib): Enable BluetoothTest fixture tests on all platforms.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ConstructDefaultAdapter ConstructDefaultAdapter
 #else
 #define MAYBE_ConstructDefaultAdapter DISABLED_ConstructDefaultAdapter
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, ConstructDefaultAdapter) {
 #else
 TEST_F(BluetoothTest, MAYBE_ConstructDefaultAdapter) {
@@ -723,9 +723,9 @@ TEST_F(BluetoothTest, MAYBE_ConstructDefaultAdapter) {
 
   bool expected = false;
 // MacOS returns empty for name and address if the adapter is off.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   expected = !adapter_->IsPowered();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   EXPECT_EQ(expected, adapter_->GetAddress().empty());
   EXPECT_EQ(expected, adapter_->GetName().empty());
@@ -739,18 +739,18 @@ TEST_F(BluetoothTest, MAYBE_ConstructDefaultAdapter) {
 }  // namespace device
 
 // TODO(scheib): Enable BluetoothTest fixture tests on all platforms.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ConstructWithoutDefaultAdapter ConstructWithoutDefaultAdapter
 #else
 #define MAYBE_ConstructWithoutDefaultAdapter \
   DISABLED_ConstructWithoutDefaultAdapter
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, ConstructWithoutDefaultAdapter) {
 #else
 TEST_F(BluetoothTest, MAYBE_ConstructWithoutDefaultAdapter) {
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   InitWithoutDefaultAdapter();
   EXPECT_EQ(adapter_->GetAddress(), "");
   EXPECT_EQ(adapter_->GetName(), "");
@@ -761,17 +761,17 @@ TEST_F(BluetoothTest, MAYBE_ConstructWithoutDefaultAdapter) {
 }
 
 // TODO(scheib): Enable BluetoothTest fixture tests on all platforms.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ConstructFakeAdapter ConstructFakeAdapter
 #else
 #define MAYBE_ConstructFakeAdapter DISABLED_ConstructFakeAdapter
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, ConstructFakeAdapter) {
 #else
 TEST_F(BluetoothTest, MAYBE_ConstructFakeAdapter) {
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -787,7 +787,7 @@ TEST_F(BluetoothTest, MAYBE_ConstructFakeAdapter) {
   EXPECT_FALSE(adapter_->IsDiscovering());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, ConstructFakeAdapterWithoutRadio) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
@@ -819,10 +819,10 @@ TEST_P(BluetoothTestWinrtOnly, ConstructFakeAdapterWithoutPowerControl) {
   EXPECT_FALSE(adapter_->IsDiscoverable());
   EXPECT_FALSE(adapter_->IsDiscovering());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // TODO(scheib): Enable BluetoothTest fixture tests on all platforms.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DiscoverySession DiscoverySession
 #else
 #define MAYBE_DiscoverySession DISABLED_DiscoverySession
@@ -848,7 +848,7 @@ TEST_F(BluetoothTest, MAYBE_DiscoverySession) {
 
 // Android only: this test is specific for Android and should not be
 // enabled for other platforms.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(BluetoothTest, AdapterIllegalStateBeforeStartScan) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
@@ -861,11 +861,11 @@ TEST_F(BluetoothTest, AdapterIllegalStateBeforeStartScan) {
   EXPECT_EQ(1, error_callback_count_);
   EXPECT_FALSE(adapter_->IsDiscovering());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Android only: this test is specific for Android and should not be
 // enabled for other platforms.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(BluetoothTest, AdapterIllegalStateBeforeStopScan) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
@@ -881,9 +881,9 @@ TEST_F(BluetoothTest, AdapterIllegalStateBeforeStopScan) {
                                GetErrorCallback(Call::NOT_EXPECTED));
   EXPECT_FALSE(adapter_->IsDiscovering());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_NoPermissions NoPermissions
 #else
 #define MAYBE_NoPermissions DISABLED_NoPermissions
@@ -910,7 +910,7 @@ TEST_F(BluetoothTest, MAYBE_NoPermissions) {
 
 // Android-only: Only Android requires location services to be turned on to scan
 // for Bluetooth devices.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Checks that discovery fails (instead of hanging) when location services are
 // turned off.
 TEST_F(BluetoothTest, NoLocationServices) {
@@ -928,15 +928,15 @@ TEST_F(BluetoothTest, NoLocationServices) {
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_DiscoverLowEnergyDevice DiscoverLowEnergyDevice
 #else
 #define MAYBE_DiscoverLowEnergyDevice DISABLED_DiscoverLowEnergyDevice
 #endif
 // Discovers a device.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, DiscoverLowEnergyDevice) {
 #else
 TEST_F(BluetoothTest, MAYBE_DiscoverLowEnergyDevice) {
@@ -956,13 +956,13 @@ TEST_F(BluetoothTest, MAYBE_DiscoverLowEnergyDevice) {
   EXPECT_TRUE(device);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_DiscoverLowEnergyDeviceTwice DiscoverLowEnergyDeviceTwice
 #else
 #define MAYBE_DiscoverLowEnergyDeviceTwice DISABLED_DiscoverLowEnergyDeviceTwice
 #endif
 // Discovers the same device multiple times.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, DiscoverLowEnergyDeviceTwice) {
 #else
 TEST_F(BluetoothTest, MAYBE_DiscoverLowEnergyDeviceTwice) {
@@ -989,7 +989,7 @@ TEST_F(BluetoothTest, MAYBE_DiscoverLowEnergyDeviceTwice) {
   EXPECT_EQ(1u, adapter_->GetDevices().size());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_DiscoverLowEnergyDeviceWithUpdatedUUIDs \
   DiscoverLowEnergyDeviceWithUpdatedUUIDs
 #else
@@ -999,7 +999,7 @@ TEST_F(BluetoothTest, MAYBE_DiscoverLowEnergyDeviceTwice) {
 // Discovers a device, and then again with new Service UUIDs.
 // Makes sure we don't create another device when we've found the
 // device in the past.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, DiscoverLowEnergyDeviceWithUpdatedUUIDs) {
 #else
 TEST_F(BluetoothTest, MAYBE_DiscoverLowEnergyDeviceWithUpdatedUUIDs) {
@@ -1031,14 +1031,14 @@ TEST_F(BluetoothTest, MAYBE_DiscoverLowEnergyDeviceWithUpdatedUUIDs) {
   EXPECT_EQ(1u, adapter_->GetDevices().size());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_DiscoverMultipleLowEnergyDevices DiscoverMultipleLowEnergyDevices
 #else
 #define MAYBE_DiscoverMultipleLowEnergyDevices \
   DISABLED_DiscoverMultipleLowEnergyDevices
 #endif
 // Discovers multiple devices when addresses vary.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, DiscoverMultipleLowEnergyDevices) {
 #else
 TEST_F(BluetoothTest, MAYBE_DiscoverMultipleLowEnergyDevices) {
@@ -1058,7 +1058,7 @@ TEST_F(BluetoothTest, MAYBE_DiscoverMultipleLowEnergyDevices) {
   EXPECT_EQ(2u, adapter_->GetDevices().size());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Tests that the adapter responds to external changes to the power state.
 TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPoweredOffAndOn) {
   if (!PlatformSupportsLowEnergy()) {
@@ -1177,11 +1177,11 @@ TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPowerFailure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(adapter_->IsPowered());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // TODO(https://crbug.com/804356): Enable this test on old Windows versions as
 // well.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter) {
 #else
 TEST_F(BluetoothTest, TogglePowerFakeAdapter) {
@@ -1213,7 +1213,7 @@ TEST_F(BluetoothTest, TogglePowerFakeAdapter) {
   EXPECT_EQ(2, observer.powered_changed_count());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_TogglePowerFakeAdapter_Twice TogglePowerFakeAdapter_Twice
 #else
 #define MAYBE_TogglePowerFakeAdapter_Twice DISABLED_TogglePowerFakeAdapter_Twice
@@ -1222,7 +1222,7 @@ TEST_F(BluetoothTest, TogglePowerFakeAdapter) {
 // platforms the corresponding system APIs are blocking or use callbacks, so
 // that it is not necessary to store pending callbacks and wait for the
 // appropriate events.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_Twice) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_Twice) {
@@ -1260,7 +1260,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_Twice) {
   EXPECT_EQ(2, observer.powered_changed_count());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_TogglePowerFakeAdapter_WithinCallback_On_Off \
   TogglePowerFakeAdapter_WithinCallback_On_Off
 #else
@@ -1268,7 +1268,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_Twice) {
   DISABLED_TogglePowerFakeAdapter_WithinCallback_On_Off
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_WithinCallback_On_Off) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_On_Off) {
@@ -1297,7 +1297,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_On_Off) {
   EXPECT_EQ(2, observer.powered_changed_count());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_TogglePowerFakeAdapter_WithinCallback_Off_On \
   TogglePowerFakeAdapter_WithinCallback_Off_On
 #else
@@ -1305,7 +1305,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_On_Off) {
   DISABLED_TogglePowerFakeAdapter_WithinCallback_Off_On
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_WithinCallback_Off_On) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_Off_On) {
@@ -1341,7 +1341,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_Off_On) {
   EXPECT_EQ(3, observer.powered_changed_count());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_TogglePowerFakeAdapter_DestroyWithPending \
   TogglePowerFakeAdapter_DestroyWithPending
 #else
@@ -1349,7 +1349,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_Off_On) {
   DISABLED_TogglePowerFakeAdapter_DestroyWithPending
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_DestroyWithPending) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_DestroyWithPending) {
@@ -1393,7 +1393,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_DestroyWithPending) {
   EXPECT_TRUE(error_callback_called);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TogglePowerBeforeScan TogglePowerBeforeScan
 #else
 #define MAYBE_TogglePowerBeforeScan DISABLED_TogglePowerBeforeScan
@@ -1433,7 +1433,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerBeforeScan) {
   EXPECT_TRUE(discovery_sessions_[0]->IsActive());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, DiscoverySessionFailure) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
@@ -1459,9 +1459,9 @@ TEST_P(BluetoothTestWinrtOnly, DiscoverySessionFailure) {
   EXPECT_EQ(2, observer.discovering_changed_count());
   EXPECT_FALSE(observer.last_discovering());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TurnOffAdapterWithConnectedDevice \
   TurnOffAdapterWithConnectedDevice
 #else
@@ -1496,7 +1496,7 @@ TEST_F(BluetoothTest, MAYBE_TurnOffAdapterWithConnectedDevice) {
   EXPECT_FALSE(device->IsGattConnected());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, RegisterAdvertisement) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
@@ -1804,9 +1804,9 @@ TEST_P(BluetoothTestWinrtOnly, SimulateAdvertisementStoppedByOS) {
   EXPECT_EQ(1u, observer.released_count());
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if (defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
     !defined(USE_CAST_BLUETOOTH_ADAPTER)
 #define MAYBE_RegisterLocalGattServices RegisterLocalGattServices
 #else
@@ -1849,7 +1849,7 @@ TEST_F(BluetoothTest, MAYBE_RegisterLocalGattServices) {
 // This test should only be enabled for platforms that uses the
 // BluetoothAdapter#RemoveOutdatedDevices function to purge outdated
 // devices.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_EnsureUpdatedTimestamps EnsureUpdatedTimestamps
 #else
 #define MAYBE_EnsureUpdatedTimestamps DISABLED_EnsureUpdatedTimestamps
@@ -1888,7 +1888,7 @@ TEST_F(BluetoothTest, MAYBE_EnsureUpdatedTimestamps) {
 // This test should only be enabled for platforms that uses the
 // BluetoothAdapter#RemoveOutdatedDevices function to purge outdated
 // devices.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_RemoveOutdatedDevices RemoveOutdatedDevices
 #else
 #define MAYBE_RemoveOutdatedDevices DISABLED_RemoveOutdatedDevices
@@ -1917,7 +1917,7 @@ TEST_F(BluetoothTest, MAYBE_RemoveOutdatedDevices) {
 // This test should only be enabled for platforms that uses the
 // BluetoothAdapter#RemoveOutdatedDevices function to purge outdated
 // devices.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_RemoveOutdatedDeviceGattConnect RemoveOutdatedDeviceGattConnect
 #else
 #define MAYBE_RemoveOutdatedDeviceGattConnect \
@@ -1944,7 +1944,7 @@ TEST_F(BluetoothTest, MAYBE_RemoveOutdatedDeviceGattConnect) {
   EXPECT_EQ(1u, adapter_->GetDevices().size());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Simulate two devices being connected before calling
 // RetrieveGattConnectedDevicesWithDiscoveryFilter() with no service filter.
 TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceWithNoFilter) {
@@ -1972,9 +1972,9 @@ TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceWithNoFilter) {
   EXPECT_EQ(2, observer.device_added_count());
   EXPECT_EQ(2u, adapter_->GetDevices().size());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Simulate two devices being connected before calling
 // RetrieveGattConnectedDevicesWithDiscoveryFilter() with one service filter.
 TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceWithFilter) {
@@ -2005,9 +2005,9 @@ TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceWithFilter) {
   EXPECT_EQ(1, observer.device_added_count());
   EXPECT_EQ(1u, adapter_->GetDevices().size());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Simulate two devices being connected before calling
 // RetrieveGattConnectedDevicesWithDiscoveryFilter() with one service filter
 // that doesn't match.
@@ -2034,9 +2034,9 @@ TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceWithWrongFilter) {
   EXPECT_EQ(0, observer.device_added_count());
   EXPECT_EQ(0u, adapter_->GetDevices().size());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Simulate two devices being connected before calling
 // RetrieveGattConnectedDevicesWithDiscoveryFilter() with two service filters
 // that both match.
@@ -2079,9 +2079,9 @@ TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceWithTwoFilters) {
   EXPECT_EQ(2, observer.device_added_count());
   EXPECT_EQ(2u, adapter_->GetDevices().size());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Simulate two devices being connected before calling
 // RetrieveGattConnectedDevicesWithDiscoveryFilter() with one service filter
 // that one match device, and then
@@ -2131,9 +2131,9 @@ TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceTwice) {
   EXPECT_EQ(0, observer.device_added_count());
   EXPECT_EQ(1u, adapter_->GetDevices().size());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 INSTANTIATE_TEST_SUITE_P(All,
                          BluetoothTestWinrt,
                          ::testing::ValuesIn(kBluetoothTestWinrtParamAll));
@@ -2143,6 +2143,6 @@ INSTANTIATE_TEST_SUITE_P(
     BluetoothTestWinrtOnly,
     ::testing::ValuesIn(kBluetoothTestWinrtParamWinrtOnly));
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device

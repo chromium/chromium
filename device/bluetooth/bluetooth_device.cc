@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -327,7 +328,7 @@ BluetoothDevice::UUIDSet BluetoothDevice::GetUUIDs() const {
   return device_uuids_.GetUUIDs();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothDevice::SetIsBlockedByPolicy(bool is_blocked_by_policy) {
   is_blocked_by_policy_ = is_blocked_by_policy;
   GetAdapter()->NotifyDeviceIsBlockedByPolicyChanged(this,
@@ -510,7 +511,7 @@ BluetoothDevice::GetPrimaryServicesByUUID(const BluetoothUUID& service_uuid) {
   return services;
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void BluetoothDevice::SetBatteryInfo(const BatteryInfo& info) {
   if (info.percentage) {
     DCHECK_GE(info.percentage.value(), 0);

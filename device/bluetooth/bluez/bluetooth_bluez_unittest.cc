@@ -2220,7 +2220,7 @@ TEST_F(BluetoothBlueZTest, DeviceAddressChanged) {
   EXPECT_EQ(std::string(kNewAddress), devices[idx]->GetAddress());
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(BluetoothBlueZTest, DevicePairedChanged) {
   // Simulate a change of paired state of a device.
   GetAdapter();
@@ -4663,7 +4663,7 @@ TEST_F(BluetoothBlueZTest, SetConnectionLatency) {
   EXPECT_EQ(2, error_callback_count_);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BluetoothBlueZTest, AdminPolicyEvents) {
   // Simulate the addition, removal, and change of admin policy.
   GetAdapter();

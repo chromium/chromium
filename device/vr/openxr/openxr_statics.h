@@ -14,7 +14,7 @@
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -48,7 +48,7 @@ class DEVICE_VR_EXPORT OpenXrStatics {
   bool IsHardwareAvailable();
   bool IsApiAvailable();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CHROME_LUID GetLuid(const OpenXrExtensionHelper& extension_helper);
 #endif
 

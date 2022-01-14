@@ -6,10 +6,11 @@
 
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/vr/windows/d3d11_texture_helper.h"
 #endif
 
@@ -142,7 +143,7 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
   pending_frame_->waiting_for_webxr_ = false;
   pending_frame_->submit_frame_time_ = base::TimeTicks::Now();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
                                               ? texture_handle.TakeHandle()
                                               : base::win::ScopedHandle();
@@ -499,7 +500,7 @@ void XRCompositorCommon::SubmitOverlayTexture(
 
   pending_frame_->waiting_for_overlay_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), left_bounds,
                                     right_bounds);
   pending_frame_->overlay_submitted_ = true;

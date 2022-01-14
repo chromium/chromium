@@ -21,17 +21,17 @@
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "device/bluetooth/test/bluetooth_test_android.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "device/bluetooth/test/bluetooth_test_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "device/bluetooth/test/bluetooth_test_win.h"
 #elif defined(USE_CAST_BLUETOOTH_ADAPTER)
 #include "device/bluetooth/test/bluetooth_test_cast.h"
-#elif defined(OS_CHROMEOS) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "device/bluetooth/test/bluetooth_test_bluez.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "device/bluetooth/test/bluetooth_test_fuchsia.h"
 #endif
 
@@ -51,7 +51,7 @@ int8_t ToInt8(BluetoothTest::TestTxPower tx_power) {
   return static_cast<int8_t>(tx_power);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ScheduleAsynchronousCancelPairing(BluetoothDevice* device) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&BluetoothDevice::CancelPairing,
@@ -63,7 +63,7 @@ void ScheduleAsynchronousRejectPairing(BluetoothDevice* device) {
       FROM_HERE, base::BindOnce(&BluetoothDevice::RejectPairing,
                                 base::Unretained(device)));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -135,7 +135,7 @@ TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_RejectsInvalidFormats) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, DeviceIsPaired) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
@@ -300,10 +300,10 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeCancelPairing) {
   EXPECT_FALSE(device->IsPaired());
   EXPECT_FALSE(device->ExpectingPinCode());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Verifies basic device properties, e.g. GetAddress, GetName, ...
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, LowEnergyDeviceProperties) {
 #else
 TEST_F(BluetoothTest, LowEnergyDeviceProperties) {
@@ -334,7 +334,7 @@ TEST_F(BluetoothTest, LowEnergyDeviceProperties) {
 
 // Verifies that the device name can be populated by later advertisement
 // packets and is persistent.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, LowEnergyDeviceNameDelayed) {
 #else
 // This test does not yet pass on any other platform.
@@ -357,7 +357,7 @@ TEST_F(BluetoothTest, DISABLED_LowEnergyDeviceNameDelayed) {
 }
 
 // Device with no advertised Service UUIDs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, LowEnergyDeviceNoUUIDs) {
 #else
 TEST_F(BluetoothTest, LowEnergyDeviceNoUUIDs) {
@@ -374,15 +374,15 @@ TEST_F(BluetoothTest, LowEnergyDeviceNoUUIDs) {
   EXPECT_EQ(0u, uuids.size());
 }
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS) || defined(OS_LINUX) || \
-    defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID \
   GetServiceDataUUIDs_GetServiceDataForUUID
 #else
 #define MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID \
   DISABLED_GetServiceDataUUIDs_GetServiceDataForUUID
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GetServiceDataUUIDs_GetServiceDataForUUID) {
 #else
 TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
@@ -393,11 +393,11 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
   }
   InitWithFakeAdapter();
 
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/706043): Remove #if once StartLowEnergyDiscoverySession is
   // implemented for bluez.
   StartLowEnergyDiscoverySession();
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
   // Receive Advertisement with empty service data.
   BluetoothDevice* device1 = SimulateLowEnergyDevice(4);
@@ -409,7 +409,7 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
   // Receive Advertisement with service data.
   BluetoothDevice* device2 = SimulateLowEnergyDevice(1);
 
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device2->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x04, device2->GetAdvertisingDataFlags().value());
 #endif
@@ -426,7 +426,7 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
 
 // TODO(crbug.com/707039): Remove #if once the BlueZ caching behavior is
 // changed.
-#if (defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
     !defined(USE_CAST_BLUETOOTH_ADAPTER)
   // On ChromeOS and Linux, BlueZ persists all service data meaning if
   // a device stops advertising service data for a UUID, BlueZ will
@@ -449,7 +449,7 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
   // Receive Advertisement with new service data and empty manufacturer data.
   SimulateLowEnergyDevice(2);
 
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device2->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x05, device2->GetAdvertisingDataFlags().value());
 #endif
@@ -468,7 +468,7 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
       std::vector<uint8_t>({0, 2}),
       *device2->GetServiceDataForUUID(BluetoothUUID(kTestUUIDImmediateAlert)));
 
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/706043): Remove #if once StartLowEnergyDiscoverySession is
   // implemented for bluez.
   // Stop discovery.
@@ -485,17 +485,17 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
             device2->GetServiceDataForUUID(BluetoothUUID(kTestUUIDHeartRate)));
   EXPECT_EQ(nullptr, device2->GetServiceDataForUUID(
                          BluetoothUUID(kTestUUIDImmediateAlert)));
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_AdvertisementData_Discovery AdvertisementData_Discovery
 #else
 #define MAYBE_AdvertisementData_Discovery DISABLED_AdvertisementData_Discovery
 #endif
 // Tests that the Advertisement Data fields are correctly updated during
 // discovery.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, AdvertisementData_Discovery) {
 #else
 TEST_F(BluetoothTest, MAYBE_AdvertisementData_Discovery) {
@@ -520,7 +520,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_Discovery) {
   EXPECT_EQ(0, observer.device_changed_count());
 
   EXPECT_EQ(ToInt8(TestRSSI::LOWEST), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x04, device->GetAdvertisingDataFlags().value());
 #endif
@@ -561,7 +561,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_Discovery) {
   EXPECT_EQ(2, observer.device_changed_count());
 
   EXPECT_EQ(ToInt8(TestRSSI::LOWER), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x05, device->GetAdvertisingDataFlags().value());
 #endif
@@ -614,7 +614,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_Discovery) {
   EXPECT_EQ(4, observer.device_changed_count());
 
   EXPECT_EQ(ToInt8(TestRSSI::LOWEST), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x04, device->GetAdvertisingDataFlags().value());
 #endif
@@ -630,14 +630,14 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_Discovery) {
 
 // TODO(dougt) As I turn on new platforms for WebBluetooth Scanning,
 // I will relax this #ifdef
-#if defined(OS_ANDROID) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_DeviceAdvertisementReceived DeviceAdvertisementReceived
 #else
 #define MAYBE_DeviceAdvertisementReceived DISABLED_DeviceAdvertisementReceived
 #endif
 // Tests that the Bluetooth adapter observer is notified when a device
 // advertisement is received.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, DeviceAdvertisementReceived) {
 #else
 TEST_F(BluetoothTest, MAYBE_DeviceAdvertisementReceived) {
@@ -682,13 +682,13 @@ TEST_F(BluetoothTest, MAYBE_DeviceAdvertisementReceived) {
   EXPECT_EQ(2, observer.device_advertisement_raw_received_count());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetUUIDs_Connection GetUUIDs_Connection
 #else
 #define MAYBE_GetUUIDs_Connection DISABLED_GetUUIDs_Connection
 #endif
 // Tests Advertisement Data is updated correctly during a connection.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GetUUIDs_Connection) {
 #else
 TEST_F(BluetoothTest, MAYBE_GetUUIDs_Connection) {
@@ -728,7 +728,7 @@ TEST_F(BluetoothTest, MAYBE_GetUUIDs_Connection) {
   EXPECT_EQ(UUIDSet({BluetoothUUID(kTestUUIDGenericAccess)}),
             device->GetUUIDs());
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // TODO(ortuno): Enable in Android and classic Windows.
   // Android and Windows don't yet support service changed events.
   // http://crbug.com/548280
@@ -754,7 +754,7 @@ TEST_F(BluetoothTest, MAYBE_GetUUIDs_Connection) {
   EXPECT_EQ(UUIDSet({BluetoothUUID(kTestUUIDGenericAccess)}),
             device->GetUUIDs());
 
-#endif  // defined(OS_MAC) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   observer.Reset();
 
@@ -770,7 +770,7 @@ TEST_F(BluetoothTest, MAYBE_GetUUIDs_Connection) {
   EXPECT_TRUE(device->GetUUIDs().empty());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Tests that receiving 2 notifications in a row from macOS that services has
 // changed is handled correctly. Each notification should generate a
 // notification that the gatt device has changed, and each notification should
@@ -869,7 +869,7 @@ TEST_F(BluetoothTest, ExtraDidDiscoverServicesCall) {
 }
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_AdvertisementData_DiscoveryDuringConnection \
   AdvertisementData_DiscoveryDuringConnection
 #else
@@ -878,7 +878,7 @@ TEST_F(BluetoothTest, ExtraDidDiscoverServicesCall) {
 #endif
 // Tests Advertisement Data is updated correctly when we start discovery
 // during a connection.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, AdvertisementData_DiscoveryDuringConnection) {
 #else
 TEST_F(BluetoothTest, MAYBE_AdvertisementData_DiscoveryDuringConnection) {
@@ -930,7 +930,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_DiscoveryDuringConnection) {
   EXPECT_EQ(UUIDSet({BluetoothUUID(kTestUUIDGenericAccess),
                      BluetoothUUID(kTestUUIDGenericAttribute)}),
             device->GetUUIDs());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x04, device->GetAdvertisingDataFlags().value());
 #endif
@@ -962,7 +962,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_DiscoveryDuringConnection) {
 
   EXPECT_EQ(3, observer.device_changed_count());
   EXPECT_EQ(ToInt8(TestRSSI::LOWER), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x05, device->GetAdvertisingDataFlags().value());
 #endif
@@ -1011,14 +1011,14 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_DiscoveryDuringConnection) {
   EXPECT_TRUE(device->GetUUIDs().empty());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_AdvertisementData_ConnectionDuringDiscovery \
   AdvertisementData_ConnectionDuringDiscovery
 #else
 #define MAYBE_AdvertisementData_ConnectionDuringDiscovery \
   DISABLED_AdvertisementData_ConnectionDuringDiscovery
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, AdvertisementData_ConnectionDuringDiscovery) {
 #else
 TEST_F(BluetoothTest, MAYBE_AdvertisementData_ConnectionDuringDiscovery) {
@@ -1047,7 +1047,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_ConnectionDuringDiscovery) {
 
   EXPECT_EQ(0, observer.device_changed_count());
   EXPECT_EQ(ToInt8(TestRSSI::LOWEST), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x04, device->GetAdvertisingDataFlags().value());
 #endif
@@ -1078,7 +1078,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_ConnectionDuringDiscovery) {
 
   EXPECT_EQ(1, observer.device_changed_count());
   EXPECT_EQ(ToInt8(TestRSSI::LOWER), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x05, device->GetAdvertisingDataFlags().value());
 #endif
@@ -1118,7 +1118,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_ConnectionDuringDiscovery) {
 
   EXPECT_EQ(3, observer.device_changed_count());
   EXPECT_EQ(ToInt8(TestRSSI::LOWER), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x05, device->GetAdvertisingDataFlags().value());
 #endif
@@ -1142,7 +1142,7 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_ConnectionDuringDiscovery) {
 
   EXPECT_EQ(4, observer.device_changed_count());
   EXPECT_EQ(ToInt8(TestRSSI::LOWEST), device->GetInquiryRSSI().value());
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(device->GetAdvertisingDataFlags().has_value());
   EXPECT_EQ(0x04, device->GetAdvertisingDataFlags().value());
 #endif
@@ -1175,8 +1175,8 @@ TEST_F(BluetoothTest, MAYBE_AdvertisementData_ConnectionDuringDiscovery) {
   EXPECT_FALSE(device->GetInquiryTxPower());
 }
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_LINUX)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_GetName_NullName GetName_NullName
 #else
 #define MAYBE_GetName_NullName DISABLED_GetName_NullName
@@ -1204,19 +1204,19 @@ TEST_F(BluetoothTest, MAYBE_GetName_NullName) {
   // GetAppearance() method is not implemented on those platforms.
   // TODO(https://crbug.com/588083): Enable the check below when GetAppearance()
   // is implemented for Android and Mac.
-#if !defined(OS_ANDROID) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   EXPECT_EQ(device->GetNameForDisplay(),
             u"Unknown or Unsupported Device (01:00:00:90:1E:BE)");
 #endif
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_CreateGattConnection CreateGattConnection
 #else
 #define MAYBE_CreateGattConnection DISABLED_CreateGattConnection
 #endif
 // Basic CreateGattConnection test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, CreateGattConnection) {
 #else
 TEST_F(BluetoothTest, MAYBE_CreateGattConnection) {
@@ -1237,14 +1237,14 @@ TEST_F(BluetoothTest, MAYBE_CreateGattConnection) {
   EXPECT_TRUE(gatt_connections_[0]->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_DisconnectionNotifiesDeviceChanged \
   DisconnectionNotifiesDeviceChanged
 #else
 #define MAYBE_DisconnectionNotifiesDeviceChanged \
   DISABLED_DisconnectionNotifiesDeviceChanged
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, DisconnectionNotifiesDeviceChanged) {
 #else
 TEST_F(BluetoothTest, MAYBE_DisconnectionNotifiesDeviceChanged) {
@@ -1270,14 +1270,14 @@ TEST_F(BluetoothTest, MAYBE_DisconnectionNotifiesDeviceChanged) {
   EXPECT_FALSE(device->IsGattConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection BluetoothGattConnection
 #else
 #define MAYBE_BluetoothGattConnection DISABLED_BluetoothGattConnection
 #endif
 // Creates BluetoothGattConnection instances and tests that the interface
 // functions even when some Disconnect and the BluetoothDevice is destroyed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, BluetoothGattConnection) {
 #else
 TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection) {
@@ -1333,7 +1333,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection) {
   EXPECT_EQ(device_address, gatt_connections_[1]->GetDeviceAddress());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_ConnectWithMultipleOSConnections \
   BluetoothGattConnection_ConnectWithMultipleOSConnections
 #else
@@ -1374,7 +1374,7 @@ TEST_F(BluetoothTest,
   EXPECT_FALSE(gatt_connections_[0]->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_AlreadyConnected \
   BluetoothGattConnection_AlreadyConnected
 #else
@@ -1382,7 +1382,7 @@ TEST_F(BluetoothTest,
   DISABLED_BluetoothGattConnection_AlreadyConnected
 #endif
 // Calls CreateGattConnection after already connected.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, BluetoothGattConnection_AlreadyConnected) {
 #else
 TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_AlreadyConnected) {
@@ -1406,7 +1406,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_AlreadyConnected) {
   EXPECT_TRUE(gatt_connections_[1]->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_NewConnectionLeavesPreviousDisconnected \
   BluetoothGattConnection_NewConnectionLeavesPreviousDisconnected
 #else
@@ -1414,7 +1414,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_AlreadyConnected) {
   DISABLED_BluetoothGattConnection_NewConnectionLeavesPreviousDisconnected
 #endif
 // Creates BluetoothGattConnection after one exists that has disconnected.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly,
        BluetoothGattConnection_NewConnectionLeavesPreviousDisconnected) {
 #else
@@ -1446,7 +1446,7 @@ TEST_F(BluetoothTest,
   EXPECT_TRUE(gatt_connections_[1]->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_DisconnectWhenObjectsDestroyed \
   BluetoothGattConnection_DisconnectWhenObjectsDestroyed
 #else
@@ -1454,7 +1454,7 @@ TEST_F(BluetoothTest,
   DISABLED_BluetoothGattConnection_DisconnectWhenObjectsDestroyed
 #endif
 // Deletes BluetoothGattConnection causing disconnection.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly,
        BluetoothGattConnection_DisconnectWhenObjectsDestroyed) {
 #else
@@ -1484,7 +1484,7 @@ TEST_F(BluetoothTest,
   EXPECT_EQ(1, gatt_disconnection_attempts_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_DisconnectInProgress \
   BluetoothGattConnection_DisconnectInProgress
 #else
@@ -1492,7 +1492,7 @@ TEST_F(BluetoothTest,
   DISABLED_BluetoothGattConnection_DisconnectInProgress
 #endif
 // Starts process of disconnecting and then calls BluetoothGattConnection.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, BluetoothGattConnection_DisconnectInProgress) {
 #else
 TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_DisconnectInProgress) {
@@ -1534,7 +1534,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_DisconnectInProgress) {
     EXPECT_FALSE(connection->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_SimulateDisconnect \
   BluetoothGattConnection_SimulateDisconnect
 #else
@@ -1543,7 +1543,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_DisconnectInProgress) {
 #endif
 // Calls CreateGattConnection but receives notice that the device disconnected
 // before it ever connects.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, BluetoothGattConnection_SimulateDisconnect) {
 #else
 TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_SimulateDisconnect) {
@@ -1569,7 +1569,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_SimulateDisconnect) {
     EXPECT_FALSE(connection->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_DisconnectGatt_SimulateConnect \
   BluetoothGattConnection_DisconnectGatt_SimulateConnect
 #else
@@ -1577,7 +1577,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_SimulateDisconnect) {
   DISABLED_BluetoothGattConnection_DisconnectGatt_SimulateConnect
 #endif
 // Calls CreateGattConnection & DisconnectGatt, then simulates connection.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly,
        BluetoothGattConnection_DisconnectGatt_SimulateConnect) {
 #else
@@ -1597,7 +1597,7 @@ TEST_F(BluetoothTest,
       ConnectGatt(device,
                   /*service_uuid=*/absl::nullopt,
                   base::BindLambdaForTesting([this](BluetoothDevice* device) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
                     // On Windows there is currently no way to cancel a
                     // pending GATT connection from the caller's side.
                     device->DisconnectGatt();
@@ -1605,7 +1605,7 @@ TEST_F(BluetoothTest,
                     SimulateGattConnection(device);
                   })));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   EXPECT_EQ(1, gatt_disconnection_attempts_);
 #endif
   EXPECT_EQ(1, gatt_connection_attempts_);
@@ -1616,7 +1616,7 @@ TEST_F(BluetoothTest,
   base::RunLoop().RunUntilIdle();
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_DisconnectGatt_SimulateDisconnect \
   BluetoothGattConnection_DisconnectGatt_SimulateDisconnect
 #else
@@ -1624,7 +1624,7 @@ TEST_F(BluetoothTest,
   DISABLED_BluetoothGattConnection_DisconnectGatt_SimulateDisconnect
 #endif
 // Calls CreateGattConnection & DisconnectGatt, then simulates disconnection.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly,
        BluetoothGattConnection_DisconnectGatt_SimulateDisconnect) {
 #else
@@ -1649,7 +1649,7 @@ TEST_F(BluetoothTest,
                   })));
   EXPECT_EQ(1, gatt_connection_attempts_);
   EXPECT_EQ(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // Closing a GATT connection also disconnects on Android.
       // TODO(crbug.com/1045648): this value probably shouldn't be different on
       // Android.
@@ -1663,7 +1663,7 @@ TEST_F(BluetoothTest,
     EXPECT_FALSE(connection->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_DisconnectGatt_Cleanup \
   BluetoothGattConnection_DisconnectGatt_Cleanup
 #else
@@ -1672,7 +1672,7 @@ TEST_F(BluetoothTest,
 #endif
 // Calls CreateGattConnection & DisconnectGatt, then checks that gatt services
 // have been cleaned up.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, BluetoothGattConnection_DisconnectGatt_Cleanup) {
 #else
 TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_DisconnectGatt_Cleanup) {
@@ -1722,7 +1722,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_DisconnectGatt_Cleanup) {
   EXPECT_EQ(2, observer.gatt_services_discovered_count());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BluetoothGattConnection_ErrorAfterConnection \
   BluetoothGattConnection_ErrorAfterConnection
 #else
@@ -1731,7 +1731,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_DisconnectGatt_Cleanup) {
 #endif
 // Calls CreateGattConnection, but simulate errors connecting. Also, verifies
 // multiple errors should only invoke callbacks once.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, BluetoothGattConnection_ErrorAfterConnection) {
 #else
 TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_ErrorAfterConnection) {
@@ -1754,7 +1754,7 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_ErrorAfterConnection) {
       })));
 
   EXPECT_EQ(1, gatt_connection_attempts_);
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   // TODO(crbug.com/578191): Change to ERROR_AUTH_FAILED. We should be getting a
   // callback only with the first error, but our android framework doesn't yet
   // support sending different errors.
@@ -1767,12 +1767,12 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_ErrorAfterConnection) {
     EXPECT_FALSE(connection->IsConnected());
 }
 
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_GattServices_ObserversCalls GattServices_ObserversCalls
 #else
 #define MAYBE_GattServices_ObserversCalls DISABLED_GattServices_ObserversCalls
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GattServices_ObserversCalls) {
 #else
 TEST_F(BluetoothTest, MAYBE_GattServices_ObserversCalls) {
@@ -1797,13 +1797,13 @@ TEST_F(BluetoothTest, MAYBE_GattServices_ObserversCalls) {
   EXPECT_EQ(1, observer.gatt_services_discovered_count());
 }
 
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_GattServicesDiscovered_Success GattServicesDiscovered_Success
 #else
 #define MAYBE_GattServicesDiscovered_Success \
   DISABLED_GattServicesDiscovered_Success
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GattServicesDiscovered_Success) {
 #else
 TEST_F(BluetoothTest, MAYBE_GattServicesDiscovered_Success) {
@@ -1831,7 +1831,7 @@ TEST_F(BluetoothTest, MAYBE_GattServicesDiscovered_Success) {
   EXPECT_EQ(2u, device->GetGattServices().size());
 }
 
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_GattServicesDiscovered_AfterDeleted \
   GattServicesDiscovered_AfterDeleted
 #else
@@ -1863,7 +1863,7 @@ TEST_F(BluetoothTest, MAYBE_GattServicesDiscovered_AfterDeleted) {
       std::vector<std::string>({kTestUUIDGenericAccess, kTestUUIDHeartRate}));
 }
 
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_GattServicesDiscoveredError_AfterDeleted \
   GattServicesDiscoveredError_AfterDeleted
 #else
@@ -1894,7 +1894,7 @@ TEST_F(BluetoothTest, MAYBE_GattServicesDiscoveredError_AfterDeleted) {
   base::RunLoop().RunUntilIdle();
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GattServicesDiscovered_AfterDisconnection \
   GattServicesDiscovered_AfterDisconnection
 #else
@@ -1902,7 +1902,7 @@ TEST_F(BluetoothTest, MAYBE_GattServicesDiscoveredError_AfterDeleted) {
   DISABLED_GattServicesDiscovered_AfterDisconnection
 #endif
 // Classic Windows does not support disconnection.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GattServicesDiscovered_AfterDisconnection) {
 #else
 TEST_F(BluetoothTest, MAYBE_GattServicesDiscovered_AfterDisconnection) {
@@ -1932,7 +1932,7 @@ TEST_F(BluetoothTest, MAYBE_GattServicesDiscovered_AfterDisconnection) {
   EXPECT_EQ(0u, device->GetGattServices().size());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GattServicesDiscoveredError_AfterDisconnection \
   GattServicesDiscoveredError_AfterDisconnection
 #else
@@ -1940,7 +1940,7 @@ TEST_F(BluetoothTest, MAYBE_GattServicesDiscovered_AfterDisconnection) {
   DISABLED_GattServicesDiscoveredError_AfterDisconnection
 #endif
 // Windows does not support disconnecting.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GattServicesDiscoveredError_AfterDisconnection) {
 #else
 TEST_F(BluetoothTest, MAYBE_GattServicesDiscoveredError_AfterDisconnection) {
@@ -1967,14 +1967,14 @@ TEST_F(BluetoothTest, MAYBE_GattServicesDiscoveredError_AfterDisconnection) {
   EXPECT_EQ(0u, device->GetGattServices().size());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetGattServices_and_GetGattService \
   GetGattServices_and_GetGattService
 #else
 #define MAYBE_GetGattServices_and_GetGattService \
   DISABLED_GetGattServices_and_GetGattService
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, GetGattServices_and_GetGattService) {
 #else
 TEST_F(BluetoothTest, MAYBE_GetGattServices_and_GetGattService) {
@@ -2007,12 +2007,12 @@ TEST_F(BluetoothTest, MAYBE_GetGattServices_and_GetGattService) {
   EXPECT_TRUE(device->GetGattService(service_id3));
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetGattServices_FindNone GetGattServices_FindNone
 #else
 #define MAYBE_GetGattServices_FindNone DISABLED_GetGattServices_FindNone
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GetGattServices_FindNone) {
 #else
 TEST_F(BluetoothTest, MAYBE_GetGattServices_FindNone) {
@@ -2034,13 +2034,13 @@ TEST_F(BluetoothTest, MAYBE_GetGattServices_FindNone) {
   EXPECT_EQ(0u, device->GetGattServices().size());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetGattServices_DiscoveryError GetGattServices_DiscoveryError
 #else
 #define MAYBE_GetGattServices_DiscoveryError \
   DISABLED_GetGattServices_DiscoveryError
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GetGattServices_DiscoveryError) {
 #else
 TEST_F(BluetoothTest, MAYBE_GetGattServices_DiscoveryError) {
@@ -2061,7 +2061,7 @@ TEST_F(BluetoothTest, MAYBE_GetGattServices_DiscoveryError) {
   EXPECT_EQ(0u, device->GetGattServices().size());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GattServicesDiscovered_SomeServicesBlocked) {
 #else
 TEST_F(BluetoothTest, DISABLED_GattServicesDiscovered_SomeServicesBlocked) {
@@ -2091,7 +2091,7 @@ TEST_F(BluetoothTest, DISABLED_GattServicesDiscovered_SomeServicesBlocked) {
   EXPECT_EQ(3u, device->GetGattServices().size());
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(BluetoothTest, GetDeviceTransportType) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
@@ -2109,14 +2109,14 @@ TEST_F(BluetoothTest, GetDeviceTransportType) {
   EXPECT_EQ(BLUETOOTH_TRANSPORT_CLASSIC, device3->GetType());
 #endif  // !defined(USE_CAST_BLUETOOTH_ADAPTER)
 }
-#endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetPrimaryServices GetPrimaryServices
 #else
 #define MAYBE_GetPrimaryServices DISABLED_GetPrimaryServices
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, GetPrimaryServices) {
 #else
 TEST_F(BluetoothTest, MAYBE_GetPrimaryServices) {
@@ -2145,12 +2145,12 @@ TEST_F(BluetoothTest, MAYBE_GetPrimaryServices) {
   EXPECT_EQ(3u, device->GetPrimaryServices().size());
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetPrimaryServicesByUUID GetPrimaryServicesByUUID
 #else
 #define MAYBE_GetPrimaryServicesByUUID DISABLED_GetPrimaryServicesByUUID
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, GetPrimaryServicesByUUID) {
 #else
 TEST_F(BluetoothTest, MAYBE_GetPrimaryServicesByUUID) {
@@ -2201,7 +2201,7 @@ TEST_F(BluetoothTest, MAYBE_GetPrimaryServicesByUUID) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrtOnly, GattConnectedNameChange) {
 #else
 // The SimulateGattNameChange() function is not yet available on other
@@ -2228,7 +2228,7 @@ TEST_F(BluetoothTest, DISABLED_GattConnectedNameChange) {
   EXPECT_EQ(base::UTF8ToUTF16(kTestDeviceName), device->GetNameForDisplay());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // WinRT sometimes calls OnConnectionStatusChanged when the status is
 // initialized and not when changed.
 TEST_P(BluetoothTestWinrtOnly, FalseStatusChangedTest) {
@@ -2248,13 +2248,13 @@ TEST_P(BluetoothTestWinrtOnly, FalseStatusChangedTest) {
 }
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ServiceSpecificDiscovery ServiceSpecificDiscovery
 #else
 #define MAYBE_ServiceSpecificDiscovery DISABLED_ServiceSpecificDiscovery
 #endif
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 TEST_F(BluetoothTest, MAYBE_ServiceSpecificDiscovery) {
 #else
 TEST_P(BluetoothTestWinrtOnly, ServiceSpecificDiscovery) {
@@ -2277,7 +2277,7 @@ TEST_P(BluetoothTestWinrtOnly, ServiceSpecificDiscovery) {
   EXPECT_EQ(1, gatt_connection_attempts_);
   EXPECT_EQ(1, gatt_discovery_attempts_);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Outside of WinRT, service-specific discovery should be ignored.
   ASSERT_FALSE(device->supports_service_specific_discovery());
 

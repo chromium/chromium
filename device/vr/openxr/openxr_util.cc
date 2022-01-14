@@ -63,7 +63,7 @@ XrResult GetSystem(XrInstance instance, XrSystemId* system) {
   return xrGetSystem(instance, &system_info, system);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsRunningInWin32AppContainer() {
   base::win::ScopedHandle scopedProcessToken;
   HANDLE processToken;
