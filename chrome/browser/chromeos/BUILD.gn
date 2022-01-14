@@ -697,6 +697,8 @@ source_set("chromeos") {
     "../ash/app_restore/full_restore_service.h",
     "../ash/app_restore/full_restore_service_factory.cc",
     "../ash/app_restore/full_restore_service_factory.h",
+    "../ash/app_restore/lacros_window_handler.cc",
+    "../ash/app_restore/lacros_window_handler.h",
     "../ash/app_restore/new_user_restore_pref_handler.cc",
     "../ash/app_restore/new_user_restore_pref_handler.h",
     "../ash/apps/apk_web_app_installer.cc",

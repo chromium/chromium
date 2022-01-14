@@ -193,4 +193,15 @@ std::string GetAppIdFromAppName(const std::string& app_name) {
   return app_name.substr(prefix.length());
 }
 
+void OnLacrosWindowAdded(aura::Window* const window,
+                         uint32_t browser_session_id,
+                         uint32_t restored_browser_session_id) {
+  if (window->GetProperty(aura::client::kAppType) !=
+      static_cast<int>(ash::AppType::LACROS)) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1239984): Save and restore Lacros windows.
+}
+
 }  // namespace app_restore

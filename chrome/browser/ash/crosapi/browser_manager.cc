@@ -277,7 +277,7 @@ bool GetLaunchOnLoginPref() {
 browser_util::InitialBrowserAction GetInitialBrowserAction() {
   return browser_util::InitialBrowserAction(
       user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
-              ash::full_restore::IsFullRestoreAvailableForLacros()
+              ash::full_restore::MaybeCreateFullRestoreServiceForLacros()
           ? mojom::InitialBrowserAction::kDoNotOpenWindow
           : mojom::InitialBrowserAction::kUseStartupPreference);
 }

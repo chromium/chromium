@@ -64,6 +64,14 @@ int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 COMPONENT_EXPORT(APP_RESTORE)
 std::string GetAppIdFromAppName(const std::string& app_name);
 
+// Invoked when Lacros window is created. `browser_session_id` is the
+// current browser session id. `restored_browser_session_id` is the restored
+// browser session id.
+COMPONENT_EXPORT(APP_RESTORE)
+void OnLacrosWindowAdded(aura::Window* const window,
+                         uint32_t browser_session_id,
+                         uint32_t restored_browser_session_id);
+
 }  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_APP_RESTORE_UTILS_H_
