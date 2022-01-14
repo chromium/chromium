@@ -224,7 +224,7 @@ static const SegmentCase segment_cases[] = {
         url::Component(),       // query
         url::Component(27, 3),  // ref
     },
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {
         "c:/notahost/path/file#ref", "file",
         url::Component(),       // scheme
@@ -236,7 +236,7 @@ static const SegmentCase segment_cases[] = {
         url::Component(),       // query
         url::Component(22, 3),  // ref
     },
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     {
         "~/notahost/path/file#ref", "file",
         url::Component(),       // scheme
@@ -491,7 +491,7 @@ TEST(URLFixerTest, FixupFile) {
   EXPECT_EQ(golden, fixedup);
 
   // TODO(port): Make some equivalent tests for posix.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // c|/foo\bar.txt -> file:///c:/foo/bar.txt (pipe allowed instead of colon)
   std::string cur(base::WideToUTF8(original.value()));
   EXPECT_EQ(':', cur[1]);
@@ -525,9 +525,9 @@ TEST(URLFixerTest, FixupFile) {
     //   {"file:///foo:/bar", "file://foo/bar"},
     //   {"file:/\\/server\\folder/file", "file://server/folder/file"},
   };
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define HOME "/Users/"
 #else
 #define HOME "/home/"

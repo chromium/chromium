@@ -187,7 +187,7 @@ TEST(UrlFormatterTest, FormatUrl) {
        7},
 
       // -------- omit file: --------
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       {"omit file on Windows", "file:///C:/Users/homedirname/folder/file.pdf/",
        kFormatUrlOmitFileScheme, net::UnescapeRule::NORMAL,
        L"C:/Users/homedirname/folder/file.pdf/", static_cast<size_t>(-1)},
@@ -248,7 +248,7 @@ TEST(UrlFormatterTest, FormatUrl) {
            kFormatUrlOmitTrivialSubdomains | kFormatUrlTrimAfterHost,
        net::UnescapeRule::NORMAL, L"view-source:https://www.google.com/foo",
        20},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       {"view-source should not omit file on Windows",
        "view-source:file:///C:/Users/homedirname/folder/file.pdf/",
        kFormatUrlOmitDefaults | kFormatUrlOmitFileScheme,

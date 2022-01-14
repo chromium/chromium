@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 
   base::i18n::InitializeICU();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
   base::CommandLine::StringVector wide_args = command_line.GetArgs();
   for (const auto& arg : wide_args) {

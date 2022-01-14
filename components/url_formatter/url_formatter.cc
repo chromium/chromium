@@ -699,7 +699,7 @@ std::u16string FormatUrlWithAdjustments(
         url.SchemeIs(url::kMailToScheme)
             ? new_parsed->scheme.len + 1   // +1 for :.
             : new_parsed->scheme.len + 3;  // +3 for ://.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Because there's an additional leading slash after the scheme for local
     // files on Windows, we should remove it for URL display when eliding
     // the scheme by offsetting by an additional character.

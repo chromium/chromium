@@ -45,7 +45,7 @@ struct ParsingTestcase {
   const std::vector<UrlComponent> components;
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Returns the width of a utf8 or utf16 string using default UI font, or the
 // provided |font_list|.
@@ -260,7 +260,7 @@ TEST(TextEliderTest, TestTrailingEllipsisSlashEllipsisHack) {
 
 // Test eliding of empty strings, URLs with ports, passwords, queries, etc.
 TEST(TextEliderTest, TestElisionSpecialCases) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
@@ -321,7 +321,7 @@ TEST(TextEliderTest, TestFileURLEliding) {
          /* clang-format on */
      }},
 // GURL parses "file:///C:path" differently on windows than it does on posix.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {"file:///C:path1/path2/path3/filename",
      {
          /* clang-format off */
@@ -331,7 +331,7 @@ TEST(TextEliderTest, TestFileURLEliding) {
          "C:/" + kEllipsisStr + "/filename",
          /* clang-format on */
      }},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     {"file://filer/foo/bar/file",
      {
          /* clang-format off */
@@ -395,7 +395,7 @@ TEST(TextEliderTest, TestHostEliding) {
                                                  gfx::FontList(), 2));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 struct OriginTestData {
   const char* const description;

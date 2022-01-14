@@ -735,7 +735,7 @@ const IDNTestCase kIdnCases[] = {
     {"xn--ab-yod.com", u"a\u05f4b.com", kInvalid},
     // Hebrew Gershayim with Arabic is disallowed.
     {"xn--5eb7h.eg", u"\u0628\u05f4.eg", kUnsafe},
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // These characters are blocked due to a font issue on Mac.
     // Tibetan transliteration characters.
     {"xn--com-lum.test.pl", u"com\u0f8c.test.pl", kUnsafe},
@@ -1038,7 +1038,7 @@ const IDNTestCase kIdnCases[] = {
      u"\u1090\u1091\u1095\u1096\u1097.\u1019\u103c\u1014\u103a\u1019\u102c",
      kSafe},
 // Thai:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     {"xn--o3cedqz2c.com", u"\u0e17\u0e19\u0e1a\u0e1e\u0e23\u0e2b.com", kUnsafe},
     {"xn--o3cedqz2c.th", u"\u0e17\u0e19\u0e1a\u0e1e\u0e23\u0e2b.th", kSafe},
     {"xn--o3cedqz2c.xn--o3cw4h",
