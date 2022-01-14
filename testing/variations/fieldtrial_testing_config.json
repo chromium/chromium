@@ -4165,6 +4165,28 @@
             ]
         }
     ],
+    "HatsArcGames": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "custom_client_data": "{\"package_names\":[\"com.roblox.client\",\"com.dts.freefireth\",\"air.com.lunime.gachaclub\",\"com.devsisters.ck\",\"com.tocaboca.tocalifeworld\",\"com.innersloth.spacemafia\",\"com.microsoft.microsoftsolitairecollection\",\"com.king.candycrushsaga\",\"com.king.candycrushsodasaga\",\"air.com.lunime.gachalife\",\"com.playrix.township\",\"com.dts.freefiremax\",\"com.mobilityware.spider\",\"net.wooga.junes_journey_hidden_object_mystery_game\",\"com.mobile.legends\",\"com.ninjakiwi.bloonstd6\",\"com.lockwoodpublishing.avakinlife\",\"com.pixel.art.coloring.color.number\",\"com.playrix.homescapes\",\"com.miHoYo.GenshinImpact\"]}",
+                        "prob": "0.05",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1638316800000",
+                        "trigger_id": "rJ6AqzkxG0jBnuKU19R0UJFsCCjz"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingArcGames"
+                    ]
+                }
+            ]
+        }
+    ],
     "HatsOnboardingExperience": [
         {
             "platforms": [
