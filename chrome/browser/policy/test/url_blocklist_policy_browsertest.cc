@@ -191,6 +191,33 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistViewSource) {
   CheckCanOpenURL(browser(), kURL_A);
 }
 
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistNonStandardScheme) {
+  // Checks that non-standard schemes can be blocklisted, and that the blocking
+  // page mentions the URL's scheme.
+  const std::string kURL = "mailto:nobody";
+
+  // Block mailto: urls.
+  base::ListValue blocklist;
+  blocklist.Append("mailto:*");
+  PolicyMap policies;
+  policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  // Ensure the URL is blocked.
+  CheckURLIsBlocked(browser(), kURL);
+
+  // Ensure the blocking page mentions the scheme.
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      contents, "domAutomationController.send(document.body.textContent);",
+      &result));
+  EXPECT_THAT(result, testing::HasSubstr("mailto"));
+}
+
 IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
   // Checks that URLs can be blocklisted, and that exceptions can be made to
   // the blocklist.

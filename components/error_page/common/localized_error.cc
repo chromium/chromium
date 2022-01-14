@@ -982,10 +982,17 @@ LocalizedError::PageState LocalizedError::GetPageState(
     base::i18n::WrapStringWithLTRFormatting(&failed_url_string);
 
   std::u16string host_name(url_formatter::IDNToUnicode(failed_url.host()));
-  if (failed_url.SchemeIsHTTPOrHTTPS())
+  if (failed_url.SchemeIsHTTPOrHTTPS()) {
     result.strings.SetStringPath("title", host_name);
-  else
+  } else {
     result.strings.SetStringPath("title", failed_url_string);
+
+    // If we do not have a meaningful hostname to display, show the scheme.
+    if (host_name.empty() && !failed_url.IsStandard()) {
+      options.heading_resource_id = IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME;
+      host_name = base::UTF8ToUTF16(failed_url.scheme());
+    }
+  }
 
   result.strings.SetStringPath("iconClass",
                                GetIconClassForError(error_domain, error_code));
