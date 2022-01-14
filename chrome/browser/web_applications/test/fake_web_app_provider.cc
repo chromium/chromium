@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -130,6 +131,11 @@ WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
 WebAppIconManager& FakeWebAppProvider::GetIconManager() const {
   DCHECK(icon_manager_);
   return *icon_manager_;
+}
+
+AbstractWebAppDatabaseFactory& FakeWebAppProvider::GetDatabaseFactory() const {
+  DCHECK(database_factory_);
+  return *database_factory_;
 }
 
 void FakeWebAppProvider::CheckNotStarted() const {
