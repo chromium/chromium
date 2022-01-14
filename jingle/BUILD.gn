@@ -60,103 +60,6 @@ static_library("jingle_glue") {
   }
 }
 
-# A library for sending and receiving peer-issued notifications.
-static_library("notifier") {
-  visibility = [
-    ":*",
-    "//chrome/service",
-  ]
-  sources = [
-    "notifier/base/const_communicator.h",
-    "notifier/base/gaia_constants.cc",
-    "notifier/base/gaia_constants.h",
-    "notifier/base/gaia_token_pre_xmpp_auth.cc",
-    "notifier/base/gaia_token_pre_xmpp_auth.h",
-    "notifier/base/notification_method.cc",
-    "notifier/base/notification_method.h",
-    "notifier/base/notifier_options.cc",
-    "notifier/base/notifier_options.h",
-    "notifier/base/notifier_options_util.cc",
-    "notifier/base/notifier_options_util.h",
-    "notifier/base/server_information.cc",
-    "notifier/base/server_information.h",
-    "notifier/base/weak_xmpp_client.cc",
-    "notifier/base/weak_xmpp_client.h",
-    "notifier/base/xmpp_connection.cc",
-    "notifier/base/xmpp_connection.h",
-    "notifier/communicator/connection_settings.cc",
-    "notifier/communicator/connection_settings.h",
-    "notifier/communicator/login.cc",
-    "notifier/communicator/login.h",
-    "notifier/communicator/login_settings.cc",
-    "notifier/communicator/login_settings.h",
-    "notifier/communicator/single_login_attempt.cc",
-    "notifier/communicator/single_login_attempt.h",
-    "notifier/listener/non_blocking_push_client.cc",
-    "notifier/listener/non_blocking_push_client.h",
-    "notifier/listener/notification_constants.cc",
-    "notifier/listener/notification_constants.h",
-    "notifier/listener/notification_defines.cc",
-    "notifier/listener/notification_defines.h",
-    "notifier/listener/push_client.cc",
-    "notifier/listener/push_client.h",
-    "notifier/listener/push_client_observer.cc",
-    "notifier/listener/push_client_observer.h",
-    "notifier/listener/push_notifications_listen_task.cc",
-    "notifier/listener/push_notifications_listen_task.h",
-    "notifier/listener/push_notifications_send_update_task.cc",
-    "notifier/listener/push_notifications_send_update_task.h",
-    "notifier/listener/push_notifications_subscribe_task.cc",
-    "notifier/listener/push_notifications_subscribe_task.h",
-    "notifier/listener/send_ping_task.cc",
-    "notifier/listener/send_ping_task.h",
-    "notifier/listener/xml_element_util.cc",
-    "notifier/listener/xml_element_util.h",
-    "notifier/listener/xmpp_push_client.cc",
-    "notifier/listener/xmpp_push_client.h",
-  ]
-  defines = [ "_CRT_SECURE_NO_WARNINGS" ]
-
-  public_deps = [
-    "//third_party/libjingle_xmpp",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
-  deps = [
-    ":jingle_glue",
-    "//base",
-    "//net",
-    "//services/network/public/cpp:cpp",
-    "//third_party/expat",
-    "//third_party/libjingle_xmpp:rtc_task_runner",
-    "//url",
-  ]
-}
-
-static_library("notifier_test_util") {
-  visibility = [ ":*" ]
-  testonly = true
-  sources = [
-    "glue/network_service_config_test_util.cc",
-    "glue/network_service_config_test_util.h",
-    "notifier/base/fake_base_task.cc",
-    "notifier/base/fake_base_task.h",
-    "notifier/listener/fake_push_client.cc",
-    "notifier/listener/fake_push_client.h",
-    "notifier/listener/fake_push_client_observer.cc",
-    "notifier/listener/fake_push_client_observer.h",
-  ]
-  public_deps = [
-    ":jingle_glue",
-    ":notifier",
-  ]
-  deps = [
-    "//base",
-    "//services/network:network_service",
-    "//services/network/public/mojom",
-    "//testing/gmock",
-  ]
-}
-
 test("jingle_unittests") {
   sources = [
     "glue/fake_ssl_client_socket_unittest.cc",
@@ -168,19 +71,6 @@ test("jingle_unittests") {
     "glue/network_service_async_socket_unittest.cc",
     "glue/task_pump_unittest.cc",
     "glue/thread_wrapper_unittest.cc",
-    "notifier/base/weak_xmpp_client_unittest.cc",
-    "notifier/base/xmpp_connection_unittest.cc",
-    "notifier/communicator/connection_settings_unittest.cc",
-    "notifier/communicator/login_settings_unittest.cc",
-    "notifier/communicator/single_login_attempt_unittest.cc",
-    "notifier/listener/non_blocking_push_client_unittest.cc",
-    "notifier/listener/notification_defines_unittest.cc",
-    "notifier/listener/push_client_unittest.cc",
-    "notifier/listener/push_notifications_send_update_task_unittest.cc",
-    "notifier/listener/push_notifications_subscribe_task_unittest.cc",
-    "notifier/listener/send_ping_task_unittest.cc",
-    "notifier/listener/xml_element_util_unittest.cc",
-    "notifier/listener/xmpp_push_client_unittest.cc",
     "run_all_unittests.cc",
   ]
 
@@ -191,8 +81,6 @@ test("jingle_unittests") {
 
   deps = [
     ":jingle_glue",
-    ":notifier",
-    ":notifier_test_util",
     ":webrtc_glue",
     "//base",
     "//base/test:test_support",
