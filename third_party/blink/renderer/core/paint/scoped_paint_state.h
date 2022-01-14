@@ -89,9 +89,7 @@ class ScopedPaintState {
         paint_offset_(paint_offset) {}
 
  private:
-  void AdjustForPaintOffsetTranslation(
-      const LayoutObject&,
-      const TransformPaintPropertyNode& paint_offset_translation);
+  void AdjustForPaintProperties(const LayoutObject&);
 
   void FinishPaintOffsetTranslationAsDrawing();
 

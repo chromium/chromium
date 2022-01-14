@@ -38,33 +38,64 @@ ScopedPaintState::ScopedPaintState(
     return;
   }
 
-  if (const auto* properties = fragment_to_paint_->PaintProperties()) {
-    if (const auto* translation = properties->PaintOffsetTranslation())
-      AdjustForPaintOffsetTranslation(object, *translation);
-  }
+  AdjustForPaintProperties(object);
 }
 
-void ScopedPaintState::AdjustForPaintOffsetTranslation(
-    const LayoutObject& object,
-    const TransformPaintPropertyNode& paint_offset_translation) {
-  if (input_paint_info_.context.InDrawingRecorder()) {
-    // If we are recording drawings, we should issue the translation as a raw
-    // paint operation instead of paint chunk properties. One case is that we
-    // are painting table row background behind a cell having paint offset
-    // translation.
-    input_paint_info_.context.Save();
-    gfx::Vector2dF translation = paint_offset_translation.Translation2D();
-    input_paint_info_.context.Translate(translation.x(), translation.y());
-    paint_offset_translation_as_drawing_ = true;
-  } else {
-    chunk_properties_.emplace(
-        input_paint_info_.context.GetPaintController(),
-        paint_offset_translation, object,
-        DisplayItem::PaintPhaseToDrawingType(input_paint_info_.phase));
+void ScopedPaintState::AdjustForPaintProperties(const LayoutObject& object) {
+  // Paint properties of SVG children are handled in SVG code paths.
+  if (object.IsSVGChild())
+    return;
+
+  const auto* properties = fragment_to_paint_->PaintProperties();
+  if (!properties)
+    return;
+
+  auto new_chunk_properties = input_paint_info_.context.GetPaintController()
+                                  .CurrentPaintChunkProperties();
+  bool needs_new_chunk_properties = false;
+
+  if (const auto* paint_offset_translation =
+          properties->PaintOffsetTranslation()) {
+    adjusted_paint_info_.emplace(input_paint_info_);
+    adjusted_paint_info_->TransformCullRect(*paint_offset_translation);
+    new_chunk_properties.SetTransform(*paint_offset_translation);
+    needs_new_chunk_properties = true;
+
+    if (input_paint_info_.context.InDrawingRecorder()) {
+      // If we are recording drawings, we should issue the translation as a raw
+      // paint operation instead of paint chunk properties. One case is that we
+      // are painting table row background behind a cell having paint offset
+      // translation.
+      input_paint_info_.context.Save();
+      gfx::Vector2dF translation = paint_offset_translation->Translation2D();
+      input_paint_info_.context.Translate(translation.x(), translation.y());
+      paint_offset_translation_as_drawing_ = true;
+    }
   }
 
-  adjusted_paint_info_.emplace(input_paint_info_);
-  adjusted_paint_info_->TransformCullRect(paint_offset_translation);
+  if (input_paint_info_.context.InDrawingRecorder())
+    return;
+
+  if (const auto* transform = properties->Transform()) {
+    // This transform node stores some transform-related information for a
+    // non-stacked object without real transform (otherwise PaintLayerPainter
+    // should have handled the transform node for painting).
+    DCHECK(transform->IsIdentity());
+    new_chunk_properties.SetTransform(*transform);
+    needs_new_chunk_properties = true;
+  }
+  if (const auto* effect = properties->Effect()) {
+    // Similar to the above.
+    DCHECK(!effect->HasRealEffects());
+    new_chunk_properties.SetEffect(*effect);
+    needs_new_chunk_properties = true;
+  }
+
+  if (needs_new_chunk_properties) {
+    chunk_properties_.emplace(
+        input_paint_info_.context.GetPaintController(), new_chunk_properties,
+        object, DisplayItem::PaintPhaseToDrawingType(input_paint_info_.phase));
+  }
 }
 
 void ScopedPaintState::FinishPaintOffsetTranslationAsDrawing() {

@@ -1,0 +1,59 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='scroller'",
+      "bounds": [302, 302],
+      "contentsOpaqueForText": true,
+      "backfaceVisibility": "hidden",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='target'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 100, 100]
+      ],
+      "transform": 3
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -400, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [1, 601, 0, 1]
+      ]
+    }
+  ]
+}
+
