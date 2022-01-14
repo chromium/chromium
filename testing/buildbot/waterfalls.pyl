@@ -216,6 +216,8 @@
         },
         'os_type': 'chromeos',
       },
+      # TODO(crbug.com/1286898): Merge this to lacros-amd64-generic-chrome
+      # once it's proven to be stable and easy to debug.
       'lacros-arm-generic-chrome-skylab': {
         'additional_compile_targets': [
           'chrome',
