@@ -19,17 +19,21 @@ WebFramesManagerImpl::WebFramesManagerImpl() : weak_factory_(this) {}
 
 WebFramesManagerImpl::~WebFramesManagerImpl() = default;
 
-void WebFramesManagerImpl::AddFrame(std::unique_ptr<WebFrame> frame) {
+bool WebFramesManagerImpl::AddFrame(std::unique_ptr<WebFrame> frame) {
   DCHECK(frame);
   DCHECK(!frame->GetFrameId().empty());
   if (frame->IsMainFrame()) {
-    DCHECK(!main_web_frame_ ||
-           (main_web_frame_->GetFrameId() == frame->GetFrameId()));
+    if (main_web_frame_) {
+      // A main frame is already registered, ignore duplicate registration
+      // message.
+      return false;
+    }
     main_web_frame_ = frame.get();
   }
   DCHECK(web_frames_.count(frame->GetFrameId()) == 0);
   std::string frame_id = frame->GetFrameId();
   web_frames_[frame_id] = std::move(frame);
+  return true;
 }
 
 void WebFramesManagerImpl::RemoveFrameWithId(const std::string& frame_id) {

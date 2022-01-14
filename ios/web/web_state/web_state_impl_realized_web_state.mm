@@ -472,7 +472,11 @@ void WebStateImpl::RealizedWebState::OnAuthRequired(
 void WebStateImpl::RealizedWebState::WebFrameBecameAvailable(
     std::unique_ptr<WebFrame> frame) {
   WebFrame* frame_ptr = frame.get();
-  GetWebFramesManager().AddFrame(std::move(frame));
+  bool success = GetWebFramesManager().AddFrame(std::move(frame));
+  if (!success) {
+    // Frame was not added, do not notify observers.
+    return;
+  }
 
   for (auto& observer : observers())
     observer.WebFrameDidBecomeAvailable(owner_, frame_ptr);
