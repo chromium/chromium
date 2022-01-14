@@ -98,6 +98,7 @@ class Internals final : public ScriptWrappable {
   static void ResetToConsistentState(Page*);
 
   explicit Internals(ExecutionContext*);
+  ~Internals() override;
 
   String elementLayoutTreeAsText(Element*, ExceptionState&);
 

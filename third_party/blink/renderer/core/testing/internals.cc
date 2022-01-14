@@ -207,7 +207,13 @@ using ui::mojom::ImeTextSpanUnderlineStyle;
 
 namespace {
 
-std::unique_ptr<ScopedMockOverlayScrollbars> g_mock_overlay_scrollbars;
+ScopedMockOverlayScrollbars* g_mock_overlay_scrollbars = nullptr;
+
+void ResetMockOverlayScrollbars() {
+  if (g_mock_overlay_scrollbars)
+    delete g_mock_overlay_scrollbars;
+  g_mock_overlay_scrollbars = nullptr;
+}
 
 class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
  public:
@@ -678,7 +684,7 @@ void Internals::ResetToConsistentState(Page* page) {
       OverrideCapsLockState::kDefault);
 
   IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
-  g_mock_overlay_scrollbars.reset();
+  ResetMockOverlayScrollbars();
 
   Page::SetMaxNumberOfFramesToTenForTesting(false);
 }
@@ -687,6 +693,10 @@ Internals::Internals(ExecutionContext* context)
     : runtime_flags_(InternalRuntimeFlags::create()),
       document_(To<LocalDOMWindow>(context)->document()) {
   document_->Fetcher()->EnableIsPreloadedForTest();
+}
+
+Internals::~Internals() {
+  ResetMockOverlayScrollbars();
 }
 
 LocalFrame* Internals::GetFrame() const {
@@ -3810,8 +3820,16 @@ String Internals::getAgentId(DOMWindow* window) {
 }
 
 void Internals::useMockOverlayScrollbars() {
-  g_mock_overlay_scrollbars =
-      std::make_unique<ScopedMockOverlayScrollbars>(true);
+  // Note: it's important to reset `g_mock_overlay_scrollbars` before the
+  // assignment, since if `g_mock_overlay_scrollbars` is non-null, its
+  // destructor will end up running after the constructor for the new
+  // ScopedMockOverlayScrollbars runs, meaning the global state the new pointer
+  // stores will in fact be the state from the previous pointer, which may not
+  // be what was intended. E.g. if a test calls this function twice, then
+  // whatever the original global state was in Blink's ScrollbarThemeSettings
+  // will be lost, and the state after the second call may be wrong.
+  ResetMockOverlayScrollbars();
+  g_mock_overlay_scrollbars = new ScopedMockOverlayScrollbars(true);
 }
 
 bool Internals::overlayScrollbarsEnabled() const {
