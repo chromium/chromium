@@ -117,16 +117,19 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
                             : base::TimeTicks::Now();
 }
 
-bool SetKeyboardEventText(char16_t* to, Maybe<std::string> from) {
+bool SetKeyboardEventText(
+    char16_t (&to)[blink::WebKeyboardEvent::kTextLengthCap],
+    Maybe<std::string> from) {
   if (!from.isJust())
     return true;
 
   std::u16string text16 = base::UTF8ToUTF16(from.fromJust());
-  if (text16.size() > blink::WebKeyboardEvent::kTextLengthCap)
+  if (text16.size() >= blink::WebKeyboardEvent::kTextLengthCap)
     return false;
 
   for (size_t i = 0; i < text16.size(); ++i)
     to[i] = text16[i];
+  to[text16.size()] = 0;
   return true;
 }
 
