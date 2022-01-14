@@ -3,9 +3,10 @@
 <head>
 <script>
 // Records if 'onprerenderingchange' event is triggered at least once.
-let onprerenderingchange_observed = false;
-document.addEventListener('prerenderingchange', e => {
-  onprerenderingchange_observed = true;
+const onprerenderingchange_observed_promise = new Promise(resolve => {
+  document.addEventListener('prerenderingchange', () => {
+    resolve(true);
+  });
 });
 </script>
 </head>

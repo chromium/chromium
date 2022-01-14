@@ -193,8 +193,8 @@ IN_PROC_BROWSER_TEST_F(
       /*is_renderer_initiated=*/false));
   prerender_observer.WaitForActivation();
 
-  EXPECT_EQ(true,
-            EvalJs(prerender_frame_host, "onprerenderingchange_observed"));
+  EXPECT_EQ(true, EvalJs(prerender_frame_host,
+                         "onprerenderingchange_observed_promise"));
   EXPECT_LT(
       0.0,
       EvalJs(prerender_frame_host,
