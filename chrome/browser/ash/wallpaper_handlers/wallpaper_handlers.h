@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_H_
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_H_
 
+#include <map>
 #include <memory>
+#include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -150,7 +152,6 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
  public:
   GooglePhotosFetcher(
       Profile* profile,
-      const char* service_url,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   GooglePhotosFetcher(const GooglePhotosFetcher&) = delete;
@@ -158,11 +159,15 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
 
   ~GooglePhotosFetcher() override;
 
-  // Issues an API request if and only if one is not in progress.
-  using ClientCallback = base::OnceCallback<void(T)>;
-  virtual void AddCallbackAndStartIfNecessary(ClientCallback callback);
-
  protected:
+  // Issues an API request to `service_url` if and only if one is not in
+  // progress. Each subclass is expected to write a public overload of this
+  // function that prepares `service_url`--with appended query params from the
+  // client if applicable--and delegates the rest of the work to this function.
+  using ClientCallback = base::OnceCallback<void(T)>;
+  void AddRequestAndStartIfNecessary(const std::string& service_url,
+                                     ClientCallback callback);
+
   // Called when the API request finishes. `response` will be absent if there
   // was an error in sending the request, receiving the response, or parsing the
   // response; otherwise, it will hold a response in the API's specified
@@ -170,10 +175,13 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   virtual T ParseResponse(absl::optional<base::Value> response) = 0;
 
  private:
-  void OnTokenReceived(GoogleServiceAuthError error,
+  void OnTokenReceived(const std::string& service_url,
+                       GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnJsonReceived(std::unique_ptr<std::string> response_body);
-  void OnResponseReady(absl::optional<base::Value> response);
+  void OnJsonReceived(const std::string& service_url,
+                      std::unique_ptr<std::string> response_body);
+  void OnResponseReady(const std::string& service_url,
+                       absl::optional<base::Value> response);
 
   // Profile associated with the Google Photos account that will be queried.
   Profile* const profile_;
@@ -184,23 +192,23 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  // API endpoint for the request this fetcher makes. Expected to outlive this
-  // class and therefore not need cleanup.
-  const char* const service_url_;
-
   // States metadata about the network request that this fetcher sends.
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
-  // Called when the download finishes, successfully or in error.
-  std::vector<ClientCallback> pending_client_callbacks_;
+  // Callbacks for each distinct query this fetcher has been asked to make. A
+  // URL's callbacks are called and then removed when the download finishes,
+  // successfully or in error.
+  std::map<std::string, std::vector<ClientCallback>> pending_client_callbacks_;
 
-  // Used for fetching OAuth2 access tokens. Only non-null when a token
-  // is being fetched.
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
+  // OAuth2 access token fetcher for each distinct query this fetcher has been
+  // asked to make. A URL's fetcher exists until its callbacks have been called.
+  std::map<std::string,
+           std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>>
+      token_fetchers_;
 
   // Used to download the client's desired information from the Google Photos
-  // service. Only non-null when a download is in progress.
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  // service. A URL's loader exists until its callbacks have been called.
+  std::map<std::string, std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
 
   base::WeakPtrFactory<GooglePhotosFetcher> weak_factory_{this};
 };
@@ -214,6 +222,9 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
   GooglePhotosCountFetcher& operator=(const GooglePhotosCountFetcher&) = delete;
 
   ~GooglePhotosCountFetcher() override;
+
+  virtual void AddRequestAndStartIfNecessary(
+      base::OnceCallback<void(int)> callback);
 
  private:
   // GooglePhotosFetcher:

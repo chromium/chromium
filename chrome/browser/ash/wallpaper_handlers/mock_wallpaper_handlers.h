@@ -25,7 +25,7 @@ class MockGooglePhotosCountFetcher : public GooglePhotosCountFetcher {
 
   // GooglePhotosCountFetcher:
   MOCK_METHOD(void,
-              AddCallbackAndStartIfNecessary,
+              AddRequestAndStartIfNecessary,
               (base::OnceCallback<void(int)> callback),
               (override));
 };

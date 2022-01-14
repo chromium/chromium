@@ -365,7 +365,7 @@ TEST_P(ChromePersonalizationAppWallpaperProviderGooglePhotosTest, FetchCount) {
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
   const size_t num_fetches = 2;
-  EXPECT_CALL(*google_photos_count_fetcher, AddCallbackAndStartIfNecessary)
+  EXPECT_CALL(*google_photos_count_fetcher, AddRequestAndStartIfNecessary)
       .Times(GooglePhotosEnabled() ? num_fetches : 0);
 
   base::RunLoop loop;

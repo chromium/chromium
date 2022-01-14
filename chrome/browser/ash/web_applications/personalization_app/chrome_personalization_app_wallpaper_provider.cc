@@ -190,7 +190,7 @@ void ChromePersonalizationAppWallpaperProvider::FetchGooglePhotosCount(
         std::make_unique<wallpaper_handlers::GooglePhotosCountFetcher>(
             profile_);
   }
-  google_photos_count_fetcher_->AddCallbackAndStartIfNecessary(
+  google_photos_count_fetcher_->AddRequestAndStartIfNecessary(
       std::move(callback));
 }
 

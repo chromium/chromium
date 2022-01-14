@@ -13,7 +13,7 @@ namespace wallpaper_handlers {
 
 MockGooglePhotosCountFetcher::MockGooglePhotosCountFetcher(Profile* profile)
     : GooglePhotosCountFetcher(profile) {
-  ON_CALL(*this, AddCallbackAndStartIfNecessary)
+  ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault([](base::OnceCallback<void(int)> callback) {
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), /*count=*/0));

@@ -11,6 +11,7 @@
 #include "ash/constants/devicetype.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -405,16 +406,13 @@ void BackdropSurpriseMeImageFetcher::OnResponseFetched(
 template <typename T>
 GooglePhotosFetcher<T>::GooglePhotosFetcher(
     Profile* profile,
-    const char* service_url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
-      service_url_(service_url),
       traffic_annotation_(traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
   DCHECK(identity_manager_);
-  DCHECK(service_url_);
   identity_manager_observation_.Observe(identity_manager_);
 }
 
@@ -422,37 +420,41 @@ template <typename T>
 GooglePhotosFetcher<T>::~GooglePhotosFetcher() = default;
 
 template <typename T>
-void GooglePhotosFetcher<T>::AddCallbackAndStartIfNecessary(
+void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
+    const std::string& service_url,
     ClientCallback callback) {
-  pending_client_callbacks_.push_back(std::move(callback));
-  if (pending_client_callbacks_.size() > 1)
+  pending_client_callbacks_[service_url].push_back(std::move(callback));
+  if (pending_client_callbacks_[service_url].size() > 1)
     return;
 
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kPhotosModuleOAuth2Scope);
 
-  DCHECK(!token_fetcher_);
-  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "wallpaper_google_photos_fetcher", identity_manager_, scopes,
-      base::BindOnce(&GooglePhotosFetcher::OnTokenReceived,
-                     base::Unretained(this) /*`this` owns `token_fetcher_`.*/),
-      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      signin::ConsentLevel::kSignin);
+  DCHECK(token_fetchers_.find(service_url) == token_fetchers_.end());
+  token_fetchers_[service_url] =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          "wallpaper_google_photos_fetcher", identity_manager_, scopes,
+          base::BindOnce(
+              &GooglePhotosFetcher::OnTokenReceived,
+              base::Unretained(this), /*`this` owns `token_fetchers_`.*/
+              service_url),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+          signin::ConsentLevel::kSignin);
 }
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnTokenReceived(
+    const std::string& service_url,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
-  token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
-    OnResponseReady(absl::nullopt);
+    OnResponseReady(service_url, absl::nullopt);
     return;
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
-  resource_request->url = GURL(service_url_);
+  resource_request->url = GURL(service_url);
   // Cookies should not be allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
@@ -461,23 +463,23 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
 
-  DCHECK(!url_loader_);
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 traffic_annotation_);
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  DCHECK(url_loaders_.find(service_url) == url_loaders_.end());
+  url_loaders_[service_url] = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation_);
+  url_loaders_[service_url]->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&GooglePhotosFetcher::OnJsonReceived,
-                     base::Unretained(this) /*`this` owns `url_loader_`.*/));
+                     base::Unretained(this), /*`this` owns `url_loaders_`.*/
+                     service_url));
 }
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnJsonReceived(
+    const std::string& service_url,
     std::unique_ptr<std::string> response_body) {
-  const int net_error = url_loader_->NetError();
-  url_loader_.reset();
-
+  const int net_error = url_loaders_[service_url]->NetError();
   if (net_error != net::OK || !response_body) {
-    OnResponseReady(absl::nullopt);
+    OnResponseReady(service_url, absl::nullopt);
     return;
   }
 
@@ -487,26 +489,34 @@ void GooglePhotosFetcher<T>::OnJsonReceived(
         return std::move(result.value);
       })
           .Then(base::BindOnce(&GooglePhotosFetcher::OnResponseReady,
-                               weak_factory_.GetWeakPtr())));
+                               weak_factory_.GetWeakPtr(), service_url)));
 }
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnResponseReady(
+    const std::string& service_url,
     absl::optional<base::Value> response) {
   T args = ParseResponse(std::move(response));
-  for (auto& callback : pending_client_callbacks_)
+  for (auto& callback : pending_client_callbacks_[service_url])
     std::move(callback).Run(args);
-  pending_client_callbacks_.clear();
+
+  token_fetchers_.erase(service_url);
+  url_loaders_.erase(service_url);
+  pending_client_callbacks_.erase(service_url);
 }
 
 GooglePhotosCountFetcher::GooglePhotosCountFetcher(Profile* profile)
-    : GooglePhotosFetcher(profile,
-                          kGooglePhotosCountUrl,
-                          kGooglePhotosCountTrafficAnnotation) {
+    : GooglePhotosFetcher(profile, kGooglePhotosCountTrafficAnnotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 GooglePhotosCountFetcher::~GooglePhotosCountFetcher() = default;
+
+void GooglePhotosCountFetcher::AddRequestAndStartIfNecessary(
+    base::OnceCallback<void(int)> callback) {
+  GooglePhotosFetcher::AddRequestAndStartIfNecessary(kGooglePhotosCountUrl,
+                                                     std::move(callback));
+}
 
 int GooglePhotosCountFetcher::ParseResponse(
     absl::optional<base::Value> response) {
