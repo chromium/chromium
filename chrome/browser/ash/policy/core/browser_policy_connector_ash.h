@@ -320,7 +320,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       device_network_configuration_updater_;
 
   // The ConfigurationPolicyProviders created in the constructor are initially
-  // added here, and then pushed to the super class in BuildPolicyProviders().
+  // added here, and then pushed to the super class in CreatePolicyProviders().
   std::vector<std::unique_ptr<ConfigurationPolicyProvider>> providers_for_init_;
 
   // Manages provisioning of certificates from
