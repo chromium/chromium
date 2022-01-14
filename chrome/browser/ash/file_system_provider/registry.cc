@@ -91,8 +91,8 @@ void Registry::RememberFileSystem(
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  DictionaryPrefUpdateDeprecated dict_update(pref_service,
-                                             prefs::kFileSystemProviderMounted);
+  DictionaryPrefUpdate dict_update(pref_service,
+                                   prefs::kFileSystemProviderMounted);
 
   base::Value* file_systems_per_extension = dict_update->FindKeyOfType(
       file_system_info.provider_id().ToString(), base::Value::Type::DICTIONARY);
@@ -111,12 +111,12 @@ void Registry::ForgetFileSystem(const ProviderId& provider_id,
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  DictionaryPrefUpdateDeprecated dict_update(pref_service,
-                                             prefs::kFileSystemProviderMounted);
+  DictionaryPrefUpdate dict_update(pref_service,
+                                   prefs::kFileSystemProviderMounted);
 
-  base::DictionaryValue* file_systems_per_extension = NULL;
-  if (!dict_update->GetDictionaryWithoutPathExpansion(
-          provider_id.ToString(), &file_systems_per_extension))
+  base::Value* file_systems_per_extension =
+      dict_update->FindDictKey(provider_id.ToString());
+  if (!file_systems_per_extension)
     return;  // Nothing to forget.
 
   file_systems_per_extension->RemoveKey(file_system_id);
@@ -244,24 +244,27 @@ void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
 
   // TODO(mtomasz): Consider optimizing it by moving information about watchers
   // or even file systems to leveldb.
-  DictionaryPrefUpdateDeprecated dict_update(pref_service,
-                                             prefs::kFileSystemProviderMounted);
+  DictionaryPrefUpdate dict_update(pref_service,
+                                   prefs::kFileSystemProviderMounted);
 
   // All of the following checks should not happen in healthy environment.
   // However, since they rely on storage, DCHECKs can't be used.
-  base::DictionaryValue* file_systems_per_extension = NULL;
-  base::DictionaryValue* file_system = NULL;
-  base::DictionaryValue* watchers = NULL;
-  base::DictionaryValue* watcher_value = NULL;
-  if (!dict_update->GetDictionaryWithoutPathExpansion(
-          file_system_info.provider_id().ToString(),
-          &file_systems_per_extension) ||
-      !file_systems_per_extension->GetDictionaryWithoutPathExpansion(
-          file_system_info.file_system_id(), &file_system) ||
-      !file_system->GetDictionaryWithoutPathExpansion(kPrefKeyWatchers,
-                                                      &watchers) ||
-      !watchers->GetDictionaryWithoutPathExpansion(watcher.entry_path.value(),
-                                                   &watcher_value)) {
+  base::Value* file_systems_per_extension =
+      dict_update->FindDictKey(file_system_info.provider_id().ToString());
+  base::Value* file_system = nullptr;
+  base::Value* watchers = nullptr;
+  base::Value* watcher_value = nullptr;
+
+  if (file_systems_per_extension) {
+    file_system = file_systems_per_extension->FindDictKey(
+        file_system_info.file_system_id());
+  }
+  if (file_system)
+    watchers = file_system->FindDictKey(kPrefKeyWatchers);
+  if (watchers)
+    watcher_value = watchers->FindDictKey(watcher.entry_path.value());
+
+  if (!watcher_value) {
     // Broken preferences.
     LOG(ERROR) << "Broken preferences detected while updating a tag.";
     return;
