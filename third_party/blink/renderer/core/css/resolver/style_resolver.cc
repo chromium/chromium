@@ -231,6 +231,13 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     exclusions.insert(DebugField::mask_);
   }
 
+  // Changes to this flag caused by history.pushState do not always mark
+  // for recalc in time, yet VisitedLinkState::DetermineLinkState will provide
+  // the up-to-date answer when polled.
+  //
+  // See crbug.com/1158076.
+  exclusions.insert(DebugField::inside_link_);
+
   Vector<DebugField> diff =
       base_computed_style->DebugDiffFields(computed_style);
 
