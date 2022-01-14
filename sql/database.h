@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -247,7 +246,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Runs "PRAGMA quick_check" and, unlike the FullIntegrityCheck method,
   // interprets the results returning true if the the statement executes
   // without error and results in a single "ok" value.
-  bool QuickIntegrityCheck() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool QuickIntegrityCheck();
 
   // Meant to be called from a client error callback so that it's able to
   // get diagnostic information about the database.
@@ -261,18 +260,18 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Initializes the SQL database for the given file, returning true if the
   // file could be opened. You can call this or OpenInMemory.
-  bool Open(const base::FilePath& path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Open(const base::FilePath& path);
 
   // Initializes the SQL database for a temporary in-memory database. There
   // will be no associated file on disk, and the initial database will be
   // empty. You can call this or Open.
-  bool OpenInMemory() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool OpenInMemory();
 
   // Create a temporary on-disk database.  The database will be
   // deleted after close.  This kind of database is similar to
   // OpenInMemory() for small databases, but can page to disk if the
   // database becomes large.
-  bool OpenTemporary() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool OpenTemporary();
 
   // Returns true if the database has been successfully opened.
   bool is_open() const { return static_cast<bool>(db_); }
@@ -421,7 +420,7 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // `sql` cannot have parameters. Statements with parameters can be handled by
   // sql::Statement. See GetCachedStatement() and GetUniqueStatement().
-  bool Execute(const char* sql) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Execute(const char* sql);
 
   // Executes a sequence of SQL statements.
   //
@@ -431,7 +430,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // The database's error handler is not invoked when errors occur. This method
   // is a convenience for setting up a complex on-disk database state, such as
   // an old schema version with test contents.
-  bool ExecuteScriptForTesting(const char* sql_script) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExecuteScriptForTesting(const char* sql_script);
 
   // Returns a statement for the given SQL using the statement cache. It can
   // take a nontrivial amount of work to parse and compile a statement, so
@@ -724,18 +723,17 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // This is only exposed to the Database implementation. Code that uses
   // sql::Database should not be concerned with SQLite error codes.
-  int ExecuteAndReturnErrorCode(const char* sql) WARN_UNUSED_RESULT;
+  [[nodiscard]] int ExecuteAndReturnErrorCode(const char* sql);
 
   // Like |Execute()|, but retries if the database is locked.
-  bool ExecuteWithTimeout(const char* sql,
-                          base::TimeDelta ms_timeout) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExecuteWithTimeout(const char* sql,
+                                        base::TimeDelta ms_timeout);
 
   // Implementation helper for GetUniqueStatement() and GetCachedStatement().
   scoped_refptr<StatementRef> GetStatementImpl(const char* sql);
 
-  bool IntegrityCheckHelper(const char* pragma_sql,
-                            std::vector<std::string>* messages)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool IntegrityCheckHelper(const char* pragma_sql,
+                                          std::vector<std::string>* messages);
 
   // Release page-cache memory if memory-mapped I/O is enabled and the database
   // was changed.  Passing true for |implicit_change_performed| allows

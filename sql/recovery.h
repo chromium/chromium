@@ -81,9 +81,9 @@ class COMPONENT_EXPORT(SQL) Recovery {
   // TODO(shess): Later versions of SQLite allow extracting the path
   // from the database.
   // TODO(shess): Allow specifying the connection point?
-  static std::unique_ptr<Recovery> Begin(Database* database,
-                                         const base::FilePath& db_path)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static std::unique_ptr<Recovery> Begin(
+      Database* database,
+      const base::FilePath& db_path);
 
   // Mark recovery completed by replicating the recovery database over
   // the original database, then closing the recovery database.  The
@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(SQL) Recovery {
   // TODO(shess): At this time, this function can fail while leaving
   // the original database intact.  Figure out which failure cases
   // should go to RazeAndClose() instead.
-  static bool Recovered(std::unique_ptr<Recovery> r) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool Recovered(std::unique_ptr<Recovery> r);
 
   // Indicate that the database is unrecoverable.  The original
   // database is razed, and the handle poisoned.
@@ -156,9 +156,9 @@ class COMPONENT_EXPORT(SQL) Recovery {
   // such as validating constraints not expressed in the schema.
   //
   // In case of SQLITE_NOTADB, the database is deemed unrecoverable and deleted.
-  static std::unique_ptr<Recovery> BeginRecoverDatabase(
+  [[nodiscard]] static std::unique_ptr<Recovery> BeginRecoverDatabase(
       Database* db,
-      const base::FilePath& db_path) WARN_UNUSED_RESULT;
+      const base::FilePath& db_path);
 
   // Call BeginRecoverDatabase() to recover the database, then commit the
   // changes using Recovered().  After this call, the |db| handle will be
@@ -188,10 +188,10 @@ class COMPONENT_EXPORT(SQL) Recovery {
 
   // Setup the recovery database handle for Begin().  Returns false in
   // case anything failed.
-  bool Init(const base::FilePath& db_path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Init(const base::FilePath& db_path);
 
   // Copy the recovered database over the original database.
-  bool Backup() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Backup();
 
   // Close the recovery database, and poison the original handle.
   // |raze| controls whether the original database is razed or just
