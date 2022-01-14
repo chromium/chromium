@@ -206,6 +206,9 @@ void V8Window::NamedPropertyGetterCustom(
   Frame* child = frame->Tree().ScopedChild(name);
   if (child) {
     window->ReportCoopAccess("named");
+    window->RecordWindowProxyAccessMetrics(
+        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
     UseCounter::Count(CurrentExecutionContext(info.GetIsolate()),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
 
@@ -259,6 +262,9 @@ void V8Window::NamedPropertyGetterCustom(
   if (!has_named_item && !has_id_item)
     return;
   window->ReportCoopAccess("named");
+  window->RecordWindowProxyAccessMetrics(
+      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
 
   if (!has_named_item && has_id_item &&
       !doc->ContainsMultipleElementsWithId(name)) {
