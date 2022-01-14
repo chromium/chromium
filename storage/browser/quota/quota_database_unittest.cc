@@ -251,6 +251,34 @@ TEST_P(QuotaDatabaseTest, GetOrCreateBucket) {
   ASSERT_EQ(retrieved_bucket.type, created_bucket.type);
 }
 
+TEST_P(QuotaDatabaseTest, GetOrCreateBucketDeprecated) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
+  std::string bucket_name = "google_bucket";
+
+  QuotaErrorOr<BucketInfo> result =
+      db.GetOrCreateBucketDeprecated(storage_key, bucket_name, kPerm);
+  ASSERT_TRUE(result.ok());
+
+  BucketInfo created_bucket = result.value();
+  ASSERT_GT(created_bucket.id.value(), 0);
+  ASSERT_EQ(created_bucket.name, bucket_name);
+  ASSERT_EQ(created_bucket.storage_key, storage_key);
+  ASSERT_EQ(created_bucket.type, kPerm);
+
+  // Should return the same bucket when querying again.
+  result = db.GetOrCreateBucketDeprecated(storage_key, bucket_name, kPerm);
+  ASSERT_TRUE(result.ok());
+
+  BucketInfo retrieved_bucket = result.value();
+  ASSERT_EQ(retrieved_bucket.id, created_bucket.id);
+  ASSERT_EQ(retrieved_bucket.name, created_bucket.name);
+  ASSERT_EQ(retrieved_bucket.storage_key, created_bucket.storage_key);
+  ASSERT_EQ(retrieved_bucket.type, created_bucket.type);
+}
+
 TEST_P(QuotaDatabaseTest, GetBucket) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));

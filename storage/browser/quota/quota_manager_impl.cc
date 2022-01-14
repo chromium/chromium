@@ -104,6 +104,16 @@ QuotaErrorOr<BucketInfo> GetOrCreateBucketOnDBThread(
   return database->GetOrCreateBucket(storage_key, bucket_name);
 }
 
+QuotaErrorOr<BucketInfo> GetOrCreateBucketDeprecatedOnDBThread(
+    const StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type,
+    QuotaDatabase* database) {
+  DCHECK(database);
+  return database->GetOrCreateBucketDeprecated(storage_key, bucket_name,
+                                               storage_type);
+}
+
 QuotaErrorOr<BucketInfo> CreateBucketOnDBThread(
     const StorageKey& storage_key,
     const std::string& bucket_name,
@@ -1192,6 +1202,25 @@ void QuotaManagerImpl::GetOrCreateBucket(
   }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetOrCreateBucketOnDBThread, storage_key, bucket_name),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucket,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::GetOrCreateBucketDeprecated(
+    const StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&GetOrCreateBucketDeprecatedOnDBThread, storage_key,
+                     bucket_name, storage_type),
       base::BindOnce(&QuotaManagerImpl::DidGetBucket,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -80,6 +80,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
+  // Same as GetOrCreateBucket but takes in StorageType. This should only be
+  // used by FileSystem, and is expected to be removed when
+  // StorageType::kSyncable and StorageType::kPersistent are deprecated.
+  // (crbug.com/1233525, crbug.com/1286964).
+  virtual void GetOrCreateBucketDeprecated(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType storage_type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
   // Creates a bucket for `origin` with `bucket_name` and returns the
   // BucketInfo to the callback. Returns a QuotaError to the callback
   // on operation failure.

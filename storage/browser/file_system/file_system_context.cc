@@ -427,10 +427,10 @@ void FileSystemContext::OpenFileSystem(const blink::StorageKey& storage_key,
   // Quota manager isn't provided by all tests.
   if (quota_manager_proxy()) {
     // Ensure default bucket for `storage_key` exists so that Quota API
-    // is aware of the usage. Bucket type 'temporary' is used even though the
-    // actual storage type of the file system being opened may be different.
-    quota_manager_proxy()->GetOrCreateBucket(
-        storage_key, kDefaultBucketName, io_task_runner_.get(),
+    // is aware of the usage.
+    quota_manager_proxy()->GetOrCreateBucketDeprecated(
+        storage_key, kDefaultBucketName, FileSystemTypeToQuotaStorageType(type),
+        io_task_runner_.get(),
         base::BindOnce(&FileSystemContext::OnGetOrCreateBucket,
                        weak_factory_.GetWeakPtr(), storage_key, type, mode,
                        std::move(callback)));

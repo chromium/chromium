@@ -111,6 +111,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       const blink::StorageKey& storage_key,
       const std::string& bucket_name);
 
+  // Same as GetOrCreateBucket but takes in StorageType. This should only be
+  // used by FileSystem, and is expected to be removed when
+  // StorageType::kSyncable and StorageType::kPersistent are deprecated.
+  // (crbug.com/1233525, crbug.com/1286964).
+  QuotaErrorOr<BucketInfo> GetOrCreateBucketDeprecated(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType type);
+
   // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
   // StorageType is kTemporary.
   QuotaErrorOr<BucketInfo> CreateBucketForTesting(
