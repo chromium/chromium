@@ -82,6 +82,7 @@ include_rules = [
     "+ui/base/page_transition_types.h",
     "+ui/base/prediction",
     "+ui/base/resource/resource_scale_factor.h",
+    "+ui/color",
     "+ui/events/types",
     "+ui/gfx",
     "+url",

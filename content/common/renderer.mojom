@@ -10,9 +10,11 @@ import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/color/color_id.mojom";
 
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
@@ -32,8 +34,15 @@ struct UpdateScrollbarThemeParams {
 struct UpdateSystemColorInfoParams {
   bool is_dark_mode;
   bool forced_colors;
+
   // uint32 represents a SkColor in the map.
+  // TODO(crbug.com/1251637): These colors should be consolidated into the
+  // renderer's ColorProviders.
   map<SystemThemeColor, uint32> colors;
+
+  // Maps used to reconstruct ColorProvider instances in the renderer.
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> light_colors;
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> dark_colors;
 };
 
 // The background state for the render process.  When backgrounded the process's

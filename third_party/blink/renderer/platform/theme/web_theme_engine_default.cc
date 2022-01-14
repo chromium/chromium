@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
@@ -155,6 +156,11 @@ static void GetNativeThemeExtraParams(
     default:
       break;  // Parts that have no extra params get here.
   }
+}
+
+WebThemeEngineDefault::WebThemeEngineDefault() {
+  light_color_provider_.GenerateColorMap();
+  dark_color_provider_.GenerateColorMap();
 }
 
 WebThemeEngineDefault::~WebThemeEngineDefault() = default;
@@ -314,4 +320,22 @@ WebThemeEngineDefault::GetSystemColorInfo() {
 
   return state;
 }
+
+bool WebThemeEngineDefault::UpdateColorProviders(
+    const ui::RendererColorMap& light_colors,
+    const ui::RendererColorMap& dark_colors) {
+  // Do not create new ColorProviders if the renderer color maps match the
+  // existing ColorProviders.
+  if (IsRendererColorMappingEquivalent(light_color_provider_, light_colors) &&
+      IsRendererColorMappingEquivalent(dark_color_provider_, dark_colors)) {
+    return false;
+  }
+
+  light_color_provider_ =
+      ui::CreateColorProviderFromRendererColorMap(light_colors);
+  dark_color_provider_ =
+      ui::CreateColorProviderFromRendererColorMap(dark_colors);
+  return true;
+}
+
 }  // namespace blink

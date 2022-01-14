@@ -4,14 +4,41 @@
 
 #include "ui/color/color_provider_utils.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
 namespace ui {
+namespace {
+
+using RendererColorId = color::mojom::RendererColorId;
+
+// Below defines the mapping between RendererColorIds and ColorIds.
+struct RendererColorIdTable {
+  RendererColorId renderer_color_id;
+  ColorId color_id;
+};
+constexpr RendererColorIdTable kRendererColorIdMap[] = {
+    {RendererColorId::kColorMenuBackground, kColorMenuBackground},
+    {RendererColorId::kColorMenuItemBackgroundSelected,
+     kColorMenuItemBackgroundSelected},
+    {RendererColorId::kColorMenuSeparator, kColorMenuSeparator},
+    {RendererColorId::kColorOverlayScrollbarFill, kColorOverlayScrollbarFill},
+    {RendererColorId::kColorOverlayScrollbarFillHovered,
+     kColorOverlayScrollbarFillHovered},
+    {RendererColorId::kColorOverlayScrollbarStroke,
+     kColorOverlayScrollbarStroke},
+    {RendererColorId::kColorOverlayScrollbarStrokeHovered,
+     kColorOverlayScrollbarStrokeHovered},
+};
+
+}  // namespace
 
 base::StringPiece ColorModeName(ColorProviderManager::ColorMode color_mode) {
   switch (color_mode) {
@@ -220,6 +247,41 @@ std::string ConvertSkColorToCSSColor(SkColor color) {
   return base::StringPrintf("#%.2x%.2x%.2x%.2x", SkColorGetR(color),
                             SkColorGetG(color), SkColorGetB(color),
                             SkColorGetA(color));
+}
+
+RendererColorMap CreateRendererColorMap(const ColorProvider& color_provider) {
+  RendererColorMap map;
+  for (const auto& table : kRendererColorIdMap) {
+    map.emplace(table.renderer_color_id,
+                color_provider.GetColor(table.color_id));
+  }
+  return map;
+}
+
+ColorProvider CreateColorProviderFromRendererColorMap(
+    const RendererColorMap& renderer_color_map) {
+  ColorProvider color_provider;
+  ui::ColorMixer& mixer = color_provider.AddMixer();
+
+  for (const auto& table : kRendererColorIdMap)
+    mixer[table.color_id] = {renderer_color_map.at(table.renderer_color_id)};
+  color_provider.GenerateColorMap();
+
+  return color_provider;
+}
+
+bool IsRendererColorMappingEquivalent(
+    const ColorProvider& color_provider,
+    const RendererColorMap& renderer_color_map) {
+  for (const auto& table : kRendererColorIdMap) {
+    // The `renderer_color_map_` should map the full set of renderer color ids.
+    DCHECK(base::Contains(renderer_color_map, table.renderer_color_id));
+    if (color_provider.GetColor(table.color_id) !=
+        renderer_color_map.at(table.renderer_color_id)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace ui

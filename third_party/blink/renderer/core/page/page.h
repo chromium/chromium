@@ -141,6 +141,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   static void PlatformColorsChanged();
   static void ColorSchemeChanged();
+  static void ColorProvidersChanged();
 
   void InitialStyleChanged();
   void UpdateAcceleratedCompositingSettings();

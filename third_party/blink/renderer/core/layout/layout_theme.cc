@@ -525,6 +525,10 @@ void LayoutTheme::ColorSchemeDidChange() {
   Page::ColorSchemeChanged();
 }
 
+void LayoutTheme::ColorProvidersDidChange() {
+  Page::ColorProvidersChanged();
+}
+
 void LayoutTheme::SetCaretBlinkInterval(base::TimeDelta interval) {
   caret_blink_interval_ = interval;
 }

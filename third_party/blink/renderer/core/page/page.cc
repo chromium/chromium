@@ -392,6 +392,11 @@ void Page::ColorSchemeChanged() {
     }
 }
 
+void Page::ColorProvidersChanged() {
+  for (Page* page : AllPages())
+    page->InvalidatePaint();
+}
+
 void Page::InitialStyleChanged() {
   for (Frame* frame = MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {

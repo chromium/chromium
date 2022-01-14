@@ -143,6 +143,7 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -1748,10 +1749,26 @@ void RenderThreadImpl::OnSystemColorsChanged(
 
 void RenderThreadImpl::UpdateSystemColorInfo(
     mojom::UpdateSystemColorInfoParamsPtr params) {
+  if (blink_platform_impl_->ThemeEngine()->UpdateColorProviders(
+          params->light_colors, params->dark_colors)) {
+    // Notify blink that the global ColorProvider instances for this renderer
+    // have changed. These color providers are only used to paint native
+    // controls and only require us to invalidate paint for local frames in this
+    // renderer.
+    blink::ColorProvidersChanged();
+  }
+
   bool did_system_color_info_change =
       ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
           params->is_dark_mode, params->forced_colors, params->colors);
+
   if (did_system_color_info_change) {
+    // Notify blink of system color info changes. These give blink the
+    // opportunity to update internal state to reflect the NativeTheme's color
+    // scheme. These will also prompt blink to invalidate and recalculate styles
+    // for elements that rely on system colors, such as those leveraging the
+    // forced colors media feature. These can affect CSS styles and thus require
+    // action beyond simply invalidating paint on local frames.
     blink::SystemColorsChanged();
     blink::ColorSchemeChanged();
   }

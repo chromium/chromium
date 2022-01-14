@@ -11,9 +11,12 @@
 #include "base/strings/string_piece.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_id.mojom.h"
 #include "ui/color/color_provider_manager.h"
 
 namespace ui {
+
+using RendererColorMap = base::flat_map<color::mojom::RendererColorId, SkColor>;
 
 // The following functions convert various values to strings intended for
 // logging. Do not retain the results for longer than the scope in which these
@@ -51,6 +54,24 @@ std::string COMPONENT_EXPORT(COLOR)
 // Converts SkColor in ARGB format to CSS color in RGBA color. Returns the color
 // in a Hex string representation.
 std::string COMPONENT_EXPORT(COLOR) ConvertSkColorToCSSColor(SkColor color);
+
+// Creates a map of RendererColorIds to SkColors from `color_provider`. This is
+// used when sending ColorProvider colors to renderer processes. Sending a map
+// keyed with RendererColorIds (as opposed to ColorIds) allows us to validate
+// the ids that are sent to the renderer.
+RendererColorMap COMPONENT_EXPORT(COLOR)
+    CreateRendererColorMap(const ColorProvider& color_provider);
+
+// Used in combination with CreateRendererColormap() to create the ColorProvider
+// in the renderer process.
+ColorProvider COMPONENT_EXPORT(COLOR) CreateColorProviderFromRendererColorMap(
+    const RendererColorMap& renderer_color_map);
+
+// Returns true if `color_provider` and `renderer_color_map` map renderer
+// color ids to the same SkColor.
+bool COMPONENT_EXPORT(COLOR) IsRendererColorMappingEquivalent(
+    const ColorProvider& color_provider,
+    const RendererColorMap& renderer_color_map);
 
 }  // namespace ui
 

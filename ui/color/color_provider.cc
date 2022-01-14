@@ -17,6 +17,10 @@ namespace ui {
 
 ColorProvider::ColorProvider() = default;
 
+ColorProvider::ColorProvider(ColorProvider&&) = default;
+
+ColorProvider& ColorProvider::operator=(ColorProvider&&) = default;
+
 ColorProvider::~ColorProvider() = default;
 
 ColorMixer& ColorProvider::AddMixer() {
@@ -83,7 +87,7 @@ void ColorProvider::GenerateColorMap() {
     color_map.insert({color_id, mixers_.front().GetResultColor(color_id)});
 
   // Construct the color_map_.
-  color_map_ = std::make_unique<ColorMap>(color_map.begin(), color_map.end());
+  color_map_ = ColorMap(color_map.begin(), color_map.end());
 
   // Clear away all associated mixers as these are no longer needed.
   mixers_.clear();
