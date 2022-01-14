@@ -459,6 +459,21 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
     command_line.AppendSwitchPath(app_mode::kLaunchedByChromeBundlePath,
                                   base::mac::MainBundlePath());
 
+    // When running unbundled (e.g, when running browser_tests), the path
+    // returned by base::mac::FrameworkBundlePath will not include the version.
+    // Manually append it.
+    // https://crbug.com/1286681
+    const base::FilePath framework_bundle_path =
+        base::mac::AmIBundled() ? base::mac::FrameworkBundlePath()
+                                : base::mac::FrameworkBundlePath()
+                                      .Append("Versions")
+                                      .Append(version_info::GetVersionNumber());
+    command_line.AppendSwitchPath(
+        app_mode::kLaunchedByChromeFrameworkBundlePath, framework_bundle_path);
+    command_line.AppendSwitchPath(
+        app_mode::kLaunchedByChromeFrameworkDylibPath,
+        framework_bundle_path.Append(chrome::kFrameworkExecutableName));
+
     if (launched_after_rebuild)
       command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
 

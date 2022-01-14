@@ -9,7 +9,6 @@
 
 #include <set>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
@@ -74,22 +73,7 @@ bool IsPathValidForBundle(const base::FilePath& bundle_path,
 
 }  // namespace
 
-bool FindChromeBundle(NSString* bundle_id,
-                      const base::CommandLine& command_line,
-                      base::FilePath* out_bundle) {
-  // If Chrome launched this app and provided a bundle path, use that.
-  if (command_line.HasSwitch(app_mode::kLaunchedByChromeBundlePath)) {
-    base::FilePath command_line_bundle_path =
-        command_line.GetSwitchValuePath(app_mode::kLaunchedByChromeBundlePath);
-    if (IsPathValidForBundle(command_line_bundle_path, bundle_id)) {
-      *out_bundle = command_line_bundle_path;
-      return true;
-    } else {
-      LOG(WARNING) << "Invalid command line bundle path: "
-                   << command_line_bundle_path;
-    }
-  }
-
+bool FindChromeBundle(NSString* bundle_id, base::FilePath* out_bundle) {
   // Retrieve the last-run Chrome bundle location.
   base::FilePath last_run_bundle_path;
   {
