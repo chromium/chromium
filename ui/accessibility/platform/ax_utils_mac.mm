@@ -19,6 +19,9 @@ CFTypeID AXTextMarkerGetTypeID();
 AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef,
                                    const UInt8* bytes,
                                    CFIndex length);
+AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef,
+                                             AXTextMarkerRef start,
+                                             AXTextMarkerRef end);
 size_t AXTextMarkerGetLength(AXTextMarkerRef);
 const UInt8* AXTextMarkerGetBytePtr(AXTextMarkerRef);
 
@@ -89,6 +92,34 @@ AXPlatformNodeDelegate::AXRange AXTextMarkerRangeToAXRange(
   AXPlatformNodeDelegate::AXPosition focus =
       AXTextMarkerToAXPosition(static_cast<id>(end_marker.get()));
   return AXPlatformNodeDelegate::AXRange(std::move(anchor), std::move(focus));
+}
+
+id AXPositionToAXTextMarker(AXPlatformNodeDelegate::AXPosition position) {
+  // AXTextMarkerCreate is a system function that makes a copy of the data
+  // buffer given to it.
+  AXPlatformNodeDelegate::SerializedPosition serialized = position->Serialize();
+  AXTextMarkerRef cf_text_marker = AXTextMarkerCreate(
+      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&serialized),
+      sizeof(AXPlatformNodeDelegate::SerializedPosition));
+  return [static_cast<id>(cf_text_marker) autorelease];
+}
+
+id AXRangeToAXTextMarkerRange(AXPlatformNodeDelegate::AXRange range) {
+  AXPlatformNodeDelegate::SerializedPosition serialized_anchor =
+      range.anchor()->Serialize();
+  AXPlatformNodeDelegate::SerializedPosition serialized_focus =
+      range.focus()->Serialize();
+
+  base::ScopedCFTypeRef<AXTextMarkerRef> start_marker(AXTextMarkerCreate(
+      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&serialized_anchor),
+      sizeof(AXPlatformNodeDelegate::SerializedPosition)));
+  base::ScopedCFTypeRef<AXTextMarkerRef> end_marker(AXTextMarkerCreate(
+      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&serialized_focus),
+      sizeof(AXPlatformNodeDelegate::SerializedPosition)));
+
+  AXTextMarkerRangeRef cf_marker_range =
+      AXTextMarkerRangeCreate(kCFAllocatorDefault, start_marker, end_marker);
+  return [static_cast<id>(cf_marker_range) autorelease];
 }
 
 }  // namespace ui

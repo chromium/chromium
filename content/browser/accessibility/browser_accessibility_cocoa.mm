@@ -55,6 +55,8 @@ using content::IsUseZoomForDSFEnabled;
 using content::OneShotAccessibilityTreeSearch;
 using ui::AXNodeData;
 using ui::AXActionHandlerRegistry;
+using ui::AXPositionToAXTextMarker;
+using ui::AXRangeToAXTextMarkerRange;
 using ui::AXTextMarkerRangeToAXRange;
 using ui::AXTextMarkerToAXPosition;
 
@@ -231,41 +233,11 @@ const int kAXResultsLimitNoLimit = -1;
 using AXTextMarkerRangeRef = CFTypeRef;
 using AXTextMarkerRef = CFTypeRef;
 extern "C" {
-AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef,
-                                   const UInt8* bytes,
-                                   CFIndex length);
-
 AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef,
                                              AXTextMarkerRef start,
                                              AXTextMarkerRef end);
 }  // extern "C"
 #endif
-
-// AXTextMarkerCreate is a system function that makes a copy of the data buffer
-// given to it.
-id CreateTextMarker(AXPosition position) {
-  BrowserAccessibility::SerializedPosition serialized = position->Serialize();
-  AXTextMarkerRef cf_text_marker = AXTextMarkerCreate(
-      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&serialized),
-      sizeof(BrowserAccessibility::SerializedPosition));
-  return [static_cast<id>(cf_text_marker) autorelease];
-}
-
-id CreateTextMarkerRange(const AXRange range) {
-  BrowserAccessibility::SerializedPosition serialized_anchor =
-      range.anchor()->Serialize();
-  BrowserAccessibility::SerializedPosition serialized_focus =
-      range.focus()->Serialize();
-  base::ScopedCFTypeRef<AXTextMarkerRef> start_marker(AXTextMarkerCreate(
-      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&serialized_anchor),
-      sizeof(BrowserAccessibility::SerializedPosition)));
-  base::ScopedCFTypeRef<AXTextMarkerRef> end_marker(AXTextMarkerCreate(
-      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&serialized_focus),
-      sizeof(BrowserAccessibility::SerializedPosition)));
-  AXTextMarkerRangeRef cf_marker_range =
-      AXTextMarkerRangeCreate(kCFAllocatorDefault, start_marker, end_marker);
-  return [static_cast<id>(cf_marker_range) autorelease];
-}
 
 AXRange CreateAXRange(const BrowserAccessibility& start_object,
                       int start_offset,
@@ -649,7 +621,7 @@ id content::AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
                              ax::mojom::TextAffinity affinity) {
   BrowserAccessibility* anchor_node = [anchor owner];
   AXPosition position = anchor_node->CreateTextPositionAt(offset, affinity);
-  return CreateTextMarker(std::move(position));
+  return AXPositionToAXTextMarker(std::move(position));
 }
 
 id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
@@ -1015,7 +987,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
   AXPosition position = _owner->CreateTextPositionAt(0);
-  return CreateTextMarker(position->CreatePositionAtEndOfContent());
+  return AXPositionToAXTextMarker(position->CreatePositionAtEndOfContent());
 }
 
 - (NSNumber*)expanded {
@@ -1542,8 +1514,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       return content::AXTextEdit(newValue, std::u16string(), nil);
     }
   }
-  return content::AXTextEdit(insertedText, deletedText,
-                             CreateTextMarker(_owner->CreateTextPositionAt(i)));
+  return content::AXTextEdit(
+      insertedText, deletedText,
+      AXPositionToAXTextMarker(_owner->CreateTextPositionAt(i)));
 }
 
 // internal
@@ -1800,7 +1773,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   // Voiceover expects this range to be backwards in order to read the selected
   // words correctly.
-  return CreateTextMarkerRange(ax_range.AsBackwardRange());
+  return AXRangeToAXTextMarkerRange(ax_range.AsBackwardRange());
 }
 
 - (NSValue*)size {
@@ -1840,7 +1813,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
   AXPosition position = _owner->CreateTextPositionAt(0);
-  return CreateTextMarker(position->CreatePositionAtStartOfContent());
+  return AXPositionToAXTextMarker(position->CreatePositionAtStartOfContent());
 }
 
 - (NSString*)AXSubrole {
@@ -2329,7 +2302,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition startPosition = _owner->CreateTextPositionAt(0);
     AXPosition endPosition = startPosition->CreatePositionAtEndOfAnchor();
     AXRange range = AXRange(std::move(startPosition), std::move(endPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2348,7 +2321,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreateNextCharacterPosition(
+    return AXPositionToAXTextMarker(position->CreateNextCharacterPosition(
         ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
@@ -2358,7 +2331,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreatePreviousCharacterPosition(
+    return AXPositionToAXTextMarker(position->CreatePreviousCharacterPosition(
         ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
@@ -2377,7 +2350,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                                    ? std::move(endWordPosition)
                                    : std::move(startWordPosition);
     AXRange range(std::move(startPosition), std::move(endPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2395,7 +2368,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                                  ? std::move(startWordPosition)
                                  : std::move(endWordPosition);
     AXRange range(std::move(startPosition), std::move(endPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2404,7 +2377,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreateNextWordEndPosition(
+    return AXPositionToAXTextMarker(position->CreateNextWordEndPosition(
         ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
@@ -2414,7 +2387,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreatePreviousWordStartPosition(
+    return AXPositionToAXTextMarker(position->CreatePreviousWordStartPosition(
         ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
@@ -2455,7 +2428,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition lineEndPosition = lineStartPosition->CreateNextLineEndPosition(
         ui::AXBoundaryBehavior::kStopAtAnchorBoundary);
     AXRange range(std::move(lineStartPosition), std::move(lineEndPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2473,7 +2446,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                                    ? std::move(endLinePosition)
                                    : std::move(startLinePosition);
     AXRange range(std::move(startPosition), std::move(endPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2491,7 +2464,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                                  ? std::move(startLinePosition)
                                  : std::move(endLinePosition);
     AXRange range(std::move(startPosition), std::move(endPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2500,7 +2473,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreateNextLineEndPosition(
+    return AXPositionToAXTextMarker(position->CreateNextLineEndPosition(
         ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
@@ -2510,7 +2483,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreatePreviousLineStartPosition(
+    return AXPositionToAXTextMarker(position->CreatePreviousLineStartPosition(
         ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
@@ -2524,7 +2497,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXRange range = position->ExpandToEnclosingTextBoundary(
         ax::mojom::TextBoundary::kSentenceStartOrEnd,
         ui::AXRangeExpandBehavior::kLeftFirst);
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2537,7 +2510,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXRange range = position->ExpandToEnclosingTextBoundary(
         ax::mojom::TextBoundary::kParagraphStartOrEnd,
         ui::AXRangeExpandBehavior::kLeftFirst);
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2546,7 +2519,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreateNextParagraphEndPosition(
+    return AXPositionToAXTextMarker(position->CreateNextParagraphEndPosition(
         ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
@@ -2556,8 +2529,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return CreateTextMarker(position->CreatePreviousParagraphStartPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreatePreviousParagraphStartPosition(
+            ui::AXBoundaryBehavior::kCrossBoundary));
   }
 
   if ([attribute
@@ -2572,7 +2546,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition endPosition = position->CreateNextFormatEndPosition(
         ui::AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary);
     AXRange range(std::move(startPosition), std::move(endPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2605,7 +2579,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     if (!root)
       return nil;
 
-    return CreateTextMarker(root->CreateTextPositionAt(index));
+    return AXPositionToAXTextMarker(root->CreateTextPositionAt(index));
   }
 
   if ([attribute isEqualToString:
@@ -2656,7 +2630,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition endPosition = startPosition->CreateNextLineStartPosition(
         ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
     AXRange range(std::move(startPosition), std::move(endPosition));
-    return CreateTextMarkerRange(std::move(range));
+    return AXRangeToAXTextMarkerRange(std::move(range));
   }
 
   if ([attribute
@@ -2701,10 +2675,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     AXPosition endPosition =
         AXTextMarkerToAXPosition([textMarkerArray objectAtIndex:1]);
     if (*startPosition <= *endPosition) {
-      return CreateTextMarkerRange(
+      return AXRangeToAXTextMarkerRange(
           AXRange(std::move(startPosition), std::move(endPosition)));
     } else {
-      return CreateTextMarkerRange(
+      return AXRangeToAXTextMarkerRange(
           AXRange(std::move(endPosition), std::move(startPosition)));
     }
   }
