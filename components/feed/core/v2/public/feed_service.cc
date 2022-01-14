@@ -252,7 +252,7 @@ FeedService::FeedService(
 
   delegate_->RegisterExperiments(prefs::GetExperiments(*profile_prefs));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   application_status_listener_ =
       base::android::ApplicationStatusListener::New(base::BindRepeating(
           &FeedService::OnApplicationStateChange, base::Unretained(this)));
@@ -301,7 +301,7 @@ uint64_t FeedService::GetReliabilityLoggingId(const std::string& metrics_id,
       {metrics_id, std::string(reinterpret_cast<char*>(&salt), sizeof(salt))}));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FeedService::OnApplicationStateChange(
     base::android::ApplicationState state) {
   if (state == base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES) {

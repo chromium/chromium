@@ -38,7 +38,7 @@ extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
 
 // Feature that allows the client to automatically dismiss the notice card based
 // on the clicks and views on the notice card.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
 #endif
 

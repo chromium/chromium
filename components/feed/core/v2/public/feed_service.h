@@ -17,7 +17,7 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -127,7 +127,7 @@ class FeedService : public KeyedService {
   class IdentityManagerObserverImpl;
 
   FeedService();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
@@ -144,7 +144,7 @@ class FeedService : public KeyedService {
   std::unique_ptr<RefreshTaskScheduler> refresh_task_scheduler_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
   std::unique_ptr<IdentityManagerObserverImpl> identity_manager_observer_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool foregrounded_ = true;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;

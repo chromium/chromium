@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -19,10 +20,10 @@ const char kHostOverrideBlessNonce[] = "feed.host_override.bless_nonce";
 const char kHasReachedClickAndViewActionsUploadConditions[] =
     "feed.clicks_and_views_upload_conditions_reached";
 const char kLastFetchHadNoticeCard[] = "feed.last_fetch_had_notice_card";
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 const char kLastFetchHadLoggingEnabled[] =
     "feed.last_fetch_had_logging_enabled";
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 const char kNoticeCardViewsCount[] = "feed.notice_card_views_count";
 const char kNoticeCardClicksCount[] = "feed.notice_card_clicks_count";
 
@@ -117,10 +118,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(feed::prefs::kLastSeenFeedType, 0);
   registry->RegisterDictionaryPref(feed::prefs::kNoticeStates, 0);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadLoggingEnabled,
                                 false);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   RegisterObsoletePrefsFeb_2021(registry);
   RegisterObsoletePrefsJune_2021(registry);
