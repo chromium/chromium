@@ -70,7 +70,8 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
     const std::string& extension_id,
     const std::string& password) {
   if (!IsDeviceRestrictedManagedGuestSessionEnabled()) {
-    return extensions::login_api_errors::kNoPermissionToUseApi;
+    return extensions::login_api_errors::
+        kDeviceRestrictedManagedGuestSessionNotEnabled;
   }
 
   if (session_manager::SessionManager::Get()->session_state() !=
@@ -109,8 +110,8 @@ void SharedSessionHandler::EnterSharedSession(
     const std::string& password,
     CallbackWithOptionalError callback) {
   if (!IsDeviceRestrictedManagedGuestSessionEnabled()) {
-    std::move(callback).Run(
-        extensions::login_api_errors::kNoPermissionToUseApi);
+    std::move(callback).Run(extensions::login_api_errors::
+                                kDeviceRestrictedManagedGuestSessionNotEnabled);
     return;
   }
 

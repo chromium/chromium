@@ -35,7 +35,7 @@ extern const char kSharedSessionAlreadyLaunched[];
 extern const char kScryptFailure[];
 extern const char kCleanupInProgress[];
 extern const char kUnlockFailure[];
-extern const char kNoPermissionToUseApi[];
+extern const char kDeviceRestrictedManagedGuestSessionNotEnabled[];
 
 }  // namespace login_api_errors
 

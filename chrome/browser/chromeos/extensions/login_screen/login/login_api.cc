@@ -76,8 +76,9 @@ const char kSharedSessionAlreadyLaunched[] =
 const char kScryptFailure[] = "Scrypt failed";
 const char kCleanupInProgress[] = "Cleanup is already in progress";
 const char kUnlockFailure[] = "Managed Guest Session unlock failed";
-const char kNoPermissionToUseApi[] =
-    "The extension does not have permission to use this API";
+const char kDeviceRestrictedManagedGuestSessionNotEnabled[] =
+    "DeviceRestrictedManagedGuestSessionEnabled policy is not enabled for "
+    "shared kiosk mode";
 
 }  // namespace login_api_errors
 

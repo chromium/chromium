@@ -654,7 +654,7 @@ TEST_F(LoginApiSharedSessionUnittest,
       ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
   ASSERT_EQ(
-      login_api_errors::kNoPermissionToUseApi,
+      login_api_errors::kDeviceRestrictedManagedGuestSessionNotEnabled,
       RunFunctionAndReturnError(
           new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
 }
@@ -934,7 +934,7 @@ TEST_F(LoginApiSharedSessionUnittest,
   GetCrosSettingsHelper()->SetBoolean(
       ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
-  ASSERT_EQ(login_api_errors::kNoPermissionToUseApi,
+  ASSERT_EQ(login_api_errors::kDeviceRestrictedManagedGuestSessionNotEnabled,
             RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),
                                       "[\"foo\"]"));
 }
