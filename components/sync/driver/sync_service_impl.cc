@@ -162,7 +162,7 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       start_behavior_(init_params.start_behavior),
       is_setting_sync_requested_(false),
       should_record_trusted_vault_error_shown_on_startup_(true),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       sessions_invalidations_enabled_(false) {
 #else
       sessions_invalidations_enabled_(true) {
@@ -255,10 +255,10 @@ void SyncServiceImpl::Initialize() {
     // the user is signed-out or signed-in but not syncing (crbug.com/1147026).
     user_settings_->SetSyncRequested(false);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // If Sync gets turned on, it should be in the decoupled state.
     sync_prefs_.SetDecoupledFromAndroidMasterSync();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // Auto-start means the first time the profile starts up, sync should start up
@@ -319,14 +319,14 @@ bool SyncServiceImpl::IsDataTypeControllerRunningForTest(ModelType type) const {
 void SyncServiceImpl::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Sync and master sync should only remain coupled if the former stays enabled
   // and the latter disabled. Upon sign-out set the pref so they are decoupled
   // on the next time Sync is turned on.
   if (!HasSyncConsent()) {
     sync_prefs_.SetDecoupledFromAndroidMasterSync();
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (!IsSignedIn()) {
     // The account was signed out, so shut down.
@@ -1798,7 +1798,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void SyncServiceImpl::SetDecoupledFromAndroidMasterSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetDecoupledFromAndroidMasterSync();
@@ -1808,7 +1808,7 @@ bool SyncServiceImpl::GetDecoupledFromAndroidMasterSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_prefs_.GetDecoupledFromAndroidMasterSync();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 SyncEncryptionHandler::Observer*
 SyncServiceImpl::GetEncryptionObserverForTest() {

@@ -599,7 +599,7 @@ TEST_F(SyncEngineImplTest,
   ModelTypeSet invalidation_enabled_types(
       Difference(enabled_types_, CommitOnlyTypes()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // SESSIONS is a noisy data type whose invalidations aren't enabled by default
   // on Android.
   invalidation_enabled_types.Remove(SESSIONS);

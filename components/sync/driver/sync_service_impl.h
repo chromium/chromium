@@ -212,7 +212,7 @@ class SyncServiceImpl : public SyncService,
   // once (before this object is destroyed).
   void Shutdown() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Persists the fact that sync should no longer respect whether Android master
   // sync is enabled. This will be respected for the current syncing account
   // (if one exists) and any future ones. Only called on Android.
@@ -221,7 +221,7 @@ class SyncServiceImpl : public SyncService,
   // Gets the persisted information of whether sync should no longer respect
   // if Android master sync is enabled. Only called on Android.
   bool GetDecoupledFromAndroidMasterSync();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns whether or not the underlying sync engine has made any
   // local changes to items that have not yet been synced with the

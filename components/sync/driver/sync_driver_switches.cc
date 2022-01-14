@@ -14,14 +14,14 @@ bool IsSyncAllowedByFlag() {
       switches::kDisableSync);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 bool IsSyncTrustedVaultPassphraseiOSRPCEnabled() {
   return base::FeatureList::IsEnabled(
              switches::kSyncTrustedVaultPassphraseRecovery) &&
          base::FeatureList::IsEnabled(
              switches::kSyncTrustedVaultPassphraseiOSRPC);
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 // Disables syncing browser data to a Google Account.
 const char kDisableSync[] = "disable-sync";
@@ -71,17 +71,17 @@ const base::Feature kSyncRequiresPoliciesLoaded{
 const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout{
     &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout", base::Seconds(10)};
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Whether RPC is enabled.
 const base::Feature kSyncTrustedVaultPassphraseiOSRPC{
     "SyncTrustedVaultPassphraseiOSRPC", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 // Keep this entry in sync with the equivalent name in
 // ChromeFeatureList.java.
 const base::Feature kSyncTrustedVaultPassphraseRecovery{
   "SyncTrustedVaultPassphraseRecovery",
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -93,12 +93,12 @@ const base::Feature kSyncTrustedVaultPassphraseRecovery{
 const base::Feature kSyncTrustedVaultPassphrasePromo{
     "SyncTrustedVaultPassphrasePromo", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Whether warning should be shown in sync settings page when lacros
 // side-by-side mode is enabled.
 const base::Feature kSyncSettingsShowLacrosSideBySideWarning{
     "SyncSettingsShowLacrosSideBySideWarning",
     base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace switches

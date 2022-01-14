@@ -128,7 +128,7 @@ SyncEngineImpl::SyncEngineImpl(
       sync_transport_data_cleared_cb_(sync_transport_data_cleared_cb),
       invalidator_(invalidator),
       sync_invalidations_service_(sync_invalidations_service),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       sessions_invalidation_enabled_(false),
 #else
       sessions_invalidation_enabled_(true),

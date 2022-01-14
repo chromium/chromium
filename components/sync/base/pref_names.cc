@@ -4,6 +4,7 @@
 
 #include "components/sync/base/pref_names.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace syncer {
@@ -77,13 +78,13 @@ const char kEnableLocalSyncBackend[] = "sync.enable_local_sync_backend";
 // flag is present.
 const char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Stores whether sync should no longer respect the state of master toggle for
 // this user.
 // TODO(crbug.com/1107904): Clean pref when the decoupling logic is removed.
 const char kSyncDecoupledFromAndroidMasterSync[] =
     "sync.decoupled_from_master_sync";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace prefs
 

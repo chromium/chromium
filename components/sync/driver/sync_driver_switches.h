@@ -17,10 +17,10 @@ namespace switches {
 // assume it's running on the UI thread.
 bool IsSyncAllowedByFlag();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Returns whether RPC is enabled.
 bool IsSyncTrustedVaultPassphraseiOSRPCEnabled();
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 // Defines all the command-line switches used by sync driver. All switches in
 // alphabetical order. The switches should be documented alongside the
@@ -40,17 +40,17 @@ extern const base::Feature kSyncWifiConfigurations;
 extern const base::Feature kSyncRequiresPoliciesLoaded;
 extern const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 extern const base::Feature kSyncTrustedVaultPassphraseiOSRPC;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 extern const base::Feature kSyncTrustedVaultPassphraseRecovery;
 
 extern const base::Feature kSyncTrustedVaultPassphrasePromo;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const base::Feature kSyncSettingsShowLacrosSideBySideWarning;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace switches
 

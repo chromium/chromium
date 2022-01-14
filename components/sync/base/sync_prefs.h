@@ -104,7 +104,7 @@ class SyncPrefs {
   // Maps |type| to its corresponding preference name.
   static const char* GetPrefNameForType(UserSelectableType type);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Sets a boolean pref representing that Sync should no longer respect whether
   // Android master sync is enabled/disabled. It is set per-device and never
   // gets cleared.
@@ -114,7 +114,7 @@ class SyncPrefs {
   // longer respect if Android master sync is enabled/disabled. Returns false
   // until |SetDecoupledFromAndroidMasterSync()| is called.
   bool GetDecoupledFromAndroidMasterSync();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // For testing.
   void SetManagedForTest(bool is_managed);

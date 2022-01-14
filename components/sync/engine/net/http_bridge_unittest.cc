@@ -44,11 +44,11 @@ const base::FilePath::CharType kDocRoot[] =
 
 const char kUserAgent[] = "user-agent";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SyncHttpBridgeTest DISABLED_SyncHttpBridgeTest
 #else
 #define MAYBE_SyncHttpBridgeTest SyncHttpBridgeTest
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 class MAYBE_SyncHttpBridgeTest : public testing::Test {
  public:
   MAYBE_SyncHttpBridgeTest() : io_thread_("IO thread") {
