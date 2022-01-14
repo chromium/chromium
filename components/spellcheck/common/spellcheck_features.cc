@@ -16,7 +16,7 @@ namespace spellcheck {
 bool UseBrowserSpellChecker() {
 #if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   return false;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(spellcheck::kWinUseBrowserSpellChecker) &&
          WindowsVersionSupportsSpellchecker();
 #else
@@ -24,7 +24,7 @@ bool UseBrowserSpellChecker() {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::Feature kWinUseBrowserSpellChecker{
     "WinUseBrowserSpellChecker", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -38,13 +38,13 @@ bool WindowsVersionSupportsSpellchecker() {
   return base::win::GetVersion() > base::win::Version::WIN7 &&
          base::win::GetVersion() < base::win::Version::WIN_LAST;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsAndroidSpellCheckFeatureEnabled() {
   return !base::SysInfo::IsLowEndDevice();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 

@@ -10,7 +10,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"
 #endif
 
@@ -54,19 +54,19 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback callback) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
         // !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // spellcheck::mojom::SpellCheckHost:
   void DisconnectSessionBridge() override;
 #endif
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android-specific object used to query the Android spellchecker.
   SpellCheckerSessionBridge session_bridge_;
 #endif

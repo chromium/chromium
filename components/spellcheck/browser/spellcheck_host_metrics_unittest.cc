@@ -50,7 +50,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordEnabledStats) {
   histogram_tester2.ExpectBucketCount(kMetricName, 1, 1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Failing consistently on Win7. See crbug.com/230534.
 #define MAYBE_CustomWordStats DISABLED_CustomWordStats
 #else
@@ -105,7 +105,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellingServiceStats) {
   histogram_tester2.ExpectBucketCount(kMetricName, 1, 1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(SpellcheckHostMetricsTest, RecordAcceptLanguageStats) {
   const char* const histogram_names[] = {
       "Spellcheck.Windows.ChromeLocalesSupport.Both",
@@ -143,4 +143,4 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellcheckLanguageStats) {
                                        static_cast<int>(expected_counts[i]), 1);
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

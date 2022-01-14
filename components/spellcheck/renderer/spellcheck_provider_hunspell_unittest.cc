@@ -20,11 +20,11 @@ void CheckSpellingServiceCallCount(size_t actual, size_t expected) {
   // On Windows, if the native spell checker integration is enabled,
   // CallSpellingService() is not used, so the call count will always be 0.
   // Don't assert the call count in that case.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(spellcheck::kWinUseBrowserSpellChecker)) {
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_EQ(actual, expected);
 }
@@ -33,11 +33,11 @@ void CheckProviderText(std::u16string expected, std::u16string actual) {
   // On Windows, if the native spell checker integration is enabled,
   // CallSpellingService() is not used, so the fake provider's |text_| is never
   // assigned. Don't assert the text in that case.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(spellcheck::kWinUseBrowserSpellChecker)) {
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_EQ(actual, expected);
 }

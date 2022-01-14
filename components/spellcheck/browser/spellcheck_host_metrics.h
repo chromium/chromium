@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Simple struct to keep track of how many languages are supported by which
 // spell checker.
 struct LocalesSupportInfo {
@@ -23,7 +23,7 @@ struct LocalesSupportInfo {
   size_t locales_supported_by_native_only;
   size_t unsupported_locales;
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // A helper object for recording spell-check related histograms.
 // This class encapsulates histogram names and metrics API.
@@ -71,7 +71,7 @@ class SpellCheckHostMetrics {
   // Records if spelling service is enabled or disabled.
   void RecordSpellingServiceStats(bool enabled);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Records spell check support for user-added Chrome languages that are not
   // eligible for spell checking (due to the hard-coded spell check locales
   // list).
@@ -79,7 +79,7 @@ class SpellCheckHostMetrics {
 
   // Records which spell checker can handle which enabled spell check locales.
   void RecordSpellcheckLanguageStats(const LocalesSupportInfo& locales_info);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   friend class SpellcheckHostMetricsTest;

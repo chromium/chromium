@@ -15,7 +15,7 @@ namespace spellcheck {
 
 bool UseBrowserSpellChecker();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const base::Feature kWinUseBrowserSpellChecker;
 
 // If the kWinDelaySpellcheckServiceInit feature flag is enabled, don't
@@ -45,11 +45,11 @@ extern const base::Feature kWinDelaySpellcheckServiceInit;
 extern const base::Feature kWinRetrieveSuggestionsOnlyOnDemand;
 
 bool WindowsVersionSupportsSpellchecker();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsAndroidSpellCheckFeatureEnabled();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 

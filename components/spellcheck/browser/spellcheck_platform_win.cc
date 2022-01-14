@@ -60,14 +60,14 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
       ->RequestTextCheck(document_tag, text, std::move(callback));
 }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void GetPerLanguageSuggestions(PlatformSpellChecker* spell_checker_instance,
                                const std::u16string& word,
                                GetSuggestionsCallback callback) {
   static_cast<WindowsSpellChecker*>(spell_checker_instance)
       ->GetPerLanguageSuggestions(word, std::move(callback));
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 void AddWord(PlatformSpellChecker* spell_checker_instance,
              const std::u16string& word) {

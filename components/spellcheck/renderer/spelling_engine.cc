@@ -20,7 +20,7 @@
 SpellingEngine* CreateNativeSpellingEngine(
     service_manager::LocalInterfaceProvider* embedder_provider) {
   DCHECK(embedder_provider);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, always return a HunspellEngine. This is a simplification to
   // avoid needing an async Mojo call to the browser process to determine which
   // languages are supported by the native spell checker. Returning a

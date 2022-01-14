@@ -72,7 +72,7 @@ void SpellCheckHostImpl::FillSuggestionList(
   std::move(callback).Run({});
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void SpellCheckHostImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -80,11 +80,11 @@ void SpellCheckHostImpl::InitializeDictionaries(
   std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
                           /*enable=*/false);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  //  BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
         //  !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void SpellCheckHostImpl::DisconnectSessionBridge() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   session_bridge_.DisconnectSession();

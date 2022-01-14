@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 namespace {
 
 // Records the duration of a spell check request. This variation is for when
@@ -37,7 +37,7 @@ void RecordNativeSpellcheckDuration(base::TimeDelta duration) {
 }
 
 }  // anonymous namespace
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 namespace spellcheck_renderer_metrics {
 
@@ -53,7 +53,7 @@ void RecordCheckedTextLengthWithSuggestions(int length) {
   UMA_HISTOGRAM_COUNTS_1M("SpellCheck.api.check.suggestions", length);
 }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void RecordHunspellSuggestionDuration(base::TimeDelta duration) {
   UMA_HISTOGRAM_TIMES(
       "Spellcheck.Windows.SuggestionGatheringDuration.HunspellOnly", duration);
@@ -75,7 +75,7 @@ void RecordSpellcheckDuration(base::TimeDelta duration,
     RecordNativeSpellcheckDuration(duration);
   }
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 }  // namespace spellcheck_renderer_metrics
 
