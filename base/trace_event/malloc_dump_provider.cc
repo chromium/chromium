@@ -176,12 +176,17 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   size_t allocated_objects_count = 0;
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t syscall_count = 0;
+  uint64_t pa_only_resident_size;
+  uint64_t pa_only_allocated_objects_size;
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ReportPartitionAllocStats(pmd, args.level_of_detail, &total_virtual_size,
                             &resident_size, &allocated_objects_size,
                             &syscall_count);
+
+  pa_only_resident_size = resident_size;
+  pa_only_allocated_objects_size = allocated_objects_size;
 
   // Even when PartitionAlloc is used, WinHeap is still used as well, report
   // its statistics.
@@ -251,14 +256,28 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                           allocated_objects_count);
   }
 
-  if (resident_size > allocated_objects_size) {
+  int64_t waste = static_cast<int64_t>(resident_size) - allocated_objects_size;
+
+  // With PartitionAlloc, reported size under malloc/partitions is the resident
+  // size, so it already includes fragmentation. Meaning that "malloc/"'s size
+  // would double-count fragmentation if we report it under
+  // "malloc/metadata_fragmentation_caches" as well.
+  //
+  // Still report waste, as on some platforms, PartitionAlloc doesn't capture
+  // all of malloc()'s memory footprint.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  int64_t pa_waste = static_cast<int64_t>(pa_only_resident_size) -
+                     pa_only_allocated_objects_size;
+  waste -= pa_waste;
+#endif
+
+  if (waste > 0) {
     // Explicitly specify why is extra memory resident. In mac and ios it
     // accounts for the fragmentation and metadata.
     MemoryAllocatorDump* other_dump =
         pmd->CreateAllocatorDump("malloc/metadata_fragmentation_caches");
     other_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes,
-                          resident_size - allocated_objects_size);
+                          MemoryAllocatorDump::kUnitsBytes, waste);
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
