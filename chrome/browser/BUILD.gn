@@ -1358,6 +1358,8 @@ static_library("browser") {
     "prefs/profile_pref_store_manager.h",
     "prefs/session_startup_pref.cc",
     "prefs/session_startup_pref.h",
+    "prerender/prerender_utils.cc",
+    "prerender/prerender_utils.h",
     "privacy/privacy_metrics_service.cc",
     "privacy/privacy_metrics_service.h",
     "privacy/privacy_metrics_service_factory.cc",

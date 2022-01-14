@@ -4,6 +4,7 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -165,14 +166,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  const char histogram_suffix[] = "DirectURLInput";
 
   // Hold PrerenderHandle while the test is executed to avoid canceling a
   // prerender host in the destruction of PrerenderHandle.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       prerender_helper_.AddEmbedderTriggeredPrerenderAsync(
           prerender_url, content::PrerenderTriggerType::kEmbedder,
-          histogram_suffix);
+          prerender_utils::kDirectUrlInputMetricSuffix);
   EXPECT_TRUE(prerender_handle);
 
   // Wait until the completion of prerendering navigation.
@@ -196,17 +196,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderNavigationToActivation,
-          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
       1);
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderActivationToFirstPaint,
-          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
       1);
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderActivationToFirstContentfulPaint,
-          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
       1);
 
   // Simulate mouse click and wait for FirstInputDelay.
@@ -219,7 +222,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderFirstInputDelay4,
-          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
       1);
 
   // Force navigation to another page, which should force logging of
@@ -230,17 +234,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderActivationToLargestContentfulPaint2,
-          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
       1);
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScore,
-          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
       1);
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
-          content::PrerenderTriggerType::kEmbedder, histogram_suffix),
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
       1);
 }
 

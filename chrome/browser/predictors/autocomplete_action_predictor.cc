@@ -21,6 +21,7 @@
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/history/core/browser/in_memory_database.h"
@@ -30,7 +31,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -192,8 +192,7 @@ void AutocompleteActionPredictor::StartPrerendering(
     content::WebContents& web_contents,
     const gfx::Size& size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (blink::features::IsPrerender2Enabled() &&
-      base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2)) {
+  if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
     // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.
     // TODO(https://crbug.com/1269204): Move this check into
@@ -218,7 +217,8 @@ void AutocompleteActionPredictor::StartPrerendering(
     }
 
     prerender_handle_ = web_contents.StartPrerendering(
-        url, content::PrerenderTriggerType::kEmbedder, "DirectURLInput");
+        url, content::PrerenderTriggerType::kEmbedder,
+        prerender_utils::kDirectUrlInputMetricSuffix);
   } else if (base::FeatureList::IsEnabled(
                  features::kOmniboxTriggerForNoStatePrefetch)) {
     content::SessionStorageNamespace* session_storage_namespace =
