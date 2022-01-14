@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<iframe id="i" srcdoc="new"></iframe>
+<iframe id="i" src="javascript:'foo'"></iframe>
 
 <script>
 promise_test(async t => {
@@ -10,6 +10,6 @@ promise_test(async t => {
   assert_not_equals(i.contentWindow.appHistory.current, null);
   assert_array_equals(i.contentWindow.appHistory.entries(), [i.contentWindow.appHistory.current]);
 
-  assert_equals(i.contentWindow.appHistory.current.url, "about:srcdoc");
-}, "AppHistory entries() and current should be set in a new srcdoc iframe");
+  assert_equals(i.contentWindow.appHistory.current.url, "about:blank");
+}, "AppHistory entries() and current should be set in a new javascript: URL iframe");
 </script>
