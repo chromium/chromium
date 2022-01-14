@@ -44,7 +44,7 @@ enum DroppedReason {
   DROPPED_REASON_MAX
 };
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Binds/reads the given file path to the given column of the given statement.
 void BindFilePath(sql::Statement& statement,

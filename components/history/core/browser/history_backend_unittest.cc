@@ -606,11 +606,11 @@ const char16_t InMemoryHistoryBackendTest::kTestSearchTerm1[] = u"banana";
 const char16_t InMemoryHistoryBackendTest::kTestSearchTerm2[] = u"orange";
 
 // http://crbug.com/114287
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Loaded DISABLED_Loaded
 #else
 #define MAYBE_Loaded Loaded
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 TEST_F(HistoryBackendTest, MAYBE_Loaded) {
   ASSERT_TRUE(backend_.get());
   ASSERT_TRUE(loaded_);
@@ -1275,7 +1275,7 @@ TEST_F(HistoryBackendTest, SetPageTitleFiresNotificationWithCorrectDetails) {
 }
 
 // There's no importer on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(HistoryBackendTest, ImportedFaviconsTest) {
   // Setup test data - two Urls in the history, one with favicon assigned and
   // one without.
@@ -1349,7 +1349,7 @@ TEST_F(HistoryBackendTest, ImportedFaviconsTest) {
   EXPECT_NE(0, backend_->db_->GetRowForURL(url3, &url_row3));
   EXPECT_EQ(0, url_row3.visit_count());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HistoryBackendTest, StripUsernamePasswordTest) {
   ASSERT_TRUE(backend_.get());
@@ -2898,7 +2898,7 @@ TEST_F(HistoryBackendTest, DeleteFTSIndexDatabases) {
             base::WriteFile(db1_wal, data, data_len));
   ASSERT_EQ(static_cast<int>(data_len),
             base::WriteFile(db2_actual, data, data_len));
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   EXPECT_TRUE(base::CreateSymbolicLink(db2_actual, db2_symlink));
 #endif
 

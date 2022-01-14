@@ -113,7 +113,7 @@ class HistoryService : public KeyedService {
   // Returns true if the backend has finished loading.
   bool backend_loaded() const { return backend_loaded_; }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Causes the history backend to commit any in-progress transactions. Called
   // when the application is being backgrounded.
   void HandleBackgrounding();

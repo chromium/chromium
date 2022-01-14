@@ -27,7 +27,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/backup_util.h"
 #endif
 
@@ -108,7 +108,7 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   if (!committer.Begin())
     return LogInitFailure(InitStep::TRANSACTION_BEGIN);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Exclude the history file from backups.
   base::mac::SetBackupExclusion(history_name);
 #endif
@@ -403,7 +403,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   }
 
   if (cur_version == 16) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // In this version we bring the time format on Mac & Linux in sync with the
     // Windows version so that profiles can be moved between computers.
     MigrateTimeEpoch();
@@ -447,7 +447,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
 
   if (cur_version == 21) {
     // The android_urls table's data schemal was changed in version 21.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (!MigrateToVersion22())
       return LogMigrationFailure(21);
 #endif
@@ -691,7 +691,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   return sql::INIT_OK;
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void HistoryDatabase::MigrateTimeEpoch() {
   // Update all the times in the URLs and visits table in the main database.
   std::ignore = db_.Execute(

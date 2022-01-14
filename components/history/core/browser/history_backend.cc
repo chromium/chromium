@@ -58,7 +58,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/ios/scoped_critical_action.h"
 #endif
 
@@ -349,7 +349,7 @@ void HistoryBackend::Closing() {
   CancelScheduledCommit();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void HistoryBackend::PersistState() {
   TRACE_EVENT0("browser", "HistoryBackend::PersistState");
   Commit();
@@ -1720,7 +1720,7 @@ bool HistoryBackend::CreateDownload(const DownloadRow& history_info) {
   if (!db_)
     return false;
   bool success = db_->CreateDownload(history_info);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On android, browser process can get easily killed. Download will no longer
   // be able to resume and the temporary file will linger forever if the
   // download is not committed before that. Do the commit right away to avoid
@@ -2251,7 +2251,7 @@ void HistoryBackend::Commit() {
   if (!db_)
     return;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Attempts to get the application running long enough to commit the database
   // transaction if it is currently being backgrounded.
   base::ios::ScopedCriticalAction scoped_critical_action(
@@ -2673,7 +2673,7 @@ bool HistoryBackend::ClearAllFaviconHistory(
   if (!favicon_backend_->ClearAllExcept(kept_urls))
     return false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(michaelbai): Add the unit test once AndroidProviderBackend is
   // available in HistoryBackend.
   db_->ClearAndroidURLRows();

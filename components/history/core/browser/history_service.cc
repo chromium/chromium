@@ -55,7 +55,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/critical_closure.h"
 #endif
 
@@ -167,7 +167,7 @@ bool HistoryService::BackendLoaded() {
   return backend_loaded_;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void HistoryService::HandleBackgrounding() {
   TRACE_EVENT0("browser", "HistoryService::HandleBackgrounding");
 

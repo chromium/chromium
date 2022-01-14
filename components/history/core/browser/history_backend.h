@@ -216,7 +216,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // actually be deleted.
   void Closing();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Persists any in-flight state, without actually shutting down the history
   // system. This is intended for use when the application is backgrounded.
   void PersistState();
