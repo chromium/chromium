@@ -6,6 +6,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   sources = [
+    "ftrl_optimizer.proto",
     "mrfu_cache.proto",
     "persistent_proto_test.proto",
     "score_normalizer.proto",
