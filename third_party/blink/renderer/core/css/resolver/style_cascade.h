@@ -242,15 +242,18 @@ class CORE_EXPORT StyleCascade {
     bool IsAnimationTainted() const { return is_animation_tainted_; }
     CSSParserTokenRange TokenRange() const { return tokens_; }
 
-    void Append(const TokenSequence&);
-    void Append(const CSSVariableData*);
+    bool Append(const TokenSequence&, wtf_size_t);
+    bool Append(CSSVariableData* data,
+                wtf_size_t limit = std::numeric_limits<wtf_size_t>::max());
     void Append(const CSSParserToken&);
 
     scoped_refptr<CSSVariableData> BuildVariableData();
 
    private:
+    bool AppendTokens(const Vector<CSSParserToken>&, wtf_size_t);
+
     Vector<CSSParserToken> tokens_;
-    Vector<String> backing_strings_;
+    Vector<scoped_refptr<const CSSVariableData>> variable_data_;
     // https://drafts.csswg.org/css-variables/#animation-tainted
     bool is_animation_tainted_ = false;
     // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles
