@@ -447,6 +447,7 @@ void AssistantDialogPlate::InitVoiceLayoutContainer() {
   AssistantButton::InitParams params;
   params.size_in_dip = kButtonSizeDip;
   params.icon_size_in_dip = kIconSizeDip;
+  params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
   params.tooltip_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_TOOLTIP;
   keyboard_input_toggle_ =

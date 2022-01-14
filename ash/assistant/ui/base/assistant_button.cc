@@ -7,15 +7,19 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/base/assistant_button_listener.h"
 #include "ash/assistant/util/histogram_util.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -101,9 +105,24 @@ std::unique_ptr<AssistantButton> AssistantButton::Create(
         l10n_util::GetStringUTF16(params.tooltip_id.value()));
   }
 
-  button->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(icon, params.icon_size_in_dip, params.icon_color));
+  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
+  gfx::IconDescription icon_description(icon, params.icon_size_in_dip,
+                                        gfx::kPlaceholderColor);
+  icon_description.color = params.icon_color_type.has_value()
+                               ? ColorProvider::Get()->GetContentLayerColor(
+                                     params.icon_color_type.value())
+                               : params.icon_color;
+
+  if (params.icon_color_type.has_value()) {
+    button->icon_color_type_ = params.icon_color_type.value();
+    // We cannot copy IconDescription as copy assignment operator of
+    // IconDescription is deleted since it has a non-static reference member,
+    // icon.
+    button->icon_description_.emplace(icon_description);
+  }
+
+  button->SetImage(views::Button::STATE_NORMAL,
+                   gfx::CreateVectorIcon(icon_description));
   button->SetPreferredSize(gfx::Size(params.size_in_dip, params.size_in_dip));
   return button;
 }
@@ -115,6 +134,19 @@ void AssistantButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
       SkColorSetA(views::InkDrop::Get(this)->GetBaseColor(),
                   0xff * kInkDropHighlightOpacity),
       width() / 2 - kInkDropInset, gfx::Insets(kInkDropInset)));
+}
+
+void AssistantButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  if (!icon_color_type_.has_value() || !icon_description_.has_value())
+    return;
+
+  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
+  icon_description_->color =
+      ColorProvider::Get()->GetContentLayerColor(icon_color_type_.value());
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(icon_description_.value()));
 }
 
 void AssistantButton::OnButtonPressed() {

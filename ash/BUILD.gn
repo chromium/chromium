@@ -2301,6 +2301,7 @@ test("ash_unittests") {
     "assistant/assistant_suggestions_controller_impl_unittest.cc",
     "assistant/model/assistant_query_history_unittest.cc",
     "assistant/ui/assistant_web_container_view_unittest.cc",
+    "assistant/ui/base/assistant_button_unittest.cc",
     "assistant/ui/colors/assistant_colors_util_unittest.cc",
     "assistant/ui/main_stage/assistant_onboarding_suggestion_view_unittest.cc",
     "assistant/ui/main_stage/assistant_onboarding_view_unittest.cc",

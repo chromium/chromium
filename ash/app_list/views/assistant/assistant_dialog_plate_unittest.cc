@@ -8,17 +8,28 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/base/assistant_button.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
+namespace {
+
+constexpr int kIconDipSize = 24;
+
+}  // namespace
 
 using AssistantDialogPlateTest = AssistantAshTestBase;
 
@@ -36,10 +47,17 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
       page_view()->GetViewByID(AssistantViewID::kDialogPlate);
   views::Textfield* assistant_text_field = static_cast<views::Textfield*>(
       assistant_dialog_plate->GetViewByID(AssistantViewID::kTextQueryField));
+  AssistantButton* keyboard_input_toggle =
+      static_cast<AssistantButton*>(assistant_dialog_plate->GetViewByID(
+          AssistantViewID::kKeyboardInputToggle));
 
   EXPECT_EQ(assistant_text_field->GetTextColor(),
             ColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      *gfx::CreateVectorIcon(kKeyboardIcon, kIconDipSize, gfx::kGoogleGrey900)
+           .bitmap(),
+      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, true);
@@ -48,6 +66,10 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
   EXPECT_EQ(assistant_text_field->GetTextColor(),
             ColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      *gfx::CreateVectorIcon(kKeyboardIcon, kIconDipSize, gfx::kGoogleGrey200)
+           .bitmap(),
+      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
@@ -63,8 +85,15 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
       page_view()->GetViewByID(AssistantViewID::kDialogPlate);
   views::Textfield* assistant_text_field = static_cast<views::Textfield*>(
       assistant_dialog_plate->GetViewByID(AssistantViewID::kTextQueryField));
+  AssistantButton* keyboard_input_toggle =
+      static_cast<AssistantButton*>(assistant_dialog_plate->GetViewByID(
+          AssistantViewID::kKeyboardInputToggle));
 
   EXPECT_EQ(assistant_text_field->GetTextColor(), kTextColorPrimary);
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      *gfx::CreateVectorIcon(kKeyboardIcon, kIconDipSize, gfx::kGoogleGrey900)
+           .bitmap(),
+      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   // Avoid test teardown issues by explicitly closing the launcher.
   CloseAssistantUi();
