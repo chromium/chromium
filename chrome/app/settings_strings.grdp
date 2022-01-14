@@ -1702,7 +1702,7 @@
     Standard protection
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC" desc="Description for safe browsing standard protection mode">
-    Standard protection against websites, downloads, and extensions that are known to be dangerous.
+    Standard protection against websites, downloads, and extensions that are known to be dangerous
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing standard protection. Only visible by screen reader software.">
     Show standard protection details
