@@ -908,8 +908,9 @@ public class ExternalNavigationHandler {
      * Returns true if an intent is an ACTION_VIEW intent targeting browsers or browser-like apps
      * (excluding the embedding app).
      */
-    private boolean isViewIntentToOtherBrowser(Intent targetIntent, List<ResolveInfo> resolveInfos,
-            boolean isIntentWithSupportedProtocol, boolean hasSpecializedHandler) {
+    private boolean isViewIntentToOtherBrowser(Intent targetIntent,
+            QueryIntentActivitiesSupplier resolveInfos, boolean isIntentWithSupportedProtocol,
+            ResolveActivitySupplier resolveActivity) {
         // Note that up until at least Android S, an empty action will match any intent filter
         // with with an action specified. If an intent selector is specified, then don't trust the
         // action on the intent.
@@ -927,7 +928,7 @@ public class ExternalNavigationHandler {
 
         String selfPackageName = mDelegate.getContext().getPackageName();
         boolean matchesOtherPackage = false;
-        for (ResolveInfo resolveInfo : resolveInfos) {
+        for (ResolveInfo resolveInfo : resolveInfos.get()) {
             ActivityInfo info = resolveInfo.activityInfo;
             if (info == null || !selfPackageName.equals(info.packageName)) {
                 matchesOtherPackage = true;
@@ -936,29 +937,24 @@ public class ExternalNavigationHandler {
         }
         if (!matchesOtherPackage) return false;
 
-        // Shortcut the queryIntentActivities if the scheme is a browser-supported scheme.
-        if (isIntentWithSupportedProtocol && !hasSpecializedHandler) return true;
-
-        // Fall back to querying for browser packages if the intent doesn't obviously match or not
+        // Querying for browser packages if the intent doesn't obviously match or not
         // match a browser. This will catch custom URL schemes like googlechrome://.
         Set<String> browserPackages = getInstalledBrowserPackages();
 
-        if (hasSpecializedHandler) {
-            List<String> specializedPackages = getSpecializedHandlers(resolveInfos);
-            for (String packageName : specializedPackages) {
-                // A non-browser package is specialized, so don't consider it to be targeting a
-                // browser.
-                if (!browserPackages.contains(packageName)) return false;
-            }
-        }
-
-        for (ResolveInfo resolveInfo : resolveInfos) {
+        boolean matchesBrowser = false;
+        for (ResolveInfo resolveInfo : resolveInfos.get()) {
             ActivityInfo info = resolveInfo.activityInfo;
             if (info != null && browserPackages.contains(info.packageName)) {
-                return true;
+                matchesBrowser = true;
+                break;
             }
         }
-        return false;
+        if (!matchesBrowser) return false;
+        if (resolveActivity.get().activityInfo == null) return false;
+
+        // If the intent resolves to a non-browser even through a browser is included in
+        // queryIntentActivities, it's not really targeting a browser.
+        return browserPackages.contains(resolveActivity.get().activityInfo.packageName);
     }
 
     private static Set<String> getInstalledBrowserPackages() {
@@ -1432,9 +1428,10 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forExternalIntent();
         }
 
+        ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         boolean requiresIntentChooser = false;
-        if (isViewIntentToOtherBrowser(targetIntent, resolvingInfos.get(),
-                    isIntentWithSupportedProtocol, hasSpecializedHandler)) {
+        if (isViewIntentToOtherBrowser(
+                    targetIntent, resolvingInfos, isIntentWithSupportedProtocol, resolveActivity)) {
             RecordHistogram.recordBooleanHistogram("Android.Intent.WebIntentToOtherBrowser", true);
             requiresIntentChooser = true;
         }
@@ -1445,7 +1442,6 @@ public class ExternalNavigationHandler {
             requiresIntentChooser = false;
         }
 
-        ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         if (shouldAvoidShowingDisambiguationPrompt(targetIntent, resolvingInfos, resolveActivity)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
