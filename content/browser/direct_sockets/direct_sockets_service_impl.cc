@@ -500,6 +500,9 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext() {
   if (GetNetworkContextForTesting())
     return GetNetworkContextForTesting();
 
+  if (!frame_host_)
+    return nullptr;
+
   return frame_host_->GetStoragePartition()->GetNetworkContext();
 }
 
