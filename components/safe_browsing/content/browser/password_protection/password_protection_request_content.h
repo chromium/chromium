@@ -122,9 +122,9 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
       std::unique_ptr<VisualFeatures> visual_features);
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetReferringAppInfo() override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // WebContents of the password protection event.
   raw_ptr<content::WebContents> web_contents_;

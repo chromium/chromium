@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
@@ -289,7 +290,7 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
       base::BindOnce(&PhishingClassifier::OnVisualTargetsMatched,
                      weak_factory_.GetWeakPtr()));
 // TODO(crbug/1278502): This is disabled as a temporary measure due to crashes.
-#elif BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !defined(OS_CHROMEOS) && \
+#elif BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_CHROMEOS) && \
     !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   scorer_->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
@@ -309,7 +310,7 @@ void PhishingClassifier::OnVisualTargetsMatched(
                           base::TimeTicks::Now() - visual_matching_start_);
 
 // TODO(crbug/1278502): This is disabled as a temporary measure due to crashes.
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !defined(OS_CHROMEOS) && \
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_CHROMEOS) && \
     !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   scorer_->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,

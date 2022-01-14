@@ -88,7 +88,7 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
                                    ReusedPasswordAccountType password_type,
                                    content::WebContents* web_contents) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the referring app info that starts the activity.
   virtual LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) = 0;

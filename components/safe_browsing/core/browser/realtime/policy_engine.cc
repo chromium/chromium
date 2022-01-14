@@ -15,7 +15,7 @@
 #include "components/variations/service/variations_service.h"
 #include "services/network/public/cpp/request_destination.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #endif

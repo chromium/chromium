@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/backup_util.h"
 #endif
 
@@ -92,7 +92,7 @@ void V4Database::CreateOnTaskRunner(
   if (!base::CreateDirectory(base_path))
     NOTREACHED();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   base::mac::SetBackupExclusion(base_path);
 #endif
 

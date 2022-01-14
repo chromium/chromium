@@ -55,7 +55,7 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
 };
 
 // TODO(crbug.com/881476) disabled for flaky crashes.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_GetSafeBrowsingExtendedReportingLevel \
   DISABLED_GetSafeBrowsingExtendedReportingLevel
 #else
@@ -75,7 +75,7 @@ TEST_F(SafeBrowsingPrefsTest, MAYBE_GetSafeBrowsingExtendedReportingLevel) {
 }
 
 // TODO(crbug.com/881476) disabled for flaky crashes.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_VerifyMatchesPasswordProtectionLoginURL \
   DISABLED_VerifyMatchesPasswordProtectionLoginURL
 #else

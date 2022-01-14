@@ -37,7 +37,7 @@ const base::Feature kClientSideDetectionForAndroid{
     "ClientSideDetectionModelOnAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable only for Android
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kClientSideDetectionModelIsFlatBuffer{
     "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_ENABLED_BY_DEFAULT};
 #else

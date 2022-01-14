@@ -24,7 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
 #endif
 
@@ -37,7 +37,7 @@ namespace {
 const int kDomFeatureTimeoutMs = 3000;
 
 // Parameters chosen to ensure privacy is preserved by visual features.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const int kMinWidthForVisualFeatures = 258;
 const int kMinHeightForVisualFeatures = 258;
 #else
@@ -257,7 +257,7 @@ void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
 void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
   // TODO(drubery): Unify this with the code to populate content_area_width and
   // content_area_height on desktop.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (password_protection_service()->IsExtendedReporting() &&
       !password_protection_service()->IsIncognito()) {
     content::RenderWidgetHostView* view =
@@ -276,7 +276,7 @@ void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
       !password_protection_service()->IsIncognito() &&
       request_proto_->content_area_width() >= GetMinWidthForVisualFeatures() &&
       request_proto_->content_area_height() >= GetMinHeightForVisualFeatures();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   can_collect_visual_features &=
       zoom::ZoomController::GetZoomLevelForWebContents(web_contents_) <=
       kMaxZoomForVisualFeatures;
@@ -334,7 +334,7 @@ void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
   SendRequest();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PasswordProtectionRequestContent::SetReferringAppInfo() {
   PasswordProtectionService* service =
       static_cast<PasswordProtectionService*>(password_protection_service());
@@ -347,6 +347,6 @@ void PasswordProtectionRequestContent::SetReferringAppInfo() {
           1);
   *request_proto_->mutable_referring_app_info() = std::move(referring_app_info);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing

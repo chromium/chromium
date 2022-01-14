@@ -117,7 +117,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 
 // The following functions are disabled on Android, because enterprise reporting
 // extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Triggers the safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
   virtual void MaybeReportPasswordReuseDetected(
       PasswordProtectionRequest* request,

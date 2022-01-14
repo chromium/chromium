@@ -541,7 +541,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   ReferrerChainProvider* GetReferrerChainProvider(
       content::BrowserContext* browser_context);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents);
 #endif

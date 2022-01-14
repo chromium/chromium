@@ -1436,7 +1436,7 @@ TEST_F(V4LocalDatabaseManagerTest, FlagMultipleUrls) {
 TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
   WaitForTasksOnTaskRunner();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   std::vector<ListIdentifier> expected_lists{
       GetUrlSocEngId(), GetUrlMalwareId(), GetUrlBillingId(),
       GetUrlCsdAllowlistId(), GetUrlHighConfidenceAllowlistId()};

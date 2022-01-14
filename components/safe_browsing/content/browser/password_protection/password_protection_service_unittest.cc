@@ -509,7 +509,7 @@ class PasswordProtectionServiceBaseTest
   }
 
 // Visual features are not supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void VerifyContentAreaSizeCollection(
       const LoginReputationClientRequest& request) {
     bool should_report_content_size =
@@ -931,7 +931,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestNoRequestSentForAllowlistedURL) {
 }
 
 // crbug.com/1010007: crashes on win
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestNoRequestSentIfVerdictAlreadyCached \
   DISABLED_TestNoRequestSentIfVerdictAlreadyCached
 #else
@@ -1232,7 +1232,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyPasswordOnFocusRequestProto) {
   EXPECT_EQ(true, actual_request->frames(1).has_password_field());
   ASSERT_EQ(1, actual_request->frames(1).forms_size());
   EXPECT_EQ(kFormActionUrl, actual_request->frames(1).forms(0).action_url());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   VerifyContentAreaSizeCollection(*actual_request);
 #endif
 }
@@ -1289,7 +1289,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   const auto& reuse_event = actual_request->password_reuse_event();
   EXPECT_TRUE(reuse_event.is_chrome_signin_password());
   EXPECT_EQ(0, reuse_event.domains_matching_password_size());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   VerifyContentAreaSizeCollection(*actual_request);
 #endif
 }
@@ -1329,7 +1329,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   } else {
     EXPECT_EQ(0, reuse_event.domains_matching_password_size());
   }
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   VerifyContentAreaSizeCollection(*actual_request);
 #endif
 }
@@ -1388,7 +1388,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
     reused_password_account_type.set_is_account_syncing(false);
 // Currently password reuse warnings are only supported for saved passwords on
 // Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
     EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
@@ -1426,13 +1426,13 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
     reused_password_account_type.set_is_account_syncing(true);
 // If kPasswordProtectionForSignedInUsers is disabled, then GMAIL password
 // reuse warnings are only supported on desktop platforms.
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
+#if BUILDFLAG(IS_ANDROID)
+    EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
   EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
 #endif
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_account_type, LoginReputationClientResponse::PHISHING));
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_account_type, LoginReputationClientResponse::PHISHING));
   }
 
   // For a GSUITE account, don't show warning if password protection is set to
@@ -1457,7 +1457,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
           reused_password_account_type));
 // Currently password reuse warnings are only supported for saved passwords on
 // Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
   EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
@@ -1468,7 +1468,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   // Modal dialog warning is also shown on LOW_REPUTATION verdict.
 // Currently password reuse warnings are only supported for saved passwords on
 // Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
   EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
@@ -1495,7 +1495,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
       .WillRepeatedly(Return(PHISHING_REUSE));
 // Currently password reuse warnings are only supported for saved passwords on
 // Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
   EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
@@ -1540,7 +1540,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
 
   EXPECT_TRUE(password_protection_service_->IsSupportedPasswordTypeForPinging(
       PasswordType::PRIMARY_ACCOUNT_PASSWORD));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(password_protection_service_->IsSupportedPasswordTypeForPinging(
       PasswordType::OTHER_GAIA_PASSWORD));
 #else
@@ -1578,7 +1578,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestPingsForAboutBlank) {
 }
 
 // DOM features and visual features are not supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordProtectionServiceBaseTest,
        TestVisualFeaturesPopulatedInOnFocusPing) {
   LoginReputationClientResponse expected_response =

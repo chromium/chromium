@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_service_base.h"
@@ -248,9 +249,9 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetReferringAppInfo();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {

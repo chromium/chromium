@@ -268,7 +268,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   ExpectFeatureMapsAreEqual(features, expected_features);
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // The test code is disabled due to http://crbug.com/392234
   // The client-side detection feature is not enabled on Android yet.
   // If we decided to enable the feature, we need to fix the bug first.

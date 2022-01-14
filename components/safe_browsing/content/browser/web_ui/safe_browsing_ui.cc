@@ -383,7 +383,7 @@ ReferrerChainProvider* WebUIInfoSingleton::GetReferrerChainProvider(
       browser_context);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 LoginReputationClientRequest::ReferringAppInfo
 WebUIInfoSingleton::GetReferringAppInfo(content::WebContents* web_contents) {
   return sb_service_ ? sb_service_->GetReferringAppInfo(web_contents)
@@ -2462,7 +2462,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(
 void SafeBrowsingUIHandler::GetReferringAppInfo(
     const base::Value::ConstListView args) {
   base::Value referring_app_value;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo info =
       WebUIInfoSingleton::GetInstance()->GetReferringAppInfo(
           web_ui()->GetWebContents());

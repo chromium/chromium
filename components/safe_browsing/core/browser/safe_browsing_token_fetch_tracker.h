@@ -17,7 +17,7 @@
 namespace safe_browsing {
 
 // Exposed for unittests.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr int kTokenFetchTimeoutDelayFromMilliseconds = 50;
 #else
 constexpr int kTokenFetchTimeoutDelayFromMilliseconds = 1000;

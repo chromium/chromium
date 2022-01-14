@@ -193,7 +193,7 @@ TEST_F(SuspiciousSiteTriggerTest, RegularPageNonSuspicious) {
 }
 
 // crbug.com/1010037: fails on win.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SuspiciousHitDuringLoad DISABLED_SuspiciousHitDuringLoad
 #else
 #define MAYBE_SuspiciousHitDuringLoad SuspiciousHitDuringLoad

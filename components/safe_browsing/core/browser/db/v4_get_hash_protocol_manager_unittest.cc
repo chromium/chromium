@@ -672,7 +672,7 @@ TEST_F(V4GetHashProtocolManagerTest,
   m->set_threat_type(API_ABUSE);
   // TODO(crbug.com/1030487): This special case for Android will no longer be
   // needed once GetCurrentPlatformType() returns ANDROID_PLATFORM on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   m->set_platform_type(ANDROID_PLATFORM);
 #else
   m->set_platform_type(GetCurrentPlatformType());

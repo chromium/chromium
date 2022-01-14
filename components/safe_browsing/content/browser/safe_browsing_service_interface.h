@@ -46,7 +46,7 @@ class SafeBrowsingServiceInterface
   virtual ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
       content::BrowserContext* browser_context) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) = 0;
 #endif

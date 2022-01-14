@@ -21,7 +21,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #endif
 
@@ -50,18 +50,18 @@ std::string ShortURLForReporting(const GURL& url) {
 
 ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
     const policy::BrowserPolicyConnector* bpc) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::IsMachineExternallyManaged())
     return ChromeUserPopulation::ENTERPRISE_MANAGED;
   else
     return ChromeUserPopulation::NOT_MANAGED;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
   if (!bpc || !bpc->IsDeviceEnterpriseManaged())
     return ChromeUserPopulation::NOT_MANAGED;
   return ChromeUserPopulation::ENTERPRISE_MANAGED;
 #else
   return ChromeUserPopulation::UNAVAILABLE;
-#endif  // #if defined(OS_WIN) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void SetDelayInPref(PrefService* prefs,
