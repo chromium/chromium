@@ -158,10 +158,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
   // Report throughput metrics:
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.Full.Cpp",
-      base::Microseconds(event.total_cpp.mark_wall_clock_duration_in_us +
-                         event.total_cpp.weak_wall_clock_duration_in_us +
-                         event.total_cpp.compact_wall_clock_duration_in_us +
-                         event.total_cpp.sweep_wall_clock_duration_in_us));
+      base::Microseconds(event.total_cpp.total_wall_clock_duration_in_us));
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.Full.Mark.Cpp",
       base::Microseconds(event.total_cpp.mark_wall_clock_duration_in_us));
@@ -178,10 +175,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Cpp",
       base::Microseconds(
-          event.main_thread_cpp.mark_wall_clock_duration_in_us +
-          event.main_thread_cpp.weak_wall_clock_duration_in_us +
-          event.main_thread_cpp.compact_wall_clock_duration_in_us +
-          event.main_thread_cpp.sweep_wall_clock_duration_in_us));
+          event.main_thread_cpp.total_wall_clock_duration_in_us));
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Mark.Cpp",
       base::Microseconds(event.main_thread_cpp.mark_wall_clock_duration_in_us));
@@ -199,6 +193,10 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
   // Report atomic pause metrics:
   UMA_HISTOGRAM_TIMES(
+      "V8.GC.Cycle.MainThread.Full.Atomic.Cpp",
+      base::Microseconds(
+          event.main_thread_atomic_cpp.total_wall_clock_duration_in_us));
+  UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp",
       base::Microseconds(
           event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us));
@@ -213,13 +211,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Atomic.Sweep.Cpp",
       base::Microseconds(
-          event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us));
-  UMA_HISTOGRAM_TIMES(
-      "V8.GC.Cycle.MainThread.Full.Atomic.Cpp",
-      base::Microseconds(
-          event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us +
-          event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us +
-          event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us +
           event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us));
 
   // Report size metrics:
