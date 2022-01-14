@@ -24,6 +24,7 @@ ImageProcessorWithPool::Create(
 
   const gfx::Size coded_size = config.size;
   DCHECK(gfx::Rect(coded_size).Contains(config.visible_rect));
+  // TODO(b/191450183): Consider |visible_rect|s whose origin() is not (0,0).
   const gfx::Size natural_size = config.visible_rect.size();
 
   CroStatus::Or<GpuBufferLayout> status_or_layout =
