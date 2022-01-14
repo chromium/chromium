@@ -189,8 +189,6 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
     // new bounds for the next layout, we must abort the ongoing animation so
     // |this| will set the previous bounds of the widget and clear the clip
     // rect.
-    // TODO(chinsenj): We may not want to abort the animation and rather just
-    // animate from the current position.
     layer_animator->AbortAllAnimations();
   }
 

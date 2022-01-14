@@ -320,7 +320,7 @@ void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
   // If the restored bounds are out of the screen, move the window to the bounds
   // manually as most widget types force windows to be within the work area on
   // creation.
-  // TODO(chinsenj|sammiequon): The Files app uses async Mojo calls to activate
+  // TODO(sammiequon): The Files app uses async Mojo calls to activate
   // and set its bounds, making this approach not work. In the future, we'll
   // need to address the Files app.
   MaybeRestoreOutOfBoundsWindows(window);
