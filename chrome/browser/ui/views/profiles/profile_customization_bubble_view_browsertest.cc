@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 
 #include <string>
@@ -71,8 +72,13 @@ class ProfileCustomizationBubbleBrowserTest : public DialogBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
 IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest,
-                       InvokeUi_default) {
+                       MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
