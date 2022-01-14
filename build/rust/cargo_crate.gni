@@ -76,7 +76,7 @@ template("cargo_crate") {
     }
     _epochlabel = "vunknown"
     if (defined(invoker.epoch)) {
-      _tempepoch = string_replace(invoker.epoch, ".", "")
+      _tempepoch = string_replace(invoker.epoch, ".", "_")
       _epochlabel = "v${_tempepoch}"
     }
     build_script_name = "${_cratelabel}_${_epochlabel}_build_script"
