@@ -18,7 +18,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/image/image_skia.h"
 #endif
 
@@ -119,7 +119,7 @@ class PageInfoUI {
     // Textual description of the Safe Browsing status.
     std::u16string safe_browsing_details;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Textual description of the site's identity status that is displayed to
     // the user.
     std::string identity_status_description_android;
@@ -217,7 +217,7 @@ class PageInfoUI {
   // Returns the color to use for the permission decision reason strings.
   static SkColor GetSecondaryTextColor();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the identity icon ID for the given identity |status|.
   static int GetIdentityIconID(PageInfo::SiteIdentityStatus status);
 
@@ -229,7 +229,7 @@ class PageInfoUI {
 
   // Returns the connection icon color ID for the given connection |status|.
   static int GetConnectionIconColorID(PageInfo::SiteConnectionStatus status);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Return true if the given ContentSettingsType is in PageInfoUI.
   static bool ContentSettingsTypeInPageInfo(ContentSettingsType type);

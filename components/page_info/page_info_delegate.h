@@ -57,7 +57,7 @@ class PageInfoDelegate {
   virtual permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type,
       const GURL& site_url) = 0;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Creates an infobars::ContentInfoBarManager and an InfoBarDelegate using it,
   // if possible. Returns true if an InfoBarDelegate was created, false
   // otherwise.
@@ -94,7 +94,7 @@ class PageInfoDelegate {
   virtual bool IsContentDisplayedInVrHeadset() = 0;
   virtual security_state::SecurityLevel GetSecurityLevel() = 0;
   virtual security_state::VisibleSecurityState GetVisibleSecurityState() = 0;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Gets the name of the embedder.
   virtual const std::u16string GetClientApplicationName() = 0;
 #endif

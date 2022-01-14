@@ -29,7 +29,7 @@
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #else
 #include "ui/gfx/color_palette.h"
@@ -98,7 +98,7 @@ static_assert(base::size(kPermissionButtonTextIDDefaultSetting) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kPermissionButtonTextIDDefaultSetting array size is incorrect");
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The resource IDs for the strings that are displayed on the sound permission
 // button if the sound permission setting is managed by the user.
 const int kSoundPermissionButtonTextIDUserManaged[] = {
@@ -154,7 +154,7 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
     {ContentSettingsType::BACKGROUND_SYNC,
      IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC,
      IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC_MID_SENTENCE},
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
     {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
      IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID,
      IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID_MID_SENTENCE},
@@ -194,7 +194,7 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
      IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_MID_SENTENCE},
     {ContentSettingsType::IDLE_DETECTION, IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION,
      IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Page Info Permissions that are not defined in Android.
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
@@ -448,7 +448,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
   }
 
   switch (identity_info.identity_status) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
       return CreateSecurityDescription(SecuritySummaryColor::GREEN, 0,
                                        IDS_PAGE_INFO_INTERNAL_PAGE,
@@ -585,7 +585,7 @@ std::u16string PageInfoUI::PermissionActionToUIString(
   switch (source) {
     case content_settings::SETTING_SOURCE_USER:
       if (setting == CONTENT_SETTING_DEFAULT) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         if (type == ContentSettingsType::SOUND) {
           // If the block autoplay enabled preference is enabled and the
           // sound default setting is ALLOW, we will return a custom string
@@ -607,7 +607,7 @@ std::u16string PageInfoUI::PermissionActionToUIString(
       [[fallthrough]];
     case content_settings::SETTING_SOURCE_POLICY:
     case content_settings::SETTING_SOURCE_EXTENSION:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       if (type == ContentSettingsType::SOUND) {
         button_text_ids = kSoundPermissionButtonTextIDUserManaged;
         break;
@@ -642,7 +642,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
       permission.type, permission.setting, permission.default_setting);
   switch (effective_setting) {
     case CONTENT_SETTING_ALLOW:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       if (permission.type == ContentSettingsType::SOUND &&
           delegate->IsBlockAutoPlayEnabled() &&
           permission.setting == CONTENT_SETTING_DEFAULT) {
@@ -652,7 +652,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
 #endif
       if (permission.setting == CONTENT_SETTING_DEFAULT) {
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       } else if (permission.is_one_time) {
         DCHECK_EQ(permission.source, content_settings::SETTING_SOURCE_USER);
         DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(
@@ -667,7 +667,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
       break;
     case CONTENT_SETTING_BLOCK:
       if (permission.setting == CONTENT_SETTING_DEFAULT) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         if (permission.type == ContentSettingsType::SOUND) {
           message_id = IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_DEFAULT;
           break;
@@ -675,7 +675,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
 #endif
         message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_BY_DEFAULT;
       } else {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         if (permission.type == ContentSettingsType::SOUND) {
           message_id = IDS_PAGE_INFO_STATE_TEXT_MUTED;
           break;
@@ -881,7 +881,7 @@ SkColor PageInfoUI::GetSecondaryTextColor() {
   return SK_ColorGRAY;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // static
 int PageInfoUI::GetIdentityIconID(PageInfo::SiteIdentityStatus status) {
   switch (status) {
@@ -953,7 +953,7 @@ int PageInfoUI::GetConnectionIconColorID(
   return 0;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // static
 bool PageInfoUI::ContentSettingsTypeInPageInfo(ContentSettingsType type) {

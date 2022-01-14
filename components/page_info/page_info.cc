@@ -39,7 +39,7 @@
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #endif
 #include "build/chromeos_buildflags.h"
@@ -90,7 +90,7 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::SENSORS,
     ContentSettingsType::NOTIFICATIONS,
     ContentSettingsType::JAVASCRIPT,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::IMAGES,
 #endif
     ContentSettingsType::POPUPS,
@@ -99,16 +99,16 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::BACKGROUND_SYNC,
     ContentSettingsType::SOUND,
     ContentSettingsType::AUTOMATIC_DOWNLOADS,
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
     ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
 #endif
     ContentSettingsType::MIDI_SYSEX,
     ContentSettingsType::CLIPBOARD_READ_WRITE,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ContentSettingsType::NFC,
 #endif
     ContentSettingsType::USB_GUARD,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::HID_GUARD,
     ContentSettingsType::SERIAL_GUARD,
     ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
@@ -148,7 +148,7 @@ bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
   }
 
   const bool is_incognito = web_contents->GetBrowserContext()->IsOffTheRecord();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Special geolocation DSE settings apply only on Android, so make sure it
   // gets checked there regardless of default setting on Desktop.
   // DSE settings don't apply to incognito mode.
@@ -264,7 +264,7 @@ const PageInfo::ChooserUIInfo kChooserUIInfo[] = {
      IDS_PAGE_INFO_USB_DEVICE_SECONDARY_LABEL,
      IDS_PAGE_INFO_USB_DEVICE_ALLOWED_BY_POLICY_LABEL,
      IDS_PAGE_INFO_DELETE_USB_DEVICE},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {ContentSettingsType::HID_CHOOSER_DATA,
      IDS_PAGE_INFO_HID_DEVICE_SECONDARY_LABEL,
      /*allowed_by_policy_description_string_id=*/-1,
@@ -421,7 +421,7 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   if (action != PAGE_INFO_OPENED)
     did_perform_action_ = true;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   delegate_->OnPageInfoActionOccurred(action);
 #endif
 
@@ -530,7 +530,7 @@ void PageInfo::OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,
 void PageInfo::OnUIClosing(bool* reload_prompt) {
   if (reload_prompt)
     *reload_prompt = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   if (show_info_bar_ && web_contents_ && !web_contents_->IsBeingDestroyed()) {
@@ -552,7 +552,7 @@ void PageInfo::OnRevokeSSLErrorBypassButtonPressed() {
 }
 
 void PageInfo::OpenSiteSettingsView() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   RecordPageInfoAction(PAGE_INFO_SITE_SETTINGS_OPENED);
@@ -561,7 +561,7 @@ void PageInfo::OpenSiteSettingsView() {
 }
 
 void PageInfo::OpenCookiesDialog() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   if (!web_contents_ || web_contents_->IsBeingDestroyed())
@@ -573,7 +573,7 @@ void PageInfo::OpenCookiesDialog() {
 }
 
 void PageInfo::OpenCertificateDialog(net::X509Certificate* certificate) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   if (!web_contents_ || web_contents_->IsBeingDestroyed())
@@ -588,7 +588,7 @@ void PageInfo::OpenCertificateDialog(net::X509Certificate* certificate) {
 }
 
 void PageInfo::OpenSafetyTipHelpCenterPage() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   RecordPageInfoAction(PAGE_INFO_SAFETY_TIP_HELP_OPENED);
@@ -597,7 +597,7 @@ void PageInfo::OpenSafetyTipHelpCenterPage() {
 }
 
 void PageInfo::OpenConnectionHelpCenterPage(const ui::Event& event) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   RecordPageInfoAction(PAGE_INFO_CONNECTION_HELP_OPENED);
@@ -607,7 +607,7 @@ void PageInfo::OpenConnectionHelpCenterPage(const ui::Event& event) {
 
 void PageInfo::OpenContentSettingsExceptions(
     ContentSettingsType content_settings_type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   RecordPageInfoAction(PAGE_INFO_CONNECTION_HELP_OPENED);
@@ -647,7 +647,7 @@ std::u16string PageInfo::GetSimpleSiteName() const {
 void PageInfo::ComputeUIInputs(const GURL& url) {
   auto security_level = delegate_->GetSecurityLevel();
   auto visible_security_state = delegate_->GetVisibleSecurityState();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // On desktop, internal URLs aren't handled by this class. Instead, a
   // custom and simpler bubble is shown.
   DCHECK(!url.SchemeIs(content::kChromeUIScheme) &&
@@ -657,7 +657,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 #endif
 
   bool is_chrome_ui_native_scheme = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   is_chrome_ui_native_scheme = url.SchemeIs(browser_ui::kChromeUINativeScheme);
 #endif
 
@@ -665,7 +665,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
     // All about: URLs except about:blank are redirected.
     DCHECK_EQ(url::kAboutBlankURL, url.spec());
     site_identity_status_ = SITE_IDENTITY_STATUS_NO_CERT;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     identity_status_description_android_ =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_TAB_INSECURE_IDENTITY);
 #endif
@@ -678,7 +678,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 
   if (url.SchemeIs(content::kChromeUIScheme) || is_chrome_ui_native_scheme) {
     site_identity_status_ = SITE_IDENTITY_STATUS_INTERNAL_PAGE;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     identity_status_description_android_ =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_INTERNAL_PAGE);
 #endif
@@ -713,7 +713,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
               IDS_PAGE_INFO_SECURITY_TAB_UNKNOWN_PARTY));
         }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         // This string is shown on all non-error HTTPS sites on Android when
         // the user taps "Details" link on page info.
         identity_status_description_android_.assign(l10n_util::GetStringFUTF16(
@@ -725,7 +725,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
         site_identity_status_ =
             SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         identity_status_description_android_ +=
             u"\n\n" +
             l10n_util::GetStringUTF16(
@@ -741,7 +741,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
     } else {
       site_identity_status_ = SITE_IDENTITY_STATUS_ERROR;
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const std::u16string bullet = u"\n • ";
     std::vector<ssl_errors::ErrorInfo> errors;
     ssl_errors::ErrorInfo::GetErrorsForCertStatus(
@@ -768,7 +768,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
     GetSafeBrowsingStatusByMaliciousContentStatus(
         visible_security_state.malicious_content_status, &safe_browsing_status_,
         &safe_browsing_details_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     identity_status_description_android_ = safe_browsing_details_;
 #endif
 
@@ -796,7 +796,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   }
 
   safety_tip_info_ = visible_security_state.safety_tip_info;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (security_state::IsSafetyTipUIFeatureEnabled()) {
     // identity_status_description_android_ is only displayed on Android when
     // the user taps "Details" link on the page info. Reuse the description from
@@ -1045,7 +1045,7 @@ void PageInfo::PresentSiteIdentity() {
   if (security_state::IsSafetyTipUIFeatureEnabled()) {
     info.safety_tip_info = safety_tip_info_;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   info.identity_status_description_android =
       UTF16ToUTF8(identity_status_description_android_);
 #endif
