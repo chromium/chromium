@@ -82,39 +82,11 @@
   'android_webview_unittests': {
   },
   'angle_end2end_tests': {
-    'remove_from': [
-      # TODO(ynovikov) Investigate why the test breaks on older devices.
-      'Android FYI Release (Nexus 5)',
-      'Android FYI Release (Nexus 9)',
-    ],
     'modifications': {
-      # anglebug.com/5328 suspecting blue screen caused by multiprocess
-      'Optional Win10 x64 Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
-      'Win10 FYI x64 Exp Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
-      'Win10 FYI x64 Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
       'win10-angle-x64-intel': {
         'args': [
           '--max-processes=1',
         ],
-      },
-    },
-    'replacements': {
-      'Linux FYI Release (AMD RX 5500 XT)': {
-        'args': {
-          '--max-processes': '1',
-        },
       },
     },
   },
@@ -133,22 +105,6 @@
   },
   'angle_white_box_tests': {
     'modifications': {
-      # anglebug.com/5328 suspecting blue screen caused by multiprocess
-      'Optional Win10 x64 Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
-      'Win10 FYI x64 Exp Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
-      'Win10 FYI x64 Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
       'win10-angle-x64-intel': {
         'args': [
           '--max-processes=1',

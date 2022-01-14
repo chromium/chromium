@@ -2477,25 +2477,6 @@
       },
     },
 
-    'gpu_angle_end2end_with_retry_gtests': {
-      'angle_end2end_tests': {
-        'args': [
-          'angle_end2end_tests',
-          '--gtest_filter=-*Vulkan_SwiftShader*',
-          '--bot-mode',
-          '--flaky-retries=2',
-        ],
-        # Linux has issues with creating too many windows at once.
-        'linux_args': [
-          '--max-processes=4',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'use_isolated_scripts_api': True,
-      },
-    },
-
     'gpu_angle_fuchsia_unittests_isolated_scripts': {
       'angle_unittests': {
         'args': [
@@ -6550,13 +6531,8 @@
     # TODO(crbug.com/1080424): Merge with an existing set of tests such as
     # gpu_fyi_linux_release_gtests once all CrOS tests have been enabled.
     'gpu_fyi_chromeos_release_gtests': [
-      # TODO(crbug.com/1087552): Enable once these stop crashing.
-      # 'gpu_angle_end2end_gtests',
       # TODO(crbug.com/1135720): Missing cros wrapper script.
       # 'gpu_angle_unit_gtests',
-      # TODO(crbug.com/1087558): Decide if we want to actually fix/enable these
-      # tests on CrOS.
-      # 'gpu_angle_white_box_gtests',
       # TODO(crbug.com/1087567, crbug.com/1087590): Enable once there are tests
       # that actually pass.
       # 'gpu_common_gtests',
@@ -6601,16 +6577,12 @@
     ],
 
     'gpu_fyi_linux_optional_gtests': [
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_white_box_gtests',
       'gpu_gles2_conform_gtests',
       'gpu_swiftshader_gtests',
     ],
 
     'gpu_fyi_linux_release_gtests': [
-      'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
       'gpu_gles2_conform_gtests',
@@ -6626,7 +6598,6 @@
     ],
 
     'gpu_fyi_mac_debug_gtests': [
-      'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_common_gtests_validating',
@@ -6645,7 +6616,6 @@
     ],
 
     'gpu_fyi_mac_optional_gtests': [
-      'gpu_angle_end2end_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_mac_specific_gtests',
       'gpu_gles2_conform_gtests',
@@ -6661,7 +6631,6 @@
     ],
 
     'gpu_fyi_mac_release_gtests': [
-      'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_common_gtests_validating',
@@ -6728,9 +6697,7 @@
     ],
 
     'gpu_fyi_win7_amd_gtests': [
-      'gpu_angle_end2end_with_retry_gtests',
       'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
@@ -6740,9 +6707,7 @@
     ],
 
     'gpu_fyi_win7_gtests': [
-      'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
@@ -6781,9 +6746,7 @@
     ],
 
     'gpu_fyi_win_gtests': [
-      'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_default_and_optional_win_specific_gtests',
       'gpu_desktop_specific_gtests',
@@ -6813,8 +6776,6 @@
     ],
 
     'gpu_fyi_win_optional_gtests': [
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_white_box_gtests',
       'gpu_default_and_optional_win_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
