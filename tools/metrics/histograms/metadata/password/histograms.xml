@@ -501,17 +501,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AccountStore.InaccessiblePasswords"
-    units="saved passwords" expires_after="2022-02-20">
-  <owner>vasilii@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    The number of saved passwords in the account-scoped store that could not be
-    decrypted. Recorded once for the profile on startup.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn"
     units="credentials" expires_after="2022-05-31">
   <owner>treib@chromium.org</owner>
@@ -1595,16 +1584,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The response code of successful or failed password import attempt from a CSV
     file. Recorded when the user imports passwords within the password settings.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.InaccessiblePasswords" units="saved passwords"
-    expires_after="2022-06-26">
-  <owner>vasilii@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    The number of saved passwords in the profile-scoped store that could not be
-    decrypted. Recorded once for the profile on startup.
   </summary>
 </histogram>
 
@@ -3054,6 +3033,20 @@ chromium-metrics-reviews@google.com.
     <variant name="AccountStore." summary="for account-scoped store"/>
   </token>
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+</histogram>
+
+<histogram name="PasswordManager.{Store}InaccessiblePasswords"
+    units="saved passwords" expires_after="2022-06-26">
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    The number of saved passwords that could not be decrypted in the password
+    manager's {Store}. Recorded once for the profile on startup.
+  </summary>
+  <token key="Store">
+    <variant name="" summary="profile-scoped store"/>
+    <variant name="AccountStore." summary="account-scoped store"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.{Store}TimesPasswordUsed" units="PasswordUses"
