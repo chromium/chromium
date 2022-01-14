@@ -58,6 +58,16 @@ bool HasNonDefaultBlockSetting(const ContentSettingsForOneType& cookie_settings,
   return false;
 }
 
+// Convert a stored FLEDGE block eTLD+1 into a content settings pattern. This
+// ensures that if Public Suffix List membership changes, the stored item
+// continues to match as when it was set.
+// TODO (crbug.com/1287153): This is somewhat hacky and can be removed when
+// FLEDGE is controlled by a content setting directly.
+ContentSettingsPattern FledgeBlockToContentSettingsPattern(
+    const std::string& entry) {
+  return ContentSettingsPattern::FromString("[*.]" + entry);
+}
+
 }  // namespace
 
 PrivacySandboxSettings::PrivacySandboxSettings(
@@ -212,11 +222,13 @@ bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
   auto* pref_data = scoped_pref_update.Get();
   DCHECK(pref_data);
   DCHECK(pref_data->is_dict());
-  auto top_frame_etld_plus1 =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          top_frame_origin,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return !pref_data->FindKey(top_frame_etld_plus1);
+  for (auto entry : pref_data->DictItems()) {
+    if (FledgeBlockToContentSettingsPattern(entry.first)
+            .Matches(top_frame_origin.GetURL())) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool PrivacySandboxSettings::IsFledgeAllowed(

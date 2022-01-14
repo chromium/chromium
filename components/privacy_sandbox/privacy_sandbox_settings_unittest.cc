@@ -581,6 +581,28 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
       url::Origin::Create(GURL("https://example.com.au"))));
 }
 
+TEST_F(PrivacySandboxSettingsTest, FledgeJoiningEtldChange) {
+  // Confirm that if what constitutes an eTLD+1 changes (e.g. due to Public
+  // Suffix List membership changing) previous settings still apply.
+
+  // Attempting to apply settings to non eTLD+1's will be rejected by the
+  // service, so create them manually.
+  auto dict_pref = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  dict_pref->SetKey("subsite.example.com",
+                    base::TimeToValue(base::Time::Now()));
+  prefs()->SetUserPref(prefs::kPrivacySandboxFledgeJoinBlocked,
+                       std::move(dict_pref));
+
+  // The fact that subsite.example.com exists as a setting means it was once
+  // considered an eTLD+1, and should still affect subdomains.
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://subsite.example.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://another.subsite.example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+}
+
 TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
   // Confirm that time range deletions work appropriately for FLEDGE join
   // settings.
