@@ -78,12 +78,12 @@ bool ServicesMatch(int profile_a, int profile_b, std::ostream* os) {
     return false;
   }
 
-  for (auto it = a_turls.begin(); it != a_turls.end(); ++it) {
-    if (b_turls.find(it->first) == b_turls.end()) {
-      *os << "TURL GUID from a not found in b's TURLs: " << it->first;
+  for (const auto& [guid, a_turl] : a_turls) {
+    if (b_turls.find(guid) == b_turls.end()) {
+      *os << "TURL GUID from a not found in b's TURLs: " << guid;
       return false;
     }
-    if (!TURLsMatch(*b_turls[it->first], *it->second))
+    if (!TURLsMatch(*b_turls[guid], *a_turl))
       return false;
   }
 

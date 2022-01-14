@@ -98,8 +98,8 @@ void DataTypeManagerImpl::Configure(ModelTypeSet desired_types,
 
   ModelTypeSet allowed_types = ControlTypes();
   // Add types with controllers.
-  for (const auto& kv : *controllers_) {
-    allowed_types.Put(kv.first);
+  for (const auto& [type, controller] : *controllers_) {
+    allowed_types.Put(type);
   }
 
   ConfigureImpl(Intersection(desired_types, allowed_types), context);

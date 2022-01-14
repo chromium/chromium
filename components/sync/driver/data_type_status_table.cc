@@ -14,9 +14,9 @@ namespace {
 ModelTypeSet GetTypesFromErrorMap(
     const DataTypeStatusTable::TypeErrorMap& errors) {
   ModelTypeSet result;
-  for (auto it = errors.begin(); it != errors.end(); ++it) {
-    DCHECK(!result.Has(it->first));
-    result.Put(it->first);
+  for (const auto& [type, error] : errors) {
+    DCHECK(!result.Has(type));
+    result.Put(type);
   }
   return result;
 }

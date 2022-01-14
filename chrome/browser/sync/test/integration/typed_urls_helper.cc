@@ -569,12 +569,12 @@ bool CheckSyncHasURLMetadata(int index, const GURL& url) {
   syncer::MetadataBatch batch;
   GetMetadataBatchFromHistoryService(service, &batch);
 
-  std::string storage_key(sizeof(row.id()), 0);
-  base::WriteBigEndian<history::URLID>(&storage_key[0], row.id());
+  std::string expected_storage_key(sizeof(row.id()), 0);
+  base::WriteBigEndian<history::URLID>(&expected_storage_key[0], row.id());
 
   syncer::EntityMetadataMap metadata_map(batch.TakeAllMetadata());
-  for (const auto& kv : metadata_map) {
-    if (kv.first == storage_key)
+  for (const auto& [storage_key, metadata] : metadata_map) {
+    if (storage_key == expected_storage_key)
       return true;
   }
   return false;
@@ -587,12 +587,12 @@ bool CheckSyncHasMetadataForURLID(int index, history::URLID url_id) {
   syncer::MetadataBatch batch;
   GetMetadataBatchFromHistoryService(service, &batch);
 
-  std::string storage_key(sizeof(url_id), 0);
-  base::WriteBigEndian<history::URLID>(&storage_key[0], url_id);
+  std::string expected_storage_key(sizeof(url_id), 0);
+  base::WriteBigEndian<history::URLID>(&expected_storage_key[0], url_id);
 
   syncer::EntityMetadataMap metadata_map(batch.TakeAllMetadata());
-  for (const auto& kv : metadata_map) {
-    if (kv.first == storage_key)
+  for (const auto& [storage_key, metadata] : metadata_map) {
+    if (storage_key == expected_storage_key)
       return true;
   }
   return false;

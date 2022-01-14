@@ -252,8 +252,7 @@ void ClientTagBasedModelTypeProcessor::ClearAllProvidedMetadataAndResetState(
     const EntityMetadataMap& metadata_map) {
   std::unique_ptr<MetadataChangeList> change_list =
       bridge_->CreateMetadataChangeList();
-  for (const auto& kv : metadata_map) {
-    const std::string& storage_key = kv.first;
+  for (const auto& [storage_key, metadata] : metadata_map) {
     change_list->ClearMetadata(storage_key);
   }
   change_list->ClearModelTypeState();

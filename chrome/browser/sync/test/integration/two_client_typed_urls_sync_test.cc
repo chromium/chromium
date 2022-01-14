@@ -828,8 +828,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
   size_t count_for_dummy = 0;
   const syncer::ClientTagHash kClientTagHash =
       syncer::ClientTagHash::FromUnhashed(syncer::TYPED_URLS, kDummyUrl);
-  for (const auto& kv : metadata_map) {
-    if (kv.second->client_tag_hash() == kClientTagHash.value()) {
+  for (const auto& [storage_key, metadata] : metadata_map) {
+    if (metadata->client_tag_hash() == kClientTagHash.value()) {
       ++count_for_dummy;
     }
   }

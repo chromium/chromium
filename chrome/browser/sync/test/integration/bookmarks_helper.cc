@@ -1004,8 +1004,8 @@ void AnyBookmarkChangeObserver::GroupedBookmarkChangesEnded(
 BookmarkModelStatusChangeChecker::BookmarkModelStatusChangeChecker() = default;
 
 BookmarkModelStatusChangeChecker::~BookmarkModelStatusChangeChecker() {
-  for (const auto& model_and_observer : observers_) {
-    model_and_observer.first->RemoveObserver(model_and_observer.second.get());
+  for (const auto& [model, observer] : observers_) {
+    model->RemoveObserver(observer.get());
   }
 }
 
@@ -1430,10 +1430,8 @@ BookmarkModelMatchesFakeServerChecker::GetServerGuidsGroupedByParentSyncId(
     const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid)
     const {
   std::map<std::string, std::vector<base::GUID>> guids_grouped_by_parent_id;
-  for (const auto& guid_and_entity : server_bookmarks_by_guid) {
-    const sync_pb::SyncEntity& entity = guid_and_entity.second;
-    guids_grouped_by_parent_id[entity.parent_id_string()].push_back(
-        guid_and_entity.first);
+  for (const auto& [guid, entity] : server_bookmarks_by_guid) {
+    guids_grouped_by_parent_id[entity.parent_id_string()].push_back(guid);
   }
   auto sort_by_position_fn = [&server_bookmarks_by_guid](
                                  const base::GUID& left,
@@ -1446,9 +1444,9 @@ BookmarkModelMatchesFakeServerChecker::GetServerGuidsGroupedByParentSyncId(
         .LessThan(syncer::UniquePosition::FromProto(right_position));
   };
 
-  for (auto& parent_id_and_children_guids : guids_grouped_by_parent_id) {
-    std::vector<base::GUID>& children = parent_id_and_children_guids.second;
-    std::sort(children.begin(), children.end(), sort_by_position_fn);
+  for (auto& [parent_id, children_guids] : guids_grouped_by_parent_id) {
+    std::sort(children_guids.begin(), children_guids.end(),
+              sort_by_position_fn);
   }
   return guids_grouped_by_parent_id;
 }
