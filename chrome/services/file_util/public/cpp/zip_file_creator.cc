@@ -96,7 +96,8 @@ void ZipFileCreator::CreateZipFile(
   DCHECK(!remote_zip_file_creator_);
 
   if (!file.IsValid()) {
-    LOG(ERROR) << "Cannot create ZIP file " << Redact(dest_file_);
+    LOG(ERROR) << "Cannot create ZIP file " << Redact(dest_file_) << ": "
+               << base::File::ErrorToString(file.error_details());
     ReportResult(kError);
     return;
   }
