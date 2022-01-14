@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #include "base/test/simple_test_tick_clock.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "components/viz/test/fake_delay_based_time_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,30 +21,25 @@ base::TimeDelta Interval() {
 class DelayBasedTimeSourceTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    now_src_ = std::make_unique<base::SimpleTestTickClock>();
-    task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     delay_based_time_source_ = std::make_unique<FakeDelayBasedTimeSource>(
-        now_src_.get(), task_runner_.get());
+        task_runner_->GetMockTickClock(), task_runner_.get());
     delay_based_time_source_->SetClient(&client_);
   }
 
   void TearDown() override {
     delay_based_time_source_.reset();
     task_runner_ = nullptr;
-    now_src_.reset();
   }
 
-  void SetNow(base::TimeTicks ticks) { now_src_->SetNowTicks(ticks); }
-
-  base::TestSimpleTaskRunner* task_runner() { return task_runner_.get(); }
+  base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
 
   FakeDelayBasedTimeSource* timer() { return delay_based_time_source_.get(); }
 
   FakeDelayBasedTimeSourceClient* client() { return &client_; }
 
-  std::unique_ptr<base::SimpleTestTickClock> now_src_;
   FakeDelayBasedTimeSourceClient client_;
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<FakeDelayBasedTimeSource> delay_based_time_source_;
 };
 
@@ -54,8 +49,8 @@ TEST_F(DelayBasedTimeSourceTest, TaskPostedAndTickCalled) {
   EXPECT_TRUE(timer()->Active());
   EXPECT_TRUE(task_runner()->HasPendingTask());
 
-  SetNow(timer()->Now() + base::Milliseconds(16));
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval());
+  task_runner()->RunUntilIdle();
   EXPECT_TRUE(timer()->Active());
   EXPECT_TRUE(client()->TickCalled());
 }
@@ -65,7 +60,7 @@ TEST_F(DelayBasedTimeSourceTest, TickNotCalledWithTaskPosted) {
   timer()->SetActive(true);
   EXPECT_TRUE(task_runner()->HasPendingTask());
   timer()->SetActive(false);
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
   EXPECT_FALSE(client()->TickCalled());
 }
 
@@ -82,7 +77,7 @@ TEST_F(DelayBasedTimeSourceTest, StartWhenRunningDoesntTick) {
   timer()->SetTimebaseAndInterval(base::TimeTicks(), Interval());
   timer()->SetActive(true);
   EXPECT_TRUE(task_runner()->HasPendingTask());
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
   task_runner()->ClearPendingTasks();
   timer()->SetActive(true);
   EXPECT_FALSE(task_runner()->HasPendingTask());
@@ -94,12 +89,12 @@ TEST_F(DelayBasedTimeSourceTest, NextDelaySaneWhenExactlyOnRequestedTime) {
   timer()->SetTimebaseAndInterval(base::TimeTicks(), Interval());
   timer()->SetActive(true);
   // Run the first tick.
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + Interval());
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval());
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
@@ -110,12 +105,12 @@ TEST_F(DelayBasedTimeSourceTest, NextDelaySaneWhenSlightlyAfterRequestedTime) {
   timer()->SetTimebaseAndInterval(base::TimeTicks(), Interval());
   timer()->SetActive(true);
   // Run the first tick.
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + Interval() + base::Microseconds(1));
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + base::Microseconds(1));
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
@@ -127,12 +122,12 @@ TEST_F(DelayBasedTimeSourceTest,
   timer()->SetTimebaseAndInterval(base::TimeTicks(), Interval());
   timer()->SetActive(true);
   // Run the first tick.
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + 2 * Interval());
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(2 * Interval());
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
@@ -144,12 +139,12 @@ TEST_F(DelayBasedTimeSourceTest,
   timer()->SetTimebaseAndInterval(base::TimeTicks(), Interval());
   timer()->SetActive(true);
   // Run the first tick.
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + 2 * Interval() + base::Microseconds(1));
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(2 * Interval() + base::Microseconds(1));
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
@@ -160,12 +155,12 @@ TEST_F(DelayBasedTimeSourceTest, NextDelaySaneWhenHalfAfterRequestedTime) {
   timer()->SetTimebaseAndInterval(base::TimeTicks(), Interval());
   timer()->SetActive(true);
   // Run the first tick.
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
-  SetNow(timer()->Now() + Interval() + base::Milliseconds(8));
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + base::Milliseconds(8));
+  task_runner()->RunUntilIdle();
 
   EXPECT_EQ(8, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
@@ -175,7 +170,7 @@ TEST_F(DelayBasedTimeSourceTest, JitteryRuntimeWithFutureTimebases) {
   timer()->SetActive(true);
 
   // Run the first tick.
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   base::TimeTicks future_timebase = timer()->Now() + Interval() * 10;
@@ -186,29 +181,29 @@ TEST_F(DelayBasedTimeSourceTest, JitteryRuntimeWithFutureTimebases) {
   // Tick with +1ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() + jitter1);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + jitter1);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(15, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with 0ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() - jitter1);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() - jitter1);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with -1ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() - jitter1);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() - jitter1);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(1, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with 0ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() + jitter1);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + jitter1);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // 8 ms jitter
@@ -217,29 +212,29 @@ TEST_F(DelayBasedTimeSourceTest, JitteryRuntimeWithFutureTimebases) {
   // Tick with +8ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() + jitter8);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + jitter8);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(8, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with 0ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() - jitter8);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() - jitter8);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with -8ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() - jitter8);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() - jitter8);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(8, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with 0ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() + jitter8);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + jitter8);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // 15 ms jitter
@@ -248,29 +243,29 @@ TEST_F(DelayBasedTimeSourceTest, JitteryRuntimeWithFutureTimebases) {
   // Tick with +15ms jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() + jitter15);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + jitter15);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(1, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with 0ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() - jitter15);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() - jitter15);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with -15ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() - jitter15);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() - jitter15);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(15, task_runner()->NextPendingTaskDelay().InMilliseconds());
 
   // Tick with 0ms of jitter
   future_timebase += Interval();
   timer()->SetTimebaseAndInterval(future_timebase, Interval());
-  SetNow(timer()->Now() + Interval() + jitter15);
-  task_runner()->RunPendingTasks();
+  task_runner()->AdvanceMockTickClock(Interval() + jitter15);
+  task_runner()->RunUntilIdle();
   EXPECT_EQ(16, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
 
@@ -288,8 +283,8 @@ TEST_F(DelayBasedTimeSourceTest, AchievesTargetRateWithNoNoise) {
     total_frame_time += delay_ms / 1000.0;
 
     // Run the callback exactly when asked
-    SetNow(timer()->Now() + base::Milliseconds(delay_ms));
-    task_runner()->RunPendingTasks();
+    task_runner()->AdvanceMockTickClock(base::Milliseconds(delay_ms));
+    task_runner()->RunUntilIdle();
   }
   double average_interval =
       total_frame_time / static_cast<double>(num_iterations);
@@ -301,8 +296,8 @@ TEST_F(DelayBasedTimeSourceTest, TestDeactivateWhilePending) {
   timer()->SetActive(true);  // Should post a task.
   timer()->SetActive(false);
   // Should run the posted task without crashing.
-  EXPECT_TRUE(task_runner()->HasPendingTask());
-  task_runner()->RunPendingTasks();
+  EXPECT_FALSE(task_runner()->HasPendingTask());
+  task_runner()->RunUntilIdle();
 }
 
 TEST_F(DelayBasedTimeSourceTest,
@@ -311,17 +306,17 @@ TEST_F(DelayBasedTimeSourceTest,
 
   // Should run the activate task, and pick up a new timebase.
   timer()->SetActive(true);
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   // Stop the timer()
   timer()->SetActive(false);
 
   // Task will be pending anyway, run it
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   // Start the timer() again, but before the next tick time the timer()
   // previously planned on using. That same tick time should still be targeted.
-  SetNow(timer()->Now() + base::Milliseconds(4));
+  task_runner()->AdvanceMockTickClock(base::Milliseconds(4));
   timer()->SetActive(true);
   EXPECT_EQ(12, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }
@@ -331,17 +326,17 @@ TEST_F(DelayBasedTimeSourceTest, TestDeactivateAndReactivateAfterNextTickTime) {
 
   // Should run the activate task, and pick up a new timebase.
   timer()->SetActive(true);
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   // Stop the timer().
   timer()->SetActive(false);
 
   // Task will be pending anyway, run it.
-  task_runner()->RunPendingTasks();
+  task_runner()->RunUntilIdle();
 
   // Start the timer() again, but before the next tick time the timer()
   // previously planned on using. That same tick time should still be targeted.
-  SetNow(timer()->Now() + base::Milliseconds(20));
+  task_runner()->AdvanceMockTickClock(base::Milliseconds(20));
   timer()->SetActive(true);
   EXPECT_EQ(13, task_runner()->NextPendingTaskDelay().InMilliseconds());
 }

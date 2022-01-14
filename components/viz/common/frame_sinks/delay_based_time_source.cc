@@ -46,7 +46,7 @@ void DelayBasedTimeSource::SetActive(bool active) {
   if (active_) {
     PostNextTickTask(Now());
   } else {
-    timer_.AbandonAndStop();
+    timer_.Stop();
     last_tick_time_ = base::TimeTicks();
     next_tick_time_ = base::TimeTicks();
   }
@@ -157,7 +157,8 @@ void DelayBasedTimeSource::PostNextTickTask(base::TimeTicks now) {
       next_tick_time_ += interval_;
     DCHECK_GT(next_tick_time_, now);
   }
-  timer_.Start(FROM_HERE, next_tick_time_ - now, tick_closure_);
+  timer_.Start(FROM_HERE, next_tick_time_, tick_closure_,
+               base::ExactDeadline(true));
 }
 
 std::string DelayBasedTimeSource::TypeString() const {

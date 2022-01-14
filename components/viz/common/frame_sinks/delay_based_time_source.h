@@ -82,7 +82,7 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSource {
   raw_ptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::RepeatingClosure tick_closure_;
-  base::OneShotTimer timer_;
+  base::DeadlineTimer timer_;
 };
 
 }  // namespace viz
