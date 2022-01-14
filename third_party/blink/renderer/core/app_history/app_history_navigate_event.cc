@@ -42,14 +42,14 @@ void AppHistoryNavigateEvent::transitionWhile(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "transitionWhile() may not be called in a "
-        "detached window");
+        "detached window.");
     return;
   }
 
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
         "transitionWhile() may only be called on a "
-        "trusted event during event dispatch");
+        "trusted event.");
     return;
   }
 
@@ -63,11 +63,17 @@ void AppHistoryNavigateEvent::transitionWhile(ScriptState* script_state,
     return;
   }
 
-  if (!IsBeingDispatched() || defaultPrevented()) {
+  if (!IsBeingDispatched()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "transitionWhile() may only be called during "
-        "the first dispatch of this event");
+        "transitionWhile() may only be called while the navigate event is "
+        "being dispatched.");
+  }
+
+  if (defaultPrevented()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "transitionWhile() may not be called if the event has been canceled.");
     return;
   }
 
