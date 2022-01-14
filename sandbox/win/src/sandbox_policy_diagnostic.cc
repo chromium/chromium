@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
 
+#include <Windows.h>
 #include <stddef.h>
 
 #include <cinttypes>
@@ -34,6 +35,7 @@ const char kAppContainerCapabilities[] = "appContainerCapabilities";
 const char kAppContainerInitialCapabilities[] =
     "appContainerInitialCapabilities";
 const char kAppContainerSid[] = "appContainerSid";
+const char kComponentFilters[] = "componentFilters";
 const char kDesiredIntegrityLevel[] = "desiredIntegrityLevel";
 const char kDesiredMitigations[] = "desiredMitigations";
 const char kDisconnectCsrss[] = "disconnectCsrss";
@@ -142,6 +144,12 @@ std::string GetPlatformMitigationsAsHex(MitigationFlags mitigations) {
     return base::StringPrintf("%016" PRIx64 "%016" PRIx64, platform_flags[0],
                               platform_flags[1]);
   return base::StringPrintf("%016" PRIx64, platform_flags[0]);
+}
+
+std::string GetComponentFilterAsHex(MitigationFlags mitigations) {
+  COMPONENT_FILTER filter;
+  sandbox::ConvertProcessMitigationsToComponentFilter(mitigations, &filter);
+  return base::StringPrintf("%08lx", filter.ComponentFlags);
 }
 
 std::string GetIpcTagAsString(IpcTag service) {
@@ -443,6 +451,8 @@ const char* PolicyDiagnostic::JsonString() {
                base::Value(GetMitigationsAsHex(desired_mitigations_)));
   value.SetKey(kPlatformMitigations,
                base::Value(GetPlatformMitigationsAsHex(desired_mitigations_)));
+  value.SetKey(kComponentFilters,
+               base::Value(GetComponentFilterAsHex(desired_mitigations_)));
 
   if (app_container_sid_) {
     value.SetStringKey(

@@ -39,7 +39,8 @@ let RendererHostProcess;
  *   processIds: !Array<number>,
  *   lockdownLevel: string,
  *   desiredIntegrityLevel: string,
- *   platformMitigations: string
+ *   platformMitigations: string,
+ *   componentFilters: string
  * }}
  */
 let PolicyDiagnostic;
@@ -370,6 +371,20 @@ function makeTextEntry(textContent) {
 }
 
 /**
+ * Makes a <td> containing formatted component filter flags.
+ * @param {PolicyDiagnostic} policy
+ * @return {Node}
+ */
+function makeComponentFilterEntry(policy) {
+  const fixed = document.createElement('div');
+  fixed.classList.add('mitigations');
+  fixed.innerText = policy.componentFilters;
+  const col = document.createElement('td');
+  col.appendChild(fixed);
+  return col;
+}
+
+/**
  * Makes an expandable <td> containing arg as textContent.
  * @param {string} mainEntry is always shown
  * @param {Object} expandable
@@ -480,13 +495,13 @@ function addRowForProcess(pid, type, name, sandbox, policy) {
       pid, type, name, sandbox, policy.lockdownLevel,
       policy.desiredIntegrityLevel
     ].map(makeTextEntry);
-    // Clickable mitigations item.
     entries.push(makeMitigationEntry(policy.platformMitigations));
+    entries.push(makeComponentFilterEntry(policy));
     entries.push(makeLowboxAcEntry(policy));
     addRow(entries);
   } else {
-    addRow(
-        [pid, type, name, 'Not Sandboxed', '', '', '', ''].map(makeTextEntry));
+    addRow([pid, type, name, 'Not Sandboxed', '', '', '', '', ''].map(
+        makeTextEntry));
   }
 }
 
@@ -504,7 +519,7 @@ function onGetSandboxDiagnostics(results) {
   // Titles.
   addRow([
     'Process', 'Type', 'Name', 'Sandbox', 'Lockdown', 'Integrity',
-    'Mitigations', 'Lowbox/AppContainer'
+    'Mitigations', 'Component Filter', 'Lowbox/AppContainer'
   ].map(makeTextEntry));
 
   // Browser Processes.
