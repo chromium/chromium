@@ -55,6 +55,7 @@ aggregate_vector_icons("components_vector_icons") {
     "headset.icon",
     "help.icon",
     "help_outline.icon",
+    "history.icon",
     "https_valid.icon",
     "https_valid_arrow.icon",
     "info_outline.icon",

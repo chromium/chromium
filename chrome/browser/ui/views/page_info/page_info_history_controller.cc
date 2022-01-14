@@ -54,8 +54,8 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
   return std::make_unique<PageInfoHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
-      PageInfoViewFactory::GetSiteSettingsIcon(), IDS_PAGE_INFO_HISTORY,
-      last_visit, PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON,
+      PageInfoViewFactory::GetHistoryIcon(), IDS_PAGE_INFO_HISTORY, last_visit,
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON,
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon());
 }
