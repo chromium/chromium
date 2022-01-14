@@ -225,6 +225,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:reclient_config_deploy_check/tester",
+    use_python3 = True,
 )
 
 build_recipe(
