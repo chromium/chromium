@@ -22,20 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Cookie.AbbreviatedExpirationYear" units="year"
-    expires_after="2021-06-30">
-  <obsolete>
-    Removed Jan 2021: no longer needed since crbug.com/907610 is now fixed.
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Records the abbreviated 2-digit year number used in a cookie's expiration
-    date. Emitted when parsing a cookie with an Expires attribute that specifies
-    an expiration year as a number between 0 and 99 inclusive.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.BackingStoreUpdateResults" enum="BackingStoreResults"
     expires_after="M82">
   <owner>morlovich@chromium.org</owner>
@@ -76,23 +62,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.CookiePrefixBlocked" enum="CookiePrefix"
-    expires_after="2020-03-08">
-  <obsolete>
-    Expired in 03/2020, code removed in M98
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Number of times a cookie was set with a name prefixed by
-    &quot;__Secure-&quot; or &quot;__Host-&quot; that violate cookie prefix
-    rules. That is, a __Secure- cookie must be set over a secure connection with
-    the Secure attribute, and a __Host- cookie must be set over a secure
-    connection, with the Secure attribute, with no Domain attribute, and with a
-    Path attribute of &quot;/&quot;. (As defined in
-    https://tools.ietf.org/html/draft-west-cookie-prefixes.)
-  </summary>
-</histogram>
-
 <histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
     expires_after="2022-07-03">
   <owner>bingler@chromium.org</owner>
@@ -120,47 +89,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each cookie added to the store, record the source URL's scheme. Schemes
     we're unfamiliar with will be put into the &quot;Other Scheme&quot; bucket.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.CorruptMetaTable" units="units"
-    expires_after="2021-06-25">
-  <obsolete>
-    Removed June 2021 in favor of a local histogram. See
-    Net.SQLite.CorruptMetaTableRecovered (which is a local histogram only logged
-    to, and viewable from, chrome://histograms).
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <summary>
-    Records the detection of a corrupted meta table. See http://crbug.com/111376
-    .
-  </summary>
-</histogram>
-
-<histogram name="Cookie.CorruptMetaTableRecoveryFailed" units="units"
-    expires_after="2021-06-25">
-  <obsolete>
-    Removed June 2021 in favor of a local histogram. See
-    Net.SQLite.CorruptMetaTableRecovered (which is a local histogram only logged
-    to, and viewable from, chrome://histograms).
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Records a failure to recover a corrupted meta table. See
-    http://crbug.com/111376 .
-  </summary>
-</histogram>
-
-<histogram name="Cookie.Count" units="units" expires_after="2021-07-27">
-  <obsolete>
-    Removed Feb 2021 in favor of Cookie.Count2, which has a wider range.
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Number of cookies in the store (recorded every 10 minutes of active browsing
-    time)
   </summary>
 </histogram>
 
@@ -263,16 +191,6 @@ chromium-metrics-reviews@google.com.
     Number of days until a cookie expires when set (for values under or equal to
     the rfc6265bis limit of 400 days).
   </summary>
-</histogram>
-
-<histogram name="Cookie.ExpirationDurationMinutes" units="minutes"
-    expires_after="M85">
-  <obsolete>
-    Removed Oct 2020 in favor of two new histograms to divide into Secure and
-    non-Secure cookies.
-  </obsolete>
-  <owner>battre@chromium.org</owner>
-  <summary>Number of minutes until cookie expires when set.</summary>
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesNonSecure" units="minutes"
@@ -810,84 +728,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.SameSiteContextAffectedByBugfix1166211"
-    enum="BooleanAffected" expires_after="2021-12-19">
-  <obsolete>
-    Removed July 2021, no longer needed: crbug.com/1166211
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Whether the SameSite context was affected by the fix for crbug.com/1166211,
-    i.e. whether it would have been laxly same-site before the fix but is
-    considered cross-site after the fix. Logged for each HTTP(S)
-    request/response that potentially accesses cookies, whose site-for-cookies
-    is same-site with the request URL, but whose initiator is cross-site to the
-    request URL. This is logged regardless of whether the change in SameSite
-    context actually changed the outcome of any cookie inclusion calculation.
-    Logged regardless of whether the bugfix's base::Feature is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SameSiteContextDowngradeRequest"
-    enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
-    expires_after="2021-11-07">
-  <obsolete>
-    Removed Nov 2021: no longer needed and expired.
-  </obsolete>
-  <owner>bingler@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The type of breaking same-site context downgrade a cookie is experiencing
-    along with the secureness of the origin that we're attempting to send the
-    cookie to. Logged once per included cookie or if the cookie was excluded
-    only due to insufficient same-site context.
-
-    For more information on breaking context downgrades please see the comment
-    block above
-    net::CanonicalCookie::CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SameSiteContextDowngradeResponse"
-    enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
-    expires_after="2021-11-07">
-  <obsolete>
-    Removed Nov 2021: no longer needed and expired.
-  </obsolete>
-  <owner>bingler@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The type of breaking same-site context downgrade a cookie is experiencing
-    along with the secureness of the origin that is attempting to set the
-    cookie. Logged once per included cookie or if the cookie was excluded only
-    due to insufficient same-site context.
-
-    For more information on breaking context downgrades please see the comment
-    block above
-    net::CanonicalCookie::CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SameSiteCookieInclusionChangedByBugfix1166211"
-    enum="BooleanChanged" expires_after="2021-12-19">
-  <obsolete>
-    Removed July 2021, no longer needed: crbug.com/1166211
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Whether a cookie was excluded solely due to the fix for crbug.com/1166211,
-    i.e. whether it would have been included before the fix but is excluded
-    after the fix. Logged for each cookie accessed by an HTTP(S)
-    request/response whose SameSite context was affected by the bugfix, i.e.
-    requests that are not main frame navigations, whose site-for-cookies is
-    same-site with the request URL, but whose initiator is cross-site to the
-    request URL. This is logged regardless of whether the bugfix's base::Feature
-    is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.SameSiteNone.PartyContext.{AccessType}"
     enum="SameSiteNonePartyContextType" expires_after="2022-06-15">
   <owner>cfredric@chromium.org</owner>
@@ -902,60 +742,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Read" summary="read"/>
     <variant name="Write" summary="write"/>
   </token>
-</histogram>
-
-<histogram name="Cookie.SameSiteNoneIsSecure" enum="Boolean"
-    expires_after="2021-10-25">
-  <obsolete>
-    Removed Oct 2021. No longer useful.
-  </obsolete>
-  <owner>bingler@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    If a cookie was SameSite=None, this records whether or not it was Secure.
-    Logged once per attempt to set a SameSite=None cookie.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SameSiteUnspecifiedEffective"
-    enum="CookieEffectiveSameSite" expires_after="M90">
-  <obsolete>
-    Removed Jan 2021 for cleanup: crbug.com/1165039
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    If a cookie had an unspecified SameSite attribute, this records what mode it
-    was treated as, i.e. what the effective SameSite mode is. Logged once per
-    attempt to determine SameSite inclusion/exclusion for an
-    unspecified-SameSite cookie.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.Startup.NumberOfCookiesDeleted" units="units"
-    expires_after="2021-03-07">
-  <obsolete>
-    Removed July 2021, no longer needed and expired.
-  </obsolete>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The number of session cookies deleted on startup. This metric is emitted
-    even if no cookies are deleted. This metric is not emitted if session
-    cookies are restored, rather than deleted on startup.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.Startup.TimeSpentDeletingCookies" units="ms"
-    expires_after="2020-03-08">
-  <obsolete>
-    Removed July 2021, no longer needed and expired.
-  </obsolete>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time required to delete session cookies on startup. This
-    metric is emitted even if no cookies are deleted. This metric is not emitted
-    if session cookies are restored, rather than deleted on startup.
-  </summary>
 </histogram>
 
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
@@ -995,48 +781,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.TimeDatabaseMigrationToV13Failure" units="ms"
-    expires_after="2021-10-30">
-  <obsolete>
-    Removed Nov 2021: no longer needed and expired.
-  </obsolete>
-  <owner>bingler@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v12 cookie database to v13, in the case
-    when migration fails. Migration occurs upon first startup of a browser
-    version with v13 database code.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV13Success" units="ms"
-    expires_after="2021-10-30">
-  <obsolete>
-    Removed Nov 2021: no longer needed and expired.
-  </obsolete>
-  <owner>bingler@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v12 cookie database to v13, in the case
-    when migration succeeds. Migration occurs upon first startup of a browser
-    version with v13 database code.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV14" units="ms"
-    expires_after="2022-01-09">
-  <obsolete>
-    Removed Jan 2022: no longer needed and expired.
-  </obsolete>
-  <owner>wfh@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v13 cookie database to v14. Migration
-    occurs upon first startup of a browser version with v14 database code.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.TimeDatabaseMigrationToV15" units="ms"
     expires_after="2022-02-01">
   <owner>dylancutler@chromium.org</owner>
@@ -1061,15 +805,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2018-08-30">
   <owner>erikchen@chromium.org</owner>
   <summary>The amount of time (ms) to migrate a v8 database to v9.</summary>
-</histogram>
-
-<histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2021-12-26">
-  <obsolete>
-    Removed Jan 2022: no longer needed and expired.
-  </obsolete>
-  <owner>bingler@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>The amount of time (ms) to initialize the cookies database.</summary>
 </histogram>
 
 <histogram name="Cookie.TimeKeyLoadDBQueueWait" units="ms" expires_after="M81">
