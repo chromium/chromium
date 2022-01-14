@@ -17,22 +17,19 @@ import traceback
 import xml.etree.ElementTree
 
 from enum import Enum, auto
+from functools import reduce
 from google.protobuf import text_format
+from google.protobuf.descriptor import FieldDescriptor
+from google.protobuf.message import Message
 from pathlib import Path
 from typing import NewType, TYPE_CHECKING, Any, Optional, List, Dict, Set, \
     Iterable, Tuple, Union
-
-from error import AuditorError, ErrorType
-import util
-from util import UniqueId, HashCode
 
 # Path to the directory where this script is.
 SCRIPT_DIR = Path(__file__).resolve().parent
 
 # Absolute path to chrome/src.
 SRC_DIR = SCRIPT_DIR.parents[3]
-
-logger = logging.getLogger(__name__)
 
 # TODO(nicolaso): Move extractor.py to this folder once the C++ auditor doesn't
 # depend on it anymore.
@@ -48,6 +45,9 @@ if TYPE_CHECKING:
   import traffic_annotation_pb2
   from traffic_annotation_pb2 import NetworkTrafficAnnotation as \
       traffic_annotation
+
+UniqueId = NewType("UniqueId", str)
+HashCode = NewType("HashCode", int)
 
 # Reserved annotation unique IDs that should only be used in untracked files
 # (e.g., test files or files that aren't compiled on this platform).
@@ -79,6 +79,431 @@ Refer to README.md for content description and update process.
 -->
 
 <annotations>"""
+
+# Configure logging with timestamp, log level, filename, and line number.
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s:%(levelname)s:%(filename)s(%(lineno)d)] %(message)s")
+logger = logging.getLogger(__name__)
+
+
+def get_current_platform(build_path: Optional[Path] = None) -> str:
+  """Return the target platform of |build_path| based on heuristics."""
+  # Use host platform as the source of truth (in most cases).
+  current_platform: str = platform.system().lower()
+
+  if current_platform == "linux" and build_path is not None:
+    # It could be an Android build directory, being compiled from a Linux host.
+    # Look for a target_os="android" line in args.gn.
+    try:
+      gn_args = (build_path / "args.gn").read_text(encoding="utf-8")
+      pattern = re.compile(r"^\s*target_os\s*=\s*\"(android|chromeos)\"\s*$",
+                           re.MULTILINE)
+      match = pattern.search(gn_args)
+      if match:
+        current_platform = match.group(1)
+
+    except (ValueError, OSError) as e:
+      logger.info(e)
+      # Maybe the file's absent, or it can't be decoded as UTF-8, or something.
+      # It's probably not Android in that case.
+      pass
+
+  if current_platform not in SUPPORTED_PLATFORMS:
+    raise ValueError("Unsupported platform {}".format(current_platform))
+
+  return current_platform
+
+
+def twos_complement_8bit(b: int) -> int:
+  """Interprets b like a signed 8-bit integer, possibly changing its sign.
+
+  For instance, twos_complement_8bit(204) returns -52."""
+  if b >= 256:
+    raise ValueError("b must fit inside 8 bits")
+  if b & (1 << 7):
+    # Negative number, calculate its value using two's-complement.
+    return b - (1 << 8)
+  else:
+    # Positive number, do not touch.
+    return b
+
+
+def iterative_hash(s: str) -> HashCode:
+  """Compute the has code of the given string as in:
+  net/traffic_annotation/network_traffic_annotation.h
+
+  Args:
+    s: str
+      The seed, e.g. unique id of traffic annotation.
+  Returns: int
+    A hash code.
+  """
+  return HashCode(
+      reduce(lambda acc, b: (acc * 31 + twos_complement_8bit(b)) % 138003713,
+             s.encode("utf-8"), 0))
+
+
+def compute_hash_value(text: str) -> HashCode:
+  """Same as iterative_hash, but returns -1 for empty strings."""
+  return iterative_hash(text) if text else HashCode(-1)
+
+
+def merge_string_field(src: Message, dst: Message, field: str):
+  """Merges the content of one string field into an annotation."""
+  if getattr(src, field):
+    if getattr(dst, field):
+      setattr(dst, field, "{}\n{}".format(getattr(src, field),
+                                          getattr(dst, field)))
+    else:
+      setattr(dst, field, getattr(src, field))
+
+
+def fill_proto_with_bogus(proto: Message, field_numbers: List[int]):
+  """Fill proto with bogus values for the fields identified by field_numbers.
+  Uses reflection to fill the proto with the right types."""
+  descriptor = proto.DESCRIPTOR
+  for field_number in field_numbers:
+    field_number = abs(field_number)
+
+    if field_number not in descriptor.fields_by_number:
+      raise ValueError("{} is not a valid {} field".format(
+          field_number, descriptor.name))
+
+    field = descriptor.fields_by_number[field_number]
+    repeated = field.label == FieldDescriptor.LABEL_REPEATED
+
+    if field.type == FieldDescriptor.TYPE_STRING and not repeated:
+      setattr(proto, field.name, "[Archived]")
+    elif field.type == FieldDescriptor.TYPE_ENUM and not repeated:
+      # Assume the 2nd value in the enum is reasonable, since the 1st is
+      # UNSPECIFIED.
+      setattr(proto, field.name, field.enum_type.values[1].number)
+    elif field.type == FieldDescriptor.TYPE_MESSAGE and repeated:
+      getattr(proto, field.name).add()
+    else:
+      raise NotImplementedError("Unimplemented proto field type {} ({})".format(
+          field.type, "repeated" if repeated else "non-repeated"))
+
+
+def extract_annotation_id(line: str) -> Optional[UniqueId]:
+  """Returns the annotation id given an '<item id=...' line"""
+  m = re.search('id="([^"]+)"', line)
+  return UniqueId(m.group(1)) if m else None
+
+
+# TODO(nicolaso): Move TSV-related functions to their own file (after detangling
+# circular imports).
+def escape_for_tsv(text: str) -> str:
+  """Changes double-quotes to single-quotes, and adds double-quotes around the
+  text if it has newlines/tabs."""
+  text.replace("\"", "'")
+  if "\n" in text or "\t" in text:
+    return "\"{}\"".format(text)
+  return text
+
+
+def policy_to_text(chrome_policy: Iterable[Message]) -> str:
+  """Unnests the policy name/values from chrome_policy, producing a
+  human-readable string.
+
+  For example, this:
+    chrome_policy {
+      SyncDisabled {
+        policy_options {
+          mode: MANDATORY
+        }
+        SyncDisabled: true
+      }
+    }
+
+  becomes this:
+    SyncDisabled: true"""
+  items = []
+  # Use the protobuf serializer library to print the fields, 2 levels deep.
+  for policy in chrome_policy:
+    for field, value in policy.ListFields():
+      for subfield, subvalue in value.ListFields():
+        if subfield.name == "policy_options":
+          # Skip the policy_options field.
+          continue
+        writer = text_format.TextWriter(as_utf8=True)
+        text_format.PrintField(subfield,
+                               subvalue,
+                               writer,
+                               as_one_line=True,
+                               use_short_repeated_primitives=True)
+        items.append(writer.getvalue().strip())
+  # We wrote an extra comma at the end, remove it before returning.
+  return ", ".join(items)
+  return re.sub(r", $", "", writer.getvalue()).strip()
+
+
+def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
+                               missing_ids: List[UniqueId]):
+  """Writes a TSV file of all annotations and their contents in file_path."""
+  logger.info("Saving annotations to TSV file: {}.".format(file_path))
+  Destination = traffic_annotation.TrafficSemantics.Destination
+  CookiesAllowed = traffic_annotation.TrafficPolicy.CookiesAllowed
+
+  lines = []
+  title = "Unique ID\tLast Update\tSender\tDescription\tTrigger\tData\t" + \
+  "Destination\tCookies Allowed\tCookies Store\tSetting\tChrome Policy\t" + \
+  "Comments\tSource File"
+
+  column_count = title.count("\t")
+  for missing_id in missing_ids:
+    lines.append(missing_id + "\t" * column_count)
+
+  for annotation in annotations:
+    if annotation.type != Annotation.Type.COMPLETE:
+      continue
+
+    # TODO(nicolaso): Use StringIO for faster concatenation.
+
+    line = annotation.proto.unique_id
+    # Placeholder for Last Update Date, will be updated in the scripts.
+    line += "\t"
+
+    # Semantics.
+    semantics = annotation.proto.semantics
+    semantics_list = [
+        semantics.sender,
+        escape_for_tsv(semantics.description),
+        escape_for_tsv(semantics.trigger),
+        escape_for_tsv(semantics.data),
+    ]
+
+    for semantic_info in semantics_list:
+      line += "\t{}".format(semantic_info)
+
+    destination_names = {
+        Destination.WEBSITE: "Website",
+        Destination.GOOGLE_OWNED_SERVICE: "Google",
+        Destination.LOCAL: "Local",
+        Destination.OTHER: "Other",
+    }
+    if (semantics.destination == Destination.OTHER
+        and semantics.destination_other):
+      line += "\tOther: {}".format(semantics.destination_other)
+    elif semantics.destination in destination_names:
+      line += "\t{}".format(destination_names[semantics.destination])
+    else:
+      raise ValueError("Invalid value for the semantics.destination field")
+
+    # Policy.
+    policy = annotation.proto.policy
+    if annotation.proto.policy.cookies_allowed == CookiesAllowed.YES:
+      line += "\tYes"
+    else:
+      line += "\tNo"
+
+    line += "\t{}".format(escape_for_tsv(policy.cookies_store))
+    line += "\t{}".format(escape_for_tsv(policy.setting))
+
+    # Chrome policies.
+    if policy.chrome_policy:
+      policies_text = policy_to_text(policy.chrome_policy)
+    else:
+      policies_text = policy.policy_exception_justification
+    line += "\t{}".format(escape_for_tsv(policies_text))
+
+    # Comments.
+    line += "\t{}".format(escape_for_tsv(annotation.proto.comments))
+    # Source.
+    source = annotation.proto.source
+    code_search_link = "https://cs.chromium.org/chromium/src/"
+    line += "\t{}{}?l={}".format(code_search_link, source.file, source.line)
+    lines.append(line)
+
+  lines.sort()
+  lines.insert(0, title)
+  report = "\n".join(lines) + "\n"
+
+  file_path.write_text(report, encoding="utf-8")
+
+
+class AuditorError:
+  class Type(Enum):
+    # Annotation syntax is not right.
+    SYNTAX = auto()
+    # Can't create a MutableNetworkTrafficAnnotationTag from anywhere (except
+    # in whitelisted files).
+    MUTABLE_TAG = auto()
+    # Annotation has some missing fields.
+    INCOMPLETE_ANNOTATION = auto()
+    # A partial of (branched-)completing annotation is not paired with another
+    # annotation to be completed.
+    INCOMPLETED_ANNOTATION = auto()
+    # Annotation has some inconsistent fields.
+    INCONSISTENT_ANNOTATION = auto()
+    # Two annotations that are supposed to merge cannot merge.
+    MERGE_FAILED = auto()
+    # A function is called with the "missing" tag.
+    MISSING_TAG_USED = auto()
+    # A function is called with the "test" or "test_partial" tag outside of a
+    # test file.
+    TEST_ANNOTATION = auto()
+    # A function is called with NO_TRAFFIC_ANNOTATION_YET tag.
+    NO_ANNOTATION = auto()
+    # An id has a hash code equal to a reserved word.
+    RESERVED_ID_HASH_CODE = auto()
+    # An id contains an invalid character (not alphanumeric or underscore).
+    ID_INVALID_CHARACTER = auto()
+    # An id is used in two places without matching conditions. Proper conditions
+    # include when 2 annotations are completing each other, or are different
+    # branches of the same annotation.
+    REPEATED_ID = auto()
+    # Annotation does not have a valid second id.
+    MISSING_SECOND_ID = auto()
+    # Two ids have equal hash codes.
+    HASH_CODE_COLLISION = auto()
+    # "os_list" is invalid in annotations.xml.
+    INVALID_OS = auto()
+    # "added_in_milestone" is invalid in annotations.xml.
+    INVALID_ADDED_IN = auto()
+    # annotations.xml requires an update.
+    ANNOTATIONS_XML_UPDATE = auto()
+    # Annotations should be added to grouping.xml.
+    ADD_GROUPING_XML = auto()
+    # Annotations should be removed from grouping.xml.
+    REMOVE_GROUPING_XML = auto()
+
+  def __init__(self,
+               result_type: "AuditorError.Type",
+               message: str = "",
+               file_path: Optional[Path] = None,
+               line: int = 0,
+               *extra_details: str):
+    self.type = result_type
+    self.message = message
+    self.file_path = file_path
+    self.line = line
+    self._details = []
+
+    assert message or result_type in [
+        AuditorError.Type.MISSING_TAG_USED, AuditorError.Type.TEST_ANNOTATION,
+        AuditorError.Type.NO_ANNOTATION, AuditorError.Type.MISSING_SECOND_ID,
+        AuditorError.Type.MUTABLE_TAG, AuditorError.Type.INVALID_OS,
+        AuditorError.Type.INVALID_ADDED_IN
+    ]
+
+    if message:
+      self._details.append(message)
+    self._details.extend(extra_details)
+
+  def __str__(self) -> str:
+    if self.type == AuditorError.Type.SYNTAX:
+      assert self._details
+      return ("SYNTAX: Annotation at '{}:{}' has the following syntax"
+              " error: {}".format(self.file_path, self.line,
+                                  str(self._details[0]).replace("\n", " ")))
+
+    if self.type == AuditorError.Type.MUTABLE_TAG:
+      return ("MUTABLE_TAG: Calling CreateMutableNetworkTrafficAnnotationTag() "
+              "is not safelisted at '{}:{}'.".format(self.file_path, self.line))
+
+    if self.type == AuditorError.Type.INCOMPLETE_ANNOTATION:
+      assert self._details
+      return ("INCOMPLETE_ANNOTATION: Annotation at '{}:{}' has the"
+              " following missing fields: {}".format(self.file_path, self.line,
+                                                     self._details[0]))
+
+    if self.type == AuditorError.Type.INCOMPLETED_ANNOTATION:
+      assert self._details
+      return ("INCOMPLETED_ANNOTATION: Annotation '{}' is never "
+              "completed.".format(self._details[0]))
+
+    if self.type == AuditorError.Type.INCONSISTENT_ANNOTATION:
+      assert self._details
+      return ("INCONSISTENT_ANNOTATION: Annotation at '{}:{}' has the "
+              "following inconsistencies: {}".format(self.file_path, self.line,
+                                                     self._details[0]))
+    if self.type == AuditorError.Type.MERGE_FAILED:
+      assert len(self._details) == 3
+      return ("MERGE_FAILED: Annotations '{}' and '{}' cannot be merged due to "
+              "the following error(s): {}".format(self._details[1],
+                                                  self._details[2],
+                                                  self._details[0]))
+
+    if self.type == AuditorError.Type.MISSING_TAG_USED:
+      return ("MISSING_TAG_USED: MISSING_TRAFFIC_ANNOTATION tag used in "
+              "'{}:{}'.".format(self.file_path, self.line))
+
+    if self.type == AuditorError.Type.TEST_ANNOTATION:
+      return ("TEST_ANNOTATION: Annotation for tests used in '{}:{}'.".format(
+          self.file_path, self.line))
+
+    if self.type == AuditorError.Type.NO_ANNOTATION:
+      return "NO_ANNOTATION: Empty annotation in '{}:{}'.".format(
+          self.file_path, self.line)
+
+    if self.type == AuditorError.Type.RESERVED_ID_HASH_CODE:
+      assert self._details
+      return ("RESERVED_ID_HASH_CODE: Id '{}' in '{}:{}' has a hash code equal "
+              "to a reserved word and should be changed.".format(
+                  self._details[0], self.file_path, self.line))
+
+    if self.type == AuditorError.Type.HASH_CODE_COLLISION:
+      assert len(self._details) == 2
+      return ("HASH_CODE_COLLISION: The following annotations have colliding "
+              "hash codes and should be updated: '{}', '{}'.".format(
+                  self._details[0], self._details[1]))
+
+    if self.type == AuditorError.Type.REPEATED_ID:
+      assert len(self._details) == 2
+      return ("REPEATED_ID: The following annotations have equal ids and "
+              "should be updated: {}, {}.".format(self._details[0],
+                                                  self._details[1]))
+
+    if self.type == AuditorError.Type.ID_INVALID_CHARACTER:
+      assert self._details
+      return ("ID_INVALID_CHARACTER: Id '{}' in '{}:{}' contains an invalid "
+              "character.".format(self._details[0], self.file_path, self.line))
+
+    if self.type == AuditorError.Type.MISSING_SECOND_ID:
+      return ("MISSING_SECOND_ID: Second id of annotation at '{}:{}' should be "
+              "updated, as it has the same hash code as the first one.".format(
+                  self.file_path, self.line))
+
+    if self.type == AuditorError.Type.INVALID_OS:
+      assert len(self._details) == 2
+      return ("INVALID_OS: Invalid OS '{}' in annotation '{}' at {}.".format(
+          self._details[0], self._details[1], self.file_path))
+
+    if self.type == AuditorError.Type.INVALID_ADDED_IN:
+      assert len(self._details) == 2
+      return ("INVALID_ADDED_IN: Invalid or missing added_in_milestone '{}' in "
+              "annotation '{}' at {}.".format(self._details[0],
+                                              self._details[1], self.file_path))
+
+    if self.type == AuditorError.Type.ADD_GROUPING_XML:
+      assert self._details
+      return ("ADD_GROUPING_XML: The following annotations should be added "
+              "to an existing group in "
+              "tools/traffic_annotation/summary/grouping.xml: {}.".format(
+                  self._details[0]))
+
+    if self.type == AuditorError.Type.REMOVE_GROUPING_XML:
+      assert self._details
+      return ("REMOVE_GROUPING_XML: The following annotations are not needed "
+              "in tools/traffic_annotation/summary/grouping.xml, and should be "
+              "removed: {}.".format(self._details[0]))
+
+    if self.type == AuditorError.Type.ANNOTATIONS_XML_UPDATE:
+      assert self._details
+      return (
+          "'tools/traffic_annotation/summary/annotations.xml' requires update. "
+          "It is recommended to run traffic_annotation_auditor locally to do "
+          "the updates automatically (please refer to tools/traffic_annotation/"
+          "auditor/README.md), but you can also apply the following edit(s) to "
+          "do it manually:\n{}\n\n".format(self._details[0]))
+
+    raise NotImplementedError("Unimplemented AuditorError.Type: {}".format(
+        self.type.name))
+
+  def __repr__(self) -> str:
+    return "AuditorError(\"{}\")".format(str(self))
 
 
 class Annotation:
@@ -143,11 +568,11 @@ class Annotation:
 
   @property
   def unique_id_hash_code(self) -> HashCode:
-    return util.compute_hash_value(self.unique_id)
+    return compute_hash_value(self.unique_id)
 
   @property
   def second_id_hash_code(self) -> HashCode:
-    return util.compute_hash_value(self.second_id)
+    return compute_hash_value(self.second_id)
 
   def get_ids(self) -> List[UniqueId]:
     """Returns the ids used by this annotation (up to 2 strings)."""
@@ -170,10 +595,9 @@ class Annotation:
     if annotation.needs_two_ids():
       annotation.second_id = archived.second_id
 
-    util.fill_proto_with_bogus(annotation.proto.semantics,
-                               archived.semantics_fields)
+    fill_proto_with_bogus(annotation.proto.semantics, archived.semantics_fields)
 
-    util.fill_proto_with_bogus(annotation.proto.policy, archived.policy_fields)
+    fill_proto_with_bogus(annotation.proto.policy, archived.policy_fields)
 
     # cookies_allowed is a special field: negative values indicate NO, and
     # positive values indicate YES.
@@ -218,7 +642,7 @@ class Annotation:
     combination.second_id = UniqueId("")
 
     # Update comment.
-    util.merge_string_field(other.proto, combination.proto, "comments")
+    merge_string_field(other.proto, combination.proto, "comments")
     assert self.file is not None
     assert completing_annotation.file is not None
     combination.proto.comments += (
@@ -233,8 +657,7 @@ class Annotation:
         "sender", "description", "trigger", "data", "destination_other"
     ]
     for f in semantics_string_fields:
-      util.merge_string_field(other.proto.semantics,
-                              combination.proto.semantics, f)
+      merge_string_field(other.proto.semantics, combination.proto.semantics, f)
 
     # Merge 'destination' field.
     Destination = traffic_annotation.TrafficSemantics.Destination
@@ -246,7 +669,7 @@ class Annotation:
           combination.proto.semantics.destination):
       return combination, [
           AuditorError(
-              ErrorType.MERGE_FAILED,
+              AuditorError.Type.MERGE_FAILED,
               "Annotations contain different semantics::destination values",
               None, 0, self.unique_id, completing_annotation.unique_id)
       ]
@@ -256,7 +679,7 @@ class Annotation:
         "cookies_store", "setting", "policy_exception_justification"
     ]
     for f in policy_string_fields:
-      util.merge_string_field(other.proto.policy, combination.proto.policy, f)
+      merge_string_field(other.proto.policy, combination.proto.policy, f)
 
     combination.proto.policy.cookies_allowed = max(
         combination.proto.policy.cookies_allowed,
@@ -326,7 +749,7 @@ class Annotation:
     source_free_proto.ClearField("source")
     source_free_proto = text_format.MessageToString(source_free_proto,
                                                     as_utf8=False)
-    return util.compute_hash_value(source_free_proto)
+    return compute_hash_value(source_free_proto)
 
   def deserialize(self, serialized_annotation: extractor.Annotation
                   ) -> List[AuditorError]:
@@ -339,7 +762,10 @@ class Annotation:
     self.line = line_number
 
     if serialized_annotation.type_name == extractor.AnnotationType.MUTABLE:
-      return [AuditorError(ErrorType.MUTABLE_TAG, "", file_path, line_number)]
+      return [
+          AuditorError(AuditorError.Type.MUTABLE_TAG, "", file_path,
+                       line_number)
+      ]
 
     self.type = Annotation.Type(serialized_annotation.type_name.value.lower())
     self.unique_id = serialized_annotation.unique_id
@@ -348,22 +774,29 @@ class Annotation:
     # Check for reserved IDs first, before trying to parse the Proto.
     if self.unique_id in TEST_IDS:
       return [
-          AuditorError(ErrorType.TEST_ANNOTATION, "", file_path, line_number)
+          AuditorError(AuditorError.Type.TEST_ANNOTATION, "", file_path,
+                       line_number)
       ]
 
     if self.unique_id == MISSING_ID:
       return [
-          AuditorError(ErrorType.MISSING_TAG_USED, "", file_path, line_number)
+          AuditorError(AuditorError.Type.MISSING_TAG_USED, "", file_path,
+                       line_number)
       ]
 
     if self.unique_id == NO_ANNOTATION_ID:
-      return [AuditorError(ErrorType.NO_ANNOTATION, "", file_path, line_number)]
+      return [
+          AuditorError(AuditorError.Type.NO_ANNOTATION, "", file_path,
+                       line_number)
+      ]
 
     try:
       text_format.Parse(serialized_annotation.text, self.proto)
     except Exception as e:
       logger.error(str(e))
-      return [AuditorError(ErrorType.SYNTAX, str(e), file_path, line_number)]
+      return [
+          AuditorError(AuditorError.Type.SYNTAX, str(e), file_path, line_number)
+      ]
 
     return []
 
@@ -400,8 +833,8 @@ class Annotation:
     if unspecifieds:
       error_text = ", ".join(unspecifieds)
       return [
-          AuditorError(ErrorType.INCOMPLETE_ANNOTATION, error_text, self.file,
-                       self.line)
+          AuditorError(AuditorError.Type.INCOMPLETE_ANNOTATION, error_text,
+                       self.file, self.line)
       ]
     else:
       return []
@@ -414,7 +847,7 @@ class Annotation:
     if policy.cookies_allowed == CookiesAllowed.NO and policy.cookies_store:
       return [
           AuditorError(
-              ErrorType.INCONSISTENT_ANNOTATION,
+              AuditorError.Type.INCONSISTENT_ANNOTATION,
               "Cookies store is specified while cookies are not allowed.",
               self.file, self.line)
       ]
@@ -422,7 +855,7 @@ class Annotation:
     if policy.chrome_policy and policy.policy_exception_justification:
       return [
           AuditorError(
-              ErrorType.INCONSISTENT_ANNOTATION,
+              AuditorError.Type.INCONSISTENT_ANNOTATION,
               "Both chrome policies and policy exception justification are "
               "present.", self.file, self.line)
       ]
@@ -442,12 +875,12 @@ class ExceptionType(Enum):
   MUTABLE_TAG = "mutable_tag"
 
   @classmethod
-  def from_error_type(cls, error_type: ErrorType):
-    if error_type == ErrorType.MISSING_TAG_USED:
+  def from_error_type(cls, error_type: AuditorError.Type):
+    if error_type == AuditorError.Type.MISSING_TAG_USED:
       return ExceptionType.MISSING
-    if error_type == ErrorType.TEST_ANNOTATION:
+    if error_type == AuditorError.Type.TEST_ANNOTATION:
       return ExceptionType.TEST_ANNOTATION
-    if error_type == ErrorType.MUTABLE_TAG:
+    if error_type == AuditorError.Type.MUTABLE_TAG:
       return ExceptionType.MUTABLE_TAG
     return None
 
@@ -556,7 +989,7 @@ class IdChecker:
     errors.extend(self._check_for_second_ids())
     errors.extend(
         self._check_for_invalid_values(self.reserved_ids,
-                                       ErrorType.RESERVED_ID_HASH_CODE))
+                                       AuditorError.Type.RESERVED_ID_HASH_CODE))
     errors.extend(self._check_for_hash_collisions())
     errors.extend(self._check_for_invalid_repeated_ids())
 
@@ -570,8 +1003,8 @@ class IdChecker:
       for id in annotation.get_ids():
         if not re.match(r"^[0-9a-zA-Z_]*$", id):
           errors.append(
-              AuditorError(ErrorType.ID_INVALID_CHARACTER, id, annotation.file,
-                           annotation.line))
+              AuditorError(AuditorError.Type.ID_INVALID_CHARACTER, id,
+                           annotation.file, annotation.line))
 
     return errors
 
@@ -584,13 +1017,14 @@ class IdChecker:
           and (not annotation.second_id
                or annotation.second_id == annotation.unique_id)):
         errors.append(
-            AuditorError(ErrorType.MISSING_SECOND_ID, "", annotation.file,
-                         annotation.line))
+            AuditorError(AuditorError.Type.MISSING_SECOND_ID, "",
+                         annotation.file, annotation.line))
 
     return errors
 
   def _check_for_invalid_values(self, invalid_ids: List[UniqueId],
-                                error_type: ErrorType) -> List[AuditorError]:
+                                error_type: AuditorError.Type
+                                ) -> List[AuditorError]:
     """Checks that invalid_ids are not used in annotations.
 
     If found, returns an error with error_type."""
@@ -611,12 +1045,12 @@ class IdChecker:
 
     for annotation in self._annotations:
       for id in annotation.get_ids():
-        hash_code = util.compute_hash_value(id)
+        hash_code = compute_hash_value(id)
         if hash_code not in collisions:
           collisions[hash_code] = id
         elif id != collisions[hash_code]:
           errors.append(
-              AuditorError(ErrorType.HASH_CODE_COLLISION, id, None, 0,
+              AuditorError(AuditorError.Type.HASH_CODE_COLLISION, id, None, 0,
                            collisions[hash_code]))
 
     return errors
@@ -677,7 +1111,7 @@ class IdChecker:
                                 annotation2: Annotation) -> AuditorError:
     """Constructs and returns a REPEATED_ID error."""
     return AuditorError(
-        ErrorType.REPEATED_ID,
+        AuditorError.Type.REPEATED_ID,
         "{} in '{}:{}'".format(common_id, annotation1.file, annotation1.line),
         None, 0, "'{}:{}'".format(annotation2.file, annotation2.line))
 
@@ -729,7 +1163,7 @@ class ArchivedAnnotation:
 
   @property
   def hash_code(self) -> HashCode:
-    return util.compute_hash_value(self.id)
+    return compute_hash_value(self.id)
 
   def __str__(self):
     return "ArchivedAnnotation({})".format(",".join(
@@ -961,8 +1395,8 @@ class Exporter:
     for unique_id, archived in self.archive.items():
       if archived.hash_code in used_codes:
         errors.append(
-            AuditorError(ErrorType.HASH_CODE_COLLISION, str(archived.hash_code),
-                         None, 0, unique_id))
+            AuditorError(AuditorError.Type.HASH_CODE_COLLISION,
+                         str(archived.hash_code), None, 0, unique_id))
       else:
         used_codes[archived.hash_code] = unique_id
 
@@ -971,14 +1405,14 @@ class Exporter:
       for os in archived.os_list:
         if os not in SUPPORTED_PLATFORMS:
           errors.append(
-              AuditorError(ErrorType.INVALID_OS, "",
+              AuditorError(AuditorError.Type.INVALID_OS, "",
                            Exporter.ANNOTATIONS_XML_PATH, 0, os, unique_id))
 
     # Check for consistency of "added_in_milestone" attribute.
     for unique_id, archived in self.archive.items():
       if archived.added_in_milestone < MIN_MILESTONE:
         errors.append(
-            AuditorError(ErrorType.INVALID_ADDED_IN, "",
+            AuditorError(AuditorError.Type.INVALID_ADDED_IN, "",
                          Exporter.ANNOTATIONS_XML_PATH, 0,
                          str(archived.added_in_milestone), unique_id))
 
@@ -1039,9 +1473,6 @@ class Auditor:
                               "auditor" / "chromeos" / "safe_list.txt")
 
   def __init__(self, current_platform: str, no_filtering: bool = False):
-    if current_platform not in SUPPORTED_PLATFORMS:
-      raise ValueError("Unsupported platform {}".format(current_platform))
-
     self.no_filtering = no_filtering
 
     self.extracted_annotations: List[Annotation] = []
@@ -1286,13 +1717,14 @@ class Auditor:
       # Check that the partial annotation was completed by another.
       if not found_a_pair:
         all_errors.append(
-            AuditorError(ErrorType.INCOMPLETED_ANNOTATION, partial.unique_id))
+            AuditorError(AuditorError.Type.INCOMPLETED_ANNOTATION,
+                         partial.unique_id))
 
     # Check that completing annotations all complete another annotation.
     for completing in completing_annotations:
       if completing not in used_completing_annotations:
         all_errors.append(
-            AuditorError(ErrorType.INCOMPLETED_ANNOTATION,
+            AuditorError(AuditorError.Type.INCOMPLETED_ANNOTATION,
                          completing.unique_id))
 
     self.extracted_annotations.extend(new_annotations)
@@ -1342,14 +1774,14 @@ class Auditor:
     ids_to_add = extracted_ids - grouping_xml_ids
     if ids_to_add:
       errors.append(
-          AuditorError(ErrorType.ADD_GROUPING_XML,
+          AuditorError(AuditorError.Type.ADD_GROUPING_XML,
                        ", ".join(sorted(ids_to_add))))
 
     # These ids should be removed from grouping.xml.
     ids_to_remove = grouping_xml_ids - extracted_ids
     if ids_to_remove:
       errors.append(
-          AuditorError(ErrorType.REMOVE_GROUPING_XML,
+          AuditorError(AuditorError.Type.REMOVE_GROUPING_XML,
                        ", ".join(sorted(ids_to_remove))))
 
     return errors
@@ -1414,7 +1846,8 @@ class Auditor:
     if report_xml_updates:
       updates = self.exporter.get_required_updates()
       if updates:
-        errors.append(AuditorError(ErrorType.ANNOTATIONS_XML_UPDATE, updates))
+        errors.append(
+            AuditorError(AuditorError.Type.ANNOTATIONS_XML_UPDATE, updates))
 
     return errors
 
@@ -1443,7 +1876,7 @@ class AuditorUI:
 
     # Exposed for testing.
     self.traffic_annotation = self.import_compiled_proto()
-    self.auditor = Auditor(util.get_current_platform(self.build_path),
+    self.auditor = Auditor(get_current_platform(self.build_path),
                            self.no_filtering)
 
   def import_compiled_proto(self) -> Any:
@@ -1493,9 +1926,9 @@ class AuditorUI:
     # Write annotations TSV file.
     if self.annotations_file is not None:
       missing_ids = self.auditor.exporter.get_other_platforms_annotation_ids()
-      util.write_annotations_tsv_file(self.annotations_file,
-                                      self.auditor.extracted_annotations,
-                                      missing_ids)
+      write_annotations_tsv_file(self.annotations_file,
+                                 self.auditor.extracted_annotations,
+                                 missing_ids)
 
     # Update annotations.xml if everything else is OK and the auditor is not
     # in test-only mode.

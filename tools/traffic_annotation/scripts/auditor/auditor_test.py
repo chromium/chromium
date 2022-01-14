@@ -13,11 +13,8 @@ import platform
 import sys
 import unittest
 
-from typing import cast, Tuple
-
 from auditor import *
-from error import *
-from util import *
+from typing import cast, Tuple
 
 # Path to the test_data/ dir.
 TEST_DATA_DIR = SCRIPT_DIR.parent / "test_data"
@@ -190,13 +187,13 @@ class AuditorTest(unittest.TestCase):
          Annotation.Type.BRANCHED_COMPLETING),
         ("good_completing_annotation.txt", None, Annotation.Type.COMPLETING),
         ("good_partial_annotation.txt", None, Annotation.Type.PARTIAL),
-        ("good_test_annotation.txt", ErrorType.TEST_ANNOTATION, None),
-        ("missing_annotation.txt", ErrorType.MISSING_TAG_USED, None),
-        ("good_no_annotation.txt", ErrorType.NO_ANNOTATION, None),
-        ("bad_syntax_annotation1.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation2.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation3.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation4.txt", ErrorType.SYNTAX, None),
+        ("good_test_annotation.txt", AuditorError.Type.TEST_ANNOTATION, None),
+        ("missing_annotation.txt", AuditorError.Type.MISSING_TAG_USED, None),
+        ("good_no_annotation.txt", AuditorError.Type.NO_ANNOTATION, None),
+        ("bad_syntax_annotation1.txt", AuditorError.Type.SYNTAX, None),
+        ("bad_syntax_annotation2.txt", AuditorError.Type.SYNTAX, None),
+        ("bad_syntax_annotation3.txt", AuditorError.Type.SYNTAX, None),
+        ("bad_syntax_annotation4.txt", AuditorError.Type.SYNTAX, None),
         # "fatal" means a Python exception gets raised.
         ("fatal_annotation1.txt", "fatal", None),
         ("fatal_annotation2.txt", "fatal", None),
@@ -250,14 +247,14 @@ class AuditorTest(unittest.TestCase):
       annotation.unique_id = reserved_id
       errors = self.run_id_checker(annotation)
       self.assertEqual(1, len(errors))
-      self.assertEqual(ErrorType.RESERVED_ID_HASH_CODE, errors[0].type)
+      self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
 
       annotation.type = Annotation.Type.PARTIAL
       annotation.unique_id = "nonempty"
       annotation.second_id = reserved_id
       errors = self.run_id_checker(annotation)
       self.assertEqual(1, len(errors))
-      self.assertEqual(ErrorType.RESERVED_ID_HASH_CODE, errors[0].type)
+      self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
 
   def test_repeated_ids_detection(self):
     """Tests if use of repeated ids are detected."""
@@ -275,7 +272,7 @@ class AuditorTest(unittest.TestCase):
         self.create_annotation_sample(unique_id=i // 2) for i in range(20)
     ]
     errors = id_checker.check_ids(annotations)
-    self.assertCountEqual([ErrorType.REPEATED_ID] * 10,
+    self.assertCountEqual([AuditorError.Type.REPEATED_ID] * 10,
                           [e.type for e in errors])
 
   def test_similar_unique_and_second_ids_detection(self):
@@ -683,7 +680,7 @@ class AuditorTest(unittest.TestCase):
 
     self.assertTrue(errors)
     result = errors[0]
-    self.assertEqual(ErrorType.SYNTAX, result.type)
+    self.assertEqual(AuditorError.Type.SYNTAX, result.type)
     self.assertTrue("sender: \"Cloud Policy\"': Expected \"{\"" in str(result))
 
   def test_incomplete_error(self) -> None:
@@ -694,7 +691,7 @@ class AuditorTest(unittest.TestCase):
     errors = self.auditor.run_all_checks([], True)
     self.assertTrue(errors)
     result = errors[0]
-    self.assertEqual(ErrorType.INCOMPLETE_ANNOTATION, result.type)
+    self.assertEqual(AuditorError.Type.INCOMPLETE_ANNOTATION, result.type)
 
     expected_missing_fields = [
         "sender", "chrome_policy", "cookies_store",
