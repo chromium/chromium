@@ -205,13 +205,13 @@
                   'components/autofill_assistant/',
     },
     'autofill_payments': {
-      'filepath': 'chrome/browser/ui/autofill/chrome_autofill_client*|'\
+      'filepath': 'chrome/browser/ui/autofill/chrome_autofill_client|'\
                   'chrome/browser/ui/autofill/payments/|'\
                   'chrome/browser/ui/views/autofill/payments/|'\
                   'components/autofill/core/browser/payments/|'\
                   'components/autofill/core/browser/ui/payments/|'\
-                  'components/autofill/core/common/autofill_payments_features*|'\
-                  'components/autofill_payments_strings*',
+                  'components/autofill/core/common/autofill_payments_features|'\
+                  'components/autofill_payments_strings',
     },
     'background_fetch': {
       'filepath': 'background_fetch|'\
@@ -293,11 +293,11 @@
       'filepath': 'third_party/(WebKit|blink)/.*[Bb]luetooth'
     },
     'blink_client_hints': {
-      'filepath': 'third_party/blink/renderer/core/loader/accept_client_hints*' \
-                  '|third_party/blink/renderer/core/loader/frame_fetch_context*' \
-                  '|third_party/blink/renderer/core/loader/resource/image_resource*' \
-                  '|third_party/blink/renderer/platform/loader/fetch/fetch_context*' \
-                  '|third_party/blink/renderer/platform/loader/fetch/resource_fetcher*'
+      'filepath': 'third_party/blink/renderer/core/loader/accept_client_hints' \
+                  '|third_party/blink/renderer/core/loader/frame_fetch_context' \
+                  '|third_party/blink/renderer/core/loader/resource/image_resource' \
+                  '|third_party/blink/renderer/platform/loader/fetch/fetch_context' \
+                  '|third_party/blink/renderer/platform/loader/fetch/resource_fetcher'
     },
     'blink_clipboard': {
       'filepath': 'third_party/blink/renderer/core/clipboard' \
@@ -733,12 +733,12 @@
     },
     'chromeos_bluetooth': {
       'filepath': 'ash/system/bluetooth/'\
-                  '|chrome/browser/ui/webui/chromeos/bluetooth*'\
+                  '|chrome/browser/ui/webui/chromeos/bluetooth'\
                   '|chrome/browser/resources/settings/chromeos/bluetooth_page/'\
                   '|chrome/browser/resources/chromeos/bluetooth_pairing_dialog/'\
                   '|device/bluetooth/bluez/'\
                   '|device/bluetooth/chromeos/'\
-                  '|ui/webui/resources/cr_components/chromeos/bluetooth*'
+                  '|ui/webui/resources/cr_components/chromeos/bluetooth'
     },
     'chromeos_cellular': {
       'filepath': 'chromeos/dbus/hermes/|'\
@@ -814,7 +814,7 @@
     'content_loader': {
       'filepath': 'chrome/browser/loader|' \
                   'content/browser/loader|' \
-                  'content/child/*loader',
+                  'content/child/.*loader',
     },
     'content_security_policy': {
       'filepath': 'content_security_policy|csp',
@@ -904,8 +904,8 @@
                   'chrome/browser/android/customtabs/',
     },
     'dark_mode': {
-      'filepath': 'cc/*/*dark_mode*|'\
-                  'third_party/blink/renderer/platform/graphics/*dark_mode*',
+      'filepath': 'cc/.*/.*dark_mode|'\
+                  'third_party/blink/renderer/platform/graphics/.*dark_mode',
     },
     'data_decoder': {
       'filepath': 'services/data_decoder/',
@@ -1168,7 +1168,7 @@
       'filepath': 'ui/events/devices/',
     },
     'installable': {
-      'filepath': 'chrome/browser/extensions/bookmark_app*'\
+      'filepath': 'chrome/browser/extensions/bookmark_app'\
                   '|chrome/browser/installable/'
                   '|components/webapps/browser/installable/',
     },
@@ -1252,7 +1252,7 @@
     },
     'manifest': {
       'filepath': 'content/(browser|renderer)/manifest/'\
-                  '|content/public/common/manifest*'\
+                  '|content/public/common/manifest'\
                   '|third_party/blink/(common|mojom)/manifest/'\
                   '|third_party/blink/renderer/modules/manifest/',
     },
@@ -1567,10 +1567,10 @@
     },
     'permissions': {
       'filepath': 'content/(child,browser)/permissions/'\
-                  '|content/common/permission_*'\
-                  '|content/public/(common,browser)/permission_*'\
+                  '|content/common/permission_'\
+                  '|content/public/(common,browser)/permission_'\
                   '|chrome/browser/permissions/'\
-                  '|chrome/browser/content_settings/permission*'\
+                  '|chrome/browser/content_settings/permission'\
                   '|permission_context',
     },
     'phonehub': {
@@ -1669,9 +1669,9 @@
     'sampling_profiler': {
       'filepath': 'base/profiler/'\
                   '|chrome/common/profiler/'\
-                  '|chrome/renderer/v8_unwinder*'\
-                  '|components/metrics/*call_stack*'\
-                  '|components/metrics/public/mojom/call_stack*',
+                  '|chrome/renderer/v8_unwinder'\
+                  '|components/metrics/.*call_stack'\
+                  '|components/metrics/public/mojom/call_stack',
     },
     'scanning': {
       'filepath': 'ash/webui/scanning/'\
@@ -1736,11 +1736,11 @@
     },
     'smartlock': {
       'filepath': 'ash/components/proximity_auth/'\
-                  '|ash/public/cpp/smartlock*'\
+                  '|ash/public/cpp/smartlock'\
                   '|chrome/browser/ash/login/easy_unlock/'\
                   '|chrome/browser/resources/chromeos/quick_unlock/'\
-                  '|chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_smartlock*'\
-                  '|chrome/test/data/webui/settings/chromeos/multidevice_smartlock*'\
+                  '|chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_smartlock'\
+                  '|chrome/test/data/webui/settings/chromeos/multidevice_smartlock'\
                   '|chromeos/dbus/easy_unlock/',
     },
     'smb': {
@@ -1769,7 +1769,7 @@
       'filepath': 'components/services/storage/',
     },
     'structured_headers' : {
-      'filepath': 'net/http/structured_headers*',
+      'filepath': 'net/http/structured_headers',
     },
     'styleguide': {
       'filepath': '^styleguide/',
@@ -1786,9 +1786,9 @@
                   '|chrome/browser/.*supervised_user',
     },
     'surface_layer_for_video': {
-      'filepath': 'cc/layers/surface_layer*'\
-                  '|third_party/blink/renderer/platform/graphics/video_frame_*'\
-                  '|third_party/blink/renderer/platform/graphics/surface_layer_bridge*',
+      'filepath': 'cc/layers/surface_layer'\
+                  '|third_party/blink/renderer/platform/graphics/video_frame_'\
+                  '|third_party/blink/renderer/platform/graphics/surface_layer_bridge',
     },
     'switch_access': {
       'filepath': 'switch_access',
@@ -1866,7 +1866,7 @@
     'tether': {
       'filepath': 'ash/components/tether/'\
                   '|chrome/browser/ash/tether/'\
-                  '|chrome/browser/ui/ash/network/tether*'\
+                  '|chrome/browser/ui/ash/network/tether'\
     },
     'text_to_speech': {
       'filepath': 'tts'
@@ -1884,7 +1884,7 @@
                   '|chrome/browser/extensions/api/input_ime'\
                   '|chrome/browser/resources/chromeos/keyboard/' \
                   'chromeos/.*(language|keyboard)'\
-                  '|chromeos/ime/*'
+                  '|chromeos/ime/'
     },
     'third_party_conflicts': {
       'filepath': 'chrome/browser/win/conflicts/'
@@ -2063,7 +2063,7 @@
         'filepath': 'weblayer/browser/safe_browsing/',
     },
     'weblayer_ssl': {
-        'filepath': 'weblayer/browser/ssl*',
+        'filepath': 'weblayer/browser/ssl',
     },
     'webotp': {
         'filepath': 'third_party/blink/renderer/modules/credentialmanager/credentials_container\.cc'\
@@ -2100,14 +2100,14 @@
     'zoom': {
       'filepath': 'chrome/browser/ui/zoom/' \
                   '|components/ui/zoom/' \
-                  '|content/browser/host_zoom_*' \
-                  '|content/browser/storage_partition_impl*' \
+                  '|content/browser/host_zoom_' \
+                  '|content/browser/storage_partition_impl' \
                   '|content/public/browser/host_zoom_map.h' \
                   '|content/public/browser/storage_partition.h'
     },
     'zte': {
-      'filepath': 'chrome/browser/ash/login/enrollment/*auto_enrollment*|' \
-                  'chrome/browser/ash/policy/enrollment/*auto_enrollment*|' \
+      'filepath': 'chrome/browser/ash/login/enrollment/.*auto_enrollment|' \
+                  'chrome/browser/ash/policy/enrollment/.*auto_enrollment|' \
                   'chrome/browser/ash/policy/enrollment/private_membership/'
     },
   },
