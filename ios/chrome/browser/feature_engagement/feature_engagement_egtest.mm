@@ -44,11 +44,16 @@ const char kFrenchPageURLPath[] = "/french";
 
 // Matcher for the Reading List Text Badge.
 id<GREYMatcher> ReadingListTextBadge() {
-  return grey_allOf(
-      grey_accessibilityID(@"kToolsMenuTextBadgeAccessibilityIdentifier"),
-      grey_ancestor(grey_allOf(grey_accessibilityID(kToolsMenuReadingListId),
-                               grey_sufficientlyVisible(), nil)),
-      nil);
+  NSString* new_overflow_menu_accessibility_id =
+      [NSString stringWithFormat:@"%@-badge", kToolsMenuReadingListId];
+  return [ChromeEarlGrey isNewOverflowMenuEnabled]
+             ? grey_accessibilityID(new_overflow_menu_accessibility_id)
+             : grey_allOf(grey_accessibilityID(
+                              @"kToolsMenuTextBadgeAccessibilityIdentifier"),
+                          grey_ancestor(grey_allOf(
+                              grey_accessibilityID(kToolsMenuReadingListId),
+                              grey_sufficientlyVisible(), nil)),
+                          nil);
 }
 
 // Matcher for the Translate Manual Trigger button.
@@ -146,16 +151,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
       onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       assertWithMatcher:grey_notNil()];
 
-  // Close tools menu by tapping reload.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::ReloadButton(),
-                                   grey_ancestor(
-                                       chrome_test_util::ToolsMenuView()),
-                                   nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI closeToolsMenu];
 
   // Reopen tools menu to verify that the badge does not appear again.
   [ChromeEarlGreyUI openToolsMenu];
@@ -213,6 +209,11 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 // Verifies that the Badged Manual Translate Trigger feature shows only once
 // when the triggering conditions are met.
 - (void)testBadgedTranslateManualTriggerFeatureShouldShowOnce {
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    // TODO(crbug.com/1285154): Reenable once this is supported.
+    EARL_GREY_TEST_DISABLED(
+        @"New overflow menu does not support translate badge");
+  }
   GREYAssert([FeatureEngagementAppInterface enableBadgedTranslateManualTrigger],
              @"Feature Engagement tracker did not load");
 

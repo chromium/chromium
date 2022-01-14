@@ -148,6 +148,10 @@
   [self setUpConstraints];
 }
 
+- (void)setHidden:(BOOL)hidden {
+  [super setHidden:hidden];
+}
+
 - (void)addFakeOmniboxTarget {
   self.fakeOmniboxTarget = [[UIView alloc] init];
   self.fakeOmniboxTarget.translatesAutoresizingMaskIntoConstraints = NO;

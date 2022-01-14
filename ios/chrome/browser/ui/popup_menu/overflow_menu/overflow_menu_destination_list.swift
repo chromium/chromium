@@ -5,6 +5,7 @@
 import SwiftUI
 
 /// A view displaying a list of destinations.
+@available(iOS 15, *)
 struct OverflowMenuDestinationList: View {
   enum Constants {
     /// Padding breakpoints for each width. The ranges should be inclusive of
@@ -68,6 +69,7 @@ struct OverflowMenuDestinationList: View {
         // spacing before the first item.
         .padding([.leading], Constants.iconInitialSpace - spacing.iconSpacing)
       }
+      .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
     }
   }
 

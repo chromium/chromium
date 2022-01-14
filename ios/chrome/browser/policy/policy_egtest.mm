@@ -420,7 +420,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   // Open the menu and click on the item.
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:grey_accessibilityID(kTextMenuEnterpriseInfo)];
+      tapToolsMenuAction:grey_accessibilityID(kTextMenuEnterpriseInfo)];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Check the navigation.

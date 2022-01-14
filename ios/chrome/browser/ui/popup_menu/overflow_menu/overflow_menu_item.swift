@@ -17,17 +17,22 @@ import SwiftUI
     return Image(imageName)
   }
 
-  /// Closure to execute when item is selected.
-  @Published public var handler: () -> Void
+  /// The accessibility identifier for this item.
+  @Published public var accessibilityIdentifier: String
 
   /// Whether the action is disabled by enterprise policy.
   @Published public var enterpriseDisabled: Bool
 
+  /// Closure to execute when item is selected.
+  @Published public var handler: () -> Void
+
   public init(
-    name: String, imageName: String, enterpriseDisabled: Bool, handler: @escaping () -> Void
+    name: String, imageName: String, accessibilityIdentifier: String, enterpriseDisabled: Bool,
+    handler: @escaping () -> Void
   ) {
     self.name = name
     self.imageName = imageName
+    self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
     self.handler = handler
   }

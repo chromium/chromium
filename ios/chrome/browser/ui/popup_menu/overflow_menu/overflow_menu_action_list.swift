@@ -15,6 +15,7 @@ struct OverflowMenuActionList: View {
         OverflowMenuActionSection(actionGroup: actionGroup)
       }
     }
+    .accessibilityIdentifier(kPopupMenuToolsMenuActionListId)
     .listStyle(InsetGroupedListStyle())
     // Allow sections to have very small headers controlling section spacing.
     .environment(\.defaultMinListHeaderHeight, 0)

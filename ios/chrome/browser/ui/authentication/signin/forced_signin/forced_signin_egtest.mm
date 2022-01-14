@@ -1093,6 +1093,12 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
+  // TODO(crbug.com/1285974).
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
+  }
+
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -1139,6 +1145,12 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 - (void)testSignInScreenOnModalMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // TODO(crbug.com/1285974).
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
+  }
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;

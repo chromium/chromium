@@ -13,7 +13,9 @@
 namespace bookmarks {
 class BookmarkModel;
 }
-
+namespace feature_engagement {
+class Tracker;
+}
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 class BrowserPolicyConnectorIOS;
@@ -63,12 +65,21 @@ class WebStateList;
 // Reading List" button should be enabled.
 @property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
 
+// Records events for the use of in-product help. The mediator does not take
+// ownership of tracker. Tracker must not be destroyed during lifetime of the
+// object.
+@property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
+
 // The current browser policy connector.
 @property(nonatomic, assign) BrowserPolicyConnectorIOS* browserPolicyConnector;
 
 // The follow action state. e.g. If the property value is FollowActionStateHide,
 // "Follow" action should be hidden in the overflow menu.
 @property(nonatomic, assign) FollowActionState followActionState;
+
+// Disconnect the mediator.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_MEDIATOR_H_

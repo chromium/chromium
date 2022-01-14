@@ -130,6 +130,11 @@ using chrome_test_util::WindowWithNumber;
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
+  // TODO(crbug.com/1285974).
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled])
+    EARL_GREY_TEST_DISABLED(
+        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
+
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];

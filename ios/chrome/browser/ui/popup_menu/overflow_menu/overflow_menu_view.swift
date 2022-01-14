@@ -4,6 +4,7 @@
 
 import SwiftUI
 
+@available(iOS 15, *)
 struct OverflowMenuView: View {
   enum Dimensions {
     static let destinationListHeight: CGFloat = 123

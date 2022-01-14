@@ -23,4 +23,9 @@ extension Color {
   public static var cr_blue: Color {
     return Color(kBlueColor)
   }
+
+  /// The blue500 color.
+  public static var cr_blue500: Color {
+    return Color(kBlue500Color)
+  }
 }

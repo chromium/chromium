@@ -831,11 +831,18 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_notVisible()];
 
-  // Open tools menu and reload page, then check if incognito view is still
-  // visible.
-  [ChromeEarlGreyUI openToolsMenu];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kToolsMenuReload)]
-      performAction:grey_tap()];
+  // Reload page, then check if incognito view is still visible.
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
+      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    // In the new
+    // overflow menu on iPad, the reload button is only on the toolbar.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ReloadButton()]
+        performAction:grey_tap()];
+  } else {
+    [ChromeEarlGreyUI openToolsMenu];
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kToolsMenuReload)]
+        performAction:grey_tap()];
+  }
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPIncognitoView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }

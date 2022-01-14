@@ -108,8 +108,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       assertWithMatcher:grey_notNil()];
-  // After veryfing, close the ToolsMenu by tapping on its button.
-  [ChromeEarlGreyUI openToolsMenu];
+  // After veryfing, close the ToolsMenu.
+  [ChromeEarlGreyUI closeToolsMenu];
 
   // Close the opened tab.
   [ChromeEarlGrey closeCurrentTab];
@@ -184,6 +184,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // shows only a snackbar.
 - (void)testKeyboardCommandsRegistered_AddBookmark {
   // Add the bookmark.
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  const GURL firstURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:firstURL];
   [BookmarkEarlGreyUI starCurrentTab];
   GREYAssertTrue([ChromeEarlGrey registeredKeyCommandCount] > 0,
                  @"Some keyboard commands are registered.");

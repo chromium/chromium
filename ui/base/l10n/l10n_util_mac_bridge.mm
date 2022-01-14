@@ -13,4 +13,8 @@
   return l10n_util::GetNSString(messageId);
 }
 
++ (NSString*)stringWithFixupForMessageId:(int)messageId {
+  return l10n_util::GetNSStringWithFixup(messageId);
+}
+
 @end

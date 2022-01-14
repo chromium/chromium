@@ -1220,6 +1220,10 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isContextMenuInWebViewEnabled];
 }
 
+- (BOOL)isNewOverflowMenuEnabled {
+  return [ChromeEarlGreyAppInterface isNewOverflowMenuEnabled];
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 - (ContentSetting)popupPrefValue {

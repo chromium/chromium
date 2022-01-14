@@ -133,15 +133,12 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the menu is closed when tapping the close button or the scrim.
+// Tests that the menu is opened and closed correctly, whatever the current
+// device type is.
 - (void)testOpenAndCloseToolsMenu {
   [ChromeEarlGreyUI openToolsMenu];
 
-  // A scrim covers the whole window and tapping on this scrim dismisses the
-  // tools menu.  The "Tools Menu" button happens to be outside of the bounds of
-  // the menu and is a convenient place to tap to activate the scrim.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI closeToolsMenu];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
       assertWithMatcher:grey_notVisible()];
@@ -174,12 +171,16 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Navigate to a mock pdf and verify that the find button is disabled.
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuFindInPageId),
                                    grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      onElementWithMatcher:tableViewMatcher]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
 }

@@ -52,6 +52,28 @@ id<GREYAction> ScrollDown() {
   return grey_scrollInDirection(kGREYDirectionDown, kMenuScrollDisplacement);
 }
 
+// Returns a GREYAction to scroll down (swipe up) for a reasonably small amount.
+id<GREYAction> PageSheetScrollDown() {
+  // 500 is a reasonable value to ensure all menu items are seen, and cause the
+  // page sheet to expand to full screen. With a larger value, some menu items
+  // could be skipped while searching. A smaller value increses the area that is
+  // searched, but slows down the scroll. It also causes the page sheet to not
+  // expand.
+  CGFloat const kMenuScrollDisplacement = 500;
+  return grey_scrollInDirection(kGREYDirectionDown, kMenuScrollDisplacement);
+}
+
+// Returns a GREYAction to scroll right (swipe left) for a reasonably small
+// amount.
+id<GREYAction> ScrollRight() {
+  // 150 is a reasonable value to ensure all menu items are seen, without too
+  // much delay. With a larger value, some menu items could be skipped while
+  // searching. A smaller value increses the area that is searched, but slows
+  // down the scroll.
+  CGFloat const kMenuScrollDisplacement = 150;
+  return grey_scrollInDirection(kGREYDirectionRight, kMenuScrollDisplacement);
+}
+
 bool IsAppCompactWidth() {
   UIUserInterfaceSizeClass sizeClass =
       chrome_test_util::GetAnyKeyWindow().traitCollection.horizontalSizeClass;
@@ -100,6 +122,22 @@ class ScopedDisableTimerTracking {
   // to always find it.
 }
 
+- (void)closeToolsMenu {
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
+      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+    // With the new overflow menu on iPhone, the half sheet covers the bottom
+    // half of the screen. Swiping down on the sheet will close the menu.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
+        performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  } else {
+    // A scrim covers the whole window and tapping on this scrim dismisses the
+    // tools menu.  The "Tools Menu" button happens to be outside of the bounds
+    // of the menu and is a convenient place to tap to activate the scrim.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
+        performAction:grey_tap()];
+  }
+}
+
 - (void)openToolsMenuInWindowWithNumber:(int)windowNumber {
   [EarlGrey setRootMatcherForSubsequentInteractions:
                 chrome_test_util::WindowWithNumber(windowNumber)];
@@ -143,9 +181,26 @@ class ScopedDisableTimerTracking {
   ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableSettingsButton =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
+  id<GREYAction> scrollAction =
+      [ChromeEarlGrey isNewOverflowMenuEnabled] ? ScrollRight() : ScrollDown();
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
-         usingSearchAction:ScrollDown()
+         usingSearchAction:scrollAction
       onElementWithMatcher:ToolsMenuView()] performAction:grey_tap()];
+}
+
+- (void)tapToolsMenuAction:(id<GREYMatcher>)buttonMatcher {
+  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    [self tapToolsMenuButton:buttonMatcher];
+    return;
+  }
+  ScopedDisableTimerTracking disabler;
+  id<GREYMatcher> interactableSettingsButton =
+      grey_allOf(buttonMatcher, grey_interactable(), nil);
+  [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
+         usingSearchAction:PageSheetScrollDown()
+      onElementWithMatcher:grey_accessibilityID(
+                               @"kPopupMenuToolsMenuActionListId")]
+      performAction:grey_tap()];
 }
 
 - (void)tapSettingsMenuButton:(id<GREYMatcher>)buttonMatcher {
@@ -313,11 +368,15 @@ class ScopedDisableTimerTracking {
 
 - (void)openPageInfo {
   [self openToolsMenu];
+  id<GREYAction> searchAction =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? ScrollRight()
+          : grey_scrollInDirection(kGREYDirectionDown, 200);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               kToolsMenuSiteInformation),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+         usingSearchAction:searchAction
       onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       performAction:grey_tap()];
 }

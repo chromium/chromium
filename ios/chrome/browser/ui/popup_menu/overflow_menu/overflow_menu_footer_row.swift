@@ -48,6 +48,7 @@ struct OverflowMenuFooterRow: View {
         .font(.caption2)
         .foregroundColor(.cr_blue)
         .onTapGesture(perform: footer.handler)
+        .accessibilityIdentifier(footer.accessibilityIdentifier)
     }
     // Group all children together so VoiceOver doesn't have to read the two
     // text labels individually.

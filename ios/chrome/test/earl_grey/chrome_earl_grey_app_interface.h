@@ -515,6 +515,9 @@
 // Returns whether the new ContextMenu for web content feature is enabled.
 + (BOOL)isContextMenuInWebViewEnabled;
 
+// Returns whether the NewOverflowMenu feature is enabled.
++ (BOOL)isNewOverflowMenuEnabled;
+
 #pragma mark - Popup Blocking
 
 // Gets the current value of the popup content setting preference for the

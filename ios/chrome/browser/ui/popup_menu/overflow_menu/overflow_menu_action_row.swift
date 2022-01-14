@@ -26,6 +26,7 @@ struct OverflowMenuActionRow: View {
         .contentShape(Rectangle())
       }
     )
+    .accessibilityIdentifier(action.accessibilityIdentifier)
     .disabled(!action.enabled || action.enterpriseDisabled)
     .accentColor(.cr_textPrimaryColor)
   }
