@@ -175,7 +175,7 @@ void RemoveRecords(PrefService* prefs) {
       prefs->GetDictionary(prefs::kWebAppsDailyMetrics);
   if (!urls_to_features)
     return;
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kWebAppsDailyMetrics);
+  DictionaryPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
   update->DictClear();
 }
 
@@ -198,7 +198,7 @@ void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
   }
 
   std::unique_ptr<DictionaryValue> record_dict = RecordToDict(record);
-  DictionaryPrefUpdateDeprecated update(prefs, prefs::kWebAppsDailyMetrics);
+  DictionaryPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
 
   update->SetKey(url, std::move(*record_dict));
 }

@@ -87,8 +87,7 @@ void WriteInstallMetricsToPrefs(const InstallMetrics& install_metrics,
   dict.SetKey(kInstallSource,
               base::Value(static_cast<int>(install_metrics.source)));
 
-  DictionaryPrefUpdateDeprecated update(pref_service,
-                                        prefs::kWebAppInstallMetrics);
+  DictionaryPrefUpdate update(pref_service, prefs::kWebAppInstallMetrics);
   update->SetKey(app_id, std::move(dict));
 }
 

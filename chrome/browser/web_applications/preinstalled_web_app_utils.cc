@@ -170,7 +170,7 @@ constexpr char kOemInstalled[] = "oem_installed";
 constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
     "disable_if_touchscreen_with_stylus_not_supported";
 
-void EnsureContains(ListPrefUpdateDeprecated& update, base::StringPiece value) {
+void EnsureContains(ListPrefUpdate& update, base::StringPiece value) {
   for (const base::Value& item : update->GetList()) {
     if (item.is_string() && item.GetString() == value)
       return;
@@ -602,8 +602,8 @@ bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
 void MarkAppAsMigratedToWebApp(Profile* profile,
                                const std::string& app_id,
                                bool was_migrated) {
-  ListPrefUpdateDeprecated update(profile->GetPrefs(),
-                                  webapps::kWebAppsMigratedPreinstalledApps);
+  ListPrefUpdate update(profile->GetPrefs(),
+                        webapps::kWebAppsMigratedPreinstalledApps);
   if (was_migrated)
     EnsureContains(update, app_id);
   else
@@ -627,8 +627,8 @@ bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
 void SetMigrationRun(Profile* profile,
                      base::StringPiece feature_name,
                      bool was_migrated) {
-  ListPrefUpdateDeprecated update(profile->GetPrefs(),
-                                  prefs::kWebAppsDidMigrateDefaultChromeApps);
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsDidMigrateDefaultChromeApps);
   if (was_migrated)
     EnsureContains(update, feature_name);
   else
@@ -654,8 +654,8 @@ void MarkPreinstalledAppAsUninstalled(Profile* profile,
                                       const std::string& app_id) {
   if (WasPreinstalledAppUninstalled(profile, app_id))
     return;
-  ListPrefUpdateDeprecated update(profile->GetPrefs(),
-                                  prefs::kWebAppsUninstalledDefaultChromeApps);
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsUninstalledDefaultChromeApps);
   EnsureContains(update, app_id);
 }
 }  // namespace web_app
