@@ -37,6 +37,10 @@ constexpr size_t kTooManyQuads = 128;
 // https://crbug.com/636884.
 const int kTooManyRenderPassDrawQuads = 30;
 
+// Assume we are in a video conference if the total video count is bigger than
+// or equal to this number.
+const int kMaxNumVideos = 5;
+
 // This enum is used for histogram states and should only have new values added
 // to the end before COUNT. tools/metrics/histograms/enums.xml should be updated
 // together.
@@ -251,7 +255,8 @@ class CALayerOverlayProcessorInternal {
           render_pass_backdrop_filters,
       CALayerOverlay* ca_layer_overlay,
       bool* skip,
-      bool* render_pass_draw_quad) {
+      bool* render_pass_draw_quad,
+      int& yuv_draw_quad_count) {
     if (quad->shared_quad_state->blend_mode != SkBlendMode::kSrcOver)
       return CA_LAYER_FAILED_QUAD_BLEND_MODE;
 
@@ -322,6 +327,7 @@ class CALayerOverlayProcessorInternal {
         return FromSolidColorDrawQuad(SolidColorDrawQuad::MaterialCast(quad),
                                       ca_layer_overlay, skip);
       case DrawQuad::Material::kStreamVideoContent:
+        yuv_draw_quad_count++;
         return FromStreamVideoQuad(resource_provider,
                                    StreamVideoDrawQuad::MaterialCast(quad),
                                    ca_layer_overlay);
@@ -337,6 +343,7 @@ class CALayerOverlayProcessorInternal {
       case DrawQuad::Material::kSurfaceContent:
         return CA_LAYER_FAILED_SURFACE_CONTENT;
       case DrawQuad::Material::kYuvVideoContent:
+        yuv_draw_quad_count++;
         return FromYUVVideoQuad(resource_provider,
                                 YUVVideoDrawQuad::MaterialCast(quad),
                                 ca_layer_overlay);
@@ -486,6 +493,8 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   } else if (!render_pass->copy_requests.empty()) {
     result = CA_LAYER_FAILED_COPY_REQUESTS;
   } else if (num_visible_quads > max_quad_list_size_) {
+    // |max_quad_list_size_| might be set by finch and is bigger than
+    // kTooManyQuads (128).
     result = CA_LAYER_FAILED_TOO_MANY_QUADS;
   }
 
@@ -499,6 +508,7 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   ca_layer_overlays->reserve(num_visible_quads);
 
   int render_pass_draw_quad_count = 0;
+  int yuv_draw_quad_count = 0;
   CALayerOverlayProcessorInternal processor;
   for (auto it = quad_list.BackToFrontBegin();
        result == CA_LAYER_SUCCESS && it != quad_list.BackToFrontEnd(); ++it) {
@@ -508,7 +518,8 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     bool render_pass_draw_quad = false;
     result = processor.FromDrawQuad(
         resource_provider, display_rect, quad, render_pass_filters,
-        render_pass_backdrop_filters, &ca_layer, &skip, &render_pass_draw_quad);
+        render_pass_backdrop_filters, &ca_layer, &skip, &render_pass_draw_quad,
+        yuv_draw_quad_count);
     if (result != CA_LAYER_SUCCESS)
       break;
 
@@ -529,6 +540,14 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     }
 
     ca_layer_overlays->push_back(ca_layer);
+  }
+
+  // In the case of |max_quad_list_size_| > |num_visible_quads| > kTooManyQuads,
+  // Accept CALayerOverlay if in a video conference (video count >=
+  // kMaxNumVideos(5)). Otherwise, do not use CALayerOverlay.
+  if (num_visible_quads > kTooManyQuads &&
+      yuv_draw_quad_count < kMaxNumVideos) {
+    result = CA_LAYER_FAILED_TOO_MANY_QUADS;
   }
 
   RecordCALayerHistogram(result);
@@ -557,9 +576,11 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
   CALayerOverlay ca_layer;
   bool skip = false;
   bool render_pass_draw_quad = false;
+  int yuv_draw_quad_count = 0;
   CALayerResult result = processor.FromDrawQuad(
       resource_provider, display_rect, quad, render_pass_filters,
-      render_pass_backdrop_filters, &ca_layer, &skip, &render_pass_draw_quad);
+      render_pass_backdrop_filters, &ca_layer, &skip, &render_pass_draw_quad,
+      yuv_draw_quad_count);
   if (result != CA_LAYER_SUCCESS)
     return false;
 
