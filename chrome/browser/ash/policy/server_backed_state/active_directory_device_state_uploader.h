@@ -59,7 +59,7 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   bool HasUploadedEnrollmentId() const;
 
   // Subscribes to state keys update signal to trigger state keys upload
-  // whenever state keys are updated.
+  // whenever state keys are updated. Also, starts a DM Token request.
   void Init();
 
   // Unsubscribes from state keys update signal.

@@ -45,6 +45,7 @@ class BluetoothPolicyHandler;
 class DeviceActiveDirectoryPolicyManager;
 class DeviceCloudPolicyInitializer;
 class ActiveDirectoryDeviceStateUploader;
+class ActiveDirectoryMigrationManager;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
@@ -278,6 +279,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       nullptr;
   std::unique_ptr<ActiveDirectoryDeviceStateUploader>
       active_directory_device_state_uploader_;
+  std::unique_ptr<ActiveDirectoryMigrationManager>
+      active_directory_migration_manager_;
   PrefService* local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;

@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
+#include "chrome/browser/ash/policy/active_directory/active_directory_migration_manager.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -215,8 +216,8 @@ void BrowserPolicyConnectorAsh::Init(
             CreateBackgroundTaskRunner(), url_loader_factory);
     device_local_account_policy_service_->Connect(device_management_service());
   } else if (IsForcedReEnrollmentEnabled()) {
-    // Initialize state keys upload mechanism to DM Server in Active Directory
-    // mode.
+    // Initialize state keys and enrollment ID upload mechanisms to DM Server in
+    // Active Directory mode.
     state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
         chromeos::SessionManagerClient::Get());
     active_directory_device_state_uploader_ =
@@ -226,6 +227,12 @@ void BrowserPolicyConnectorAsh::Init(
             url_loader_factory, std::make_unique<DMTokenStorage>(local_state),
             local_state);
     active_directory_device_state_uploader_->Init();
+
+    // Initialize the manager that will start the migration of Chromad devices
+    // into cloud management, when all pre-requisites are met.
+    active_directory_migration_manager_ =
+        std::make_unique<ActiveDirectoryMigrationManager>(local_state);
+    active_directory_migration_manager_->Init();
   }
 
   if (device_cloud_policy_manager_) {

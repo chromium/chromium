@@ -135,7 +135,7 @@ class KerberosCredentialsManager : public KeyedService,
   void ListAccounts(ListAccountsCallback callback);
 
   // Sets the contents of the Kerberos configuration (krb5.conf) to |krb5_conf|
-  // for the account  with given |principal_name|.
+  // for the account with given |principal_name|.
   void SetConfig(std::string principal_name,
                  const std::string& krb5_conf,
                  ResultCallback callback);
