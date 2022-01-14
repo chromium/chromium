@@ -125,7 +125,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      GridViewControllerDelegate,
                                      LayoutSwitcher,
                                      UIScrollViewAccessibilityDelegate,
-                                     ViewRevealingAnimatee>
+                                     ViewRevealingAnimatee,
+                                     UISearchBarDelegate>
 // Whether the view is visible. Bookkeeping is based on |-viewWillAppear:| and
 // |-viewWillDisappear methods. Note that the |Did| methods are not reliably
 // called (e.g., edge case in multitasking).
@@ -145,6 +146,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Other UI components.
 @property(nonatomic, weak) UIScrollView* scrollView;
 @property(nonatomic, weak) UIView* scrollContentView;
+// Scrim view to be presented when the search box in focused with no text.
+@property(nonatomic, strong) UIControl* scrimView;
 @property(nonatomic, weak) TabGridTopToolbar* topToolbar;
 @property(nonatomic, weak) TabGridBottomToolbar* bottomToolbar;
 @property(nonatomic, assign) BOOL undoCloseAllAvailable;
@@ -174,6 +177,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, assign) ViewRevealState currentState;
 // The configuration for tab grid pages.
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
+// If the scrim view is being presented.
+@property(nonatomic, assign) BOOL isScrimDisplayed;
 
 @end
 
@@ -252,6 +257,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       break;
   }
 
+  [self setupSearchUI];
   [self setupTopToolbar];
   [self setupBottomToolbar];
   [self setupEditButton];
@@ -1281,6 +1287,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                              action:@selector(pageControlChangedPage:)
                    forControlEvents:UIControlEventTouchUpInside];
 
+  if (IsTabsSearchEnabled())
+    [topToolbar setSearchBarDelegate:self];
+
   [NSLayoutConstraint activateConstraints:@[
     [topToolbar.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
@@ -1769,6 +1778,72 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+- (void)setupSearchUI {
+  self.scrimView = [[UIControl alloc] init];
+  self.scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
+  self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.scrimView.accessibilityIdentifier = kTabGridScrimIdentifier;
+  [self.scrimView addTarget:self
+                     action:@selector(cancelSearchButtonTapped:)
+           forControlEvents:UIControlEventTouchUpInside];
+}
+
+// Shows scrim overlay.
+- (void)showScrim {
+  self.scrimView.alpha = 0.0f;
+  [self.scrollContentView addSubview:self.scrimView];
+  AddSameConstraints(self.scrimView, self.view.superview);
+  self.currentPageViewController.accessibilityElementsHidden = YES;
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:0.2
+      animations:^{
+        TabGridViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        strongSelf.scrimView.alpha = 1.0f;
+        [strongSelf.view layoutIfNeeded];
+      }
+      completion:^(BOOL finished) {
+        weakSelf.isScrimDisplayed = YES;
+      }];
+}
+
+// Hides scrim overlay.
+- (void)hideScrim {
+  __weak TabGridViewController* weakSelf = self;
+  [UIView animateWithDuration:0.2
+      animations:^{
+        weakSelf.scrimView.alpha = 0.0f;
+      }
+      completion:^(BOOL finished) {
+        TabGridViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        [strongSelf.scrimView removeFromSuperview];
+        strongSelf.currentPageViewController.accessibilityElementsHidden = NO;
+        strongSelf.isScrimDisplayed = NO;
+      }];
+}
+
+#pragma mark UISearchBarDelegate
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar*)searchBar {
+  NSString* text = searchBar.text;
+
+  if (text.length == 0) {
+    if (!self.isScrimDisplayed)
+      [self showScrim];
+  } else {
+    // If no results have been presented yet, then hide the scrim to present the
+    // results.
+    if (self.isScrimDisplayed) {
+      [self hideScrim];
+    }
+    // TODO(crbug.com/1287190): Use the search text for the search and reload
+    // data.
+  }
+}
+
 #pragma mark - ThumbStripSupporting
 
 - (BOOL)isThumbStripEnabled {
@@ -2036,8 +2111,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
+  if (self.isScrimDisplayed) {
+    [self hideScrim];
+  } else {
+    // Only record search cancel event when an actual search happened.
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
+  }
   self.tabGridMode = TabGridModeNormal;
-  base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
 }
 
 - (void)newTabButtonTapped:(id)sender {
