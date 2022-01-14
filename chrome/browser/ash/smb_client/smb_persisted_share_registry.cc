@@ -97,8 +97,8 @@ SmbPersistedShareRegistry::SmbPersistedShareRegistry(Profile* profile)
     : profile_(profile) {}
 
 void SmbPersistedShareRegistry::Save(const SmbShareInfo& share) {
-  ListPrefUpdateDeprecated pref(profile_->GetPrefs(),
-                                prefs::kNetworkFileSharesSavedShares);
+  ListPrefUpdate pref(profile_->GetPrefs(),
+                      prefs::kNetworkFileSharesSavedShares);
 
   base::Value::ListView share_list = pref->GetList();
   for (auto it = share_list.begin(); it != share_list.end(); ++it) {
@@ -113,8 +113,8 @@ void SmbPersistedShareRegistry::Save(const SmbShareInfo& share) {
 }
 
 void SmbPersistedShareRegistry::Delete(const SmbUrl& share_url) {
-  ListPrefUpdateDeprecated pref(profile_->GetPrefs(),
-                                prefs::kNetworkFileSharesSavedShares);
+  ListPrefUpdate pref(profile_->GetPrefs(),
+                      prefs::kNetworkFileSharesSavedShares);
 
   base::Value::ListView share_list = pref->GetList();
   for (auto it = share_list.begin(); it != share_list.end(); ++it) {
