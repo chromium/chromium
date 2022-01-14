@@ -41,3 +41,7 @@ class PageCyclerStory(page.Page):
                      _WEB_CONTENTS_TIMEOUT)
     py_utils.WaitFor(action_runner.tab.IsServiceWorkerActivatedOrNotRegistered,
                      _WEB_CONTENTS_TIMEOUT)
+    # Wait an extra 5 seconds to give the page a chance to reach First
+    # Interactive, so we can compute Time to Interactive and Total Blocking
+    # Time.
+    action_runner.Wait(5)
