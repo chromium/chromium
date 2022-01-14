@@ -86,12 +86,12 @@ void CreateBlobOnIOThread(
   BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
 }
 
-std::pair<base::File, base::FileErrorOr<int>> GetFileLengthOnBlockingThread(
+std::pair<base::File, base::FileErrorOr<int64_t>> GetFileLengthOnBlockingThread(
     base::File file) {
   int64_t file_length = file.GetLength();
   if (file_length < 0)
     return {std::move(file), base::File::GetLastFileError()};
-  return {std::move(file), file_length};
+  return {std::move(file), std::move(file_length)};
 }
 
 bool HasWritePermission(const base::FilePath& path) {
@@ -352,11 +352,12 @@ void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
 void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
     OpenAccessHandleCallback callback,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-    std::pair<base::File, base::FileErrorOr<int>> file_and_length) {
+    std::pair<base::File, base::FileErrorOr<int64_t>> file_and_length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::File file = std::move(file_and_length.first);
-  base::FileErrorOr<int> length_or_error = std::move(file_and_length.second);
+  base::FileErrorOr<int64_t> length_or_error =
+      std::move(file_and_length.second);
 
   if (length_or_error.is_error()) {
     std::move(callback).Run(
