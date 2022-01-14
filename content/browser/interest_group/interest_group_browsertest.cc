@@ -273,6 +273,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     if (group.bidding_url) {
       buf << ", biddingLogicUrl: '" << *group.bidding_url << "'";
     }
+    if (group.bidding_wasm_helper_url) {
+      buf << ", biddingWasmHelperUrl: '" << *group.bidding_wasm_helper_url
+          << "'";
+    }
     if (group.update_url) {
       buf << ", dailyUpdateUrl: '" << *group.update_url << "'";
     }
@@ -1321,6 +1325,37 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidBiddingWasmHelperUrl) {
+  const char kScriptTemplate[] = R"(
+(function() {
+  try {
+    navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          biddingWasmHelperUrl: 'https://invalid^&',
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+          "biddingWasmHelperUrl 'https://invalid^&' for AuctionAdInterestGroup "
+          "with owner '%s' and name 'cars' cannot be resolved to a valid URL.",
+          origin_string.c_str()),
+      EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidDailyUpdateUrl) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
@@ -1994,6 +2029,40 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                 ->trusted_params->isolation_info.network_isolation_key(),
             url_loader_monitor.GetRequestInfo(kExpectedReportUrls[1])
                 ->trusted_params->isolation_info.network_isolation_key());
+}
+
+// Runs an auction where the bidding function uses a WASM helper.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL("a.test",
+                            "/interest_group/bidding_logic_use_wasm.js"),
+      /*bidding_wasm_helper_url=*/
+      https_server_->GetURL("a.test", "/interest_group/multiply.wasm"),
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{},
+      /*user_bidding_signals=*/"{}",
+      /*ads=*/
+      {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ad_components=*/absl::nullopt)));
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1],
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 }
 
 // Runs auction just like the above test, but runs with fenced frames enabled

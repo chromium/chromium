@@ -180,6 +180,24 @@ bool CopyBiddingLogicUrlFromIdlToMojo(const ExecutionContext& context,
   return true;
 }
 
+bool CopyWasmHelperUrlFromIdlToMojo(const ExecutionContext& context,
+                                    ExceptionState& exception_state,
+                                    const AuctionAdInterestGroup& input,
+                                    mojom::blink::InterestGroup& output) {
+  if (!input.hasBiddingWasmHelperUrl())
+    return true;
+  KURL wasm_url = context.CompleteURL(input.biddingWasmHelperUrl());
+  if (!wasm_url.IsValid()) {
+    exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+        input, "biddingWasmHelperUrl", input.biddingWasmHelperUrl(),
+        "cannot be resolved to a valid URL."));
+    return false;
+  }
+  // ValidateBlinkInterestGroup will checks whether this follows all the rules.
+  output.bidding_wasm_helper_url = wasm_url;
+  return true;
+}
+
 bool CopyDailyUpdateUrlFromIdlToMojo(const ExecutionContext& context,
                                      ExceptionState& exception_state,
                                      const AuctionAdInterestGroup& input,
@@ -715,6 +733,10 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
   mojo_group->name = group->name();
   if (!CopyBiddingLogicUrlFromIdlToMojo(*context, exception_state, *group,
                                         *mojo_group)) {
+    return;
+  }
+  if (!CopyWasmHelperUrlFromIdlToMojo(*context, exception_state, *group,
+                                      *mojo_group)) {
     return;
   }
   if (!CopyDailyUpdateUrlFromIdlToMojo(*context, exception_state, *group,
