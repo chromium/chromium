@@ -108,8 +108,8 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     SetUpWebStateList();
 
     // Set up the TestBrowser.
-    browser_ = std::make_unique<TestBrowser>(GetTestChromeBrowserState(),
-                                             web_state_list_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(GetBrowserState(), web_state_list_.get());
     // Set up the OverlayPresenter.
     OverlayPresenter::FromBrowser(browser_.get(),
                                   OverlayModality::kWebContentArea)
@@ -124,16 +124,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     ChromeWebTest::TearDown();
   }
 
-  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
-    TestChromeBrowserState::Builder builder;
-    return builder.Build();
-  }
-
  protected:
-  TestChromeBrowserState* GetTestChromeBrowserState() {
-    return static_cast<TestChromeBrowserState*>(GetBrowserState());
-  }
-
   PopupMenuMediator* CreateMediator(PopupMenuType type,
                                     BOOL is_incognito,
                                     BOOL trigger_incognito_hint) {
@@ -168,9 +159,9 @@ class PopupMenuMediatorTest : public ChromeWebTest {
   }
 
   void SetUpBookmarks() {
-    GetTestChromeBrowserState()->CreateBookmarkModel(false);
-    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        GetTestChromeBrowserState());
+    GetBrowserState()->CreateBookmarkModel(false);
+    bookmark_model_ =
+        ios::BookmarkModelFactory::GetForBrowserState(GetBrowserState());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     mediator_.bookmarkModel = bookmark_model_;
   }

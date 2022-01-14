@@ -180,9 +180,9 @@ void FormStructureBrowserTest::SetUp() {
   // Initialize it now as it may DCHECK if it is initialized during the test.
   AddressNormalizerFactory::GetInstance();
 
-  autofill_agent_ = [[AutofillAgent alloc]
-      initWithPrefService:chrome_browser_state_->GetPrefs()
-                 webState:web_state()];
+  autofill_agent_ =
+      [[AutofillAgent alloc] initWithPrefService:GetBrowserState()->GetPrefs()
+                                        webState:web_state()];
   suggestion_controller_ =
       [[FormSuggestionController alloc] initWithWebState:web_state()
                                                providers:@[ autofill_agent_ ]];
@@ -191,8 +191,7 @@ void FormStructureBrowserTest::SetUp() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
-      chrome_browser_state_.get(), web_state(), infobar_manager,
-      autofill_agent_,
+      GetBrowserState(), web_state(), infobar_manager, autofill_agent_,
       /*password_generation_manager=*/nullptr));
 
   std::string locale("en");

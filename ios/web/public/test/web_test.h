@@ -48,7 +48,7 @@ class WebTest : public PlatformTest {
   virtual web::WebClient* GetWebClient();
 
   // Returns the BrowserState that is used for testing.
-  virtual BrowserState* GetBrowserState();
+  BrowserState* GetBrowserState();
 
   // If called with |true|, prevents the test fixture from automatically failing
   // when a render process crashes during the test.  This is useful for tests

@@ -251,7 +251,7 @@ void AutofillControllerTest::SetUp() {
   // Profile import requires a PersonalDataManager which itself needs the
   // WebDataService; this is not initialized on a TestChromeBrowserState by
   // default.
-  chrome_browser_state_->CreateWebDataService();
+  GetBrowserState()->CreateWebDataService();
 
   // Create a PasswordController instance that will handle set up for renderer
   // ids.
@@ -259,9 +259,9 @@ void AutofillControllerTest::SetUp() {
   passwordController_ =
       [[PasswordController alloc] initWithWebState:web_state()];
 
-  autofill_agent_ = [[AutofillAgent alloc]
-      initWithPrefService:chrome_browser_state_->GetPrefs()
-                 webState:web_state()];
+  autofill_agent_ =
+      [[AutofillAgent alloc] initWithPrefService:GetBrowserState()->GetPrefs()
+                                        webState:web_state()];
   suggestion_controller_ =
       [[TestSuggestionController alloc] initWithWebState:web_state()
                                                providers:@[ autofill_agent_ ]];
@@ -270,8 +270,7 @@ void AutofillControllerTest::SetUp() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
-      chrome_browser_state_.get(), web_state(), infobar_manager,
-      autofill_agent_,
+      GetBrowserState(), web_state(), infobar_manager, autofill_agent_,
       /*password_generation_manager=*/nullptr));
 
   std::string locale("en");
@@ -526,7 +525,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   ExecuteJavaScript(@"document.forms[0].greeting.value = 'Hello'");
   scoped_refptr<AutofillWebDataService> web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-          chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+          GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
   TestConsumer consumer;
   const int limit = 1;
   consumer.result_ = {CreateAutofillEntry(u"Should"),
@@ -558,7 +557,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
 void AutofillControllerTest::SetUpKeyValueData() {
   scoped_refptr<AutofillWebDataService> web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-          chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+          GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
   // Load value into database.
   std::vector<FormFieldData> values;
   FormFieldData fieldData;

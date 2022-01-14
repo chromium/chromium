@@ -132,7 +132,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   }
 
   // Create a new webState with a live WKWebView.
-  web::WebState::CreateParams createParams(chrome_browser_state_.get());
+  web::WebState::CreateParams createParams(GetBrowserState());
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(createParams);
   WebSessionStateTabHelper::CreateForWebState(web_state.get());

@@ -63,7 +63,7 @@ TEST_F(BlockedPopupTabHelperTest, ShouldBlockPopup) {
   // Allow popups for |source_url1|.
   scoped_refptr<HostContentSettingsMap> settings_map(
       ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state_.get()));
+          GetBrowserState()));
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(source_url1),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,

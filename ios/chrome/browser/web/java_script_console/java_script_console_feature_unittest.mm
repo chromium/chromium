@@ -98,7 +98,11 @@ const char kIFramePageHtml[] =
 class JavaScriptConsoleFeatureTest : public ChromeWebTest {
  protected:
   JavaScriptConsoleFeatureTest()
-      : ChromeWebTest(std::make_unique<web::FakeWebClient>()) {
+      : ChromeWebTest(std::make_unique<web::FakeWebClient>()) {}
+
+  void SetUp() override {
+    ChromeWebTest::SetUp();
+
     JavaScriptConsoleFeature* feature =
         JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
             GetBrowserState());

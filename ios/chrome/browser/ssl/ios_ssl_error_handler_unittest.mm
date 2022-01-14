@@ -50,7 +50,7 @@ class IOSSSLErrorHandlerWithoutTabHelpersTest : public ChromeWebTest {
   void SetUp() override {
     ChromeWebTest::SetUp();
 
-    chrome_browser_state_->SetSharedURLLoaderFactory(
+    GetBrowserState()->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
     test_loader_factory_.AddResponse("http://www.gstatic.com/generate_204", "",

@@ -105,7 +105,7 @@ class WellKnownChangePasswordTabHelperTest : public ChromeWebTest {
     web_state()->SetDelegate(&delegate_);
     password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
         web_state());
-    chrome_browser_state_->SetSharedURLLoaderFactory(
+    GetBrowserState()->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
