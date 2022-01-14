@@ -17,6 +17,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
 import org.chromium.services.network.NetworkServiceFeatures;
+import org.chromium.webrtc_overrides.WebRtcOverridesFeatures;
 
 /**
  * List of experimental features/flags supported for user devices. Add features/flags to this list
@@ -233,5 +234,7 @@ public final class ProductionSupportedFlagList {
                     "Enables prefetching Android fonts on renderer startup."),
             Flag.baseFeature(AwFeatures.WEBVIEW_LEGACY_TLS_SUPPORT,
                     "Whether legacy TLS versions (TLS 1.0/1.1) conections are allowed."),
+            Flag.baseFeature(WebRtcOverridesFeatures.WEB_RTC_METRONOME_TASK_QUEUE,
+                    "Enables more efficient scheduling of work in WebRTC."),
     };
 }

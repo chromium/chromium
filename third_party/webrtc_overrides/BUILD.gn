@@ -5,6 +5,10 @@
 import("//build/config/chromecast_build.gni")
 import("//third_party/webrtc/webrtc.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 webrtc_configs = [ "//third_party/webrtc:common_config" ]
 
 webrtc_public_configs = [ "//third_party/webrtc:common_inherited_config" ]
@@ -269,4 +273,17 @@ source_set("system_time") {
   # visibility = [ ":*" ]
   sources = [ "rtc_base/system_time.cc" ]
   deps = [ "//base" ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":webrtc_overrides_java" instead.
+    visibility = [ ":*" ]
+    sources =
+        [ "//third_party/webrtc_overrides/metronome_task_queue_factory.cc" ]
+    template = "//third_party/webrtc_overrides/java_templates/WebRtcOverridesFeatures.java.tmpl"
+  }
+  android_library("webrtc_overrides_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }
