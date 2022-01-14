@@ -67,7 +67,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/android/navigation_handle_proxy.h"
 #endif
@@ -567,7 +567,7 @@ class CONTENT_EXPORT NavigationRequest
     return navigation_type_;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a reference to |navigation_handle_| Java counterpart. It is used
   // by Java WebContentsObservers.
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle() {
@@ -1533,7 +1533,7 @@ class CONTENT_EXPORT NavigationRequest
 
   std::unique_ptr<NavigationURLLoader> loader_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For each C++ NavigationHandle, there is a Java counterpart. It is the JNI
   // bridge in between the two.
   std::unique_ptr<NavigationHandleProxy> navigation_handle_proxy_;

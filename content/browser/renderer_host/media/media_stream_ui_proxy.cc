@@ -57,7 +57,7 @@ class MediaStreamUIProxy::Core {
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetFocus(const DesktopMediaID& media_id,
                 bool focus,
                 bool is_from_microtask,
@@ -174,7 +174,7 @@ void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
                                         bool focus,
                                         bool is_from_microtask,
@@ -340,7 +340,7 @@ void MediaStreamUIProxy::OnDeviceStopped(const std::string& label,
                                 label, media_id));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
                                   bool focus,
                                   bool is_from_microtask,

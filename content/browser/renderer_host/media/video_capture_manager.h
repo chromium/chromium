@@ -31,7 +31,7 @@
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -182,7 +182,7 @@ class CONTENT_EXPORT VideoCaptureManager
   void TakePhoto(const base::UnguessableToken& session_id,
                  VideoCaptureDevice::TakePhotoCallback callback);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Some devices had troubles when stopped and restarted quickly, so the device
   // is only stopped when Chrome is sent to background and not when, e.g., a tab
   // is hidden, see http://crbug.com/582295.
@@ -279,7 +279,7 @@ class CONTENT_EXPORT VideoCaptureManager
   void ReleaseDevices();
   void ResumeDevices();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
   bool application_state_has_running_activities_;

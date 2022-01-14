@@ -211,7 +211,7 @@ class InputEventBrowserTest : public ContentBrowserTest {
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android does not support synthetic mouse events.
 // TODO(lanwei): support dispatching WebMouseEvent in
 // SyntheticGestureTargetAndroid.

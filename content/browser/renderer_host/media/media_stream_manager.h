@@ -384,7 +384,7 @@ class CONTENT_EXPORT MediaStreamManager
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Determines whether the captured surface (tab/window) should be focused.
   // This can be called at most once, and only within the first 1s of the
   // capture session being initiated. If a call with |focus=false| is not
@@ -644,7 +644,7 @@ class CONTENT_EXPORT MediaStreamManager
                              blink::mojom::MediaStreamType type,
                              media::mojom::CaptureHandlePtr capture_handle);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Defines a window of opportunity for the Web-application to decide
   // whether a display-surface which it's capturing should be focused.
   // After |kConditionalFocusWindow| past the beginning of the capture,

@@ -176,7 +176,7 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
 
 // We don't plan on supporting middle click autoscroll on Android.
 // See https://crbug.com/686223
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest, AutoscrollFling) {
   LoadURL(kAutoscrollDataURL);
 
@@ -346,6 +346,6 @@ IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest,
   GetWidgetHost()->ForwardMouseEvent(move_down);
   WaitForScroll(observer);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

@@ -187,8 +187,8 @@ int SyntheticMouseDriver::ComputeClickCount(
     return 1;
 
   ++click_count_;
-#if !defined(OS_MAC) && !defined(OS_WIN)
-  // On Mac and Windows, we keep incresing the click count, but on the other
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  // On Mac and Windows, we keep increasing the click count, but on the other
   // platforms, we reset the count to 1 when it is greater than 3.
   if (click_count_ > 3)
     click_count_ = 1;

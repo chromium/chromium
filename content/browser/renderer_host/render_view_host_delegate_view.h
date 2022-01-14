@@ -27,7 +27,7 @@ class Rect;
 class Vector2d;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace ui {
 class OverscrollRefreshHandler;
 }
@@ -124,7 +124,7 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
       bool allow_multiple_selection) {}
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual ui::OverscrollRefreshHandler* GetOverscrollRefreshHandler() const;
 #endif
 

@@ -75,11 +75,11 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #endif
 
@@ -426,7 +426,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request);
   void CancelPresentationTimeRequest();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Set the importance of widget. The importance is passed onto
   // RenderProcessHost which aggregates importance of all of its widgets.
   void SetImportance(ChildProcessImportance importance);
@@ -1096,7 +1096,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Stop intercepting system keyboard events.
   void UnlockKeyboard();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   device::mojom::WakeLock* GetWakeLock();
 #endif
 
@@ -1187,7 +1187,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // The other side is held be the renderer.
   mojo::Receiver<blink::mojom::PointerLockContext> mouse_lock_context_{this};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Tracks the current importance of widget.
   ChildProcessImportance importance_ = ChildProcessImportance::NORMAL;
 #endif
@@ -1252,7 +1252,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::ObserverList<RenderWidgetHost::InputEventObserver>::Unchecked
       input_event_observers_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Ime input event callbacks. This is separated from input_event_observers_,
   // because not all text events are triggered by input events on Android.
   base::ObserverList<RenderWidgetHost::InputEventObserver>::Unchecked
@@ -1343,7 +1343,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // node.
   bool monitoring_composition_info_ = false;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 #endif
 

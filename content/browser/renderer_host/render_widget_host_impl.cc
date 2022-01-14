@@ -142,12 +142,12 @@
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/snapshot/snapshot.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/input/fling_scheduler_android.h"
 #include "ui/android/view_android.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/input/fling_scheduler_mac.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -328,7 +328,7 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<blink::mojom::SynchronousCompositorControlHost>
           control_host,
@@ -435,7 +435,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       new_content_rendering_delay_(kNewContentRenderingDelay),
       frame_token_message_queue_(std::move(frame_token_message_queue)),
       render_frame_metadata_provider_(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           ui::WindowResizeHelperMac::Get()->task_runner(),
 #else
           content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}),
@@ -453,9 +453,9 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   DCHECK(frame_token_message_queue_);
   frame_token_message_queue_->Init(this);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   fling_scheduler_ = std::make_unique<FlingSchedulerMac>(this);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   fling_scheduler_ = std::make_unique<FlingSchedulerAndroid>(this);
 #else
   fling_scheduler_ = std::make_unique<FlingScheduler>(this);
@@ -934,7 +934,7 @@ void RenderWidgetHostImpl::CancelPresentationTimeRequest() {
   blink_widget_->CancelPresentationTimeRequest();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderWidgetHostImpl::SetImportance(ChildProcessImportance importance) {
   if (importance_ == importance)
     return;
@@ -2104,7 +2104,7 @@ RenderProcessHost::Priority RenderWidgetHostImpl::GetPriority() {
     is_hidden_,
     frame_depth_,
     intersects_viewport_,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     importance_,
 #endif
   };
@@ -2112,7 +2112,7 @@ RenderProcessHost::Priority RenderWidgetHostImpl::GetPriority() {
       !owner_delegate_->ShouldContributePriorityToProcess()) {
     priority.is_hidden = true;
     priority.frame_depth = RenderProcessHostImpl::kMaxFrameDepthForPriority;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     priority.importance = ChildProcessImportance::NORMAL;
 #endif
   }
@@ -2166,7 +2166,7 @@ void RenderWidgetHostImpl::GetSnapshotFromBrowser(
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // MacOS version of underlying GrabViewSnapshot() blocks while
   // display/GPU are in a power-saving mode, so make sure display
   // does not go to sleep for the duration of reading a snapshot.
@@ -2286,7 +2286,7 @@ void RenderWidgetHostImpl::ImeSetComposition(
   GetWidgetInputHandler()->ImeSetComposition(
       text, ime_text_spans, replacement_range, selection_start, selection_end,
       base::OnceClosure());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeSetComposingTextEvent(text);
   }
@@ -2302,7 +2302,7 @@ void RenderWidgetHostImpl::ImeCommitText(
   GetWidgetInputHandler()->ImeCommitText(text, ime_text_spans,
                                          replacement_range, relative_cursor_pos,
                                          base::OnceClosure());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeTextCommittedEvent(text);
   }
@@ -2311,7 +2311,7 @@ void RenderWidgetHostImpl::ImeCommitText(
 
 void RenderWidgetHostImpl::ImeFinishComposingText(bool keep_selection) {
   GetWidgetInputHandler()->ImeFinishComposingText(keep_selection);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeFinishComposingTextEvent();
   }
@@ -2823,7 +2823,7 @@ void RenderWidgetHostImpl::StartDragging(
   float scale = GetScaleFactorForView(GetView());
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
   gfx::Vector2d offset = bitmap_offset_in_dip;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, scale the offset by device scale factor, otherwise the drag
   // image location doesn't line up with the drop location (drag destination).
   gfx::Vector2dF scaled_offset = gfx::Vector2dF(offset);
@@ -3324,7 +3324,7 @@ void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
 
   if (pending_browser_snapshots_.empty())
     return;
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // On Mac, when using CoreAnimation, or Win32 when using GDI, there is a
   // delay between when content is drawn to the screen, and when the
   // snapshot will actually pick up that content. Insert a manual delay of
@@ -3349,7 +3349,7 @@ void RenderWidgetHostImpl::WindowSnapshotReachedScreen(int snapshot_id) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   if (!pending_browser_snapshots_.empty()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android, call sites should pass in the bounds with correct offset
     // to capture the intended content area.
     gfx::Rect snapshot_bounds(GetView()->GetViewBounds());
@@ -3415,7 +3415,7 @@ void RenderWidgetHostImpl::OnSnapshotReceived(int snapshot_id,
       ++it;
     }
   }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (pending_browser_snapshots_.empty())
     GetWakeLock()->CancelWakeLock();
 #endif
@@ -3509,7 +3509,7 @@ void RenderWidgetHostImpl::DidProcessFrame(uint32_t frame_token,
   frame_token_message_queue_->DidProcessFrame(frame_token, activation_time);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 device::mojom::WakeLock* RenderWidgetHostImpl::GetWakeLock() {
   // Here is a lazy binding, and will not reconnect after connection error.
   if (!wake_lock_) {

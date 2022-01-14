@@ -73,7 +73,7 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/compositor.h"
 #endif
 
@@ -1964,7 +1964,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
       << "This SiteInstance should be destroyable now.";
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(lukasza): https://crbug.com/1067432: Calling Compositor::Initialize()
 // DCHECKs flakily and without such call the test below consistently fails on
 // Android (DCHECKing about parent_view->GetFrameSinkId().is_valid() in
@@ -1979,7 +1979,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
 // mess with the first tab's content. Motivated by http://crbug.com/473714.
 TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
        MAYBE_TwoTabsCrashOneReloadsOneLeaves) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(lukasza): https://crbug.com/1067432: This call might DCHECK flakily
   // about !CompositorImpl::IsInitialized()..
   Compositor::Initialize();

@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanXMainThreadJanky) {
                                     gfx::Vector2d(45, 0), kShortJankTime);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PanXAtYAreaWithTimeout PanXAtYAreaWithTimeout
 #else
 #define MAYBE_PanXAtYAreaWithTimeout DISABLED_PanXAtYAreaWithTimeout
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanXAtYAreaWithTimeout) {
                                     kLongJankTime);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TwoFingerPanXAtYAreaWithTimeout TwoFingerPanXAtYAreaWithTimeout
 #else
 #define MAYBE_TwoFingerPanXAtYAreaWithTimeout \
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
 }
 
 // TODO(crbug.com/899005): Make this test work on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TwoFingerPanYDisallowed DISABLED_TwoFingerPanYDisallowed
 #else
 #define MAYBE_TwoFingerPanYDisallowed TwoFingerPanYDisallowed

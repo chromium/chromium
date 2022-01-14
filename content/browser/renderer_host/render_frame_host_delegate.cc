@@ -71,7 +71,7 @@ RenderFrameHostDelegate::GetGeolocationContext() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderFrameHostDelegate::GetNFC(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<device::mojom::NFC> receiver) {}
@@ -122,7 +122,7 @@ bool RenderFrameHostDelegate::ShouldAllowRunningInsecureContent(
   return false;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 RenderFrameHostDelegate::GetJavaRenderFrameHostDelegate() {
   return nullptr;

@@ -14,7 +14,7 @@
 #include "content/test/test_render_widget_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
@@ -138,7 +138,7 @@ class FlingSchedulerTest : public testing::Test,
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
   std::unique_ptr<TestRenderWidgetHostView> view_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::win::test::ScopedScreenWin scoped_screen_win_;
 #endif
 };

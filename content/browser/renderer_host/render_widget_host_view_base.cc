@@ -151,7 +151,7 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
     base::i18n::TextDirection focus_dir,
     const gfx::Rect& bounding_box,
     bool is_anchor_first) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (GetTextInputManager())
     GetTextInputManager()->SelectionBoundsChanged(
         this, anchor_rect, anchor_dir, focus_rect, focus_dir, bounding_box,
@@ -222,7 +222,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
   if (!main_host || !main_frame_host)
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED()
       << "RenderWidgetHostViewAndroid::CopyFromSurface calls "
          "DelegatedFrameHostAndroid::CopyFromCompositingSurface directly, "

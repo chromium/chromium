@@ -242,7 +242,7 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/content_url_loader_factory.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/renderer_host/render_frame_host_android.h"
@@ -253,7 +253,7 @@
 #include "content/browser/serial/serial_service.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
 
@@ -342,7 +342,7 @@ static_assert(kSubframeProcessShutdownLongDelayInMSec +
               "keepalive timeout. This has security implications, see "
               "https://crbug.com/1177674.");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 #endif  // OS_ANDROID
 
@@ -2769,7 +2769,7 @@ void RenderFrameHostImpl::RenderProcessExited(
   must_be_replaced_ = true;
   has_committed_any_navigation_ = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Execute any pending Samsung smart clip callbacks.
   for (base::IDMap<std::unique_ptr<ExtractSmartClipDataCallback>>::iterator
            iter(&smart_clip_callbacks_);
@@ -2778,7 +2778,7 @@ void RenderFrameHostImpl::RenderProcessExited(
         .Run(std::u16string(), std::u16string(), gfx::Rect());
   }
   smart_clip_callbacks_.Clear();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Ensure that future remote interface requests are associated with the new
   // process's channel.
@@ -3100,10 +3100,10 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
   // live before calling to the `delegate_`.
   if (GetLocalRenderWidgetHost()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     GetLocalRenderWidgetHost()->SetForceEnableZoom(
         delegate_->GetOrCreateWebPreferences().force_enable_zoom);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     GetLocalRenderWidgetHost()->RendererWidgetCreated(
         /*for_frame_widget=*/true);
   }
@@ -4579,7 +4579,7 @@ void RenderFrameHostImpl::SetSubframeUnloadTimeoutForTesting(
   subframe_unload_timeout_ = timeout;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderFrameHostImpl::RequestSmartClipExtract(
     ExtractSmartClipDataCallback callback,
     gfx::Rect rect) {
@@ -4598,7 +4598,7 @@ void RenderFrameHostImpl::OnSmartClipDataExtracted(int32_t callback_id,
       .Run(text, html, clip_rect);
   smart_clip_callbacks_.Remove(callback_id);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void RenderFrameHostImpl::RunModalAlertDialog(
     const std::u16string& alert_message,
@@ -5440,13 +5440,13 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
   if (!uses_temporary_zoom_level)
     return;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   HostZoomMapImpl* host_zoom_map =
       static_cast<HostZoomMapImpl*>(HostZoomMap::Get(GetSiteInstance()));
   host_zoom_map->SetTemporaryZoomLevel(GetProcess()->GetID(),
                                        render_view_host()->GetRoutingID(),
                                        host_zoom_map->GetDefaultZoomLevel());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
@@ -8011,7 +8011,7 @@ void RenderFrameHostImpl::CommitNavigation(
               file_factory_priority));
     }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (effective_scheme == url::kContentScheme) {
       // Only content:// URLs can load content:// subresources
       non_network_factories.emplace(url::kContentScheme,
@@ -9538,14 +9538,14 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
       std::move(receiver));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderFrameHostImpl::BindNFCReceiver(
     mojo::PendingReceiver<device::mojom::NFC> receiver) {
   delegate_->GetNFC(this, std::move(receiver));
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void RenderFrameHostImpl::BindSerialService(
     mojo::PendingReceiver<blink::mojom::SerialService> receiver) {
   if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kSerial)) {
@@ -9804,13 +9804,13 @@ void RenderFrameHostImpl::CreatePermissionService(
 
 void RenderFrameHostImpl::GetWebAuthenticationService(
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebAuth)) {
     AuthenticatorImpl::Create(this, std::move(receiver));
   }
 #else
   GetJavaInterfaces()->GetInterface(std::move(receiver));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void RenderFrameHostImpl::GetPushMessaging(
@@ -9828,7 +9828,7 @@ void RenderFrameHostImpl::GetPushMessaging(
 void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
     mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
         receiver) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebAuth) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableWebAuthDeprecatedMojoTestingApi)) {
@@ -9837,7 +9837,7 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
     environment_singleton->AddVirtualAuthenticatorReceiver(frame_tree_node_,
                                                            std::move(receiver));
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool IsInitialSynchronousAboutBlankCommit(const GURL& url,
@@ -9967,7 +9967,7 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 RenderFrameHostImpl::GetJavaRenderFrameHost() {
   RenderFrameHostAndroid* render_frame_host_android =
@@ -10862,10 +10862,10 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
         return;
       break;
     case base::TERMINATION_STATUS_OOM:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case base::TERMINATION_STATUS_OOM_PROTECTED:
 #endif
       reason = "oom";
@@ -11861,7 +11861,7 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_STRING32(
       "VerifyDidCommit", "base_url_fdu_type",
       GetURLTypeForCrashKey(request->common_params().base_url_for_data_url));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "data_url_empty",
                         request->commit_params().data_url_as_string.empty());
 #endif

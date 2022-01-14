@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest, SetVisibility) {
 }
 
 // TODO(crbug.com/1241814): Test is flaky on Win and Lacros
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CrossProcessIframeHiddenAnFrozen \
   DISABLED_CrossProcessIframeHiddenAnFrozen
 #else

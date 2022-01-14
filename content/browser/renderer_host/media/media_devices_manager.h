@@ -313,7 +313,7 @@ class CONTENT_EXPORT MediaDevicesManager
                           const MediaDeviceSaltAndOrigin& salt_and_origin,
                           bool has_permission);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void StartMonitoringOnUIThread();
 #endif
 

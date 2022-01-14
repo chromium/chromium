@@ -38,7 +38,7 @@
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "ui/gfx/text_elider.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #endif
 
@@ -446,7 +446,7 @@ const GURL& NavigationEntryImpl::GetBaseURLForDataURL() {
   return base_url_for_data_url_;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NavigationEntryImpl::SetDataURLAsString(
     scoped_refptr<base::RefCountedString> data_url) {
   if (data_url) {
@@ -586,7 +586,7 @@ const std::u16string& NavigationEntryImpl::GetTitleForDisplay() {
     base::i18n::WrapStringWithLTRFormatting(&title);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (GetURL().SchemeIs(url::kContentScheme)) {
     std::u16string file_display_name;
     if (base::MaybeGetFileDisplayName(base::FilePath(GetURL().spec()),
@@ -804,7 +804,7 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   // ResetForCommit: post_data_
   copy->extra_headers_ = extra_headers_;
   copy->base_url_for_data_url_ = base_url_for_data_url_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   copy->data_url_as_string_ = data_url_as_string_;
 #endif
   // ResetForCommit: is_renderer_initiated_
@@ -911,7 +911,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
           std::string(),
 #endif
           false /* is_browser_initiated */,
@@ -933,7 +933,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, false /* anonymous */);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main
   // frame.

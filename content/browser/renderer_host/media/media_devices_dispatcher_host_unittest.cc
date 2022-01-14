@@ -343,7 +343,7 @@ class MediaDevicesDispatcherHostTest
                        .empty());
 
     EXPECT_FALSE(DoesContainRawIds(enumerated_devices_));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(DoesEveryDeviceMapToRawId(enumerated_devices_, origin_));
 #else
     EXPECT_EQ(DoesEveryDeviceMapToRawId(enumerated_devices_, origin_),

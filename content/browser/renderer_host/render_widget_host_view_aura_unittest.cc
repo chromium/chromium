@@ -127,7 +127,7 @@
 #include "ui/base/ime/input_method.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/display/win/test/scoped_screen_win.h"
@@ -1219,7 +1219,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DestroyPopupTapOutsidePopup) {
 }
 #endif
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // On Desktop Linux, select boxes need mouse capture in order to work. Test that
 // when a select box is opened via a mouse press that it retains mouse capture
 // after the mouse is released.
@@ -2990,7 +2990,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CursorVisibilityChange) {
   view_->Show();
   base::RunLoop().RunUntilIdle();
   auto events = GetAndResetDispatchedMessages();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1164453): Investigate occasional extra mousemoves in CrOS.
   EXPECT_GE(1u, events.size());
 #else
@@ -3737,7 +3737,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        ScrollEventsOverscrollWithFling) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a ScopedScreenWin.
   display::win::test::ScopedScreenWin scoped_screen_win;
 #endif
@@ -3818,7 +3818,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        ScrollEventsOverscrollWithZeroFling) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a ScopedScreenWin.
   display::win::test::ScopedScreenWin scoped_screen_win;
 #endif
@@ -3890,7 +3890,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 // Tests that a fling in the opposite direction of the overscroll cancels the
 // overscroll instead of completing it.
 // Flaky on Fuchsia:  http://crbug.com/810690.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ReverseFlingCancelsOverscroll \
   DISABLED_ReverseFlingCancelsOverscroll
 #else
@@ -3900,7 +3900,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        MAYBE_ReverseFlingCancelsOverscroll) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a ScopedScreenWin.
   display::win::test::ScopedScreenWin scoped_screen_win;
 #endif
@@ -4779,7 +4779,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        OverscrollStateResetsAfterScroll) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a ScopedScreenWin.
   display::win::test::ScopedScreenWin scoped_screen_win;
 #endif
@@ -5221,7 +5221,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CorrectNumberOfAcksAreDispatched) {
 TEST_F(RenderWidgetHostViewAuraOverscrollTest, ScrollDeltasResetOnEnd) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a ScopedScreenWin.
   display::win::test::ScopedScreenWin scoped_screen_win;
 #endif
@@ -5352,7 +5352,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ForwardMouseEvent) {
   view_ = nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class MockWindowEventTarget : public ui::WindowEventTarget {
  public:
   MockWindowEventTarget() = default;
@@ -5635,7 +5635,7 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
 // time passes without receiving a new compositor frame.
 // TODO(https://crbug.com/1225139): This test is flaky on "Linux ASan LSan Tests
 // (1)"
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NewContentRenderingTimeout DISABLED_NewContentRenderingTimeout
 #else
 #define MAYBE_NewContentRenderingTimeout NewContentRenderingTimeout
@@ -6701,7 +6701,7 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
   input_method->RemoveObserver(this);
 }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 class MockVirtualKeyboardController final
     : public ui::VirtualKeyboardController {
  public:
@@ -6798,7 +6798,7 @@ class RenderWidgetHostViewAuraKeyboardTest
 };
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(RenderWidgetHostViewAuraKeyboardTest,
        UpdateTextInputStateUpdatesVirtualKeyboardState) {
   ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
@@ -6823,7 +6823,7 @@ TEST_F(RenderWidgetHostViewAuraKeyboardTest,
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(RenderWidgetHostViewAuraKeyboardTest, KeyboardObserverDestroyed) {
   parent_view_->SetLastPointerType(ui::EventPointerType::kTouch);
   ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
@@ -6907,6 +6907,6 @@ TEST_F(RenderWidgetHostViewAuraKeyboardTest,
   EXPECT_EQ(keyboard_controller_observer_count(), 0u);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

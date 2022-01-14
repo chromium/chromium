@@ -140,7 +140,7 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
     TitleWatcher title_watcher(shell()->web_contents(),
                                base::UTF8ToUTF16(title));
     if (use_load_data_as_string_with_base_url) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
 #else
       NOTREACHED();
@@ -441,7 +441,7 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
 // used in the NavigationEntries.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
                        LoadDataWithBaseURLThenReload) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
   if (use_load_data_as_string_with_base_url())
     return;
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   // 1) Load data, but don't commit yet.
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
   if (use_load_data_as_string_with_base_url()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     shell()->LoadDataAsStringWithBaseURL(supplied_history_url, data,
                                          supplied_base_url);
 #else
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
 // same-document navigations after LoadDataWithBaseURL instead.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
                        LoadDataWithBaseURLThenRendererInitiatedSameDocument) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
   if (use_load_data_as_string_with_base_url())
     return;
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
 // same-document navigations after LoadDataWithBaseURL instead.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
                        LoadDataWithBaseURLThenBrowserInitiatedSameDocument) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
   if (use_load_data_as_string_with_base_url())
     return;
@@ -944,7 +944,7 @@ class LoadDataWithBaseURLBrowserTest
 // URL given is invalid.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
                        LoadDataWithInvalidBaseURL) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
   if (use_load_data_as_string_with_base_url())
     return;
@@ -1022,7 +1022,7 @@ class BlockAllCommitContentBrowserClient : public TestContentBrowserClient {
 // typically blocked by an embedder, because it bypasses the renderer check.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
                        LoadDataWithBlockedDataURL) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
   if (use_load_data_as_string_with_base_url())
     return;
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 // the checks since the base URL is invalid.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
                        LoadDataWithBlockedDataURLAndInvalidBaseURL) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
   if (use_load_data_as_string_with_base_url())
     return;
@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
       shell()->web_contents()->GetMainFrame()->GetProcess());
 
   if (use_load_data_as_string_with_base_url()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
 #else
     NOTREACHED();
@@ -1174,7 +1174,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     LoadDataWithBaseURLBrowserTest,
     LoadDataWithBaseURLThenJavaScriptURLThenSameDocumentNavigation) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
   if (use_load_data_as_string_with_base_url())
     return;
@@ -1413,7 +1413,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Load data and commit.
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
 #else
   shell()->LoadDataWithBaseURL(history_url, data, base_url);
@@ -1757,7 +1757,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Load data and commit.
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
 #else
   shell()->LoadDataWithBaseURL(history_url, data, base_url);
@@ -13178,7 +13178,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // extensions rely on them being silently blocked. See https://crbug.com/935175
 // and https://cbug.com/941653.
 // This test is flaky on Linux : http://crbug.com/1223051
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_JavascriptRedirectSilentlyCanceled \
   DISABLED_JavascriptRedirectSilentlyCanceled
 #else
@@ -16620,7 +16620,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test GoToOffset with enable history intervention.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        GoToOffsetWithSkippingEnableHistoryIntervention) {
@@ -16766,7 +16766,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // redirected_url2]
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        SetSkipOnBackForwardDoSkipForGoToOffsetWithSkipping) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -17667,7 +17667,7 @@ class DidCommitNavigationCanceller : public DidCommitNavigationInterceptor {
 }  //  namespace
 
 // Test is flaky on Mac: https://crbug.com/1151545.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CrossProcessIframeToInvalidURLCancelsRedirectSpoof \
   DISABLED_CrossProcessIframeToInvalidURLCancelsRedirectSpoof
 #else

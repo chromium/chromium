@@ -191,7 +191,7 @@ class CONTENT_EXPORT ClipboardHostImpl
                      const std::u16string& title) override;
   void WriteImage(const SkBitmap& unsafe_bitmap) override;
   void CommitWrite() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
 

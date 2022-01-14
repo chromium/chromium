@@ -87,7 +87,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   base::TimeTicks time_of_last_connect_;
   base::TimeTicks time_of_last_uninitialize_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   GetDeviceInfosCallback stashed_result_callback_for_retry_;
   int stashed_retry_count_;
 #endif

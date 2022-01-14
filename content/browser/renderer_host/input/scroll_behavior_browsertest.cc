@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
   // Smooth scrolling is disabled for wheel scroll on Mac.
   // https://crbug.com/574283.
-#if defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   ValueHoldsAt(scroll_top_script, 0);
 #else
   WaitUntilLessThan(scroll_top_script, scroll_top);

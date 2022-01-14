@@ -127,11 +127,11 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
     return mouse_wheel_phase_handler_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sets the ContextMenuParams when a context menu is triggered. Required for
   // subsequent event processing.
   void SetContextMenuParams(const ContextMenuParams& params);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   bool accept_return_character() { return accept_return_character_; }
   bool mouse_locked() { return mouse_locked_; }

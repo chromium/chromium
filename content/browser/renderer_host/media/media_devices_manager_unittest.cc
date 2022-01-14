@@ -1014,7 +1014,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateDevicesUnplugDefaultDevice) {
 TEST_F(MediaDevicesManagerTest, EnumerateDevicesUnplugCommunicationsDevice) {
   // This test has only significance on Windows devices, since communication
   // devices can only be found on windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string communications_device_id("fake_device_id_1");
   std::string new_communications_device_id("fake_device_id_2");
 
@@ -1056,7 +1056,7 @@ TEST_F(MediaDevicesManagerTest,
        EnumerateDevicesUnplugDefaultAndCommunicationsDevice) {
   // This test has only significance on Windows devices, since communication
   // devices can only be found on windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The two device IDs that will be used as 'default' and 'communications'
   // devices.
   std::string target_device_id("fake_device_id_1");

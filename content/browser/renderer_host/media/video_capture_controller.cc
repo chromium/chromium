@@ -30,7 +30,7 @@
 #include "media/capture/video/video_capture_device_client.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/compositor/image_transport_factory.h"
 #endif
 

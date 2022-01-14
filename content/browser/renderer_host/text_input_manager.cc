@@ -24,11 +24,11 @@ bool ShouldUpdateTextInputState(const ui::mojom::TextInputState& old_state,
          old_state.type != new_state.type || old_state.mode != new_state.mode ||
          old_state.flags != new_state.flags ||
          old_state.can_compose_inline != new_state.can_compose_inline;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return old_state.type != new_state.type ||
          old_state.flags != new_state.flags ||
          old_state.can_compose_inline != new_state.can_compose_inline;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // On Android, TextInputState update is sent only if there is some change in
   // the state. So the new state is always different.
   return true;
@@ -175,7 +175,7 @@ void TextInputManager::UpdateTextInputState(
     // calls necessary).
     // NOTE: Android requires state to be returned even when the current state
     // is/becomes NONE. Otherwise IME may become irresponsive.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     return;
 #endif
   }

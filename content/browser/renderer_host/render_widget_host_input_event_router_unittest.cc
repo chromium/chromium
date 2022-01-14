@@ -202,7 +202,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
 // ImageTransportFactory doesn't exist on Android. This is needed to create
 // a RenderWidgetHostViewChildFrame in the test.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
 #endif
@@ -296,7 +296,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     process_host_root_.reset();
     base::RunLoop().RunUntilIdle();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::Terminate();
 #endif
   }

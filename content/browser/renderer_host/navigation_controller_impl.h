@@ -189,7 +189,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // navigations as initiated by the renderer.
   void GoToOffsetFromRenderer(int offset);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The difference between (Can)GoToOffsetWithSkipping and
   // (Can)GoToOffset/(Can)GoToOffsetInSandboxedFrame is that this respects the
   // history manipulation intervention and will exclude skippable entries.
@@ -355,7 +355,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
 // Returns true if the string corresponds to a valid data URL, false
 // otherwise.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static bool ValidateDataURLAsString(
       const scoped_refptr<const base::RefCountedString>& data_url_as_string);
 #endif

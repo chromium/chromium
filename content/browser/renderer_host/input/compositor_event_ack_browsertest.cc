@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest, MouseWheel) {
 }
 
 // Disabled on MacOS because it doesn't support touch input.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TouchStart DISABLED_TouchStart
 #else
 #define MAYBE_TouchStart TouchStart
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest, MAYBE_TouchStart) {
 }
 
 // Disabled on MacOS because it doesn't support touch input.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TouchStartDuringFling DISABLED_TouchStartDuringFling
 #else
 #define MAYBE_TouchStartDuringFling TouchStartDuringFling
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
 }
 
 // Disabled on MacOS because it doesn't support touch input.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_PassiveTouchStartBlockingTouchEnd \
   DISABLED_PassiveTouchStartBlockingTouchEnd
 #else

@@ -37,11 +37,11 @@
 
 #if defined(USE_ALSA)
 #include "media/audio/alsa/audio_manager_alsa.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "media/audio/android/audio_manager_android.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "media/audio/mac/audio_manager_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "media/audio/win/audio_manager_win.h"
 #else
 #include "media/audio/fake_audio_manager.h"
@@ -57,11 +57,11 @@ namespace content {
 
 #if defined(USE_ALSA)
 typedef media::AudioManagerAlsa AudioManagerPlatform;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef media::AudioManagerMac AudioManagerPlatform;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 typedef media::AudioManagerWin AudioManagerPlatform;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 typedef media::AudioManagerAndroid AudioManagerPlatform;
 #else
 typedef media::FakeAudioManager AudioManagerPlatform;

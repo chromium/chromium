@@ -18,7 +18,7 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/desktop_capture_device.h"
 #endif
 
@@ -173,7 +173,7 @@ void InProcessLaunchedVideoCaptureDevice::
                                             gfx::NativeViewId window_id,
                                             base::OnceClosure done_cb) {
   DCHECK(device_task_runner_->BelongsToCurrentThread());
-#if defined(ENABLE_SCREEN_CAPTURE) && !defined(OS_ANDROID)
+#if defined(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID)
   DesktopCaptureDevice* desktop_device =
       static_cast<DesktopCaptureDevice*>(device);
   desktop_device->SetNotificationWindowId(window_id);

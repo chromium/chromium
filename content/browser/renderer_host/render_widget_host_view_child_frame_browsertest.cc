@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 // Luckily this test is verifying interactions and behaviour of
 // RenderWidgetHostImpl - RenderWidget - RenderFrameProxy -
 // CrossProcessFrameConnector, and this isn't Android-specific code.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
   // Resize the top level widget to cause its |visible_viewport_size| to be
   // changed. The change should propagate down to the child RenderWidget.
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
 // Validate that OOPIFs receive presentation feedbacks.
 // TODO(crbug.com/1270981): Flaky.
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_PresentationFeedback DISABLED_PresentationFeedback
 #else
 #define MAYBE_PresentationFeedback PresentationFeedback
@@ -536,8 +536,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 // Validate that the root widget's window segments are correctly propagated
 // via the SynchronizeVisualProperties cascade.
 // Flaky on Mac, Linux and Android (http://crbug/1089994).
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_VisualPropertiesPropagation_RootWindowSegments \
   DISABLED_VisualPropertiesPropagation_RootWindowSegments
 #else

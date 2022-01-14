@@ -223,7 +223,7 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
 };
 
 // Synthetic mouse events not allowed on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This test makes sure that TouchEmulator doesn't emit a GestureScrollEnd
 // without a valid unique_touch_event_id when it sees a GestureFlingStart
 // terminating the underlying mouse scroll sequence. If the GestureScrollEnd is
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
     EXPECT_NE(dispatched_events.end(), it_gse);
   } while (!touch_emulator->suppress_next_fling_cancel_for_testing());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Todo(crbug.com/994353): The test is flaky(crash/timeout) on MSAN, TSAN, and
 // DEBUG builds.
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
 // where popup menus don't create a popup RenderWidget, but rather they trigger
 // a FrameHostMsg_ShowPopup to ask the browser to build and display the actual
 // popup using native controls.
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
 namespace {
 

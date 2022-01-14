@@ -24,14 +24,14 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegate
   ZygoteHandle GetZygote() override;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool EnableCpuSecurityMitigations() override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   sandbox::mojom::Sandbox GetSandboxType() override;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // NOTE: changes to this class need to be reviewed by the security team.
 class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
     : public RendererSandboxedProcessLauncherDelegate {
@@ -47,7 +47,7 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   const bool renderer_code_integrity_enabled_;
   bool dynamic_code_can_be_disabled_ = false;
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content
 

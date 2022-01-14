@@ -73,7 +73,7 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Determines whether the captured display surface represented by |media_id|
   // should be focused or not.
   // Only the first call to this method on a given object has an effect; the

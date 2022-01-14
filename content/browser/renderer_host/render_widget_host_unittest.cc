@@ -72,13 +72,13 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "ui/android/screen_android.h"
 #endif
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #endif
 
@@ -297,7 +297,7 @@ class FakeRenderFrameMetadataObserver
 
   ~FakeRenderFrameMetadataObserver() override {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ReportAllRootScrolls(bool enabled) override {}
 #endif
   void ReportAllFrameSubmissionsForTesting(bool enabled) override {}
@@ -319,7 +319,7 @@ FakeRenderFrameMetadataObserver::FakeRenderFrameMetadataObserver(
 class MockInputEventObserver : public RenderWidgetHost::InputEventObserver {
  public:
   MOCK_METHOD1(OnInputEvent, void(const blink::WebInputEvent&));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(OnImeTextCommittedEvent, void(const std::u16string& text_str));
   MOCK_METHOD1(OnImeSetComposingTextEvent,
                void(const std::u16string& text_str));
@@ -545,11 +545,11 @@ class RenderWidgetHostTest : public testing::Test {
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_);
     sink_ = &process_->sink();
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // calls display::Screen::SetScreenInstance().
     ui::SetScreenAndroid(false /* use_display_wide_color_gamut */);
 #endif
@@ -617,10 +617,10 @@ class RenderWidgetHostTest : public testing::Test {
     display::Screen::SetScreenInstance(nullptr);
     screen_.reset();
 #endif
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
     ImageTransportFactory::Terminate();
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     display::Screen::SetScreenInstance(nullptr);
 #endif
 
@@ -1319,7 +1319,7 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromDeletedRenderWidget) {
 }
 
 // Unable to include render_widget_host_view_mac.h and compile.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Tests setting background transparency.
 TEST_F(RenderWidgetHostTest, Background) {
   RenderWidgetHostViewBase* view;
@@ -1327,7 +1327,7 @@ TEST_F(RenderWidgetHostTest, Background) {
   view = new RenderWidgetHostViewAura(host_.get());
   // TODO(derat): Call this on all platforms: http://crbug.com/102450.
   view->InitAsChild(nullptr);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   view = new RenderWidgetHostViewAndroid(host_.get(), nullptr);
 #endif
   host_->SetView(view);
@@ -2296,7 +2296,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(RenderWidgetHostTest, AddAndRemoveImeInputEventObserver) {
   MockInputEventObserver observer;
 

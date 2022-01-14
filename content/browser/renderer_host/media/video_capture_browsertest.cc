@@ -25,7 +25,7 @@
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
 }
 
 // Flaky on MSAN. https://crbug.com/840294
-#if defined(MEMORY_SANITIZER) || defined(OS_MAC)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReceiveFramesFromFakeCaptureDevice \
   DISABLED_ReceiveFramesFromFakeCaptureDevice
 #else
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
 #endif
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                        MAYBE_ReceiveFramesFromFakeCaptureDevice) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::mac::IsOS10_12()) {
     // Flaky on MacOS 10.12. https://crbug.com/938074
     return;

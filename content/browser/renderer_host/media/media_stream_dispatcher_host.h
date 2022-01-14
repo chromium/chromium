@@ -92,7 +92,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       blink::mojom::MediaStreamType type,
       bool is_secure) override;
   void OnStreamStarted(const std::string& label) override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const std::string& label, bool focus) override;
   void Crop(const base::UnguessableToken& device_id,
             const base::Token& crop_id,

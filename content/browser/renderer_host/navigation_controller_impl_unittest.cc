@@ -597,7 +597,7 @@ void CheckNavigationEntryMatchLoadParams(
   if (!load_params.virtual_url_for_data_url.is_empty()) {
     EXPECT_EQ(load_params.virtual_url_for_data_url, entry->GetVirtualURL());
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(load_params.data_url_as_string, entry->GetDataURLAsString());
 #endif
   if (NavigationController::UA_OVERRIDE_INHERIT !=
@@ -687,7 +687,7 @@ TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data) {
   CheckNavigationEntryMatchLoadParams(load_url_params, entry);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data_Android) {
   NavigationControllerImpl& controller = controller_impl();
   GURL url("data:,");
@@ -1444,7 +1444,7 @@ TEST_F(NavigationControllerTest, RedirectsAreNotResetByCommit) {
 
 // Tests that webkit preferences are updated when user agent override changes.
 // Fails on linux-bfcache-rel: crbug.com/1244109
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_GoBackWithUserAgentOverrideChange DISABLED_GoBackWithUserAgentOverrideChange
 #else
 #define MAYBE_GoBackWithUserAgentOverrideChange GoBackWithUserAgentOverrideChange

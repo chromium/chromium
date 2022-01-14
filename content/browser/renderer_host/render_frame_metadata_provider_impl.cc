@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 
 namespace content {
@@ -38,7 +39,7 @@ void RenderFrameMetadataProviderImpl::Bind(
   // Reset on disconnect so that pending state will be correctly stored and
   // later forwarded in the case of a renderer crash.
   render_frame_metadata_observer_remote_.reset_on_disconnect();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (pending_report_all_root_scrolls_.has_value()) {
     ReportAllRootScrolls(*pending_report_all_root_scrolls_);
     pending_report_all_root_scrolls_.reset();
@@ -51,7 +52,7 @@ void RenderFrameMetadataProviderImpl::Bind(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderFrameMetadataProviderImpl::ReportAllRootScrolls(bool enabled) {
   if (!render_frame_metadata_observer_remote_) {
     pending_report_all_root_scrolls_ = enabled;
@@ -131,7 +132,7 @@ void RenderFrameMetadataProviderImpl::OnFrameSubmissionForTesting(
                                   weak_factory_.GetWeakPtr()));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderFrameMetadataProviderImpl::OnRootScrollOffsetChanged(
     const gfx::PointF& root_scroll_offset) {
   for (Observer& observer : observers_)

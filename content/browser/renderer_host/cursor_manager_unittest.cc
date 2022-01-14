@@ -20,7 +20,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 // CursorManager is only instantiated on Aura and Mac.
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -189,4 +189,4 @@ TEST_F(CursorManagerTest, CursorOverMultipleChildViews) {
 
 }  // namespace content
 
-#endif  // defined(USE_AURA) || defined(OS_MAC)
+#endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)

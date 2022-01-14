@@ -4,9 +4,11 @@
 
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 
+#include "build/build_config.h"
+
 namespace content {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 ui::OverscrollRefreshHandler*
 content::RenderViewHostDelegateView::GetOverscrollRefreshHandler() const {
   return nullptr;

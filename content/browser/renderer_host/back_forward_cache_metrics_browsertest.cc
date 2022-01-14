@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
 #define MAYBE_SharedWorker SharedWorker

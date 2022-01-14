@@ -30,7 +30,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/crop_id_web_contents_helper.h"
 #endif
 
@@ -69,7 +69,7 @@ StartObservingWebContents(int render_process_id,
   return web_contents_observer;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Checks whether a track living in the WebContents indicated by
 // (render_process_id, render_frame_id) may be cropped to the crop-target
 // indicated by |crop_id|.
@@ -454,7 +454,7 @@ void MediaStreamDispatcherHost::OnStreamStarted(const std::string& label) {
   media_stream_manager_->OnStreamStarted(label);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
                                                      bool focus) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

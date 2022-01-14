@@ -36,15 +36,15 @@
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/screen_capture_device_android.h"
 #else
 #if defined(USE_AURA)
 #include "content/browser/media/capture/aura_window_video_capture_device.h"
 #endif
 #include "content/browser/media/capture/desktop_capture_device.h"
-#endif  // defined(OS_ANDROID)
-#if defined(OS_MAC)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/media/capture/desktop_capture_device_mac.h"
 #include "content/browser/media/capture/views_widget_video_capture_device_mac.h"
 #endif
@@ -80,7 +80,7 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
 // not on hardware performance.
 const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -207,7 +207,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
         break;
       }
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
       if (desktop_id.window_id != DesktopMediaID::kNullId) {
         // For the other capturers, when a bug reports the type of capture it's
         // easy enough to determine which capturer was used, but it's a little
@@ -222,7 +222,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
             std::move(after_start_capture_callback));
         break;
       }
-#endif  // defined(USE_AURA) || defined(OS_MAC)
+#endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
 
       // All cases other than tab capture or Aura desktop/window capture.
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -367,7 +367,7 @@ void InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread(
   std::move(result_callback).Run(std::move(video_capture_device));
 }
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 void InProcessVideoCaptureDeviceLauncher::
     DoStartVizFrameSinkWindowCaptureOnDeviceThread(
         const DesktopMediaID& device_id,
@@ -381,7 +381,7 @@ void InProcessVideoCaptureDeviceLauncher::
 #if defined(USE_AURA)
   video_capture_device =
       std::make_unique<AuraWindowVideoCaptureDevice>(device_id);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   video_capture_device =
       std::make_unique<ViewsWidgetVideoCaptureDeviceMac>(device_id);
 #endif
@@ -406,7 +406,7 @@ void InProcessVideoCaptureDeviceLauncher::
   }
   std::move(result_callback).Run(std::move(video_capture_device));
 }
-#endif  // defined(USE_AURA) || defined(OS_MAC)
+#endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
 
 void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
     const DesktopMediaID& desktop_id,
@@ -418,10 +418,10 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   DCHECK(!desktop_id.is_null());
 
   std::unique_ptr<media::VideoCaptureDevice> video_capture_device;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>();
 #else
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(kDesktopCaptureMacV2))
     video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id);
 #endif

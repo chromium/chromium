@@ -44,7 +44,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "ui/android/delegated_frame_host_android.h"
 #endif
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // blank content is shown.
   EXPECT_TRUE(rwhvb);
   // Mac does not initialize RenderWidgetHostViewBase as visible.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(rwhvb->IsShowing());
 #endif
   EXPECT_TRUE(rwhvb->GetLocalSurfaceId().is_valid());
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 
 // TODO(jonross): Update Mac to also invalidate its viz::LocalSurfaceIds when
 // performing navigations while hidden. https://crbug.com/935364
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // When a navigation occurs while the RenderWidgetHostViewBase is hidden, it
 // should invalidate it's viz::LocalSurfaceId. When subsequently being shown,
 // a new surface should be generated with a new viz::LocalSurfaceId
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 
   // Hide the view before performing the next navigation.
   shell()->web_contents()->WasHidden();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we want to ensure that we maintain the currently embedded
   // surface. So that there is something to display when returning to the tab.
   RenderWidgetHostViewAndroid* rwhva =
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
       shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
   EXPECT_FALSE(rwhvb->GetLocalSurfaceId().is_valid());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Navigating while hidden should not generate a new surface. As the old one
   // is maintained as the fallback. The DelegatedFrameHost should have not have
   // a valid active viz::LocalSurfaceId until the first surface after navigation
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   viz::LocalSurfaceId new_rwhvb_local_surface_id = rwhvb->GetLocalSurfaceId();
   EXPECT_TRUE(new_rwhvb_local_surface_id.is_valid());
   EXPECT_NE(rwhvb_local_surface_id, new_rwhvb_local_surface_id);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(dfh->HasPrimarySurface());
   EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
   viz::LocalSurfaceId new_local_surface_id =
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 
   // Hide the view before performing the next navigation.
   shell()->web_contents()->WasHidden();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we want to ensure that we maintain the currently embedded
   // surface. So that there is something to display when returning to the tab.
   RenderWidgetHostViewAndroid* rwhva =
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   rwhvb->ResetFallbackToFirstNavigationSurface();
   EXPECT_FALSE(rwhvb->HasFallbackSurface());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Navigating while hidden should not generate a new surface.
   // The failed navigation above will lead to the primary surface being evicted.
   // The DelegatedFrameHost should have not have a valid active
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   viz::LocalSurfaceId new_rwhvb_local_surface_id = rwhvb->GetLocalSurfaceId();
   EXPECT_TRUE(new_rwhvb_local_surface_id.is_valid());
   EXPECT_NE(rwhvb_local_surface_id, new_rwhvb_local_surface_id);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(dfh->HasPrimarySurface());
   EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
   viz::LocalSurfaceId new_local_surface_id =
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 #endif
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Tests that if a pending commit attempts to swap from a RenderFrameHost which
 // has no Fallback Surface, that we clear pre-existing ones in a
@@ -586,7 +586,7 @@ class CompositingRenderWidgetHostViewBrowserTest
 };
 
 // Disable tests for Android as it has an incomplete implementation.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // The CopyFromSurface() API should work on all platforms when compositing is
 // enabled.
@@ -968,7 +968,7 @@ class CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI
 
 // NineImagePainter implementation crashes the process on Windows when this
 // content_browsertest forces a device scale factor.  http://crbug.com/399349
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CopyToBitmap_EntireRegion DISABLED_CopyToBitmap_EntireRegion
 #define MAYBE_CopyToBitmap_CenterRegion DISABLED_CopyToBitmap_CenterRegion
 #define MAYBE_CopyToBitmap_ScaledResult DISABLED_CopyToBitmap_ScaledResult
@@ -1030,6 +1030,6 @@ INSTANTIATE_TEST_SUITE_P(
     CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI,
     kTestCompositingModes);
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

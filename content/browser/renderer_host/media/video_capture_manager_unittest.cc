@@ -345,7 +345,7 @@ class VideoCaptureManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ApplicationStateChange(base::android::ApplicationState state) {
     vcm_->OnApplicationStateChange(state);
   }
@@ -851,7 +851,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Try to open, start, pause and resume a device.
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   InSequence s;
@@ -996,7 +996,7 @@ TEST_F(VideoCaptureManagerTest, DeviceCaptureDeviceNotClosedOnScreenlock) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID)
 // Try to open, start a desktop capture device, and confirm it's closed on
 // ScreenLocked event on desktop platforms.
 TEST_F(VideoCaptureManagerTest, DesktopCaptureDeviceClosedOnScreenlock) {
@@ -1030,7 +1030,7 @@ TEST_F(VideoCaptureManagerTest, DesktopCaptureDeviceClosedOnScreenlock) {
   base::RunLoop().RunUntilIdle();
   vcm_->UnregisterListener(listener_.get());
 }
-#endif  // ENABLE_SCREEN_CAPTURE && !defined(OS_ANDROID)
+#endif  // ENABLE_SCREEN_CAPTURE && !BUILDFLAG(IS_ANDROID)
 
 // TODO(mcasas): Add a test to check consolidation of the supported formats
 // provided by the device when http://crbug.com/323913 is closed.

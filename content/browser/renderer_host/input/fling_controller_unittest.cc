@@ -18,7 +18,7 @@
 #include "ui/events/blink/fling_booster.h"
 #include "ui/events/gestures/physics_based_fling_curve.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
@@ -215,7 +215,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool notified_client_after_fling_stop_ = false;
   bool first_wheel_event_sent_ = false;
   int sent_scroll_gesture_count_ = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::win::test::ScopedScreenWin scoped_screen_win_;
 #endif
 
@@ -787,7 +787,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)
@@ -834,7 +834,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)

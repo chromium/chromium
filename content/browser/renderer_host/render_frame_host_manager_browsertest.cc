@@ -2000,8 +2000,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(speculative_rfh);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2 \
   DISABLED_DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2
 #else
@@ -2444,7 +2444,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // See http://crbug.com/335503.
 // The test fails on Mac OSX with ASAN.
 // See http://crbug.com/699062.
-#if defined(OS_MAC) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(THREAD_SANITIZER)
 #define MAYBE_RendererDebugURLsDontSwap DISABLED_RendererDebugURLsDontSwap
 #else
 #define MAYBE_RendererDebugURLsDontSwap RendererDebugURLsDontSwap
@@ -2533,7 +2533,7 @@ class RFHMProcessPerTabTest : public RenderFrameHostManagerTest {
 // --process-per-tab mode.  See http://crbug.com/343017.
 // Disabled on Android: http://crbug.com/345873.
 // Crashes under ThreadSanitizer, http://crbug.com/356758.
-#if defined(OS_ANDROID) || defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) || defined(THREAD_SANITIZER)
 #define MAYBE_BackFromWebUI DISABLED_BackFromWebUI
 #else
 #define MAYBE_BackFromWebUI BackFromWebUI
@@ -2767,7 +2767,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DontSelectInvalidFiles) {
   EXPECT_EQ(url1, prev_entry->GetURL());
   const std::vector<base::FilePath>& files =
       prev_entry->GetPageState().GetReferencedFiles();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(1U, files.size());
 #else
   EXPECT_EQ(0U, files.size());
@@ -3795,7 +3795,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // with arbitrary origin, when universal access setting is enabled.
 // TODO(nasko): The test is disabled on Mac, since universal access from file
 // scheme behaves differently.  See also https://crbug.com/981018.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EnsureUniversalAccessFromFileSchemeSucceeds \
   DISABLED_EnsureUniversalAccessFromFileSchemeSucceeds
 #else
@@ -8081,8 +8081,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 // its unload handler is able to send a postMessage to the parent frame.
 // See https://crbug.com/857274.
 // TODO(https://crbug.com/989704): Fix flake on Linux TSAN and ASAN.
-#if defined(OS_MAC) || (defined(OS_WIN) && defined(ADDRESS_SANITIZER)) || \
-    (defined(OS_LINUX) &&                                                 \
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
+    (BUILDFLAG(IS_LINUX) &&                                                   \
      (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
 #define MAYBE_PostMessageToParentWhenSubframeNavigates \
   DISABLED_PostMessageToParentWhenSubframeNavigates
@@ -8203,7 +8203,7 @@ class AssertForegroundHelper {
   AssertForegroundHelper(const AssertForegroundHelper&) = delete;
   AssertForegroundHelper& operator=(const AssertForegroundHelper&) = delete;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Asserts that |renderer_process| isn't backgrounded and reposts self to
   // check again shortly. |renderer_process| must outlive this
   // AssertForegroundHelper instance.
@@ -8217,7 +8217,7 @@ class AssertForegroundHelper {
                        std::cref(renderer_process), port_provider),
         base::Milliseconds(1));
   }
-#else   // defined(OS_MAC)
+#else   // BUILDFLAG(IS_MAC)
   // Same as above without the Mac specific base::PortProvider.
   void AssertForegroundAndRepost(const base::Process& renderer_process) {
     ASSERT_FALSE(renderer_process.IsProcessBackgrounded());
@@ -8228,7 +8228,7 @@ class AssertForegroundHelper {
                        std::cref(renderer_process)),
         base::Milliseconds(1));
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   base::WeakPtrFactory<AssertForegroundHelper> weak_ptr_factory_{this};
@@ -8243,7 +8243,7 @@ class AssertForegroundHelper {
 // RenderProcessHost if present, to ensure that it is not used in the
 // cross-process navigation.
 // TODO(https://crbug.com/1197438): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess \
   DISABLED_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess
 #else
@@ -8257,10 +8257,10 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::PortProvider* port_provider =
       BrowserChildProcessHost::GetPortProvider();
-#endif  //  defined(OS_MAC)
+#endif  //  BUILDFLAG(IS_MAC)
 
   // Start off navigating to a.com and capture the process used to commit.
   EXPECT_TRUE(NavigateToURL(
@@ -8286,7 +8286,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_NE(start_rph, speculative_rph);
   EXPECT_FALSE(speculative_rph->IsReady());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(gab, nasko): On Android IsProcessBackgrounded is currently giving
   // incorrect value at this stage of the process lifetime. This should be
   // fixed in follow up cleanup work. See https://crbug.com/560446.
@@ -8306,7 +8306,7 @@ IN_PROC_BROWSER_TEST_P(
   const base::Process& process = speculative_rph->GetProcess();
   EXPECT_TRUE(process.IsValid());
   AssertForegroundHelper assert_foreground_helper;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   assert_foreground_helper.AssertForegroundAndRepost(process, port_provider);
 #else
   assert_foreground_helper.AssertForegroundAndRepost(process);
@@ -8332,10 +8332,10 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::PortProvider* port_provider =
       BrowserChildProcessHost::GetPortProvider();
-#endif  //  defined(OS_MAC)
+#endif  //  BUILDFLAG(IS_MAC)
 
   // Start off navigating to a.com and capture the process used to commit.
   EXPECT_TRUE(NavigateToURL(
@@ -8391,7 +8391,7 @@ IN_PROC_BROWSER_TEST_P(
   const base::Process& process = spare_rph->GetProcess();
   EXPECT_TRUE(process.IsValid());
   AssertForegroundHelper assert_foreground_helper;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   assert_foreground_helper.AssertForegroundAndRepost(process, port_provider);
 #else
   assert_foreground_helper.AssertForegroundAndRepost(process);

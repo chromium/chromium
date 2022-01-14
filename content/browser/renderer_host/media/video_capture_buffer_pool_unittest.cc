@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -280,7 +280,7 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   buffer4.reset();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 namespace {
 
 gfx::GpuMemoryBufferHandle CreateIOSurfaceHandle() {

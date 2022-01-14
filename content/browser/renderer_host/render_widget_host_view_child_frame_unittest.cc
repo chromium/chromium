@@ -114,7 +114,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     browser_context_ = std::make_unique<TestBrowserContext>();
 
 // ImageTransportFactory doesn't exist on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
 #endif
@@ -172,7 +172,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
                                                     browser_context_.release());
     base::RunLoop().RunUntilIdle();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::Terminate();
 #endif
   }

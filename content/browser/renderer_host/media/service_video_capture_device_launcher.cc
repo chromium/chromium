@@ -21,7 +21,7 @@
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "media/base/media_switches.h"
 #endif
 
@@ -146,7 +146,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 
   // GpuMemoryBuffer-based VideoCapture buffer works only on the Chrome OS
   // and Windows VideoCaptureDevice implementations.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(media::kMediaFoundationD3D11VideoCapture) &&
       params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12) {
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;

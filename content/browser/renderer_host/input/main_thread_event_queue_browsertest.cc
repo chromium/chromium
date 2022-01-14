@@ -197,7 +197,7 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
 };
 
 // Disabled due to flaky test results: crbug.com/805666.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_MouseMove DISABLED_MouseMove
 #else
 #define MAYBE_MouseMove MouseMove
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(MainThreadEventQueueBrowserTest, MAYBE_MouseMove) {
 }
 
 // Disabled on MacOS because it doesn't support touch input.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TouchMove DISABLED_TouchMove
 #else
 #define MAYBE_TouchMove TouchMove

@@ -109,7 +109,7 @@ void VideoCaptureManager::RegisterListener(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(listener);
   listeners_.AddObserver(listener);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   application_state_has_running_activities_ = true;
   app_status_listener_ = base::android::ApplicationStatusListener::New(
       base::BindRepeating(&VideoCaptureManager::OnApplicationStateChange,
@@ -872,7 +872,7 @@ VideoCaptureController* VideoCaptureManager::GetOrCreateController(
   return new_controller;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void VideoCaptureManager::OnApplicationStateChange(
     base::android::ApplicationState state) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -933,7 +933,7 @@ void VideoCaptureManager::ResumeDevices() {
 }
 
 void VideoCaptureManager::OnScreenLocked() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Stop screen sharing when screen is locked on desktop platforms only.
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage("VideoCaptureManager::OnScreenLocked", 1);

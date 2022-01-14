@@ -39,7 +39,7 @@
 #include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -65,7 +65,7 @@ static constexpr size_t kDefaultForegroundBackForwardCacheSize = 0;
 // The default time to live in seconds for documents in BackForwardCache.
 static constexpr int kDefaultTimeToLiveInBackForwardCacheInSeconds = 180;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsProcessBindingEnabled() {
   // Avoid activating BackForwardCache trial for checking the parameters
   // associated with it.
@@ -144,7 +144,7 @@ constexpr base::FeatureParam<BackForwardCacheImpl::UnloadSupportStrategy>::
 
 BackForwardCacheImpl::UnloadSupportStrategy GetUnloadSupportStrategy() {
   constexpr auto kDefaultStrategy =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       BackForwardCacheImpl::UnloadSupportStrategy::kAlways;
 #else
       BackForwardCacheImpl::UnloadSupportStrategy::kNo;
@@ -974,7 +974,7 @@ void BackForwardCacheImpl::StoreEntry(
       CanStorePageNow(entry->render_frame_host());
   DCHECK(result);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!IsProcessBindingEnabled()) {
     // Set the priority of the main frame on entering the back-forward cache to
     // make sure the page gets evicted instead of foreground tab. This might not

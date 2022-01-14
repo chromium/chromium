@@ -70,7 +70,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       override;
   void SetCaptureHandleConfig(
       blink::mojom::CaptureHandleConfigPtr config) override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity(const std::string& label) override;
   void ProduceCropId(ProduceCropIdCallback callback) override;
 #endif

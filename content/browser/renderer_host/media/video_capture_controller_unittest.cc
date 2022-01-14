@@ -625,7 +625,7 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
 // VideoCaptureControllerTest.CaptureWithScaledFrames should run on those
 // platforms as well.
 // TODO(https://crbug.com/1174481): Update test to work on other platforms.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_P(VideoCaptureControllerTest, CaptureWithScaledFrames) {
   const gfx::Size kFrameSize(444, 200);

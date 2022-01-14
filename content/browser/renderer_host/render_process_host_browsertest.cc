@@ -63,7 +63,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -691,7 +691,7 @@ class ObserverLogger : public RenderProcessHostObserver {
 };
 
 // Flaky on Android. http://crbug.com/759514.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AllProcessExitedCallsBeforeAnyHostDestroyedCalls \
   DISABLED_AllProcessExitedCallsBeforeAnyHostDestroyedCalls
 #else
@@ -817,7 +817,7 @@ class AudioStartObserver : public WebContentsObserver {
 // only used by Chromecast.
 //
 // crbug.com/864476: flaky on Android for unclear reasons.
-#if BUILDFLAG(ENABLE_MOJO_RENDERER) || defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(IS_ANDROID)
 #define KillProcessZerosAudioStreams DISABLED_KillProcessZerosAudioStreams
 #endif
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
@@ -1116,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_KeepAliveRendererProcess_Hung \
   DISABLED_KeepAliveRendererProcess_Hung
 #else
@@ -1171,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_FetchKeepAliveRendererProcess_Hung \
   DISABLED_FetchKeepAliveRendererProcess_Hung
 #else

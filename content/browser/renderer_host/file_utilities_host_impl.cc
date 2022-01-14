@@ -8,12 +8,13 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -49,7 +50,7 @@ void FileUtilitiesHostImpl::GetFileInfo(const base::FilePath& path,
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void FileUtilitiesHostImpl::SetLength(base::File file,
                                       const int64_t length,
                                       SetLengthCallback callback) {
@@ -63,6 +64,6 @@ void FileUtilitiesHostImpl::SetLength(base::File file,
   bool result = file.SetLength(length);
   std::move(callback).Run(std::move(file), result);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content

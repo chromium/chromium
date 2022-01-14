@@ -137,7 +137,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/containers/id_map.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #else
@@ -1137,7 +1137,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // renderer process to change the accessibility mode.
   void UpdateAccessibilityMode();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
   using ExtractSmartClipDataCallback = base::OnceCallback<
       void(const std::u16string&, const std::u16string&, const gfx::Rect&)>;
@@ -1149,7 +1149,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                 const std::u16string& text,
                                 const std::u16string& html,
                                 const gfx::Rect& clip_rect);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Request a one-time snapshot of the accessibility tree without changing
   // the accessibility mode.
@@ -1307,7 +1307,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaRenderFrameHost() override;
   service_manager::InterfaceProvider* GetJavaInterfaces() override;
 #endif
@@ -1674,7 +1674,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GetFileSystemAccessManager(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void GetHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
 
   void BindSerialService(
@@ -1743,7 +1743,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
       const net::NetworkIsolationKey& nik);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void BindNFCReceiver(mojo::PendingReceiver<device::mojom::NFC> receiver);
 #endif
 
@@ -3536,10 +3536,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   ui::AXTreeData ax_tree_data_;
 
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::IDMap<std::unique_ptr<ExtractSmartClipDataCallback>>
       smart_clip_callbacks_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Callback when an event is received, for testing.
   AccessibilityCallbackForTesting accessibility_testing_callback_;
@@ -3701,7 +3701,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Tracks the document policy which has been set on this frame.
   std::unique_ptr<blink::DocumentPolicy> document_policy_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // An InterfaceProvider for Java-implemented interfaces that are scoped to
   // this RenderFrameHost. This provides access to interfaces implemented in
   // Java in the browser process to C++ code in the browser process.

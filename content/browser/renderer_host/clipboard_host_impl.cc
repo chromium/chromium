@@ -172,7 +172,7 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
       result =
           clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                                        clipboard_buffer, data_endpoint.get());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       result |= clipboard->IsFormatAvailable(
           ui::ClipboardFormatType::PlainTextAType(), clipboard_buffer,
           data_endpoint.get());
@@ -189,7 +189,7 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
           data_endpoint.get());
       break;
     case blink::mojom::ClipboardFormat::kBookmark:
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       result =
           clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
                                        clipboard_buffer, data_endpoint.get());
@@ -214,7 +214,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
                                    clipboard_buffer, data_dst.get())) {
     clipboard->ReadText(clipboard_buffer, data_dst.get(), &result);
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextAType(),
                                      clipboard_buffer, data_dst.get())) {
       std::string ascii;

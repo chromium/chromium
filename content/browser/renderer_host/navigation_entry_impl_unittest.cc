@@ -354,7 +354,7 @@ TEST_F(NavigationEntryTest, SetPageStateWithDefaultSequenceNumbers) {
             entry2_->root_node()->frame_entry.get());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Failing test, see crbug/1050906.
 // Test that content URIs correctly show the file display name as the title.
 TEST_F(NavigationEntryTest, DISABLED_NavigationEntryContentUri) {

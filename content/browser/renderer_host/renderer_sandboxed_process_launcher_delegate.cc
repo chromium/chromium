@@ -9,7 +9,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/security_level.h"
@@ -35,18 +35,18 @@ ZygoteHandle RendererSandboxedProcessLauncherDelegate::GetZygote() {
 }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool RendererSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations() {
   return true;
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 sandbox::mojom::Sandbox
 RendererSandboxedProcessLauncherDelegate::GetSandboxType() {
   return sandbox::mojom::Sandbox::kRenderer;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 RendererSandboxedProcessLauncherDelegateWin::
     RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
                                                 bool is_jit_disabled)
@@ -111,6 +111,6 @@ bool RendererSandboxedProcessLauncherDelegateWin::CetCompatible() {
   return dynamic_code_can_be_disabled_;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

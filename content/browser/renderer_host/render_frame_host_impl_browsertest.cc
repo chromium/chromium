@@ -97,10 +97,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "third_party/blink/public/mojom/remote_objects/remote_objects.mojom.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 namespace {
@@ -619,7 +619,7 @@ class RenderFrameHostFactoryForBeforeUnloadInterceptor
 // Tests that a beforeunload dialog in an iframe doesn't stop the beforeunload
 // timer of a parent frame.
 // TODO(avi): flaky on Linux TSAN: http://crbug.com/795326
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 #define MAYBE_IframeBeforeUnloadParentHang DISABLED_IframeBeforeUnloadParentHang
 #else
 #define MAYBE_IframeBeforeUnloadParentHang IframeBeforeUnloadParentHang
@@ -2709,7 +2709,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(0, process->get_media_stream_count_for_testing());
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // ChromeOS and Linux failures are tracked in https://crbug.com/954217
 #define MAYBE_VisibilityScrolledOutOfView DISABLED_VisibilityScrolledOutOfView
 #else
@@ -3416,7 +3416,7 @@ class RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android, --site-per-process may be passed on some bots to force strict
     // site isolation.  That causes this test too create a lot of processes and
     // time out due to running too slowly, so force this test to run without
@@ -4857,7 +4857,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, CrossSiteFrame) {
 
 // TODO(https://crbug.com/794320): the code below is temporary and will be
 // removed when Java Bridge is mojofied.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 struct ObjectData {
   const int32_t id;

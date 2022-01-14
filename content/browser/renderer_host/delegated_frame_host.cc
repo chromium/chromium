@@ -129,7 +129,7 @@ bool DelegatedFrameHost::HasSavedFrame() const {
 
 void DelegatedFrameHost::WasHidden(HiddenCause cause) {
   tab_switch_time_recorder_.TabWasHidden();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Ignore if the native window was occluded.
   // Windows needs the frame host to display tab previews.
   if (cause == HiddenCause::kOccluded)
@@ -288,7 +288,7 @@ void DelegatedFrameHost::EmbedSurface(
 
   if (!primary_surface_id ||
       primary_surface_id->local_surface_id() != local_surface_id_) {
-#if defined(OS_WIN) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // On Windows and Linux, we would like to produce new content as soon as
     // possible or the OS will create an additional black gutter. Until we can
     // block resize on surface synchronization on these platforms, we will not

@@ -668,7 +668,7 @@ TEST_F(MouseWheelEventQueueTest, WheelScrollLatching) {
   EXPECT_EQ(1U, GetAndResetSentEventCount());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(MouseWheelEventQueueTest, DoNotSwapXYForShiftScroll) {
   // Send an event with shift modifier, zero value for delta X, and no direction
   // for |rails_mode|. Do not swap the scroll direction.

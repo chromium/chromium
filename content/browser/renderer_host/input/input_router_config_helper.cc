@@ -27,7 +27,7 @@ PassthroughTouchEventQueue::Config GetTouchEventQueueConfig() {
   config.mobile_touch_ack_timeout_delay =
       base::Milliseconds(kMobileTouchAckTimeoutDelayMs);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For historical reasons only Android enables the touch ack timeout.
   config.touch_ack_timeout_supported = true;
 #else

@@ -219,7 +219,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, TestValidEventTiming) {
 }
 
 // Flaky on Android. https://crbug.com/970841
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestWheelToFirstScrollHistograms \
   DISABLED_TestWheelToFirstScrollHistograms
 #else
@@ -331,7 +331,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
 }
 
 // Flaky on Android. https://crbug.com/970841
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestWheelToScrollHistograms DISABLED_TestWheelToScrollHistograms
 #else
 #define MAYBE_TestWheelToScrollHistograms TestWheelToScrollHistograms
@@ -442,7 +442,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
 }
 
 // Flaky on Android. https://crbug.com/970841
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestInertialToScrollHistograms \
   DISABLED_TestInertialToScrollHistograms
 #else
@@ -503,7 +503,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
 }
 
 // Flaky on Android. https://crbug.com/970841
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestTouchToFirstScrollHistograms \
   DISABLED_TestTouchToFirstScrollHistograms
 #else
@@ -622,7 +622,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
 }
 
 // Flaky on Android. https://crbug.com/970841
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestTouchToScrollHistograms DISABLED_TestTouchToScrollHistograms
 #else
 #define MAYBE_TestTouchToScrollHistograms TestTouchToScrollHistograms
@@ -737,7 +737,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestTouchToScrollHistograms) {
 }
 
 // Flaky on Android. https://crbug.com/970841
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ScrollbarEndToEndHistograms DISABLED_ScrollbarEndToEndHistograms
 #else
 #define MAYBE_ScrollbarEndToEndHistograms ScrollbarEndToEndHistograms
