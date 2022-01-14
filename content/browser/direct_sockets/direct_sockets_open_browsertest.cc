@@ -758,15 +758,17 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
-// TODO(https://crbug.com/1282060): This test is flaky.
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       DISABLED_OpenUdp_TransientActivation) {
+                       OpenUdp_TransientActivation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  const std::string script = base::StringPrintf(
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: %d});\
-       openUdp({remoteAddress: '127.0.0.1', remotePort: %d})",
-      0, 0);
+  MockNetworkContext mock_network_context(net::OK);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  // The first call consumes the transient activation. The second fails.
+  const std::string open =
+      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
+  const std::string script = open + ".then(() => " + open + ")";
 
   EXPECT_EQ(
       "openUdp failed: NotAllowedError: Failed to execute 'openUDPSocket' on "
