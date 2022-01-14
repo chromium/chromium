@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("path_parser") {
@@ -255,6 +256,10 @@ source_set("browser_tests") {
     "//services/network/public/mojom",
     "//testing/gmock",
   ]
+
+  if (enable_dice_support) {
+    sources += [ "cloud/user_policy_signin_service_browsertest.cc" ]
+  }
 
   if (enable_extensions) {
     sources += [ "extension_policy_browsertest.cc" ]

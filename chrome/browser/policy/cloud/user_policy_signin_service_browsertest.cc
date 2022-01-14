@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -28,7 +27,9 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_test_utils.h"
 #include "components/policy/policy_constants.h"
-#include "components/policy/test_support/local_policy_test_server.h"
+#include "components/policy/proto/cloud_policy.pb.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -83,24 +84,6 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
 
   raw_ptr<UserPolicySigninServiceTest> test_fixture_;
 };
-
-std::string GetTestPolicy() {
-  const char kTestPolicy[] = R"(
-      {
-        "%s": {
-          "mandatory": {
-            "ShowHomeButton": true
-          }
-        },
-        "managed_users": [ "*" ],
-        "policy_user": "%s",
-        "current_key_index": 0,
-        "policy_invalidation_topic": "test_policy_topic"
-      })";
-
-  return base::StringPrintf(
-      kTestPolicy, policy::dm_protocol::kChromeUserPolicyType, kTestEmail);
-}
 
 }  // namespace
 
@@ -242,21 +225,20 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     SetupFakeGaiaResponses();
   }
 
-  void SetServerPolicy(const std::string& policy) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::WriteFile(policy_file_path(), policy));
-  }
-
-  base::FilePath policy_file_path() const {
-    return temp_dir_.GetPath().AppendASCII("policy.json");
-  }
-
   void SetUpPolicyServer() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy()));
-    policy_server_ =
-        std::make_unique<policy::LocalPolicyTestServer>(policy_file_path());
+    policy_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
+
+    policy::PolicyStorage* policy_storage = policy_server_->policy_storage();
+    em::CloudPolicySettings settings;
+    settings.mutable_showhomebutton()->mutable_policy_options()->set_mode(
+        em::PolicyOptions::MANDATORY);
+    settings.mutable_showhomebutton()->set_value(true);
+    policy_storage->SetPolicyPayload(policy::dm_protocol::kChromeUserPolicyType,
+                                     settings.SerializeAsString());
+    policy_storage->add_managed_user("*");
+    policy_storage->set_policy_user(kTestEmail);
+    policy_storage->signature_provider()->set_current_key_version(1);
+    policy_storage->set_policy_invalidation_topic("test_policy_topic");
   }
 
   void SetupFakeGaiaResponses() {
@@ -309,10 +291,9 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     return http_response;
   }
 
-  base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer embedded_test_server_;
   FakeGaia fake_gaia_;
-  std::unique_ptr<policy::LocalPolicyTestServer> policy_server_;
+  std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server_;
   CoreAccountInfo account_info_;
   base::OnceClosure sync_confirmation_shown_closure_;
   base::OnceClosure policy_hanging_closure_;
