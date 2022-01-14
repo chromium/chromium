@@ -8,6 +8,14 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 /**
  * @typedef {{
+ *   name: string,
+ *   enabled: boolean,
+ * }}
+ */
+let SandboxFeature;
+
+/**
+ * @typedef {{
  *   processId: number,
  *   processType: string,
  *   name: string,
@@ -40,7 +48,8 @@ let PolicyDiagnostic;
  * @typedef {{
  *   browser: !Array<!BrowserHostProcess>,
  *   renderer: !Array<!RendererHostProcess>,
- *   policies: !Array<!PolicyDiagnostic>
+ *   policies: !Array<!PolicyDiagnostic>,
+ *   features: !Array<!SandboxFeature>
  * }}
  */
 let SandboxDiagnostics;
@@ -514,6 +523,7 @@ function onGetSandboxDiagnostics(results) {
 
   // Raw Diagnostics.
   $('raw-info').textContent =
+      'features: ' + JSON.stringify(results.features, null, 2) + '\n' +
       'policies: ' + JSON.stringify(results.policies, null, 2);
 }
 
