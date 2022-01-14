@@ -14,6 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -89,7 +91,16 @@ class AmbientAnimationViewTest : public views::ViewsTestBase {
   AmbientAnimationView* view_;
 };
 
-TEST_F(AmbientAnimationViewTest, NotifiesDelegateOfAnimationCycleMarkers) {
+// Flaky: crbug.com/1287542
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_NotifiesDelegateOfAnimationCycleMarkers \
+  DISABLED_NotifiesDelegateOfAnimationCycleMarkers
+#else
+#define MAYBE_NotifiesDelegateOfAnimationCycleMarkers \
+  NotifiesDelegateOfAnimationCycleMarkers
+#endif
+TEST_F(AmbientAnimationViewTest,
+       MAYBE_NotifiesDelegateOfAnimationCycleMarkers) {
   view_->SetBoundsRect(widget_->GetWindowBoundsInScreen());
   widget_->Show();
 
