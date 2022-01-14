@@ -112,6 +112,9 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
       const override;
   void SetTransport(
       rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport);
+  std::vector<webrtc::RtpCodecCapability> codec_preferences() const override {
+    return {};
+  }
   webrtc::RTCError SetCodecPreferences(
       rtc::ArrayView<webrtc::RtpCodecCapability>) override {
     RTC_DCHECK_NOTREACHED() << "Not implemented";
