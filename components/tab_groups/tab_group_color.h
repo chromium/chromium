@@ -26,6 +26,11 @@ namespace tab_groups {
 // Any code that reads an enum value from disk should check it against the map
 // from GetTabGroupColorLabelMap(). If the value is not contained in the map's
 // keys, default to kGrey.
+//
+// Additionally, any colors added here will also be used in
+// chrome/browser/resources/tab_search/tab_group_color_helper.ts. As such these
+// colors should be kept in sync. Ex: Adding orange in this file,
+// requires adding orange in the other file.
 enum class TabGroupColorId {
   kGrey = 0,
   kBlue = 1,
