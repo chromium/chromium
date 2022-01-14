@@ -327,8 +327,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+// Disabled due to flakiness on Linux and Mac https://crbug.com/1287467
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_ProxiesAreStoredAndRestored DISABLED_ProxiesAreStoredAndRestored
+#else
+#define MAYBE_ProxiesAreStoredAndRestored ProxiesAreStoredAndRestored
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ProxiesAreStoredAndRestored) {
+                       MAYBE_ProxiesAreStoredAndRestored) {
   // This test makes assumption about where iframe processes live.
   if (!AreAllSitesIsolatedForTesting())
     return;
