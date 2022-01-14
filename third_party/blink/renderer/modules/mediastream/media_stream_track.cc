@@ -277,8 +277,8 @@ MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
 MediaStreamTrack::~MediaStreamTrack() = default;
 
 String MediaStreamTrack::kind() const {
-  DEFINE_STATIC_LOCAL(String, audio_kind, ("audio"));
-  DEFINE_STATIC_LOCAL(String, video_kind, ("video"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(String, audio_kind, ("audio"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(String, video_kind, ("video"));
 
   switch (component_->Source()->GetType()) {
     case MediaStreamSource::kTypeAudio:
