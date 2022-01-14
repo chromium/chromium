@@ -9,8 +9,7 @@
 namespace ui {
 namespace internal_onedevice {
 struct alignas(16) FixedAllocations {
-  float alloc0[117];
-  float alloc1[115];
+  float alloc0[20];
   int32_t shape0[2];
 };
 
@@ -22,7 +21,7 @@ extern int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0Shape[2];
 #define CHROME_KNOWLEDGE_INPUT_FROM_FEATURE_COLUMNS_INPUT_LAYER_CONCAT_CONCAT0_DIM0_SIZE \
   1
 #define CHROME_KNOWLEDGE_INPUT_FROM_FEATURE_COLUMNS_INPUT_LAYER_CONCAT_CONCAT0_DIM1_SIZE \
-  193
+  323
 #define CHROME_KNOWLEDGE_LOGITS_MATMUL_MERGED_WITH_DNN_LOGITS_BIASADD0_RANK 2
 #define CHROME_KNOWLEDGE_LOGITS_MATMUL_MERGED_WITH_DNN_LOGITS_BIASADD0_DIM0_SIZE \
   1
@@ -30,7 +29,7 @@ extern int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0Shape[2];
   1
 
 void Inference(
-    const float* __restrict input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,193 */
+    const float* __restrict input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,323 */
     ,
     float* __restrict logits_MatMul_merged_with_dnn_logits_BiasAdd0 /* shape:
                                                                        1,1 */

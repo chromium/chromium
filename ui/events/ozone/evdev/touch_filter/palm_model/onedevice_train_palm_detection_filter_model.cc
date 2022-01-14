@@ -27,8 +27,8 @@ float OneDeviceTrainNeuralStylusPalmDetectionFilterModel::Inference(
   DVLOG(1) << "In Inference.";
   std::unique_ptr<internal_onedevice::FixedAllocations> fixed_allocations(
       new internal_onedevice::FixedAllocations());
-  if (features.size() != 193) {
-    LOG(DFATAL) << "Bad count. Is " << features.size() << " expected " << 193;
+  if (features.size() != 323) {
+    LOG(DFATAL) << "Bad count. Is " << features.size() << " expected " << 323;
     return nanf("");
   }
   // TODO(robsc): Update to DVLOG_IS_ON if relevant.
@@ -50,15 +50,16 @@ OneDeviceTrainNeuralStylusPalmDetectionFilterModel::config() const {
 OneDeviceTrainNeuralStylusPalmDetectionFilterModel::
     OneDeviceTrainNeuralStylusPalmDetectionFilterModel() {
   config_.nearest_neighbor_count = 0;
-  config_.biggest_near_neighbor_count = 2;
+  config_.biggest_near_neighbor_count = 4;
   config_.include_sequence_count_in_strokes = true;
   config_.max_neighbor_distance_in_mm = 100.0f;
-  config_.min_sample_count = 6;
+  config_.min_sample_count = 5;
   config_.max_sample_count = 12;
   config_.max_dead_neighbor_time = base::Milliseconds(100.0f);
   config_.heuristic_palm_touch_limit = 20.0f;
   config_.heuristic_palm_area_limit = 400.0f;
   config_.max_blank_time = base::Milliseconds(100.0f);
+  config_.output_threshold = 1.2885f;
 }
 
 OneDeviceTrainNeuralStylusPalmDetectionFilterModel::

@@ -72,6 +72,8 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   //
   // R = 0.5 * r^3 + 1.3 * r^2 - 0.2 * r + 1
   std::vector<float> radius_polynomial_resize;
+
+  float output_threshold = 0.0f;
 };
 
 // An abstract model utilized by NueralStylusPalmDetectionFilter.
