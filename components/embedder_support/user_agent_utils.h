@@ -69,7 +69,7 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // This sets a user agent string to simulate a desktop user agent on mobile.
 // If |override_in_new_tabs| is true, and the first navigation in the tab is
 // renderer initiated, then is-overriding-user-agent is set to true for the
@@ -79,9 +79,9 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
                                  bool override_in_new_tabs);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace embedder_support
 

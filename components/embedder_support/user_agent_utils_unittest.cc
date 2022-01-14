@@ -26,11 +26,11 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/re2/src/re2/re2.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/utsname.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.foundation.metadata.h>
 #include <wrl.h>
 
@@ -39,7 +39,7 @@
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace embedder_support {
 
@@ -51,7 +51,7 @@ namespace {
 static constexpr char kChromeProductVersionRegex[] =
     "Chrome/([0-9]+).([0-9]+).([0-9]+).([0-9]+)";
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 std::string GetMachine() {
   struct utsname unixinfo;
   uname(&unixinfo);
@@ -99,7 +99,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
 
   pieces = base::SplitStringUsingSubstr(os_str, "; ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows NT 10.0; Win64; x64
   // Windows NT 10.0; WOW64
   // Windows NT 10.0
@@ -118,7 +118,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_TRUE(base::StringToDouble(pieces[2], &version));
   ASSERT_LE(4.0, version);
   ASSERT_GT(11.0, version);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // Macintosh; Intel Mac OS X 10_15_4
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("Macintosh", pieces[0]);
@@ -144,7 +144,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_LE(0, value);
   ASSERT_TRUE(base::StringToInt(pieces[2], &value));
   ASSERT_LE(0, value);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
   // X11; CrOS armv7l 4537.56.0
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
@@ -159,7 +159,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
     int value;
     ASSERT_TRUE(base::StringToInt(pieces[i], &value));
   }
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   // X11; Linux x86_64
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
@@ -169,7 +169,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   // This may not be Linux in all cases in the wild, but it is on the bots.
   ASSERT_EQ("Linux", pieces[0]);
   ASSERT_EQ(GetMachine(), pieces[1]);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Linux; Android 7.1.1; Pixel 2
   ASSERT_GE(3u, pieces.size());
   ASSERT_EQ("Linux", pieces[0]);
@@ -194,7 +194,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
     else
       ASSERT_EQ("", model);
   }
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // X11; Fuchsia
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
@@ -217,7 +217,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ResolveCoreWinRT() {
   return base::win::ResolveCoreWinRTDelayload() &&
          base::win::ScopedHString::ResolveCoreWinRTStringDelayload() &&
@@ -289,7 +289,7 @@ void VerifyWinPlatformVersion(std::string version) {
   EXPECT_FALSE(is_supported) << " expected major version " << major_version + 1
                              << " to not be supported.";
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -324,7 +324,7 @@ INSTANTIATE_TEST_CASE_P(All,
                         /*force_major_version_to_M100*/ testing::Bool());
 
 TEST_P(UserAgentUtilsTest, UserAgentStringOrdering) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
@@ -347,7 +347,7 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Verify the correct user agent is returned when the UseMobileUserAgent
   // command line flag is present.
   const char* const kArguments[] = {"chrome"};
@@ -454,7 +454,7 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
 
   EXPECT_EQ(metadata.full_version, full_version);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10) {
     EXPECT_EQ(metadata.platform_version, "0.0.0");
   } else {
@@ -470,7 +470,7 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.platform_version.find(";"), std::string::npos);
   // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
   // "macOS" by default
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(metadata.platform, "macOS");
 #else
   EXPECT_EQ(metadata.platform, version_info::GetOSType());

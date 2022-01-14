@@ -27,12 +27,12 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace embedder_support {
 
@@ -41,7 +41,7 @@ namespace {
 constexpr char kVersion100[] = "100";
 constexpr char kVersion99[] = "99";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // The registry key where the UniversalApiContract version value can be read
 // from.
@@ -122,7 +122,7 @@ const std::string& GetUniversalApiContractVersion() {
   return *universal_api_contract_version;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 const std::string& GetM100VersionNumber() {
   static const base::NoDestructor<std::string> m100_version_number([] {
@@ -325,7 +325,7 @@ std::string GetReducedUserAgent() {
 
 std::string GetFullUserAgent() {
   std::string product = GetProduct(/*allow_version_override=*/true);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent))
     product += " Mobile";
@@ -459,7 +459,7 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
 // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
 // "macOS" by default
 std::string GetPlatformForUAMetadata() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return "macOS";
 #else
   return version_info::GetOSType();
@@ -491,12 +491,12 @@ blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
   metadata.architecture = content::GetLowEntropyCpuArchitecture();
   metadata.model = content::BuildModelInfo();
   metadata.mobile = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseMobileUserAgent);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   metadata.platform_version = GetUniversalApiContractVersion();
 #else
   int32_t major, minor, bugfix = 0;
@@ -514,7 +514,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
   return metadata;
 }  // namespace embedder_support
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void SetDesktopUserAgentOverride(content::WebContents* web_contents,
                                  const blink::UserAgentMetadata& metadata,
                                  bool override_in_new_tabs) {
@@ -538,10 +538,10 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
 }
 #endif  // OS_ANDROID
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting() {
   return kHighestKnownUniversalApiContractVersion;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace embedder_support
