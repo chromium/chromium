@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -466,6 +467,34 @@ TEST(TimerTest, AbandonedTaskIsCancelled) {
   // After AbandonAndStop(), the task is correctly treated as cancelled.
   timer.AbandonAndStop();
   EXPECT_EQ(0u, task_environment.GetPendingMainThreadTaskCount());
+}
+
+TEST(TimerTest, DeadlineTimer) {
+  test::TaskEnvironment task_environment(
+      test::TaskEnvironment::TimeSource::MOCK_TIME);
+  RunLoop run_loop;
+  DeadlineTimer timer;
+  TimeTicks start = TimeTicks::Now();
+
+  timer.Start(FROM_HERE, start + Seconds(5), run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(start + Seconds(5), TimeTicks::Now());
+}
+
+TEST(TimerTest, DeadlineTimerCancel) {
+  test::TaskEnvironment task_environment(
+      test::TaskEnvironment::TimeSource::MOCK_TIME);
+  RunLoop run_loop;
+  DeadlineTimer timer;
+  TimeTicks start = TimeTicks::Now();
+
+  MockRepeatingCallback<void()> callback;
+  timer.Start(FROM_HERE, start + Seconds(5), callback.Get());
+
+  EXPECT_CALL(callback, Run()).Times(0);
+  timer.Stop();
+  task_environment.FastForwardBy(Seconds(5));
+  EXPECT_EQ(start + Seconds(5), TimeTicks::Now());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

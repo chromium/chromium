@@ -26,8 +26,9 @@ class TimerBase;
 namespace base {
 
 namespace internal {
-class TimerBase;
+class DelayTimerBase;
 }
+class DeadlineTimer;
 
 namespace subtle {
 
@@ -38,7 +39,8 @@ class PostDelayedTaskPassKey {
   // Avoid =default to disallow creation by uniform initialization.
   PostDelayedTaskPassKey() {}
 
-  friend class base::internal::TimerBase;
+  friend class base::internal::DelayTimerBase;
+  friend class base::DeadlineTimer;
   friend class blink::TimerBase;
   // TODO(pmonette): Remove this once PSIMemoryMetrics no longer uses
   // PostCancelableDelayedTask.

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// OneShotTimer, RepeatingTimer and RetainingOneShotTimer provide a simple timer
-// API.  As the names suggest, OneShotTimer calls you back once after a time
-// delay expires.
-// RepeatingTimer on the other hand calls you back periodically with the
-// prescribed time interval.
-// RetainingOneShotTimer doesn't repeat the task itself like RepeatingTimer, but
-// retains the given task after the time out. You can restart it with Reset
-// again without giving new task to Start.
-//
-// All of OneShotTimer, RepeatingTimer and RetainingOneShotTimer cancel the
-// timer when they go out of scope, which makes it easy to ensure that you do
-// not get called when your object has gone out of scope.  Just instantiate a
-// timer as a member variable of the class for which you wish to receive timer
-// events.
+// A "timer" takes care of invoking a callback in the future, once or
+// repeatedly. The callback is invoked:
+// - OneShotTimer: Once after a `TimeDelta` delay has elapsed.
+// - RetainingOneShotTimer: Same as OneShotTimer, but the callback is retained
+//    after being executed, allowing another invocation to be scheduled with
+//    Reset() without specifying the callback again.
+// - DeadlineTimer: Once at the specified `TimeTicks` time.
+// - RepeatingTimer: Repeatedly, with a specified `TimeDelta` delay before the
+//    first invocation and between invocations.
+
+// Scheduled invocations can be cancelled with Stop() or by deleting the
+// Timer. The latter makes it easy to ensure that an object is not accessed by a
+// Timer after it has been deleted: just make the Timer a member of the object
+// which receives Timer events (see example below).
 //
 // Sample RepeatingTimer usage:
 //
@@ -35,12 +35,6 @@
 //     }
 //     base::RepeatingTimer timer_;
 //   };
-//
-// Timers also support a Reset method, which allows you to easily defer the
-// timer event until the timer delay passes once again.  So, in the above
-// example, if 0.5 seconds have already passed, calling Reset on |timer_|
-// would postpone DoStuff by another 1 second.  In other words, Reset is
-// shorthand for calling Stop and then Start again with the same arguments.
 //
 // These APIs are not thread safe. When a method is called (except the
 // constructor), all further method calls must be on the same sequence until
@@ -70,40 +64,24 @@
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 
 namespace base {
 
 class TickClock;
 
+using ExactDeadline = base::StrongAlias<class ExactDeadlineTag, bool>;
+
 namespace internal {
 
 class TaskDestructionDetector;
 
-//-----------------------------------------------------------------------------
-// This class wraps TaskRunner::PostDelayedTask to manage delayed and repeating
-// tasks. See meta comment above for thread-safety requirements.
-// Do not use this class directly. Use one of OneShotTimer, RepeatingTimer or
-// RetainingOneShotTimer.
-//
+// This class wraps logic shared by all timers.
 class BASE_EXPORT TimerBase {
  public:
   // Initializes the state of all the timer features. Must be invoked after
   // FeatureList initialization and while Chrome is still single-threaded.
   static void InitializeFeatures();
-
-  // Constructs a timer. Start must be called later to set task info.
-  // If |tick_clock| is provided, it is used instead of TimeTicks::Now() to get
-  // TimeTicks when scheduling tasks.
-  TimerBase();
-  explicit TimerBase(const TickClock* tick_clock);
-
-  // Construct a timer with task info.
-  // If |tick_clock| is provided, it is used instead of TimeTicks::Now() to get
-  // TimeTicks when scheduling tasks.
-  TimerBase(const Location& posted_from, TimeDelta delay);
-  TimerBase(const Location& posted_from,
-            TimeDelta delay,
-            const TickClock* tick_clock);
 
   TimerBase(const TimerBase&) = delete;
   TimerBase& operator=(const TimerBase&) = delete;
@@ -112,9 +90,6 @@ class BASE_EXPORT TimerBase {
 
   // Returns true if the timer is running (i.e., not stopped).
   bool IsRunning() const;
-
-  // Returns the current delay for this timer.
-  TimeDelta GetCurrentDelay() const;
 
   // Sets the task runner on which the delayed task should be scheduled when
   // this Timer is running. This method can only be called while this Timer
@@ -130,21 +105,21 @@ class BASE_EXPORT TimerBase {
   // is not running.
   virtual void Stop();
 
-  // Abandons the scheduled task (if any) and stops the timer (if running). Use
-  // this instead of Stop() only if the timer will need to be used or destroyed
-  // on another sequence.
-  // TODO(1262205): Remove once kAlwaysAbandonScheduledTask is gone.
-  void AbandonAndStop();
-
-  // Call this method to reset the timer delay. The user task must be set. If
-  // the timer is not running, this will start it by posting a task.
-  virtual void Reset();
-
-  const TimeTicks& desired_run_time() const { return desired_run_time_; }
-
  protected:
-  virtual void OnStop() = 0;
+  // Constructs a timer. Start must be called later to set task info.
+  explicit TimerBase(const Location& posted_from = Location());
+
   virtual void RunUserTask() = 0;
+  virtual void OnStop() = 0;
+
+  // Cancels the scheduled task and abandon it so that it no longer refers back
+  // to this object.
+  void AbandonScheduledTask();
+
+  // Returns the task runner on which the task should be scheduled. If the
+  // corresponding |task_runner_| field is null, the task runner for the current
+  // sequence is returned.
+  scoped_refptr<SequencedTaskRunner> GetTaskRunner();
 
   // The task runner on which the task should be scheduled. If it is null, the
   // task runner for the current sequence will be used.
@@ -155,6 +130,70 @@ class BASE_EXPORT TimerBase {
   // or restarted on another sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // Location in user code.
+  Location posted_from_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Detects when the scheduled task is deleted before being executed. Null when
+  // there is no scheduled task.
+  raw_ptr<TaskDestructionDetector> task_destruction_detector_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // If true, |user_task_| is scheduled to run sometime in the future.
+  bool is_running_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // The handle to the posted delayed task.
+  DelayedTaskHandle delayed_task_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+ private:
+  friend class TaskDestructionDetector;
+
+  // Indicates that the scheduled task was destroyed from inside the queue.
+  // Stops the timer if it was running.
+  void OnTaskDestroyed();
+};
+
+//-----------------------------------------------------------------------------
+// This class wraps logic shared by (Retaining)OneShotTimer and RepeatingTimer.
+class BASE_EXPORT DelayTimerBase : public TimerBase {
+ public:
+  DelayTimerBase(const DelayTimerBase&) = delete;
+  DelayTimerBase& operator=(const DelayTimerBase&) = delete;
+
+  ~DelayTimerBase() override;
+
+  // Returns the current delay for this timer.
+  TimeDelta GetCurrentDelay() const;
+
+  // Call this method to reset the timer delay. The user task must be set. If
+  // the timer is not running, this will start it by posting a task.
+  virtual void Reset();
+
+  void Stop() override;
+
+  // Abandons the scheduled task (if any) and stops the timer (if running). Use
+  // this instead of Stop() only if the timer will need to be used or destroyed
+  // on another sequence.
+  // TODO(1262205): Remove once kAlwaysAbandonScheduledTask is gone.
+  void AbandonAndStop();
+
+  TimeTicks desired_run_time() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return desired_run_time_;
+  }
+
+ protected:
+  // Constructs a timer. Start must be called later to set task info.
+  // If |tick_clock| is provided, it is used instead of TimeTicks::Now() to get
+  // TimeTicks when scheduling tasks.
+  explicit DelayTimerBase(const TickClock* tick_clock = nullptr);
+
+  // Construct a timer with task info.
+  // If |tick_clock| is provided, it is used instead of TimeTicks::Now() to get
+  // TimeTicks when scheduling tasks.
+  DelayTimerBase(const Location& posted_from,
+                 TimeDelta delay,
+                 const TickClock* tick_clock = nullptr);
+
   // Schedules |OnScheduledTaskInvoked()| to run on the current sequence with
   // the given |delay|. |scheduled_run_time_| and |desired_run_time_| are reset
   // to Now() + delay.
@@ -163,23 +202,8 @@ class BASE_EXPORT TimerBase {
   void StartInternal(const Location& posted_from, TimeDelta delay);
 
  private:
-  friend class TaskDestructionDetector;
-
-  // Indicates that the scheduled task was destroyed from inside the queue.
-  // Stops the timer if it was running.
-  void OnTaskDestroyed();
-
-  // Returns the task runner on which the task should be scheduled. If the
-  // corresponding |task_runner_| field is null, the task runner for the current
-  // sequence is returned.
-  scoped_refptr<SequencedTaskRunner> GetTaskRunner();
-
   // Returns the current tick count.
   TimeTicks Now() const;
-
-  // Disables the scheduled task and abandon it so that it no longer refers back
-  // to this object.
-  void AbandonScheduledTask();
 
   // Called when the scheduled task is invoked. Will run the  |user_task| if the
   // timer is still running and |desired_run_time_| was reached.
@@ -188,13 +212,6 @@ class BASE_EXPORT TimerBase {
   void OnScheduledTaskInvoked(
       std::unique_ptr<TaskDestructionDetector> task_destruction_detector);
 
-  // Detects when the scheduled task is deleted before being executed. Null when
-  // there is no scheduled task.
-  raw_ptr<TaskDestructionDetector> task_destruction_detector_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Location in user code.
-  Location posted_from_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Delay requested by user.
   TimeDelta delay_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -214,19 +231,13 @@ class BASE_EXPORT TimerBase {
   // The tick clock used to calculate the run time for scheduled tasks.
   const raw_ptr<const TickClock> tick_clock_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // If true, |user_task_| is scheduled to run sometime in the future.
-  bool is_running_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The handle to the posted delayed task.
-  DelayedTaskHandle delayed_task_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace internal
 
 //-----------------------------------------------------------------------------
 // A simple, one-shot timer.  See usage notes at the top of the file.
-class BASE_EXPORT OneShotTimer : public internal::TimerBase {
+class BASE_EXPORT OneShotTimer : public internal::DelayTimerBase {
  public:
   OneShotTimer();
   explicit OneShotTimer(const TickClock* tick_clock);
@@ -266,7 +277,7 @@ class BASE_EXPORT OneShotTimer : public internal::TimerBase {
 
 //-----------------------------------------------------------------------------
 // A simple, repeating timer.  See usage notes at the top of the file.
-class BASE_EXPORT RepeatingTimer : public internal::TimerBase {
+class BASE_EXPORT RepeatingTimer : public internal::DelayTimerBase {
  public:
   RepeatingTimer();
   explicit RepeatingTimer(const TickClock* tick_clock);
@@ -313,9 +324,9 @@ class BASE_EXPORT RepeatingTimer : public internal::TimerBase {
 };
 
 //-----------------------------------------------------------------------------
-// A simple, one-shot timer with the retained user_task which is reused for
-// multiple invocations of Start(). See usage notes at the top of the file.
-class BASE_EXPORT RetainingOneShotTimer : public internal::TimerBase {
+// A simple, one-shot timer with the retained |user_task| which is reused when
+// Reset() is invoked. See usage notes at the top of the file.
+class BASE_EXPORT RetainingOneShotTimer : public internal::DelayTimerBase {
  public:
   RetainingOneShotTimer();
   explicit RetainingOneShotTimer(const TickClock* tick_clock);
@@ -399,6 +410,56 @@ class DelayTimer {
 
  private:
   RetainingOneShotTimer timer_;
+};
+
+//-----------------------------------------------------------------------------
+// A one-shot timer that attempts to run |user_task| some time near specified
+// deadline. See usage notes at the top of the file.
+class BASE_EXPORT DeadlineTimer : public internal::TimerBase {
+ public:
+  DeadlineTimer();
+  ~DeadlineTimer() override;
+
+  DeadlineTimer(const DeadlineTimer&) = delete;
+  DeadlineTimer& operator=(const DeadlineTimer&) = delete;
+
+  // Start the timer to run |user_task| near the specified |deadline|;
+  // preferably as close as possible to the specified time if |exact|, or
+  // preferably a little bit before than after otherwise. If the timer is
+  // already running, it will be replaced to call the given |user_task|.
+  void Start(const Location& posted_from,
+             TimeTicks deadline,
+             OnceClosure user_task,
+             ExactDeadline exact = ExactDeadline(false));
+
+  // Start the timer to run |user_task| near the specified |deadline|. If the
+  // timer is already running, it will be replaced to call a task formed from
+  // |receiver->*method|.
+  template <class Receiver>
+  void Start(const Location& posted_from,
+             TimeTicks deadline,
+             Receiver* receiver,
+             void (Receiver::*method)(),
+             ExactDeadline exact = ExactDeadline(false)) {
+    Start(posted_from, deadline, BindOnce(method, Unretained(receiver)), exact);
+  }
+
+ protected:
+  void OnStop() override;
+  void RunUserTask() override;
+
+  // Schedules |OnScheduledTaskInvoked()| to run on the current sequence at
+  // the given |deadline|.
+  void ScheduleNewTask(TimeTicks deadline, subtle::DelayPolicy delay_policy);
+
+ private:
+  // Called when the scheduled task is invoked to run the |user_task|.
+  // |task_destruction_detector| is owned by the callback to detect when the
+  // scheduled task is deleted before being executed.
+  void OnScheduledTaskInvoked(std::unique_ptr<internal::TaskDestructionDetector>
+                                  task_destruction_detector);
+
+  OnceClosure user_task_;
 };
 
 }  // namespace base
