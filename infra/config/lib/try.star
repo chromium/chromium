@@ -238,6 +238,7 @@ def orchestrator_pair_builders(
         orchestrator_tryjob = None,
         compilator_cores = None,
         compilator_name = None,
+        compilator_cache_name = None,
         compilator_goma_jobs = None,
         compilator_grace_period = None,
         compilator_builderless = not settings.is_main,
@@ -293,7 +294,17 @@ def orchestrator_pair_builders(
     )
 
     compilator_kwargs = dict(kwargs)
+    caches = compilator_kwargs.get("caches", [])
+    if compilator_cache_name:
+        caches.append(
+            swarming.cache(
+                name = compilator_cache_name,
+                path = "builder",
+                wait_for_warm_cache = 4 * time.minute,
+            ),
+        )
     compilator_kwargs.update(dict(
+        caches = caches,
         executable = "recipe:chromium/compilator",
         properties = {
             "orchestrator": {

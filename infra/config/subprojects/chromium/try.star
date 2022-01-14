@@ -141,7 +141,6 @@ exec("./try/tryserver.chromium.packager.star")
 exec("./try/tryserver.chromium.rust.star")
 exec("./try/tryserver.chromium.updater.star")
 exec("./try/tryserver.chromium.win.star")
-exec("./try/tryserver.infra.star")
 
 # Used for listing chrome trybots in chromium's commit-queue.cfg without also
 # adding them to chromium's cr-buildbucket.cfg. Note that the recipe these

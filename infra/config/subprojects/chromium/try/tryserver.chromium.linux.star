@@ -300,6 +300,20 @@ try_.orchestrator_pair_builders(
     compilator_name = "linux-rel-compilator",
 )
 
+# crbug.com/1270571: Experimental bot to test pre-warming
+try_.orchestrator_pair_builders(
+    name = "linux-rel-warmed",
+    main_list_view = "try",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    orchestrator_cores = 2,
+    orchestrator_tryjob = None,
+    compilator_cache_name = "linux_rel_warmed_compilator_warmed_cache",
+    compilator_cores = 16,
+    compilator_goma_jobs = goma.jobs.J150,
+    compilator_name = "linux-rel-warmed-compilator",
+)
+
 try_.builder(
     name = "linux-wayland-rel",
     branch_selector = branches.STANDARD_MILESTONE,
