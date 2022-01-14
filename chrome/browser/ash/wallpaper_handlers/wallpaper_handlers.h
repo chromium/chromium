@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -211,6 +212,30 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   std::map<std::string, std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
 
   base::WeakPtrFactory<GooglePhotosFetcher> weak_factory_{this};
+};
+
+using GooglePhotosAlbumsCbkArgs =
+    ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponsePtr;
+// Downloads the Google Photos albums a user has created.
+class GooglePhotosAlbumsFetcher
+    : public GooglePhotosFetcher<GooglePhotosAlbumsCbkArgs> {
+ public:
+  explicit GooglePhotosAlbumsFetcher(Profile* profile);
+
+  GooglePhotosAlbumsFetcher(const GooglePhotosAlbumsFetcher&) = delete;
+  GooglePhotosAlbumsFetcher& operator=(const GooglePhotosAlbumsFetcher&) =
+      delete;
+
+  ~GooglePhotosAlbumsFetcher() override;
+
+  virtual void AddRequestAndStartIfNecessary(
+      const absl::optional<std::string>& resume_token,
+      base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback);
+
+ private:
+  // GooglePhotosFetcher:
+  GooglePhotosAlbumsCbkArgs ParseResponse(
+      absl::optional<base::Value> response) override;
 };
 
 // Downloads the number of photos in a user's Google Photos library.

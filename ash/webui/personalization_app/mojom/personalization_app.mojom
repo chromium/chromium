@@ -61,6 +61,32 @@ struct WallpaperCollection {
     url.mojom.Url? preview;
 };
 
+// Encapsulates metadata for a Google Photos album, which is itself displayed in
+// the UI and from which a user may select a photo as their wallpaper.
+struct GooglePhotosAlbum {
+    // Unique identifier for this album.
+    string id;
+
+    // User-generated album title to be displayed.
+    string title;
+
+    // Number of photos stored within this album.
+    int32 photo_count;
+
+    // URL to the bytes of the album's displayed cover photo.
+    url.mojom.Url preview;
+};
+
+// Represents the server-provided response to a Google Photos albums request.
+struct FetchGooglePhotosAlbumsResponse {
+    // List of non-empty Google Photos albums (absent on error).
+    array<GooglePhotosAlbum>? albums;
+
+    // Token that allows the client to fetch more albums not returned in the
+    // current query (absent if the last of the albums was returned).
+    string? resume_token;
+};
+
 // Represents a single image that can be set as user wallpaper.
 struct WallpaperImage {
     // URL of the image file to be displayed in the UI.
@@ -124,8 +150,16 @@ interface WallpaperProvider {
 
     // Fetch a list of WallpaperImage objects from the Backdrop API that can be
     // set as the user's wallpaper. |images| will be null on error.
-    FetchImagesForCollection(string collection_id) => (
-        array<WallpaperImage>? images);
+    FetchImagesForCollection(string collection_id) =>
+        (array<WallpaperImage>? images);
+
+    // Fetch the number of albums the user has created in Google Photos. Albums
+    // with no photo assets will not be returned. On error, |response.albums|
+    // will be absent. |response.resume_token| will be absent unless there are
+    // more results to fetch; |resume_token| will be absent unless this is a
+    // follow-up query to one that indicated there were more results to fetch.
+    FetchGooglePhotosAlbums(string? resume_token) =>
+        (FetchGooglePhotosAlbumsResponse response);
 
     // Fetch the number of photos the user has stored in Google Photos. |count|
     // will be -1 on failure.

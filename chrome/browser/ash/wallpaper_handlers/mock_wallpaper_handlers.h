@@ -11,6 +11,27 @@
 
 namespace wallpaper_handlers {
 
+// Fetcher that returns one dummy album and no resume token in response to a
+// request for the user's Google Photos albums. Used to avoid network requests
+// in unit tests.
+class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
+ public:
+  explicit MockGooglePhotosAlbumsFetcher(Profile* profile);
+
+  MockGooglePhotosAlbumsFetcher(const MockGooglePhotosAlbumsFetcher&) = delete;
+  MockGooglePhotosAlbumsFetcher& operator=(
+      const MockGooglePhotosAlbumsFetcher&) = delete;
+
+  ~MockGooglePhotosAlbumsFetcher() override;
+
+  // GooglePhotosAlbumsFetcher:
+  MOCK_METHOD(void,
+              AddRequestAndStartIfNecessary,
+              (const absl::optional<std::string>& resume_token,
+               base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback),
+              (override));
+};
+
 // Fetcher that returns a dummy value for the number of photos in a user's
 // Google Photos library. Used to avoid network requests in unit tests.
 class MockGooglePhotosCountFetcher : public GooglePhotosCountFetcher {

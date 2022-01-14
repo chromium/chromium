@@ -224,15 +224,10 @@ TEST_F(ChromePersonalizationAppWallpaperProviderTest, SelectWallpaper) {
                         backdrop::Image::IMAGE_TYPE_UNKNOWN,
                     });
 
-  base::RunLoop loop;
   wallpaper_provider_remote()->get()->SelectWallpaper(
       asset_id, /*preview_mode=*/false,
-      base::BindLambdaForTesting([quit = loop.QuitClosure()](bool success) {
-        EXPECT_TRUE(success);
-        std::move(quit).Run();
-      }));
+      base::BindLambdaForTesting([](bool success) { EXPECT_TRUE(success); }));
   wallpaper_provider_remote()->FlushForTesting();
-  loop.Run();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
   EXPECT_EQ(ash::WallpaperInfo(
@@ -262,15 +257,10 @@ TEST_F(ChromePersonalizationAppWallpaperProviderTest, PreviewWallpaper) {
                         backdrop::Image::IMAGE_TYPE_UNKNOWN,
                     });
 
-  base::RunLoop loop;
   wallpaper_provider_remote()->get()->SelectWallpaper(
       asset_id, /*preview_mode=*/true,
-      base::BindLambdaForTesting([quit = loop.QuitClosure()](bool success) {
-        EXPECT_TRUE(success);
-        std::move(quit).Run();
-      }));
+      base::BindLambdaForTesting([](bool success) { EXPECT_TRUE(success); }));
   wallpaper_provider_remote()->FlushForTesting();
-  loop.Run();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
   EXPECT_EQ(ash::WallpaperInfo(
@@ -337,6 +327,9 @@ class ChromePersonalizationAppWallpaperProviderGooglePhotosTest
   bool GooglePhotosEnabled() const { return GetParam(); }
 
  protected:
+  // The number of times to start each idempotent API query.
+  static constexpr size_t kNumFetches = 2;
+
   // ChromePersonalizationAppWallpaperProviderTest:
   void SetUp() override {
     ChromePersonalizationAppWallpaperProviderTest::SetUp();
@@ -354,6 +347,31 @@ INSTANTIATE_TEST_SUITE_P(
     ChromePersonalizationAppWallpaperProviderGooglePhotosTest,
     /*google_photos_enabled=*/::testing::Bool());
 
+TEST_P(ChromePersonalizationAppWallpaperProviderGooglePhotosTest, FetchAlbums) {
+  // Mock a fetcher for the albums query.
+  auto* const google_photos_albums_fetcher = static_cast<
+      wallpaper_handlers::MockGooglePhotosAlbumsFetcher*>(
+      delegate()->SetGooglePhotosAlbumsFetcherForTest(
+          std::make_unique<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>(
+              profile())));
+
+  // Simulate the client making multiple requests for the same information to
+  // test that all callbacks for that query are called.
+  EXPECT_CALL(*google_photos_albums_fetcher, AddRequestAndStartIfNecessary)
+      .Times(GooglePhotosEnabled() ? kNumFetches : 0);
+
+  for (size_t i = 0; i < kNumFetches; ++i) {
+    wallpaper_provider_remote()->get()->FetchGooglePhotosAlbums(
+        /*resume_token=*/absl::nullopt,
+        base::BindLambdaForTesting(
+            [this](ash::personalization_app::mojom::
+                       FetchGooglePhotosAlbumsResponsePtr response) {
+              EXPECT_EQ(response->albums.has_value(), GooglePhotosEnabled());
+            }));
+  }
+  wallpaper_provider_remote()->FlushForTesting();
+}
+
 TEST_P(ChromePersonalizationAppWallpaperProviderGooglePhotosTest, FetchCount) {
   // Mock a fetcher for the photos count query.
   auto* const google_photos_count_fetcher = static_cast<
@@ -364,18 +382,14 @@ TEST_P(ChromePersonalizationAppWallpaperProviderGooglePhotosTest, FetchCount) {
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
-  const size_t num_fetches = 2;
   EXPECT_CALL(*google_photos_count_fetcher, AddRequestAndStartIfNecessary)
-      .Times(GooglePhotosEnabled() ? num_fetches : 0);
+      .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
-  base::RunLoop loop;
-  for (size_t i = 0; i < num_fetches; ++i) {
+  for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosCount(
-        base::BindLambdaForTesting([&](int count) {
+        base::BindLambdaForTesting([this](int count) {
           EXPECT_EQ(count, GooglePhotosEnabled() ? 0 : -1);
-          loop.QuitClosure().Run();
         }));
   }
   wallpaper_provider_remote()->FlushForTesting();
-  loop.Run();
 }

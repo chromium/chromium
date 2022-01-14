@@ -46,6 +46,7 @@ class WebUI;
 namespace wallpaper_handlers {
 class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
+class GooglePhotosAlbumsFetcher;
 class GooglePhotosCountFetcher;
 }  // namespace wallpaper_handlers
 
@@ -85,6 +86,10 @@ class ChromePersonalizationAppWallpaperProvider
   void FetchImagesForCollection(
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
+
+  void FetchGooglePhotosAlbums(
+      const absl::optional<std::string>& resume_token,
+      FetchGooglePhotosAlbumsCallback callback) override;
 
   void FetchGooglePhotosCount(FetchGooglePhotosCountCallback callback) override;
 
@@ -128,6 +133,10 @@ class ChromePersonalizationAppWallpaperProvider
   void ConfirmPreviewWallpaper() override;
 
   void CancelPreviewWallpaper() override;
+
+  wallpaper_handlers::GooglePhotosAlbumsFetcher*
+  SetGooglePhotosAlbumsFetcherForTest(
+      std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher> fetcher);
 
   wallpaper_handlers::GooglePhotosCountFetcher*
   SetGooglePhotosCountFetcherForTest(
@@ -194,6 +203,13 @@ class ChromePersonalizationAppWallpaperProvider
 
   std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher>
       wallpaper_attribution_info_fetcher_;
+
+  // Fetches the Google Photos Albums the user has created. Constructed lazily
+  // at the time of the first request and then persists for the rest of the
+  // delegate's lifetime, unless preemptively or subsequently replaced by a mock
+  // in a test.
+  std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher>
+      google_photos_albums_fetcher_;
 
   // Fetches the number of photos in the user's Google Photos library.
   // Constructed lazily at the time of the first request and then persists for

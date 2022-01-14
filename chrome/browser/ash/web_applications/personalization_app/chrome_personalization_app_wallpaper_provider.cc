@@ -175,6 +175,28 @@ void ChromePersonalizationAppWallpaperProvider::FetchImagesForCollection(
       std::move(wallpaper_images_info_fetcher)));
 }
 
+void ChromePersonalizationAppWallpaperProvider::FetchGooglePhotosAlbums(
+    const absl::optional<std::string>& resume_token,
+    FetchGooglePhotosAlbumsCallback callback) {
+  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+    mojo::ReportBadMessage(
+        "Cannot call `FetchGooglePhotosAlbums()` without Google Photos "
+        "Wallpaper integration enabled.");
+    std::move(callback).Run(
+        ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New(
+            absl::nullopt, absl::nullopt));
+    return;
+  }
+
+  if (!google_photos_albums_fetcher_) {
+    google_photos_albums_fetcher_ =
+        std::make_unique<wallpaper_handlers::GooglePhotosAlbumsFetcher>(
+            profile_);
+  }
+  google_photos_albums_fetcher_->AddRequestAndStartIfNecessary(
+      resume_token, std::move(callback));
+}
+
 void ChromePersonalizationAppWallpaperProvider::FetchGooglePhotosCount(
     FetchGooglePhotosCountCallback callback) {
   if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
@@ -425,6 +447,13 @@ void ChromePersonalizationAppWallpaperProvider::ConfirmPreviewWallpaper() {
 void ChromePersonalizationAppWallpaperProvider::CancelPreviewWallpaper() {
   SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
   WallpaperController::Get()->CancelPreviewWallpaper();
+}
+
+wallpaper_handlers::GooglePhotosAlbumsFetcher*
+ChromePersonalizationAppWallpaperProvider::SetGooglePhotosAlbumsFetcherForTest(
+    std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher> fetcher) {
+  google_photos_albums_fetcher_ = std::move(fetcher);
+  return google_photos_albums_fetcher_.get();
 }
 
 wallpaper_handlers::GooglePhotosCountFetcher*

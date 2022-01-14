@@ -44,6 +44,10 @@ class FakePersonalizationAppWallpaperProvider
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
 
+  void FetchGooglePhotosAlbums(
+      const absl::optional<std::string>& resume_token,
+      FetchGooglePhotosAlbumsCallback callback) override;
+
   void FetchGooglePhotosCount(FetchGooglePhotosCountCallback callback) override;
 
   void GetLocalImages(GetLocalImagesCallback callback) override;

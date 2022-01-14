@@ -85,6 +85,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="wallpaper_backdrop_images_info"/>
       <traffic_annotation unique_id="wallpaper_backdrop_surprise_me_image"/>
       <traffic_annotation unique_id="wallpaper_fetcher"/>
+      <traffic_annotation unique_id="wallpaper_google_photos_albums"/>
       <traffic_annotation unique_id="wallpaper_google_photos_count"/>
     </sender>
     <!-- ChromeOS-specific features -->
