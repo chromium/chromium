@@ -2,7 +2,8 @@
 <meta charset="utf-8"/>
 <script>
 async function onLoad() {
-  const scope = self.origin + '/cookies/resources/postToParent.py?with-sw';
+  const params = new URLSearchParams(self.location.search);
+  const scope = self.origin + params.get('scopepath');
   const script = './fetch-rewrite-worker.js';
   const reg = await navigator.serviceWorker.register(script, { scope: scope });
   // In nested cases we may be impacted by partitioning or not depending on

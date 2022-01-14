@@ -22,9 +22,12 @@ function make_nested_url(nested_origins, target_url) {
   return target_url;
 }
 
+const scopepath = '/cookies/resources/postToParent.py?with-sw';
+
 async function unregister_service_worker(origin, nested_origins=[]) {
   let target_url = origin +
-      '/service-workers/service-worker/resources/same-site-cookies-unregister.html';
+      '/service-workers/service-worker/resources/unregister-rewrite-worker.html' +
+      '?scopepath=' + encodeURIComponent(scopepath);
   target_url = make_nested_url(nested_origins, target_url);
   const w = window.open(target_url);
   try {
@@ -36,7 +39,8 @@ async function unregister_service_worker(origin, nested_origins=[]) {
 
 async function register_service_worker(origin, nested_origins=[]) {
   let target_url = origin +
-      '/service-workers/service-worker/resources/same-site-cookies-register.html';
+      '/service-workers/service-worker/resources/register-rewrite-worker.html' +
+      '?scopepath=' + encodeURIComponent(scopepath);
   target_url = make_nested_url(nested_origins, target_url);
   const w = window.open(target_url);
   try {
