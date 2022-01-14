@@ -104,7 +104,7 @@ class PLATFORM_EXPORT ScriptWrappable
   // yet associated with any wrapper.  Returns the wrapper already associated
   // or |wrapper| if not yet associated.
   // The caller should always use the returned value rather than |wrapper|.
-  WARN_UNUSED_RESULT virtual v8::Local<v8::Object> AssociateWithWrapper(
+  [[nodiscard]] virtual v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper);
@@ -114,9 +114,9 @@ class PLATFORM_EXPORT ScriptWrappable
   // associated with this instance, or false if this instance is already
   // associated with a wrapper.  In the latter case, |wrapper| will be updated
   // to the existing wrapper.
-  WARN_UNUSED_RESULT bool SetWrapper(v8::Isolate* isolate,
-                                     const WrapperTypeInfo* wrapper_type_info,
-                                     v8::Local<v8::Object>& wrapper) {
+  [[nodiscard]] bool SetWrapper(v8::Isolate* isolate,
+                                const WrapperTypeInfo* wrapper_type_info,
+                                v8::Local<v8::Object>& wrapper) {
     DCHECK(!wrapper.IsEmpty());
     if (UNLIKELY(ContainsWrapper())) {
       wrapper = MainWorldWrapper(isolate);

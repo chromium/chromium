@@ -1508,36 +1508,36 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // For non-boxes, for better performance, the caller can prepare
   // |block_for_flipping| (= ContainingBlock()) if it will loop through many
   // rects/points to flip to avoid the cost of repeated ContainingBlock() calls.
-  WARN_UNUSED_RESULT LayoutRect
-  FlipForWritingMode(const PhysicalRect& r,
-                     const LayoutBox* box_for_flipping = nullptr) const {
+  [[nodiscard]] LayoutRect FlipForWritingMode(
+      const PhysicalRect& r,
+      const LayoutBox* box_for_flipping = nullptr) const {
     NOT_DESTROYED();
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return r.ToLayoutRect();
     return {FlipForWritingModeInternal(r.X(), r.Width(), box_for_flipping),
             r.Y(), r.Width(), r.Height()};
   }
-  WARN_UNUSED_RESULT PhysicalRect
-  FlipForWritingMode(const LayoutRect& r,
-                     const LayoutBox* box_for_flipping = nullptr) const {
+  [[nodiscard]] PhysicalRect FlipForWritingMode(
+      const LayoutRect& r,
+      const LayoutBox* box_for_flipping = nullptr) const {
     NOT_DESTROYED();
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return PhysicalRect(r);
     return {FlipForWritingModeInternal(r.X(), r.Width(), box_for_flipping),
             r.Y(), r.Width(), r.Height()};
   }
-  WARN_UNUSED_RESULT LayoutPoint
-  FlipForWritingMode(const PhysicalOffset& p,
-                     const LayoutBox* box_for_flipping = nullptr) const {
+  [[nodiscard]] LayoutPoint FlipForWritingMode(
+      const PhysicalOffset& p,
+      const LayoutBox* box_for_flipping = nullptr) const {
     NOT_DESTROYED();
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return p.ToLayoutPoint();
     return {FlipForWritingModeInternal(p.left, LayoutUnit(), box_for_flipping),
             p.top};
   }
-  WARN_UNUSED_RESULT PhysicalOffset
-  FlipForWritingMode(const LayoutPoint& p,
-                     const LayoutBox* box_for_flipping = nullptr) const {
+  [[nodiscard]] PhysicalOffset FlipForWritingMode(
+      const LayoutPoint& p,
+      const LayoutBox* box_for_flipping = nullptr) const {
     NOT_DESTROYED();
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return PhysicalOffset(p);

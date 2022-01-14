@@ -362,8 +362,8 @@ class PLATFORM_EXPORT TransformationMatrix {
     double angle;
   } Decomposed2dType;
 
-  WARN_UNUSED_RESULT bool Decompose(DecomposedType&) const;
-  WARN_UNUSED_RESULT bool Decompose2D(Decomposed2dType&) const;
+  [[nodiscard]] bool Decompose(DecomposedType&) const;
+  [[nodiscard]] bool Decompose2D(Decomposed2dType&) const;
   void Recompose(const DecomposedType&);
   void Recompose2D(const Decomposed2dType&);
   void Blend(const TransformationMatrix& from, double progress);

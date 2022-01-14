@@ -59,7 +59,7 @@ class CORE_EXPORT ModuleScript : public Script {
   // Callers must enter a `v8::HandleScope` before calling.
   // See the class comments of `RethrowErrorsOption` and
   // `ScriptEvaluationResult` for exception handling and return value semantics.
-  WARN_UNUSED_RESULT ScriptEvaluationResult RunScriptAndReturnValue(
+  [[nodiscard]] ScriptEvaluationResult RunScriptAndReturnValue(
       V8ScriptRunner::RethrowErrorsOption =
           V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 

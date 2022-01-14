@@ -111,7 +111,7 @@ class NetworkResourcesData final
 
     bool IsContentEvicted() const { return is_content_evicted_; }
     // Evicts the post data and the respone content.
-    WARN_UNUSED_RESULT size_t EvictContent();
+    [[nodiscard]] size_t EvictContent();
 
     InspectorPageAgent::ResourceType GetType() const { return type_; }
     void SetType(InspectorPageAgent::ResourceType type) { type_ = type; }
@@ -177,7 +177,7 @@ class NetworkResourcesData final
     bool HasData() const { return data_buffer_.get(); }
     void AppendData(const char* data, size_t data_length);
     // Removes just the response content.
-    WARN_UNUSED_RESULT size_t RemoveResponseContent();
+    [[nodiscard]] size_t RemoveResponseContent();
     size_t DecodeDataToContent();
     void ProcessCustomWeakness(const LivenessBroker&);
 

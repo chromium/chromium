@@ -73,8 +73,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
                            Thread::IdleTask task) override;
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
-  std::unique_ptr<RendererPauseHandle> PauseScheduler() override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<RendererPauseHandle> PauseScheduler() override;
 
   // Returns base::TimeTicks::Now() by default.
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;

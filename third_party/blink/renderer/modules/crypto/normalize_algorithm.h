@@ -54,7 +54,7 @@ class ExceptionState;
 //
 // [1]
 // https://w3c.github.io/webcrypto/#algorithm-normalization-normalize-an-algorithm
-MODULES_EXPORT WARN_UNUSED_RESULT bool NormalizeAlgorithm(
+[[nodiscard]] MODULES_EXPORT bool NormalizeAlgorithm(
     v8::Isolate*,
     const V8AlgorithmIdentifier*,
     WebCryptoOperation,

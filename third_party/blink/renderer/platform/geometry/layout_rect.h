@@ -195,7 +195,7 @@ class PLATFORM_EXPORT LayoutRect {
                        location_.Y() + size_.Height());
   }
 
-  WARN_UNUSED_RESULT bool Intersects(const LayoutRect&) const;
+  [[nodiscard]] bool Intersects(const LayoutRect&) const;
   bool Contains(const LayoutRect&) const;
 
   // This checks to see if the rect contains x,y in the traditional sense.

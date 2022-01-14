@@ -54,8 +54,8 @@ class HeapMojoRemote {
       mojo::ConnectionErrorWithReasonCallback handler) {
     wrapper_->remote().set_disconnect_with_reason_handler(std::move(handler));
   }
-  mojo::PendingReceiver<Interface> BindNewPipeAndPassReceiver(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
+  [[nodiscard]] mojo::PendingReceiver<Interface> BindNewPipeAndPassReceiver(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(task_runner);
     return wrapper_->remote().BindNewPipeAndPassReceiver(
         std::move(task_runner));

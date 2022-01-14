@@ -348,7 +348,7 @@ class WebLocalFrame : public WebFrame {
 
   // `world_id` must be > kMainDOMWorldId and < kEmbedderWorldIdLimit (a
   // high number used internally).
-  WARN_UNUSED_RESULT virtual v8::Local<v8::Value>
+  [[nodiscard]] virtual v8::Local<v8::Value>
   ExecuteScriptInIsolatedWorldAndReturnValue(int32_t world_id,
                                              const WebScriptSource&,
                                              BackForwardCacheAware) = 0;

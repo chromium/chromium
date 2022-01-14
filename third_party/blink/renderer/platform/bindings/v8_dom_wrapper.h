@@ -61,7 +61,7 @@ class V8DOMWrapper {
   // ScriptWrappable is not yet associated with any wrapper.  Returns the
   // wrapper already associated or |wrapper| if not yet associated.
   // The caller should always use the returned value rather than |wrapper|.
-  PLATFORM_EXPORT WARN_UNUSED_RESULT static v8::Local<v8::Object>
+  [[nodiscard]] PLATFORM_EXPORT static v8::Local<v8::Object>
   AssociateObjectWithWrapper(v8::Isolate*,
                              ScriptWrappable*,
                              const WrapperTypeInfo*,

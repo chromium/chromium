@@ -51,8 +51,9 @@ class HeapMojoAssociatedReceiver {
   void set_disconnect_handler(base::OnceClosure handler) {
     wrapper_->associated_receiver().set_disconnect_handler(std::move(handler));
   }
-  mojo::PendingAssociatedRemote<Interface> BindNewEndpointAndPassRemote(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
+  [[nodiscard]] mojo::PendingAssociatedRemote<Interface>
+  BindNewEndpointAndPassRemote(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(task_runner);
     return wrapper_->associated_receiver().BindNewEndpointAndPassRemote(
         std::move(task_runner));

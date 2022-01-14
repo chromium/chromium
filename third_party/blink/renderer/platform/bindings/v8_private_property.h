@@ -55,7 +55,7 @@ class PLATFORM_EXPORT V8PrivateProperty {
     }
 
     // Returns the value of the private property if set, or undefined.
-    WARN_UNUSED_RESULT v8::MaybeLocal<v8::Value> GetOrUndefined(
+    [[nodiscard]] v8::MaybeLocal<v8::Value> GetOrUndefined(
         v8::Local<v8::Object> object) const {
       return object->GetPrivate(GetContext(), private_symbol_);
     }

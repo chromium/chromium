@@ -47,7 +47,7 @@ class PLATFORM_EXPORT EventWithCallback {
                     OriginalEventList original_events);
   ~EventWithCallback();
 
-  bool CanCoalesceWith(const EventWithCallback& other) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CanCoalesceWith(const EventWithCallback& other) const;
   void CoalesceWith(EventWithCallback* other, base::TimeTicks timestamp_now);
 
   void RunCallbacks(InputHandlerProxy::EventDisposition,

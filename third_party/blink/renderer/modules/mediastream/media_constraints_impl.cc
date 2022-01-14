@@ -668,7 +668,7 @@ bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
   return false;
 }
 
-WARN_UNUSED_RESULT bool ValidateAndCopyStringConstraint(
+[[nodiscard]] bool ValidateAndCopyStringConstraint(
     const V8ConstrainDOMString* blink_union_form,
     NakedValueDisposition naked_treatment,
     StringConstraint& web_form,

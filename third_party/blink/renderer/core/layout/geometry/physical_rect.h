@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_RECT_H_
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
@@ -95,8 +94,8 @@ struct CORE_EXPORT PhysicalRect {
     return Contains(point.left, point.top);
   }
 
-  WARN_UNUSED_RESULT bool Intersects(const PhysicalRect&) const;
-  WARN_UNUSED_RESULT bool IntersectsInclusively(const PhysicalRect&) const;
+  [[nodiscard]] bool Intersects(const PhysicalRect&) const;
+  [[nodiscard]] bool IntersectsInclusively(const PhysicalRect&) const;
 
   // Whether all edges of the rect are at full-pixel boundaries.
   // i.e.: ToEnclosingRect(this)) == this

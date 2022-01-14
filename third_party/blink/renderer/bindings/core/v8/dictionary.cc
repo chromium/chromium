@@ -134,7 +134,7 @@ bool Dictionary::GetInternal(const v8::Local<v8::Value>& key,
   return true;
 }
 
-WARN_UNUSED_RESULT static v8::MaybeLocal<v8::String> GetStringValueInArray(
+[[nodiscard]] static v8::MaybeLocal<v8::String> GetStringValueInArray(
     v8::Local<v8::Context> context,
     v8::Local<v8::Array> array,
     uint32_t index) {

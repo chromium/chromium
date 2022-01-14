@@ -197,8 +197,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void PauseTimersForAndroidWebView() override;
   void ResumeTimersForAndroidWebView() override;
 #endif
-  std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseRenderer() override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<ThreadScheduler::RendererPauseHandle>
+  PauseRenderer() override;
   bool IsHighPriorityWorkAnticipated() override;
   bool ShouldYieldForHighPriorityWork() override;
   bool CanExceedIdleDeadlineIfRequired() const override;

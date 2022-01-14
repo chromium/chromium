@@ -227,8 +227,7 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   //
   // Renderer will be resumed when the handle is destroyed.
   // Handle should be destroyed before the renderer.
-  virtual std::unique_ptr<RendererPauseHandle> PauseRenderer()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual std::unique_ptr<RendererPauseHandle> PauseRenderer();
 
   // Returns true if the scheduler has reason to believe that high priority work
   // may soon arrive on the main thread, e.g., if gesture events were observed

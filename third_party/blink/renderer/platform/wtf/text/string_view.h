@@ -150,8 +150,8 @@ class WTF_EXPORT StringView {
     return impl_->Is8Bit();
   }
 
-  std::string Utf8(UTF8ConversionMode mode = kLenientUTF8Conversion) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::string Utf8(
+      UTF8ConversionMode mode = kLenientUTF8Conversion) const;
 
   bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
 

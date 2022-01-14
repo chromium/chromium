@@ -92,11 +92,10 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   // is associated with the object, or false if the object is already
   // associated with a wrapper.  In the latter case, |wrapper| will be updated
   // to the existing wrapper.
-  WARN_UNUSED_RESULT static bool SetWrapper(
-      v8::Isolate* isolate,
-      ScriptWrappable* object,
-      const WrapperTypeInfo* wrapper_type_info,
-      v8::Local<v8::Object>& wrapper) {
+  [[nodiscard]] static bool SetWrapper(v8::Isolate* isolate,
+                                       ScriptWrappable* object,
+                                       const WrapperTypeInfo* wrapper_type_info,
+                                       v8::Local<v8::Object>& wrapper) {
     if (CanUseMainWorldWrapper())
       return object->SetWrapper(isolate, wrapper_type_info, wrapper);
     return Current(isolate).Set(isolate, object, wrapper_type_info, wrapper);
@@ -123,10 +122,10 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     return v8::Local<v8::Object>();
   }
 
-  WARN_UNUSED_RESULT bool Set(v8::Isolate* isolate,
-                              ScriptWrappable* object,
-                              const WrapperTypeInfo* wrapper_type_info,
-                              v8::Local<v8::Object>& wrapper) {
+  [[nodiscard]] bool Set(v8::Isolate* isolate,
+                         ScriptWrappable* object,
+                         const WrapperTypeInfo* wrapper_type_info,
+                         v8::Local<v8::Object>& wrapper) {
     DCHECK(object);
     DCHECK(!wrapper.IsEmpty());
     if (is_main_world_)

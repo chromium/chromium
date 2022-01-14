@@ -72,7 +72,7 @@ class BLINK_COMMON_EXPORT IndexedDBKey {
   // Returns a copy of this array-type key, but with "holes" replaced by the
   // given primary key. Used in cases where a compound key references an
   // auto-generated primary key.
-  IndexedDBKey FillHoles(const IndexedDBKey&) const WARN_UNUSED_RESULT;
+  [[nodiscard]] IndexedDBKey FillHoles(const IndexedDBKey&) const;
 
   std::string DebugString() const;
 

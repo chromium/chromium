@@ -151,8 +151,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       int32_t world_id,
       const WebScriptSource&,
       BackForwardCacheAware back_forward_cache_aware) override;
-  WARN_UNUSED_RESULT v8::Local<v8::Value>
-  ExecuteScriptInIsolatedWorldAndReturnValue(
+  [[nodiscard]] v8::Local<v8::Value> ExecuteScriptInIsolatedWorldAndReturnValue(
       int32_t world_id,
       const WebScriptSource&,
       BackForwardCacheAware back_forward_cache_aware) override;

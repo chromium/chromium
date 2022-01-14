@@ -64,7 +64,7 @@ class IDBCursor : public ScriptWrappable {
   void Trace(Visitor*) const override;
   void ContextWillBeDestroyed() { backend_.reset(); }
 
-  WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
+  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper) override;

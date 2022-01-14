@@ -1734,9 +1734,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit OffsetLeft(const Element*) const final;
   LayoutUnit OffsetTop(const Element*) const final;
 
-  WARN_UNUSED_RESULT LayoutUnit
-  FlipForWritingMode(LayoutUnit position,
-                     LayoutUnit width = LayoutUnit()) const {
+  [[nodiscard]] LayoutUnit FlipForWritingMode(
+      LayoutUnit position,
+      LayoutUnit width = LayoutUnit()) const {
     NOT_DESTROYED();
     // The offset is in the block direction (y for horizontal writing modes, x
     // for vertical writing modes).
@@ -1748,8 +1748,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Inherit other flipping methods from LayoutObject.
   using LayoutObject::FlipForWritingMode;
 
-  WARN_UNUSED_RESULT LayoutPoint
-  DeprecatedFlipForWritingMode(const LayoutPoint& position) const {
+  [[nodiscard]] LayoutPoint DeprecatedFlipForWritingMode(
+      const LayoutPoint& position) const {
     NOT_DESTROYED();
     return LayoutPoint(FlipForWritingMode(position.X()), position.Y());
   }

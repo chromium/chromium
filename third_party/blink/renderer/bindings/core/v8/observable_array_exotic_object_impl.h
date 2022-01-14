@@ -32,7 +32,7 @@ class CORE_EXPORT ObservableArrayExoticObjectImpl final
 
   // ScriptWrappable overrides
   v8::MaybeLocal<v8::Value> Wrap(ScriptState* script_state) override;
-  WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
+  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate* isolate,
       const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Object> wrapper) override;

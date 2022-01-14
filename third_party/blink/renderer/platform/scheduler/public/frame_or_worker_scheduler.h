@@ -101,9 +101,9 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // Usage:
   // handle = scheduler->RegisterFeature(
   //     kYourFeature, { SchedulingPolicy::DisableSomething() });
-  SchedulingAffectingFeatureHandle RegisterFeature(
+  [[nodiscard]] SchedulingAffectingFeatureHandle RegisterFeature(
       SchedulingPolicy::Feature feature,
-      SchedulingPolicy policy) WARN_UNUSED_RESULT;
+      SchedulingPolicy policy);
 
   // Register a feature which is used for the rest of the lifetime of
   // the document and can't be unregistered.
@@ -124,9 +124,9 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // exception is that this observer enables observing visibility changes of the
   // associated page in workers, whereas PageVisibilityObserver does not
   // (crbug.com/1286570).
-  std::unique_ptr<LifecycleObserverHandle> AddLifecycleObserver(
+  [[nodiscard]] std::unique_ptr<LifecycleObserverHandle> AddLifecycleObserver(
       ObserverType,
-      OnLifecycleStateChangedCallback) WARN_UNUSED_RESULT;
+      OnLifecycleStateChangedCallback);
 
   virtual std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) = 0;
