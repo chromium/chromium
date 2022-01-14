@@ -323,8 +323,7 @@ double FontSizeTabHelper::GetCurrentUserZoomMultiplier() const {
 }
 
 void FontSizeTabHelper::StoreCurrentUserZoomMultiplier(double multiplier) {
-  DictionaryPrefUpdateDeprecated update(GetPrefService(),
-                                        prefs::kIosUserZoomMultipliers);
+  DictionaryPrefUpdate update(GetPrefService(), prefs::kIosUserZoomMultipliers);
 
   // Don't bother to store all the ones. This helps keep the pref dict clean.
   if (multiplier == 1) {
