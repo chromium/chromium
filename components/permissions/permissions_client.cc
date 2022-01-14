@@ -5,10 +5,11 @@
 #include "components/permissions/permissions_client.h"
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/permissions/permission_uma_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/paint_vector_icon.h"
 #endif
 
@@ -45,7 +46,7 @@ void PermissionsClient::AreSitesImportant(
     entry.second = false;
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 bool PermissionsClient::IsCookieDeletionDisabled(
     content::BrowserContext* browser_context,
     const GURL& origin) {
@@ -61,7 +62,7 @@ void PermissionsClient::GetUkmSourceId(content::BrowserContext* browser_context,
 }
 
 IconId PermissionsClient::GetOverrideIconId(RequestType request_type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return 0;
 #else
   return gfx::kNoneIcon;
@@ -116,7 +117,7 @@ bool PermissionsClient::DoOriginsMatchNewTabPage(const GURL& requesting_origin,
   return false;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool PermissionsClient::IsDseOrigin(content::BrowserContext* browser_context,
                                     const url::Origin& origin) {
   return false;
@@ -134,7 +135,7 @@ infobars::InfoBar* PermissionsClient::MaybeCreateInfoBar(
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<PermissionsClient::PermissionMessageDelegate>
 PermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,

@@ -40,7 +40,7 @@ class GeolocationPermissionContext : public PermissionContextBase {
                                   BrowserPermissionCallback* callback,
                                   GeolocationPermissionContext* context) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Returns whether or not this |web_contents| is interactable.
     virtual bool IsInteractable(content::WebContents* web_contents) = 0;
 

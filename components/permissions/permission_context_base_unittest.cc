@@ -267,7 +267,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
           "Permissions.Prompt." + decision_string + ".PriorIgnoreCount2." +
               PermissionUtil::GetPermissionString(content_settings_type),
           0, 1);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       histograms.ExpectUniqueSample(
           "Permissions.Action.WithDisposition.ModalDialog",
           static_cast<int>(action.value()), 1);
@@ -307,7 +307,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
                 static_cast<int64_t>(action.value()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       EXPECT_EQ(
           *ukm_recorder.GetEntryMetric(entry, "PromptDisposition"),
           static_cast<int64_t>(PermissionPromptDisposition::MODAL_DIALOG));
@@ -773,7 +773,7 @@ TEST_F(PermissionContextBaseTests, TestDismissUntilBlocked) {
 
 // Test setting a custom number of dismissals before block via variations.
 // TODO(crbug.com/1278842): Fix flaky test on Linux TSan.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TestDismissVariations DISABLED_TestDismissVariations
 #else
 #define MAYBE_TestDismissVariations TestDismissVariations
@@ -796,7 +796,7 @@ TEST_F(PermissionContextBaseTests, TestGrantAndRevoke) {
                                  CONTENT_SETTING_ASK);
   TestGrantAndRevoke_TestContent(ContentSettingsType::MIDI_SYSEX,
                                  CONTENT_SETTING_ASK);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TestGrantAndRevoke_TestContent(
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ASK);
   // TODO(timvolodine): currently no test for
@@ -810,7 +810,7 @@ TEST_F(PermissionContextBaseTests, TestGrantAndRevoke) {
 
 // Tests the global kill switch by enabling/disabling the Field Trials.
 // TODO(crbug.com/1278842): Fix flaky test on Linux TSan.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TestGlobalKillSwitch DISABLED_TestGlobalKillSwitch
 #else
 #define MAYBE_TestGlobalKillSwitch TestGlobalKillSwitch
@@ -820,7 +820,7 @@ TEST_F(PermissionContextBaseTests, MAYBE_TestGlobalKillSwitch) {
   TestGlobalPermissionsKillSwitch(ContentSettingsType::NOTIFICATIONS);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::MIDI_SYSEX);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::DURABLE_STORAGE);
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   TestGlobalPermissionsKillSwitch(
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
 #endif

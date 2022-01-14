@@ -19,7 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/message_wrapper.h"
 #endif
 
@@ -51,7 +51,7 @@ class PermissionPromptAndroid;
 // specific logic.
 class PermissionsClient {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   class PermissionMessageDelegate {
    public:
     virtual ~PermissionMessageDelegate() = default;
@@ -113,7 +113,7 @@ class PermissionsClient {
       content::BrowserContext* browser_context,
       std::vector<std::pair<url::Origin, bool>>* origins);
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns whether cookie deletion is allowed for |browser_context| and
   // |origin|.
   // TODO(crbug.com/1081944): Remove this method and all code depending on it
@@ -196,7 +196,7 @@ class PermissionsClient {
   virtual bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
                                         const GURL& embedding_origin);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns whether the given origin matches the default search engine (DSE)
   // origin.
   virtual bool IsDseOrigin(content::BrowserContext* browser_context,

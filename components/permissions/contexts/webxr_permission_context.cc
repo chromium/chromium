@@ -5,9 +5,10 @@
 #include "components/permissions/contexts/webxr_permission_context.h"
 
 #include "base/check.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
@@ -32,7 +33,7 @@ bool WebXrPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // There are two other permissions that need to check corresponding OS-level
 // permissions, and they take two different approaches to this. Geolocation only
 // stores the permission ContentSetting if both requests are granted (or if the
@@ -134,5 +135,5 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
       id, requesting_origin, embedding_origin, std::move(callback),
       false /*persist*/, setting, /*is_one_time=*/false);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace permissions

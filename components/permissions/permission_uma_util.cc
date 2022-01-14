@@ -29,7 +29,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "components/permissions/android/jni_headers/PermissionUmaUtil_jni.h"
 #endif
@@ -60,7 +60,7 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS;
     case RequestType::kArSession:
       return RequestTypeForUma::PERMISSION_AR;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kCameraPanTiltZoom:
       return RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM;
 #endif
@@ -70,7 +70,7 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_CLIPBOARD_READ_WRITE;
     case RequestType::kDiskQuota:
       return RequestTypeForUma::QUOTA;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kFontAccess:
       return RequestTypeForUma::PERMISSION_FONT_ACCESS;
 #endif
@@ -84,17 +84,17 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_MIDI_SYSEX;
     case RequestType::kMultipleDownloads:
       return RequestTypeForUma::DOWNLOAD;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case RequestType::kNfcDevice:
       return RequestTypeForUma::PERMISSION_NFC;
 #endif
     case RequestType::kNotifications:
       return RequestTypeForUma::PERMISSION_NOTIFICATIONS;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       return RequestTypeForUma::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kRegisterProtocolHandler:
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
     case RequestType::kSecurityAttestation:
@@ -106,7 +106,7 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
     case RequestType::kVrSession:
       return RequestTypeForUma::PERMISSION_VR;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kWindowPlacement:
       return RequestTypeForUma::PERMISSION_WINDOW_PLACEMENT;
 #endif
@@ -604,7 +604,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     RecordPermissionPromptPriorCount(
         permission, priorIgnorePrefix,
         autoblocker->GetIgnoreCount(requesting_origin, permission));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (permission == ContentSettingsType::GEOLOCATION &&
         permission_action != PermissionAction::IGNORED) {
       RecordWithBatteryBucket("Permissions.BatteryLevel." + action_string +
@@ -677,7 +677,7 @@ void PermissionUmaUtil::RecordPermissionPromptPriorCount(
       ->Add(count);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PermissionUmaUtil::RecordWithBatteryBucket(const std::string& histogram) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PermissionUmaUtil_recordWithBatteryBucket(

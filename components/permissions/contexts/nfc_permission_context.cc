@@ -4,6 +4,7 @@
 
 #include "components/permissions/contexts/nfc_permission_context.h"
 
+#include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_request_id.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -20,7 +21,7 @@ NfcPermissionContext::NfcPermissionContext(
 
 NfcPermissionContext::~NfcPermissionContext() = default;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 ContentSetting NfcPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,

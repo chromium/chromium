@@ -99,7 +99,7 @@ bool ShouldShowQuietRequestAgainIfPreempted(
 }
 
 bool IsMediaRequest(RequestType type) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (type == RequestType::kCameraPanTiltZoom)
     return true;
 #endif

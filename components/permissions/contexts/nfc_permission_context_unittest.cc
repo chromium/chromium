@@ -17,7 +17,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/nfc/mock_nfc_system_level_setting.h"
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 #endif
@@ -28,7 +28,7 @@ namespace permissions {
 namespace {
 class TestNfcPermissionContextDelegate : public NfcPermissionContext::Delegate {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsInteractable(content::WebContents* web_contents) override {
     return true;
   }
@@ -138,7 +138,7 @@ void NfcPermissionContextTests::SetUp() {
 
   auto delegate = std::make_unique<TestNfcPermissionContextDelegate>();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto context = std::make_unique<NfcPermissionContextAndroid>(
       browser_context(), std::move(delegate));
   context->set_nfc_system_level_setting_for_testing(
@@ -234,7 +234,7 @@ TEST_F(NfcPermissionContextTests, SinglePermissionPrompt) {
   RequestNfcPermission(web_contents(), RequestID(0), requesting_frame,
                        true /* user_gesture */);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(HasActivePrompt());
 #else
   ASSERT_FALSE(HasActivePrompt());
@@ -251,7 +251,7 @@ TEST_F(NfcPermissionContextTests, SinglePermissionPromptFailsOnInsecureOrigin) {
   ASSERT_FALSE(HasActivePrompt());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Tests concerning Android NFC setting
 TEST_F(NfcPermissionContextTests,
        SystemNfcSettingDisabledWhenNfcPermissionGetsGranted) {

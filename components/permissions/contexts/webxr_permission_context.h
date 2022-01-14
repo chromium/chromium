@@ -23,7 +23,7 @@ class WebXrPermissionContext : public PermissionContextBase {
   // PermissionContextBase:
   bool IsRestrictedToSecureOrigins() const override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we need to do some additional checking for OS level permissions,
   // which do not need to happen on Desktop. Note that NotifyPermissionSet is
   // only called after a "RequestPermission" call (and not if we are just

@@ -35,10 +35,10 @@ int BucketizeValue(int count) {
 }
 
 ClientFeatures_Platform GetCurrentPlatformProto() {
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   return permissions::ClientFeatures_Platform_PLATFORM_DESKTOP;
-#elif defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   return permissions::ClientFeatures_Platform_PLATFORM_MOBILE;
 #else
   return permissions::ClientFeatures_Platform_PLATFORM_UNSPECIFIED;
@@ -46,10 +46,10 @@ ClientFeatures_Platform GetCurrentPlatformProto() {
 }
 
 ClientFeatures_PlatformEnum GetCurrentPlatformEnumProto() {
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   return permissions::ClientFeatures_PlatformEnum_PLATFORM_DESKTOP_V2;
-#elif defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   return permissions::ClientFeatures_PlatformEnum_PLATFORM_MOBILE_V2;
 #else
   return permissions::ClientFeatures_PlatformEnum_PLATFORM_UNSPECIFIED_V2;

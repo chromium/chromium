@@ -46,7 +46,7 @@ class PermissionRequestManagerTest
                      PermissionRequestGestureType::NO_GESTURE),
         request_camera_(RequestType::kCameraStream,
                         PermissionRequestGestureType::NO_GESTURE),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         request_ptz_(RequestType::kCameraPanTiltZoom,
                      PermissionRequestGestureType::NO_GESTURE),
 #endif
@@ -151,7 +151,7 @@ class PermissionRequestManagerTest
   MockPermissionRequest request2_;
   MockPermissionRequest request_mic_;
   MockPermissionRequest request_camera_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   MockPermissionRequest request_ptz_;
 #endif
   MockPermissionRequest iframe_request_same_domain_;
@@ -364,7 +364,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraDifferentOrigins) {
   ASSERT_EQ(prompt_factory_->request_count(), 1);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Only camera/ptz requests from the same origin should be grouped.
 TEST_P(PermissionRequestManagerTest, CameraPtzGrouped) {
   manager_->AddRequest(web_contents()->GetMainFrame(), &request_camera_);
@@ -426,7 +426,7 @@ TEST_P(PermissionRequestManagerTest, MicCameraPtzDifferentOrigins) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_LT(prompt_factory_->request_count(), 3);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests mix of grouped media requests and non-groupable request.
 TEST_P(PermissionRequestManagerTest, MixOfMediaAndNotMediaRequests) {
@@ -461,7 +461,7 @@ TEST_P(PermissionRequestManagerTest, TwoRequestsTabSwitch) {
   ASSERT_EQ(prompt_factory_->request_count(), 2);
 
   MockTabSwitchAway();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(prompt_factory_->is_visible());
 #else
   EXPECT_FALSE(prompt_factory_->is_visible());

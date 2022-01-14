@@ -12,7 +12,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_drm_bridge.h"
 #endif
 
@@ -39,7 +39,7 @@ bool PermissionRequest::IsDuplicateOf(PermissionRequest* other_request) const {
          requesting_origin() == other_request->requesting_origin();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::u16string PermissionRequest::GetDialogMessageText() const {
   int message_id = 0;
   switch (request_type_) {
@@ -102,7 +102,7 @@ std::u16string PermissionRequest::GetDialogMessageText() const {
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IconId PermissionRequest::GetIconForChip() {
   return permissions::GetIconId(request_type_);
 }
@@ -207,7 +207,7 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kNotifications:
       message_id = IDS_NOTIFICATION_PERMISSIONS_FRAGMENT;
       break;
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       message_id = IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT;
       break;
