@@ -12556,13 +12556,18 @@
       'id': 269,
       'caption': '''Enable virtual keyboard''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled keeps the on-screen virtual keyboard (a Chrome OS input device) on. Setting the policy to Disabled keeps this keyboard off.
+      'desc': '''Controls the on-screen keyboard, acting as a supplementary policy to the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy.
 
-      If you set the policy, users can't change it. (They can turn an accessibility on-screen keyboard that takes precedence over the virtual keyboard on or off. See the VirtualKeyboardEnabled policy.)
+      If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is True or if the Enable on-screen keyboard Chrome OS setting is on, this policy has no effect.
 
-      If not set, the keyboard is off, but users can change it.
+      If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is False or not set and the Enable on-screen keyboard Chrome OS setting is off, this policy has the following effect:
+      If this policy is not set, the on-screen keyboard is displayed when the device is in tablet mode.
+      If this policy is set to True, the on-screen keyboard is always displayed.
+      If this policy is set to False, the on-screen keyboard is never displayed.
 
-       Note: Heuristic rules might also factor into keyboard display.''',
+      The on-screen keyboard may change to a compact layout depending on the input method.
+
+      If you set the policy, users can't change it.''',
     },
     {
       'name': 'ShowLogoutButtonInTray',
@@ -14204,7 +14209,7 @@
       'id': 255,
       'caption': '''Enable on-screen keyboard''',
       'tags': [],
-      'desc': '''Setting the policy to True keeps the on-screen keyboard on. Setting the policy to False keeps the on-screen keyboard off.
+      'desc': '''Setting the policy to True keeps the on-screen keyboard on. Setting the policy to False keeps the on-screen keyboard off unless other factors turn it on. See the <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">TouchVirtualKeyboardEnabled</ph> policy as an example of these factors.
 
       If you set the policy, users can't change it. If not set, the on-screen keyboard is off at first, but users can turn it on any time.'''
     },
