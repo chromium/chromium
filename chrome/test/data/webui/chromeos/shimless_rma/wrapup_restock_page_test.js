@@ -107,4 +107,16 @@ export function wrapupRestockPageTest() {
 
     assertEquals(1, restockCallCounter);
   });
+
+  test('RestockPageButtonsDisabled', async () => {
+    await initializeRestockPage();
+
+    const continueButton = component.shadowRoot.querySelector('#continue');
+    const shutdownButton = component.shadowRoot.querySelector('#shutdown');
+    assertFalse(continueButton.disabled);
+    assertFalse(shutdownButton.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(continueButton.disabled);
+    assertTrue(shutdownButton.disabled);
+  });
 }
