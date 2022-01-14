@@ -27,6 +27,7 @@ public class PrivacyReviewDialog {
     private PrivacyReviewPagerAdapter mPagerAdapter;
     private ButtonCompat mNextButton;
     private ButtonCompat mBackButton;
+    private ButtonCompat mFinishButton;
 
     public PrivacyReviewDialog(Context context, ViewGroup container) {
         mContainer = container;
@@ -84,6 +85,18 @@ public class PrivacyReviewDialog {
 
         mBackButton = (ButtonCompat) mDialogView.findViewById(R.id.back_button);
         mBackButton.setOnClickListener((View v) -> previousStep());
+
+        mFinishButton = (ButtonCompat) mDialogView.findViewById(R.id.finish_button);
+        mFinishButton.setOnClickListener((View v) -> displayDonePage());
+    }
+
+    private void displayDonePage() {
+        FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
+        content.removeAllViews();
+        mLayoutInflater.inflate(R.layout.privacy_review_done, content);
+
+        ButtonCompat doneButton = (ButtonCompat) mDialogView.findViewById(R.id.done_button);
+        doneButton.setOnClickListener((View v) -> dismiss());
     }
 
     private void nextStep() {
@@ -93,11 +106,13 @@ public class PrivacyReviewDialog {
         }
         mBackButton.setVisibility(View.VISIBLE);
         if (nextIdx + 1 == mPagerAdapter.getItemCount()) {
-            mNextButton.setVisibility(View.INVISIBLE);
+            mNextButton.setVisibility(View.GONE);
+            mFinishButton.setVisibility(View.VISIBLE);
         }
     }
 
     private void previousStep() {
+        mFinishButton.setVisibility(View.GONE);
         int prevIdx = mViewPager.getCurrentItem() - 1;
         if (prevIdx >= 0) {
             mViewPager.setCurrentItem(prevIdx);

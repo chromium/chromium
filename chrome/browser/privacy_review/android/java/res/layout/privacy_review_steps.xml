@@ -56,6 +56,16 @@
             android:text="@string/next"
             style="@style/FilledButton.Flat" />
 
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/finish_button"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:visibility="gone"
+            android:text="@string/privacy_review_finish_button"
+            style="@style/FilledButton.Flat" />
+
     </LinearLayout>
 
 </LinearLayout>

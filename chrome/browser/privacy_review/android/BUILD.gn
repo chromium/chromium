@@ -25,12 +25,14 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/privacy_review_cookies_image.xml",
+    "java/res/drawable/privacy_review_done_image.xml",
     "java/res/drawable/privacy_review_illustration.xml",
     "java/res/drawable/privacy_review_msbb_image.xml",
     "java/res/drawable/privacy_review_sb_image.xml",
     "java/res/drawable/privacy_review_sync_image.xml",
     "java/res/layout/privacy_review_cookies_step.xml",
     "java/res/layout/privacy_review_dialog.xml",
+    "java/res/layout/privacy_review_done.xml",
     "java/res/layout/privacy_review_explanation_heading.xml",
     "java/res/layout/privacy_review_explanation_item.xml",
     "java/res/layout/privacy_review_msbb_step.xml",
