@@ -658,7 +658,7 @@ void ArcSettingsServiceImpl::SyncReportingConsent(bool initial_sync) const {
     consent = false;
   }
   base::DictionaryValue extras;
-  extras.SetBoolean("reportingConsent", consent);
+  extras.SetBoolKey("reportingConsent", consent);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_REPORTING_CONSENT",
                         extras);
 }
@@ -703,7 +703,7 @@ void ArcSettingsServiceImpl::SyncTimeZone() const {
 
 void ArcSettingsServiceImpl::SyncTimeZoneByGeolocation() const {
   base::DictionaryValue extras;
-  extras.SetBoolean("autoTimeZone",
+  extras.SetBoolKey("autoTimeZone",
                     chromeos::system::TimeZoneResolverManager::
                             GetEffectiveUserTimeZoneResolveMethod(
                                 registrar_.prefs(), false) !=
@@ -720,7 +720,7 @@ void ArcSettingsServiceImpl::SyncUse24HourClock() const {
   DCHECK(pref->GetValue()->is_bool());
   bool use24HourClock = pref->GetValue()->GetBool();
   base::DictionaryValue extras;
-  extras.SetBoolean("use24HourClock", use24HourClock);
+  extras.SetBoolKey("use24HourClock", use24HourClock);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_USE_24_HOUR_CLOCK",
                         extras);
 }
@@ -777,8 +777,8 @@ void ArcSettingsServiceImpl::SendBoolValueSettingsBroadcast(
     bool managed,
     const std::string& action) const {
   base::DictionaryValue extras;
-  extras.SetBoolean("enabled", enabled);
-  extras.SetBoolean("managed", managed);
+  extras.SetBoolKey("enabled", enabled);
+  extras.SetBoolKey("managed", managed);
   SendSettingsBroadcast(action, extras);
 }
 

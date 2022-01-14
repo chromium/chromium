@@ -72,7 +72,7 @@ scoped_refptr<extensions::Extension> CreateFakeExtension(
 
   base::DictionaryValue capabilities;
   capabilities.SetStringKey("source", "network");
-  capabilities.SetBoolean("watchable", true);
+  capabilities.SetBoolKey("watchable", true);
   manifest.SetKey(extensions::manifest_keys::kFileSystemProviderCapabilities,
                   std::move(capabilities));
 

@@ -414,8 +414,8 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
   }
 
   message_args.SetStringKey(kErrorMessage, message);
-  message_args.SetBoolean(kShouldShowSendFeedback, should_show_send_feedback);
-  message_args.SetBoolean(
+  message_args.SetBoolKey(kShouldShowSendFeedback, should_show_send_feedback);
+  message_args.SetBoolKey(
       kShouldShowNetworkTests,
       should_show_run_network_tests &&
           ash::features::IsArcNetworkDiagnosticsButtonEnabled());
@@ -450,8 +450,8 @@ void ArcSupportHost::SendPreferenceCheckboxUpdate(
 
   base::DictionaryValue message;
   message.SetStringKey(kAction, action_name);
-  message.SetBoolean(kEnabled, data.is_enabled);
-  message.SetBoolean(kManaged, data.is_managed);
+  message.SetBoolKey(kEnabled, data.is_enabled);
+  message.SetBoolKey(kManaged, data.is_managed);
   message_host_->SendMessage(message);
 }
 
@@ -658,8 +658,8 @@ bool ArcSupportHost::Initialize() {
   loadtime_data.SetStringKey(
       "overlayLoading", l10n_util::GetStringUTF16(IDS_ARC_POPUP_HELP_LOADING));
 
-  loadtime_data.SetBoolean(kArcManaged, is_arc_managed_);
-  loadtime_data.SetBoolean("isOwnerProfile",
+  loadtime_data.SetBoolKey(kArcManaged, is_arc_managed_);
+  loadtime_data.SetBoolKey("isOwnerProfile",
                            ash::ProfileHelper::IsOwnerProfile(profile_));
 
   const std::string& country_code = base::CountryCodeForCurrentTimezone();

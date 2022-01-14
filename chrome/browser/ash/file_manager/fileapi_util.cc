@@ -614,7 +614,7 @@ std::unique_ptr<base::DictionaryValue> ConvertEntryDefinitionToValue(
   entry->SetStringKey(
       "fileFullPath",
       base::FilePath("/").Append(entry_definition.full_path).AsUTF8Unsafe());
-  entry->SetBoolean("fileIsDirectory", entry_definition.is_directory);
+  entry->SetBoolKey("fileIsDirectory", entry_definition.is_directory);
   return entry;
 }
 

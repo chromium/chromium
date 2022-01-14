@@ -37,7 +37,7 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
   ForceMaximizeOnFirstRunTest() {}
 
   void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override {
-    policy->SetBoolean(key::kForceMaximizeOnFirstRun, true);
+    policy->SetBoolKey(key::kForceMaximizeOnFirstRun, true);
   }
 
   void SetUpResolution() {
@@ -100,7 +100,7 @@ class ForceMaximizePolicyFalseTest : public ForceMaximizeOnFirstRunTest {
   ForceMaximizePolicyFalseTest() : ForceMaximizeOnFirstRunTest() {}
 
   void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override {
-    policy->SetBoolean(key::kForceMaximizeOnFirstRun, false);
+    policy->SetBoolKey(key::kForceMaximizeOnFirstRun, false);
   }
 };
 

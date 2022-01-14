@@ -103,7 +103,7 @@ class ArcSupportMessageHostTest : public testing::Test {
 TEST_F(ArcSupportMessageHostTest, SendMessage) {
   base::DictionaryValue value;
   value.SetStringKey("foo", "bar");
-  value.SetBoolean("baz", true);
+  value.SetBoolKey("baz", true);
 
   message_host()->SendMessage(value);
 
@@ -116,7 +116,7 @@ TEST_F(ArcSupportMessageHostTest, SendMessage) {
 TEST_F(ArcSupportMessageHostTest, ReceiveMessage) {
   base::DictionaryValue value;
   value.SetStringKey("foo", "bar");
-  value.SetBoolean("baz", true);
+  value.SetBoolKey("baz", true);
 
   TestObserver observer;
   message_host()->SetObserver(&observer);

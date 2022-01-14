@@ -1682,7 +1682,7 @@ void ArcBluetoothBridge::SendBluetoothPoweredStateBroadcast(
     return;
 
   base::DictionaryValue extras;
-  extras.SetBoolean("enable", powered == AdapterPowerState::TURN_ON);
+  extras.SetBoolKey("enable", powered == AdapterPowerState::TURN_ON);
   std::string extras_json;
   bool write_success = base::JSONWriter::Write(extras, &extras_json);
   DCHECK(write_success);

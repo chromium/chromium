@@ -107,7 +107,7 @@ void EasyUnlockKeyManager::DeviceDataToRemoteDeviceDictionary(
                                          account_id.GetUserEmail().c_str()));
   dict->SetStringKey(key_names::kKeySerializedBeaconSeeds,
                      data.serialized_beacon_seeds);
-  dict->SetBoolean(key_names::kKeyUnlockKey, data.unlock_key);
+  dict->SetBoolKey(key_names::kKeyUnlockKey, data.unlock_key);
 }
 
 // static

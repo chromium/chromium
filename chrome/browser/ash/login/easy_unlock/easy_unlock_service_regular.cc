@@ -254,7 +254,7 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
     bool unlock_key = device.GetSoftwareFeatureState(
                           multidevice::SoftwareFeature::kSmartLockHost) ==
                       multidevice::SoftwareFeatureState::kEnabled;
-    dict->SetBoolean(key_names::kKeyUnlockKey, unlock_key);
+    dict->SetBoolKey(key_names::kKeyUnlockKey, unlock_key);
 
     PA_LOG(VERBOSE) << "Storing RemoteDevice: { "
                     << "name: " << device.name()

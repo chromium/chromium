@@ -85,7 +85,7 @@ GURL GetFileManagerMainPageUrlWithParams(
   if (type == ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE)
     arg_value.SetStringKey("targetName", target_name);
   arg_value.SetStringKey("searchQuery", search_query);
-  arg_value.SetBoolean("showAndroidPickerApps", show_android_picker_apps);
+  arg_value.SetBoolKey("showAndroidPickerApps", show_android_picker_apps);
 
   if (file_types) {
     base::ListValue types_list;
@@ -104,14 +104,14 @@ GURL GetFileManagerMainPageUrlWithParams(
       }
 
       // file_type_index is 1-based. 0 means no selection at all.
-      dict->SetBoolean("selected",
+      dict->SetBoolKey("selected",
                        (static_cast<size_t>(file_type_index) == (i + 1)));
 
       types_list.Append(std::move(dict));
     }
     arg_value.SetKey("typeList", std::move(types_list));
 
-    arg_value.SetBoolean("includeAllFiles", file_types->include_all_files);
+    arg_value.SetBoolKey("includeAllFiles", file_types->include_all_files);
   }
 
   if (file_types) {

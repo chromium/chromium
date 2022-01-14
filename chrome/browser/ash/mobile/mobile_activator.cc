@@ -169,7 +169,7 @@ void MobileActivator::InitiateActivation(const std::string& service_path) {
 
   // We want shill to connect us after activations, so enable autoconnect.
   base::DictionaryValue auto_connect_property;
-  auto_connect_property.SetBoolean(shill::kAutoConnectProperty, true);
+  auto_connect_property.SetBoolKey(shill::kAutoConnectProperty, true);
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
       service_path_, auto_connect_property, base::DoNothing(),
       network_handler::ErrorCallback());

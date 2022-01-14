@@ -82,12 +82,12 @@ void FakeArcSupport::ClickAgreeButton() {
   base::DictionaryValue message;
   message.SetStringKey("event", "onAgreed");
   message.SetStringKey("tosContent", tos_content_);
-  message.SetBoolean("tosShown", tos_shown_);
-  message.SetBoolean("isMetricsEnabled", metrics_mode_);
-  message.SetBoolean("isBackupRestoreEnabled", backup_and_restore_mode_);
-  message.SetBoolean("isBackupRestoreManaged", backup_and_restore_managed_);
-  message.SetBoolean("isLocationServiceEnabled", location_service_mode_);
-  message.SetBoolean("isLocationServiceManaged", location_service_managed_);
+  message.SetBoolKey("tosShown", tos_shown_);
+  message.SetBoolKey("isMetricsEnabled", metrics_mode_);
+  message.SetBoolKey("isBackupRestoreEnabled", backup_and_restore_mode_);
+  message.SetBoolKey("isBackupRestoreManaged", backup_and_restore_managed_);
+  message.SetBoolKey("isLocationServiceEnabled", location_service_mode_);
+  message.SetBoolKey("isLocationServiceManaged", location_service_managed_);
   SerializeAndSend(native_message_host_.get(), message);
 }
 
@@ -96,12 +96,12 @@ void FakeArcSupport::ClickCancelButton() {
   base::DictionaryValue message;
   message.SetStringKey("event", "onCanceled");
   message.SetStringKey("tosContent", tos_content_);
-  message.SetBoolean("tosShown", tos_shown_);
-  message.SetBoolean("isMetricsEnabled", metrics_mode_);
-  message.SetBoolean("isBackupRestoreEnabled", backup_and_restore_mode_);
-  message.SetBoolean("isBackupRestoreManaged", backup_and_restore_managed_);
-  message.SetBoolean("isLocationServiceEnabled", location_service_mode_);
-  message.SetBoolean("isLocationServiceManaged", location_service_managed_);
+  message.SetBoolKey("tosShown", tos_shown_);
+  message.SetBoolKey("isMetricsEnabled", metrics_mode_);
+  message.SetBoolKey("isBackupRestoreEnabled", backup_and_restore_mode_);
+  message.SetBoolKey("isBackupRestoreManaged", backup_and_restore_managed_);
+  message.SetBoolKey("isLocationServiceEnabled", location_service_mode_);
+  message.SetBoolKey("isLocationServiceManaged", location_service_managed_);
   SerializeAndSend(native_message_host_.get(), message);
   // The cancel button closes the window.
   Close();

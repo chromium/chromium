@@ -109,7 +109,7 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
   base::ListValue scripts;
   scripts.Append("main.js");
   value.SetPath("app.background.scripts", std::move(scripts));
-  value.SetBoolean("kiosk_enabled", true);
+  value.SetBoolKey("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
     value.SetStringPath("kiosk.required_platform_version",
                         required_platform_version);
