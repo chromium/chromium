@@ -148,6 +148,7 @@ class SearchSuggestionParser {
                   int relevance,
                   bool relevance_from_server,
                   bool should_prefetch,
+                  bool should_prerender,
                   const std::u16string& input_text);
     SuggestResult(const SuggestResult& result);
     ~SuggestResult() override;
@@ -179,6 +180,7 @@ class SearchSuggestionParser {
     const GURL& image_url() const { return image_url_; }
 
     bool should_prefetch() const { return should_prefetch_; }
+    bool should_prerender() const { return should_prerender_; }
 
     // Fills in |match_contents_class_| to reflect how |match_contents_| should
     // be displayed and bolded against the current |input_text|.  If
@@ -228,6 +230,10 @@ class SearchSuggestionParser {
 
     // Should this result be prefetched?
     bool should_prefetch_;
+
+    // Should this result trigger Prerender2? See
+    // content/browser/prerender/README.md for more information.
+    bool should_prerender_;
   };
 
   class NavigationResult : public Result {

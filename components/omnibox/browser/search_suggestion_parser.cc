@@ -155,6 +155,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                     relevance,
                     relevance_from_server,
                     /*should_prefetch=*/false,
+                    /*should_prerender=*/false,
                     input_text) {}
 
 SearchSuggestionParser::SuggestResult::SuggestResult(
@@ -172,6 +173,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     int relevance,
     bool relevance_from_server,
     bool should_prefetch,
+    bool should_prerender,
     const std::u16string& input_text)
     : Result(from_keyword,
              relevance,
@@ -185,7 +187,8 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
       additional_query_params_(additional_query_params),
       image_dominant_color_(image_dominant_color),
       image_url_(GURL(image_url)),
-      should_prefetch_(should_prefetch) {
+      should_prefetch_(should_prefetch),
+      should_prerender_(should_prerender) {
   match_contents_ = match_contents;
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
@@ -482,6 +485,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   const base::DictionaryValue* extras = nullptr;
   const base::Value* suggestsubtypes = nullptr;
   int prefetch_index = -1;
+  int prerender_index = -1;
 
   absl::optional<base::Value::ConstListView> subtype_identifiers;
   absl::optional<base::Value::ConstListView> relevances;
@@ -543,6 +547,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
         client_data) {
       if (absl::optional<int> phi = client_data->FindIntKey("phi"))
         prefetch_index = *phi;
+      if (absl::optional<int> pre = client_data->FindIntKey("pre")) {
+        prerender_index = *pre;
+      }
     }
 
     if (extras->GetList("google:suggestdetail", &suggestion_details) &&
@@ -709,13 +716,16 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
       }
 
-      bool should_prefetch = static_cast<int>(index) == prefetch_index;
+      int int_index = static_cast<int>(index);
+      bool should_prefetch = int_index == prefetch_index;
+      bool should_prerender = int_index == prerender_index;
       results->suggest_results.push_back(SuggestResult(
           suggestion, match_type, subtypes[index],
           base::CollapseWhitespace(match_contents, false),
           match_contents_prefix, annotation, additional_query_params,
           deletion_url, image_dominant_color, image_url, is_keyword_result,
-          relevance, relevances.has_value(), should_prefetch, trimmed_input));
+          relevance, relevances.has_value(), should_prefetch, should_prerender,
+          trimmed_input));
 
       if (suggestion_group_id) {
         results->suggest_results.back().set_suggestion_group_id(

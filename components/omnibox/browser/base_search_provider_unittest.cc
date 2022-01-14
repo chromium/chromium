@@ -196,6 +196,7 @@ TEST_F(BaseSearchProviderTest, MatchTailSuggestionProperly) {
       /*relevance=*/1300,
       /*relevance_from_server=*/true,
       /*should_prefetch=*/false,
+      /*should_prerender=*/false,
       /*input_text=*/query);
 
   TestBaseSearchProvider::MatchMap map;

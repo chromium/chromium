@@ -155,6 +155,75 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
   }
 }
 
+// Tests that prerender hints can be parsed correctly.
+TEST(SearchSuggestionParserTest, ParsePrerenderSuggestion) {
+  std::string json_data = R"([
+      "pre",
+      ["prefetch","prerender"],
+      ["", ""],
+      [],
+      {
+        "google:clientdata": {
+          "pre": 1
+        }
+      }])";
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"pre", metrics::OmniboxEventProto::BLANK,
+                          scheme_classifier);
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
+  {
+    const auto& suggestion_result = results.suggest_results[0];
+    ASSERT_EQ(u"prefetch", suggestion_result.suggestion());
+    EXPECT_FALSE(suggestion_result.should_prerender());
+  }
+  {
+    const auto& suggestion_result = results.suggest_results[1];
+    ASSERT_EQ(u"prerender", suggestion_result.suggestion());
+    EXPECT_TRUE(suggestion_result.should_prerender());
+  }
+}
+
+// Tests that both prefetch and prerender hints can be parsed correctly.
+TEST(SearchSuggestionParserTest, ParseBothPrefetchAndPrerenderSuggestion) {
+  std::string json_data = R"([
+      "pre",
+      ["prefetch","prerender"],
+      ["", ""],
+      [],
+      {
+        "google:clientdata": {
+          "phi": 0,
+          "pre": 1
+        }
+      }])";
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"pre", metrics::OmniboxEventProto::BLANK,
+                          scheme_classifier);
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
+  {
+    const auto& suggestion_result = results.suggest_results[0];
+    ASSERT_EQ(u"prefetch", suggestion_result.suggestion());
+    EXPECT_FALSE(suggestion_result.should_prerender());
+    EXPECT_TRUE(suggestion_result.should_prefetch());
+  }
+  {
+    const auto& suggestion_result = results.suggest_results[1];
+    ASSERT_EQ(u"prerender", suggestion_result.suggestion());
+    EXPECT_TRUE(suggestion_result.should_prerender());
+    EXPECT_FALSE(suggestion_result.should_prefetch());
+  }
+}
+
 TEST(SearchSuggestionParserTest, SuggestClassification) {
   SearchSuggestionParser::SuggestResult result(
       u"foobar", AutocompleteMatchType::SEARCH_SUGGEST, {}, false, 400, true,
