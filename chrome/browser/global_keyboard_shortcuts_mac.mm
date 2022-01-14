@@ -172,6 +172,11 @@ std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
     {true,  true,  false, false, kVK_ANSI_A,            IDC_TAB_SEARCH},
     {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
     {true,  false, true,  false, kVK_ANSI_F,            IDC_FULLSCREEN},
+
+    // Special shortcuts for Zoom in and out.
+    {true,  false, false, false, kVK_ANSI_Equal,        IDC_ZOOM_PLUS},
+    {true,  false, false, false, kVK_ANSI_KeypadPlus,   IDC_ZOOM_PLUS},
+    {true,  false, false, false, kVK_ANSI_KeypadMinus,  IDC_ZOOM_MINUS},
   });
   // clang-format on
 
