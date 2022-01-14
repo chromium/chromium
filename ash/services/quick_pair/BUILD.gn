@@ -95,7 +95,7 @@ fuzzer_test("fast_pair_decryption_fuzzer") {
     ":quick_pair",
     "//ash:test_support",
     "//ash/quick_pair/common",
-    "//ash/quick_pair/pairing",
+    "//ash/quick_pair/fast_pair_handshake",
     "//base/test:test_support",
   ]
 }
