@@ -116,6 +116,7 @@ class ClientAndroid : public Client,
   base::android::ScopedJavaGlobalRef<jobject> GetDependencies(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
+  std::string GetDebugContext();
 
   // Overrides Client
   void AttachUI() override;
@@ -139,6 +140,7 @@ class ClientAndroid : public Client,
   void Shutdown(Metrics::DropOutReason reason) override;
   void RecordDropOut(Metrics::DropOutReason reason) override;
   bool HasHadUI() const override;
+  ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(
@@ -175,6 +177,7 @@ class ClientAndroid : public Client,
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   std::unique_ptr<Controller> controller_;
+  std::unique_ptr<UiController> ui_controller_;
   mutable std::unique_ptr<WebsiteLoginManager> website_login_manager_;
 
   const std::unique_ptr<Dependencies> dependencies_;

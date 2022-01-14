@@ -10,10 +10,12 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/execution_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
+#include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 
 namespace autofill_assistant {
-class ScriptExecutorDelegate;
+class ScriptExecutorUiDelegate;
 
 // Provides basic interactions for use by the generic UI framework. These
 // methods are intended to be bound to by the corresponding interaction
@@ -21,7 +23,8 @@ class ScriptExecutorDelegate;
 class BasicInteractions {
  public:
   // Constructor. |delegate| must outlive this instance.
-  BasicInteractions(ScriptExecutorDelegate* delegate, ClientSettings* settings);
+  BasicInteractions(ScriptExecutorUiDelegate* ui_delegate,
+                    ExecutionDelegate* execution_delegate);
   ~BasicInteractions();
 
   BasicInteractions(const BasicInteractions&) = delete;
@@ -29,7 +32,7 @@ class BasicInteractions {
 
   base::WeakPtr<BasicInteractions> GetWeakPtr();
 
-  // Returns ClientSettings from the ScriptExecutorDelegate.
+  // Returns ClientSettings.
   const ClientSettings& GetClientSettings();
 
   // Performs the computation specified by |proto| and writes the result to
@@ -87,8 +90,8 @@ class BasicInteractions {
                               base::RepeatingCallback<void()> callback);
 
  private:
-  raw_ptr<ScriptExecutorDelegate> delegate_;
-  raw_ptr<ClientSettings> settings_;
+  raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
+  raw_ptr<ExecutionDelegate> execution_delegate_;
   // Only valid during a ShowGenericUiAction.
   base::OnceCallback<void(const ClientStatus&)> end_action_callback_;
   base::OnceCallback<void(const ClientStatus&)>

@@ -24,7 +24,8 @@ class ElementArea {
  public:
   // |settings| and |web_controller| must remain valid for the lifetime of this
   // instance.
-  explicit ElementArea(ClientSettings* settings, WebController* web_controller);
+  explicit ElementArea(const ClientSettings* settings,
+                       WebController* web_controller);
 
   ElementArea(const ElementArea&) = delete;
   ElementArea& operator=(const ElementArea&) = delete;
@@ -130,7 +131,7 @@ class ElementArea {
   void OnGetVisualViewport(const ClientStatus& status, const RectF& rect);
   void ReportUpdate();
 
-  const raw_ptr<ClientSettings> settings_;
+  const raw_ptr<const ClientSettings> settings_;
   const raw_ptr<WebController> web_controller_;
   std::vector<Rectangle> rectangles_;
 

@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
@@ -54,7 +55,7 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
   ScriptTrackerTest()
       : no_runnable_scripts_anymore_(0),
         runnable_scripts_changed_(0),
-        tracker_(&delegate_, /* listener=*/this) {
+        tracker_(&delegate_, &ui_delegate_, /* listener=*/this) {
     delegate_.SetService(&mock_service_);
     delegate_.SetWebController(&mock_web_controller_);
   }
@@ -141,6 +142,7 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
   int runnable_scripts_changed_;
   std::vector<ScriptHandle> runnable_scripts_;
   FakeScriptExecutorDelegate delegate_;
+  FakeScriptExecutorUiDelegate ui_delegate_;
   ScriptTracker tracker_;
   std::vector<std::unique_ptr<SupportedScriptProto>> scripts_proto_;
   UserData user_data_;

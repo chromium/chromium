@@ -8,9 +8,12 @@
 #include <string>
 
 #include "base/callback.h"
+#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -103,6 +106,10 @@ class Client {
 
   // Whether this client has had an UI.
   virtual bool HasHadUI() const = 0;
+
+  // Returns the ScriptExecutorUiDelegate if it exists, otherwise returns
+  // nullptr.
+  virtual ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() = 0;
 
  protected:
   Client() = default;

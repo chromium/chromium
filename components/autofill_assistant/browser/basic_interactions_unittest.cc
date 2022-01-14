@@ -9,8 +9,9 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
-#include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
+#include "components/autofill_assistant/browser/mock_execution_delegate.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +23,8 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Property;
+using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::StrEq;
 namespace {
 DateProto CreateDateProto(int year, int month, int day) {
@@ -34,14 +37,23 @@ DateProto CreateDateProto(int year, int month, int day) {
 }  // namespace
 
 class BasicInteractionsTest : public testing::Test {
+ public:
+  void SetUp() override {
+    ON_CALL(execution_delegate_, GetClientSettings)
+        .WillByDefault(ReturnRef(settings_));
+    ON_CALL(execution_delegate_, GetUserModel)
+        .WillByDefault(Return(&user_model_));
+  }
+
  protected:
-  BasicInteractionsTest() { delegate_.SetUserModel(&user_model_); }
+  BasicInteractionsTest() {}
   ~BasicInteractionsTest() override {}
 
-  FakeScriptExecutorDelegate delegate_;
+  FakeScriptExecutorUiDelegate ui_delegate_;
+  MockExecutionDelegate execution_delegate_;
   ClientSettings settings_;
   UserModel user_model_;
-  BasicInteractions basic_interactions_{&delegate_, &settings_};
+  BasicInteractions basic_interactions_{&ui_delegate_, &execution_delegate_};
 };
 
 TEST_F(BasicInteractionsTest, SetValue) {

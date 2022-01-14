@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantClient_jni.h"
@@ -388,17 +389,31 @@ void ClientAndroid::ShowFatalError(
   controller_->OnFatalError(
       GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR,
                            controller_->GetSettings()),
-      /*show_feedback_chip = */ false, Metrics::DropOutReason::NO_SCRIPTS);
+      Metrics::DropOutReason::NO_SCRIPTS);
 }
 
 void ClientAndroid::OnSpokenFeedbackAccessibilityServiceChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jboolean enabled) {
-  if (!controller_) {
+  if (!ui_controller_) {
     return;
   }
-  controller_->OnSpokenFeedbackAccessibilityServiceChanged(enabled);
+  ui_controller_->OnSpokenFeedbackAccessibilityServiceChanged(enabled);
+}
+
+std::string ClientAndroid::GetDebugContext() {
+  if (!controller_) {
+    return std::string();
+  }
+  base::Value controller_context = controller_->GetDebugContext();
+  if (ui_controller_) {
+    base::Value ui_controller_context = ui_controller_->GetDebugContext();
+    controller_context.MergeDictionary(&ui_controller_context);
+  }
+  std::string output_js;
+  base::JSONWriter::Write(controller_context, &output_js);
+  return output_js;
 }
 
 base::android::ScopedJavaGlobalRef<jobject> ClientAndroid::GetDependencies(
@@ -447,7 +462,8 @@ void ClientAndroid::AttachUI(
        !ui_controller_android_->IsAttachedTo(controller_.get()))) {
     if (!controller_)
       CreateController(nullptr, absl::nullopt);
-    ui_controller_android_->Attach(GetWebContents(), this, controller_.get());
+    ui_controller_android_->Attach(GetWebContents(), this, controller_.get(),
+                                   ui_controller_.get());
   }
 }
 
@@ -582,6 +598,10 @@ bool ClientAndroid::HasHadUI() const {
   return has_had_ui_;
 }
 
+ScriptExecutorUiDelegate* ClientAndroid::GetScriptExecutorUiDelegate() {
+  return ui_controller_.get();
+}
+
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
   if (!controller_)
     return;
@@ -655,13 +675,16 @@ void ClientAndroid::CreateController(
       GetWebContents(), /* client= */ this,
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
-      std::move(service), std::move(tts_controller), ukm::UkmRecorder::Get(),
+      std::move(service), ukm::UkmRecorder::Get(),
       dependencies_->GetAnnotateDomModelService(
           GetWebContents()->GetBrowserContext()));
-  controller_->SetStatusMessage(status_message);
+  ui_controller_ = std::make_unique<UiController>(
+      /* client= */ this, controller_.get(), std::move(tts_controller));
+  ui_controller_->StartListening();
+  ui_controller_->SetStatusMessage(status_message);
   if (progress_bar_config) {
-    controller_->SetStepProgressBarConfiguration(*progress_bar_config);
-    controller_->SetProgressActiveStep(*progress_bar_active_step);
+    ui_controller_->SetStepProgressBarConfiguration(*progress_bar_config);
+    ui_controller_->SetProgressActiveStep(*progress_bar_active_step);
   }
 }
 
@@ -670,6 +693,7 @@ void ClientAndroid::DestroyController() {
       ui_controller_android_->IsAttachedTo(controller_.get())) {
     ui_controller_android_->Detach();
   }
+  ui_controller_.reset();
   controller_.reset();
   started_ = false;
 }

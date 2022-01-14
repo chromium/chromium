@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/wait_for_dom_action.h"
+#include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/mock_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor.h"
@@ -2897,11 +2898,12 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForDomForUniqueElement) {
   ON_CALL(mock_script_executor_delegate, GetWebController)
       .WillByDefault(Return(web_controller_.get()));
   std::vector<std::unique_ptr<Script>> ordered_interrupts;
+  FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate;
   ScriptExecutor script_executor(
       /* script_path= */ std::string(), /* additional_context= */ nullptr,
       /* global_payload= */ std::string(), /* script_payload= */ std::string(),
       /* listener= */ nullptr, &ordered_interrupts,
-      &mock_script_executor_delegate);
+      &mock_script_executor_delegate, &fake_script_executor_ui_delegate);
 
   ActionProto action_proto;
   auto* wait_for_dom = action_proto.mutable_wait_for_dom();
@@ -2928,11 +2930,12 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   ON_CALL(mock_script_executor_delegate, GetWebController)
       .WillByDefault(Return(web_controller_.get()));
   std::vector<std::unique_ptr<Script>> ordered_interrupts;
+  FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate;
   ScriptExecutor script_executor(
       /* script_path= */ std::string(), /* additional_context= */ nullptr,
       /* global_payload= */ std::string(), /* script_payload= */ std::string(),
       /* listener= */ nullptr, &ordered_interrupts,
-      &mock_script_executor_delegate);
+      &mock_script_executor_delegate, &fake_script_executor_ui_delegate);
 
   ActionProto action_proto;
   auto* wait_for_dom = action_proto.mutable_wait_for_dom();

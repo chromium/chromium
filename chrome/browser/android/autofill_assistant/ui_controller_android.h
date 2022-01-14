@@ -22,10 +22,12 @@
 #include "components/autofill_assistant/browser/chip.h"
 #include "components/autofill_assistant/browser/controller_observer.h"
 #include "components/autofill_assistant/browser/details.h"
+#include "components/autofill_assistant/browser/execution_delegate.h"
 #include "components/autofill_assistant/browser/info_box.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/overlay_state.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/ui_controller_observer.h"
 #include "components/autofill_assistant/browser/user_action.h"
 
 namespace autofill_assistant {
@@ -42,18 +44,13 @@ class ClientAndroid;
 // TODO(crbug.com/806868): This class should be renamed to
 // AssistantMediator(Android) and listen for state changes to forward those
 // changes to the UI model.
-class UiControllerAndroid : public ControllerObserver {
+class UiControllerAndroid : public ControllerObserver, UiControllerObserver {
  public:
   static std::unique_ptr<UiControllerAndroid> CreateFromWebContents(
       content::WebContents* web_contents,
       const base::android::JavaRef<jobject>& jdependencies,
       const base::android::JavaRef<jobject>& joverlay_coordinator);
 
-  // pointers to |web_contents|, |client| must remain valid for the lifetime of
-  // this instance.
-  //
-  // Pointer to |ui_delegate| must remain valid for the lifetime of this
-  // instance or until WillShutdown is called.
   UiControllerAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jdependencies,
@@ -66,23 +63,25 @@ class UiControllerAndroid : public ControllerObserver {
 
   // Attaches the UI to the given client, its web contents and delegate.
   //
-  // |web_contents|, |client| and |ui_delegate| must remain valid for the
-  // lifetime of this instance or until Attach() is called again, with different
-  // pointers.
+  // |web_contents|, |client|, |execution_delegate| and |ui_delegate| must
+  // remain valid for the lifetime of this instance or until Attach() is called
+  // again, with different pointers.
   void Attach(content::WebContents* web_contents,
               ClientAndroid* client,
+              ExecutionDelegate* execution_delegate,
               UiDelegate* ui_delegate);
 
-  // Detaches the UI from |ui_delegate_|. It will stop receiving notifications
-  // from the delegate until it is attached again.
+  // Detaches the UI from |execution_delegate| and |ui_delegate_|. It will stop
+  // receiving notifications from the delegates until it is attached again.
   void Detach();
 
-  // Returns true if the UI is attached to a delegate.
-  bool IsAttached() { return ui_delegate_ != nullptr; }
+  // Returns true if the UI is attached to an execution delegate.
+  bool IsAttached() { return execution_delegate_ != nullptr; }
 
-  // Returns whether the UI is currently attached to the given delegate or not.
-  bool IsAttachedTo(UiDelegate* ui_delegate) {
-    return ui_delegate_ == ui_delegate;
+  // Returns whether the UI is currently attached to the given execution
+  // delegate or not.
+  bool IsAttachedTo(ExecutionDelegate* execution_delegate) {
+    return execution_delegate_ == execution_delegate;
   }
 
   // Have the UI react as if a close or cancel button was pressed.
@@ -99,14 +98,32 @@ class UiControllerAndroid : public ControllerObserver {
   void OnStateChanged(AutofillAssistantState new_state) override;
   void OnKeyboardSuppressionStateChanged(
       bool should_suppress_keyboard) override;
+  void CloseCustomTab() override;
+  void OnError(const std::string& error_message,
+               Metrics::DropOutReason reason) override;
+  void OnUserDataChanged(const UserData& user_data,
+                         UserData::FieldChange field_change) override;
+  void OnTouchableAreaChanged(
+      const RectF& visual_viewport,
+      const std::vector<RectF>& touchable_areas,
+      const std::vector<RectF>& restricted_areas) override;
+  void OnViewportModeChanged(ViewportMode mode) override;
+  void OnOverlayColorsChanged(
+      const ExecutionDelegate::OverlayColors& colors) override;
+  void OnClientSettingsChanged(const ClientSettings& settings) override;
+  void OnShouldShowOverlayChanged(bool should_show) override;
+  void OnExecuteScript(const std::string& start_message) override;
+  void OnStart(const TriggerContext& trigger_context) override;
+  void OnStop() override;
+  void OnResetState() override;
+  void OnUiShownChanged(bool shown) override;
+
+  // Overrides UiControllerObserver:
   void OnStatusMessageChanged(const std::string& message) override;
   void OnBubbleMessageChanged(const std::string& message) override;
-  void CloseCustomTab() override;
   void OnUserActionsChanged(const std::vector<UserAction>& actions) override;
   void OnCollectUserDataOptionsChanged(
       const CollectUserDataOptions* collect_user_data_options) override;
-  void OnUserDataChanged(const UserData& user_data,
-                         UserData::FieldChange field_change) override;
   void OnDetailsChanged(const std::vector<Details>& details) override;
   void OnInfoBoxChanged(const InfoBox* info_box) override;
   void OnProgressActiveStepChanged(int active_step) override;
@@ -115,24 +132,16 @@ class UiControllerAndroid : public ControllerObserver {
   void OnStepProgressBarConfigurationChanged(
       const ShowProgressBarProto::StepProgressBarConfiguration& configuration)
       override;
-  void OnTouchableAreaChanged(
-      const RectF& visual_viewport,
-      const std::vector<RectF>& touchable_areas,
-      const std::vector<RectF>& restricted_areas) override;
-  void OnViewportModeChanged(ViewportMode mode) override;
   void OnPeekModeChanged(
       ConfigureBottomSheetProto::PeekMode peek_mode) override;
   void OnExpandBottomSheet() override;
   void OnCollapseBottomSheet() override;
-  void OnOverlayColorsChanged(const UiDelegate::OverlayColors& colors) override;
   void OnFormChanged(const FormProto* form,
                      const FormProto::Result* result) override;
-  void OnClientSettingsChanged(const ClientSettings& settings) override;
   void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
   void OnPersistentGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
-  void OnShouldShowOverlayChanged(bool should_show) override;
   void OnTtsButtonVisibilityChanged(bool visible) override;
   void OnTtsButtonStateChanged(TtsButtonState state) override;
 
@@ -221,7 +230,9 @@ class UiControllerAndroid : public ControllerObserver {
   // A pointer to the client. nullptr until Attach() is called.
   raw_ptr<ClientAndroid> client_ = nullptr;
 
-  // A pointer to the ui_delegate. nullptr until Attach() is called.
+  // Pointers to the execution_delegate and ui_delegate. nullptr until Attach()
+  // is called.
+  raw_ptr<ExecutionDelegate> execution_delegate_ = nullptr;
   raw_ptr<UiDelegate> ui_delegate_ = nullptr;
   AssistantOverlayDelegate overlay_delegate_;
   AssistantHeaderDelegate header_delegate_;
@@ -243,10 +254,10 @@ class UiControllerAndroid : public ControllerObserver {
   base::android::ScopedJavaLocalRef<jobject> GetGenericUiModel();
   base::android::ScopedJavaLocalRef<jobject> GetPersistentGenericUiModel();
 
-  // The UiDelegate has the last say on whether we should show the overlay.
-  // This saves the AutofillAssistantState-determined OverlayState and then
-  // applies it the actual UI only if the UiDelegate's ShouldShowOverlay is
-  // true.
+  // The ExecutionDelegate has the last say on whether we should show the
+  // overlay. This saves the AutofillAssistantState-determined OverlayState and
+  // then applies it the actual UI only if the ExecutionDelegate's
+  // ShouldShowOverlay is true.
   void SetOverlayState(OverlayState state);
   // Applies the specified OverlayState to the UI.
   void ApplyOverlayState(OverlayState state);
@@ -273,13 +284,13 @@ class UiControllerAndroid : public ControllerObserver {
 
   void OnCancel(int action_index, Metrics::DropOutReason dropout_reason);
 
-  // Updates the state of the UI to reflect the UIDelegate's state.
+  // Updates the state of the UI to reflect the ExecutionDelegate's state.
   void SetupForState();
 
   // Makes the whole of AA invisible or visible again.
   void SetVisible(bool visible);
 
-  // Restore the UI for the current UIDelegate.
+  // Restore the UI for the current ExecutionDelegate.
   void RestoreUi();
 
   // Performs tasks to update Display String Changes.

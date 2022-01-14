@@ -11,6 +11,7 @@
 
 #include "base/observer_list_types.h"
 #include "components/autofill_assistant/browser/details.h"
+#include "components/autofill_assistant/browser/execution_delegate.h"
 #include "components/autofill_assistant/browser/info_box.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/script.h"
@@ -36,49 +37,18 @@ class ControllerObserver : public base::CheckedObserver {
   virtual void OnKeyboardSuppressionStateChanged(
       bool should_suppress_keyboard) = 0;
 
-  // Report that the status message has changed.
-  virtual void OnStatusMessageChanged(const std::string& message) = 0;
-
-  // Report that the bubble / tooltip message has changed.
-  virtual void OnBubbleMessageChanged(const std::string& message) = 0;
-
   // If the current chrome activity is a custom tab activity, close it.
   // Otherwise, do nothing.
   virtual void CloseCustomTab() = 0;
 
-  // Report that the set of user actions has changed.
-  virtual void OnUserActionsChanged(
-      const std::vector<UserAction>& user_actions) = 0;
-
-  // Report that the options configuring a CollectUserDataAction have changed.
-  virtual void OnCollectUserDataOptionsChanged(
-      const CollectUserDataOptions* options) = 0;
+  // Report an error. This does not imply that the flow has ended and is usually
+  // followed by |OnStop|.
+  virtual void OnError(const std::string& error_message,
+                       Metrics::DropOutReason reason) = 0;
 
   // Report that a field in |user_data| has changed.
   virtual void OnUserDataChanged(const UserData& user_data,
                                  UserData::FieldChange field_change) = 0;
-
-  // Called when details have changed. Details will be empty if they have been
-  // cleared.
-  virtual void OnDetailsChanged(const std::vector<Details>& details) = 0;
-
-  // Called when info box has changed. |info_box| will be null if it has been
-  // cleared.
-  virtual void OnInfoBoxChanged(const InfoBox* info_box) = 0;
-
-  // Called when the currently active progress step has changed.
-  virtual void OnProgressActiveStepChanged(int active_step) = 0;
-
-  // Called when the current progress bar visibility has changed. If |visible|
-  // is true, then the bar is now shown.
-  virtual void OnProgressVisibilityChanged(bool visible) = 0;
-
-  virtual void OnStepProgressBarConfigurationChanged(
-      const ShowProgressBarProto::StepProgressBarConfiguration&
-          configuration) = 0;
-
-  // Called when  the progress bar error state changes.
-  virtual void OnProgressBarErrorStateChanged(bool error) = 0;
 
   // Updates the area of the visible viewport that is accessible when the
   // overlay state is OverlayState::PARTIAL.
@@ -103,45 +73,30 @@ class ControllerObserver : public base::CheckedObserver {
   // Called when the viewport mode has changed.
   virtual void OnViewportModeChanged(ViewportMode mode) = 0;
 
-  // Called when the peek mode has changed.
-  virtual void OnPeekModeChanged(
-      ConfigureBottomSheetProto::PeekMode peek_mode) = 0;
-
-  // Called when the bottom sheet should be expanded.
-  virtual void OnExpandBottomSheet() = 0;
-
-  // Called when the bottom sheet should be collapsed.
-  virtual void OnCollapseBottomSheet() = 0;
-
   // Called when the overlay colors have changed.
   virtual void OnOverlayColorsChanged(
-      const UiDelegate::OverlayColors& colors) = 0;
-
-  // Called when the form has changed.
-  virtual void OnFormChanged(const FormProto* form,
-                             const FormProto::Result* result) = 0;
+      const ExecutionDelegate::OverlayColors& colors) = 0;
 
   // Called when client settings have changed.
   virtual void OnClientSettingsChanged(const ClientSettings& settings) = 0;
 
-  // Called when the generic user interface to show has been changed or cleared.
-  virtual void OnGenericUserInterfaceChanged(
-      const GenericUserInterfaceProto* generic_ui) = 0;
-
-  // Called when the persistent generic user interface to show has been changed
-  // or cleared.
-  virtual void OnPersistentGenericUserInterfaceChanged(
-      const GenericUserInterfaceProto* generic_ui) = 0;
-
   // Called when the desired overlay behavior has changed.
   virtual void OnShouldShowOverlayChanged(bool should_show) = 0;
 
-  // Called when the TTS button visibility has changed. If |visible| is true,
-  // then the button is shown.
-  virtual void OnTtsButtonVisibilityChanged(bool visible) = 0;
+  // Called before starting to execute a script.
+  virtual void OnExecuteScript(const std::string& start_message) = 0;
 
-  // Called when Tts Button State has changed.
-  virtual void OnTtsButtonStateChanged(TtsButtonState state) = 0;
+  // Called when execution is started.
+  virtual void OnStart(const TriggerContext& trigger_context) = 0;
+
+  // Called when the flow is stopped.
+  virtual void OnStop() = 0;
+
+  // Called when the state needs to be reset.
+  virtual void OnResetState() = 0;
+
+  // Called whenever the UI is shown or hidden.
+  virtual void OnUiShownChanged(bool shown) = 0;
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CONTROLLER_OBSERVER_H_

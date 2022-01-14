@@ -782,6 +782,8 @@ if (!is_ios) {
 
     if (is_android) {
       sources += [
+        "autofill_assistant/browser/fake_script_executor_ui_delegate.cc",
+        "autofill_assistant/browser/fake_script_executor_ui_delegate.h",
         "autofill_assistant/browser/js_flow_executor_impl_browsertest.cc",
         "autofill_assistant/browser/mock_script_executor_delegate.cc",
         "autofill_assistant/browser/mock_script_executor_delegate.h",

@@ -22,7 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
-class ControllerObserver;
+class UiControllerObserver;
 class Details;
 class InfoBox;
 class BasicInteractions;
@@ -30,23 +30,7 @@ class BasicInteractions;
 // UI delegate called for script executions.
 class UiDelegate {
  public:
-  // Colors of the overlay. Empty string to use the default.
-  struct OverlayColors {
-    // Overlay background color.
-    std::string background;
-
-    // Color of the border around the highlighted portions of the overlay.
-    std::string highlight_border;
-  };
-
   virtual ~UiDelegate() = default;
-
-  // Returns the current state of the controller.
-  virtual AutofillAssistantState GetState() const = 0;
-
-  // Returns a string describing the current execution context. This is useful
-  // when analyzing feedback forms and for debugging in general.
-  virtual std::string GetDebugContext() = 0;
 
   // Returns the current status message.
   virtual std::string GetStatusMessage() const = 0;
@@ -91,10 +75,6 @@ class UiDelegate {
   // If the controller is waiting for user data, this field contains a non-null
   // options describing the request.
   virtual const CollectUserDataOptions* GetCollectUserDataOptions() const = 0;
-
-  // If the controller is waiting for user data, this field contains a non-null
-  // object describing the currently selected data.
-  virtual const UserData* GetUserData() const = 0;
 
   // Sets shipping address, in response to the current collect user data
   // options.
@@ -141,35 +121,6 @@ class UiDelegate {
   virtual void SetAdditionalValue(const std::string& client_memory_key,
                                   const ValueProto& value) = 0;
 
-  // Adds the rectangles that correspond to the current touchable area to
-  // the given vector.
-  //
-  // At the end of this call, |rectangles| contains one element per
-  // configured rectangles, though these can correspond to empty rectangles.
-  // Coordinates absolute CSS coordinates.
-  //
-  // Note that the vector is not cleared before rectangles are added.
-  virtual void GetTouchableArea(std::vector<RectF>* rectangles) const = 0;
-  virtual void GetRestrictedArea(std::vector<RectF>* rectangles) const = 0;
-
-  // Returns the current size of the visual viewport. May be empty if
-  // unknown.
-  //
-  // The rectangle is expressed in absolute CSS coordinates.
-  virtual void GetVisualViewport(RectF* viewport) const = 0;
-
-  // Reports a fatal error to Autofill Assistant, which should then stop.
-  virtual void OnFatalError(const std::string& error_message,
-                            bool show_feedback_chip,
-                            Metrics::DropOutReason reason) = 0;
-
-  // Reports that Autofill Assistant should be Stopped.
-  virtual void OnStop(const std::string& message,
-                      const std::string& button_label) = 0;
-
-  // Returns whether the viewport should be resized.
-  virtual ViewportMode GetViewportMode() = 0;
-
   // Peek mode state and whether it was changed automatically last time.
   virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
 
@@ -178,18 +129,6 @@ class UiDelegate {
 
   // Sets the state of the bottom sheet.
   virtual void SetBottomSheetState(BottomSheetState state) = 0;
-
-  // Gets whether the tab associated with this controller is currently selected.
-  virtual bool IsTabSelected() = 0;
-
-  // Sets whether the tab associated with this controller is currently selected.
-  virtual void SetTabSelected(bool selected) = 0;
-
-  // Fills in the overlay colors.
-  virtual void GetOverlayColors(OverlayColors* colors) const = 0;
-
-  // Gets the current Client Settings
-  virtual const ClientSettings& GetClientSettings() const = 0;
 
   // Returns the current form. May be null if there is no form to show.
   virtual const FormProto* GetForm() const = 0;
@@ -207,21 +146,15 @@ class UiDelegate {
                                  int choice_index,
                                  bool selected) = 0;
 
-  // Sets whether a UI is shown.
-  virtual void SetUiShown(bool shown) = 0;
-
   // Register an observer. Observers get told about changes to the
-  // controller.
-  virtual void AddObserver(ControllerObserver* observer) = 0;
+  // ui controller.
+  virtual void AddObserver(UiControllerObserver* observer) = 0;
 
   // Remove a previously registered observer.
-  virtual void RemoveObserver(const ControllerObserver* observer) = 0;
+  virtual void RemoveObserver(const UiControllerObserver* observer) = 0;
 
   // Dispatches an event to the event handler.
   virtual void DispatchEvent(const EventHandler::EventKey& key) = 0;
-
-  // Returns the user model.
-  virtual UserModel* GetUserModel() = 0;
 
   // Returns the event handler.
   virtual EventHandler* GetEventHandler() = 0;
@@ -239,29 +172,12 @@ class UiDelegate {
   virtual const GenericUserInterfaceProto* GetPersistentGenericUiProto()
       const = 0;
 
-  // Whether the overlay should be determined based on AA state or always
-  // hidden.
-  virtual bool ShouldShowOverlay() const = 0;
-
-  // Whether the keyboard should currently be suppressed.
-  virtual bool ShouldSuppressKeyboard() const = 0;
-
-  // Set the keyboard suppression for all frames for the current WebContent's
-  // main page.
-  virtual void SuppressKeyboard(bool suppress) = 0;
-
-  // Notifies the UI delegate that it should shut down.
-  virtual void ShutdownIfNecessary() = 0;
-
   // Called when the visibility of the keyboard has changed.
   virtual void OnKeyboardVisibilityChanged(bool visible) = 0;
 
   // Called when the user starts or finishes to focus an input text field in the
   // bottom sheet.
   virtual void OnInputTextFocusChanged(bool is_text_focused) = 0;
-
-  // Returns true if the controller is in a state where UI is necessary.
-  virtual bool NeedsUI() const = 0;
 
  protected:
   UiDelegate() = default;

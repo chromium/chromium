@@ -36,7 +36,6 @@ class WebController;
 struct ClientSettings;
 class TriggerContext;
 class WebsiteLoginManager;
-class EventHandler;
 class UserModel;
 
 class ScriptExecutorDelegate {
@@ -71,68 +70,24 @@ class ScriptExecutorDelegate {
   // Enters the given state. Returns true if the state was changed.
   virtual bool EnterState(AutofillAssistantState state) = 0;
 
+  // Make the area of the screen that correspond to the given elements
+  // touchable.
+  virtual void SetTouchableElementArea(const ElementAreaProto& element) = 0;
+
   // Returns the current state.
-  virtual AutofillAssistantState GetState() = 0;
+  virtual AutofillAssistantState GetState() const = 0;
 
   virtual void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) = 0;
 
-  // Make the area of the screen that correspond to the given elements
-  // touchable.
-  virtual void SetTouchableElementArea(const ElementAreaProto& element) = 0;
-  virtual void SetStatusMessage(const std::string& message) = 0;
-  virtual std::string GetStatusMessage() const = 0;
-  virtual void SetBubbleMessage(const std::string& message) = 0;
-  virtual std::string GetBubbleMessage() const = 0;
-  virtual void SetTtsMessage(const std::string& message) = 0;
-  virtual std::string GetTtsMessage() const = 0;
-  virtual TtsButtonState GetTtsButtonState() const = 0;
-  virtual void MaybePlayTtsMessage() = 0;
-  virtual void SetDetails(std::unique_ptr<Details> details,
-                          base::TimeDelta delay) = 0;
-  virtual void AppendDetails(std::unique_ptr<Details> details,
-                             base::TimeDelta delay) = 0;
-  virtual void SetInfoBox(const InfoBox& info_box) = 0;
-  virtual void ClearInfoBox() = 0;
-  virtual void SetCollectUserDataOptions(
-      CollectUserDataOptions* collect_user_data_options) = 0;
-  virtual void SetLastSuccessfulUserDataOptions(
-      std::unique_ptr<CollectUserDataOptions> collect_user_data_options) = 0;
-  virtual const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
-      const = 0;
   virtual void WriteUserData(
       base::OnceCallback<void(UserData*, UserData::FieldChange*)>
           write_callback) = 0;
-  virtual bool SetProgressActiveStepIdentifier(
-      const std::string& active_step_identifier) = 0;
-  virtual void SetProgressActiveStep(int active_step) = 0;
-  virtual void SetProgressVisible(bool visible) = 0;
-  virtual void SetProgressBarErrorState(bool error) = 0;
-  virtual void SetStepProgressBarConfiguration(
-      const ShowProgressBarProto::StepProgressBarConfiguration&
-          configuration) = 0;
-  virtual void SetUserActions(
-      std::unique_ptr<std::vector<UserAction>> user_action) = 0;
   virtual ViewportMode GetViewportMode() = 0;
   virtual void SetViewportMode(ViewportMode mode) = 0;
-  virtual void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) = 0;
-  virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
-  virtual void ExpandBottomSheet() = 0;
-  virtual void CollapseBottomSheet() = 0;
   virtual void SetClientSettings(
       const ClientSettingsProto& client_settings) = 0;
-  virtual bool SetForm(
-      std::unique_ptr<FormProto> form,
-      base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
-      base::OnceCallback<void(const ClientStatus&)> cancel_callback) = 0;
   virtual UserModel* GetUserModel() = 0;
-  virtual EventHandler* GetEventHandler() = 0;
-  virtual void SetShowFeedbackChip(bool show_feedback_chip) = 0;
-
-  // Makes no area of the screen touchable.
-  void ClearTouchableElementArea() {
-    SetTouchableElementArea(ElementAreaProto::default_instance());
-  }
 
   // The next navigation is expected and will not cause an error.
   virtual void ExpectNavigation() = 0;
@@ -160,6 +115,11 @@ class ScriptExecutorDelegate {
   // Changes to this value is reported to Listener::OnNavigationStateChanged()
   virtual bool HasNavigationError() = 0;
 
+  // Makes no area of the screen touchable.
+  void ClearTouchableElementArea() {
+    SetTouchableElementArea(ElementAreaProto::default_instance());
+  }
+
   // Force showing the UI, if necessary. This is useful when executing a direct
   // action which realizes it needs to interact with the user. The UI stays up
   // until the end of the flow.
@@ -180,30 +140,8 @@ class ScriptExecutorDelegate {
   // exists.
   virtual void RemoveListener(Listener* listener) = 0;
 
-  // Set how the sheet should behave when entering a prompt state.
-  virtual void SetExpandSheetForPromptAction(bool expand) = 0;
-
   // Set the domains allowlist for browse mode.
   virtual void SetBrowseDomainsAllowlist(std::vector<std::string> domains) = 0;
-
-  // Sets the generic UI to show to the user.
-  virtual void SetGenericUi(
-      std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-      base::OnceCallback<void(const ClientStatus&)> end_action_callback,
-      base::OnceCallback<void(const ClientStatus&)>
-          view_inflation_finished_callback) = 0;
-
-  // Sets the persistent generic UI to show to the user.
-  virtual void SetPersistentGenericUi(
-      std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-      base::OnceCallback<void(const ClientStatus&)>
-          view_inflation_finished_callback) = 0;
-
-  // Clears the generic UI.
-  virtual void ClearGenericUi() = 0;
-
-  // Clears the persistent generic UI.
-  virtual void ClearPersistentGenericUi() = 0;
 
   // Sets whether browse mode should be invisible or not. Must be set before
   // calling |EnterState(BROWSE)| to take effect.

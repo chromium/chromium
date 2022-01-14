@@ -54,6 +54,7 @@ class ScriptTracker : public ScriptExecutor::Listener {
   // |delegate| and |listener| should outlive this object and should not be
   // nullptr.
   ScriptTracker(ScriptExecutorDelegate* delegate,
+                ScriptExecutorUiDelegate* ui_delegate,
                 ScriptTracker::Listener* listener);
 
   ScriptTracker(const ScriptTracker&) = delete;
@@ -131,6 +132,7 @@ class ScriptTracker : public ScriptExecutor::Listener {
       std::vector<std::unique_ptr<Script>> scripts) override;
 
   const raw_ptr<ScriptExecutorDelegate> delegate_;
+  const raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
   const raw_ptr<ScriptTracker::Listener> listener_;
 
   // If true, a set of script has already been reported to

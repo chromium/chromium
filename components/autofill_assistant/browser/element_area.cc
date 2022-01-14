@@ -37,7 +37,7 @@ std::string ToDebugString(const std::vector<RectF>& rectangles) {
 
 }  // namespace
 
-ElementArea::ElementArea(ClientSettings* settings,
+ElementArea::ElementArea(const ClientSettings* settings,
                          WebController* web_controller)
     : settings_(settings), web_controller_(web_controller) {
   DCHECK(settings_ && web_controller_);

@@ -47,6 +47,7 @@ class MockClient : public Client {
   MOCK_CONST_METHOD0(IsFirstTimeTriggerScriptUser, bool());
   MOCK_METHOD1(FetchPaymentsClientToken,
                void(base::OnceCallback<void(const std::string&)>));
+  MOCK_METHOD0(GetScriptExecutorUiDelegate, ScriptExecutorUiDelegate*());
 
  private:
   std::unique_ptr<MockPersonalDataManager> mock_personal_data_manager_;

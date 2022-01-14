@@ -306,19 +306,26 @@ UiControllerAndroid::UiControllerAndroid(
 
 void UiControllerAndroid::Attach(content::WebContents* web_contents,
                                  ClientAndroid* client,
+                                 ExecutionDelegate* execution_delegate,
                                  UiDelegate* ui_delegate) {
   DCHECK(web_contents);
   DCHECK(client);
   DCHECK(ui_delegate);
+  DCHECK(execution_delegate);
 
   client_ = client;
 
-  // Detach from the current ui_delegate, if one was set previously.
+  // Detach from the current execution_delegate and ui_delegate, if previously
+  // set.
   Detach();
 
   // Attach to the new ui_delegate.
   ui_delegate_ = ui_delegate;
   ui_delegate_->AddObserver(this);
+
+  // Attach to the new execution_delegate.
+  execution_delegate_ = execution_delegate;
+  execution_delegate_->AddObserver(this);
 
   JNIEnv* env = AttachCurrentThread();
   auto java_web_contents = web_contents->GetJavaWebContents();
@@ -328,14 +335,15 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
       env, GetCollectUserDataModel(), java_web_contents);
   Java_AssistantOverlayModel_setWebContents(env, GetOverlayModel(),
                                             java_web_contents);
-  OnClientSettingsChanged(ui_delegate_->GetClientSettings());
+  OnClientSettingsChanged(execution_delegate_->GetClientSettings());
   Java_AssistantModel_setPeekModeDisabled(env, GetModel(), false);
 
-  if (ui_delegate->GetState() != AutofillAssistantState::INACTIVE &&
-      ui_delegate->IsTabSelected()) {
+  if (execution_delegate_->GetState() != AutofillAssistantState::INACTIVE &&
+      execution_delegate_->IsTabSelected()) {
     // The UI was created for an existing Controller.
     RestoreUi();
-  } else if (ui_delegate->GetState() == AutofillAssistantState::INACTIVE) {
+  } else if (execution_delegate_->GetState() ==
+             AutofillAssistantState::INACTIVE) {
     SetVisible(true);
   }
   // The call to set the web contents will, for some edge cases, trigger a call
@@ -350,14 +358,18 @@ void UiControllerAndroid::Detach() {
   if (ui_delegate_) {
     ui_delegate_->RemoveObserver(this);
   }
+  if (execution_delegate_) {
+    execution_delegate_->RemoveObserver(this);
+  }
   ui_delegate_ = nullptr;
+  execution_delegate_ = nullptr;
 }
 
 UiControllerAndroid::~UiControllerAndroid() {
   Java_AutofillAssistantUiController_clearNativePtr(AttachCurrentThread(),
                                                     java_object_);
-  if (ui_delegate_) {
-    ui_delegate_->SetUiShown(false);
+  if (execution_delegate_) {
+    execution_delegate_->SetUiShown(false);
   }
   Detach();
 }
@@ -377,10 +389,11 @@ void UiControllerAndroid::OnStateChanged(AutofillAssistantState new_state) {
 }
 
 void UiControllerAndroid::SetupForState() {
+  DCHECK(execution_delegate_ != nullptr);
   DCHECK(ui_delegate_ != nullptr);
 
   UpdateActions(ui_delegate_->GetUserActions());
-  AutofillAssistantState state = ui_delegate_->GetState();
+  AutofillAssistantState state = execution_delegate_->GetState();
   bool should_prompt_action_expand_sheet =
       ui_delegate_->ShouldPromptActionExpandSheet();
   switch (state) {
@@ -398,7 +411,8 @@ void UiControllerAndroid::SetupForState() {
       SetOverlayState(OverlayState::PARTIAL);
       SetSpinPoodle(false);
 
-      if (should_prompt_action_expand_sheet && ui_delegate_->IsTabSelected())
+      if (should_prompt_action_expand_sheet &&
+          execution_delegate_->IsTabSelected())
         ShowContentAndExpandBottomSheet();
       return;
 
@@ -417,7 +431,7 @@ void UiControllerAndroid::SetupForState() {
       SetSpinPoodle(false);
 
       // Make sure the user sees the error message.
-      if (ui_delegate_->IsTabSelected())
+      if (execution_delegate_->IsTabSelected())
         ShowContentAndExpandBottomSheet();
       ResetGenericUiControllers();
       return;
@@ -426,11 +440,11 @@ void UiControllerAndroid::SetupForState() {
       SetOverlayState(OverlayState::HIDDEN);
       SetSpinPoodle(false);
 
-      if (!ui_delegate_->NeedsUI()) {
+      if (!execution_delegate_->NeedsUI()) {
         Java_AssistantModel_setVisible(AttachCurrentThread(), GetModel(),
                                        false);
         DestroySelf();
-      } else if (ui_delegate_->IsTabSelected()) {
+      } else if (execution_delegate_->IsTabSelected()) {
         ShowContentAndExpandBottomSheet();
       }
       return;
@@ -499,7 +513,7 @@ void UiControllerAndroid::OnCollapseBottomSheet() {
 }
 
 void UiControllerAndroid::OnOverlayColorsChanged(
-    const UiDelegate::OverlayColors& colors) {
+    const ExecutionDelegate::OverlayColors& colors) {
   JNIEnv* env = AttachCurrentThread();
   auto overlay_model = GetOverlayModel();
   Java_AssistantOverlayModel_setBackgroundColor(
@@ -526,7 +540,7 @@ void UiControllerAndroid::OnHeaderFeedbackButtonClicked() {
   // the website's screenshot (COMPOSITOR).
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
-      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
+      ConvertUTF8ToJavaString(env, client_->GetDebugContext()),
       /* screenshotMode */ 0);
 }
 
@@ -536,7 +550,7 @@ void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
 
 void UiControllerAndroid::OnValueChanged(const std::string& identifier,
                                          const ValueProto& value) {
-  ui_delegate_->GetUserModel()->SetValue(identifier, value);
+  execution_delegate_->GetUserModel()->SetValue(identifier, value);
 }
 
 void UiControllerAndroid::Shutdown(Metrics::DropOutReason reason) {
@@ -586,8 +600,8 @@ void UiControllerAndroid::SnackbarResult(
 void UiControllerAndroid::DestroySelf() {
   // Note: shutdown happens asynchronously (if at all), so calling code after
   // |ShutdownIfNecessary| returns should be ok.
-  if (ui_delegate_)
-    ui_delegate_->ShutdownIfNecessary();
+  if (execution_delegate_)
+    execution_delegate_->ShutdownIfNecessary();
 
   // Destroy self in separate task to avoid UaFs. Obviously, having this method
   // in the first place is a terrible idea. We should refactor. The controller
@@ -611,7 +625,7 @@ void UiControllerAndroid::SetVisible(
 
 void UiControllerAndroid::SetVisible(bool visible) {
   Java_AssistantModel_setVisible(AttachCurrentThread(), GetModel(), visible);
-  DCHECK(ui_delegate_);
+  DCHECK(execution_delegate_);
   if (visible) {
     // Recover possibly state changes missed by OnStateChanged()
     SetupForState();
@@ -619,19 +633,20 @@ void UiControllerAndroid::SetVisible(bool visible) {
     SetOverlayState(OverlayState::HIDDEN);
   }
   bool should_suppress_keyboard =
-      visible && ui_delegate_->ShouldSuppressKeyboard();
-  ui_delegate_->SuppressKeyboard(should_suppress_keyboard);
+      visible && execution_delegate_->ShouldSuppressKeyboard();
+  execution_delegate_->SuppressKeyboard(should_suppress_keyboard);
   OnKeyboardSuppressionStateChanged(should_suppress_keyboard);
-  ui_delegate_->SetUiShown(visible);
+  execution_delegate_->SetUiShown(visible);
 }
 
 void UiControllerAndroid::RestoreUi() {
-  if (ui_delegate_ == nullptr)
+  if (!execution_delegate_ || !ui_delegate_)
     return;
 
   OnStatusMessageChanged(ui_delegate_->GetStatusMessage());
   OnBubbleMessageChanged(ui_delegate_->GetBubbleMessage());
-  OnClientSettingsDisplayStringsChanged(ui_delegate_->GetClientSettings());
+  OnClientSettingsDisplayStringsChanged(
+      execution_delegate_->GetClientSettings());
   OnStepProgressBarConfigurationChanged(
       ui_delegate_->GetStepProgressBarConfiguration());
   OnProgressActiveStepChanged(ui_delegate_->GetProgressActiveStep());
@@ -641,23 +656,24 @@ void UiControllerAndroid::RestoreUi() {
   OnDetailsChanged(ui_delegate_->GetDetails());
   OnUserActionsChanged(ui_delegate_->GetUserActions());
   OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
-  OnUserDataChanged(*ui_delegate_->GetUserData(), UserData::FieldChange::ALL);
+  OnUserDataChanged(*execution_delegate_->GetUserData(),
+                    UserData::FieldChange::ALL);
   OnPersistentGenericUserInterfaceChanged(
       ui_delegate_->GetPersistentGenericUiProto());
   OnGenericUserInterfaceChanged(ui_delegate_->GetGenericUiProto());
 
   std::vector<RectF> area;
-  ui_delegate_->GetTouchableArea(&area);
+  execution_delegate_->GetTouchableArea(&area);
   std::vector<RectF> restricted_area;
-  ui_delegate_->GetRestrictedArea(&restricted_area);
+  execution_delegate_->GetRestrictedArea(&restricted_area);
   RectF visual_viewport;
-  ui_delegate_->GetVisualViewport(&visual_viewport);
+  execution_delegate_->GetVisualViewport(&visual_viewport);
   OnTouchableAreaChanged(visual_viewport, area, restricted_area);
-  OnViewportModeChanged(ui_delegate_->GetViewportMode());
+  OnViewportModeChanged(execution_delegate_->GetViewportMode());
   OnPeekModeChanged(ui_delegate_->GetPeekMode());
   OnFormChanged(ui_delegate_->GetForm(), ui_delegate_->GetFormResult());
-  UiDelegate::OverlayColors colors;
-  ui_delegate_->GetOverlayColors(&colors);
+  ExecutionDelegate::OverlayColors colors;
+  execution_delegate_->GetOverlayColors(&colors);
   OnOverlayColorsChanged(colors);
   OnTtsButtonVisibilityChanged(ui_delegate_->GetTtsButtonVisible());
   OnTtsButtonStateChanged(ui_delegate_->GetTtsButtonState());
@@ -673,24 +689,23 @@ void UiControllerAndroid::OnTabSwitched(
     const base::android::JavaParamRef<jobject>& jcaller,
     jint state,
     jboolean activity_changed) {
-  if (ui_delegate_ == nullptr) {
+  if (!execution_delegate_ || !ui_delegate_)
     return;
-  }
 
   ui_delegate_->SetBottomSheetState(
       ui_controller_android_utils::ToNativeBottomSheetState(state));
-  ui_delegate_->SetTabSelected(false);
+  execution_delegate_->SetTabSelected(false);
 }
 
 void UiControllerAndroid::OnTabSelected(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  if (ui_delegate_ == nullptr) {
+  if (execution_delegate_ == nullptr)
     return;
-  }
-  if (!ui_delegate_->IsTabSelected()) {
+
+  if (!execution_delegate_->IsTabSelected()) {
     RestoreUi();
-    ui_delegate_->SetTabSelected(true);
+    execution_delegate_->SetTabSelected(true);
   }
 }
 
@@ -698,6 +713,7 @@ void UiControllerAndroid::OnTabSelected(
 
 void UiControllerAndroid::UpdateActions(
     const std::vector<UserAction>& user_actions) {
+  DCHECK(execution_delegate_);
   DCHECK(ui_delegate_);
 
   JNIEnv* env = AttachCurrentThread();
@@ -796,13 +812,14 @@ void UiControllerAndroid::UpdateActions(
 
   if (!has_close_or_cancel) {
     base::android::ScopedJavaLocalRef<jobject> jcancel_chip;
-    if (ui_delegate_->GetState() == AutofillAssistantState::STOPPED ||
-        ui_delegate_->GetState() == AutofillAssistantState::TRACKING) {
+    if (execution_delegate_->GetState() == AutofillAssistantState::STOPPED ||
+        execution_delegate_->GetState() == AutofillAssistantState::TRACKING) {
       jcancel_chip = Java_AutofillAssistantUiController_createCloseButton(
           env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""),
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
           /* content_description= */ nullptr);
-    } else if (ui_delegate_->GetState() != AutofillAssistantState::INACTIVE) {
+    } else if (execution_delegate_->GetState() !=
+               AutofillAssistantState::INACTIVE) {
       jcancel_chip = Java_AutofillAssistantUiController_createCancelButton(
           env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""), -1,
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
@@ -865,7 +882,7 @@ void UiControllerAndroid::OnFeedbackButtonClicked(
   // directly stop.
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
-      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
+      ConvertUTF8ToJavaString(env, client_->GetDebugContext()),
       /* screenshotMode */ 1);
 
   OnUserActionSelected(env, jcaller, index);
@@ -894,13 +911,13 @@ bool UiControllerAndroid::OnBackButtonClicked() {
   }
 
   // For BROWSE state the back button should react in its default way.
-  if (ui_delegate_ != nullptr &&
-      (ui_delegate_->GetState() == AutofillAssistantState::BROWSE)) {
+  if (execution_delegate_ != nullptr &&
+      (execution_delegate_->GetState() == AutofillAssistantState::BROWSE)) {
     return false;
   }
 
-  if (ui_delegate_ == nullptr ||
-      ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
+  if (execution_delegate_ == nullptr ||
+      execution_delegate_->GetState() == AutofillAssistantState::STOPPED) {
     if (client_->GetWebContents() != nullptr &&
         client_->GetWebContents()->GetController().CanGoBack()) {
       client_->GetWebContents()->GetController().GoBack();
@@ -909,12 +926,12 @@ bool UiControllerAndroid::OnBackButtonClicked() {
     return true;
   }
 
-  // ui_delegate_ must never be nullptr here!
+  // execution_delegate_ must never be nullptr here!
   auto back_button_settings =
-      ui_delegate_->GetClientSettings().back_button_settings;
+      execution_delegate_->GetClientSettings().back_button_settings;
   if (back_button_settings.has_value()) {
-    ui_delegate_->OnStop(back_button_settings->message(),
-                         back_button_settings->undo_label());
+    execution_delegate_->OnStop(back_button_settings->message(),
+                                back_button_settings->undo_label());
   } else {
     CloseOrCancel(-1, Metrics::DropOutReason::BACK_BUTTON_CLICKED);
   }
@@ -928,8 +945,8 @@ void UiControllerAndroid::OnBottomSheetClosedWithSwipe() {
 void UiControllerAndroid::CloseOrCancel(int action_index,
                                         Metrics::DropOutReason dropout_reason) {
   // Close immediately.
-  if (!ui_delegate_ ||
-      ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
+  if (!execution_delegate_ ||
+      execution_delegate_->GetState() == AutofillAssistantState::STOPPED) {
     DestroySelf();
     return;
   }
@@ -944,11 +961,11 @@ void UiControllerAndroid::CloseOrCancel(int action_index,
   }
 
   // Cancel, with a snackbar to allow UNDO.
-  ShowSnackbar(ui_delegate_->GetClientSettings().cancel_delay,
+  ShowSnackbar(execution_delegate_->GetClientSettings().cancel_delay,
                GetDisplayStringUTF8(ClientSettingsProto::STOPPED,
-                                    ui_delegate_->GetClientSettings()),
+                                    execution_delegate_->GetClientSettings()),
                GetDisplayStringUTF8(ClientSettingsProto::UNDO,
-                                    ui_delegate_->GetClientSettings()),
+                                    execution_delegate_->GetClientSettings()),
                base::BindOnce(&UiControllerAndroid::OnCancel,
                               weak_ptr_factory_.GetWeakPtr(), action_index,
                               dropout_reason));
@@ -1005,14 +1022,14 @@ void UiControllerAndroid::SetOverlayState(OverlayState state) {
   // page if there is no touchable area.
   if (state == OverlayState::PARTIAL) {
     std::vector<RectF> area;
-    ui_delegate_->GetTouchableArea(&area);
+    execution_delegate_->GetTouchableArea(&area);
     if (area.empty()) {
       state = OverlayState::FULL;
     }
   }
   overlay_state_ = state;
 
-  if (ui_delegate_ && ui_delegate_->ShouldShowOverlay()) {
+  if (execution_delegate_ && execution_delegate_->ShouldShowOverlay()) {
     ApplyOverlayState(state);
   }
 }
@@ -1063,16 +1080,16 @@ void UiControllerAndroid::OnTouchableAreaChanged(
 }
 
 void UiControllerAndroid::OnUnexpectedTaps() {
-  if (!ui_delegate_) {
+  if (!execution_delegate_) {
     Shutdown(Metrics::DropOutReason::OVERLAY_STOP);
     return;
   }
 
-  ShowSnackbar(ui_delegate_->GetClientSettings().tap_shutdown_delay,
+  ShowSnackbar(execution_delegate_->GetClientSettings().tap_shutdown_delay,
                GetDisplayStringUTF8(ClientSettingsProto::MAYBE_GIVE_UP,
-                                    ui_delegate_->GetClientSettings()),
+                                    execution_delegate_->GetClientSettings()),
                GetDisplayStringUTF8(ClientSettingsProto::UNDO,
-                                    ui_delegate_->GetClientSettings()),
+                                    execution_delegate_->GetClientSettings()),
                base::BindOnce(&UiControllerAndroid::Shutdown,
                               weak_ptr_factory_.GetWeakPtr(),
                               Metrics::DropOutReason::OVERLAY_STOP));
@@ -1225,7 +1242,7 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
   if (collect_user_data_options->request_login_choice) {
     auto jlist = CreateJavaLoginChoiceList(
         env, collect_user_data_options->login_choices,
-        ui_delegate_->GetClientSettings(), GetInfoPageUtil());
+        execution_delegate_->GetClientSettings(), GetInfoPageUtil());
     Java_AssistantCollectUserDataModel_setLoginChoices(env, jmodel, jlist);
   }
   Java_AssistantCollectUserDataModel_setTermsRequireReviewText(
@@ -1278,6 +1295,7 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
 void UiControllerAndroid::OnUserDataChanged(
     const UserData& user_data,
     UserData::FieldChange field_change) {
+  DCHECK(execution_delegate_ != nullptr);
   DCHECK(ui_delegate_ != nullptr);
   DCHECK(client_->GetWebContents() != nullptr);
   const CollectUserDataOptions* collect_user_data_options =
@@ -1492,7 +1510,7 @@ void UiControllerAndroid::OnUserDataChanged(
         user_data.selected_login_choice() == nullptr
             ? nullptr
             : CreateJavaLoginChoice(env, *user_data.selected_login_choice(),
-                                    ui_delegate_->GetClientSettings(),
+                                    execution_delegate_->GetClientSettings(),
                                     GetInfoPageUtil());
 
     Java_AssistantCollectUserDataModel_setSelectedLoginChoice(
@@ -1609,7 +1627,7 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
         ui_controller_android_utils::CreateJavaInfoPopup(
             env, form->info_popup(), GetInfoPageUtil(),
             GetDisplayStringUTF8(ClientSettingsProto::CLOSE,
-                                 ui_delegate_->GetClientSettings())));
+                                 execution_delegate_->GetClientSettings())));
   } else {
     Java_AssistantFormModel_clearInfoPopup(env, GetFormModel());
   }
@@ -1647,7 +1665,7 @@ void UiControllerAndroid::OnClientSettingsChanged(
         env, GetOverlayModel(), jcontext,
         ui_controller_android_utils::CreateJavaDrawable(
             env, jcontext, image.image_drawable(),
-            ui_delegate_->GetUserModel()),
+            execution_delegate_->GetUserModel()),
         image_size, top_margin, bottom_margin,
         ConvertUTF8ToJavaString(env, image.text()),
         ui_controller_android_utils::GetJavaColor(env, image.text_color()),
@@ -1785,7 +1803,6 @@ void UiControllerAndroid::OnDetailsChanged(
 }
 
 // InfoBox related method.
-
 base::android::ScopedJavaLocalRef<jobject>
 UiControllerAndroid::GetInfoBoxModel() {
   return Java_AssistantModel_getInfoBoxModel(AttachCurrentThread(), GetModel());
@@ -1817,11 +1834,11 @@ void UiControllerAndroid::OnFatalError(
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& jmessage,
     int jreason) {
-  if (!ui_delegate_)
+  if (!execution_delegate_)
     return;
-  ui_delegate_->OnFatalError(
+
+  execution_delegate_->OnFatalError(
       base::android::ConvertJavaStringToUTF8(env, jmessage),
-      /*show_feedback_chip=*/false,
       static_cast<Metrics::DropOutReason>(jreason));
 }
 
@@ -1847,9 +1864,17 @@ UiControllerAndroid::CreateGenericUiControllerForProto(
   return GenericUiRootControllerAndroid::CreateFromProto(
       proto, base::android::ScopedJavaGlobalRef<jobject>(jcontext),
       GetInfoPageUtil(), generic_ui_delegate_.GetJavaObject(),
-      ui_delegate_->GetEventHandler(), ui_delegate_->GetUserModel(),
+      ui_delegate_->GetEventHandler(), execution_delegate_->GetUserModel(),
       ui_delegate_->GetBasicInteractions());
 }
+
+void UiControllerAndroid::OnError(const std::string& error_message,
+                                  Metrics::DropOutReason reason) {}
+void UiControllerAndroid::OnExecuteScript(const std::string& start_message) {}
+void UiControllerAndroid::OnStart(const TriggerContext& trigger_context) {}
+void UiControllerAndroid::OnStop() {}
+void UiControllerAndroid::OnResetState() {}
+void UiControllerAndroid::OnUiShownChanged(bool shown) {}
 
 base::android::ScopedJavaLocalRef<jobject>
 UiControllerAndroid::GetGenericUiModel() {

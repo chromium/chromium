@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/test_util.h"
@@ -74,7 +75,7 @@ class ScriptExecutorTest : public testing::Test,
         /* global_payload= */ "initial global payload",
         /* script_payload= */ "initial payload",
         /* listener= */ this, &ordered_interrupts_,
-        /* delegate= */ &delegate_);
+        /* delegate= */ &delegate_, /* ui_delegate= */ &ui_delegate_);
 
     test_util::MockFindAnyElement(mock_web_controller_);
   }
@@ -156,6 +157,7 @@ class ScriptExecutorTest : public testing::Test,
   // creation run in that environment.
   base::test::TaskEnvironment task_environment_;
   FakeScriptExecutorDelegate delegate_;
+  FakeScriptExecutorUiDelegate ui_delegate_;
   Script script_;
   StrictMock<MockService> mock_service_;
   NiceMock<MockWebController> mock_web_controller_;
@@ -295,10 +297,10 @@ TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningReplace) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "2");
 }
 
 TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningConcatenate) {
@@ -328,10 +330,10 @@ TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningConcatenate) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_EQ(delegate_.GetStatusMessage(), "1... slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "1... slow");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "2");
 }
 
 TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersOnlyOnce) {
@@ -361,9 +363,9 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersOnlyOnce) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow");
   task_environment_.FastForwardBy(base::Milliseconds(100));
-  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "2");
 }
 
 TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersMultipleTimes) {
@@ -394,11 +396,11 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersMultipleTimes) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow");
   task_environment_.FastForwardBy(base::Milliseconds(100));
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow");
   task_environment_.FastForwardBy(base::Milliseconds(100));
-  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "2");
 }
 
 TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShowingIfNotConsecutive) {
@@ -426,7 +428,7 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShowingIfNotConsecutive) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_NE(delegate_.GetStatusMessage(), "slow");
+  EXPECT_NE(ui_delegate_.GetStatusMessage(), "slow");
 }
 
 TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShowingIfOnCompleted) {
@@ -450,7 +452,7 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShowingIfOnCompleted) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_NE(delegate_.GetStatusMessage(), "slow");
+  EXPECT_NE(ui_delegate_.GetStatusMessage(), "slow");
 }
 
 TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShownIfSlowWebsiteFirst) {
@@ -499,10 +501,10 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShownIfSlowWebsiteFirst) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow website");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow website");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "3");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "3");
 }
 
 TEST_F(ScriptExecutorTest, SlowWebsiteWarningReplace) {
@@ -524,7 +526,7 @@ TEST_F(ScriptExecutorTest, SlowWebsiteWarningReplace) {
       .WillOnce(Delay(&task_environment_, 2000));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow");
 }
 
 TEST_F(ScriptExecutorTest, SlowWebsiteWarningConcatenate) {
@@ -547,7 +549,7 @@ TEST_F(ScriptExecutorTest, SlowWebsiteWarningConcatenate) {
       .WillOnce(Delay(&task_environment_, 2000));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_EQ(delegate_.GetStatusMessage(), "1... slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "1... slow");
 }
 
 TEST_F(ScriptExecutorTest, SlowWebsiteWarningTriggersOnlyOnce) {
@@ -590,10 +592,10 @@ TEST_F(ScriptExecutorTest, SlowWebsiteWarningTriggersOnlyOnce) {
           RunOnceCallback<5>(net::HTTP_OK, Serialize(next_actions_response)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "2");
 }
 
 TEST_F(ScriptExecutorTest, SlowWebsiteWarningNotShownIfSlowConnectionFirst) {
@@ -642,13 +644,13 @@ TEST_F(ScriptExecutorTest, SlowWebsiteWarningNotShownIfSlowConnectionFirst) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow connection");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow connection");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "2");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "3");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "3");
 }
 
 TEST_F(ScriptExecutorTest, SlowWarningsBothShownIfConfigured) {
@@ -698,15 +700,13 @@ TEST_F(ScriptExecutorTest, SlowWarningsBothShownIfConfigured) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow connection");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow connection");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow website");
-  //  task_environment_.DescribeCurrentTasks();
-  ////  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "slow website");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
-  EXPECT_EQ(delegate_.GetStatusMessage(), "3");
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "3");
 }
 
 TEST_F(ScriptExecutorTest, UnsupportedAction) {
@@ -824,9 +824,9 @@ TEST_F(ScriptExecutorTest, ClearDetailsWhenFinished) {
               Run(Field(&ScriptExecutor::Result::success, true)));
 
   // empty, but not null
-  delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
+  ui_delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_THAT(delegate_.GetDetails(), IsEmpty());
+  EXPECT_THAT(ui_delegate_.GetDetails(), IsEmpty());
 }
 
 TEST_F(ScriptExecutorTest, DontClearDetailsIfOtherActionsAreLeft) {
@@ -845,9 +845,9 @@ TEST_F(ScriptExecutorTest, DontClearDetailsIfOtherActionsAreLeft) {
               Run(Field(&ScriptExecutor::Result::success, true)));
 
   // empty, but not null
-  delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
+  ui_delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_THAT(delegate_.GetDetails(), Not(IsEmpty()));
+  EXPECT_THAT(ui_delegate_.GetDetails(), Not(IsEmpty()));
 }
 
 TEST_F(ScriptExecutorTest, ClearDetailsOnError) {
@@ -861,9 +861,9 @@ TEST_F(ScriptExecutorTest, ClearDetailsOnError) {
               Run(Field(&ScriptExecutor::Result::success, false)));
 
   // empty, but not null
-  delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
+  ui_delegate_.SetDetails(std::make_unique<Details>(), base::TimeDelta());
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_THAT(delegate_.GetDetails(), IsEmpty());
+  EXPECT_THAT(ui_delegate_.GetDetails(), IsEmpty());
 }
 
 TEST_F(ScriptExecutorTest, ForwardLastPayloadOnSuccess) {
@@ -1289,7 +1289,7 @@ TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
       ElementsAre(interruptible_area, interrupt_area,
                   ElementAreaProto::default_instance(), interruptible_area,
                   ElementAreaProto::default_instance()));
-  EXPECT_EQ("done", delegate_.GetStatusMessage());
+  EXPECT_EQ("done", ui_delegate_.GetStatusMessage());
 }
 
 TEST_F(ScriptExecutorTest, RunPromptInBrowseMode) {
@@ -1510,9 +1510,9 @@ TEST_F(ScriptExecutorTest, RestorePreInterruptStatusMessage) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
 
-  delegate_.SetStatusMessage("pre-run status");
+  ui_delegate_.SetStatusMessage("pre-run status");
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ("pre-interrupt status", delegate_.GetStatusMessage());
+  EXPECT_EQ("pre-interrupt status", ui_delegate_.GetStatusMessage());
 }
 
 TEST_F(ScriptExecutorTest, KeepStatusMessageWhenNotInterrupted) {
@@ -1533,9 +1533,9 @@ TEST_F(ScriptExecutorTest, KeepStatusMessageWhenNotInterrupted) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
 
-  delegate_.SetStatusMessage("pre-run status");
+  ui_delegate_.SetStatusMessage("pre-run status");
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ("pre-interrupt status", delegate_.GetStatusMessage());
+  EXPECT_EQ("pre-interrupt status", ui_delegate_.GetStatusMessage());
 }
 
 TEST_F(ScriptExecutorTest, PauseWaitForDomWhileNavigating) {
@@ -1918,14 +1918,14 @@ TEST_F(ScriptExecutorTest, InterceptUserActions) {
 
   executor_->Run(&user_data_, executor_callback_.Get());
   EXPECT_EQ(AutofillAssistantState::PROMPT, delegate_.GetState());
-  ASSERT_NE(nullptr, delegate_.GetUserActions());
-  ASSERT_THAT(*delegate_.GetUserActions(), SizeIs(1));
+  ASSERT_NE(nullptr, ui_delegate_.GetUserActions());
+  ASSERT_THAT(*ui_delegate_.GetUserActions(), SizeIs(1));
 
   // The prompt action must finish. We don't bother continuing with the script
   // in this test.
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _));
 
-  (*delegate_.GetUserActions())[0].RunCallback();
+  (*ui_delegate_.GetUserActions())[0].RunCallback();
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 }
 
@@ -1942,21 +1942,21 @@ TEST_F(ScriptExecutorTest, PauseAndResume) {
       .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
 
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ("Tell", delegate_.GetStatusMessage());
+  EXPECT_EQ("Tell", ui_delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::PROMPT, delegate_.GetState());
 
   executor_->OnPause("Paused", "Button");
-  EXPECT_EQ("Paused", delegate_.GetStatusMessage());
+  EXPECT_EQ("Paused", ui_delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::STOPPED, delegate_.GetState());
-  ASSERT_THAT(*delegate_.GetUserActions(), SizeIs(1));
+  ASSERT_THAT(*ui_delegate_.GetUserActions(), SizeIs(1));
   EXPECT_THAT(
-      *delegate_.GetUserActions(),
+      *ui_delegate_.GetUserActions(),
       ElementsAre(Property(&UserAction::chip,
                            AllOf(Field(&Chip::text, StrEq("Button")),
                                  Field(&Chip::type, HIGHLIGHTED_ACTION)))));
 
-  (*delegate_.GetUserActions())[0].RunCallback();
-  EXPECT_EQ("Tell", delegate_.GetStatusMessage());
+  (*ui_delegate_.GetUserActions())[0].RunCallback();
+  EXPECT_EQ("Tell", ui_delegate_.GetStatusMessage());
   EXPECT_THAT(delegate_.GetStateHistory(),
               ElementsAre(AutofillAssistantState::PROMPT,
                           AutofillAssistantState::STOPPED,
@@ -1985,15 +1985,15 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
           RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ("Tell", delegate_.GetStatusMessage());
+  EXPECT_EQ("Tell", ui_delegate_.GetStatusMessage());
   EXPECT_THAT(delegate_.GetState(), Not(Eq(AutofillAssistantState::PROMPT)));
 
   executor_->OnPause("Paused", "Button");
-  EXPECT_EQ("Paused", delegate_.GetStatusMessage());
+  EXPECT_EQ("Paused", ui_delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::STOPPED, delegate_.GetState());
-  ASSERT_THAT(*delegate_.GetUserActions(), SizeIs(1));
+  ASSERT_THAT(*ui_delegate_.GetUserActions(), SizeIs(1));
   EXPECT_THAT(
-      *delegate_.GetUserActions(),
+      *ui_delegate_.GetUserActions(),
       ElementsAre(Property(&UserAction::chip,
                            AllOf(Field(&Chip::text, StrEq("Button")),
                                  Field(&Chip::type, HIGHLIGHTED_ACTION)))));
@@ -2002,8 +2002,8 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
   // not advance to the next action (i.e. |PromptAction|), so the status
   // status message is the one from |TellAction|.
   EXPECT_CALL(mock_web_controller_, FindElement(_, _, _)).Times(0);
-  (*delegate_.GetUserActions())[0].RunCallback();
-  EXPECT_EQ("Tell", delegate_.GetStatusMessage());
+  (*ui_delegate_.GetUserActions())[0].RunCallback();
+  EXPECT_EQ("Tell", ui_delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 
   // We have resumed, the |WaitForDom| should now finish and advance the script.
@@ -2013,7 +2013,7 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
                                 std::make_unique<ElementFinder::Result>());
       }));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  EXPECT_EQ("Prompt", delegate_.GetStatusMessage());
+  EXPECT_EQ("Prompt", ui_delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::PROMPT, delegate_.GetState());
 }
 
@@ -2056,11 +2056,11 @@ TEST_F(ScriptExecutorTest, ClearPersistentUiOnError) {
               Run(Field(&ScriptExecutor::Result::success, false)));
 
   // empty, but not null
-  delegate_.SetPersistentGenericUi(
+  ui_delegate_.SetPersistentGenericUi(
       std::make_unique<GenericUserInterfaceProto>(), base::DoNothing());
-  ASSERT_NE(nullptr, delegate_.GetPersistentGenericUi());
+  ASSERT_NE(nullptr, ui_delegate_.GetPersistentGenericUi());
   executor_->Run(&user_data_, executor_callback_.Get());
-  ASSERT_EQ(nullptr, delegate_.GetPersistentGenericUi());
+  ASSERT_EQ(nullptr, ui_delegate_.GetPersistentGenericUi());
 }
 
 }  // namespace
