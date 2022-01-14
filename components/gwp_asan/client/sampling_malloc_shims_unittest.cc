@@ -27,17 +27,17 @@
 // These tests install global allocator shims so they are not safe to run in
 // multi-threaded contexts. Instead they're implemented as multi-process tests.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <malloc.h>
 static size_t GetUsableSize(void* mem) {
   return _msize(mem);
 }
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 static size_t GetUsableSize(void* mem) {
   return malloc_size(mem);
 }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
 static size_t GetUsableSize(void* mem) {
   return malloc_usable_size(mem);
@@ -62,9 +62,9 @@ constexpr int kFailure = 1;
 class SamplingMallocShimsTest : public base::MultiProcessTest {
  public:
   static void multiprocessTestSetup() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     base::allocator::InitializeAllocatorShim();
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
     crash_reporter::InitializeCrashKeys();
     InstallMallocHooks(AllocatorState::kMaxMetadata,
                        AllocatorState::kMaxMetadata, AllocatorState::kMaxSlots,
@@ -123,15 +123,15 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   EXPECT_TRUE(allocationCheck([&] { return realloc(nullptr, page_size); },
                               &free, &failures));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(allocationCheck([&] { return _aligned_malloc(123, 16); },
                               &_aligned_free, &failures));
   EXPECT_TRUE(
       allocationCheck([&] { return _aligned_realloc(nullptr, 123, 16); },
                       &_aligned_free, &failures));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   EXPECT_TRUE(allocationCheck(
       [&]() -> void* {
         void* ptr;
@@ -140,7 +140,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
         return ptr;
       },
       &free, &failures));
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   EXPECT_TRUE(allocationCheck([&] { return std::malloc(page_size); },
                               &std::free, &failures));
@@ -169,7 +169,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 }
 
 // Flaky on Mac: https://crbug.com/1087372
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_BasicFunctionality DISABLED_BasicFunctionality
 #else
 #define MAYBE_BasicFunctionality BasicFunctionality
@@ -249,7 +249,7 @@ TEST_F(SamplingMallocShimsTest, CrashKey) {
 #endif  // !defined(COMPONENT_BUILD)
 
 // malloc_usable_size() is not currently used/shimmed on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     GetSizeEstimate,
     SamplingMallocShimsTest::multiprocessTestSetup) {
@@ -273,7 +273,7 @@ TEST_F(SamplingMallocShimsTest, GetSizeEstimate) {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     AlignedRealloc,
     SamplingMallocShimsTest::multiprocessTestSetup) {
@@ -294,10 +294,10 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 TEST_F(SamplingMallocShimsTest, AlignedRealloc) {
   runTest("AlignedRealloc");
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // PartitionAlloc-Everywhere does not support batch_malloc / batch_free.
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     BatchFree,
     SamplingMallocShimsTest::multiprocessTestSetup) {
@@ -325,7 +325,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 TEST_F(SamplingMallocShimsTest, BatchFree) {
   runTest("BatchFree");
 }
-#endif  // defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
 

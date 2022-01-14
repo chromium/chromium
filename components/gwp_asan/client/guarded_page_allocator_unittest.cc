@@ -111,7 +111,7 @@ TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
 TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
   void* buf = gpa_.Allocate(100);
   EXPECT_EQ(gpa_.GetRequestedSize(buf), 100U);
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   EXPECT_DEATH({ gpa_.GetRequestedSize((char*)buf + 1); }, "");
 #else
   EXPECT_EQ(gpa_.GetRequestedSize((char*)buf + 1), 0U);
@@ -295,7 +295,7 @@ class ThreadedHighContentionDelegate
 // Test that allocator remains in consistent state under high contention and
 // doesn't double-allocate pages or fail to deallocate pages.
 TEST_P(GuardedPageAllocatorTest, ThreadedHighContention) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   constexpr size_t num_threads = 200;
 #else
   constexpr size_t num_threads = 1000;
