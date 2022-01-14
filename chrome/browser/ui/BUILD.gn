@@ -2190,6 +2190,8 @@ static_library("ui") {
       "ash/projector/projector_client_impl.h",
       "ash/projector/projector_soda_installation_controller.cc",
       "ash/projector/projector_soda_installation_controller.h",
+      "ash/projector/projector_utils.cc",
+      "ash/projector/projector_utils.h",
       "ash/screen_orientation_delegate_chromeos.cc",
       "ash/screen_orientation_delegate_chromeos.h",
       "ash/screenshot_area.cc",

@@ -39,6 +39,8 @@ class UntrustedProjectorUIConfig : public ui::WebUIConfig {
   ~UntrustedProjectorUIConfig() override;
 
   // ui::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui) override;
 };

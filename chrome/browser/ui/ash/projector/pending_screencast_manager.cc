@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -218,6 +219,10 @@ void PendingSreencastManager::OnError(const drivefs::mojom::DriveError& error) {
 }
 
 void PendingSreencastManager::OnUserSessionStarted(bool is_primary_user) {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  if (!IsProjectorAllowedForProfile(profile))
+    return;
+
   auto* drivefs_host = GetDriveFsHostForActiveProfile();
   if (drivefs_host)
     GetDriveFsHostForActiveProfile()->AddObserver(this);

@@ -214,6 +214,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_welcome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_ui.h"
@@ -924,8 +925,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
     return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
-  if (ash::features::IsProjectorEnabled() &&
-      url.host_piece() == ash::kChromeUIProjectorAppHost) {
+  if (url.host_piece() == ash::kChromeUIProjectorAppHost &&
+      ash::features::IsProjectorEnabled() &&
+      IsProjectorAllowedForProfile(profile)) {
     return &NewWebUI<ash::TrustedProjectorUI>;
   }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
