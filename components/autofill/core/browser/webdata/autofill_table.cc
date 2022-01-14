@@ -651,11 +651,11 @@ bool AutofillTable::CreateTablesIfNecessary() {
   return (InitMainTable() && InitCreditCardsTable() && InitProfilesTable() &&
           InitProfileAddressesTable() && InitProfileNamesTable() &&
           InitProfileEmailsTable() && InitProfilePhonesTable() &&
-          InitProfileTrashTable() && InitMaskedCreditCardsTable() &&
-          InitUnmaskedCreditCardsTable() && InitServerCardMetadataTable() &&
-          InitServerAddressesTable() && InitServerAddressMetadataTable() &&
-          InitAutofillSyncMetadataTable() && InitModelTypeStateTable() &&
-          InitPaymentsCustomerDataTable() && InitPaymentsUPIVPATable() &&
+          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
+          InitServerCardMetadataTable() && InitServerAddressesTable() &&
+          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
+          InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
+          InitPaymentsUPIVPATable() &&
           InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
           InitOfferEligibleInstrumentTable() &&
           InitOfferMerchantDomainTable() && InitCreditCardArtImagesTable());
@@ -777,6 +777,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 98:
       *update_compatible_version = true;
       return MigrateToVersion98RemoveStatusColumnMaskedCreditCards();
+    case 99:
+      *update_compatible_version = true;
+      return MigrateToVersion99RemoveAutofillProfilesTrashTable();
   }
   return true;
 }
@@ -1110,9 +1113,6 @@ bool AutofillTable::UpdateAutofillEntries(
 }
 
 bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
-  if (IsAutofillGUIDInTrash(profile.guid()))
-    return true;
-
   sql::Statement s(db_->GetUniqueStatement(
       "INSERT INTO autofill_profiles"
       "(guid, company_name, street_address, dependent_locality, city, state,"
@@ -1131,11 +1131,6 @@ bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
 
 bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
   DCHECK(base::IsValidGUID(profile.guid()));
-
-  // Don't update anything until the trash has been emptied.  There may be
-  // pending modifications to process.
-  if (!IsAutofillProfilesTrashEmpty())
-    return true;
 
   std::unique_ptr<AutofillProfile> old_profile =
       GetAutofillProfile(profile.guid());
@@ -1174,17 +1169,6 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
 
 bool AutofillTable::RemoveAutofillProfile(const std::string& guid) {
   DCHECK(base::IsValidGUID(guid));
-
-  if (IsAutofillGUIDInTrash(guid)) {
-    sql::Statement s_trash(db_->GetUniqueStatement(
-        "DELETE FROM autofill_profiles_trash WHERE guid = ?"));
-    s_trash.BindString(0, guid);
-
-    bool success = s_trash.Run();
-    DCHECK_GT(db_->GetLastChangeCount(), 0) << "Expected item in trash";
-    return success;
-  }
-
   sql::Statement s(
       db_->GetUniqueStatement("DELETE FROM autofill_profiles WHERE guid = ?"));
   s.BindString(0, guid);
@@ -3526,6 +3510,13 @@ bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion99RemoveAutofillProfilesTrashTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         db_->Execute("DROP TABLE autofill_profiles_trash") &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3664,21 +3655,6 @@ bool AutofillTable::InsertAutofillEntry(const AutofillEntry& entry) {
   // timestamps completely meaningless as a way to track frequency of usage.
   s.BindInt(5, entry.date_last_used() == entry.date_created() ? 1 : 2);
   return s.Run();
-}
-
-bool AutofillTable::IsAutofillProfilesTrashEmpty() {
-  sql::Statement s(
-      db_->GetUniqueStatement("SELECT guid FROM autofill_profiles_trash"));
-
-  return !s.Step();
-}
-
-bool AutofillTable::IsAutofillGUIDInTrash(const std::string& guid) {
-  sql::Statement s(db_->GetUniqueStatement(
-      "SELECT guid FROM autofill_profiles_trash WHERE guid = ?"));
-  s.BindString(0, guid);
-
-  return s.Step();
 }
 
 void AutofillTable::AddMaskedCreditCards(
@@ -3920,17 +3896,6 @@ bool AutofillTable::InitProfilePhonesTable() {
     if (!db_->Execute("CREATE TABLE autofill_profile_phones ( "
                       "guid VARCHAR, "
                       "number VARCHAR)")) {
-      NOTREACHED();
-      return false;
-    }
-  }
-  return true;
-}
-
-bool AutofillTable::InitProfileTrashTable() {
-  if (!db_->DoesTableExist("autofill_profiles_trash")) {
-    if (!db_->Execute("CREATE TABLE autofill_profiles_trash ( "
-                      "guid VARCHAR)")) {
       NOTREACHED();
       return false;
     }

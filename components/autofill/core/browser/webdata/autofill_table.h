@@ -208,13 +208,6 @@ struct PaymentsCustomerData;
 //                      phone number belongs.
 //   number
 //
-// autofill_profiles_trash
-//                      This table contains guids of "trashed" autofill
-//                      profiles.  When a profile is removed its guid is added
-//                      to this table so that Sync can perform deferred removal.
-//
-//   guid               The guid string that identifies the trashed profile.
-//
 // credit_cards         This table contains credit card data added by the user
 //                      with the Autofill dialog.  Most of the columns are
 //                      standard entries in a credit card form.
@@ -721,6 +714,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion95AddVirtualCardMetadata();
   bool MigrateToVersion96AddAutofillProfileDisallowConfirmableMergesColumn();
   bool MigrateToVersion98RemoveStatusColumnMaskedCreditCards();
+  bool MigrateToVersion99RemoveAutofillProfilesTrashTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -794,12 +788,6 @@ class AutofillTable : public WebDatabaseTable,
   // Insert a single AutofillEntry into the autofill table.
   bool InsertAutofillEntry(const AutofillEntry& entry);
 
-  // Checks if the trash is empty.
-  bool IsAutofillProfilesTrashEmpty();
-
-  // Checks if the guid is in the trash.
-  bool IsAutofillGUIDInTrash(const std::string& guid);
-
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
   // Must already be in a transaction.
   void AddMaskedCreditCards(const std::vector<CreditCard>& credit_cards);
@@ -819,7 +807,6 @@ class AutofillTable : public WebDatabaseTable,
   bool InitProfileNamesTable();
   bool InitProfileEmailsTable();
   bool InitProfilePhonesTable();
-  bool InitProfileTrashTable();
   bool InitMaskedCreditCardsTable();
   bool InitUnmaskedCreditCardsTable();
   bool InitServerCardMetadataTable();
