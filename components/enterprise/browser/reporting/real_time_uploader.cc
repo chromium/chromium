@@ -83,12 +83,12 @@ void RealTimeUploader::CreateReportQueueRequest(
     reporting::StatusOr<std::unique_ptr<reporting::ReportQueueConfiguration>>
         config,
     reporting::ReportQueueProvider::CreateReportQueueCallback callback) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   reporting::ReportQueueProvider::CreateQueue(std::move(config.ValueOrDie()),
                                               std::move(callback));
 #else
   NOTREACHED();
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void RealTimeUploader::OnReportQueueCreated(

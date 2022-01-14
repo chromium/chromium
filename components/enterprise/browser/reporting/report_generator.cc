@@ -16,7 +16,7 @@
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/wmi.h"
 #endif
 
@@ -55,7 +55,7 @@ void ReportGenerator::CreateBasicRequest(
           policy::GetBrowserDeviceIdentifier().release());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // 1. Async function base::SysInfo::SetHardwareInfo is called.
   // 2. ReportGenerator::SetHardwareInfo fills basic_report
   // 3. ReportGenerator::GenerateReport is called
@@ -68,7 +68,7 @@ void ReportGenerator::CreateBasicRequest(
                                     std::move(callback))));
 #else
   GenerateReport(report_type, std::move(callback), std::move(basic_request));
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 std::string ReportGenerator::GetMachineName() {
@@ -80,7 +80,7 @@ std::string ReportGenerator::GetOSUserName() {
 }
 
 std::string ReportGenerator::GetSerialNumber() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(
       base::win::WmiComputerSystemInfo::Get().serial_number());
 #else
@@ -125,11 +125,11 @@ void ReportGenerator::SetHardwareInfo(
     std::unique_ptr<ReportRequest> basic_request,
     base::OnceCallback<void(std::unique_ptr<ReportRequest>)> callback,
     base::SysInfo::HardwareInfo hardware_info) {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   basic_request->GetDeviceReportRequest().set_brand_name(
       hardware_info.manufacturer);
   basic_request->GetDeviceReportRequest().set_device_model(hardware_info.model);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   std::move(callback).Run(std::move(basic_request));
 }

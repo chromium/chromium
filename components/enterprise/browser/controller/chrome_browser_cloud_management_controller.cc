@@ -30,10 +30,10 @@
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace policy {
 

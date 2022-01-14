@@ -4,6 +4,7 @@
 
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 
+#include "build/build_config.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -52,10 +53,10 @@ INSTANTIATE_TEST_SUITE_P(MachineEnrolledOrNot,
                          testing::Bool());
 
 TEST_P(CloudReportingPolicyHandlerTest, MachineEnrollment) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // CBCM device enrollment is not for chromeos.
   bool enrolled = EnrollWithChromeBrowserCloudManagement();
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kCloudReportingEnabled,
@@ -65,11 +66,11 @@ TEST_P(CloudReportingPolicyHandlerTest, MachineEnrollment) {
   CloudReportingPolicyHandler handler;
   policy::PolicyErrorMap errors;
   ASSERT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(errors.empty());
 #else
   EXPECT_EQ(errors.empty(), enrolled);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   PrefValueMap prefs;
   handler.ApplyPolicySettings(policy_map, &prefs);
   bool enabled = false;
