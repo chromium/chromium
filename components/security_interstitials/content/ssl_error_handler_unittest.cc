@@ -457,7 +457,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
 
     RunCaptivePortalTest();
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
     // On platforms where captive portal detection is enabled, timer should
     // start for captive portal detection.
     EXPECT_TRUE(error_handler()->IsTimerRunningForTesting());
@@ -1138,7 +1138,7 @@ TEST_F(SSLErrorHandlerNameMismatchTest,
 }
 
 // Flakily fails on linux_chromium_tsan_rel_ng. http://crbug.com/989128
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 #define MAYBE_TimeQueryStarted DISABLED_TimeQueryStarted
 #else
 #define MAYBE_TimeQueryStarted TimeQueryStarted
@@ -1173,7 +1173,7 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryStarted) {
 // clock can't be determined because network time is unavailable.
 
 // Flakily fails on linux_chromium_tsan_rel_ng. http://crbug.com/989225
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 #define MAYBE_NoTimeQueries DISABLED_NoTimeQueries
 #else
 #define MAYBE_NoTimeQueries NoTimeQueries
@@ -1198,7 +1198,7 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_NoTimeQueries) {
 // the system clock times out (e.g. because a network time query hangs).
 
 // Flakily fails on linux_chromium_tsan_rel_ng. http://crbug.com/989289
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 #define MAYBE_TimeQueryHangs DISABLED_TimeQueryHangs
 #else
 #define MAYBE_TimeQueryHangs TimeQueryHangs

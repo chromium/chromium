@@ -50,7 +50,7 @@
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 StatefulSSLHostStateDelegate::RecurrentInterstitialMode
     kRecurrentInterstitialDefaultMode =
         StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF;

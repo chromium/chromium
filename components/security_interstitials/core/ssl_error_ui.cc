@@ -128,7 +128,7 @@ void SSLErrorUI::PopulateOverridableStrings(base::Value* load_time_data) {
 
 // On iOS, offer to close the page instead of navigating to NTP when unable to
 // go back. See crbug.com/1058476 for discussion.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (!controller()->CanGoBack()) {
     load_time_data->SetStringKey(
         "primaryButtonText",

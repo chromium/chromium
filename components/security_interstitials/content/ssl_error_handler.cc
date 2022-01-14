@@ -53,7 +53,7 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "components/security_interstitials/content/captive_portal_helper_android.h"
 #endif
@@ -429,7 +429,7 @@ void SSLErrorHandlerDelegateImpl::CheckForCaptivePortal() {
 }
 
 bool SSLErrorHandlerDelegateImpl::DoesOSReportCaptivePortal() {
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   return security_interstitials::IsBehindCaptivePortal();
 #else
   return false;
@@ -510,7 +510,7 @@ void SSLErrorHandlerDelegateImpl::ShowBlockedInterceptionInterstitial() {
 
 void SSLErrorHandlerDelegateImpl::ReportNetworkConnectivity(
     base::OnceClosure callback) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   security_interstitials::ReportNetworkConnectivity(
       base::android::AttachCurrentThread());
 #else

@@ -30,11 +30,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/cert/cert_verify_proc_android.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
@@ -305,7 +305,7 @@ TEST(ErrorReportTest, TestChromeChannelIncluded) {
   }
 }
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the SetIsEnterpriseManaged() function populates
 // is_enterprise_managed correctly on Windows, and that value is correctly
 // extracted from the parsed report.
@@ -327,7 +327,7 @@ TEST(ErrorReportTest, TestIsEnterpriseManagedPopulatedOnWindows) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Tests that information about the Android AIA fetching feature is included in
 // the report.
 TEST(ErrorReportTest, AndroidAIAFetchingFeatureEnabled) {
@@ -364,7 +364,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
 
   cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info =
       cert_verifier::mojom::CertVerifierDebugInfo::New();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   debug_info->mac_platform_debug_info =
       cert_verifier::mojom::MacPlatformVerifierDebugInfo::New();
   debug_info->mac_platform_debug_info->trust_result = 1;
@@ -389,7 +389,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->mac_trust_impl =
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kLruCache;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   debug_info->win_platform_debug_info =
       cert_verifier::mojom::WinPlatformVerifierDebugInfo::New();
   debug_info->win_platform_debug_info->authroot_this_update =
@@ -419,7 +419,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
 
   VerifyDeserializedReportSystemInfo(parsed);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   ASSERT_TRUE(trial_info.has_mac_platform_debug_info());
   EXPECT_EQ(1U, trial_info.mac_platform_debug_info().trust_result());
   EXPECT_EQ(20, trial_info.mac_platform_debug_info().result_code());
@@ -466,7 +466,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_FALSE(trial_info.has_mac_trust_impl());
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_TRUE(trial_info.has_win_platform_debug_info());
   EXPECT_EQ(
       8675309,
