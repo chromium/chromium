@@ -9247,6 +9247,21 @@
             ]
         }
     ],
+    "WebViewNativeContextMenuPhase2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewNativeContextMenuPhase2"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewThreadSafeMedia": [
         {
             "platforms": [
