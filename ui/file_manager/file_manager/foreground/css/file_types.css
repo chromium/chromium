@@ -167,6 +167,10 @@ body.check-select #list-container li[selected] [file-type-icon] {
   background-image: url(../images/filetype/filetype_sites.svg);
 }
 
+[file-type-icon='smb'] {
+  -webkit-mask-image: url(../images/volumes/smb.svg);
+}
+
 [file-type-icon='tini'] {
   -webkit-mask-image: none;
   background-color: transparent;
