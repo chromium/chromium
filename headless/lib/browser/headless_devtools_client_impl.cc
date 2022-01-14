@@ -161,9 +161,9 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
   std::unique_ptr<base::DictionaryValue> message_dict =
       base::DictionaryValue::From(std::move(message));
 
-  std::string session_id;
-  if (message_dict->GetString("sessionId", &session_id)) {
-    auto it = sessions_.find(session_id);
+  const std::string* session_id = message_dict->FindStringKey("sessionId");
+  if (session_id) {
+    auto it = sessions_.find(*session_id);
     if (it != sessions_.end()) {
       it->second->ReceiveProtocolMessage(json_message, std::move(message_dict));
       return;
@@ -521,7 +521,7 @@ HeadlessDevToolsClientImpl::Callback::Callback(
 
 HeadlessDevToolsClientImpl::Callback::~Callback() = default;
 
-HeadlessDevToolsClientImpl::Callback& HeadlessDevToolsClientImpl::Callback::
-operator=(Callback&& other) = default;
+HeadlessDevToolsClientImpl::Callback&
+HeadlessDevToolsClientImpl::Callback::operator=(Callback&& other) = default;
 
 }  // namespace headless
