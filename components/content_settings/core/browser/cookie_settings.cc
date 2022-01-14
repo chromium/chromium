@@ -21,7 +21,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
 #else
 #include "third_party/blink/public/common/features.h"
@@ -197,7 +197,7 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // IOS doesn't use blink and as such cannot check our feature flag. Disabling
   // by default there should be no-op as the lack of Blink also means no grants
   // would be generated. Everywhere else we'll use |kStorageAccessAPI| to gate
@@ -230,7 +230,7 @@ CookieSettings::~CookieSettings() = default;
 bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (!base::FeatureList::IsEnabled(kImprovedCookieControls))
     return false;
 #endif

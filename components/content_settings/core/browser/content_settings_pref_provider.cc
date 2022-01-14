@@ -45,10 +45,10 @@ namespace {
 const char kObsoleteDomainToOriginMigrationStatus[] =
     "profile.content_settings.domain_to_origin_migration_status";
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 const char kObsoleteFullscreenExceptionsPref[] =
     "profile.content_settings.exceptions.fullscreen";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kObsoleteMouseLockExceptionsPref[] =
     "profile.content_settings.exceptions.mouselock";
 const char kObsoletePluginsExceptionsPref[] =
@@ -57,8 +57,8 @@ const char kObsoletePluginsDataExceptionsPref[] =
     "profile.content_settings.exceptions.flash_data";
 const char kObsoleteFileHandlingExceptionsPref[] =
     "profile.content_settings.exceptions.file_handling";
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -85,19 +85,19 @@ void PrefProvider::RegisterProfilePrefs(
   // These prefs have been removed, but need to be registered so they can
   // be deleted on startup.
   registry->RegisterIntegerPref(kObsoleteDomainToOriginMigrationStatus, 0);
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   registry->RegisterDictionaryPref(
       kObsoleteFullscreenExceptionsPref,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(
       kObsoleteMouseLockExceptionsPref,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(kObsoletePluginsDataExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePluginsExceptionsPref);
   registry->RegisterDictionaryPref(kObsoleteFileHandlingExceptionsPref);
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 PrefProvider::PrefProvider(PrefService* prefs,
@@ -274,15 +274,15 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
 
   // These prefs were never stored on iOS/Android so they don't need to be
   // deleted.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteFullscreenExceptionsPref);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockExceptionsPref);
   prefs_->ClearPref(kObsoletePluginsExceptionsPref);
   prefs_->ClearPref(kObsoletePluginsDataExceptionsPref);
   prefs_->ClearPref(kObsoleteFileHandlingExceptionsPref);
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void PrefProvider::SetClockForTesting(base::Clock* clock) {

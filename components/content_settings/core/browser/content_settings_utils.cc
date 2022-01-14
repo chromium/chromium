@@ -120,7 +120,7 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
 
 void GetRendererContentSettingRules(const HostContentSettingsMap* map,
                                     RendererContentSettingRules* rules) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   map->GetSettingsForOneType(ContentSettingsType::IMAGES,
                              &(rules->image_rules));
   map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT,

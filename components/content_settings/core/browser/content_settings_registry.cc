@@ -16,7 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_drm_bridge.h"
 #endif
 
@@ -268,21 +268,21 @@ void ContentSettingsRegistry::Init() {
   // https://crbug.com/904883).
   // On ChromeOS and Windows the default value is always ALLOW.
   const auto protected_media_identifier_setting =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       media::MediaDrmBridge::IsPerOriginProvisioningSupported()
           ? CONTENT_SETTING_ALLOW
           : CONTENT_SETTING_ASK;
 #else
       CONTENT_SETTING_ALLOW;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   Register(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
            "protected-media-identifier", protected_media_identifier_setting,
            WebsiteSettingsInfo::UNSYNCABLE, AllowlistedSchemes(),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
                          CONTENT_SETTING_ASK),
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
 #endif  // else
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
@@ -614,13 +614,13 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   const auto auto_dark_web_content_setting =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       content_settings::kDarkenWebsitesCheckboxOptOut.Get()
           ? CONTENT_SETTING_ALLOW
           : CONTENT_SETTING_BLOCK;
 #else
       CONTENT_SETTING_ALLOW;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   Register(ContentSettingsType::AUTO_DARK_WEB_CONTENT, "auto-dark-web-content",
            auto_dark_web_content_setting, WebsiteSettingsInfo::UNSYNCABLE,

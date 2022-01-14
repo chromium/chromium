@@ -105,7 +105,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
 
   // Check that after initializing, nothing is blocked.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(content_settings->IsContentBlocked(ContentSettingsType::IMAGES));
 #endif
   EXPECT_FALSE(
@@ -134,7 +134,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                   false});
   content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content_settings->OnContentBlocked(ContentSettingsType::IMAGES);
 #endif
   content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
@@ -149,7 +149,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
       std::string(), std::string(), std::string());
 
   // Check that only the respective content types are affected.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::IMAGES));
 #endif
   EXPECT_FALSE(
@@ -211,7 +211,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
   NavigateAndCommit(GURL("http://google.com"));
   content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(content_settings->IsContentBlocked(ContentSettingsType::IMAGES));
 #endif
   EXPECT_FALSE(

@@ -4,6 +4,8 @@
 
 #include "components/content_settings/core/common/pref_names.h"
 
+#include "build/build_config.h"
+
 namespace prefs {
 
 // CookieControlsMode enum value that decides when the cookie controls UI is
@@ -139,7 +141,7 @@ const char kQuietNotificationPermissionUiEnablingMethod[] =
 const char kQuietNotificationPermissionUiDisabledTime[] =
     "profile.content_settings.disable_quiet_permission_ui_time.notifications";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Enable vibration for web notifications.
 const char kNotificationsVibrateEnabled[] = "notifications.vibrate_enabled";
 #endif

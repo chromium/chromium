@@ -515,7 +515,7 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
   if (type == ContentSettingsType::SENSORS)
     must_reset_blocked_status = true;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // content_settings_status_[type].allowed is always set to true in
   // OnContentBlocked, so we have to use
   // content_settings_status_[type].blocked to detect whether the protected
@@ -694,7 +694,7 @@ void PageSpecificContentSettings::OnFileSystemAccessed(const GURL& url,
   NotifySiteDataObservers();
 }
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 void PageSpecificContentSettings::OnProtectedMediaIdentifierPermissionSet(
     const GURL& requesting_origin,
     bool allowed) {

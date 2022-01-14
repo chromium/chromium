@@ -62,7 +62,7 @@ TEST_F(WebsiteSettingsRegistryTest, GetByName) {
 }
 
 TEST_F(WebsiteSettingsRegistryTest, GetPlatformDependent) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // App banner shouldn't be registered on iOS.
   EXPECT_FALSE(registry()->Get(ContentSettingsType::APP_BANNER));
 #else
@@ -101,7 +101,7 @@ TEST_F(WebsiteSettingsRegistryTest, Properties) {
             info->default_value_pref_name());
   ASSERT_TRUE(info->initial_default_value().is_int());
   EXPECT_EQ(999, info->initial_default_value().GetInt());
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_EQ(PrefRegistry::LOSSY_PREF, info->GetPrefRegistrationFlags());
 #else
   EXPECT_EQ(PrefRegistry::LOSSY_PREF |

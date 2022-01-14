@@ -34,10 +34,10 @@ namespace content_settings {
 namespace {
 
 // These settings are no longer used, and should be deleted on profile startup.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 const char kObsoleteFullscreenDefaultPref[] =
     "profile.default_content_setting_values.fullscreen";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kObsoleteMouseLockDefaultPref[] =
     "profile.default_content_setting_values.mouselock";
 const char kObsoletePluginsDefaultPref[] =
@@ -46,13 +46,13 @@ const char kObsoletePluginsDataDefaultPref[] =
     "profile.default_content_setting_values.flash_data";
 const char kObsoleteFileHandlingDefaultPref[] =
     "profile.default_content_setting_values.file_handling";
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 // This setting was moved and should be migrated on profile startup.
 const char kDeprecatedEnableDRM[] = "settings.privacy.drm_enabled";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
@@ -116,23 +116,23 @@ void DefaultProvider::RegisterProfilePrefs(
 
   // These prefs have been deprecated, but need to be registered so they can
   // be deleted on startup (see DiscardOrMigrateObsoletePreferences).
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(
       kObsoleteFullscreenDefaultPref, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kObsoleteMouseLockDefaultPref, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(kObsoletePluginsDataDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoletePluginsDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteFileHandlingDefaultPref, 0);
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(kDeprecatedEnableDRM, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
@@ -155,14 +155,14 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
                             IntToContentSetting(prefs_->GetInteger(
                                 GetPrefName(ContentSettingsType::POPUPS))),
                             CONTENT_SETTING_NUM_SETTINGS);
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultImagesSetting",
                             IntToContentSetting(prefs_->GetInteger(
                                 GetPrefName(ContentSettingsType::IMAGES))),
                             CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultJavaScriptSetting",
                             IntToContentSetting(prefs_->GetInteger(
                                 GetPrefName(ContentSettingsType::JAVASCRIPT))),
@@ -215,7 +215,7 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
                             CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultAutoDarkWebContentSetting",
                             IntToContentSetting(prefs_->GetInteger(GetPrefName(
                                 ContentSettingsType::AUTO_DARK_WEB_CONTENT))),
@@ -223,7 +223,7 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
 
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultRequestDesktopSiteSetting",
                             IntToContentSetting(prefs_->GetInteger(GetPrefName(
@@ -403,17 +403,17 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
     return;
   // These prefs were never stored on iOS/Android so they don't need to be
   // deleted.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteFullscreenDefaultPref);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDataDefaultPref);
   prefs_->ClearPref(kObsoleteFileHandlingDefaultPref);
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1191642): Remove this migration logic in M100.
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
@@ -427,7 +427,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
                                                : CONTENT_SETTING_BLOCK);
   }
   prefs_->ClearPref(kDeprecatedEnableDRM);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 }
 
 }  // namespace content_settings
