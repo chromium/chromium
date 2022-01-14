@@ -62,20 +62,21 @@ enum class DatabaseAction {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class NoStatePrefetchStatus {
-  // No state prefetch was not started at all for this omnibox interaction.
+enum class PredictionStatus {
+  // The no state prefetch/prerender was not started at all for this omnibox
+  // interaction.
   kNotStarted = 0,
-  // The no state prefetch was cancelled because the user did not select a URL
-  // in the omnibox.
+  // The no state prefetch/prerender was cancelled because the user did not
+  // select a URL in the omnibox.
   kCancelled = 1,
-  // The no state prefetch was unused because the user navigated to a different
-  // URL.
+  // The no state prefetch/prerender was unused because the user navigated to a
+  // different URL.
   kUnused = 2,
-  // The no state prefetch was used and had time to finish before the user
-  // selected a URL.
+  // The no state prefetch/prerender was used and had time to finish before the
+  // user selected a URL.
   kHitFinished = 3,
-  // The no state prefetch was used but had not completed before the user
-  // selected a URL.
+  // The no state prefetch/prerender was used but had not completed before the
+  // user selected a URL.
   kHitUnfinished = 4,
   kMaxValue = kHitUnfinished,
 };
@@ -181,7 +182,7 @@ void AutocompleteActionPredictor::CancelPrerender() {
   if (no_state_prefetch_handle_ && !no_state_prefetch_handle_->IsAbandoned()) {
     UMA_HISTOGRAM_ENUMERATION(
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
-        NoStatePrefetchStatus::kCancelled);
+        PredictionStatus::kCancelled);
     no_state_prefetch_handle_->OnCancel();
     no_state_prefetch_handle_.reset();
   }
@@ -213,6 +214,8 @@ void AutocompleteActionPredictor::StartPrerendering(
       }
       // `url` does not matched with previously prerendered url. Reset the
       // handle to trigger cancellation.
+      UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
+                                PredictionStatus::kCancelled);
       prerender_handle_.reset();
     }
 
@@ -310,24 +313,37 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
       if (no_state_prefetch_handle_->IsFinishedLoading()) {
         UMA_HISTOGRAM_ENUMERATION(
             "AutocompleteActionPredictor.NoStatePrefetchStatus",
-            NoStatePrefetchStatus::kHitFinished);
+            PredictionStatus::kHitFinished);
       } else {
         UMA_HISTOGRAM_ENUMERATION(
             "AutocompleteActionPredictor.NoStatePrefetchStatus",
-            NoStatePrefetchStatus::kHitUnfinished);
+            PredictionStatus::kHitUnfinished);
       }
     } else {
       UMA_HISTOGRAM_ENUMERATION(
           "AutocompleteActionPredictor.NoStatePrefetchStatus",
-          NoStatePrefetchStatus::kUnused);
+          PredictionStatus::kUnused);
     }
     no_state_prefetch_handle_->OnNavigateAway();
     // Don't release |no_state_prefetch_handle_| so it is canceled if it
     // survives to the next StartPrerendering call.
+  } else if (prerender_handle_) {
+    if (prerender_handle_->GetInitialPrerenderingUrl() == opened_url) {
+      UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
+                                PredictionStatus::kHitFinished);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
+                                PredictionStatus::kUnused);
+    }
+    // Don't release `prerender_handle_` here as prerender activation is still
+    // ongoing at this point. The handle will be reset in
+    // AutocompleteActionPredictor::OnFinishedNavigation().
   } else {
     UMA_HISTOGRAM_ENUMERATION(
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
-        NoStatePrefetchStatus::kNotStarted);
+        PredictionStatus::kNotStarted);
+    UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
+                              PredictionStatus::kNotStarted);
   }
 
   UpdateDatabaseFromTransitionalMatches(opened_url);
@@ -687,6 +703,8 @@ void AutocompleteActionPredictor::OnHistoryServiceLoaded(
 }
 
 void AutocompleteActionPredictor::OnFinishedNavigation() {
+  // Do not record AutocompleteActionPredictor.PrerenderStatus here because
+  // it is already recorded at OnOmniboxOpenedUrl().
   prerender_handle_.reset();
 }
 
