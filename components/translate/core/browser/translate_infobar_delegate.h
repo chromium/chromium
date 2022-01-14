@@ -200,7 +200,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   bool ShouldShowAlwaysTranslateShortcut();
   bool ShouldShowNeverTranslateShortcut();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Shows the Infobar offering to never translate the language or the site.
   void ShowNeverTranslateInfobar();
 #endif

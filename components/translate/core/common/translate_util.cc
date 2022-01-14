@@ -28,11 +28,10 @@ const base::Feature kTranslateSubFrames{"TranslateSubFrames",
 
 const base::Feature kTFLiteLanguageDetectionEnabled{
   "TFLiteLanguageDetectionEnabled",
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
       base::FEATURE_ENABLED_BY_DEFAULT
-#else  // !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_WIN) &&
-       // !defined(OS_MAC)
+#else
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };

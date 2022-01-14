@@ -1124,10 +1124,10 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   // Translation of unknown source language pages is not supported on iOS.
   // Experiment in place for supporting it on Android.
   bool unknown_source_supported = true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
     unknown_source_supported = false;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   unknown_source_supported = false;
 #endif
   EXPECT_EQ(translate_manager_->CanManuallyTranslate(),

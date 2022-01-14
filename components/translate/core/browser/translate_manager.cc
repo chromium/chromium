@@ -289,10 +289,10 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   // Translation of unknown source language pages is supported on Desktop
   // platforms, experimentally supported on Android and not supported on iOS.
   bool unknown_source_supported = true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   unknown_source_supported =
       base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption);
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   unknown_source_supported = false;
 #endif
   if (!unknown_source_supported &&
@@ -434,10 +434,10 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
     // Translation service is able to translate the various languages using it's
     // own language detection.
     // Experiment in place for supporting unknown language code on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
       source_lang = translate::kUnknownLanguageCode;
-#elif !defined(OS_IOS)
+#elif !BUILDFLAG(IS_IOS)
     source_lang = translate::kUnknownLanguageCode;
 #endif
     TranslateBrowserMetrics::ReportInitiationStatus(

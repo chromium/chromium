@@ -121,10 +121,10 @@ TranslateUIDelegate::TranslateUIDelegate(
   // Reserve additional space for unknown language option on Android if feature
   // is enabled, and on Desktop always.
   std::vector<std::string>::size_type languages_size = language_codes.size();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
     languages_size += 1;
-#elif !defined(OS_IOS)
+#elif !BUILDFLAG(IS_IOS)
   languages_size += 1;
 #endif
   languages_.reserve(languages_size);
@@ -166,9 +166,9 @@ TranslateUIDelegate::TranslateUIDelegate(
   // Add unknown language option to the front of the list on Android if feature
   // is enabled, and on Desktop always.
   bool add_unknown_language_option = true;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   add_unknown_language_option = false;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
     add_unknown_language_option = false;
 #endif

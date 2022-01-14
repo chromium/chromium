@@ -1152,14 +1152,14 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
 
 // When the detailed language settings are enabled blocked languages not in
 // accept languages can be translated.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   {  // Android scoped feature.
     base::test::ScopedFeatureList scoped_feature_list(
         language::kDetailedLanguageSettings);
     EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
         &translate_accept_languages, "de"));
   }
-#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   {  // Desktop scoped feature.
     base::test::ScopedFeatureList scoped_feature_list(
         language::kDesktopDetailedLanguageSettings);

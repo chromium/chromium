@@ -276,7 +276,7 @@ bool TranslateInfoBarDelegate::ShouldShowMessageInfoBarButton() {
 }
 
 bool TranslateInfoBarDelegate::ShouldShowAlwaysTranslateShortcut() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // On mobile, the option to always translate is shown after the translation.
   DCHECK_EQ(translate::TRANSLATE_STEP_AFTER_TRANSLATE, step_);
 #else
@@ -291,7 +291,7 @@ bool TranslateInfoBarDelegate::ShouldShowNeverTranslateShortcut() {
   return ui_delegate_.ShouldShowNeverTranslateShortcut();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void TranslateInfoBarDelegate::ShowNeverTranslateInfobar() {
   // Return if the infobar is not owned.
   if (!infobar()->owner())
