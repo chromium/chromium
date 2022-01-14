@@ -72,7 +72,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -449,10 +449,10 @@ void PPBNaClPrivate::LaunchSelLdr(
 
   IPC::PlatformFileForTransit nexe_for_transit =
       IPC::InvalidPlatformFileForTransit();
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   if (nexe_file_info->handle != PP_kInvalidFileHandle)
     nexe_for_transit = base::FileDescriptor(nexe_file_info->handle, true);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   nexe_for_transit = IPC::PlatformFileForTransit(nexe_file_info->handle);
 #else
 # error Unsupported target platform.

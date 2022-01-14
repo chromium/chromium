@@ -15,7 +15,7 @@ namespace nacl {
 enum {
   PATH_START = 9000,
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   FILE_NACL_HELPER = PATH_START,  // Full path to Linux nacl_helper executable.
   FILE_NACL_HELPER_BOOTSTRAP,     // ... and nacl_helper_bootstrap executable.
 #endif

@@ -11,7 +11,7 @@ namespace nacl {
 NaClStartParams::NaClStartParams()
     : nexe_file(IPC::InvalidPlatformFileForTransit()),
       irt_handle(IPC::InvalidPlatformFileForTransit()),
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       debug_stub_server_bound_socket(IPC::InvalidPlatformFileForTransit()),
 #endif
       validation_cache_enabled(false),

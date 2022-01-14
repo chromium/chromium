@@ -17,7 +17,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "sandbox/policy/switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -36,20 +36,20 @@ int NaClMain(content::MainFunctionParams parameters) {
       std::make_unique<base::PowerMonitorDeviceSource>());
   base::HighResolutionTimerManager hi_res_timer_manager;
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   NaClMainPlatformDelegate platform;
   bool no_sandbox =
       parsed_command_line.HasSwitch(sandbox::policy::switches::kNoSandbox);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // NaCl processes exit differently from other Chromium processes (see NaClExit
   // in native_client/src/shared/platform/win/nacl_exit.c) and so do not want
   // default Chromium process exit behavior.
   base::win::SetShouldCrashOnProcessDetach(false);
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // The number of cores must be obtained before the invocation of
   // platform.EnableSandbox(), so cannot simply be inlined below.
   int number_of_cores = sysconf(_SC_NPROCESSORS_ONLN);
@@ -59,7 +59,7 @@ int NaClMain(content::MainFunctionParams parameters) {
     platform.EnableSandbox(parameters);
   }
   NaClListener listener;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   listener.set_number_of_cores(number_of_cores);
 #endif
 

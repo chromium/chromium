@@ -28,10 +28,10 @@ void CopyNaClCommandLineArguments(base::CommandLine* cmd_line) {
     switches::kLoggingLevel,
     switches::kVerboseLoggingInNacl,
     switches::kNoErrorDialogs,
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     sandbox::policy::switches::kEnableSandboxLogging,
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     switches::kDisableHighResTimer,
     switches::kRaiseTimerFrequency,
 #endif

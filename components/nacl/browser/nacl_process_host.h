@@ -101,7 +101,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
 
   void OnChannelConnected(int32_t peer_pid) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnProcessLaunchedByBroker(base::Process process);
   void OnDebugExceptionHandlerLaunchedByBroker(bool success);
 #endif
@@ -118,14 +118,14 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // listeners (if the port is not kGdbDebugStubPortUnknown).
   void SetDebugStubPort(int port);
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Create bound TCP socket in the browser process so that the NaCl GDB debug
   // stub can use it to accept incoming connections even when the Chrome sandbox
   // is enabled.
   net::SocketDescriptor GetDebugStubSocketHandle();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Called when the debug stub port has been selected.
   void OnDebugStubPortSelected(uint16_t debug_stub_port);
 #endif
@@ -180,7 +180,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
                     uint64_t file_token_hi,
                     const base::FilePath& file_path,
                     base::File file);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Message handler for Windows hardware exception handling.
   void OnAttachDebugExceptionHandler(const std::string& info,
                                      IPC::Message* reply_msg);
@@ -204,7 +204,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
 
   ppapi::PpapiPermissions permissions_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This field becomes true when the broker successfully launched
   // the NaCl loader.
   bool process_launched_by_broker_;
@@ -217,7 +217,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // sub-process either succeeds or fails to unblock the renderer waiting for
   // the reply. NULL when there is no reply to send.
   IPC::Message* reply_msg_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool debug_exception_handler_requested_;
   std::unique_ptr<IPC::Message> attach_debug_exception_handler_reply_msg_;
 #endif

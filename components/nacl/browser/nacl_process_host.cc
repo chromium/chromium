@@ -71,14 +71,14 @@
 #include "content/public/common/zygote/zygote_handle.h"  // nogncheck
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <winsock2.h>
 
@@ -96,7 +96,7 @@ using ppapi::proxy::SerializedHandle;
 
 namespace nacl {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 // Looks for the largest contiguous unallocated region of address
@@ -159,7 +159,7 @@ bool RunningOnWOW64() {
 
 }  // namespace
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -169,7 +169,7 @@ class NaClSandboxedProcessLauncherDelegate
  public:
   NaClSandboxedProcessLauncherDelegate() {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void PostSpawnTarget(base::ProcessHandle process) override {
     // For Native Client sel_ldr processes on 32-bit Windows, reserve 1 GB of
     // address space to prevent later failure due to address space fragmentation
@@ -223,11 +223,11 @@ NaClProcessHost::NaClProcessHost(
       nexe_token_(nexe_token),
       prefetched_resource_files_(prefetched_resource_files),
       permissions_(permissions),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       process_launched_by_broker_(false),
 #endif
       reply_msg_(nullptr),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       debug_exception_handler_requested_(false),
 #endif
       enable_debug_stub_(false),
@@ -270,7 +270,7 @@ NaClProcessHost::~NaClProcessHost() {
 
   // Note: this does not work on Windows, though we currently support this
   // prefetching feature only on POSIX platforms, so it should be ok.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(prefetched_resource_files_.empty());
 #else
   for (size_t i = 0; i < prefetched_resource_files_.size(); ++i) {
@@ -296,7 +296,7 @@ NaClProcessHost::~NaClProcessHost() {
     reply_msg_->set_reply_error();
     nacl_host_message_filter_->Send(reply_msg_);
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (process_launched_by_broker_) {
     NaClBrokerService::GetInstance()->OnLoaderDied();
   }
@@ -318,7 +318,7 @@ void NaClProcessHost::EarlyStartup() {
   // Inform NaClBrowser that we exist and will have a debug port at some point.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Open the IRT file early to make sure that it isn't replaced out from
   // under us by autoupdate.
   NaClBrowser::GetInstance()->EnsureIrtAvailable();
@@ -356,7 +356,7 @@ void NaClProcessHost::Launch(
   }
 
   const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (cmd->HasSwitch(switches::kEnableNaClDebug) &&
       !cmd->HasSwitch(sandbox::policy::switches::kNoSandbox)) {
     // We don't switch off sandbox automatically for security reasons.
@@ -395,7 +395,7 @@ void NaClProcessHost::OnChannelConnected(int32_t peer_pid) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NaClProcessHost::OnProcessLaunchedByBroker(base::Process process) {
   process_launched_by_broker_ = true;
   process_->SetProcess(std::move(process));
@@ -419,7 +419,7 @@ bool NaClProcessHost::Send(IPC::Message* msg) {
 void NaClProcessHost::LaunchNaClGdb() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath nacl_gdb =
       command_line.GetSwitchValuePath(switches::kNaClGdb);
   base::CommandLine cmd_line(nacl_gdb);
@@ -463,9 +463,9 @@ bool NaClProcessHost::LaunchSelLdr() {
 
   // Build command line for nacl.
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int flags = ChildProcessHost::CHILD_ALLOW_SELF;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   int flags = ChildProcessHost::CHILD_PLUGIN;
 #else
   int flags = ChildProcessHost::CHILD_NORMAL;
@@ -475,7 +475,7 @@ bool NaClProcessHost::LaunchSelLdr() {
   if (exe_path.empty())
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows 64-bit NaCl loader is called nacl64.exe instead of chrome.exe
   if (RunningOnWOW64()) {
     if (!NaClBrowser::GetInstance()->GetNaCl64ExePath(&exe_path)) {
@@ -520,12 +520,12 @@ bool NaClProcessHost::LaunchSelLdr() {
   if (NaClBrowser::GetDelegate()->DialogsAreSuppressed())
     cmd_line->AppendSwitch(switches::kNoErrorDialogs);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   cmd_line->AppendArg(switches::kPrefetchArgumentOther);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // On Windows we might need to start the broker process to launch a new loader
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (RunningOnWOW64()) {
     if (!NaClBrokerService::GetInstance()->LaunchLoader(
             weak_factory_.GetWeakPtr(),
@@ -551,7 +551,7 @@ bool NaClProcessHost::OnMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(NaClProcessMsg_ResolveFileToken,
                         OnResolveFileToken)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(
         NaClProcessMsg_AttachDebugExceptionHandler,
         OnAttachDebugExceptionHandler)
@@ -637,7 +637,7 @@ void NaClProcessHost::SetDebugStubPort(int port) {
   nacl_browser->SetProcessGdbDebugStubPort(process_->GetData().id, port);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // TCP port we chose for NaCl debug stub. It can be any other number.
 static const uint16_t kInitialDebugStubPort = 4014;
 
@@ -700,7 +700,7 @@ net::SocketDescriptor NaClProcessHost::GetDebugStubSocketHandle() {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NaClProcessHost::OnDebugStubPortSelected(uint16_t debug_stub_port) {
   SetDebugStubPort(debug_stub_port);
 }
@@ -728,7 +728,7 @@ bool NaClProcessHost::StartNaClExecution() {
     return false;
   }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   if (params.enable_debug_stub) {
     net::SocketDescriptor server_bound_socket = GetDebugStubSocketHandle();
     if (server_bound_socket != net::kInvalidSocket) {
@@ -989,7 +989,7 @@ void NaClProcessHost::FileResolved(
            out_file_path));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NaClProcessHost::OnAttachDebugExceptionHandler(const std::string& info,
                                                     IPC::Message* reply_msg) {
   if (!AttachDebugExceptionHandler(info, reply_msg)) {

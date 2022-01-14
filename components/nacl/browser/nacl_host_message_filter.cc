@@ -182,7 +182,7 @@ void NaClHostMessageFilter::LaunchNaClContinuation(
 
   // TODO(yusukes): Fix NaClProcessHost::~NaClProcessHost() and remove the
   // ifdef.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   const std::vector<NaClResourcePrefetchRequest>& original_request_list =
       launch_params.resource_prefetch_request_list;
   content::SiteInstance* site_instance = rfh->GetSiteInstance();

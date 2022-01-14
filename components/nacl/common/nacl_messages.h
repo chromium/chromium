@@ -26,10 +26,10 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClStartParams)
   IPC_STRUCT_TRAITS_MEMBER(nexe_file)
   IPC_STRUCT_TRAITS_MEMBER(nexe_file_path_metadata)
   IPC_STRUCT_TRAITS_MEMBER(irt_handle)
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   IPC_STRUCT_TRAITS_MEMBER(debug_stub_server_bound_socket)
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   IPC_STRUCT_TRAITS_MEMBER(ppapi_browser_channel_handle)
   IPC_STRUCT_TRAITS_MEMBER(ppapi_renderer_channel_handle)
   IPC_STRUCT_TRAITS_MEMBER(trusted_service_channel_handle)
@@ -63,7 +63,7 @@ IPC_MESSAGE_CONTROL1(NaClProcessMsg_AddPrefetchedResource,
 IPC_MESSAGE_CONTROL1(NaClProcessMsg_Start,
                      nacl::NaClStartParams /* params */)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Tells the NaCl broker to launch a NaCl loader process.
 IPC_MESSAGE_CONTROL2(NaClProcessMsg_LaunchLoaderThroughBroker,
                      int, /* launch_id */

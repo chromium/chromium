@@ -21,7 +21,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define snprintf _snprintf
 #endif
 

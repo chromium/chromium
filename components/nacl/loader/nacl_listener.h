@@ -42,12 +42,12 @@ class NaClListener : public IPC::Listener {
 
   bool Send(IPC::Message* msg);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void set_prereserved_sandbox_size(size_t prereserved_sandbox_size) {
     prereserved_sandbox_size_ = prereserved_sandbox_size;
   }
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void set_number_of_cores(int number_of_cores) {
     number_of_cores_ = number_of_cores;
   }
@@ -70,7 +70,7 @@ class NaClListener : public IPC::Listener {
                            base::FilePath file_path);
 
  private:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   static int MakeSharedMemorySegment(size_t length, int executable);
 #endif
 
@@ -93,10 +93,10 @@ class NaClListener : public IPC::Listener {
   base::WaitableEvent shutdown_event_;
   base::Thread io_thread_;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   size_t prereserved_sandbox_size_;
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // The outer sandbox on Linux and OSX prevents
   // sysconf(_SC_NPROCESSORS) from working; in Windows, there are no
   // problems with invoking GetSystemInfo.  Therefore, only in

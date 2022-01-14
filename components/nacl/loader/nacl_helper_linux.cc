@@ -55,7 +55,7 @@ struct NaClLoaderSystemInfo {
   long number_of_cores;
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 std::string GetCommandLineFeatureFlagChoice(
     const base::CommandLine* command_line,
     std::string feature_flag) {
@@ -115,7 +115,7 @@ void AddVerboseLoggingInNaclSwitch(base::CommandLine* command_line) {
         switches::kVerboseLoggingInNacl,
         switches::kVerboseLoggingInNaclChoiceDisabled);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The child must mimic the behavior of zygote_main_linux.cc on the child
 // side of the fork. See zygote_main_linux.cc:HandleForkRequest from
@@ -129,7 +129,7 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   PCHECK(0 == IGNORE_EINTR(close(kNaClZygoteDescriptor)));
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   AddVerboseLoggingInNaclSwitch(command_line);
 #endif
   if (command_line->HasSwitch(switches::kVerboseLoggingInNacl)) {

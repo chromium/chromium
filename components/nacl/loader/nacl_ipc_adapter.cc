@@ -248,9 +248,9 @@ std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(
   base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle handle =
       region.PassPlatformHandle();
   return std::make_unique<NaClDescWrapper>(
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
       NaClDescImcShmMachMake(handle.release(),
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       NaClDescImcShmMake(handle.Take(),
 #else
       NaClDescImcShmMake(handle.fd.release(),
@@ -566,7 +566,7 @@ bool NaClIPCAdapter::RewriteMessage(const IPC::Message& msg, uint32_t type) {
         }
         case ppapi::proxy::SerializedHandle::SOCKET: {
           nacl_desc = std::make_unique<NaClDescWrapper>(NaClDescSyncSocketMake(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
               handle.descriptor().GetHandle()
 #else
               handle.descriptor().fd
@@ -578,7 +578,7 @@ bool NaClIPCAdapter::RewriteMessage(const IPC::Message& msg, uint32_t type) {
           // Create the NaClDesc for the file descriptor. If quota checking is
           // required, wrap it in a NaClDescQuota.
           NaClDesc* desc = NaClDescIoMakeFromHandle(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
               handle.descriptor().GetHandle(),
 #else
               handle.descriptor().fd,
@@ -657,7 +657,7 @@ void NaClIPCAdapter::SaveOpenResourceMessage(
 
     std::unique_ptr<NaClDescWrapper> desc_wrapper(
         new NaClDescWrapper(NaClDescIoMakeFromHandle(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
             orig_sh.descriptor().GetHandle(),
 #else
             orig_sh.descriptor().fd,
