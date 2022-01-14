@@ -212,13 +212,13 @@ void DomDistillerViewerSource::StartDataRequest(
   content::WebContents* web_contents = wc_getter.Run();
   if (!web_contents)
     return;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Don't allow loading of mixed content on Reader Mode pages.
   blink::web_pref::WebPreferences prefs =
       web_contents->GetOrCreateWebPreferences();
   prefs.strict_mixed_content_checking = true;
   web_contents->SetWebPreferences(prefs);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   if (kViewerCssPath == path) {
     std::string css = viewer::GetCss();
     std::move(callback).Run(base::RefCountedString::TakeString(&css));

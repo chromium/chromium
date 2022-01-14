@@ -113,14 +113,14 @@ std::unique_ptr<FakeDistilledPage> SetUpTestServerWithDistilledPage(
 void AddComponentsResources() {
   FilePath pak_file;
   FilePath pak_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CHECK(PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
   pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   PathService::Get(base::DIR_MODULE, &pak_dir);
 #else
   PathService::Get(base::DIR_ASSETS, &pak_dir);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   pak_file =
       pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

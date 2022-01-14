@@ -153,7 +153,7 @@ class TestDistillerPageWebContents : public DistillerPageWebContents {
   bool new_web_contents_created_;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_BasicDistillationWorks DISABLED_BasicDistillationWorks
 #else
 #define MAYBE_BasicDistillationWorks BasicDistillationWorks
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   EXPECT_EQ("", distiller_result_->pagination_info().prev_page());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_HandlesRelativeLinks DISABLED_HandlesRelativeLinks
 #else
 #define MAYBE_HandlesRelativeLinks HandlesRelativeLinks
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
               HasSubstr("href=\"http://www.google.com/absolutelink.html\""));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_HandlesRelativeImages DISABLED_HandlesRelativeImages
 #else
 #define MAYBE_HandlesRelativeImages HandlesRelativeImages
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
               HasSubstr("src=\"http://www.google.com/absoluteimage.png\""));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_HandlesRelativeVideos DISABLED_HandlesRelativeVideos
 #else
 #define MAYBE_HandlesRelativeVideos HandlesRelativeVideos
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
               HasSubstr("src=\"http://www.google.com/absolute_track_fr.vtt\""));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_VisibilityDetection DISABLED_VisibilityDetection
 #else
 #define MAYBE_VisibilityDetection VisibilityDetection
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_UsingCurrentWebContentsWrongUrl \
   DISABLED_UsingCurrentWebContentsWrongUrl
 #else
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
                                wait_for_document_loaded);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_UsingCurrentWebContentsNotFinishedLoadingYet \
   DISABLED_UsingCurrentWebContentsNotFinishedLoadingYet
 #else
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
                                wait_for_document_loaded);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_UsingCurrentWebContentsReadyForDistillation \
   DISABLED_UsingCurrentWebContentsReadyForDistillation
 #else
@@ -368,7 +368,7 @@ void DistillerPageWebContentsTest::RunUseCurrentWebContentsTest(
   EXPECT_EQ("Test Page Title", distiller_result_->title());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PageDestroyedBeforeFinishDistillation \
   DISABLED_PageDestroyedBeforeFinishDistillation
 #else
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   run_loop.Run();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_MarkupInfo DISABLED_MarkupInfo
 #else
 #define MAYBE_MarkupInfo MarkupInfo

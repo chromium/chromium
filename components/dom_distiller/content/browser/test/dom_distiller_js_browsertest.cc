@@ -89,14 +89,14 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
   void AddComponentsResources() {
     base::FilePath pak_file;
     base::FilePath pak_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
     pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     base::PathService::Get(base::DIR_MODULE, &pak_dir);
 #else
     base::PathService::Get(base::DIR_ASSETS, &pak_dir);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
     pak_file =
         pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
@@ -115,10 +115,10 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
 // Disabled on MSan as well as Android and Linux CFI bots.
 // https://crbug.com/845180
 // Then disabled more generally on Android: https://crbug.com/979685
-#if defined(MEMORY_SANITIZER) || defined(OS_WIN) || defined(OS_ANDROID) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) &&                        \
-     (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) ||           \
-      BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) ||                             \
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                        \
+     (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) ||               \
+      BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) ||                                 \
       BUILDFLAG(CFI_ENFORCEMENT_TRAP)))
 #define MAYBE_RunJsTests DISABLED_RunJsTests
 #else

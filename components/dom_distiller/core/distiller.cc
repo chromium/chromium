@@ -67,7 +67,7 @@ DistillerImpl::~DistillerImpl() {
 
 bool DistillerImpl::DoesFetchImages() {
 // Only iOS makes use of the fetched image data.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return true;
 #else
   return false;

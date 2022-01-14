@@ -50,7 +50,7 @@ class DistilledPageJsTest : public content::ContentBrowserTest {
 };
 
 // Pincher is only used on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #define MAYBE_Pinch DISABLED_Pinch
 #else
 #define MAYBE_Pinch Pinch
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, MAYBE_Pinch) {
 }
 
 // FontSizeSlider is only used on Desktop.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FontSizeSlider DISABLED_FontSizeSlider
 #else
 #define MAYBE_FontSizeSlider FontSizeSlider
