@@ -7,9 +7,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior} from './i18n_setup.js';
+import {DoodleShareChannel} from './new_tab_page.mojom-webui.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
@@ -43,7 +45,7 @@ class DoodleShareDialogElement extends mixinBehaviors
 
       /**
        * Share URL provided to the user.
-       * @type {url.mojom.Url}
+       * @type {Url}
        */
       url: Object,
     };
@@ -56,7 +58,7 @@ class DoodleShareDialogElement extends mixinBehaviors
         `&href=${encodeURIComponent(this.url.url)}` +
         `&hashtag=${encodeURIComponent('#GoogleDoodle')}`;
     WindowProxy.getInstance().open(url);
-    this.notifyShare_(newTabPage.mojom.DoodleShareChannel.kFacebook);
+    this.notifyShare_(DoodleShareChannel.kFacebook);
   }
 
   /** @private */
@@ -64,7 +66,7 @@ class DoodleShareDialogElement extends mixinBehaviors
     const url = 'https://twitter.com/intent/tweet' +
         `?text=${encodeURIComponent(`${this.title}\n${this.url.url}`)}`;
     WindowProxy.getInstance().open(url);
-    this.notifyShare_(newTabPage.mojom.DoodleShareChannel.kTwitter);
+    this.notifyShare_(DoodleShareChannel.kTwitter);
   }
 
   /** @private */
@@ -72,14 +74,14 @@ class DoodleShareDialogElement extends mixinBehaviors
     const url = `mailto:?subject=${encodeURIComponent(this.title)}` +
         `&body=${encodeURIComponent(this.url.url)}`;
     WindowProxy.getInstance().navigate(url);
-    this.notifyShare_(newTabPage.mojom.DoodleShareChannel.kEmail);
+    this.notifyShare_(DoodleShareChannel.kEmail);
   }
 
   /** @private */
   onCopyClick_() {
     this.$.url.select();
     navigator.clipboard.writeText(this.url.url);
-    this.notifyShare_(newTabPage.mojom.DoodleShareChannel.kLinkCopy);
+    this.notifyShare_(DoodleShareChannel.kLinkCopy);
   }
 
   /** @private */
@@ -88,7 +90,7 @@ class DoodleShareDialogElement extends mixinBehaviors
   }
 
   /**
-   * @param {newTabPage.mojom.DoodleShareChannel} channel
+   * @param {DoodleShareChannel} channel
    * @private
    */
   notifyShare_(channel) {

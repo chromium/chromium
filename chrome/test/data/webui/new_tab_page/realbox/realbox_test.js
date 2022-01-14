@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://test/mojo_webui_test_support.js';
+
 import {$$, decodeString16, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/realbox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {assertStyle, createTheme} from 'chrome://test/new_tab_page/test_support.js';
@@ -22,7 +25,7 @@ const CLASSES = {
  * resolves the browser call promises with the arguments as an array making the
  * tests prone to change if the arguments change. This class extends the page
  * handler remote, resolving the browser call promises with named arguments.
- * @implements {realbox.mojom.PageHandlerRemote}
+ * @implements {PageHandlerRemote}
  * @extends {TestBrowserProxy}
  */
 class TestRealboxBrowserProxy extends TestBrowserProxy {
@@ -101,7 +104,7 @@ class TestRealboxBrowserProxy extends TestBrowserProxy {
  * @return {TestBrowserProxy}
  */
 export function createTestProxy() {
-  const callbackRouter = new realbox.mojom.PageCallbackRouter();
+  const callbackRouter = new PageCallbackRouter();
   return {
     callbackRouter,
     callbackRouterRemote: callbackRouter.$.bindNewPipeAndPassRemote(),

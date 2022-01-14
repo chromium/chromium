@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Action} from '../realbox.mojom-webui.js';
 
 import {decodeString16} from '../utils.js';
 
@@ -25,7 +26,7 @@ class RealboxActionElement extends PolymerElement {
       // Public properties
       //========================================================================
       /**
-       * @type {!realbox.mojom.Action}
+       * @type {!Action}
        */
       action: {
         type: Object,

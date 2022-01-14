@@ -4,6 +4,10 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {TimeDelta, TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
+
 /**
  * Given a |container| that has scrollable content, <div>'s before and after the
  * |container| are created with an attribute "scroll-border". These <div>'s are
@@ -40,8 +44,8 @@ export function createScrollBorders(
 }
 
 /**
- * Converts a mojoBase.mojom.String16 to a JavaScript String.
- * @param {?mojoBase.mojom.String16} str
+ * Converts a String16 to a JavaScript String.
+ * @param {?String16} str
  * @return {string}
  */
 export function decodeString16(str) {
@@ -49,9 +53,9 @@ export function decodeString16(str) {
 }
 
 /**
- * Converts a JavaScript String to a mojoBase.mojom.String16.
+ * Converts a JavaScript String to a String16.
  * @param {string} str
- * @return {!mojoBase.mojom.String16}
+ * @return {!String16}
  */
 export function mojoString16(str) {
   const array = new Array(str.length);
@@ -62,18 +66,18 @@ export function mojoString16(str) {
 }
 
 /**
- * Converts a time delta in milliseconds to mojoBase.mojom.TimeDelta.
+ * Converts a time delta in milliseconds to TimeDelta.
  * @param {number} timeDelta time delta in milliseconds
- * @returns {!mojoBase.mojom.TimeDelta}
+ * @returns {!TimeDelta}
  */
 export function mojoTimeDelta(timeDelta) {
   return {microseconds: BigInt(Math.floor(timeDelta * 1000))};
 }
 
 /**
- * Converts a time ticks in milliseconds to mojoBase.mojom.TimeTicks.
+ * Converts a time ticks in milliseconds to TimeTicks.
  * @param {number} timeTicks time ticks in milliseconds
- * @returns {!mojoBase.mojom.TimeTicks}
+ * @returns {!TimeTicks}
  */
 export function mojoTimeTicks(timeTicks) {
   return {internalValue: BigInt(Math.floor(timeTicks * 1000))};

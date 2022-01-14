@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-
-import './realbox.mojom-lite.js';
+import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '../realbox.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo
@@ -32,11 +25,11 @@ export class RealboxBrowserProxy {
   }
 
   constructor() {
-    /** @type {!realbox.mojom.PageHandlerRemote} */
-    this.handler = realbox.mojom.PageHandler.getRemote();
+    /** @type {!PageHandlerRemote} */
+    this.handler = PageHandler.getRemote();
 
-    /** @type {!realbox.mojom.PageCallbackRouter} */
-    this.callbackRouter = new realbox.mojom.PageCallbackRouter();
+    /** @type {!PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
 
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }

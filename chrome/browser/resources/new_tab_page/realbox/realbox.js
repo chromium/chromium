@@ -8,9 +8,11 @@ import './realbox_icon.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from '../i18n_setup.js';
+import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerRemote, SearchBoxTheme} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
@@ -59,7 +61,7 @@ class RealboxElement extends mixinBehaviors
       },
 
       /**
-       * @type {!realbox.mojom.SearchBoxTheme}
+       * @type {!SearchBoxTheme}
        */
       theme: {
         type: Object,
@@ -156,7 +158,7 @@ class RealboxElement extends mixinBehaviors
       },
 
       /**
-       * @type {?realbox.mojom.AutocompleteResult}
+       * @type {?AutocompleteResult}
        * @private
        */
       result_: {
@@ -165,7 +167,7 @@ class RealboxElement extends mixinBehaviors
 
       /**
        * The currently selected match, if any.
-       * @type {?realbox.mojom.AutocompleteMatch}
+       * @type {?AutocompleteMatch}
        * @private
        */
       selectedMatch_: {
@@ -203,9 +205,9 @@ class RealboxElement extends mixinBehaviors
   constructor() {
     performance.mark('realbox-creation-start');
     super();
-    /** @private {realbox.mojom.PageHandlerRemote} */
+    /** @private {PageHandlerRemote} */
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
-    /** @private {!realbox.mojom.PageCallbackRouter} */
+    /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
     /** @private {?number} */
     this.autocompleteResultChangedListenerId_ = null;
@@ -247,7 +249,7 @@ class RealboxElement extends mixinBehaviors
 
   /**
    * @param {number} matchIndex match index
-   * @param {!url.mojom.Url} url match imageUrl or destinationUrl.
+   * @param {!Url} url match imageUrl or destinationUrl.
    * @param {string} dataUrl match image or favicon content in in base64 encoded
    *     Data URL format.
    * @private
@@ -272,7 +274,7 @@ class RealboxElement extends mixinBehaviors
 
   /**
    * @private
-   * @param {realbox.mojom.AutocompleteResult} result
+   * @param {AutocompleteResult} result
    */
   onAutocompleteResultChanged_(result) {
     if (this.lastQueriedInput_ === null ||
@@ -698,7 +700,7 @@ class RealboxElement extends mixinBehaviors
   //============================================================================
 
   /**
-   * @return {?realbox.mojom.AutocompleteMatch}
+   * @return {?AutocompleteMatch}
    * @private
    */
   computeSelectedMatch_() {

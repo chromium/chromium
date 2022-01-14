@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://test/mojo_webui_test_support.js';
+
 import {$$, shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TaskModuleHandlerRemote, TaskModuleType} from 'chrome://new-tab-page/task_module.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.m.js';

@@ -4,6 +4,8 @@
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AutocompleteMatch} from '../realbox.mojom-webui.js';
+
 const DOCUMENT_MATCH_TYPE = 'document';
 
 // The LHS icon. Used on autocomplete matches as well as the realbox input to
@@ -66,7 +68,7 @@ class RealboxIconElement extends PolymerElement {
       },
 
       /**
-       * @type {!realbox.mojom.AutocompleteMatch}
+       * @type {!AutocompleteMatch}
        */
       match: {
         type: Object,

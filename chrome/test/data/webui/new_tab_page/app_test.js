@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://test/mojo_webui_test_support.js';
+
 import {$$, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -22,7 +25,7 @@ suite('NewTabPageAppTest', () => {
   /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {!newTabPage.mojom.PageHandlerRemote} */
+  /** @type {!PageHandlerRemote} */
   let callbackRouterRemote;
 
   /** @type {!MetricsTracker} */
@@ -45,9 +48,8 @@ suite('NewTabPageAppTest', () => {
 
     windowProxy = installMock(WindowProxy);
     handler = installMock(
-        newTabPage.mojom.PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(
-            mock, new newTabPage.mojom.PageCallbackRouter()));
+        PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,

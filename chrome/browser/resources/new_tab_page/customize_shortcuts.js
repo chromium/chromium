@@ -12,6 +12,7 @@ import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_man
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior} from './i18n_setup.js';
+import {CustomizeDialogAction, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /**
@@ -42,7 +43,7 @@ class CustomizeShortcutsElement extends mixinBehaviors
   constructor() {
     super();
     const {handler} = NewTabPageProxy.getInstance();
-    /** @private {!newTabPage.mojom.PageHandlerRemote} */
+    /** @private {!PageHandlerRemote} */
     this.pageHandler_ = handler;
     this.pageHandler_.getMostVisitedSettings().then(
         ({customLinksEnabled, shortcutsVisible}) => {
@@ -106,7 +107,7 @@ class CustomizeShortcutsElement extends mixinBehaviors
   onCustomLinksClick_() {
     if (!this.customLinksEnabled_) {
       this.pageHandler_.onCustomizeDialogAction(
-          newTabPage.mojom.CustomizeDialogAction.kShortcutsCustomLinksClicked);
+          CustomizeDialogAction.kShortcutsCustomLinksClicked);
     }
     this.customLinksEnabled_ = true;
     this.hide_ = false;
@@ -118,8 +119,7 @@ class CustomizeShortcutsElement extends mixinBehaviors
    */
   onHideChange_(e) {
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction
-            .kShortcutsVisibilityToggleClicked);
+        CustomizeDialogAction.kShortcutsVisibilityToggleClicked);
     this.hide_ = e.detail;
   }
 
@@ -128,7 +128,7 @@ class CustomizeShortcutsElement extends mixinBehaviors
   onMostVisitedClick_() {
     if (this.customLinksEnabled_) {
       this.pageHandler_.onCustomizeDialogAction(
-          newTabPage.mojom.CustomizeDialogAction.kShortcutsMostVisitedClicked);
+          CustomizeDialogAction.kShortcutsMostVisitedClicked);
     }
     this.customLinksEnabled_ = false;
     this.hide_ = false;

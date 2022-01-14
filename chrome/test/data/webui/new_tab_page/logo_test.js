@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://test/mojo_webui_test_support.js';
+
 import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {Doodle, DoodleImageType, DoodleShareChannel, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {assertNotStyle, assertStyle, installMock, keydown} from 'chrome://test/new_tab_page/test_support.js';
@@ -42,7 +45,7 @@ function createImageDataUrl(width, height, color) {
 /**
  * @param {number} width
  * @param {number} height
- * @return {!newTabPage.mojom.Doodle}
+ * @return {!Doodle}
  */
 function createImageDoodle(width, height) {
   width = width || 500;
@@ -104,9 +107,8 @@ suite('NewTabPageLogoTest', () => {
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('createIframeSrc', '');
     handler = installMock(
-        newTabPage.mojom.PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(
-            mock, new newTabPage.mojom.PageCallbackRouter()));
+        PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     handler.setResultFor('onDoodleImageRendered', Promise.resolve({
       imageClickParams: '',
       interactionLogUrl: null,
@@ -633,7 +635,7 @@ suite('NewTabPageLogoTest', () => {
       // Assert (load).
       const [type, _, logUrl] =
           await handler.whenCalled('onDoodleImageRendered');
-      assertEquals(newTabPage.mojom.DoodleImageType.kStatic, type);
+      assertEquals(DoodleImageType.kStatic, type);
       assertEquals(imageDoodle.imageImpressionLogUrl.url, logUrl.url);
 
       // Act (click).
@@ -642,7 +644,7 @@ suite('NewTabPageLogoTest', () => {
       // Assert (click).
       const [type2] = await handler.whenCalled('onDoodleImageClicked');
       const onClickUrl = await windowProxy.whenCalled('open');
-      assertEquals(newTabPage.mojom.DoodleImageType.kStatic, type2);
+      assertEquals(DoodleImageType.kStatic, type2);
       assertEquals(
           'https://click.com/?ct=supi&foo=bar&hello=world', onClickUrl);
 
@@ -650,14 +652,13 @@ suite('NewTabPageLogoTest', () => {
       $$(logo, '#shareButton').click();
       await flushTasks();
       $$(logo, 'ntp-doodle-share-dialog')
-          .dispatchEvent(new CustomEvent(
-              'share',
-              {detail: newTabPage.mojom.DoodleShareChannel.kFacebook}));
+          .dispatchEvent(
+              new CustomEvent('share', {detail: DoodleShareChannel.kFacebook}));
 
       // Assert (share).
       const [channel, doodleId, shareId] =
           await handler.whenCalled('onDoodleShared');
-      assertEquals(newTabPage.mojom.DoodleShareChannel.kFacebook, channel);
+      assertEquals(DoodleShareChannel.kFacebook, channel);
       assertEquals('supi', doodleId);
       assertEquals('123', shareId);
     });
@@ -693,7 +694,7 @@ suite('NewTabPageLogoTest', () => {
       // Assert (CTA load).
       const [type, _, logUrl] =
           await handler.whenCalled('onDoodleImageRendered');
-      assertEquals(newTabPage.mojom.DoodleImageType.kCta, type);
+      assertEquals(DoodleImageType.kCta, type);
       assertEquals(imageDoodle.imageImpressionLogUrl.url, logUrl.url);
 
       // Act (CTA click).
@@ -708,13 +709,13 @@ suite('NewTabPageLogoTest', () => {
       // Assert (CTA click).
       const [type2, interactionLogUrl] =
           await handler.whenCalled('onDoodleImageClicked');
-      assertEquals(newTabPage.mojom.DoodleImageType.kCta, type2);
+      assertEquals(DoodleImageType.kCta, type2);
       assertEquals('https://interaction.com', interactionLogUrl.url);
 
       // Assert (animation load). Also triggered by clicking #image.
       const [type3, __, logUrl2] =
           await handler.whenCalled('onDoodleImageRendered');
-      assertEquals(newTabPage.mojom.DoodleImageType.kAnimation, type3);
+      assertEquals(DoodleImageType.kAnimation, type3);
       assertEquals(imageDoodle.animationImpressionLogUrl.url, logUrl2.url);
 
       // Act (animation click).
@@ -724,7 +725,7 @@ suite('NewTabPageLogoTest', () => {
       // Assert (animation click).
       const [type4, ___] = await handler.whenCalled('onDoodleImageClicked');
       const onClickUrl = await windowProxy.whenCalled('open');
-      assertEquals(newTabPage.mojom.DoodleImageType.kAnimation, type4);
+      assertEquals(DoodleImageType.kAnimation, type4);
       assertEquals(
           'https://click.com/?ct=supi&foo=bar&hello=world', onClickUrl);
 
@@ -732,13 +733,13 @@ suite('NewTabPageLogoTest', () => {
       $$(logo, '#shareButton').click();
       await flushTasks();
       $$(logo, 'ntp-doodle-share-dialog')
-          .dispatchEvent(new CustomEvent(
-              'share', {detail: newTabPage.mojom.DoodleShareChannel.kTwitter}));
+          .dispatchEvent(
+              new CustomEvent('share', {detail: DoodleShareChannel.kTwitter}));
 
       // Assert (share).
       const [channel, doodleId, shareId] =
           await handler.whenCalled('onDoodleShared');
-      assertEquals(newTabPage.mojom.DoodleShareChannel.kTwitter, channel);
+      assertEquals(DoodleShareChannel.kTwitter, channel);
       assertEquals('supi', doodleId);
       assertEquals('123', shareId);
     });

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://test/mojo_webui_test_support.js';
+
 import {$$, Module, ModuleDescriptor, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -14,7 +17,7 @@ suite('NewTabPageModulesModulesTest', () => {
   /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {!newTabPage.mojom.PageRemote} */
+  /** @type {!PageRemote} */
   let callbackRouterRemote;
 
   /** @type {!MetricsTracker} */
@@ -27,9 +30,8 @@ suite('NewTabPageModulesModulesTest', () => {
     document.body.innerHTML = '';
     metrics = fakeMetricsPrivate();
     handler = installMock(
-        newTabPage.mojom.PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(
-            mock, new newTabPage.mojom.PageCallbackRouter()));
+        PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     moduleRegistry = installMock(ModuleRegistry);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();

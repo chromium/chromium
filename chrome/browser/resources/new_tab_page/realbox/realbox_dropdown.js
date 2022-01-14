@@ -9,9 +9,11 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerRemote, SearchBoxTheme} from '../realbox.mojom-webui.js';
 import {decodeString16} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
@@ -34,7 +36,7 @@ class RealboxDropdownElement extends PolymerElement {
       //========================================================================
 
       /**
-       * @type {!realbox.mojom.AutocompleteResult}
+       * @type {!AutocompleteResult}
        */
       result: {
         type: Object,
@@ -51,7 +53,7 @@ class RealboxDropdownElement extends PolymerElement {
       },
 
       /**
-       * @type {!realbox.mojom.SearchBoxTheme}
+       * @type {!SearchBoxTheme}
        */
       theme: {
         type: Object,
@@ -96,9 +98,9 @@ class RealboxDropdownElement extends PolymerElement {
 
   constructor() {
     super();
-    /** @private {!realbox.mojom.PageCallbackRouter} */
+    /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
-    /** @private {realbox.mojom.PageHandlerRemote} */
+    /** @private {PageHandlerRemote} */
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
     /** @private {?number} */
     this.autocompleteMatchImageAvailableListenerId_ = null;
@@ -188,7 +190,7 @@ class RealboxDropdownElement extends PolymerElement {
 
   /**
    * @param {number} matchIndex match index
-   * @param {!url.mojom.Url} url match imageUrl or destinationUrl.
+   * @param {!Url} url match imageUrl or destinationUrl.
    * @param {string} dataUrl match image or favicon content in in base64 encoded
    *     Data URL format.
    * @private
@@ -340,7 +342,7 @@ class RealboxDropdownElement extends PolymerElement {
 
   /**
    * @param {number} groupId
-   * @returns {!function(!realbox.mojom.AutocompleteMatch):boolean} The filter
+   * @returns {!function(!AutocompleteMatch):boolean} The filter
    *     function to filter matches that belong to the given suggestion group
    *     ID.
    * @private

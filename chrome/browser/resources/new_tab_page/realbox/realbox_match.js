@@ -11,12 +11,14 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {ACMatchClassification, AutocompleteMatch, PageHandlerRemote} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoTimeTicks} from '../utils.js';
+
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 
 // clang-format off
 /**
- * Bitmap used to decode the value of realbox.mojom.ACMatchClassification style
+ * Bitmap used to decode the value of ACMatchClassification style
  * field.
  * See components/omnibox/browser/autocomplete_match.h.
  * @enum {number}
@@ -66,7 +68,7 @@ class RealboxMatchElement extends PolymerElement {
       },
 
       /**
-       * @type {!realbox.mojom.AutocompleteMatch}
+       * @type {!AutocompleteMatch}
        */
       match: {
         type: Object,
@@ -158,7 +160,7 @@ class RealboxMatchElement extends PolymerElement {
 
   constructor() {
     super();
-    /** @private {realbox.mojom.PageHandlerRemote} */
+    /** @private {PageHandlerRemote} */
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
   }
 
@@ -384,7 +386,7 @@ class RealboxMatchElement extends PolymerElement {
 
   /**
    * Decodes the ACMatchClassificationStyle enteries encoded in the given
-   * realbox.mojom.ACMatchClassification style field, maps each entry to a CSS
+   * ACMatchClassification style field, maps each entry to a CSS
    * class and returns them.
    * @param {number} style
    * @return {!Array<string>}
@@ -418,11 +420,11 @@ class RealboxMatchElement extends PolymerElement {
   }
 
   /**
-   * Renders |text| based on the given realbox.mojom.ACMatchClassification(s)
+   * Renders |text| based on the given ACMatchClassification(s)
    * Each classification contains an 'offset' and an encoded list of styles for
    * styling a substring starting with the 'offset' and ending with the next.
    * @param {string} text
-   * @param {!Array<!realbox.mojom.ACMatchClassification>} classifications
+   * @param {!Array<!ACMatchClassification>} classifications
    * @return {!Element} A <span> with <span> children for each styled substring.
    */
   renderTextWithClassifications_(text, classifications) {

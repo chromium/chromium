@@ -18,6 +18,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {BackgroundCollection, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
 
@@ -49,7 +50,7 @@ class CustomizeDialogElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {!newTabPage.mojom.Theme} */
+      /** @type {!Theme} */
       theme: Object,
 
       /** @type {CustomizeDialogPage} */
@@ -58,7 +59,7 @@ class CustomizeDialogElement extends mixinBehaviors
         observer: 'onSelectedPageChange_',
       },
 
-      /** @private {newTabPage.mojom.BackgroundCollection} */
+      /** @private {BackgroundCollection} */
       selectedCollection_: Object,
 
       /** @private */
@@ -91,7 +92,7 @@ class CustomizeDialogElement extends mixinBehaviors
 
   constructor() {
     super();
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
+    /** @private {PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     /** @private {!Array<!IntersectionObserver>} */
     this.intersectionObservers_ = [];
@@ -118,7 +119,7 @@ class CustomizeDialogElement extends mixinBehaviors
           this.$.bottomPageScrollBorder, 'show-2'),
     ];
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction.kOpenClicked);
+        CustomizeDialogAction.kOpenClicked);
   }
 
   /** @private */
@@ -131,7 +132,7 @@ class CustomizeDialogElement extends mixinBehaviors
   /** @private */
   onCancelClick_() {
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction.kCancelClicked);
+        CustomizeDialogAction.kCancelClicked);
     this.$.dialog.cancel();
   }
 
@@ -147,7 +148,7 @@ class CustomizeDialogElement extends mixinBehaviors
       this.shadowRoot.querySelector('ntp-customize-modules').apply();
     }
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction.kDoneClicked);
+        CustomizeDialogAction.kDoneClicked);
     this.$.dialog.close();
   }
 
@@ -194,7 +195,7 @@ class CustomizeDialogElement extends mixinBehaviors
   onBackClick_() {
     this.selectedCollection_ = null;
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction.kBackgroundsBackClicked);
+        CustomizeDialogAction.kBackgroundsBackClicked);
     this.$.pages.scrollTop = 0;
   }
 
@@ -207,8 +208,7 @@ class CustomizeDialogElement extends mixinBehaviors
       this.pageHandler_.setDailyRefreshCollectionId('');
     }
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction
-            .kBackgroundsRefreshToggleClicked);
+        CustomizeDialogAction.kBackgroundsRefreshToggleClicked);
   }
 }
 

@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -238,7 +239,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
 
   constructor() {
     super();
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
+    /** @private {PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     /** @private {webkitSpeechRecognition} */
     this.voiceRecognition_ = new webkitSpeechRecognition();

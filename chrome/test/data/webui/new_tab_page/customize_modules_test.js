@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
 import {$$, ChromeCartProxy, ModuleDescriptor, ModuleRegistry, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle, assertStyle, installMock} from 'chrome://test/new_tab_page/test_support.js';
@@ -25,7 +27,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
   /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {!newTabPage.mojom.PageHandlerRemote} */
+  /** @type {!PageHandlerRemote} */
   let callbackRouterRemote;
 
   /** @type {!TestBrowserProxy} */
@@ -60,9 +62,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
     PolymerTest.clearBody();
 
     handler = installMock(
-        newTabPage.mojom.PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(
-            mock, new newTabPage.mojom.PageCallbackRouter()));
+        PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
     moduleRegistry = installMock(ModuleRegistry);

@@ -10,6 +10,7 @@ import './iframe.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {BackgroundCollection, CollectionImage, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /**
@@ -42,7 +43,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
         computed: 'computeShowBackgroundSelection_(selectedCollection)',
       },
 
-      /** @private {newTabPage.mojom.BackgroundCollection} */
+      /** @private {BackgroundCollection} */
       selectedCollection: {
         notify: true,
         observer: 'onSelectedCollectionChange_',
@@ -50,13 +51,13 @@ class CustomizeBackgroundsElement extends mixinBehaviors
         value: null,
       },
 
-      /** @type {!newTabPage.mojom.Theme} */
+      /** @type {!Theme} */
       theme: Object,
 
-      /** @private {!Array<!newTabPage.mojom.BackgroundCollection>} */
+      /** @private {!Array<!BackgroundCollection>} */
       collections_: Array,
 
-      /** @private {!Array<!newTabPage.mojom.CollectionImage>} */
+      /** @private {!Array<!CollectionImage>} */
       images_: Array,
     };
   }
@@ -66,7 +67,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
     if (this.customBackgroundDisabledByPolicy_) {
       return;
     }
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
+    /** @private {PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     this.pageHandler_.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
@@ -127,14 +128,13 @@ class CustomizeBackgroundsElement extends mixinBehaviors
   onCollectionClick_(e) {
     this.selectedCollection = this.$.collectionsRepeat.itemForElement(e.target);
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction.kBackgroundsCollectionOpened);
+        CustomizeDialogAction.kBackgroundsCollectionOpened);
   }
 
   /** @private */
   async onUploadFromDeviceClick_() {
     this.pageHandler_.onCustomizeDialogAction(
-        newTabPage.mojom.CustomizeDialogAction
-            .kBackgroundsUploadFromDeviceClicked);
+        CustomizeDialogAction.kBackgroundsUploadFromDeviceClicked);
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
       // The theme update is asynchronous. Close the dialog and allow ntp-app
@@ -147,8 +147,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
   onDefaultClick_() {
     if (!this.theme.isCustomBackground) {
       this.pageHandler_.onCustomizeDialogAction(
-          newTabPage.mojom.CustomizeDialogAction
-              .kBackgroundsNoBackgroundSelected);
+          CustomizeDialogAction.kBackgroundsNoBackgroundSelected);
     }
     this.pageHandler_.setNoBackgroundImage();
   }
@@ -161,7 +160,7 @@ class CustomizeBackgroundsElement extends mixinBehaviors
     const image = this.$.imagesRepeat.itemForElement(e.target);
     if (this.theme.isCustomBackground && this.theme.backgroundImage !== image) {
       this.pageHandler_.onCustomizeDialogAction(
-          newTabPage.mojom.CustomizeDialogAction.kBackgroundsImageSelected);
+          CustomizeDialogAction.kBackgroundsImageSelected);
     }
     const {attribution1, attribution2, attributionUrl, imageUrl} = image;
     this.pageHandler_.setBackgroundImage(

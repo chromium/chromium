@@ -10,9 +10,12 @@ import './doodle_share_dialog.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior} from './i18n_setup.js';
+import {Doodle, DoodleImageType, ImageDoodle, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
@@ -59,17 +62,17 @@ class LogoElement extends mixinBehaviors
       /**
        * The NTP's background color. If null or undefined the NTP does not have
        * a single background color, e.g. when a background image is set.
-       * @type {skia.mojom.SkColor}
+       * @type {SkColor}
        */
       backgroundColor: Object,
 
       /** @private */
       loaded_: Boolean,
 
-      /** @private {newTabPage.mojom.Doodle} */
+      /** @private {Doodle} */
       doodle_: Object,
 
-      /** @private {newTabPage.mojom.ImageDoodle} */
+      /** @private {ImageDoodle} */
       imageDoodle_: {
         observer: 'onImageDoodleChange_',
         computed: 'computeImageDoodle_(dark, doodle_)',
@@ -156,7 +159,7 @@ class LogoElement extends mixinBehaviors
     super();
     /** @private {!EventTracker} */
     this.eventTracker_ = new EventTracker();
-    /** @private {newTabPage.mojom.PageHandlerRemote} */
+    /** @private {PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     this.pageHandler_.getDoodle().then(({doodle}) => {
       this.doodle_ = doodle;
@@ -168,7 +171,7 @@ class LogoElement extends mixinBehaviors
     });
     /** @private {?string} */
     this.imageClickParams_ = null;
-    /** @private {url.mojom.Url} */
+    /** @private {Url} */
     this.interactionLogUrl_ = null;
     /** @private {?string} */
     this.shareId_ = null;
@@ -247,7 +250,7 @@ class LogoElement extends mixinBehaviors
   }
 
   /**
-   * @return {newTabPage.mojom.ImageDoodle}
+   * @return {ImageDoodle}
    * @private
    */
   computeImageDoodle_() {
@@ -298,7 +301,7 @@ class LogoElement extends mixinBehaviors
     if (this.isCtaImageShown_()) {
       this.showAnimation_ = true;
       this.pageHandler_.onDoodleImageClicked(
-          newTabPage.mojom.DoodleImageType.kCta, this.interactionLogUrl_);
+          DoodleImageType.kCta, this.interactionLogUrl_);
 
       // TODO(tiborg): This is technically not correct since we don't know if
       // the animation has loaded yet. However, since the animation is loaded
@@ -306,8 +309,8 @@ class LogoElement extends mixinBehaviors
       // practice this should be good enough but we could improve that in the
       // future.
       this.logImageRendered_(
-          newTabPage.mojom.DoodleImageType.kAnimation,
-          /** @type {!url.mojom.Url} */
+          DoodleImageType.kAnimation,
+          /** @type {!Url} */
           (this.imageDoodle_.animationImpressionLogUrl));
 
       if (!this.doodle_.image.onClickUrl) {
@@ -318,8 +321,8 @@ class LogoElement extends mixinBehaviors
     }
     assert(this.doodle_.image.onClickUrl);
     this.pageHandler_.onDoodleImageClicked(
-        this.showAnimation_ ? newTabPage.mojom.DoodleImageType.kAnimation :
-                              newTabPage.mojom.DoodleImageType.kStatic,
+        this.showAnimation_ ? DoodleImageType.kAnimation :
+                              DoodleImageType.kStatic,
         null);
     const onClickUrl = new URL(this.doodle_.image.onClickUrl.url);
     if (this.imageClickParams_) {
@@ -333,14 +336,14 @@ class LogoElement extends mixinBehaviors
   /** @private */
   onImageLoad_() {
     this.logImageRendered_(
-        this.isCtaImageShown_() ? newTabPage.mojom.DoodleImageType.kCta :
-                                  newTabPage.mojom.DoodleImageType.kStatic,
+        this.isCtaImageShown_() ? DoodleImageType.kCta :
+                                  DoodleImageType.kStatic,
         this.imageDoodle_.imageImpressionLogUrl);
   }
 
   /**
-   * @param {newTabPage.mojom.DoodleImageType} type
-   * @param {!url.mojom.Url} logUrl
+   * @param {DoodleImageType} type
+   * @param {!Url} logUrl
    * @private
    */
   async logImageRendered_(type, logUrl) {
