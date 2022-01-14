@@ -167,14 +167,14 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // type.
   void ClearPrefs(SeedType seed_type);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Imports the variations seed from the Java side. Logs UMA on failure.
   // Android Chrome uses this on first run; WebView uses this on every startup.
   // In Chrome's case, it's important to set the first run seed as soon as
   // possible, because some clients query the seed store prefs directly rather
   // than accessing them via the seed store API: https://crbug.com/829527
   void ImportInitialSeed(std::unique_ptr<SeedResponse> initial_seed);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Loads the variations seed data from local state into |seed|, as well as the
   // raw pref values into |seed_data| and |base64_signature|. Loads either the

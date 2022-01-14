@@ -62,9 +62,9 @@
 #include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/variations/android/variations_seed_bridge.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace variations {
 namespace {
@@ -94,22 +94,22 @@ bool g_should_fetch_for_testing = false;
 // Returns a string that will be used for the value of the 'osname' URL param
 // to the variations server.
 std::string GetPlatformString() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return "win";
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return "ios";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return "mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return "chromeos";
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return "chromeos_lacros";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return "android";
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return "fuchsia";
-#elif (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    defined(OS_BSD) || defined(OS_SOLARIS)
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    BUILDFLAG(IS_BSD) || BUILDFLAG(IS_SOLARIS)
   // Default BSD and SOLARIS to Linux to not break those builds, although these
   // platforms are not officially supported by Chrome.
   return "linux";
@@ -249,7 +249,7 @@ bool IsFetchingEnabled() {
 
 std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
     PrefService* local_state) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!local_state->HasPrefPath(prefs::kVariationsSeedSignature)) {
     DVLOG(1) << "Importing first run seed from Java preferences.";
     return android::GetVariationsFirstRunSeed();
@@ -383,12 +383,12 @@ void VariationsService::PerformPreMainMessageLoopStartup() {
 // StartRepeatedVariationsSeedFetch(). This is too early to do it on Android
 // because at this point the |restrict_mode_| hasn't been set yet. See also
 // the CHECK in SetRestrictMode().
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (!IsFetchingEnabled())
     return;
 
   StartRepeatedVariationsSeedFetch();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 std::string VariationsService::LoadPermanentConsistencyCountry(
@@ -494,7 +494,7 @@ void VariationsService::EnsureLocaleEquals(const std::string& locale) {
   return;
 #else
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(asvitkine): Speculative early return to silence CHECK failures on
   // Android, see crbug.com/912320.
   if (locale.empty())

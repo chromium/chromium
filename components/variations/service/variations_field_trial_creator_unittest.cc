@@ -44,7 +44,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/variations/seed_response.h"
 #endif
 
@@ -104,7 +104,7 @@ VariationsSeed CreateTestSafeSeed() {
   return seed;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kTestSeedCountry[] = "in";
 
 // Populates |seed| with simple test data, targetting only users in a specific
@@ -126,7 +126,7 @@ std::string SerializeSeed(const VariationsSeed& seed) {
   seed.SerializeToString(&serialized_seed);
   return serialized_seed;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class TestPlatformFieldTrials : public PlatformFieldTrials {
  public:
@@ -856,7 +856,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_SafeSeedForFutureMilestone) {
       "Variations.SeedUsage", SeedUsage::kSafeSeedForFutureMilestoneNotUsed, 1);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // This is a regression test for crbug/829527.
 TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   DisableTestingConfig();
@@ -921,7 +921,7 @@ TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
       field_trial_creator.GetClientFilterableStateForVersion(current_version);
   EXPECT_NE(client_filterable_state->hardware_class, std::string());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Verify that providing an empty user data directory opts the client out of the
 // Extended Variations Safe Mode experiment.
@@ -1019,7 +1019,7 @@ INSTANTIATE_TEST_SUITE_P(
         ChannelTestParams{.test_name = "Beta",
                           .channel = version_info::Channel::BETA,
                           .should_experiment_be_active = true},
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
         ChannelTestParams{.test_name = "Stable",
                           .channel = version_info::Channel::STABLE,
                           .should_experiment_be_active = true}),
@@ -1027,7 +1027,7 @@ INSTANTIATE_TEST_SUITE_P(
         ChannelTestParams{.test_name = "Stable",
                           .channel = version_info::Channel::STABLE,
                           .should_experiment_be_active = false}),
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
     [](const ::testing::TestParamInfo<ChannelTestParams>& params) {
       return params.param.test_name;
     });
