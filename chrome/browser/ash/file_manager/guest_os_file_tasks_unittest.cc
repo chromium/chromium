@@ -60,9 +60,9 @@ class GuestOsFileTasksTest : public testing::Test {
               guest_os::GuestOsRegistryService::VmType vm_type) {
     // crostini.registry {<id>: {container_name: "penguin", name: {"": <name>},
     //                           mime_types: [<mime>,], vm_name: "termina"}}
-    DictionaryPrefUpdateDeprecated update(profile_.GetPrefs(),
-                                          guest_os::prefs::kGuestOsRegistry);
-    base::DictionaryValue* registry = update.Get();
+    DictionaryPrefUpdate update(profile_.GetPrefs(),
+                                guest_os::prefs::kGuestOsRegistry);
+    base::Value* registry = update.Get();
     base::Value app(base::Value::Type::DICTIONARY);
     app.SetKey("container_name", base::Value("penguin"));
     base::Value mime_list(base::Value::Type::LIST);
@@ -93,9 +93,9 @@ class GuestOsFileTasksTest : public testing::Test {
 
   void AddMime(const std::string& file_ext, const std::string& mime) {
     // crostini.mime_types.termina.penguin.<file_ext>: <mime>
-    DictionaryPrefUpdateDeprecated update(profile_.GetPrefs(),
-                                          guest_os::prefs::kGuestOsMimeTypes);
-    base::DictionaryValue* mimes = update.Get();
+    DictionaryPrefUpdate update(profile_.GetPrefs(),
+                                guest_os::prefs::kGuestOsMimeTypes);
+    base::Value* mimes = update.Get();
     mimes->SetStringPath("termina.penguin." + file_ext, mime);
   }
 
