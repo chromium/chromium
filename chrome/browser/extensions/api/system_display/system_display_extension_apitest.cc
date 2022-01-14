@@ -60,7 +60,7 @@ class SystemDisplayExtensionApiTest
 };
 
 // TODO(crbug.com/1231357): MockScreen causes random failures on Windows.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          SystemDisplayExtensionApiTest,
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
   ASSERT_TRUE(RunExtensionTest("system_display/info")) << message_;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 

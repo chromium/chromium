@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, SameDocumentNavigation) {
 
 // Tests that the location bar forgets about unloaded page actions.
 // Flaky on Linux: https://crbug.com/1283900
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_UnloadPageAction DISABLED_UnloadPageAction
 #else
 #define MAYBE_UnloadPageAction UnloadPageAction

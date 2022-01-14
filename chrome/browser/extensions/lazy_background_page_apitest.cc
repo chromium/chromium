@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInView) {
 // Tests that the lazy background page stays alive until all visible views are
 // closed.
 // http://crbug.com/175778; test fails frequently on OS X
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WaitForNTP DISABLED_WaitForNTP
 #else
 #define MAYBE_WaitForNTP WaitForNTP
@@ -642,7 +642,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Tests that messages from the content script activate the lazy background
 // page, and keep it alive until all channels are closed.
 // http://crbug.com/1179524; test fails occasionally on OS X 10.15
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Messaging DISABLED_Messaging
 #else
 #define MAYBE_Messaging Messaging
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
 // Tests that an extension can not fetch a file scheme URL from the lazy
 // background page, if it does not have file access.
 // Flaky on Linux: crbug.com/1284362.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_FetchFileSchemeURLWithNoFileAccess \
   DISABLED_FetchFileSchemeURLWithNoFileAccess
 #else

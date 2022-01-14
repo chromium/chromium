@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
 // TODO(crbug/1256760): Flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
   DISABLED_SessionStorageDoesNotPersistBetweenOpenings
 #else

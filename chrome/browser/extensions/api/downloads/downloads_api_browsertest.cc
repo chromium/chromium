@@ -458,7 +458,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
 
   std::string GetFilename(const char* path) {
     std::string result = downloads_directory().AppendASCII(path).AsUTF8Unsafe();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     for (std::string::size_type next = result.find("\\");
          next != std::string::npos;
          next = result.find("\\", next)) {
@@ -1617,7 +1617,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_Basic \
   DISABLED_DownloadExtensionTest_Download_Basic
 #else
@@ -1673,7 +1673,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_Redirect \
   DISABLED_DownloadExtensionTest_Download_Redirect
 #else
@@ -1733,7 +1733,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that we can start a download from an incognito context, and that the
 // download knows that it's incognito.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1245173) Flaky on Win7
 #define MAYBE_DownloadExtensionTest_Download_Incognito \
   DISABLED_DownloadExtensionTest_Download_Incognito
@@ -1976,7 +1976,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // This test is very flaky on Win. http://crbug.com/248438
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_Subdirectory\
         DISABLED_DownloadExtensionTest_Download_Subdirectory
 #else
@@ -2097,7 +2097,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_URLFragment \
   DISABLED_DownloadExtensionTest_Download_URLFragment
 #else
@@ -2149,7 +2149,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // conflictAction may be specified without filename.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1245173) Flaky on Win7
 #define MAYBE_DownloadExtensionTest_Download_ConflictAction \
   DISABLED_DownloadExtensionTest_Download_ConflictAction
@@ -2239,7 +2239,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_DataURL \
   DISABLED_DownloadExtensionTest_Download_DataURL
 #else
@@ -2292,7 +2292,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // Valid file URLs are valid URLs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Disabled due to crbug.com/175711
 #define MAYBE_DownloadExtensionTest_Download_File \
         DISABLED_DownloadExtensionTest_Download_File
@@ -2305,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   GoOnTheRecord();
   LoadExtension("downloads_split", /*enable_file_access=*/true);
   std::string download_url = "file:///";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   download_url += "C:/";
 #endif
 
@@ -2382,7 +2382,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_Headers \
   DISABLED_DownloadExtensionTest_Download_Headers
 #else
@@ -2448,7 +2448,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // testserver.py does not succeed when it should fail as well as how the
 // downloads extension api exposes the failure to extensions.
 // TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_Headers_Fail \
   DISABLED_DownloadExtensionTest_Download_Headers_Fail
 #else
@@ -2540,7 +2540,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that DownloadsDownloadFunction propagates the |method| and |body|
 // parameters to the URLRequest.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1245173) Flaky on Win7
 #define MAYBE_DownloadExtensionTest_Download_Post \
   DISABLED_DownloadExtensionTest_Download_Post
@@ -2605,7 +2605,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
 // TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_Post_Get \
   DISABLED_DownloadExtensionTest_Download_Post_Get
 #else
@@ -2654,7 +2654,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
 // TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_Post_NoBody \
   DISABLED_DownloadExtensionTest_Download_Post_NoBody
 #else
@@ -2745,7 +2745,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // TODO(https://crbug.com/392288): Flaky on macOS
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_Download_FileSystemURL \
         DISABLED_DownloadExtensionTest_Download_FileSystemURL
 #else
@@ -2816,7 +2816,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_NoChange \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_NoChange
 #else
@@ -2949,7 +2949,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Twice \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_Twice
 #else
@@ -3072,7 +3072,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_DangerousOverride \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_DangerousOverride
 #else
@@ -3213,7 +3213,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid
 #else
@@ -3283,7 +3283,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilename \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_IllegalFilename
 #else
@@ -3353,7 +3353,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension
 #else
@@ -3422,7 +3422,7 @@ IN_PROC_BROWSER_TEST_F(
                           "    \"current\": \"complete\"}}]",
                           result_id)));
 }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReservedFilename\
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_ReservedFilename
 #else
@@ -3492,7 +3492,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid
 #else
@@ -3562,7 +3562,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid
 #else
@@ -3632,7 +3632,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid
 #else
@@ -3767,7 +3767,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Overwrite \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_Overwrite
 #else
@@ -3892,7 +3892,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Override \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_Override
 #else
@@ -4020,7 +4020,7 @@ IN_PROC_BROWSER_TEST_F(
 // TODO test precedence rules: install_time
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_RemoveFilenameDeterminer \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_RemoveFilenameDeterminer
 #else
@@ -4080,9 +4080,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // This test is flaky on Linux ASan LSan Tests bot. https://crbug.com/1114226
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-     defined(ADDRESS_SANITIZER)) ||                 \
-    defined(OS_WIN)
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+     defined(ADDRESS_SANITIZER)) ||                     \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IncognitoSplit \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_IncognitoSplit
 #else
@@ -4230,7 +4230,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning
 #else
@@ -4546,7 +4546,7 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
   prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 // Flaky on Mac debug, failing with a timeout.
 // http://crbug.com/180759
 #define MAYBE_DownloadExtensionTest_AcceptDanger \
@@ -4593,7 +4593,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DownloadExtensionTest_DeleteFileAfterCompletion \
   DISABLED_DownloadExtensionTest_DeleteFileAfterCompletion
 #else

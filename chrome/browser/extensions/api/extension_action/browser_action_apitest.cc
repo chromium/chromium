@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // We need this on mac so we don't loose 2x representations from browser icon
   // in transformations gfx::ImageSkia -> NSImage -> gfx::ImageSkia.
   std::vector<ui::ResourceScaleFactor> supported_scale_factors;

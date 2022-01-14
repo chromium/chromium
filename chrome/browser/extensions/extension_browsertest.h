@@ -409,7 +409,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   // Disable external install UI.
   FeatureSwitch::ScopedOverride override_prompt_for_external_extensions_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Use mock shortcut directories to ensure app shortcuts are cleaned up.
   base::ScopedPathOverride user_desktop_override_;
   base::ScopedPathOverride common_desktop_override_;

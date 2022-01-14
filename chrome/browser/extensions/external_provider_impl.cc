@@ -71,7 +71,7 @@
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/extensions/external_registry_loader_win.h"
 #endif
 
@@ -754,11 +754,11 @@ void ExternalProviderImpl::CreateExternalProviders(
     return;
   }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // On Mac OS, items in /Library/... should be written by the superuser.
   // Check that all components of the path are writable by root only.
   ExternalPrefLoader::Options check_admin_permissions_on_mac;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   check_admin_permissions_on_mac =
       ExternalPrefLoader::ENSURE_PATH_CONTROLLED_BY_ADMIN;
 #else
@@ -816,7 +816,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   if (!profile->GetPrefs()->GetBoolean(pref_names::kBlockExternalExtensions)) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     provider_list->push_back(std::make_unique<ExternalProviderImpl>(
         service,
         base::MakeRefCounted<ExternalPrefLoader>(
@@ -826,7 +826,7 @@ void ExternalProviderImpl::CreateExternalProviders(
         ManifestLocation::kExternalPrefDownload,
         bundled_extension_creation_flags));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     auto registry_provider = std::make_unique<ExternalProviderImpl>(
         service, new ExternalRegistryLoader, profile,
         ManifestLocation::kExternalRegistry,
@@ -844,8 +844,8 @@ void ExternalProviderImpl::CreateExternalProviders(
         bundled_extension_creation_flags));
 
     // Define a per-user source of external extensions.
-#if defined(OS_MAC) || ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-                        BUILDFLAG(CHROMIUM_BRANDING))
+#if BUILDFLAG(IS_MAC) || ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+                          BUILDFLAG(CHROMIUM_BRANDING))
     provider_list->push_back(std::make_unique<ExternalProviderImpl>(
         service,
         base::MakeRefCounted<ExternalPrefLoader>(

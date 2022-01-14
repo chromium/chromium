@@ -666,7 +666,7 @@ constexpr char kRulesExtensionName[] =
     "Declarative content persistence apitest";
 
 // TODO(crbug.com/512431): Flaky on Windows release builds.
-#if defined(OS_WIN) && defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_PRE_RulesPersistence DISABLED_PRE_RulesPersistence
 #else
 #define MAYBE_PRE_RulesPersistence PRE_RulesPersistence
@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, MAYBE_PRE_RulesPersistence) {
 }
 
 // TODO(crbug.com/512431): Flaky on Windows release builds.
-#if defined(OS_WIN) && defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_RulesPersistence DISABLED_RulesPersistence
 #else
 #define MAYBE_RulesPersistence RulesPersistence

@@ -151,7 +151,7 @@ class NonPersistentExtensionTabsTest
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
 // Flakes on Linux Tests. http://crbug.com/1162432
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
 #else
 #define MAYBE_TabCurrentWindow TabCurrentWindow
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
 // TODO(http://crbug.com/58229): The Linux and Lacros window managers
 // behave differently, which complicates the test. A separate  test should
 // be written for them to avoid complicating this one.
-#if !defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, WindowSetFocus) {
   ASSERT_TRUE(RunExtensionTest("window_update/set_focus")) << message_;
 }
@@ -197,7 +197,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 // TODO(llandwerlin): Activating a browser window and waiting for the
 // action to happen requires views::Widget which is not available on
 // MacOSX. Deactivate for now.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
  public:
   void SetUpOnMainThread() override;
@@ -420,6 +420,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
   CloseAppWindow(app_window);
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace extensions

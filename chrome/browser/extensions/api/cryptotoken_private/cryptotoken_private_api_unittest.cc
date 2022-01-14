@@ -28,7 +28,7 @@
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -322,7 +322,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
 };
 
 TEST_F(CryptoTokenPermissionTest, AttestationPrompt) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1225335) This test is failing on WIN10_20H2.
   if (base::win::OSInfo::GetInstance()->version() >=
       base::win::Version::WIN10_20H2)

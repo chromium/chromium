@@ -137,7 +137,7 @@ bool IsSettingReadOnly(const std::string& pref_name) {
     return true;
   }
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Don't allow user to change sw_reporter preferences.
   if (pref_name == prefs::kSwReporterEnabled)
     return true;
@@ -181,7 +181,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   (*s_allowlist)[::prefs::kUseCustomChromeFrame] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
@@ -195,7 +195,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   (*s_allowlist)[::prefs::kUsesSystemTheme] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
@@ -218,7 +218,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[::prefs::kDefaultCharset] =
       settings_api::PrefType::PREF_TYPE_STRING;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   (*s_allowlist)[::prefs::kWebkitTabsToLinks] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kConfirmToQuitEnabled] =
@@ -440,7 +440,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[::prefs::kAccessibilityCaptionsBackgroundOpacity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   (*s_allowlist)[::prefs::kLiveCaptionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kLiveCaptionLanguageCode] =
@@ -852,7 +852,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[media_router::prefs::kMediaRouterMediaRemotingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // SwReporter settings.
   (*s_allowlist)[::prefs::kSwReporterEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

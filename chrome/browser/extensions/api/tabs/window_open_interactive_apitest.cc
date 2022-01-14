@@ -16,7 +16,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowOpenFocus) {
 // The test uses the chrome.browserAction.openPopup API, which requires that the
 // window can automatically be activated.
 // Fails flakily on Linux and Lacros. https://crbug.com/477691.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WindowOpen DISABLED_WindowOpen
 #else
 #define MAYBE_WindowOpen WindowOpen

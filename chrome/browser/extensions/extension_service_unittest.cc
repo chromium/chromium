@@ -2324,7 +2324,7 @@ TEST_F(ExtensionServiceTest, TestInstallThemeWithExtensionsDisabled) {
                       static_cast<int>(ManifestLocation::kInternal));
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Flaky on these platforms. http://crbug.com/1148894
 #define MAYBE_InstallTheme DISABLED_InstallTheme
 #else
@@ -2388,7 +2388,7 @@ TEST_F(ExtensionServiceTest, LoadLocalizedTheme) {
   EXPECT_EQ("description", theme->description());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(ExtensionServiceTest, UnpackedExtensionMayContainSymlinkedFiles) {
   base::FilePath source_data_dir =
       data_dir().AppendASCII("unpacked").AppendASCII("symlinks_allowed");
@@ -4402,7 +4402,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
 }
 
 // Flaky on windows; http://crbug.com/309833
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ExternalExtensionAutoAcknowledgement DISABLED_ExternalExtensionAutoAcknowledgement
 #else
 #define MAYBE_ExternalExtensionAutoAcknowledgement ExternalExtensionAutoAcknowledgement
@@ -5620,7 +5620,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
 }
 
 // Tests the external installation feature
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(ExtensionServiceTest, ExternalInstallRegistry) {
   // This should all work, even when normal extension installation is disabled.
   InitializeExtensionServiceWithExtensionsDisabled();
@@ -6952,7 +6952,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
 // Flaky on windows; http://crbug.com/295757 .
 // Causes race conditions with an in-process utility thread, so disable under
 // TSan: https://crbug.com/518957
-#if defined(OS_WIN) || defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_WIN) || defined(THREAD_SANITIZER)
 #define MAYBE_ExternalInstallMultiple DISABLED_ExternalInstallMultiple
 #else
 #define MAYBE_ExternalInstallMultiple ExternalInstallMultiple

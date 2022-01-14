@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -48,7 +49,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #endif

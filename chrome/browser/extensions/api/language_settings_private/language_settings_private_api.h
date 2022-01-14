@@ -31,10 +31,10 @@ class LanguageSettingsPrivateGetLanguageListFunction
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnDictionariesInitialized();
   void UpdateSupportedPlatformDictionaries();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   std::unique_ptr<base::ListValue> language_list_;

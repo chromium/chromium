@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceId) {
   constexpr char kAssertions[] =
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       "chrome.test.assertNoLastError();"
       "chrome.test.assertEq(id, 'client_id');";
 #else
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceId) {
   RunTest(base::StringPrintf(kTest, kAssertions));
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222670
 #define MAYBE_GetPersistentSecret DISABLED_GetPersistentSecret
 #else
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceId) {
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
                        MAYBE_GetPersistentSecret) {
   constexpr char kAssertions[] =
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       "chrome.test.assertNoLastError();"
       "chrome.test.assertTrue(secret instanceof ArrayBuffer);";
 #else
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceData) {
   constexpr char kAssertions[] =
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       "chrome.test.assertNoLastError();"
       "chrome.test.assertTrue(data instanceof ArrayBuffer);";
 #else
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceData) {
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, SetDeviceData) {
   constexpr char kAssertions[] =
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       "chrome.test.assertNoLastError();"
       "chrome.enterprise.reportingPrivate.getDeviceData('id', (data) => {"
       "  let view = new Int8Array(data);"
@@ -207,15 +207,15 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, SetDeviceData) {
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr char kOSName[] = "windows";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   constexpr char kOSName[] = "macOS";
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   constexpr char kOSName[] = "linux";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The added conditions for windows are related to the fact that we don't know
   // if the machine running the test is managed or not
   constexpr char kTest[] = R"(
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
       chrome.test.notifyPass();
     });)";
   RunTest(base::StringPrintf(kTest, kOSName));
-#elif defined(OS_MAC) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   constexpr char kTest[] = R"(
     chrome.test.assertEq(
       'function',
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr char kChromeCleanupEnabledType[] = "boolean";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   constexpr char kThirdPartyBlockingEnabledType[] = "boolean";
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
   constexpr char kChromeCleanupEnabledType[] = "undefined";
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
   constexpr char kCount[] = "15";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   constexpr char kTest[] = R"(
     chrome.test.assertEq(

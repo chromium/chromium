@@ -16,7 +16,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event_constants.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <Carbon/Carbon.h>
 #include "base/mac/mac_util.h"
 #endif
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   ASSERT_TRUE(RunExtensionTest("keybinding/global")) << message_;
   ASSERT_TRUE(catcher.GetNextResult());
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // Our infrastructure for sending keys expects a browser to send them to, but
   // to properly test global shortcuts you need to send them to another target.
   // So, create an incognito browser to use as a target to send the shortcuts
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   // Activate the shortcut (Ctrl+Shift+8). This should have an effect.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       incognito_browser, ui::VKEY_8, true, true, false, false));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // ui_test_utils::SendGlobalKeyEventsAndWait() hangs the test on macOS 10.14 -
   // https://crbug.com/904403
   if (base::mac::IsAtLeastOS10_14())
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Feature only fully implemented on Windows, other platforms coming.
 // TODO(smus): On mac, SendKeyPress must first support media keys.
 #define MAYBE_GlobalDuplicatedMediaKey GlobalDuplicatedMediaKey

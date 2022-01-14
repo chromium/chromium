@@ -135,7 +135,7 @@ class DeclarativeNetRequestApiFencedFrameTest
 };
 
 // TODO(crbug.com/1278823): Flaky on Mac
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Load DISABLED_Load
 #else
 #define MAYBE_Load Load

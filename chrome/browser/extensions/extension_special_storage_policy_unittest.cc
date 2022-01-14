@@ -106,9 +106,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   }
 
   scoped_refptr<Extension> CreateProtectedApp() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\foo"));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/foo"));
 #endif
     base::DictionaryValue manifest;
@@ -128,9 +128,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   }
 
   scoped_refptr<Extension> CreateUnlimitedApp() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\bar"));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/bar"));
 #endif
     base::DictionaryValue manifest;
@@ -153,9 +153,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   }
 
   scoped_refptr<Extension> CreateRegularApp() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\app"));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/app"));
 #endif
     base::DictionaryValue manifest;

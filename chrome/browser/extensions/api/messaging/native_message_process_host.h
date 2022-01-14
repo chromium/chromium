@@ -19,7 +19,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
@@ -109,10 +109,10 @@ class NativeMessageProcessHost : public NativeMessageHost {
   // Input stream reader.
   std::unique_ptr<net::FileStream> read_stream_;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::PlatformFile read_file_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> read_controller_;
-#endif  // !defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_POSIX)
 
   // Write stream.
   std::unique_ptr<net::FileStream> write_stream_;

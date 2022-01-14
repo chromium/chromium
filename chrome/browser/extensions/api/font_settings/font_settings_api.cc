@@ -35,9 +35,9 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/direct_write.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace extensions {
 
@@ -80,7 +80,7 @@ std::string GetFontNamePrefPath(fonts::GenericFamily generic_family_enum,
 }
 
 void MaybeUnlocalizeFontName(std::string* font_name) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Try to get the 'us-en' font name. If it is failing, use the first name
   // available.
   absl::optional<std::string> localized_font_name =
@@ -90,7 +90,7 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
 
   if (localized_font_name)
     *font_name = std::move(localized_font_name.value());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace

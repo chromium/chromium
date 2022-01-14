@@ -16,7 +16,7 @@ namespace extensions {
 // Tests that we throw errors when you try using extension APIs that aren't
 // supported in content scripts.
 // Timey-outy on mac. http://crbug.com/89116
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Stubs DISABLED_Stubs
 #else
 #define MAYBE_Stubs Stubs

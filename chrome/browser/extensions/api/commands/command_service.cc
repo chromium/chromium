@@ -481,7 +481,7 @@ bool CommandService::CanAutoAssign(const Command &command,
       return true;
 
     // Global shortcuts are restricted to (Ctrl|Command)+Shift+[0-9].
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (!command.accelerator().IsCmdDown())
       return false;
 #else

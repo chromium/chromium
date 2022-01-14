@@ -285,7 +285,7 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
 // Using MSAN on ChromeOS causes problems due to its hardware OpenGL library.
 #define MAYBE_Performance DISABLED_Performance
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 // flaky on Mac 10.11 See: http://crbug.com/1235358
 #define MAYBE_Performance DISABLED_Performance
 #else

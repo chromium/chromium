@@ -850,7 +850,7 @@ using DeclarativeNetRequestBrowserTest_Packed =
 using DeclarativeNetRequestBrowserTest_Unpacked =
     DeclarativeNetRequestBrowserTest;
 
-#if defined(OS_WIN) || (defined(OS_MAC) && !defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
 // TODO: test times out on win. http://crbug.com/900447.
 // Also times out on mac-debug: https://crbug.com/900447
 #define MAYBE_BlockRequests_UrlFilter DISABLED_BlockRequests_UrlFilter
@@ -1335,7 +1335,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowRedirect) {
 }
 
 // Test is flaky on win. http://crbug.com/1241762.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Enable_Disable_Reload_Uninstall \
   DISABLED_Enable_Disable_Reload_Uninstall
 #else
@@ -1916,7 +1916,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, HostAccessPermission) {
   }
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 // Times out on mac-debug: https://crbug.com/1159418
 #define MAYBE_ChromeURLS DISABLED_ChromeURLS
 #else
@@ -3657,7 +3657,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 // Test that the action matched badge text for an extension is visible in an
 // incognito context if the extension is incognito enabled.
 // Test is disabled on Mac. See https://crbug.com/1280116
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ActionsMatchedCountAsBadgeTextIncognito \
   DISABLED_ActionsMatchedCountAsBadgeTextIncognito
 #else

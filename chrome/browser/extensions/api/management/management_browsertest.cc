@@ -391,7 +391,7 @@ class NotificationListener : public content::NotificationObserver {
   std::set<std::string> updates_;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Fails consistently on Windows XP, see: http://crbug.com/120640.
 #define MAYBE_AutoUpdate DISABLED_AutoUpdate
 #else
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ASSERT_EQ("2.0", extension->VersionString());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Fails consistently on Windows XP, see: http://crbug.com/120640.
 #define MAYBE_AutoUpdateDisabledExtensions DISABLED_AutoUpdateDisabledExtensions
 #else
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
 }
 
 // See http://crbug.com/103371 and http://crbug.com/120640.
-#if defined(ADDRESS_SANITIZER) || defined(OS_WIN)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_WIN)
 #define MAYBE_PolicyOverridesUserInstall DISABLED_PolicyOverridesUserInstall
 #else
 #define MAYBE_PolicyOverridesUserInstall PolicyOverridesUserInstall

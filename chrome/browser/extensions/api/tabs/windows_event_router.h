@@ -17,11 +17,11 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 #include "ui/views/focus/widget_focus_manager.h"  // nogncheck
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/mac/key_window_notifier.h"
 #endif
 
@@ -41,7 +41,7 @@ class AppWindowController;
 // but will only route events within a profile to extension processes in the
 // same profile.
 class WindowsEventRouter : public AppWindowRegistry::Observer,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                            public KeyWindowNotifier::Observer,
 #elif defined(TOOLKIT_VIEWS)
                            public views::WidgetFocusChangeListener,
@@ -69,11 +69,11 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   void OnWindowControllerRemoved(WindowController* window) override;
   void OnWindowBoundsChanged(WindowController* window_controller) override;
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // KeyWindowNotifier::Observer:
   void OnNoKeyWindow() override;
 #endif
@@ -109,7 +109,7 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   base::ScopedObservation<WindowControllerList, WindowControllerListObserver>
       observed_controller_list_{this};
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ScopedObservation<KeyWindowNotifier, KeyWindowNotifier::Observer>
       observed_key_window_notifier_{this};
 #endif

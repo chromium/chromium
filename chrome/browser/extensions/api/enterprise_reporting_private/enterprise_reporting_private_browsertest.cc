@@ -37,7 +37,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/dm_token_utils.h"
 #endif
 
@@ -121,7 +121,7 @@ class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
 #endif
 
   void SetupDMToken() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
 #else
@@ -266,7 +266,7 @@ class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
   }
 
   bool BuiltInDnsClientPlatformDefault() {
-#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     return true;
 #else
     return false;
@@ -275,7 +275,7 @@ class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
 
   void ExpectDefaultChromeCleanupEnabled(
       const enterprise_reporting_private::ContextInfo& info) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_TRUE(*info.chrome_cleanup_enabled);
 #else
     EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
@@ -284,7 +284,7 @@ class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
 
   void ExpectDefaultThirdPartyBlockingEnabled(
       const enterprise_reporting_private::ContextInfo& info) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     EXPECT_TRUE(*info.third_party_blocking_enabled);
 #else
     EXPECT_EQ(info.third_party_blocking_enabled, nullptr);
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
   EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
             info.safe_browsing_protection_level);
-#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(info.built_in_dns_client_enabled);
 #else
   EXPECT_FALSE(info.built_in_dns_client_enabled);
@@ -391,13 +391,13 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(*info.chrome_cleanup_enabled);
 #else
   EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
 #endif
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(*info.third_party_blocking_enabled);
 #else
   EXPECT_EQ(info.third_party_blocking_enabled, nullptr);

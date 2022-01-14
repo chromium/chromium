@@ -116,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, OnUpdatedWithMemoryRefreshTypes) {
 }
 
 // This test is flaky on Linux and ChromeOS ASan LSan Tests bot. https://crbug.com/1028778
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    defined(ADDRESS_SANITIZER)
 #define MAYBE_CannotTerminateBrowserProcess \
   DISABLED_CannotTerminateBrowserProcess
 #else

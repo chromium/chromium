@@ -53,7 +53,7 @@
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -217,7 +217,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
     ExtensionHostTestHelper host_helper(profile());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // ClickOnView() in an inactive window is not robust on Mac. The click does
     // not guarantee window activation on trybots. So activate the browser
     // explicitly, thus causing the bubble to lose focus and dismiss itself.
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
   frame_observer.Wait();
   // Non-Aura Linux uses a singleton for the popup, so it looks like all windows
   // have popups if there is any popup open.
-#if !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(USE_AURA))
+#if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(USE_AURA))
   // Starting window does not have a popup.
   EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
 #endif
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveViewsTest,
   chrome::CloseWindow(browser());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Forcibly closing a browser HWND with a popup should not cause a crash.
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   OpenPopupViaAPI(false);
@@ -592,9 +592,9 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
 };
 
 // TODO(crbug.com/1249851): Test crashes on Windows
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
-#elif defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#elif BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 // TODO(crbug.com/1269076): Test is flaky for linux tsan builds
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #else
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_BrowserActionPopup) {
     // scrollbars are overlaid, appear on hover and don't increase the height
     // or width of the popup.
     const int kScrollbarAdjustment =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         0;
 #else
         gfx::scrollbar_size();
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   // that's what we check when we try to open the popup.
   // TODO(crbug.com/1115237): Now that this is an interactive test, is this
   // ifdef still necessary?
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(popup_browser->window()->IsActive());
 #endif
   EXPECT_FALSE(browser()->window()->IsActive());
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
   // The test verification below is applicable only to scenarios where the
   // download shelf is supported - on ChromeOS, instead of the download shelf,
   // there is a download notification in the right-bottom corner of the screen.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
 #endif
 }
@@ -1054,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
   // The test verification below is applicable only to scenarios where the
   // download shelf is supported - on ChromeOS, instead of the download shelf,
   // there is a download notification in the right-bottom corner of the screen.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
 #endif
 }

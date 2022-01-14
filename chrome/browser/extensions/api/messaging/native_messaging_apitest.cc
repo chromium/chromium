@@ -141,7 +141,7 @@ class NativeMessagingLaunchApiTest : public NativeMessagingApiTestBase {
 };
 
 // Disabled on Windows due to timeouts; see https://crbug.com/984897.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Success DISABLED_Success
 #else
 #define MAYBE_Success Success
@@ -231,7 +231,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
     // On Mac, the browser remains alive when no windows are open, so observing
     // the KeepAliveRegistry cannot detect when the native messaging keep-alive
     // has been released; poll for changes instead.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     polling_timer_.Start(
         FROM_HERE, base::Milliseconds(100),
         base::BindRepeating(&TestKeepAliveStateObserver::PollKeepAlive,
@@ -252,7 +252,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 
   void OnKeepAliveRestartStateChanged(bool can_restart) override {}
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PollKeepAlive() {
     OnKeepAliveStateChanged(
         KeepAliveRegistry::GetInstance()->IsOriginRegistered(
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
 }
 
 // Flaky on a Windows bot. See crbug.com/1030332.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Success DISABLED_Success
 #else
 #define MAYBE_Success Success

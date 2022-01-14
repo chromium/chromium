@@ -1593,7 +1593,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveApprovalSuccess) {
       1);
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Test was originally written for http://crbug.com/753014 and subsequently
 // modified to use the remote consent flow.
 //
@@ -1625,7 +1625,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       kGetAuthTokenResultHistogramName,
       IdentityGetAuthTokenError::State::kRemoteConsentPageLoadFailure, 1);
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NoninteractiveQueue) {
   SignIn("primary@example.com");

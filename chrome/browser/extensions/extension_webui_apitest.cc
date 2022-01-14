@@ -129,7 +129,7 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
 };
 
-#if !defined(OS_WIN)  // flaky http://crbug.com/530722
+#if !BUILDFLAG(IS_WIN)  // flaky http://crbug.com/530722
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, SanityCheckAvailableAPIs) {
   ASSERT_TRUE(RunTestOnExtensionsPage("sanity_check_available_apis.js"));

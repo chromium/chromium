@@ -24,7 +24,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/ozone/buildflags.h"
 #endif  // OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -76,7 +76,7 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
 
 // The build flag OZONE_PLATFORM_WAYLAND is only available on
 // Linux or ChromeOS, so this simplifies the next set of ifdefs.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
 #define OZONE_PLATFORM_WAYLAND
 #endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
@@ -85,7 +85,7 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
 // TODO(https://crbug.com/1271673): Crashes on Lacros.
 // TODO(https://crbug.com/1271680): Fails on the linux-wayland-rel bot.
 // TODO(https://crbug.com/1271711): Fails on Mac.
-#if defined(OS_MAC) || defined(OZONE_PLATFORM_WAYLAND) || \
+#if BUILDFLAG(IS_MAC) || defined(OZONE_PLATFORM_WAYLAND) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ChooseDesktopMedia DISABLED_ChooseDesktopMedia
 #else
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
 // TODO(https://crbug.com/1271673): Crashes on Lacros.
 // TODO(https://crbug.com/1271680): Fails on the linux-wayland-rel bot.
 // TODO(https://crbug.com/1271711): Fails on Mac.
-#if defined(OS_MAC) || defined(OZONE_PLATFORM_WAYLAND) || \
+#if BUILDFLAG(IS_MAC) || defined(OZONE_PLATFORM_WAYLAND) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_Delegation DISABLED_Delegation
 #else

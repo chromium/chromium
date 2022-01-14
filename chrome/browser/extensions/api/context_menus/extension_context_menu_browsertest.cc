@@ -969,7 +969,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
 }
 
 // Flaky on Mac and Windows. https://crbug.com/1035062
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_IncognitoSplitContextMenuCount \
   DISABLED_IncognitoSplitContextMenuCount
 #else

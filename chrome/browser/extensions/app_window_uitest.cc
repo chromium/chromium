@@ -68,7 +68,7 @@ class AppWindowTest : public PlatformAppBrowserTest {
 
 // Tests are flaky on Mac as transitioning to fullscreen is not instantaneous
 // and throws errors when entering/exiting fullscreen too quickly.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InitAlwaysOnTopToFullscreen DISABLED_InitAlwaysOnTopToFullscreen
 #else
 #define MAYBE_InitAlwaysOnTopToFullscreen InitAlwaysOnTopToFullscreen
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowTest, MAYBE_InitAlwaysOnTopToFullscreen) {
   CloseAppWindow(window);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RuntimeAlwaysOnTopToFullscreen \
   DISABLED_RuntimeAlwaysOnTopToFullscreen
 #else
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowTest, MAYBE_RuntimeAlwaysOnTopToFullscreen) {
   CloseAppWindow(window);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InitFullscreenToAlwaysOnTop DISABLED_InitFullscreenToAlwaysOnTop
 #else
 #define MAYBE_InitFullscreenToAlwaysOnTop InitFullscreenToAlwaysOnTop
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowTest, MAYBE_InitFullscreenToAlwaysOnTop) {
   CloseAppWindow(window);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RuntimeFullscreenToAlwaysOnTop \
   DISABLED_RuntimeFullscreenToAlwaysOnTop
 #else
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowTest, MAYBE_RuntimeFullscreenToAlwaysOnTop) {
   CloseAppWindow(window);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InitFullscreenAndAlwaysOnTop DISABLED_InitFullscreenAndAlwaysOnTop
 #else
 #define MAYBE_InitFullscreenAndAlwaysOnTop InitFullscreenAndAlwaysOnTop
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowTest, MAYBE_InitFullscreenAndAlwaysOnTop) {
   CloseAppWindow(window);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DisableAlwaysOnTopInFullscreen \
   DISABLED_DisableAlwaysOnTopInFullscreen
 #else

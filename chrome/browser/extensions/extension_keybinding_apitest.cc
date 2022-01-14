@@ -59,15 +59,15 @@ const char kAltShiftG[] = "Alt+Shift+G";
 // Name of the command for the "basics" test extension.
 const char kBasicsShortcutCommandName[] = "toggle-feature";
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kBookmarkKeybinding[] = "Command+D";
 #else
 const char kBookmarkKeybinding[] = "Ctrl+D";
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 bool SendBookmarkKeyPressSync(Browser* browser) {
   return ui_test_utils::SendKeyPressSync(browser, ui::VKEY_D,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                                          false, false, false, true
 #else
       true, false, false, false
@@ -234,7 +234,7 @@ class CommandsApiTest : public ExtensionApiTest {
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // ExtensionKeybindingRegistryViews doesn't get registered until BrowserView
     // is activated at least once.
     // TODO(crbug.com/839469): Registry creation should happen independent of
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, PageActionOverrideChromeShortcut) {
 
   CommandService* command_service = CommandService::Get(browser()->profile());
 // Simulate the user setting the keybinding to override the print shortcut.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::string print_shortcut = "Command+P";
 #else
   std::string print_shortcut = "Ctrl+P";
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, PageActionOverrideChromeShortcut) {
   // fit into SendKeyPressToAction(); do it manually.
   bool control_is_modifier = false;
   bool command_is_modifier = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   command_is_modifier = true;
 #else
   control_is_modifier = true;
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
   EXPECT_EQ(std::string("basics browser action"), test_listener.message());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Currently this feature is implemented on Windows only.
 #define MAYBE_AllowDuplicatedMediaKeys AllowDuplicatedMediaKeys
 #else

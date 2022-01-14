@@ -67,7 +67,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
@@ -812,14 +812,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExtensionAPICannotNavigateDevtools) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/836327
 #define MAYBE_AcceptState DISABLED_AcceptState
 #else
 #define MAYBE_AcceptState AcceptState
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
 
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   EXPECT_TRUE(error.empty());
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // DesktopWindowTreeHostX11::IsMinimized() relies on an asynchronous update
   // from the window server.
   EXPECT_TRUE(new_window->window()->IsMinimized());
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsAppWindow) {
 }
 
 // Crashes on Mac/Win only.  http://crbug.com/708996
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FilteredEvents DISABLED_FilteredEvents
 #else
 #define MAYBE_FilteredEvents FilteredEvents
@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_FilteredEvents) {
   // TODO(llandwerlin): It seems creating an app window on MacOSX
   // won't create an activation event whereas it does on all other
   // platform. Disable focus event tests for now.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   listener.Reply("");
 #else
   listener.Reply("focus");

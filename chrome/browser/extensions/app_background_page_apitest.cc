@@ -49,7 +49,7 @@
 #include "components/nacl/browser/nacl_process_host.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenTwoPagesWithManifest) {
 
 // TODO(https://crbug.com/1124033): Fails on LaCrOS bot.
 // TODO(https://crbug.com/1186442): Fails on linux-ozone-rel bot.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_OpenPopupFromBGPage DISABLED_OpenPopupFromBGPage
 #else
 #define MAYBE_OpenPopupFromBGPage OpenPopupFromBGPage

@@ -48,7 +48,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -136,7 +136,7 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
   GURL source_url_;
 };
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // http://crbug.com/334579
 IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   AudioDeviceDescriptions devices;

@@ -29,7 +29,7 @@
 #include "extensions/common/extension_urls.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #endif
 

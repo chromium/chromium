@@ -86,7 +86,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
-// flag to #if defined(OS_CHROMEOS)
+// flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #endif
 

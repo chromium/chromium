@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows include must be first for the code to compile.
 // clang-format off
 #include <windows.h>
@@ -24,12 +24,12 @@
 #include "base/win/registry.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/keychain_data_helper_mac.h"
 #include "crypto/apple_keychain.h"
@@ -38,7 +38,7 @@
 namespace extensions {
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const wchar_t kDefaultRegistryPath[] =
     L"SOFTWARE\\Google\\Endpoint Verification";
 const wchar_t kValueName[] = L"Safe Storage";
@@ -130,7 +130,7 @@ LONG CreateRandomSecret(std::string* secret) {
   return result;
 }
 
-#elif defined(OS_MAC)  // defined(OS_WIN)
+#elif BUILDFLAG(IS_MAC)  // BUILDFLAG(IS_WIN)
 
 constexpr char kServiceName[] = "Endpoint Verification Safe Storage";
 constexpr char kAccountName[] = "Endpoint Verification";
@@ -213,7 +213,7 @@ OSStatus ReadEncryptedSecret(std::string* password, bool force_recreate) {
   return status;
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 base::FilePath* GetEndpointVerificationDirOverride() {
   static base::NoDestructor<base::FilePath> dir_override;
@@ -227,20 +227,20 @@ base::FilePath GetEndpointVerificationDir() {
     return *GetEndpointVerificationDirOverride();
 
   bool got_path = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   got_path = base::PathService::Get(base::DIR_LOCAL_APP_DATA, &path);
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   path = base::nix::GetXDGDirectory(env.get(), base::nix::kXdgConfigHomeEnvVar,
                                     base::nix::kDotConfigDir);
   got_path = !path.empty();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   got_path = base::PathService::Get(base::DIR_APP_DATA, &path);
 #endif
   if (!got_path)
     return path;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   path = path.AppendASCII("google");
 #else
   path = path.AppendASCII("Google");
@@ -334,7 +334,7 @@ void RetrieveDeviceSecret(
     bool force_recreate,
     base::OnceCallback<void(const std::string&, long int)> callback) {
   std::string secret;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string encrypted_secret;
   LONG result = ReadEncryptedSecret(&encrypted_secret);
   if (result == ERROR_FILE_NOT_FOUND)
@@ -344,7 +344,7 @@ void RetrieveDeviceSecret(
   // If something failed above [re]try creating the secret if forced.
   if (result != ERROR_SUCCESS && force_recreate)
     result = CreateRandomSecret(&secret);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   OSStatus result = ReadEncryptedSecret(&secret, force_recreate);
 #else
   long int result = -1;  // Anything but 0 is a failure.

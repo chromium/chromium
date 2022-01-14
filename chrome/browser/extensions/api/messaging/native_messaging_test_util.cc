@@ -20,7 +20,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #endif
 
@@ -50,7 +50,7 @@ void WriteTestNativeHostManifest(const base::FilePath& target_dir,
   JSONFileValueSerializer serializer(manifest_path);
   ASSERT_TRUE(serializer.Serialize(manifest));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
   std::wstring key = L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\" +
                      base::UTF8ToWide(host_name);
@@ -87,7 +87,7 @@ void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
   test_user_data_dir = test_user_data_dir.AppendASCII("native_messaging")
                            .AppendASCII("native_hosts");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
   ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(root_key));
 #else
@@ -99,12 +99,12 @@ void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
 
   base::CopyFile(test_user_data_dir.AppendASCII("echo.py"),
                  temp_dir_.GetPath().AppendASCII("echo.py"));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath host_path = temp_dir_.GetPath().AppendASCII("echo.bat");
   base::CopyFile(test_user_data_dir.AppendASCII("echo.bat"), host_path);
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::FilePath host_path = temp_dir_.GetPath().AppendASCII("echo.py");
   ASSERT_TRUE(base::SetPosixFilePermissions(
       host_path, base::FILE_PERMISSION_READ_BY_USER |

@@ -307,7 +307,7 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
       override_prompt_for_external_extensions_(
           FeatureSwitch::prompt_for_external_extensions(),
           false),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       user_desktop_override_(base::DIR_USER_DESKTOP),
       common_desktop_override_(base::DIR_COMMON_DESKTOP),
       user_quick_launch_override_(base::DIR_USER_QUICK_LAUNCH),

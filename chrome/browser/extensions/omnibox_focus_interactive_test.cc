@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
 }
 
 // Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // Flaky on Linux/Mac, crbug.com/1254186.
 #define MAYBE_TabFocusStealingFromOopif DISABLED_TabFocusStealingFromOopif
 #else

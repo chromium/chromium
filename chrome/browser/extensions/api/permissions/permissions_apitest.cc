@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
 }
 
 // TODO(crbug/1065399): Flaky on ChromeOS and Linux non-dbg builds.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(NDEBUG)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(NDEBUG)
 #define MAYBE_FaviconPermission DISABLED_FaviconPermission
 #else
 #define MAYBE_FaviconPermission FaviconPermission
@@ -116,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_FaviconPermission) {
 // permissions).
 // Flaky on MacOS, Linux and CrOS (see crbug/1064929, crbug/1101043,
 // crbug/1181237).
-#if (defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-     defined(OS_WIN))
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+     BUILDFLAG(IS_WIN))
 #define MAYBE_AlwaysAllowed DISABLED_AlwaysAllowed
 #else
 #define MAYBE_AlwaysAllowed AlwaysAllowed

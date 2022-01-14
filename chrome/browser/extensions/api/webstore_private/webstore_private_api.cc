@@ -64,7 +64,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
-// flag to #if defined(OS_CHROMEOS)
+// flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)

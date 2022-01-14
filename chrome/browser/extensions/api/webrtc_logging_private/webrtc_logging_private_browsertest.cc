@@ -29,7 +29,7 @@ class WebrtcLoggingPrivateApiBrowserTest
   }
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestGetLogsDirectoryCreatesWebRtcLogsDirectory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                         .launch_as_platform_app = true}))
       << message_;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestNoGetLogsDirectoryPermissionsFromHangoutsExtension) {
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
       << message_;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     WebrtcLoggingPrivateApiBrowserTest,
     TestStartAudioDebugRecordingsForWebviewFromAppWithoutSwitch) {

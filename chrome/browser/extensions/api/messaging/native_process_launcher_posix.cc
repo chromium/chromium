@@ -82,12 +82,12 @@ bool NativeProcessLauncher::LaunchNativeProcess(
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Don't use no_new_privs mode, e.g. in case the host needs to use sudo.
   options.allow_new_privs = true;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This is executing a third-party binary, so do not associate any system
   // private data requests with Chrome.
   options.disclaim_responsibility = true;

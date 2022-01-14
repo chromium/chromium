@@ -18,7 +18,7 @@
 #include "extensions/test/result_catcher.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/test/base/launchservices_utils_mac.h"
 #endif
 
@@ -29,7 +29,7 @@ class ProtocolHandlerApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ASSERT_TRUE(test::RegisterAppWithLaunchServices());
 #endif
   }

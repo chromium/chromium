@@ -1014,10 +1014,10 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
 
   base::FilePath creator_suggested_filename;
   if (options.filename.get()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     creator_suggested_filename =
         base::FilePath::FromUTF8Unsafe(*options.filename);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     creator_suggested_filename = base::FilePath(*options.filename);
 #endif
     if (!net::IsSafePortableRelativePath(creator_suggested_filename)) {

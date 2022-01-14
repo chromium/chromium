@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestPublicSession) {
 // Test that a request to an OpenSearch description document (OSDD) generates
 // an event with the expected details.
 // Flaky on Windows and Mac: https://crbug.com/1218893
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_WebRequestTestOSDD DISABLED_WebRequestTestOSDD
 #else
 #define MAYBE_WebRequestTestOSDD WebRequestTestOSDD
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 // Test that the webRequest events are dispatched with the expected details when
 // a frame or tab is immediately removed after starting a request.
 // Flaky on Linux/Mac. See crbug.com/780369 for detail.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WebRequestUnloadImmediately DISABLED_WebRequestUnloadImmediately
 #else
 #define MAYBE_WebRequestUnloadImmediately WebRequestUnloadImmediately
@@ -624,7 +624,7 @@ INSTANTIATE_TEST_SUITE_P(Incognito,
 // This test times out regularly on win_rel trybots. See http://crbug.com/122178
 // Also on Linux/ChromiumOS debug, ASAN and MSAN builds.
 // https://crbug.com/670415
-#if defined(OS_WIN) || !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || \
+#if BUILDFLAG(IS_WIN) || !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || \
     defined(MEMORY_SANITIZER)
 #define MAYBE_WebRequestBlocking DISABLED_WebRequestBlocking
 #else

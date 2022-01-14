@@ -2487,7 +2487,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
 }
 
 // Disabled on win due to flakiness: https://crbug.com/1127126.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_FilteredEventsAfterRestart \
   DISABLED_PRE_FilteredEventsAfterRestart
 #define MAYBE_FilteredEventsAfterRestart DISABLED_FilteredEventsAfterRestart

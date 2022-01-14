@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
 }
 
 // See
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ExtensionProcessBalancing DISABLED_ExtensionProcessBalancing
 #else
 #define MAYBE_ExtensionProcessBalancing ExtensionProcessBalancing

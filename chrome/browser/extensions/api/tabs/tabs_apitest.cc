@@ -22,7 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #endif
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
 }
 
 // https://crbug.com/1107934 Flaky on Windows, Linux, ChromeOS.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CaptureVisibleFile DISABLED_CaptureVisibleFile
 #else
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
 }
 
 // TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CaptureVisibleDisabled DISABLED_CaptureVisibleDisabled
 #else
 #define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabBackForwardCacheTest, TabsOnUpdated) {
 }
 
 // Flaky on Linux. http://crbug.com/657376.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TabsNoPermissions DISABLED_TabsNoPermissions
 #else
 #define MAYBE_TabsNoPermissions TabsNoPermissions
@@ -297,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, HostPermission) {
 }
 
 // Flaky on Windows, Mac and Linux. http://crbug.com/820110.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_UpdateWindowResize DISABLED_UpdateWindowResize
 #else
 #define MAYBE_UpdateWindowResize UpdateWindowResize
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_UpdateWindowResize) {
   ASSERT_TRUE(RunExtensionTest("window_update/resize")) << message_;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, FocusWindowDoesNotUnmaximize) {
   HWND window =
       browser()->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
@@ -317,14 +317,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, FocusWindowDoesNotUnmaximize) {
 }
 #endif  // OS_WIN
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 // Maximizing/fullscreen popup window doesn't work on aura's managed mode.
 // See bug crbug.com/116305.
 // Mac: http://crbug.com/103912
 #define MAYBE_UpdateWindowShowState DISABLED_UpdateWindowShowState
 #else
 #define MAYBE_UpdateWindowShowState UpdateWindowShowState
-#endif  // defined(USE_AURA) || defined(OS_MAC)
+#endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_UpdateWindowShowState) {
   ASSERT_TRUE(RunExtensionTest("window_update/show_state")) << message_;
 }
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, IncognitoDisabledByPref) {
 }
 
 // Failed run on ChromeOS CI builder. https://crbug.com/1245240
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_GetViewsOfCreatedPopup DISABLED_GetViewsOfCreatedPopup
 #else
 #define MAYBE_GetViewsOfCreatedPopup GetViewsOfCreatedPopup
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedPopup) {
 }
 
 // Failed run on ChromeOS CI builder. https://crbug.com/1245240
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_GetViewsOfCreatedWindow DISABLED_GetViewsOfCreatedWindow
 #else
 #define MAYBE_GetViewsOfCreatedWindow GetViewsOfCreatedWindow

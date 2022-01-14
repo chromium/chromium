@@ -40,7 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   EXPECT_EQ("HOWDIE!!!", result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -532,9 +532,9 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Loading an extension requiring the 'lockWindowFullscreenPrivate' permission
 // on non Chrome OS platforms should always fail since the API is available only
 // on Chrome OS.

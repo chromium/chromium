@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -73,7 +74,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
-// flag to #if defined(OS_CHROMEOS)
+// flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif

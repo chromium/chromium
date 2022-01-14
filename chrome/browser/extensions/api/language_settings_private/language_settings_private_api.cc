@@ -275,7 +275,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (spellcheck::UseBrowserSpellChecker()) {
     if (!base::FeatureList::IsEnabled(
             spellcheck::kWinDelaySpellcheckServiceInit)) {
@@ -293,13 +293,13 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       return RespondLater();
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void LanguageSettingsPrivateGetLanguageListFunction::
     OnDictionariesInitialized() {
   UpdateSupportedPlatformDictionaries();
@@ -319,7 +319,7 @@ void LanguageSettingsPrivateGetLanguageListFunction::
     }
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 LanguageSettingsPrivateEnableLanguageFunction::
     LanguageSettingsPrivateEnableLanguageFunction() = default;

@@ -14,7 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -109,7 +109,7 @@ class TestExtensionEnvironment {
   const std::unique_ptr<ChromeOSEnv> chromeos_env_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 

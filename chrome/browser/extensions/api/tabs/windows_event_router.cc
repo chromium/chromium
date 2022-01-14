@@ -160,7 +160,7 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
   // rely on the notification sent by AppControllerMac after AppKit sends
   // NSWindowDidBecomeKeyNotification and there is no [NSApp keyWindo7w]. This
   // allows windows not created by toolkit-views to be tracked.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   observed_key_window_notifier_.Observe(
       &g_browser_process->platform_part()->key_window_notifier());
 #elif defined(TOOLKIT_VIEWS)
@@ -175,7 +175,7 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
 }
 
 WindowsEventRouter::~WindowsEventRouter() {
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
 #endif
 }
@@ -265,14 +265,14 @@ void WindowsEventRouter::OnWindowBoundsChanged(
                 std::move(args));
 }
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 void WindowsEventRouter::OnNativeFocusChanged(gfx::NativeView focused_now) {
   if (!focused_now)
     OnActiveWindowChanged(nullptr);
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void WindowsEventRouter::OnNoKeyWindow() {
   OnActiveWindowChanged(nullptr);
 }

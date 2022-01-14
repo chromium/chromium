@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
 }
 
 // crbug.com/897059 tracks test flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentScriptsInLocales DISABLED_ContentScriptsInLocales
 #else
 #define MAYBE_ContentScriptsInLocales ContentScriptsInLocales
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 
 // Now actually test what happens on the next startup after the PRE test above.
 // TODO(crbug.com/1271946): Flaky on mac arm64.
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 #define MAYBE_PolicyCorruptedOnStartup DISABLED_PolicyCorruptedOnStartup
 #else
 #define MAYBE_PolicyCorruptedOnStartup PolicyCorruptedOnStartup

@@ -55,7 +55,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
   CryptotokenBrowserTest()
       : base::test::WithFeatureOverride(
             extensions_features::kU2FSecurityKeyAPI) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Don't dispatch requests to the native Windows API.
     scoped_feature_list_.InitAndDisableFeature(device::kWebAuthUseNativeWinApi);
 #endif
@@ -262,7 +262,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
     return true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;

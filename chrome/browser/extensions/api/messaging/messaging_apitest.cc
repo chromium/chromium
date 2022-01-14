@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, NotInstalled) {
 
 // TODO(kalman): Most web messaging tests disabled on windows due to extreme
 // flakiness. See http://crbug.com/350517.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 // Tests two extensions on the same sites: one web connectable, one not.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
@@ -1337,7 +1337,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
             CanConnectAndSendMessagesToMainFrame(invalid.get()));
 }
 
-#endif  // !defined(OS_WIN) - http://crbug.com/350517.
+#endif  // !BUILDFLAG(IS_WIN)
 
 // Tests that messages sent in the unload handler of a window arrive.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {

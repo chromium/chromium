@@ -85,9 +85,9 @@ std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
       external_extension_search_path,
       false,  // Recursive.
       base::FileEnumerator::FILES);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath::StringType extension = base::UTF8ToWide(".json");
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath::StringType extension(".json");
 #endif
   do {
@@ -330,7 +330,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
   }
 
   if (IsOptionSet(ENSURE_PATH_CONTROLLED_BY_ADMIN)) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (!base::VerifyPathControlledByAdmin(json_file)) {
       LOG(ERROR) << "Can not read external extensions source.  The file "
                  << json_file.value() << " and every directory in its path, "
@@ -345,7 +345,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
     // you need to implement base::VerifyPathControlledByAdmin() for
     // that platform.
     NOTREACHED();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   JSONFileValueDeserializer deserializer(json_file);
@@ -380,10 +380,10 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
     base::FilePath extension_candidate_path = base_path_.Append(*it);
 
     const std::string id =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         base::WideToASCII(
             extension_candidate_path.RemoveExtension().BaseName().value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
         extension_candidate_path.RemoveExtension().BaseName().value();
 #endif
 
