@@ -56,6 +56,13 @@ enum class AppListConfigType {
   kDense,
 };
 
+// Item types supported by SearchResultTextItem.
+enum class SearchResultTextItemType {
+  kString,      // Styled text.
+  kIconCode,    // Built in vector icons.
+  kCustomIcon,  // Vector icons provided by the search model.
+};
+
 // A structure holding an item icon' color information.
 class ASH_PUBLIC_EXPORT IconColor {
  public:
@@ -417,6 +424,39 @@ struct ASH_PUBLIC_EXPORT SearchResultAction {
 };
 using SearchResultActions = std::vector<SearchResultAction>;
 
+// A structure holding a search result's text with support for embedded icon.
+class ASH_PUBLIC_EXPORT SearchResultTextItem {
+ public:
+  SearchResultTextItem(SearchResultTextItemType type);
+  SearchResultTextItem(const SearchResultTextItem&);
+  SearchResultTextItem& operator=(const SearchResultTextItem&) = delete;
+  ~SearchResultTextItem();
+
+  SearchResultTextItemType GetType();
+
+  const std::string& GetText();
+  SearchResultTextItem& SetText(std::string text);
+
+  const SearchResultTags& GetTextTags();
+  SearchResultTextItem& SetTextTags(SearchResultTags tags);
+
+  gfx::ImageSkia GetIconFromCode();
+  SearchResultTextItem& SetIconCode(int icon_code);
+
+  gfx::ImageSkia GetIcon();
+  SearchResultTextItem& SetIcon(gfx::ImageSkia icon);
+
+ private:
+  SearchResultTextItemType item_type;
+  // used for type SearchResultTextItemType::kString.
+  absl::optional<SearchResultTags> text_tags;
+  absl::optional<std::string> text_content;
+  // used for type SearchResultTextItemType::kIconCode.
+  absl::optional<int> icon_code;
+  // used for type SearchResultTextItemType::kCustomIcon.
+  absl::optional<gfx::ImageSkia> raw_icon;
+};
+
 // A structure holding the common information which is sent from chrome to ash,
 // representing a search result.
 struct ASH_PUBLIC_EXPORT SearchResultMetadata {
@@ -428,21 +468,30 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   std::string id;
 
   // The title of the result, e.g. an app's name, an autocomplete query, etc.
+  // TODO (crbug/1216097): deprecate title text.
   std::u16string title;
+  // The title of the result, e.g. an app's name, an autocomplete query, etc.
+  // Supports embedded icons.
+  std::vector<SearchResultTextItem> title_vector;
 
   // A detail string of this result.
+  // TODO (crbug/1216097): deprecate details text.
   std::u16string details;
-
-  // An text to be announced by a screen reader app.
-  std::u16string accessible_name;
+  // The title of the result, e.g. an app's name, an autocomplete query, etc.
+  std::vector<SearchResultTextItem> details_vector;
 
   // How the title matches the query. See the SearchResultTag section for more
   // details.
+  // TODO (crbug/1216097): deprecate title_tags.
   std::vector<SearchResultTag> title_tags;
 
   // How the details match the query. See the SearchResultTag section for more
   // details.
+  // TODO (crbug/1216097): deprecate details_tags.
   std::vector<SearchResultTag> details_tags;
+
+  // Text to be announced by a screen reader app.
+  std::u16string accessible_name;
 
   // Actions that can be performed on this result. See the SearchResultAction
   // section for more details.

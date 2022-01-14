@@ -193,6 +193,65 @@ SearchResultAction::SearchResultAction(const SearchResultAction& other) =
 SearchResultAction::~SearchResultAction() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
+// SearchResultTextItem:
+
+SearchResultTextItem::SearchResultTextItem(SearchResultTextItemType type) {
+  item_type = type;
+}
+
+SearchResultTextItem::SearchResultTextItem(const SearchResultTextItem& other) =
+    default;
+
+SearchResultTextItem::~SearchResultTextItem() = default;
+
+SearchResultTextItemType SearchResultTextItem::GetType() {
+  return item_type;
+}
+
+const std::string& SearchResultTextItem::GetText() {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  return text_content.value();
+}
+
+SearchResultTextItem& SearchResultTextItem::SetText(std::string text) {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  text_content = text;
+  return *this;
+}
+
+const SearchResultTags& SearchResultTextItem::GetTextTags() {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  return text_tags.value();
+}
+
+SearchResultTextItem& SearchResultTextItem::SetTextTags(SearchResultTags tags) {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  text_tags = tags;
+  return *this;
+}
+
+gfx::ImageSkia SearchResultTextItem::GetIconFromCode() {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kIconCode);
+  return gfx::ImageSkia();
+}
+
+SearchResultTextItem& SearchResultTextItem::SetIconCode(int code) {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kIconCode);
+  icon_code = code;
+  return *this;
+}
+
+gfx::ImageSkia SearchResultTextItem::GetIcon() {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kCustomIcon);
+  return raw_icon.value();
+}
+
+SearchResultTextItem& SearchResultTextItem::SetIcon(gfx::ImageSkia icon) {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kCustomIcon);
+  raw_icon = icon;
+  return *this;
+}
+////////////////////////////////////////////////////////////////////////////////
 // SearchResultMetadata:
 
 SearchResultMetadata::SearchResultMetadata() = default;
