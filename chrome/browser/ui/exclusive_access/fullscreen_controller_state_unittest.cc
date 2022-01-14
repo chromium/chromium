@@ -109,7 +109,7 @@ bool FullscreenControllerTestWindow::ShouldHideUIForFullscreen() const {
 }
 
 bool FullscreenControllerTestWindow::IsFullscreen() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return state_ == FULLSCREEN || state_ == TO_FULLSCREEN;
 #else
   return state_ == FULLSCREEN || state_ == TO_NORMAL;
@@ -292,7 +292,7 @@ void FullscreenControllerStateUnitTest::VerifyWindowState() {
 
 bool FullscreenControllerStateUnitTest::ShouldSkipStateAndEventPair(
     State state, Event event) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(scheib) Toggle, Window Event, Toggle, Toggle on Mac as exposed by
   // test *.STATE_TO_NORMAL__TOGGLE_FULLSCREEN runs interactively and exits to
   // Normal. This doesn't appear to be the desired result, and would add
@@ -531,7 +531,7 @@ TEST_F(FullscreenControllerStateUnitTest, OneCapturedFullscreenedTab) {
   EXPECT_FALSE(GetFullscreenController()->IsWindowFullscreenForTabOrPending());
   // TODO(miu): Need to make an adjustment to content::WebContentsViewMac for
   // the following to work:
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(kCaptureSize, first_tab->GetViewBounds().size());
 #endif
 

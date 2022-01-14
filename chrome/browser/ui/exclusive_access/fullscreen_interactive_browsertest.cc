@@ -76,7 +76,7 @@ class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
 
 // https://crbug.com/1087875: Flaky on Linux and Mac.
 // TODO(crbug.com/1278361): Flaky on Chrome OS.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NotifyFullscreenAcquired DISABLED_NotifyFullscreenAcquired
 #else
 #define MAYBE_NotifyFullscreenAcquired NotifyFullscreenAcquired

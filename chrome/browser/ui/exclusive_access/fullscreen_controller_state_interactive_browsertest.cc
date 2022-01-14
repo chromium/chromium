@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
 // An "empty" test is included as part of each "TEST_EVENT" because it makes
 // running the entire test suite less flaky on MacOS. All of the tests pass
 // when run individually.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define TEST_EVENT(state, event)                                            \
   IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,          \
                          state##__##event##__Empty) {}                      \
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
     ASSERT_NO_FATAL_FAILURE(TestStateAndEvent(state, event))                \
         << GetAndClearDebugLog();                                           \
   }
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 #define TEST_EVENT(state, event)                                   \
   IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest, \
                          DISABLED_##state##__##event##__Empty) {}  \
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
     ASSERT_NO_FATAL_FAILURE(TestStateAndEvent(state, event))       \
         << GetAndClearDebugLog();                                  \
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
         // Progress of tests can be examined by inserting the following line:
         // LOG(INFO) << GetAndClearDebugLog(); }
 

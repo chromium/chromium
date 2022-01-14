@@ -35,7 +35,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -378,7 +378,7 @@ void FullscreenController::EnterFullscreenModeInternal(
     FullscreenInternalOption option,
     content::RenderFrameHost* requesting_frame,
     int64_t display_id) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Do not enter fullscreen mode if disallowed by pref. This prevents the user
   // from manually entering fullscreen mode and also disables kiosk mode on
   // desktop platforms.
@@ -439,7 +439,7 @@ void FullscreenController::ExitFullscreenModeInternal() {
 
   RecordExitingUMA();
   toggled_into_fullscreen_ = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac windows report a state change instantly, and so we must also clear
   // state_prior_to_tab_fullscreen_ to match them else other logic using
   // state_prior_to_tab_fullscreen_ will be incorrect.

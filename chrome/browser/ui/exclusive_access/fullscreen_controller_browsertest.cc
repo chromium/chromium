@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
 // Sheriff: http://crbug.com/925928
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   ExclusiveAccessContext* context = GetExclusiveAccessManager()->context();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // First, set the preference to true so we expect to see the top view in
   // fullscreen mode.
   PrefService* prefs = browser()->profile()->GetPrefs();
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   // Test Normal state <--> Browser fullscreen mode <--> Tab fullscreen mode.
   ToggleBrowserFullscreen();
   EXPECT_TRUE(context->IsFullscreen());
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool should_show_top_ui = true;
 #else
   bool should_show_top_ui = false;
