@@ -8,6 +8,7 @@
 
 goog.provide('CommandHandler');
 
+goog.require('AutoScrollHandler');
 goog.require('ChromeVoxState');
 goog.require('Color');
 goog.require('CustomAutomationEvent');
@@ -1252,75 +1253,14 @@ CommandHandler.onCommand = function(command) {
     }
   }
 
-  if (tryScrolling && current && current.start && current.start.node &&
-      ChromeVoxState.instance.currentRange.start.node) {
-    const exited = AutomationUtil.getUniqueAncestors(
-        current.start.node, ChromeVoxState.instance.currentRange.start.node);
-    let scrollable = null;
-    for (let i = 0; i < exited.length; i++) {
-      if (AutomationPredicate.autoScrollable(exited[i])) {
-        scrollable = exited[i];
-        break;
-      }
-    }
-
-    // TODO(dtseng): handle more precise positioning after scroll e.g. list with
-    // 10 items shoing 1-7, scroll forward, should position at item 8.
-    if (scrollable) {
-      const callback = function(result) {
-        if (result) {
-          const innerCallback = function(currentNode, evt) {
-            scrollable.removeEventListener(
-                EventType.SCROLL_POSITION_CHANGED, innerCallback);
-            scrollable.removeEventListener(
-                EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback);
-            scrollable.removeEventListener(
-                EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback);
-
-            if (pred || (currentNode && currentNode.root)) {
-              // Jump or if there is a valid current range, then move from it
-              // since we have refreshed node data.
-              CommandHandler.onCommand(command);
-              CommandHandler.onFinishCommand();
-              return;
-            }
-
-            // Otherwise, sync to the directed deepest child.
-            let sync = scrollable;
-            if (dir === Dir.FORWARD) {
-              while (sync.firstChild) {
-                sync = sync.firstChild;
-              }
-            } else {
-              while (sync.lastChild) {
-                sync = sync.lastChild;
-              }
-            }
-            ChromeVoxState.instance.navigateToRange(
-                cursors.Range.fromNode(sync), false, speechProps);
-          }.bind(this, current.start.node);
-          // This is sent by ARC++.
-          scrollable.addEventListener(
-              EventType.SCROLL_POSITION_CHANGED, innerCallback, true);
-          // These two events are sent by Web and Views via AXEventGenerator.
-          scrollable.addEventListener(
-              EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback,
-              true);
-          scrollable.addEventListener(
-              EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback, true);
-        } else {
-          ChromeVoxState.instance.navigateToRange(current, false, speechProps);
-        }
-      };
-
-      if (dir === Dir.FORWARD) {
-        scrollable.scrollForward(callback);
-      } else {
-        scrollable.scrollBackward(callback);
-      }
-      CommandHandler.onFinishCommand();
-      return false;
-    }
+  if (tryScrolling &&
+      !AutoScrollHandler.getInstance().onCommandNavigation(
+          current, dir, pred, speechProps, () => {
+            CommandHandler.onCommand(command);
+            CommandHandler.onFinishCommand();
+          })) {
+    CommandHandler.onFinishCommand();
+    return false;
   }
 
   if (current) {

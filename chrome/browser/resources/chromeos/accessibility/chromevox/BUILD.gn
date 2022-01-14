@@ -30,6 +30,7 @@ chromevox_modules = [
   "../common/instance_checker.js",
   "../common/string_util.js",
   "../common/tree_walker.js",
+  "background/auto_scroll_handler.js",
   "background/automation_object_constructor_installer.js",
   "background/base_automation_handler.js",
   "background/braille_background.js",
