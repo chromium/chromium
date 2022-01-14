@@ -60,8 +60,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
     private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
 
-    private boolean mIsCustomEntryAdded;
-
     /**
      * Creates an {@link CustomTabAppMenuPropertiesDelegate} instance.
      */
@@ -205,14 +203,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItem.setVisible(false);
             }
 
-            // Add custom menu items. Make sure they are only added once.
-            if (!mIsCustomEntryAdded) {
-                mIsCustomEntryAdded = true;
-                for (int i = 0; i < mMenuEntries.size(); i++) {
-                    MenuItem item = menu.add(0, 0, 1, mMenuEntries.get(i));
-                    mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
-                    mItemIdToIndexMap.put(item.getItemId(), i);
-                }
+            // Add custom menu items.
+            for (int i = 0; i < mMenuEntries.size(); i++) {
+                MenuItem item = menu.add(0, i, 1, mMenuEntries.get(i));
+                mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
+                mItemIdToIndexMap.put(item.getItemId(), i);
             }
 
             updateRequestDesktopSiteMenuItem(
