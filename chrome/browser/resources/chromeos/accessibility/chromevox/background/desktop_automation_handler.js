@@ -8,6 +8,7 @@
 
 goog.provide('DesktopAutomationHandler');
 
+goog.require('AutoScrollHandler');
 goog.require('AutomationObjectConstructorInstaller');
 goog.require('BaseAutomationHandler');
 goog.require('ChromeVoxState');
@@ -307,6 +308,10 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     }
 
     if (!node.root) {
+      return;
+    }
+
+    if (!AutoScrollHandler.getInstance().onFocusEventNavigation(node)) {
       return;
     }
 

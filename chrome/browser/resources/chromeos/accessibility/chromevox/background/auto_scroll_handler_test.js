@@ -37,6 +37,79 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
         });
       </script>
       `;
+    this.runWithFakeScrollable(
+        site, {
+          numChildrenBeforeScroll_: -1,
+          beforeScroll: (list) => {
+            this.numChildrenBeforeScroll_ = list.children.length;
+          },
+          scrollFinished: (list) =>
+              list.children.length !== this.numChildrenBeforeScroll_
+        },
+        callback);
+  }
+
+  runWithFakeArcRecyclerView(callback) {
+    // This simulates a scrolling behavior in Android RecyclerView, where when a
+    // scroll action is performed, the previously visible items disappear and
+    // the new items are added to the list.
+    const site = `
+      <div id="div" role="list">
+        <p tabindex="0">1st item</p>
+        <p tabindex="0">2nd item</p>
+      </div>
+      <p>unrelated content</p>
+      <script>
+        let isShowingFirst = true;
+        const list = document.getElementById('div');
+        list.addEventListener('click', () => {
+          while (list.firstChild) {
+            list.removeChild(list.firstChild);
+          }
+          const child1 = document.createElement('p');
+          child1.innerHTML = isShowingFirst ? '3rd item' : '1st item';
+          child1.tabIndex = 0;
+          list.append(child1);
+          child1.focus();
+          const child2 = document.createElement('p');
+          child2.innerHTML = isShowingFirst ? '4th item' : '2nd item';
+          list.append(child2);
+          isShowingFirst = !isShowingFirst;
+        });
+      </script>
+      `;
+    this.runWithFakeScrollable(
+        site, {
+          childrenBeforeScroll_: [],
+          beforeScroll: (list) => {
+            this.childrenBeforeScroll_ = list.children;
+          },
+          scrollFinished: (list) => list.children.length === 2 &&
+              list.children[0] !== this.childrenBeforeScroll_[0] &&
+              list.children[1] !== this.childrenBeforeScroll_[1]
+        },
+        callback);
+  }
+
+  /**
+   * Loads site, sets up fake scrollable object that behaves similar to ARC++,
+   * and run the given callback.
+   * Instead of actually scrolling, this injects 'click' action to the list, and
+   * the document should handle click event to simulate the scrolling behavior.
+   *
+   * |scrolledPredicate| is used to determine when to call a event listener of
+   * EventType.SCROLL_POSITION_CHANGED, because this event type is not
+   * dispatched from web, we need to handle it explicitly.
+   *
+   * @param {string} site
+   * @param {{beforeScroll: Function, scrollFinished: Function}}
+   *     scrolledPredicate
+   *   beforeScroll: called before performing a fake scrolling (click action).
+   *   scrollFinished: return if the scrolling has finished and the event
+   *     listener can be invoked.
+   * @param {Function} callback
+   */
+  runWithFakeScrollable(site, scrolledPredicate, callback) {
     this.runWithLoadedTree(site, function(root) {
       const list = root.firstChild;
       Object.defineProperty(list, 'focusable', {get: () => false});
@@ -66,9 +139,9 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
 
       // Create a fake scrollForward and scrollBackward actions.
       const fakeScrollFunc = (cb) => {
-        const numChildrenBeforeScroll = list.children.length;
+        scrolledPredicate.beforeScroll(list);
         const listener = (ev) => {
-          if (list.children.length === numChildrenBeforeScroll) {
+          if (!scrolledPredicate.scrollFinished(list)) {
             return;
           }
           list.removeEventListener(EventType.CHILDREN_CHANGED, listener, true);
@@ -143,6 +216,38 @@ TEST_F('ChromeVoxAutoScrollHandlerTest', 'ScrollForward', function() {
         .expectSpeech('4th item')
         .call(doCmd('nextObject'))
         .expectSpeech('5th item')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByObject', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithFakeArcRecyclerView(function(root) {
+    mockFeedback.expectSpeech('1st item')
+        .call(doCmd('nextObject'))
+        .expectSpeech('2nd item')
+        .call(doCmd('nextObject'))  // scroll forward
+        .expectSpeech('3rd item')
+        .call(doCmd('previousObject'))  // scroll backward
+        .expectSpeech('2nd item')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByPredicate', function() {
+  // TODO(hirokisato): This test fails without '<p>unrelated content</p>' in the
+  // tree, because the next item of '2nd item' without scrolling is '1st item',
+  // and the scrollable is LCA, so auto scrolling is not invoked. We should fix
+  // this corner case.
+  const mockFeedback = this.createMockFeedback();
+  this.runWithFakeArcRecyclerView(function(root) {
+    mockFeedback.expectSpeech('1st item')
+        .call(doCmd('nextSimilarItem'))
+        .expectSpeech('2nd item')
+        .call(doCmd('nextSimilarItem'))  // scroll forward
+        .expectSpeech('3rd item')
+        .call(doCmd('previousSimilarItem'))  // scroll backward
+        .expectSpeech('2nd item')
         .replay();
   });
 });

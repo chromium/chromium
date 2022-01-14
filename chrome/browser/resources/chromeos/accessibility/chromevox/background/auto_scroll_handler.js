@@ -32,6 +32,12 @@ AutoScrollHandler = class {
 
     /** @private {AutomationNode} */
     this.scrollingNode_ = null;
+
+    /** @private {!Date} */
+    this.lastScrolledTime_ = new Date(0);
+
+    /** @private {boolean} */
+    this.relatedFocusEventHappened_ = false;
   }
 
   /**
@@ -43,13 +49,16 @@ AutoScrollHandler = class {
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
    * @param {?Object} speechProps The optional speech properties given to
    *     |navigateToRange| to provide feedback of the current command.
+   * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
+   *     the current navigation root.
    * @param {Function} retryCommandFunc The callback used to retry the command
    *     with refreshed tree after scrolling.
    * @return {boolean} True if the given navigation can be executed. False if
    *     the given navigation shouldn't happen, and AutoScrollHandler handles
    *     the command instead.
    */
-  onCommandNavigation(target, dir, pred, speechProps, retryCommandFunc) {
+  onCommandNavigation(
+      target, dir, pred, speechProps, rootPred, retryCommandFunc) {
     if (this.isScrolling_) {
       // Prevent interrupting the current scrolling.
       return false;
@@ -79,6 +88,10 @@ AutoScrollHandler = class {
     // item 8.
     this.isScrolling_ = true;
     this.scrollingNode_ = scrollable;
+    this.lastScrolledTime_ = new Date();
+    this.relatedFocusEventHappened_ = false;
+
+    const rangeBeforeScroll = ChromeVoxState.instance.currentRange;
 
     (async () => {
       const scrollResult = await new Promise(resolve => {
@@ -94,6 +107,11 @@ AutoScrollHandler = class {
       }
 
       // Wait for a scrolled event or timeout.
+      // TODO(hirokisato): On large page scrolling in Android, the
+      // SCROLL_POSITION_CHANGED event is dispatched multiple times, and if
+      // we only listen the first event, there is a chance that the ui tree
+      // is intermediate state and we set the focus on the inappropriate
+      // node. Consider waiting until the UI gets stabilized.
       await new Promise((resolve, reject) => {
         let cleanUp;
         let timeoutId;
@@ -126,30 +144,82 @@ AutoScrollHandler = class {
             'Illegal state in AutoScrollHandler. |scrollingNode_| is null.');
       }
 
-      if (pred || (target.start.node && target.start.node.root)) {
-        // Jump or if there is a valid current range, then move from it
-        // since we have refreshed node data.
-        retryCommandFunc();
+      // This block handles scrolling on Android RecyclerView.
+      // When scrolling happens, RecyclerView can delete an invisible item,
+      // which might be the focused node before scrolling, or can re-use the
+      // focused node for a newly added node. When one of these happens, the
+      // focused node first disappears from the ARC tree and the focus is moved
+      // up to the View that has the ARC tree. In this case, navigat to the
+      // first or the last matching range in the scrollable.
+      if (this.relatedFocusEventHappened_) {
+        let nextRange = null;
+        if (!pred) {
+          // Currently this only supports nextObject/previousObject.
+          // TODO(hirokisato): Support navigation by unit.
+          pred = AutomationPredicate.object;
+        }
+        let node;
+        if (dir === Dir.FORWARD) {
+          node = AutomationUtil.findNextNode(
+              this.scrollingNode_, dir, pred,
+              {root: rootPred, skipInitialSubtree: false});
+        } else {
+          node = AutomationUtil.findNodePost(this.scrollingNode_, dir, pred);
+        }
+        if (node) {
+          nextRange = cursors.Range.fromNode(node);
+        }
+
+        ChromeVoxState.instance.navigateToRange(
+            nextRange || target, false, speechProps);
         return;
       }
 
-      // Otherwise, sync to the directed deepest child.
-      let sync = this.scrollingNode_;
-      if (dir === Dir.FORWARD) {
-        while (sync.firstChild) {
-          sync = sync.firstChild;
-        }
-      } else {
-        while (sync.lastChild) {
-          sync = sync.lastChild;
-        }
+      // If the focus has been changed for some reason, do nothing to
+      // prevent disturbing the latest navigation.
+      if (!rangeBeforeScroll.equals(ChromeVoxState.instance.currentRange)) {
+        return;
       }
-      ChromeVoxState.instance.navigateToRange(
-          cursors.Range.fromNode(sync), false, speechProps);
+
+      // Usual case. Retry navigation with a refreshed tree.
+      retryCommandFunc();
     })().catch(e => {
       this.isScrolling_ = false;
     });
 
+    return false;
+  }
+
+  /**
+   * This should be called before the focus event triggers the navigation.
+   *
+   * On scrolling, sometimes previously focused node disappears.
+   * There are two common problematic patterns in ARC tree here:
+   * 1. No node has focus. The root ash window now get focus.
+   * 2. Another node in the window gets focus.
+   * Above two cases interrupt the auto scrolling. So when any of these are
+   * happening, this returns false.
+   *
+   * @param {AutomationNode} node the node that is the focus event target.
+   * @return {boolean} True if others can handle the event. False if the
+   *     event shouldn't be propagated.
+   */
+  onFocusEventNavigation(node) {
+    if (!this.scrollingNode_ || !node) {
+      return true;
+    }
+    const elapsedTime = new Date() - this.lastScrolledTime_;
+    if (elapsedTime > AutoScrollHandler.TIMEOUT_FOCUS_EVENT_DROP_MS) {
+      return true;
+    }
+
+    const isUnrelatedEvent = this.scrollingNode_.root !== node.root &&
+        !AutomationUtil.isDescendantOf(this.scrollingNode_, node);
+    if (isUnrelatedEvent) {
+      return true;
+    }
+
+    this.relatedFocusEventHappened_ = true;
     return false;
   }
 };
@@ -177,6 +247,13 @@ AutoScrollHandler.RELATED_SCROLL_EVENT_TYPES = [
  * @const {number}
  */
 AutoScrollHandler.TIMEOUT_SCROLLED_EVENT_MS = 1500;
+
+/**
+ * The timeout that the focused event should be dropped. This is longer than
+ * |TIMEOUT_CALLBACK_MS| because a focus event can happen after the scrolling.
+ * @const {number}
+ */
+AutoScrollHandler.TIMEOUT_FOCUS_EVENT_DROP_MS = 2000;
 
 goog.addSingletonGetter(AutoScrollHandler);
 });  // goog.scope

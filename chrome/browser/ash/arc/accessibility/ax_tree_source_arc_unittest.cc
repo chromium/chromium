@@ -533,9 +533,9 @@ TEST_F(AXTreeSourceArcTest, ComplexTreeStructure) {
 
 TEST_F(AXTreeSourceArcTest, GetTreeDataAppliesFocus) {
   auto event = AXEventData::New();
-  event->source_id = 5;
+  event->source_id = 2;
   event->task_id = 1;
-  event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
+  event->event_type = AXEventType::VIEW_FOCUSED;
   event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
   event->window_data->push_back(AXWindowInfoData::New());
   AXWindowInfoData* root = event->window_data->back().get();
@@ -553,15 +553,19 @@ TEST_F(AXTreeSourceArcTest, GetTreeDataAppliesFocus) {
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* node = event->node_data.back().get();
   node->id = 2;
+  node->window_id = 5;
   SetProperty(node, AXBooleanProperty::FOCUSED, true);
+  SetProperty(node, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(node, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node, AXBooleanProperty::VISIBLE_TO_USER, true);
 
   CallNotifyAccessibilityEvent(event.get());
 
   ui::AXTreeData data;
   EXPECT_TRUE(CallGetTreeData(&data));
-  EXPECT_EQ(root->window_id, data.focus_id);
+  EXPECT_EQ(node->id, data.focus_id);
 
-  EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kLayoutComplete));
+  EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
 TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
@@ -852,6 +856,71 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   EXPECT_EQ(3, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
+TEST_F(AXTreeSourceArcTest, OnClearA11yFocusEvent) {
+  set_full_focus_mode(true);
+
+  auto event = AXEventData::New();
+  event->task_id = 1;
+  event->event_type = AXEventType::VIEW_ACCESSIBILITY_FOCUSED;
+
+  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* root_window = event->window_data->back().get();
+  root_window->window_id = 100;
+  root_window->root_node_id = 10;
+  SetProperty(root_window, mojom::AccessibilityWindowBooleanProperty::FOCUSED,
+              true);
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root = event->node_data.back().get();
+  root->id = 10;
+  root->window_id = 100;
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXBooleanProperty::VISIBLE_TO_USER, true);
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node = event->node_data.back().get();
+  node->id = 1;
+  node->window_id = 100;
+  SetProperty(node, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node, AXBooleanProperty::ACCESSIBILITY_FOCUSED, true);
+  SetProperty(node, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node, AXStringProperty::TEXT, "hello world");
+
+  // VIEW_ACCESSIBILITY_FOCUSED should sync focused node id in full focus mode.
+  event->source_id = node->id;
+  CallNotifyAccessibilityEvent(event.get());
+
+  ui::AXTreeData data;
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node->id, data.focus_id);
+
+  // Then, clear the a11y focus with an event from action property.
+  // This shouldn't update the focused node.
+  SetProperty(node, AXBooleanProperty::ACCESSIBILITY_FOCUSED, false);
+  event->event_type = AXEventType::VIEW_ACCESSIBILITY_FOCUS_CLEARED;
+  SetProperty(event.get(), AXEventIntProperty::ACTION,
+              static_cast<int32_t>(AXActionType::ACCESSIBILITY_FOCUS));
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = ui::AXTreeData();
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node->id, data.focus_id);
+
+  // An a11y focus cleared event from an action unrelated to focus (e.g. scroll)
+  // should sync the focus.
+  SetProperty(event.get(), AXEventIntProperty::ACTION,
+              static_cast<int32_t>(AXActionType::SCROLL_FORWARD));
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = ui::AXTreeData();
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(ui::kInvalidAXNodeID, data.focus_id);
+}
+
 TEST_F(AXTreeSourceArcTest, OnDrawerOpened) {
   auto event = AXEventData::New();
   event->source_id = 10;  // root
@@ -1126,6 +1195,7 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   event->event_type = AXEventType::VIEW_FOCUSED;
   CallNotifyAccessibilityEvent(event.get());
 
+  data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
@@ -1134,19 +1204,20 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   event->event_type = AXEventType::VIEW_FOCUSED;
   CallNotifyAccessibilityEvent(event.get());
 
+  data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
-  // When the focused node disappeared from the tree, move the focus to the
-  // root.
+  // When the focused node disappeared from the tree, reset the focus.
   root->int_list_properties->clear();
   event->node_data.resize(1);
 
   event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
   CallNotifyAccessibilityEvent(event.get());
 
+  data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
-  EXPECT_EQ(root_window->window_id, data.focus_id);
+  EXPECT_EQ(ui::kInvalidAXNodeID, data.focus_id);
 }
 
 TEST_F(AXTreeSourceArcTest, StateDescriptionChangedEvent) {

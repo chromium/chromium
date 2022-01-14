@@ -1255,7 +1255,7 @@ CommandHandler.onCommand = function(command) {
 
   if (tryScrolling &&
       !AutoScrollHandler.getInstance().onCommandNavigation(
-          current, dir, pred, speechProps, () => {
+          current, dir, pred, speechProps, rootPred, () => {
             CommandHandler.onCommand(command);
             CommandHandler.onFinishCommand();
           })) {

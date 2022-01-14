@@ -366,7 +366,6 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     }
   }
 
-  // TODO(hirokisato): Handle CLEAR_ACCESSIBILITY_FOCUS event.
   if (event_data.event_type == AXEventType::VIEW_FOCUSED) {
     if (source_node && source_node->IsVisibleToUser() &&
         GetBooleanProperty(source_node->GetNode(),
@@ -383,6 +382,19 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
              UseFullFocusMode()) {
     if (source_node && source_node->IsVisibleToUser())
       android_focused_id_ = source_node->GetId();
+  } else if (event_data.event_type ==
+                 AXEventType::VIEW_ACCESSIBILITY_FOCUS_CLEARED &&
+             UseFullFocusMode()) {
+    int event_from_action;
+    GetProperty(event_data.int_properties,
+                mojom::AccessibilityEventIntProperty::ACTION,
+                &event_from_action);
+    const mojom::AccessibilityActionType action =
+        static_cast<mojom::AccessibilityActionType>(event_from_action);
+    if (action != mojom::AccessibilityActionType::FOCUS &&
+        action != mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS) {
+      android_focused_id_.reset();
+    }
   } else if (event_data.event_type == AXEventType::VIEW_SELECTED) {
     // In Android, VIEW_SELECTED event is dispatched in the two cases below:
     // 1. Changing a value in ProgressBar or TimePicker in ARC P.
@@ -428,10 +440,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
       android_focused_id_ = new_focus->GetId();
   }
 
-  if (!android_focused_id_ || !GetFromId(*android_focused_id_)) {
-    AccessibilityInfoDataWrapper* root = GetRoot();
-    DCHECK(IsValid(root));
-    android_focused_id_ = root_id_;
+  if (android_focused_id_ && !GetFromId(*android_focused_id_)) {
+    // We lost focus. Reset it.
+    android_focused_id_.reset();
   }
 
   if (android_focused_id_.has_value()) {
