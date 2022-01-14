@@ -235,9 +235,9 @@ void DeriveCommandLine(const GURL& start_url,
   if (start_url.is_valid())
     command_line->AppendArg(start_url.spec());
 
-  for (base::DictionaryValue::Iterator it(new_switches); !it.IsAtEnd();
-       it.Advance()) {
-    command_line->AppendSwitchASCII(it.key(), it.value().GetString());
+  for (auto new_switch : new_switches.DictItems()) {
+    command_line->AppendSwitchASCII(new_switch.first,
+                                    new_switch.second.GetString());
   }
 }
 

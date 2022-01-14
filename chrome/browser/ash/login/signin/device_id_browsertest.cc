@@ -151,10 +151,9 @@ class DeviceIDTest : public OobeBaseTest,
     base::DictionaryValue* dictionary;
     EXPECT_TRUE(value->GetAsDictionary(&dictionary));
     FakeGaia::RefreshTokenToDeviceIdMap map;
-    for (base::DictionaryValue::Iterator it(*dictionary); !it.IsAtEnd();
-         it.Advance()) {
-      ASSERT_TRUE(it.value().is_string());
-      map[it.key()] = it.value().GetString();
+    for (auto item : dictionary->DictItems()) {
+      ASSERT_TRUE(item.second.is_string());
+      map[item.first] = item.second.GetString();
     }
     fake_gaia_.fake_gaia()->SetRefreshTokenToDeviceIdMap(map);
   }

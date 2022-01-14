@@ -221,9 +221,8 @@ void KioskExternalUpdater::ProcessParsedManifest(
           IDS_KIOSK_EXTERNAL_UPDATE_IN_PROGRESS));
 
   external_update_path_ = external_update_dir;
-  for (base::DictionaryValue::Iterator it(*parsed_manifest); !it.IsAtEnd();
-       it.Advance()) {
-    std::string app_id = it.key();
+  for (auto manifest : parsed_manifest->DictItems()) {
+    std::string app_id = manifest.first;
     std::string cached_version_str;
     base::FilePath cached_crx;
     if (!KioskAppManager::Get()->GetCachedCrx(
@@ -233,8 +232,9 @@ void KioskExternalUpdater::ProcessParsedManifest(
     }
 
     const base::DictionaryValue* extension = nullptr;
-    if (!it.value().GetAsDictionary(&extension)) {
-      LOG(ERROR) << "Found bad entry in manifest type " << it.value().type();
+    if (!manifest.second.GetAsDictionary(&extension)) {
+      LOG(ERROR) << "Found bad entry in manifest type "
+                 << manifest.second.type();
       continue;
     }
 
