@@ -244,7 +244,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
                 result->proto.root_frame().embedding_token_low());
             switch (GetParam()) {
               case RecordingPersistence::kFileSystem: {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                 base::FilePath path = base::FilePath(
                     base::UTF8ToWide(result->proto.root_frame().file_path()));
                 base::FilePath name(

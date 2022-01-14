@@ -70,7 +70,7 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
     return typeface->serialize(SkTypeface::SerializeBehavior::kDontIncludeData);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   {
     SkString familyName;
     typeface->getFamilyName(&familyName);
