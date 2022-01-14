@@ -195,6 +195,16 @@ source_set("fuchsia_filters") {
     "//testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
     "//testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
     "//testing/buildbot/filters/fuchsia.views_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.accessibility_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.base_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.content_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.extensions_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.gin_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.media_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.net_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.perfetto_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.skia_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.views_unittests.filter",
   ]
 }
 

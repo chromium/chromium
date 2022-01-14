@@ -1,0 +1,4 @@
+# https://crbug.com/1287367
+-FuchsiaFontManagerTest.Caching
+-FuchsiaFontManagerTest.ReleaseThenCreateAgain
+-FuchsiaFontManagerTest.TypefaceOutlivesManager

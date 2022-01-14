@@ -1,0 +1,19 @@
+# crbug.com/416665, Fuchsia's sanitizer runtimes don't support source-based
+# suppressions
+-ArgumentsTest.TestArgumentsHolderCreationContext
+-ArgumentsTest.TestGetAll
+-ConverterTest.MoveOnlyParameters
+-ConverterTest.VectorOfWrappables
+-InterceptorTest.BypassInterceptorAllowed
+-InterceptorTest.BypassInterceptorForbidden
+-InterceptorTest.IndexedInterceptor
+-InterceptorTest.NamedInterceptor
+-InterceptorTest.NamedInterceptorCall
+-WrappableTest.GetAndSetProperty
+-WrappableTest.LazyPropertyGetterCanBeSetFirst
+-WrappableTest.LazyPropertyGetterCanBindSpecialArguments
+-WrappableTest.LazyPropertyGetterIsCalledOnce
+-WrappableTest.MethodInvocationErrorsOnNamedObject
+-WrappableTest.MethodInvocationErrorsOnUnnamedObject
+-WrappableTest.UnwrapFailures
+-WrappableTest.WrapAndUnwrap

@@ -1,0 +1,6 @@
+https://crbug.com/1265033
+-AccessiblePaneViewTest.DoesntCrashOnEscapeWithRemovedView
+-All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/0
+-All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/1
+-All/TableViewTest.TableHeaderRowAccessibleViewFocusable/0
+-All/TableViewTest.TableHeaderRowAccessibleViewFocusable/1
