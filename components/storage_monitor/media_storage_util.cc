@@ -24,7 +24,7 @@ namespace storage_monitor {
 
 namespace {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 const char kRootPath[] = "/";
 #endif
 
@@ -142,7 +142,7 @@ bool MediaStorageUtil::GetDeviceInfoFromPath(const base::FilePath& path,
   // TODO(gbillock): Delete this stanza? Posix systems should have the root
   // volume information. If not, we should move the below into the
   // right GetStorageInfoForPath implementations.
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
   if (!found_device)
     return false;
 #endif
@@ -175,7 +175,7 @@ base::FilePath MediaStorageUtil::FindDevicePathById(
   // For ImageCapture, the synthetic filesystem will be rooted at a fake
   // top-level directory which is the device_id.
   if (type == StorageInfo::MAC_IMAGE_CAPTURE) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     return base::FilePath(kRootPath + device_id);
 #endif
   }
