@@ -89,7 +89,7 @@ TEST_F(BookmarkNodeDataTest, BogusRead) {
 // Writes a URL to the clipboard and make sure BookmarkNodeData can correctly
 // read it.
 // Test is flaky on Mac: crbug.com/1236362
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_JustURL DISABLED_JustURL
 #else
 #define MAYBE_JustURL JustURL
@@ -114,7 +114,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_JustURL) {
 }
 
 // Test is flaky on Mac: crbug.com/1236362
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_URL DISABLED_URL
 #else
 #define MAYBE_URL URL
@@ -167,7 +167,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
 
 // Tests writing a folder to the clipboard.
 // Test is flaky on Mac: crbug.com/1236362
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Folder DISABLED_Folder
 #else
 #define MAYBE_Folder Folder
@@ -214,7 +214,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_Folder) {
 
 // Tests reading/writing a folder with children.
 // Test is flaky on Mac: crbug.com/1236362
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FolderWithChild DISABLED_FolderWithChild
 #else
 #define MAYBE_FolderWithChild FolderWithChild
@@ -257,7 +257,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_FolderWithChild) {
 
 // Tests reading/writing of multiple nodes.
 // Test is flaky on Mac: crbug.com/1236362
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MultipleNodes DISABLED_MultipleNodes
 #else
 #define MAYBE_MultipleNodes MultipleNodes
@@ -326,7 +326,7 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardURL) {
   EXPECT_EQ(base::UTF8ToUTF16(url.spec()), clipboard_result);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_WriteToClipboardMultipleURLs DISABLED_WriteToClipboardMultipleURLs
 #else
 #define MAYBE_WriteToClipboardMultipleURLs WriteToClipboardMultipleURLs
@@ -349,7 +349,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
 
   // Now read the data back in.
   std::u16string combined_text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string new_line = u"\r\n";
 #else
   std::u16string new_line = u"\n";
@@ -363,7 +363,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
 }
 
 // Test is flaky on LaCrOS: crbug.com/1010185
-#if defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WriteToClipboardEmptyFolder DISABLED_WriteToClipboardEmptyFolder
 #else
 #define MAYBE_WriteToClipboardEmptyFolder WriteToClipboardEmptyFolder
@@ -387,7 +387,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
 
 // Test is flaky on LaCrOS: crbug.com/1010353
 // Test is flaky on Mac: crbug.com/1236362
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WriteToClipboardFolderWithChildren \
   DISABLED_WriteToClipboardFolderWithChildren
 #else
@@ -432,7 +432,7 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
 
   // Now read the data back in.
   std::u16string combined_text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string new_line = u"\r\n";
 #else
   std::u16string new_line = u"\n";
@@ -447,7 +447,7 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
 
 // Tests reading/writing of meta info.
 // Test is flaky on Mac: crbug.com/1236362
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MetaInfo DISABLED_MetaInfo
 #else
 #define MAYBE_MetaInfo MetaInfo
@@ -477,7 +477,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_MetaInfo) {
   EXPECT_EQ("someothervalue", meta_info_map["someotherkey"]);
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 TEST_F(BookmarkNodeDataTest, ReadFromPickleTooManyNodes) {
   // Test case determined by a fuzzer. See https://crbug.com/956583.
   const uint8_t pickled_data[] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00,

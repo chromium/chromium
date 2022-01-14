@@ -145,7 +145,7 @@ std::string TruncateUrl(const std::string& url) {
 // returned.
 GURL GetUrlFromClipboard(bool notify_if_restricted) {
   std::u16string url_text;
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, notify_if_restricted);
   ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -179,7 +179,7 @@ void GetBookmarksMatchingPropertiesImpl(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Returns whether or not a bookmark model contains any bookmarks aside of the
 // permanent nodes.
 bool HasUserCreatedBookmarks(BookmarkModel* model) {
@@ -578,7 +578,7 @@ bool HasDescendantsOf(const std::vector<const BookmarkNode*>& list,
 }
 
 const BookmarkNode* GetParentForNewNodes(BookmarkModel* model) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!HasUserCreatedBookmarks(model))
     return model->mobile_node();
 #endif
