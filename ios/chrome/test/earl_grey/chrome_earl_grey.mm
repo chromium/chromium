@@ -1216,6 +1216,10 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isContextMenuActionsRefreshEnabled];
 }
 
+- (BOOL)isContextMenuInWebViewEnabled {
+  return [ChromeEarlGreyAppInterface isContextMenuInWebViewEnabled];
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 - (ContentSetting)popupPrefValue {

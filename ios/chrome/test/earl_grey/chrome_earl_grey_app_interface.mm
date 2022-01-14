@@ -1007,6 +1007,11 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return IsContextMenuActionsRefreshEnabled();
 }
 
++ (BOOL)isContextMenuInWebViewEnabled {
+  return base::FeatureList::IsEnabled(
+      web::features::kWebViewNativeContextMenuPhase2);
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 + (ContentSetting)popupPrefValue {

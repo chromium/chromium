@@ -512,6 +512,9 @@
 // Returns whether the ContextMenuActionsRefresh feature is enabled.
 + (BOOL)isContextMenuActionsRefreshEnabled;
 
+// Returns whether the new ContextMenu for web content feature is enabled.
++ (BOOL)isContextMenuInWebViewEnabled;
+
 #pragma mark - Popup Blocking
 
 // Gets the current value of the popup content setting preference for the
