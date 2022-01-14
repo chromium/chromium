@@ -182,24 +182,24 @@ void ClearBrowsingDataHandler::OnGotInstalledApps(
     const std::string& webui_callback_id,
     const std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>&
         installed_apps) {
-  base::ListValue installed_apps_list;
+  std::vector<base::Value> installed_apps_list;
   for (const auto& info : installed_apps) {
-    auto entry = std::make_unique<base::DictionaryValue>();
+    base::Value entry(base::Value::Type::DICTIONARY);
     // Used to get favicon in ClearBrowsingDataDialog and display URL next to
     // app name in the dialog.
-    entry->SetString(kRegisterableDomainField, info.registerable_domain);
+    entry.SetStringKey(kRegisterableDomainField, info.registerable_domain);
     // The |reason_bitfield| is only passed to Javascript to be logged
     // from |HandleClearBrowsingData|.
-    entry->SetInteger(kReasonBitfieldField, info.reason_bitfield);
+    entry.SetIntKey(kReasonBitfieldField, info.reason_bitfield);
     // Initially all sites are selected for deletion.
-    entry->SetBoolean(kIsCheckedField, true);
+    entry.SetBoolKey(kIsCheckedField, true);
     // User friendly name for the installed app.
     DCHECK(info.app_name);
-    entry->SetString(kAppName, info.app_name.value());
-    installed_apps_list.Append(std::move(entry));
+    entry.SetStringKey(kAppName, info.app_name.value());
+    installed_apps_list.push_back(std::move(entry));
   }
   ResolveJavascriptCallback(base::Value(webui_callback_id),
-                            installed_apps_list);
+                            base::Value(std::move(installed_apps_list)));
 }
 
 std::unique_ptr<content::BrowsingDataFilterBuilder>

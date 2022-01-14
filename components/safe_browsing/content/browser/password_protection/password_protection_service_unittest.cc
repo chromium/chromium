@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -464,34 +465,28 @@ class PasswordProtectionServiceBaseTest
 
   void CacheInvalidVerdict(ReusedPasswordAccountType password_type) {
     GURL invalid_hostname("http://invalid.com");
-    std::unique_ptr<base::DictionaryValue> verdict_dictionary =
-        base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
-            content_setting_map_->GetWebsiteSetting(
-                invalid_hostname, GURL(),
-                ContentSettingsType::PASSWORD_PROTECTION, nullptr)));
+    base::Value verdict_dictionary = content_setting_map_->GetWebsiteSetting(
+        invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
+        nullptr);
 
-    if (!verdict_dictionary)
-      verdict_dictionary = std::make_unique<base::DictionaryValue>();
+    if (!verdict_dictionary.is_dict())
+      verdict_dictionary = base::Value(base::Value::Type::DICTIONARY);
 
-    std::unique_ptr<base::DictionaryValue> invalid_verdict_entry =
-        std::make_unique<base::DictionaryValue>();
-    invalid_verdict_entry->SetString("invalid", "invalid_string");
+    base::Value invalid_verdict_entry(base::Value::Type::DICTIONARY);
+    invalid_verdict_entry.SetStringKey("invalid", "invalid_string");
 
-    std::unique_ptr<base::DictionaryValue> invalid_cache_expression_entry =
-        std::make_unique<base::DictionaryValue>();
-    invalid_cache_expression_entry->SetKey(
-        "invalid_cache_expression",
-        base::Value::FromUniquePtrValue(std::move(invalid_verdict_entry)));
-    verdict_dictionary->SetKey(
+    base::Value invalid_cache_expression_entry(base::Value::Type::DICTIONARY);
+    invalid_cache_expression_entry.SetKey("invalid_cache_expression",
+                                          std::move(invalid_verdict_entry));
+    verdict_dictionary.SetKey(
         base::NumberToString(static_cast<std::underlying_type_t<PasswordType>>(
             password_protection_service_
                 ->ConvertReusedPasswordAccountTypeToPasswordType(
                     password_type))),
-        base::Value::FromUniquePtrValue(
-            std::move(invalid_cache_expression_entry)));
+        std::move(invalid_cache_expression_entry));
     content_setting_map_->SetWebsiteSettingDefaultScope(
         invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
-        base::Value::FromUniquePtrValue(std::move(verdict_dictionary)));
+        std::move(verdict_dictionary));
   }
 
   size_t GetStoredVerdictCount(LoginReputationClientRequest::TriggerType type) {

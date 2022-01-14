@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   Profile* profile = GetBrowser()->profile();
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test/"));
   const std::string serialized_test_origin = test_origin.Serialize();
-  base::DictionaryValue origin_pref;
+  base::Value origin_pref(base::Value::Type::DICTIONARY);
   origin_pref.SetKey(serialized_test_origin,
                      base::Value(base::Value::Type::DICTIONARY));
   base::Value* allowed_protocols_for_origin =
