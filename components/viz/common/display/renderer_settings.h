@@ -50,7 +50,7 @@ class VIZ_COMMON_EXPORT RendererSettings {
   // split into multiple quads during occlusion culling.
   int minimum_fragments_reduced = 128 * 128;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The screen size at renderer creation time.
   gfx::Size initial_screen_size = gfx::Size(0, 0);
 

@@ -25,7 +25,7 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/gl/gl_surface_egl_surface_control.h"
 #endif
 
@@ -163,7 +163,7 @@ std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageFactory* factory,
     gpu::SharedImageRepresentationFactory* representation_factory) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (deps->GetGpuFeatureInfo()
           .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] !=
       gpu::kGpuFeatureStatusEnabled) {
@@ -403,7 +403,7 @@ void OutputPresenterGL::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ScopedOverlayAccess*> accesses) {
   DCHECK_EQ(overlays.size(), accesses.size());
-#if defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // Note while reading through this for-loop that |overlay| has different
   // types on different platforms. On Android and Ozone it is an
   // OverlayCandidate, on Windows it is a DCLayerOverlay, and on macOS it is
@@ -411,7 +411,7 @@ void OutputPresenterGL::ScheduleOverlays(
   for (size_t i = 0; i < overlays.size(); ++i) {
     const auto& overlay = overlays[i];
     auto* gl_image = accesses[i] ? accesses[i]->gl_image() : nullptr;
-#if defined(OS_ANDROID) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
     // TODO(msisov): Once shared image factory allows creating a non backed
     // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
     // condition that checks if this is a solid color overlay plane.
@@ -434,7 +434,7 @@ void OutputPresenterGL::ScheduleOverlays(
               overlay.opacity, overlay.priority_hint, overlay.rounded_corners,
               overlay.color_space, overlay.hdr_metadata, overlay.solid_color));
     }
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied
     // when the ddl is recorded, so the content already is with opacity applied.
     float opacity = overlay.ddl ? 1.0 : overlay.shared_state->opacity;
@@ -449,7 +449,7 @@ void OutputPresenterGL::ScheduleOverlays(
         overlay.protected_video_type));
 #endif
   }
-#endif  //  defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)
+#endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 }
 
 }  // namespace viz

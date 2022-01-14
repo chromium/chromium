@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/viz/service/display/overlay_processor_on_gpu.h"
+
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/ipc/display_compositor_memory_and_task_controller_on_gpu.h"
@@ -27,7 +29,7 @@ OverlayProcessorOnGpu::~OverlayProcessorOnGpu() {
 void OverlayProcessorOnGpu::ScheduleOverlays(
     CandidateList&& overlay_candidates) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(weiliangc): Currently only implemented for Android Classic code path.
   for (auto& overlay : overlay_candidates) {
     auto shared_image_overlay =
@@ -51,7 +53,7 @@ void OverlayProcessorOnGpu::ScheduleOverlays(
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void OverlayProcessorOnGpu::NotifyOverlayPromotions(
     base::flat_set<gpu::Mailbox> promotion_denied,
     base::flat_map<gpu::Mailbox, gfx::Rect> possible_promotions) {

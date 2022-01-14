@@ -231,7 +231,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   DCHECK(candidates->empty());
   auto* render_pass = render_passes->back().get();
   bool success = false;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   RecordFDUsageUMA();
 #endif
 

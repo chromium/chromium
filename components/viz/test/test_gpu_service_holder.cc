@@ -16,6 +16,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -41,7 +42,7 @@ namespace viz {
 
 namespace {
 
-#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
 namespace {
 constexpr int kGpuProcessHostId = 1;
 }  // namespace
@@ -168,7 +169,7 @@ TestGpuServiceHolder::TestGpuServiceHolder(
                      base::Unretained(this), gpu_preferences, &completion));
   completion.Wait();
 
-#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   if (auto* gpu_platform_support_host =
           ui::OzonePlatform::GetInstance()->GetGpuPlatformSupportHost()) {
     auto interface_binder = base::BindRepeating(
@@ -180,7 +181,7 @@ TestGpuServiceHolder::TestGpuServiceHolder(
 }
 
 TestGpuServiceHolder::~TestGpuServiceHolder() {
-#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   if (auto* gpu_platform_support_host =
           ui::OzonePlatform::GetInstance()->GetGpuPlatformSupportHost()) {
     gpu_platform_support_host->OnChannelDestroyed(kGpuProcessHostId);
@@ -214,7 +215,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
     base::WaitableEvent* completion) {
   DCHECK(gpu_thread_.task_runner()->BelongsToCurrentThread());
 
-#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   ui::OzonePlatform::GetInstance()->AddInterfaces(&binders_);
 #endif
 
@@ -298,7 +299,7 @@ void TestGpuServiceHolder::DeleteOnGpuThread() {
   gpu_service_.reset();
 }
 
-#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
 void TestGpuServiceHolder::BindInterface(
     const std::string& interface_name,
     mojo::ScopedMessagePipeHandle interface_pipe) {
@@ -319,6 +320,6 @@ void TestGpuServiceHolder::BindInterfaceOnGpuThread(
   CHECK(binders_.TryBind(&receiver))
       << "Unable to find mojo interface " << interface_name;
 }
-#endif  // defined(USE_OZONE) && !defined(OS_FUCHSIA)
+#endif  // defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace viz

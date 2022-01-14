@@ -23,7 +23,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -101,7 +101,7 @@ class GLScalerPixelTest : public cc::PixelTest, public GLScalerTestUtil {
   // Returns the amount of color error expected due to bugs in the current
   // platform's bilinear texture sampler.
   int GetBaselineColorDifference() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android seems to have texture sampling problems that are not at all seen
     // on any of the desktop platforms. Also, versions before Marshmallow seem
     // to have a much larger accuracy issues.
@@ -126,7 +126,7 @@ class GLScalerPixelTest : public cc::PixelTest, public GLScalerTestUtil {
   }
 
   bool IsAndroidMarshmallow() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return base::android::BuildInfo::GetInstance()->sdk_int() ==
            base::android::SDK_VERSION_MARSHMALLOW;
 #else

@@ -272,7 +272,7 @@ void FrameSinkBundleImpl::DidAllocateSharedBitmap(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FrameSinkBundleImpl::SetThreadIds(uint32_t sink_id,
                                        const std::vector<int32_t>& thread_ids) {
   if (auto* sink = GetFrameSink(sink_id)) {

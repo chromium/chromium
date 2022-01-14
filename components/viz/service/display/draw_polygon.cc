@@ -121,7 +121,7 @@ void DrawPolygon::ConstructNormal() {
   normal_ = new_normal;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 //
 // Allows the unittest to invoke this for the more general constructor.
 //

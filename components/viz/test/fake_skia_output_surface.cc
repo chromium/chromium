@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -330,7 +331,7 @@ gpu::SyncToken FakeSkiaOutputSurface::Flush() {
   return sync_token;
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPassOverlay(
     const gfx::Size& size,
     ResourceFormat format,

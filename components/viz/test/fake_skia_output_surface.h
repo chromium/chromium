@@ -98,7 +98,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void ScheduleOverlays(OverlayList overlays,
                         std::vector<gpu::SyncToken> sync_tokens,
                         base::OnceClosure on_finished) override {}
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetEnableDCLayers(bool enable) override {}
 #endif
   void CopyOutput(AggregatedRenderPassId id,
@@ -111,7 +111,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
   void OnObservingBeginFrameSourceChanged(bool observing) override {}
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,
       ResourceFormat format,

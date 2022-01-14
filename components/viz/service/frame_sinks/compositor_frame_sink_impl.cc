@@ -195,7 +195,7 @@ void CompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
   support_->InitializeCompositorFrameSinkType(type);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void CompositorFrameSinkImpl::SetThreadIds(
     const std::vector<int32_t>& thread_ids) {
   support_->SetThreadIds(/*from_untrusted_client=*/true,

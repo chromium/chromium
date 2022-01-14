@@ -237,7 +237,7 @@ void TestSharedImageInterface::PresentSwapChain(
     const gpu::SyncToken& sync_token,
     const gpu::Mailbox& mailbox) {}
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 void TestSharedImageInterface::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
@@ -251,7 +251,7 @@ void TestSharedImageInterface::ReleaseSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id) {
   NOTREACHED();
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 gpu::SyncToken TestSharedImageInterface::GenVerifiedSyncToken() {
   base::AutoLock locked(lock_);

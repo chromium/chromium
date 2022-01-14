@@ -18,18 +18,18 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
 class SkCanvas;
 class SkImage;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 class SkDeferredDisplayList;
 #endif
 
@@ -54,11 +54,11 @@ struct RenderPassGeometry;
 class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                              public ExternalUseClient {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   using OverlayList = std::vector<OverlayCandidate>;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   using OverlayList = CALayerOverlayList;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   using OverlayList = DCLayerOverlayList;
 #elif defined(USE_OZONE)
   using OverlayList = std::vector<OverlayCandidate>;
@@ -193,7 +193,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // begin frames. Used to estimate when rendering becomes idle.
   virtual void OnObservingBeginFrameSourceChanged(bool observing) = 0;
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   virtual SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,
       ResourceFormat format,

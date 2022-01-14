@@ -79,7 +79,7 @@ class MockSharedImageInterface : public TestSharedImageInterface {
 
 // TODO(crbug.com/1138568): Fuchsia claims support for presenting primary
 // plane as overlay, but does not provide a mailbox. Handle this case.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   // Set up the primary plane.
   gfx::Size size(128, 128);

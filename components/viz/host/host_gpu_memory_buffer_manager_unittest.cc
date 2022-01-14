@@ -27,7 +27,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
 #endif
 
@@ -144,7 +144,7 @@ class TestGpuService : public mojom::GpuService {
           jea_receiver) override {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RegisterDCOMPSurfaceHandle(
       mojo::PlatformHandle surface_handle,
       RegisterDCOMPSurfaceHandleCallback callback) override {}
@@ -210,12 +210,12 @@ class TestGpuService : public mojom::GpuService {
 
   void OnForegrounded() override {}
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level) override {}
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   void BeginCATransaction() override {}
 
   void CommitCATransaction(CommitCATransactionCallback callback) override {}
@@ -286,10 +286,10 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
       native_pixmap_supported =
           ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
               gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     native_pixmap_supported =
         base::AndroidHardwareBufferCompat::IsSupportAvailable();
-#elif defined(OS_APPLE) || defined(OS_WIN)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
     native_pixmap_supported = true;
 #endif
 

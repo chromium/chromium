@@ -21,7 +21,7 @@
 
 namespace viz {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void DrawPolygon::RecomputeNormalForTesting() {
   ConstructNormal();
 }

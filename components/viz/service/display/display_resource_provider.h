@@ -70,13 +70,13 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Indicates if this resource is backed by an Android SurfaceTexture, and thus
   // can't really be promoted to an overlay.
   bool IsBackedBySurfaceTexture(ResourceId id);
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   // Indicates if this resource wants to receive promotion hints.
   bool DoesResourceWantPromotionHint(ResourceId id);
 #endif

@@ -112,7 +112,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // YCbCr info for resources backed by YCbCr Vulkan images.
   absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Indicates whether this resource may not be overlayed on Android, since
   // it's not backed by a SurfaceView.  This may be set in combination with
   // |is_overlay_candidate|, to find out if switching the resource to a
@@ -125,7 +125,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool is_backed_by_surface_texture = false;
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   // Indicates that this resource would like a promotion hint.
   bool wants_promotion_hint = false;
 #endif
@@ -139,10 +139,10 @@ struct VIZ_COMMON_EXPORT TransferableResource {
            color_space == o.color_space && hdr_metadata == o.hdr_metadata &&
            is_overlay_candidate == o.is_overlay_candidate &&
            filter == o.filter &&
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
            is_backed_by_surface_texture == o.is_backed_by_surface_texture &&
            wants_promotion_hint == o.wants_promotion_hint &&
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
            wants_promotion_hint == o.wants_promotion_hint &&
 #endif
            read_lock_fences_enabled == o.read_lock_fences_enabled;

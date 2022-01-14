@@ -1221,7 +1221,7 @@ sk_sp<SkImage> GLRenderer::ApplyBackdropFilters(
 
 const DrawQuad* GLRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On Macs, this path can sometimes lead to all black output.
   // TODO(enne): investigate this and remove this hack.
   return nullptr;
@@ -2589,7 +2589,7 @@ void GLRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
 
   gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Force sRGB output on Windows for overlay candidate video quads to match
   // DirectComposition behavior in case these switch between overlays and
   // compositing. See https://crbug.com/811118 for details.
@@ -3067,11 +3067,11 @@ void GLRenderer::FinishDrawingFrame() {
   // semantics during overlay refactoring.
   ScheduleOutputSurfaceAsOverlay();
 
-#if defined(OS_ANDROID) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
   ScheduleOverlays();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   ScheduleCALayers();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ScheduleDCLayers();
 #endif
 
@@ -3191,7 +3191,7 @@ void GLRenderer::GenerateMipmap() {
 }
 
 bool GLRenderer::FlippedFramebuffer() const {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (force_drawing_frame_framebuffer_unflipped_)
     return false;
 #endif
@@ -3846,7 +3846,7 @@ bool GLRenderer::IsContextLost() {
   return gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void GLRenderer::ScheduleCALayers() {
   // The use of OverlayTextures for RenderPasses is only supported on the code
   // paths for |release_overlay_resources_after_gpu_query| at the moment. See
@@ -3919,9 +3919,9 @@ void GLRenderer::ScheduleCALayers() {
 
   ReduceAvailableOverlayTextures();
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GLRenderer::ScheduleDCLayers() {
   for (DCLayerOverlay& dc_layer_overlay : current_frame()->overlay_list) {
     DCHECK_EQ(DCLayerOverlay::kNumResources, 2u);
@@ -3961,9 +3961,9 @@ void GLRenderer::ScheduleDCLayers() {
         clip_rect.height(), protected_video_type);
   }
 }
-#endif  // defined (OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
 void GLRenderer::ScheduleOverlays() {
   if (current_frame()->overlay_list.empty())
     return;
@@ -3982,7 +3982,7 @@ void GLRenderer::ScheduleOverlays() {
         overlay_candidate.gpu_fence_id);
   }
 }
-#endif  // defined(OS_ANDROID) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
 
 void GLRenderer::ScheduleOutputSurfaceAsOverlay() {
   if (!current_frame()->output_surface_plane)
@@ -4001,7 +4001,7 @@ void GLRenderer::ScheduleOutputSurfaceAsOverlay() {
       overlay_candidate.enable_blending, overlay_candidate.gpu_fence_id);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // This function draws the CompositorRenderPassDrawQuad into a temporary
 // texture/framebuffer, and then copies the result into an IOSurface. The
 // inefficient (but simple) way to do this would be to:
@@ -4276,7 +4276,7 @@ GLRenderer::ScheduleRenderPassDrawQuad(const CALayerOverlay* ca_layer_overlay) {
                                filter);
   return overlay_texture;
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 void GLRenderer::SetupOverdrawFeedback() {
   gl_->StencilFunc(GL_ALWAYS, 1, 0xffffffff);

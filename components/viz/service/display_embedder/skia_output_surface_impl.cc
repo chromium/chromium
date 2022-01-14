@@ -48,7 +48,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
@@ -611,7 +611,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   return current_paint_->recorder()->getCanvas();
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
     const gfx::Size& size,
     ResourceFormat format,
@@ -640,7 +640,7 @@ SkiaOutputSurfaceImpl::EndPaintRenderPassOverlay() {
   current_paint_.reset();
   return ddl;
 }
-#endif  // defined(OS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
 void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -797,7 +797,7 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
     OverlayList overlays,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished) {
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // If there are render pass overlays, then a gl context is needed for drawing
   // the overlay render passes to a backing for being scanned out.
   bool make_current =
@@ -848,7 +848,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   // This runner could be called from vsync or GPU thread after |this| is
   // destroyed. We post directly to display compositor thread to check
   // |weak_ptr_| as |dependency_| may have been destroyed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Callback is never used on Android. Doesn't work with WebView because
   // calling it bypasses SkiaOutputSurfaceDependency.
   GpuVSyncCallback vsync_callback_runner = base::DoNothing();
@@ -1160,14 +1160,14 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
                                           ->GetDeviceQueue()
                                           ->GetVulkanPhysicalDevice(),
                                       VK_IMAGE_TILING_OPTIMAL, ycbcr_info);
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
     // Textures that were allocated _on linux_ with ycbcr info came from
     // VaapiVideoDecoder, which exports using DRM format modifiers.
     return GrBackendFormat::MakeVk(gr_ycbcr_info,
                                    /*willUseDRMFormatModifiers=*/true);
 #else
     return GrBackendFormat::MakeVk(gr_ycbcr_info);
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(ENABLE_VULKAN)
   } else if (dependency_->IsUsingDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -1175,7 +1175,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     return GrBackendFormat::MakeDawn(format);
 #endif
   } else if (dependency_->IsUsingMetal()) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     return GrBackendFormat::MakeMtl(ToMTLPixelFormat(resource_format));
 #endif
   } else {

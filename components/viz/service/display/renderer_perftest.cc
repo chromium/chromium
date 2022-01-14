@@ -257,7 +257,7 @@ class RendererPerfTest : public VizPerfTest {
     else
       printf("Using GLRenderer\n");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     renderer_settings_.color_space = gfx::ColorSpace::CreateSRGB();
     renderer_settings_.initial_screen_size = kSurfaceSize;
 #endif

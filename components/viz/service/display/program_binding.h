@@ -350,7 +350,7 @@ class VIZ_SERVICE_EXPORT Program : public ProgramBindingBase {
   void InitializeSolidColorProgram(const ProgramKey& key) {
     // Initialize vertex program.
     vertex_shader_.position_source_ = POSITION_SOURCE_ATTRIBUTE_INDEXED_UNIFORM;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (key.aa_mode_ == NO_AA)
       vertex_shader_.has_dummy_variables_ = true;
 #endif

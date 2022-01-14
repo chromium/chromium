@@ -72,7 +72,7 @@
 #include "media/gpu/vaapi/vaapi_image_decode_accelerator_worker.h"
 #endif  // BUILDFLAG(USE_VAAPI)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/gl/throw_uncaught_exception.h"
 #include "media/base/android/media_codec_util.h"
 #endif
@@ -95,13 +95,13 @@
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/base/cocoa/quartz_util.h"
 #endif
 
@@ -272,7 +272,7 @@ void GetVideoCapabilities(const gpu::GpuPreferences& gpu_preferences,
   // Due to https://crbug.com/709631, we don't want to query Android video
   // decode/encode capabilities during startup. The renderer needs this info
   // though, so assume some baseline capabilities.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Note: Video encoding on Android relies on MediaCodec, so all cases
   // where it's disabled for decoding it is also disabled for encoding.
   if (gpu_preferences.disable_accelerated_video_decode ||
@@ -417,14 +417,14 @@ GpuServiceImpl::GpuServiceImpl(
       media::VaapiImageDecodeAcceleratorWorker::Create();
 #endif  // BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_METAL] ==
       gpu::kGpuFeatureStatusEnabled) {
     metal_context_provider_ = MetalContextProvider::Create(context_options);
   }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto info_callback = base::BindRepeating(
       &GpuServiceImpl::UpdateOverlayAndHDRInfo, weak_ptr_factory_.GetWeakPtr());
   gl::DirectCompositionSurfaceWin::SetOverlayHDRGpuInfoUpdateCallback(
@@ -796,7 +796,7 @@ void GpuServiceImpl::CreateJpegEncodeAccelerator(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuServiceImpl::RegisterDCOMPSurfaceHandle(
     mojo::PlatformHandle surface_handle,
     RegisterDCOMPSurfaceHandleCallback callback) {
@@ -810,7 +810,7 @@ void GpuServiceImpl::UnregisterDCOMPSurfaceHandle(
     const base::UnguessableToken& token) {
   gl::DCOMPSurfaceRegistry::GetInstance()->UnregisterDCOMPSurfaceHandle(token);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -899,7 +899,7 @@ void GpuServiceImpl::RequestHDRStatusOnMainThread(
     RequestHDRStatusCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   hdr_enabled_ = gl::DirectCompositionSurfaceWin::IsHDRSupported();
 #endif
   io_runner_->PostTask(FROM_HERE,
@@ -954,7 +954,7 @@ void GpuServiceImpl::DidLoseContext(bool offscreen,
   gpu_host_->DidLoseContext(offscreen, reason, active_url);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuServiceImpl::DidUpdateOverlayInfo(
     const gpu::OverlayInfo& overlay_info) {
   gpu_host_->DidUpdateOverlayInfo(gpu_info_.overlay_info);
@@ -991,7 +991,7 @@ bool GpuServiceImpl::IsExiting() const {
   return is_exiting_.IsSet();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuServiceImpl::SendCreatedChildWindow(gpu::SurfaceHandle parent_window,
                                             gpu::SurfaceHandle child_window) {
   // This can be called from main or display compositor thread.
@@ -1103,7 +1103,7 @@ void GpuServiceImpl::WakeUpGpu() {
         FROM_HERE, base::BindOnce(&GpuServiceImpl::WakeUpGpu, weak_ptr_));
     return;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   gpu_channel_manager_->WakeUpGpu();
 #else
   NOTREACHED() << "WakeUpGpu() not supported on this platform.";
@@ -1179,7 +1179,7 @@ void GpuServiceImpl::DestroyAllChannels() {
 
 void GpuServiceImpl::OnBackgroundCleanup() {
 // Currently only called on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE,
@@ -1239,7 +1239,7 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void GpuServiceImpl::OnMemoryPressure(
     ::base::MemoryPressureListener::MemoryPressureLevel level) {
   // Forward the notification to the registry of MemoryPressureListeners.
@@ -1247,7 +1247,7 @@ void GpuServiceImpl::OnMemoryPressure(
 }
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void GpuServiceImpl::BeginCATransaction() {
   DCHECK(io_runner_->BelongsToCurrentThread());
   main_runner_->PostTask(FROM_HERE, base::BindOnce(&ui::BeginCATransaction));
@@ -1281,7 +1281,7 @@ void GpuServiceImpl::Hang() {
 
 void GpuServiceImpl::ThrowJavaException() {
   DCHECK(io_runner_->BelongsToCurrentThread());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ThrowUncaughtException();
 #else
   NOTREACHED() << "Java exception not supported on this platform.";
@@ -1307,7 +1307,7 @@ gpu::Scheduler* GpuServiceImpl::GetGpuScheduler() {
   return scheduler_.get();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuServiceImpl::UpdateOverlayAndHDRInfo() {
   gpu::OverlayInfo old_overlay_info = gpu_info_.overlay_info;
   gpu::CollectHardwareOverlayInfo(&gpu_info_.overlay_info);
@@ -1343,7 +1343,7 @@ void GpuServiceImpl::GetDawnInfoOnMain(GetDawnInfoCallback callback) {
                        base::BindOnce(std::move(callback), dawn_info_list));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void GpuServiceImpl::SetHostProcessId(base::ProcessId pid) {
   host_process_id_ = pid;
 }

@@ -225,7 +225,7 @@ void VizMainImpl::CreateGpuService(
     delegate_->OnGpuServiceConnection(gpu_service_.get());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void VizMainImpl::CreateInfoCollectionGpuService(
     mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
@@ -239,7 +239,7 @@ void VizMainImpl::CreateInfoCollectionGpuService(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void VizMainImpl::SetHostProcessId(int32_t pid) {
   if (gpu_service_)
     gpu_service_->SetHostProcessId(pid);

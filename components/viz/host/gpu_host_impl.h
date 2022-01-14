@@ -40,7 +40,7 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
 #endif
 
@@ -77,7 +77,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
     virtual void DidCreateContextSuccessfully() = 0;
     virtual void MaybeShutdownGpuProcess() = 0;
     virtual void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     virtual void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) = 0;
     virtual void DidUpdateHDRStatus(bool hdr_enabled) = 0;
 #endif
@@ -202,7 +202,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 
   mojom::GpuService* gpu_service();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::InfoCollectionGpuService* info_collection_gpu_service();
 #endif
 
@@ -252,7 +252,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
                       const GURL& active_url) override;
   void DisableGpuCompositing() override;
   void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
   void DidUpdateHDRStatus(bool hdr_enabled) override;
   void SetChildSurface(gpu::SurfaceHandle parent,
@@ -275,7 +275,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   const InitParams params_;
 
   mojo::Remote<mojom::GpuService> gpu_service_remote_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojo::Remote<mojom::InfoCollectionGpuService>
       info_collection_gpu_service_remote_;
 #endif

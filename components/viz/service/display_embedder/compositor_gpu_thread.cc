@@ -40,7 +40,7 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
   if (!features::IsDrDcEnabled())
     return nullptr;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // When using angle via enabling passthrough command decoder on android, angle
   // context virtualization group extension should be enabled. Also since angle
   // currently always enables this extension, we are adding DCHECK() to ensure

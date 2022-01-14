@@ -89,14 +89,14 @@ namespace {
 // was chosen to match that used by gl_renderer.
 static const float kAAEpsilon = 1.0f / 1024.0f;
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 SkScalar remove_epsilon(SkScalar v) {
   return v < std::numeric_limits<SkScalar>::epsilon() &&
                  v > -std::numeric_limits<SkScalar>::epsilon()
              ? 0
              : v;
 }
-#endif  // defined(OS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
 // The gfx::QuadF draw_region passed to DoDrawQuad, converted to Skia types
 struct SkDrawRegion {
@@ -836,12 +836,12 @@ void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
   // Right now, only macOS and Ozone need to return mailboxes of released
   // overlays, so we should not release |committed_overlay_locks_| here. The
   // resources in it will be released by DidReceiveReleasedOverlays() later.
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   for (auto lock_iter = committed_overlay_locks_.begin();
        lock_iter != read_fence_lock_iter; ++lock_iter) {
     awaiting_release_overlay_locks_.insert(std::move(*lock_iter));
   }
-#endif  // defined(OS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
   committed_overlay_locks_.clear();
   std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
@@ -856,7 +856,7 @@ void SkiaRenderer::BuffersPresented() {
 void SkiaRenderer::DidReceiveReleasedOverlays(
     const std::vector<gpu::Mailbox>& released_overlays) {
   // This method is only called on macOS and Ozone right now.
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   for (const auto& mailbox : released_overlays) {
     auto it = awaiting_release_overlay_locks_.find(mailbox);
     if (it == awaiting_release_overlay_locks_.end()) {
@@ -867,7 +867,7 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
   }
 #else
   NOTREACHED();
-#endif  // !(defined(OS_APPLE) || defined (USE_OZONE))
+#endif  // !(BUILDFLAG(IS_APPLE) || defined (USE_OZONE))
 }
 
 bool SkiaRenderer::FlippedFramebuffer() const {
@@ -2270,7 +2270,7 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   const gfx::ColorSpace& frame_color_space = CurrentRenderPassColorSpace();
   gfx::ColorSpace dst_color_space = frame_color_space;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Force sRGB output on Windows for overlay candidate video quads to match
   // DirectComposition behavior in case these switch between overlays and
   // compositing. See https://crbug.com/811118 for details.
@@ -2337,11 +2337,11 @@ void SkiaRenderer::ScheduleOverlays() {
 
   std::vector<gpu::SyncToken> sync_tokens;
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   DCHECK(output_surface_->capabilities().supports_surfaceless);
 #endif
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // CrOS and Android SurfaceControl use this code path. Android classic has
   // switched over to OverlayProcessor.
   // TODO(weiliangc): Remove this when CrOS and Android SurfaceControl switch
@@ -2360,7 +2360,7 @@ void SkiaRenderer::ScheduleOverlays() {
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   auto& locks = pending_overlay_locks_.back();
   for (auto& dc_layer_overlay : current_frame()->overlay_list) {
     for (size_t i = 0; i < DCLayerOverlay::kNumResources; ++i) {
@@ -2381,7 +2381,7 @@ void SkiaRenderer::ScheduleOverlays() {
     }
     DCHECK(!dc_layer_overlay.mailbox[0].IsZero());
   }
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   auto& locks = pending_overlay_locks_.back();
   for (CALayerOverlay& ca_layer_overlay : current_frame()->overlay_list) {
     if (ca_layer_overlay.rpdq) {
@@ -2433,12 +2433,12 @@ void SkiaRenderer::ScheduleOverlays() {
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());
   }
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   // For platforms that don't support overlays, the
   // current_frame()->overlay_list should be empty, and this code should not be
   // reached.
   NOTREACHED();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::OnceClosure on_finished_callback;
   if (current_frame_resource_fence_->WasSet()) {
@@ -2930,7 +2930,7 @@ void SkiaRenderer::FlushOutputSurface() {
   lock_set_for_external_use_->UnlockResources(sync_token);
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 void SkiaRenderer::PrepareRenderPassOverlay(
     OverlayProcessorInterface::PlatformOverlayCandidate* overlay) {
   DCHECK(!current_canvas_);
@@ -3065,7 +3065,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   // Adjust the overlay |buffer_size| to reduce memory fragmentation. It also
   // increases buffer reusing possibilities.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   constexpr int kBufferMultiple = 64;
 #else  // defined(USE_OZONE)
   // TODO(petermcneeley) : Support buffer rounding by dynamically changing
@@ -3205,7 +3205,7 @@ bool SkiaRenderer::UsingSkiaForDelegatedInk() const {
   return delegated_ink_handler_ && delegated_ink_handler_->GetInkRenderer();
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 bool SkiaRenderer::ScopedReadLockComparator::operator()(
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
@@ -3223,6 +3223,6 @@ bool SkiaRenderer::ScopedReadLockComparator::operator()(
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
   return lhs < rhs.mailbox();
 }
-#endif  // defined(OS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
 }  // namespace viz

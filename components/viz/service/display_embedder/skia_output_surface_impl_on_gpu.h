@@ -207,7 +207,7 @@ class SkiaOutputSurfaceImplOnGpu
   void OnContextLost() override;
 
   // gpu::ImageTransportSurfaceDelegate implementation:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidCreateAcceleratedSurfaceChildWindow(
       gpu::SurfaceHandle parent_window,
       gpu::SurfaceHandle child_window) override;
@@ -380,7 +380,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   void ReleaseAsyncReadResultHelpers();
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   std::unique_ptr<gpu::SharedImageRepresentationSkia>
   GetOrCreateRenderPassOverlayBacking(
       const SkSurfaceCharacterization& characterization);
@@ -487,7 +487,7 @@ class SkiaOutputSurfaceImplOnGpu
   // Tracking for ongoing AsyncReadResults.
   base::flat_set<AsyncReadResultHelper*> async_read_result_helpers_;
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   using UniqueBackingPtr = std::unique_ptr<gpu::SharedImageRepresentationSkia>;
   class BackingComparator {
    public:

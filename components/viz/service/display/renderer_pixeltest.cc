@@ -66,7 +66,7 @@ const gfx::DisplayColorSpaces kRec601DisplayColorSpaces(
     gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
                     gfx::ColorSpace::TransferID::SMPTE170M));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 template <typename T>
 base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
   return base::make_span(reinterpret_cast<const uint8_t*>(vec.data()),
@@ -5650,7 +5650,7 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTrailsWithDifferentPointerIds) {
   // is no trail after another draw.
   EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace viz

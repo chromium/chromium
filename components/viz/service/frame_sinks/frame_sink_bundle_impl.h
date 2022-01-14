@@ -66,7 +66,7 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
   void DidAllocateSharedBitmap(uint32_t sink_id,
                                base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetThreadIds(uint32_t sink_id,
                     const std::vector<int32_t>& thread_ids) override;
 #endif

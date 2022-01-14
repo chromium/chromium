@@ -26,7 +26,7 @@
 #include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #endif
 
@@ -62,7 +62,7 @@ RootCompositorFrameSinkImpl::Create(
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // For X11, we need notify client about swap completion after resizing, so the
   // client can use it for synchronize with X11 WM.
   output_surface->SetNeedsSwapSizeNotifications(true);
@@ -74,7 +74,7 @@ RootCompositorFrameSinkImpl::Create(
   std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source;
   ExternalBeginFrameSourceMojo* external_begin_frame_source_mojo = nullptr;
   bool hw_support_for_multiple_refresh_rates = false;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   bool wants_vsync_updates = false;
 #endif
 
@@ -88,7 +88,7 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::move(owned_external_begin_frame_source_mojo);
   } else {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     hw_support_for_multiple_refresh_rates = true;
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceAndroid>(
@@ -101,14 +101,14 @@ RootCompositorFrameSinkImpl::Create(
               std::make_unique<DelayBasedTimeSource>(
                   base::ThreadTaskRunnerHandle::Get().get()));
     } else if (output_surface->capabilities().supports_gpu_vsync) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       hw_support_for_multiple_refresh_rates =
           output_surface->capabilities().supports_dc_layers &&
           params->set_present_duration_allowed;
 #endif
       // Vsync updates are required to update the FrameRateDecider with
       // supported refresh rates.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
       wants_vsync_updates = params->use_preferred_interval_for_video;
 #endif
       external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
@@ -136,7 +136,7 @@ RootCompositorFrameSinkImpl::Create(
       begin_frame_source, task_runner.get(), capabilities.pending_swap_params,
       hint_session_factory, run_all_compositor_stages_before_draw);
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   auto* output_surface_ptr = output_surface.get();
 #endif
   gpu::SharedImageInterface* sii = nullptr;
@@ -171,7 +171,7 @@ RootCompositorFrameSinkImpl::Create(
       hw_support_for_multiple_refresh_rates,
       params->renderer_settings.apply_simple_frame_rate_throttling));
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // On Mac vsync parameter updates come from the browser process. We don't need
   // to provide a callback to the OutputSurface since it should never use it.
   if (wants_vsync_updates || impl->synthetic_begin_frame_source_) {
@@ -211,7 +211,7 @@ void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
   display_->SetVisible(visible);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RootCompositorFrameSinkImpl::DisableSwapUntilResize(
     DisableSwapUntilResizeCallback callback) {
   display_->DisableSwapUntilResize(std::move(callback));
@@ -322,7 +322,7 @@ void RootCompositorFrameSinkImpl::ForceImmediateDrawAndSwapIfPossible() {
   display_->ForceImmediateDrawAndSwapIfPossible();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RootCompositorFrameSinkImpl::SetVSyncPaused(bool paused) {
   if (external_begin_frame_source_)
     external_begin_frame_source_->OnSetBeginFrameSourcePaused(paused);
@@ -354,7 +354,7 @@ void RootCompositorFrameSinkImpl::SetSwapCompletionCallbackEnabled(
   enable_swap_competion_callback_ = enable;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
     mojo::PendingRemote<mojom::VSyncParameterObserver> observer) {
@@ -437,7 +437,7 @@ void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
   support_->InitializeCompositorFrameSinkType(type);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RootCompositorFrameSinkImpl::SetThreadIds(
     const std::vector<int32_t>& thread_ids) {
   support_->SetThreadIds(/*from_untrusted_client=*/false,
@@ -511,7 +511,7 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
     const gfx::CALayerParams& ca_layer_params) {
   if (last_ca_layer_params_ == ca_layer_params)
     return;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // If |ca_layer_params| should have content only when there exists a client
   // to send it to.
   DCHECK(ca_layer_params.is_empty || display_client_);
@@ -526,12 +526,12 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
 
 void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
     const gfx::Size& pixel_size) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (display_client_ && enable_swap_competion_callback_)
     display_client_->DidCompleteSwapWithSize(pixel_size);
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (display_client_ && pixel_size != last_swap_pixel_size_) {
     last_swap_pixel_size_ = pixel_size;
     display_client_->DidCompleteSwapWithNewSize(last_swap_pixel_size_);
@@ -543,7 +543,7 @@ void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
 }
 
 void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (display_client_)
     display_client_->SetWideColorEnabled(enabled);
 #endif
@@ -551,7 +551,7 @@ void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
 
 void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
     base::TimeDelta interval) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float refresh_rate =
       interval.InSecondsF() == 0 ? 0 : (1 / interval.InSecondsF());
   if (display_client_)

@@ -26,13 +26,13 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/gfx/font_render_params.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/rendering_window_manager.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
@@ -107,7 +107,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
       params_(std::move(params)) {
   // Create a special GPU info collection service if the GPU process is used for
   // info collection only.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (params_.info_collection_gpu_process) {
     viz_main_->CreateInfoCollectionGpuService(
         info_collection_gpu_service_remote_.BindNewPipeAndPassReceiver());
@@ -124,12 +124,12 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
 
   DCHECK(GetFontRenderParams().Get());
   scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (params_.main_thread_task_runner->BelongsToCurrentThread())
     task_runner = ui::WindowResizeHelperMac::Get()->task_runner();
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   viz_main_->SetHostProcessId(base::GetCurrentProcId());
 #endif
 
@@ -330,7 +330,7 @@ mojom::GpuService* GpuHostImpl::gpu_service() {
   return gpu_service_remote_.get();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 mojom::InfoCollectionGpuService* GpuHostImpl::info_collection_gpu_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(info_collection_gpu_service_remote_.is_bound());
@@ -374,7 +374,7 @@ std::string GpuHostImpl::GetShaderPrefixKey() {
                          info.gl_renderer + "-" + active_gpu.driver_version +
                          "-" + active_gpu.driver_vendor;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     std::string build_fp =
         base::android::BuildInfo::GetInstance()->android_build_fp();
     shader_prefix_key_ += "-" + build_fp;
@@ -564,7 +564,7 @@ void GpuHostImpl::DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) {
   delegate_->DidUpdateGPUInfo(gpu_info);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuHostImpl::DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) {
   delegate_->DidUpdateOverlayInfo(overlay_info);
 }
@@ -580,7 +580,7 @@ void GpuHostImpl::SetChildSurface(gpu::SurfaceHandle parent,
         parent, child, /*expected_child_process_id=*/pid_);
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void GpuHostImpl::StoreShaderToDisk(int32_t client_id,
                                     const std::string& key,

@@ -24,17 +24,17 @@ class FakeDisplayClient : public mojom::DisplayClient {
   mojo::PendingRemote<mojom::DisplayClient> BindRemote();
 
   // mojom::DisplayClient implementation.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   void OnDisplayReceivedCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void CreateLayeredWindowUpdater(
       mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) override;
 #endif
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif
 

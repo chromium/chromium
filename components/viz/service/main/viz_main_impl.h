@@ -25,7 +25,7 @@
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
 #include "ui/gfx/font_render_params.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/gl/info_collection_gpu_service_impl.h"
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
 #endif
@@ -46,7 +46,7 @@ class MojoUkmRecorder;
 
 namespace viz {
 class HintSessionFactory;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class InfoCollectionGpuServiceImpl;
 #endif
 
@@ -122,12 +122,12 @@ class VizMainImpl : public mojom::VizMain,
           discardable_memory_manager,
       mojo::ScopedSharedBufferHandle activity_flags,
       gfx::FontRenderParams::SubpixelRendering subpixel_rendering) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void CreateInfoCollectionGpuService(
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver)
       override;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetHostProcessId(int32_t pid) override;
 #endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
@@ -175,7 +175,7 @@ class VizMainImpl : public mojom::VizMain,
 
   std::unique_ptr<gpu::GpuInit> gpu_init_;
   std::unique_ptr<GpuServiceImpl> gpu_service_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<InfoCollectionGpuServiceImpl> info_collection_gpu_service_;
 #endif
 

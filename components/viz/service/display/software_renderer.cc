@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/render_surface_filters.h"
@@ -169,7 +170,7 @@ void SoftwareRenderer::SetClipRect(const gfx::Rect& rect) {
   // Checks below are incompatible with WebView as the canvas size and clip
   // provided by Android or embedder app. And Chrome doesn't use
   // SoftwareRenderer on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // SetClipRect is assumed to be applied temporarily, on an
   // otherwise-unclipped canvas.
   DCHECK_EQ(current_canvas_->getDeviceClipBounds().width(),

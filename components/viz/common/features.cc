@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/common/switches.h"
@@ -18,7 +19,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -61,8 +62,9 @@ const base::Feature kSimpleFrameRateThrottling{
 // Use the SkiaRenderer.
 const base::Feature kUseSkiaRenderer {
   "UseSkiaRenderer",
-#if defined(OS_WIN) || defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    defined(OS_LINUX) || defined(OS_FUCHSIA) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||           \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -80,7 +82,7 @@ const base::Feature kDisableDeJelly{"DisableDeJelly",
 const base::Feature kDynamicBufferQueueAllocation{
     "DynamicBufferQueueAllocation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.
 const base::Feature kDynamicColorGamut{"DynamicColorGamut",
@@ -98,7 +100,7 @@ const base::Feature kVizFrameSubmissionForWebView{
 
 const base::Feature kUsePreferredIntervalForVideo{
   "UsePreferredIntervalForVideo",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -110,7 +112,7 @@ const base::Feature kUsePreferredIntervalForVideo{
 const base::Feature kUseRealBuffersForPageFlipTest{
     "UseRealBuffersForPageFlipTest", base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Enables SkiaOutputDeviceBufferQueue instead of Vulkan swapchain on Fuchsia.
 const base::Feature kUseSkiaOutputDeviceBufferQueue{
     "UseSkiaOutputDeviceBufferQueue", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -120,7 +122,7 @@ const base::Feature kUseSkiaOutputDeviceBufferQueue{
 const base::Feature kWebRtcLogCapturePipeline{
     "WebRtcLogCapturePipeline", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Enables swap chains to call SetPresentDuration to request DWM/OS to reduce
 // vsync.
 const base::Feature kUseSetPresentDuration{"UseSetPresentDuration",
@@ -137,7 +139,7 @@ const base::Feature kUsePlatformDelegatedInk{"UsePlatformDelegatedInk",
 const base::Feature kWebViewVulkanIntermediateBuffer{
     "WebViewVulkanIntermediateBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Hardcoded as disabled for WebView to have a different default for
 // UseSurfaceLayerForVideo from chrome.
 const base::Feature kUseSurfaceLayerForVideoDefault{
@@ -175,7 +177,7 @@ const base::Feature kDynamicSchedulerForDraw{"DynamicSchedulerForDraw",
 const base::Feature kDynamicSchedulerForClients{
     "DynamicSchedulerForClients", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const base::Feature kMacCAOverlayQuad{"MacCAOverlayQuads",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 // The maximum supported overlay quad number on Mac CALayerOverlay.
@@ -219,7 +221,7 @@ bool IsSimpleFrameRateThrottlingEnabled() {
 }
 
 bool IsUsingSkiaRenderer() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // We don't support KitKat. Check for it before looking at the feature flag
   // so that KitKat doesn't show up in Control or Enabled experiment group.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <=
@@ -240,7 +242,7 @@ bool IsUsingSkiaRenderer() {
          features::IsUsingVulkan();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsDynamicColorGamutEnabled() {
   if (viz::AlwaysUseWideColorGamut())
     return false;
@@ -271,7 +273,7 @@ bool ShouldWebRtcLogCapturePipeline() {
   return base::FeatureList::IsEnabled(kWebRtcLogCapturePipeline);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ShouldUseSetPresentDuration() {
   return base::FeatureList::IsEnabled(kUseSetPresentDuration);
 }
@@ -307,7 +309,7 @@ bool ShouldUsePlatformDelegatedInk() {
   return base::FeatureList::IsEnabled(kUsePlatformDelegatedInk);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool UseSurfaceLayerForVideo() {
   // Allow enabling UseSurfaceLayerForVideo if webview is using surface control.
   if (::features::IsAndroidSurfaceControlEnabled()) {

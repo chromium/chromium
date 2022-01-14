@@ -23,7 +23,7 @@ namespace {
 void CollectMemoryUsageAndDie(const gfx::Size& size,
                               ResourceFormat format,
                               size_t alloc_size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD last_error = GetLastError();
   base::debug::Alias(&last_error);
 #endif

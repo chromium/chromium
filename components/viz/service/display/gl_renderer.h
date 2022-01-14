@@ -37,11 +37,11 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
@@ -337,9 +337,9 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // nothing.
   void ScheduleOutputSurfaceAsOverlay();
   // Schedule overlays sends overlay candidate to the GPU.
-#if defined(OS_ANDROID) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
   void ScheduleOverlays();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   void ScheduleCALayers();
 
   // Schedules the |ca_layer_overlay|, which is guaranteed to have a non-null
@@ -363,7 +363,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
       const gfx::ColorSpace& color_space);
   void ReduceAvailableOverlayTextures();
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   void ScheduleDCLayers();
 #endif
 
@@ -483,7 +483,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // If true, tints all the composited content to red.
   bool tint_gl_composited_content_ = true;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // The method FlippedFramebuffer determines whether the framebuffer associated
   // with a DrawingFrame is flipped. It makes the assumption that the
   // DrawingFrame is being used as part of a render pass. If a DrawingFrame is

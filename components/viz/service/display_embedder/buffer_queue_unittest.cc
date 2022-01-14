@@ -110,7 +110,7 @@ class StubGpuMemoryBufferManager : public TestGpuMemoryBufferManager {
   size_t set_color_space_count_ = 0;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const gpu::SurfaceHandle kFakeSurfaceHandle =
     reinterpret_cast<gpu::SurfaceHandle>(1);
 #else

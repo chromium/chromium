@@ -28,10 +28,10 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/common/quads/selection.h"
 #include "ui/gfx/selection_bound.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace viz {
 

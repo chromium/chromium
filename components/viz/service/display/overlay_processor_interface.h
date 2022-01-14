@@ -20,11 +20,11 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/overlay_priority_hint.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
@@ -44,18 +44,18 @@ class RendererSettings;
 // for overlay processing that each platform needs to implement.
 class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
  public:
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   using PlatformOverlayCandidate = CALayerOverlay;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   using PlatformOverlayCandidate = DCLayerOverlay;
 #else
   // Default.
   using PlatformOverlayCandidate = OverlayCandidate;
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   using CandidateList = CALayerOverlayList;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   using CandidateList = DCLayerOverlayList;
 #else
   // Default.

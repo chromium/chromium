@@ -61,7 +61,7 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 namespace viz {
@@ -256,10 +256,10 @@ bool ReduceComplexity(const cc::Region& region,
 }
 
 bool SupportsSetFrameRate(const OutputSurface* output_surface) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return output_surface->capabilities().supports_surfaceless &&
          gfx::SurfaceControl::SupportsSetFrameRate();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return output_surface->capabilities().supports_dc_layers &&
          features::ShouldUseSetPresentDuration();
 #else
@@ -357,7 +357,7 @@ Display::~Display() {
   if (resource_provider_) {
     resource_provider_->SetAllowAccessToGPUThread(true);
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // In certain cases, drivers hang when tearing down the display. Finishing
   // before teardown appears to address this. As we're during display teardown,
   // an additional finish should have minimal impact.
@@ -768,7 +768,7 @@ bool Display::DrawAndSwap(base::TimeTicks frame_time,
   UMA_HISTOGRAM_ENUMERATION("Compositing.ColorGamut",
                             frame.content_color_usage);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool wide_color_enabled =
       display_color_spaces_.GetOutputColorSpace(
           frame.content_color_usage, true) != gfx::ColorSpace::CreateSRGB();
@@ -1429,7 +1429,7 @@ void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
     float interval_s = interval.InSecondsF();
     float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
     output_surface_->SetFrameRate(frame_rate);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android we want to return early because the |client_| callback hits
     // a platform API in the browser process.
     return;

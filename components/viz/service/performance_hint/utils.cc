@@ -7,7 +7,7 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/linux_util.h"
 #endif
 
@@ -17,7 +17,7 @@ bool CheckThreadIdsDoNotBelongToProcessIds(
     const std::vector<base::ProcessId>& privileged_process_ids,
     const base::flat_set<base::PlatformThreadId>&
         thread_ids_from_sandboxed_process) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This is inherently racy as threads or processes can die and the IDs can be
   // reused at any time. But this is the best we can do.
   for (auto& process_id : privileged_process_ids) {

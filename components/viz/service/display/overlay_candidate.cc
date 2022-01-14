@@ -539,9 +539,9 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromStreamVideoQuad(
     candidate->resource_id = quad->resource_id();
     candidate->resource_size_in_pixels = quad->resource_size_in_pixels();
     candidate->uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
-#if defined(OS_ANDROID)
-  candidate->is_backed_by_surface_texture =
-      resource_provider->IsBackedBySurfaceTexture(quad->resource_id());
+#if BUILDFLAG(IS_ANDROID)
+    candidate->is_backed_by_surface_texture =
+        resource_provider->IsBackedBySurfaceTexture(quad->resource_id());
 #endif
   }
   return rtn;

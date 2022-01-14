@@ -18,9 +18,9 @@ namespace viz {
 namespace {
 
 wgpu::BackendType GetDefaultBackendType() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return wgpu::BackendType::D3D12;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return wgpu::BackendType::Vulkan;
 #else
   NOTREACHED();

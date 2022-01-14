@@ -45,12 +45,12 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
       base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)
           ? base::ThreadPriority::DISPLAY
           : base::ThreadPriority::NORMAL;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto thread = std::make_unique<base::android::JavaHandlerThread>(
       kThreadName, thread_priority);
   thread->Start();
   return thread;
-#else  // !defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<base::Thread> thread;
   base::Thread::Options thread_options;
@@ -63,12 +63,12 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   if (!thread)
     thread = std::make_unique<base::Thread>(kThreadName);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // An IO message pump is needed to use FIDL.
   thread_options.message_pump_type = base::MessagePumpType::IO;
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Increase the thread priority to get more reliable values in performance
   // test of macOS.
   thread_options.priority =
@@ -78,7 +78,7 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
           : thread_priority;
 #else
   thread_options.priority = thread_priority;
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
   CHECK(thread->StartWithOptions(std::move(thread_options)));
 
@@ -88,7 +88,7 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
       base::BindOnce(&tracing::TracingSamplerProfiler::CreateOnChildThread));
 
   return thread;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

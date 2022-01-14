@@ -145,7 +145,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.preserve_buffer_content = true;
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (::features::IncreaseBufferCountForHighFrameRate()) {
     capabilities_.number_of_buffers = 5;
   }
@@ -161,7 +161,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     capabilities_.number_of_buffers = 2;
   capabilities_.pending_swap_params.max_pending_swaps =
       capabilities_.number_of_buffers - 1;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (::features::IncreaseBufferCountForHighFrameRate() &&
       capabilities_.number_of_buffers == 5) {
     capabilities_.pending_swap_params.max_pending_swaps = 2;
@@ -376,11 +376,11 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     }
 
     // Fuchsia does not provide a GLImage overlay.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     const bool needs_gl_image = false;
 #else
     const bool needs_gl_image = true;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
     // TODO(penghuang): do not depend on GLImage.
     auto shared_image_access =
@@ -554,7 +554,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 
   // Code below can destroy last representation of the overlay shared image. On
   // MacOS it needs context to be current.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // TODO(vasilyt): We shouldn't need this after we stop using
   // SharedImageBackingGLImage as backing.
   if (!context_state_->MakeCurrent(nullptr)) {
@@ -566,7 +566,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 
   std::vector<gpu::Mailbox> released_overlays;
   auto on_overlay_release =
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
       [&released_overlays](const OverlayData& overlay) {
         // Right now, only macOS needs to return maliboxes of released
         // overlays, so SkiaRenderer can unlock resources for them.

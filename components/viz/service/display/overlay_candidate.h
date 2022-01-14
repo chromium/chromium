@@ -137,7 +137,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For candidates from StreamVideoDrawQuads, this records whether the quad is
   // marked as being backed by a SurfaceTexture or not.  If so, it's not really
   // promotable to an overlay.

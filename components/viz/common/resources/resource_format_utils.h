@@ -76,7 +76,7 @@ VIZ_RESOURCE_FORMAT_EXPORT wgpu::TextureFormat ToDawnFormat(
 VIZ_RESOURCE_FORMAT_EXPORT WGPUTextureFormat
 ToWGPUFormat(ResourceFormat format);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int ToMTLPixelFormat(ResourceFormat format);
 #endif
 

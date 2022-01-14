@@ -24,7 +24,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
 #endif
 
@@ -76,7 +76,7 @@ SkiaOutputDeviceVulkan::~SkiaOutputDeviceVulkan() {
   vulkan_surface_->Destroy();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 gpu::SurfaceHandle SkiaOutputDeviceVulkan::GetChildSurfaceHandle() {
   if (LIKELY(vulkan_surface_->accelerated_widget() != surface_handle_))
     return vulkan_surface_->accelerated_widget();
@@ -257,7 +257,7 @@ void SkiaOutputDeviceVulkan::EndPaint() {
 
 bool SkiaOutputDeviceVulkan::Initialize() {
   gfx::AcceleratedWidget accelerated_widget = gfx::kNullAcceleratedWidget;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool can_be_used_with_surface_control = false;
   accelerated_widget =
       gpu::GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(
@@ -296,7 +296,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_target_damage = true;
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kHardware;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // With vulkan, if the chrome is launched in landscape mode, the chrome is
   // always blank until chrome window is rotated once. Workaround this problem
   // by using logic rotation mode.

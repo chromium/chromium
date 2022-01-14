@@ -553,7 +553,7 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
       cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
+#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
 INSTANTIATE_TEST_SUITE_P(
     ,
     SkiaReadbackPixelTestNV12,
@@ -731,7 +731,7 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
+#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
 INSTANTIATE_TEST_SUITE_P(,
                          SkiaReadbackPixelTestNV12WithBlit,
                          // Result scaling: Scale by half?

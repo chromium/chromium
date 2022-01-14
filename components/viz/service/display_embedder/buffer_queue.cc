@@ -82,7 +82,7 @@ bool BufferQueue::Reshape(const gfx::Size& size,
   if (size == size_ && color_space == color_space_ && format == format_)
     return false;
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // TODO(ccameron): This assert is being hit on Mac try jobs. Determine if that
   // is cause for concern or if it is benign.
   // http://crbug.com/524624

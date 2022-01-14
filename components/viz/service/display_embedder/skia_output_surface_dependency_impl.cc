@@ -143,7 +143,7 @@ void SkiaOutputSurfaceDependencyImpl::ScheduleDelayedGPUTaskFromGPUThread(
       FROM_HERE, std::move(task), kDelayForDelayedWork);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void SkiaOutputSurfaceDependencyImpl::DidCreateAcceleratedSurfaceChildWindow(
     gpu::SurfaceHandle parent_window,
     gpu::SurfaceHandle child_window) {

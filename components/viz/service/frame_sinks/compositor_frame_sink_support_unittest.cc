@@ -1049,7 +1049,7 @@ TEST_F(CompositorFrameSinkSupportTest, PassesOnBeginFrameAcks) {
   support_->SetNeedsBeginFrame(false);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1223023
 #define MAYBE_NeedsBeginFrameResetAfterPresentationFeedback \
   DISABLED_NeedsBeginFrameResetAfterPresentationFeedback

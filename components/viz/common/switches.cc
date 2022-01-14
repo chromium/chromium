@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/constants.h"
 
@@ -44,7 +45,7 @@ const char kEnableDeJelly[] = "enable-de-jelly";
 // fullscreen overlay and use it as main framebuffer where possible.
 const char kEnableHardwareOverlays[] = "enable-hardware-overlays";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // ChromeOS uses one of two VideoDecoder implementations based on SoC/board
 // specific configurations that are signalled via this command line flag.
 // TODO(b/159825227): remove when the "old" video decoder is fully launched.

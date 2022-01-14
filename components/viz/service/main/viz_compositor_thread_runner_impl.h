@@ -12,7 +12,7 @@
 #include "components/viz/service/main/viz_compositor_thread_runner.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_handler_thread.h"
 #endif
 
@@ -27,7 +27,7 @@ class InProcessGpuMemoryBufferManager;
 class OutputSurfaceProvider;
 class ServerSharedBitmapManager;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 using VizCompositorThreadType = base::android::JavaHandlerThread;
 #else
 using VizCompositorThreadType = base::Thread;
