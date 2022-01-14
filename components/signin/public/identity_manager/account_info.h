@@ -13,7 +13,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -94,7 +94,7 @@ bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);
 bool operator!=(const CoreAccountInfo& l, const CoreAccountInfo& r);
 std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Constructs a Java CoreAccountInfo from the provided C++ CoreAccountInfo
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
     JNIEnv* env,

@@ -17,7 +17,7 @@ const base::Feature kAccountIdMigration{"AccountIdMigration",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // If enabled, child accounts (i.e. Unicorn accounts) on Android do not have the
 // Sync feature forced on.
 const base::Feature kAllowSyncOffForChildAccounts{
@@ -35,7 +35,7 @@ const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 const base::Feature kForceDisableExtendedSyncPromos{
     "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Features to trigger the startup sign-in promo at boot.
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

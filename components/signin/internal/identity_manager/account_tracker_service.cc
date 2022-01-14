@@ -35,7 +35,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_array.h"
 #include "components/signin/public/android/jni_headers/AccountTrackerService_jni.h"
 #endif
@@ -143,7 +143,7 @@ void GetString(const base::Value& dict,
 }  // namespace
 
 AccountTrackerService::AccountTrackerService() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_ref =
       signin::Java_AccountTrackerService_Constructor(
@@ -785,7 +785,7 @@ void AccountTrackerService::RemoveAccount(const CoreAccountId& account_id) {
   StopTrackingAccount(account_id);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 AccountTrackerService::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_ref_);

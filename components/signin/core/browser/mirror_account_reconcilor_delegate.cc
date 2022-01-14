@@ -40,7 +40,7 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
 
 ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return ConsentLevel::kSignin;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Whenever Mirror is enabled on a Lacros Profile, the Primary Account may or

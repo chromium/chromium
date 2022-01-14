@@ -87,7 +87,7 @@ struct ManageAccountsParams {
   std::string continue_url;
   // Whether the continue URL should be loaded in the same tab.
   bool is_same_tab = false;
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Whether to show consistency promo.
   bool show_consistency_promo = false;
 #endif

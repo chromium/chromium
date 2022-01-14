@@ -186,7 +186,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
                            "consistency_enabled_by_default=false");
 }
 #else  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Tests that eligible_for_consistency request is returned on Android
 // when reaching to Gaia origin and there's no primary account.
 TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
@@ -219,7 +219,7 @@ TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that no Mirror request is returned when the user is not signed in (no
 // account id), for non Chrome OS platforms.
@@ -711,7 +711,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildManageAccountsParams) {
       "action=ADDSESSION,email=%s,is_saml=true,"
       "is_same_tab=true,continue_url=%s",
       kEmail, kContinueURL);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   header += ",show_consistency_promo=true";
 #endif
 
@@ -721,7 +721,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildManageAccountsParams) {
   EXPECT_EQ(true, params.is_saml);
   EXPECT_EQ(true, params.is_same_tab);
   EXPECT_EQ(GURL(kContinueURL), params.continue_url);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(true, params.show_consistency_promo);
 #endif
 }

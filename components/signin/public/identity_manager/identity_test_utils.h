@@ -21,7 +21,7 @@ class TestURLLoaderFactory;
 namespace account_manager {
 class AccountManagerFacade;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class GoogleServiceAuthError;
 
@@ -185,7 +185,7 @@ void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);
 // Enables account capabilities fetches in AccountFetcherService.
 void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Stubs AccountManagerFacade, which requires special initialization of the java
 // subsystems.
 void SetUpMockAccountManagerFacade();

@@ -23,7 +23,7 @@ namespace switches {
 extern const base::Feature kAccountIdMigration;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kAllowSyncOffForChildAccounts;
 #endif
 
@@ -33,7 +33,7 @@ extern const char kDisableSigninScopedDeviceId[];
 
 extern const base::Feature kForceDisableExtendedSyncPromos;
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 extern const base::Feature kForceStartupSigninPromo;
 #endif
 

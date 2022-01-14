@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/account_info.h"
+
+#include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "components/signin/public/android/jni_headers/AccountInfo_jni.h"
 #include "components/signin/public/android/jni_headers/CoreAccountId_jni.h"
@@ -150,7 +152,7 @@ std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account) {
   return os;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
     JNIEnv* env,
     const CoreAccountInfo& account_info) {

@@ -393,7 +393,7 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithPrimary) {
 }
 
 // Neither iOS nor Android support unconsented primary accounts.
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(AccountInvestigatorTest, TryPeriodicReportWithUnconsentedPrimary) {
   investigator()->Initialize();
 
@@ -413,7 +413,7 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithUnconsentedPrimary) {
       "Signin.CookieJar.SignedInCountWithPrimary.SyncConsumer",
       /*count=*/0);
 }
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AccountInvestigatorTest, TryPeriodicReportWithEnterprisePrimary) {
   investigator()->Initialize();

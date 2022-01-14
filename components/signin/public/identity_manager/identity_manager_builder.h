@@ -14,11 +14,11 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "base/memory/scoped_refptr.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/callback.h"
 #endif
 
@@ -29,7 +29,7 @@ class SigninClient;
 class TokenWebData;
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 class DeviceAccountsProvider;
 #endif
 
@@ -73,11 +73,11 @@ struct IdentityManagerBuildParams {
   bool is_regular_profile = false;
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   std::unique_ptr<DeviceAccountsProvider> device_accounts_provider;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::RepeatingCallback<bool()> reauth_callback;
 #endif
 };

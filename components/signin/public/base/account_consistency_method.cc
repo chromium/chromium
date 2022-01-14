@@ -4,10 +4,11 @@
 
 #include "components/signin/public/base/account_consistency_method.h"
 
+#include "build/build_config.h"
 
 namespace signin {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kMobileIdentityConsistencyPromos{
     "MobileIdentityConsistencyPromos", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif

@@ -65,7 +65,7 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
 
   void TriggerCookieJarUpdate() override;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   void ForceTriggerOnCookieChange() override;
 #endif
 

@@ -210,7 +210,7 @@ enum class PromoAction : int {
   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT
 };
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // This class is used to record user action that was taken after
 // receiving the header from Gaia in the web sign-in flow.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
@@ -266,7 +266,7 @@ enum class AccountConsistencyPromoAction : int {
   TIMEOUT_ERROR_SHOWN = 17,
   MAX = 18,
 };
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Enum values which enumerates all reasons to start sign in process.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -540,10 +540,10 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
     AccessPoint access_point,
     bool with_account);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Records |Signin.AccountConsistencyPromoAction| histogram.
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace signin_metrics
 

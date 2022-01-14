@@ -80,7 +80,7 @@ class FakeProfileOAuth2TokenServiceDelegate
   void IssueRefreshTokenForUser(const CoreAccountId& account_id,
                                 const std::string& token);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 #endif
 

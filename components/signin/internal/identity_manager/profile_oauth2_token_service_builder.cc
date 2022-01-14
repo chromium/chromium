@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -15,7 +16,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
 #endif
 
@@ -28,14 +29,14 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #endif
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/986435) Provide AccountManagerFacade as a parameter once
 // IdentityServicesProvider owns its instance management.
 std::unique_ptr<ProfileOAuth2TokenServiceDelegateAndroid>
@@ -43,7 +44,7 @@ CreateAndroidOAuthDelegate(AccountTrackerService* account_tracker_service) {
   return std::make_unique<ProfileOAuth2TokenServiceDelegateAndroid>(
       account_tracker_service);
 }
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> CreateIOSOAuthDelegate(
     SigninClient* signin_client,
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
@@ -71,7 +72,7 @@ CreateMutableProfileOAuthDelegate(
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
     SigninClient* signin_client,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback
         reauth_callback,
 #endif
@@ -85,14 +86,14 @@ CreateMutableProfileOAuthDelegate(
   return std::make_unique<MutableProfileOAuth2TokenServiceDelegate>(
       signin_client, account_tracker_service, network_connection_tracker,
       token_web_data, account_consistency, revoke_all_tokens_on_load,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       reauth_callback
 #else
       MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback()
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   );
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<ProfileOAuth2TokenServiceDelegate>
 CreateOAuth2TokenServiceDelegate(
@@ -107,17 +108,17 @@ CreateOAuth2TokenServiceDelegate(
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
 #endif
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback
         reauth_callback,
 #endif
     network::NetworkConnectionTracker* network_connection_tracker) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return CreateAndroidOAuthDelegate(account_tracker_service);
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return CreateIOSOAuthDelegate(signin_client,
                                 std::move(device_accounts_provider),
                                 account_tracker_service);
@@ -131,14 +132,14 @@ CreateOAuth2TokenServiceDelegate(
   return CreateMutableProfileOAuthDelegate(
       account_tracker_service, account_consistency,
       delete_signin_cookies_on_exit, token_web_data, signin_client,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       reauth_callback,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
       network_connection_tracker);
 #else
   NOTREACHED();
   return nullptr;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -156,10 +157,10 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
 #endif
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback
         reauth_callback,
 #endif
@@ -183,10 +184,10 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
           delete_signin_cookies_on_exit, token_web_data,
 #endif
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
           std::move(device_accounts_provider),
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           reauth_callback,
 #endif
           network_connection_tracker));

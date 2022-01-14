@@ -493,7 +493,7 @@ TEST_F(AccountsCookieMutatorTest, TriggerCookieJarUpdate_OneListedAccounts) {
             GoogleServiceAuthError::NONE);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 TEST_F(AccountsCookieMutatorTest, ForceTriggerOnCookieChange) {
   PrepareURLLoaderResponsesForAction(
       AccountsCookiesMutatorAction::kTriggerOnCookieChangeNoAccounts);

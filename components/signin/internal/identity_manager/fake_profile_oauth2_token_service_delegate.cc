@@ -8,6 +8,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -179,7 +180,7 @@ void FakeProfileOAuth2TokenServiceDelegate::UpdateAuthError(
   FireAuthErrorChanged(account_id, error);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 FakeProfileOAuth2TokenServiceDelegate::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>();

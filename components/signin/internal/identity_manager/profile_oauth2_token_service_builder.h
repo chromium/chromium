@@ -12,11 +12,11 @@
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "base/memory/scoped_refptr.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
 #endif
 
@@ -25,7 +25,7 @@ class PrefService;
 class ProfileOAuth2TokenService;
 class SigninClient;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 class DeviceAccountsProvider;
 #endif
 
@@ -60,10 +60,10 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
 #endif
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback
         reauth_callback,
 #endif

@@ -41,7 +41,7 @@ const char kProfileModeAttrName[] = "mode";
 const char kServiceTypeAttrName[] = "action";
 const char kSupervisedAttrName[] = "supervised";
 const char kSourceAttrName[] = "source";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kEligibleForConsistency[] = "eligible_for_consistency";
 const char kShowConsistencyPromo[] = "show_consistency_promo";
 #endif
@@ -110,7 +110,7 @@ ManageAccountsParams ChromeConnectedHeaderHelper::BuildManageAccountsParams(
       params.continue_url = value;
     } else if (key_name == kIsSameTabAttrName) {
       params.is_same_tab = value == "true";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     } else if (key_name == kShowConsistencyPromo) {
       params.show_consistency_promo = value == "true";
 #endif
@@ -211,13 +211,13 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 #endif
 
   if (!force_account_consistency && gaia_id.empty()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
       parts.push_back(
           base::StringPrintf("%s=%s", kEligibleForConsistency, "true"));
       return base::JoinString(parts, is_header_request ? "," : ":");
     }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return std::string();
   }
 

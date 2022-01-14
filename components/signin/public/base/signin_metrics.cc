@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace signin_metrics {
 
@@ -1025,12 +1026,12 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
   }
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action) {
   UMA_HISTOGRAM_ENUMERATION(
       "Signin.AccountConsistencyPromoAction", static_cast<int>(action),
       static_cast<int>(AccountConsistencyPromoAction::MAX));
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace signin_metrics

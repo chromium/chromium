@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/prefs/pref_service.h"
@@ -25,19 +26,19 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/webdata/token_web_data.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "components/signin/internal/identity_manager/device_accounts_synchronizer_impl.h"
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #endif
 
@@ -64,7 +65,7 @@ std::unique_ptr<PrimaryAccountManager> BuildPrimaryAccountManager(
     PrefService* local_state) {
   std::unique_ptr<PrimaryAccountManager> primary_account_manager;
   std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
   policy_manager = std::make_unique<PrimaryAccountPolicyManagerImpl>(client);
 #endif
   primary_account_manager = std::make_unique<PrimaryAccountManager>(
@@ -79,7 +80,7 @@ std::unique_ptr<AccountsMutator> BuildAccountsMutator(
     AccountTrackerService* account_tracker_service,
     ProfileOAuth2TokenService* token_service,
     PrimaryAccountManager* primary_account_manager) {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return std::make_unique<AccountsMutatorImpl>(
       token_service, account_tracker_service, primary_account_manager, prefs);
 #else
@@ -120,10 +121,10 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
           params->delete_signin_cookies_on_exit, params->token_web_data,
 #endif
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
           std::move(params->device_accounts_provider),
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           params->reauth_callback,
 #endif
           params->signin_client);
@@ -160,7 +161,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
       params->signin_client, token_service.get(), account_tracker_service.get(),
       std::move(params->image_decoder));
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   init_params.device_accounts_synchronizer =
       std::make_unique<DeviceAccountsSynchronizerImpl>(
           token_service->GetDelegate());

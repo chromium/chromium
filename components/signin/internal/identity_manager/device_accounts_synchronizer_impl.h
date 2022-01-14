@@ -24,7 +24,7 @@ class DeviceAccountsSynchronizerImpl : public DeviceAccountsSynchronizer {
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const absl::optional<CoreAccountId>& primary_account_id) override;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   void ReloadAccountFromSystem(const CoreAccountId& account_id) override;
 #endif
 
