@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
-
 namespace web {
 class WebState;
 }
@@ -99,10 +97,10 @@ void SaveSessionImmediately();
 void EvictOtherBrowserTabs();
 
 // Closes all normal (non-incognito) tabs. Return YES on success.
-BOOL CloseAllNormalTabs() WARN_UNUSED_RESULT;
+[[nodiscard]] BOOL CloseAllNormalTabs();
 
 // Closes all incognito tabs. Return YES on success.
-BOOL CloseAllIncognitoTabs() WARN_UNUSED_RESULT;
+[[nodiscard]] BOOL CloseAllIncognitoTabs();
 
 // Returns the number of main tabs currently evicted.
 NSUInteger GetEvictedMainTabCount();

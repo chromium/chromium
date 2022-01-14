@@ -90,7 +90,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Returns true when omnibox contains |text|, otherwise returns false after
 // after a timeout.
-bool WaitForOmniboxContaining(std::string text) WARN_UNUSED_RESULT;
+[[nodiscard]] bool WaitForOmniboxContaining(std::string text);
 bool WaitForOmniboxContaining(std::string text) {
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {

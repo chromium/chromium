@@ -8,8 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/compiler_specific.h"
-
 class ChromeBrowserState;
 
 namespace bookmarks {
@@ -20,8 +18,7 @@ class BookmarkNode;
 // Removes all user bookmarks and clears bookmark-related pref. Requires
 // bookmark model to be loaded.
 // Return true if the bookmarks were successfully removed and false otherwise.
-bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state);
 
 // Returns the permanent nodes whose url children are considered uncategorized
 // and whose folder children should be shown in the bookmark menu.

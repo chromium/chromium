@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #include "base/task/task_observer.h"
 #include "ios/web/public/test/web_test.h"
@@ -46,7 +45,7 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // Loads the specified HTML content into the WebState, using test url name.
   void LoadHtml(NSString* html);
   // Loads the specified HTML content into the WebState, using test url name.
-  bool LoadHtml(const std::string& html) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool LoadHtml(const std::string& html);
   // Loads the specified HTML content with URL into the WebState. None of the
   // subresources will be fetched.
   // This function is only supported on iOS11+. On iOS10, this function simply

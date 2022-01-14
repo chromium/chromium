@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-
 @class NSError;
 
 namespace chrome_test_util {
@@ -16,13 +14,13 @@ namespace chrome_test_util {
 // Attempts to tap the element with |element_id| in the current WebState
 // using a JavaScript click() event. Returns a bool indicating if the tap
 // was successful.
-bool TapWebViewElementWithId(const std::string& element_id) WARN_UNUSED_RESULT;
+[[nodiscard]] bool TapWebViewElementWithId(const std::string& element_id);
 
 // Attempts to tap the element with |element_id| within window.frames[0] of the
 // current WebState using a JavaScript click() event. This only works on
 // same-origin iframes. Returns a bool indicating if the tap was successful.
-bool TapWebViewElementWithIdInIframe(const std::string& element_id)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool TapWebViewElementWithIdInIframe(
+    const std::string& element_id);
 
 // Attempts to tap the element with |element_id| in the current WebState
 // using a JavaScript click() event. |error| can be nil.

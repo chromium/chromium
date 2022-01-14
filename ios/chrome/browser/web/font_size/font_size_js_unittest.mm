@@ -56,7 +56,7 @@ class FontSizeJsTest : public ChromeWebTest {
   // Executes JavaScript "__gCrWeb.font_size.adjustFontSize(|scale|)" to
   // adjust font size to |scale|% and return if it is executed without
   // exception.
-  bool AdjustFontSize(int scale) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool AdjustFontSize(int scale) {
     id script_result = ExecuteJavaScript([NSString
         stringWithFormat:@"__gCrWeb.font_size.adjustFontSize(%d); true;",
                          scale]);

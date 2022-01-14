@@ -8,8 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
-#include "base/compiler_specific.h"
-
 namespace web {
 namespace test {
 
@@ -31,12 +29,12 @@ id ExecuteJavaScript(WKWebView* web_view, NSString* script);
 
 // Synchronously loads |html| into |web_view|. Returns true is successful or
 // false if the |web_view| never finishes loading.
-bool LoadHtml(WKWebView* web_view,
-              NSString* html,
-              NSURL* base_url) WARN_UNUSED_RESULT;
+[[nodiscard]] bool LoadHtml(WKWebView* web_view,
+                            NSString* html,
+                            NSURL* base_url);
 
 // Waits until custom javascript is injected into __gCrWeb.
-bool WaitForInjectedScripts(WKWebView* web_view) WARN_UNUSED_RESULT;
+[[nodiscard]] bool WaitForInjectedScripts(WKWebView* web_view);
 
 // Returns an autoreleased string containing the JavaScript loaded from a
 // bundled resource file with the given name (excluding extension).

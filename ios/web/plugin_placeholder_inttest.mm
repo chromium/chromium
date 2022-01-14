@@ -41,7 +41,7 @@ class PluginPlaceholderTest : public WebTestWithWebState {
   }
 
   // Sets up |server_| with |html| as response content.
-  bool SetUpServer(const std::string& html) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool SetUpServer(const std::string& html) {
     server_.RegisterDefaultHandler(
         base::BindRepeating(&testing::HandlePageWithHtml, html));
     return server_.Start();

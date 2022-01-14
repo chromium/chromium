@@ -7,7 +7,6 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
@@ -45,15 +44,15 @@ class WebIntTest : public WebTest {
 
   // Executes |block| and waits until |url| is successfully loaded in
   // |web_state_|.
-  bool ExecuteBlockAndWaitForLoad(const GURL& url,
-                                  ProceduralBlock block) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ExecuteBlockAndWaitForLoad(const GURL& url,
+                                                ProceduralBlock block);
 
   // Navigates |web_state_| to |url| and waits for the page to be loaded.
-  bool LoadUrl(const GURL& url) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool LoadUrl(const GURL& url);
 
   // Navigates |web_state_| using |params| and waits for the page to be loaded.
-  bool LoadWithParams(const NavigationManager::WebLoadParams& params)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool LoadWithParams(
+      const NavigationManager::WebLoadParams& params);
 
   // Synchronously removes data from |data_store|.
   // |websiteDataTypes| is from the constants defined in

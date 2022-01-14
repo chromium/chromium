@@ -443,7 +443,7 @@ class PasswordControllerTest : public ChromeWebTest {
     ASSERT_TRUE(SetUpUniqueIDs());
   }
 
-  bool LoadHtml(const std::string& html) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool LoadHtml(const std::string& html) {
     bool result = ChromeWebTest::LoadHtml(html);
     if (result) {
       result = SetUpUniqueIDs();

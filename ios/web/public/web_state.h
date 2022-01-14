@@ -382,9 +382,9 @@ class WebState : public base::SupportsUserData {
   // this WebState is still alive, and do nothing if this WebState is already
   // destroyed. Therefore if the caller want to stop receiving JS messages it
   // can just destroy the subscription.
-  virtual base::CallbackListSubscription AddScriptCommandCallback(
+  [[nodiscard]] virtual base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,
-      const std::string& command_prefix) WARN_UNUSED_RESULT = 0;
+      const std::string& command_prefix) = 0;
 
   // Returns the current CRWWebViewProxy object.
   virtual CRWWebViewProxyType GetWebViewProxy() const = 0;

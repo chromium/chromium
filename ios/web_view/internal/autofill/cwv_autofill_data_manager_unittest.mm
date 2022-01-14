@@ -70,8 +70,8 @@ class CWVAutofillDataManagerTest : public PlatformTest {
 
   // Fetches profiles from |autofill_data_manager_| and returns them in
   // |completion_handler|. Returns true if fetch was successful.
-  bool FetchProfiles(void (^completion_handler)(
-      NSArray<CWVAutofillProfile*>* profiles)) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool FetchProfiles(
+      void (^completion_handler)(NSArray<CWVAutofillProfile*>* profiles)) {
     __block BOOL fetch_completion_was_called = NO;
     [autofill_data_manager_ fetchProfilesWithCompletionHandler:^(
                                 NSArray<CWVAutofillProfile*>* profiles) {
@@ -86,8 +86,8 @@ class CWVAutofillDataManagerTest : public PlatformTest {
 
   // Fetches credit cards from |autofill_data_manager_| and returns them in
   // |completion_handler|. Returns true if fetch was successful.
-  bool FetchCreditCards(void (^completion_handler)(
-      NSArray<CWVCreditCard*>* credit_cards)) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool FetchCreditCards(
+      void (^completion_handler)(NSArray<CWVCreditCard*>* credit_cards)) {
     __block BOOL fetch_completion_was_called = NO;
     [autofill_data_manager_ fetchCreditCardsWithCompletionHandler:^(
                                 NSArray<CWVCreditCard*>* credit_cards) {
@@ -117,7 +117,7 @@ class CWVAutofillDataManagerTest : public PlatformTest {
   }
 
   // Fetches passwords from |autofill_data_manager_| and returns them.
-  NSArray<CWVPassword*>* FetchPasswords() WARN_UNUSED_RESULT {
+  [[nodiscard]] NSArray<CWVPassword*>* FetchPasswords() {
     __block NSArray<CWVPassword*>* fetched_passwords = nil;
     [autofill_data_manager_ fetchPasswordsWithCompletionHandler:^(
                                 NSArray<CWVPassword*>* passwords) {

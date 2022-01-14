@@ -80,7 +80,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
   // Creates the history service.
   // TODO(crbug.com/1106699): Remove when all callers are migrated.
-  bool CreateHistoryService() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CreateHistoryService();
 
   // Returns the preferences as a TestingPrefServiceSyncable if possible or
   // null. Returns null for off-the-record TestChromeBrowserState and also

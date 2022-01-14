@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_TEST_NAVIGATION_TEST_UTIL_H_
 #define IOS_WEB_PUBLIC_TEST_NAVIGATION_TEST_UTIL_H_
 
-#include "base/compiler_specific.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -19,7 +18,7 @@ void LoadUrl(WebState* web_state, const GURL& url);
 
 // Returns true if the current page in the current WebState finishes loading
 // within a timeout.
-bool WaitForPageToFinishLoading(WebState* web_state) WARN_UNUSED_RESULT;
+[[nodiscard]] bool WaitForPageToFinishLoading(WebState* web_state);
 
 }  // namespace test
 }  // namespace web

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -200,8 +199,8 @@ class SearchEngineTableViewControllerTest
   }
 
   // Deletes items at |indexes| and wait util condition returns true or timeout.
-  bool DeleteItemsAndWait(NSArray<NSIndexPath*>* indexes,
-                          ConditionBlock condition) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool DeleteItemsAndWait(NSArray<NSIndexPath*>* indexes,
+                                        ConditionBlock condition) {
     SearchEngineTableViewController* searchEngineController =
         static_cast<SearchEngineTableViewController*>(controller());
     [searchEngineController deleteItems:indexes];

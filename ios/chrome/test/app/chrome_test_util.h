@@ -6,7 +6,6 @@
 #ifndef IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
-#include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 
@@ -99,7 +98,7 @@ void OpenChromeFromExternalApp(const GURL& url);
 // cached page. Browsers don't have to use fresh version for back forward
 // navigation for HTTP pages and may serve version from the cache even if
 // Cache-Control response header says otherwise.
-bool PurgeCachedWebViewPages() WARN_UNUSED_RESULT;
+[[nodiscard]] bool PurgeCachedWebViewPages();
 
 }  // namespace chrome_test_util
 

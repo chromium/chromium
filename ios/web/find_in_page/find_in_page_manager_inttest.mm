@@ -60,7 +60,7 @@ class FindInPageManagerTest : public WebTestWithWebState {
   // Waits until the delegate receives |index| from
   // DidSelectMatch(). Returns False if delegate never receives |index| within
   // time.
-  WARN_UNUSED_RESULT bool WaitForSelectedMatchAtIndex(int index) {
+  [[nodiscard]] bool WaitForSelectedMatchAtIndex(int index) {
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       base::RunLoop().RunUntilIdle();
       return delegate_.state() && delegate_.state()->index == index;

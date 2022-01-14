@@ -207,14 +207,14 @@ class AutofillControllerTest : public ChromeWebTest {
   void WaitForSuggestionRetrieval(BOOL wait_for_trigger);
 
   // Blocks until |expected_size| forms have been fecthed.
-  bool WaitForFormFetched(BrowserAutofillManager* manager,
-                          size_t expected_number_of_forms) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool WaitForFormFetched(BrowserAutofillManager* manager,
+                                        size_t expected_number_of_forms);
 
   // Loads the page and wait until the initial form processing has been done.
   // This processing must find |expected_size| forms.
-  bool LoadHtmlAndWaitForFormFetched(NSString* html,
-                                     size_t expected_number_of_forms)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool LoadHtmlAndWaitForFormFetched(
+      NSString* html,
+      size_t expected_number_of_forms);
 
   void LoadHtmlAndInitRendererIds(NSString* html);
 

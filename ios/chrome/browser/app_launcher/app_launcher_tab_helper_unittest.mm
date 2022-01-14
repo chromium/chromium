@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -115,13 +114,13 @@ class AppLauncherTabHelperTest : public PlatformTest {
     tab_helper_->SetDelegate(&delegate_);
   }
 
-  bool TestShouldAllowRequest(NSString* url_string,
-                              bool target_frame_is_main,
-                              bool target_frame_is_cross_origin,
-                              bool has_user_gesture,
-                              ui::PageTransition transition_type =
-                                  ui::PageTransition::PAGE_TRANSITION_LINK)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TestShouldAllowRequest(
+      NSString* url_string,
+      bool target_frame_is_main,
+      bool target_frame_is_cross_origin,
+      bool has_user_gesture,
+      ui::PageTransition transition_type =
+          ui::PageTransition::PAGE_TRANSITION_LINK) {
     NSURL* url = [NSURL URLWithString:url_string];
     const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type, target_frame_is_main, target_frame_is_cross_origin,

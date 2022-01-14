@@ -146,7 +146,7 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
   }
 
   // Checks if |lang_code| matches the OCMArg's CWVTranslationLanguage.
-  id CheckLanguageCode(NSString* lang_code) WARN_UNUSED_RESULT {
+  [[nodiscard]] id CheckLanguageCode(NSString* lang_code) {
     return [OCMArg checkWithBlock:^BOOL(CWVTranslationLanguage* lang) {
       return [lang.languageCode isEqualToString:lang_code];
     }];

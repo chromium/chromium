@@ -46,7 +46,7 @@ class CRWContextMenuElementFetcherTest : public WebTestWithWebController {
 
   // Loads a page containing a link and waits until the link is present on the
   // page, making sure that the HTML is correctly injected.
-  bool LoadHtmlPage() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool LoadHtmlPage() {
     NSString* html =
         @"<html><head>"
          "<style>body { font-size:14em; }</style>"
