@@ -23,8 +23,8 @@ SegmentationResultPrefs::SegmentationResultPrefs(PrefService* pref_service)
 void SegmentationResultPrefs::SaveSegmentationResultToPref(
     const std::string& result_key,
     const absl::optional<SelectedSegment>& selected_segment) {
-  DictionaryPrefUpdateDeprecated update(prefs_, kSegmentationResultPref);
-  base::DictionaryValue* dictionary = update.Get();
+  DictionaryPrefUpdate update(prefs_, kSegmentationResultPref);
+  base::Value* dictionary = update.Get();
   if (!selected_segment.has_value()) {
     dictionary->RemoveKey(result_key);
     return;
