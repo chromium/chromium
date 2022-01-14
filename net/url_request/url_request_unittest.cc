@@ -3104,6 +3104,34 @@ TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies) {
     EXPECT_EQ(expected_lax_status,
               req->maybe_stored_cookies()[1].access_result.status);
   }
+
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        test_server.GetURL(kHost,
+                           "/set-cookie?Strict7=1;SameSite=Strict&"
+                           "Lax7=1;SameSite=Lax"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
+    req->set_force_main_frame_for_same_site_cookies(true);
+
+    // 'SameSite' cookies are settable from lax same-site contexts (same-origin
+    // site_for_cookies, cross-site initiator, main frame navigation), so this
+    // request should result in two cookies being set.
+    expected_cookies += 2;
+    expected_network_delegate_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_network_delegate_set_cookie_count,
+              network_delegate.set_cookie_count());
+  }
 }
 
 // Tests special chrome:// scheme that is supposed to always attach SameSite
