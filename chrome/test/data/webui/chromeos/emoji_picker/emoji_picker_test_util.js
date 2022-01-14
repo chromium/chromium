@@ -115,3 +115,17 @@ export function dispatchMouseEvent(element, button, eventType = 'contextmenu') {
     clientY: element.getBoundingClientRect().y
   }));
 }
+
+const ACTIVE_EMOJI_GROUP_CLASS = 'emoji-group-active';
+const ACTIVE_TEXT_GROUP_CLASS = 'text-group-active';
+/**
+ * Checks if the given emoji-group-button or text-group-button element is
+ * activated.
+ * @param {?Element} element element to check.
+ * @return {boolean} true if active, false otherwise.
+ */
+export function isGroupButtonActive(element) {
+  assert(element, 'group button element should not be null');
+  return element.classList.contains(ACTIVE_EMOJI_GROUP_CLASS) ||
+      element.classList.contains(ACTIVE_TEXT_GROUP_CLASS);
+}

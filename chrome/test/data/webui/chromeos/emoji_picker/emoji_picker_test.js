@@ -13,19 +13,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
 
-import {deepQuerySelector, dispatchMouseEvent, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
-
-const ACTIVE_CLASS = 'emoji-group-active';
-
-/**
- * Checks if the given emoji-group-button element is activated.
- * @param {?Element} element element to check.
- * @return {boolean} true if active, false otherwise.
- */
-function isGroupButtonActive(element) {
-  assert(element, 'group button element should not be null');
-  return element.classList.contains(ACTIVE_CLASS);
-}
+import {deepQuerySelector, dispatchMouseEvent, isGroupButtonActive, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 
 function assertCloseTo(actual, expected) {
   assertTrue(

@@ -46,6 +46,13 @@ export let EmojiClearRecentClickEvent;
 export const EMOJI_CLEAR_RECENTS_CLICK = 'emoji-clear-recents-click';
 
 /**
+ *
+ * @typedef {!CustomEvent}
+ */
+export let V2ContentLoadedEvent;
+
+export const V2_CONTENT_LOADED = 'v2-content-loaded';
+/**
  * Constructs a CustomEvent with the given event type and details.
  * The event will bubble up through elements and components.
  *
