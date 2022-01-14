@@ -174,10 +174,10 @@ class FvdlTarget(emu_target.EmuTarget):
       for flag in env_flags:
         emu_command.extend(['--envs', flag])
 
-  def _ConnectToTarget(self):
+  def _WaitUntilReady(self):
     # Indicates the FVDL command finished running.
     self._emu_process.communicate()
-    super(FvdlTarget, self)._ConnectToTarget()
+    super(FvdlTarget, self)._WaitUntilReady()
 
   def _IsEmuStillRunning(self):
     if not self._pid:

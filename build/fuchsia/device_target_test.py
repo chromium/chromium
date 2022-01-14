@@ -27,13 +27,12 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
   def testNoNodeNameOneDeviceReturnNoneCheckNameAndAddress(self):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
-         mock.patch.object(
-             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
+         mock.patch.object(Target, '_WaitUntilReady') as mock_waituntilready:
       mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
       mock_spec_popen.communicate.return_value = ('address device_name', '')
       mock_spec_popen.returncode = 0
       mock_ffx.return_value = mock_spec_popen
-      mock_connecttotarget.return_value = True
+      mock_waituntilready.return_value = True
       self.assertIsNone(device_target_instance.Start())
       self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
@@ -68,12 +67,11 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     self.args.node_name = 'device_name'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch('subprocess.Popen') as mock_popen, \
-         mock.patch.object(
-             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
+         mock.patch.object(Target, '_WaitUntilReady') as mock_waituntilready:
       mock_popen.return_value.communicate.return_value = ('address',
                                                           'device_name')
       mock_popen.return_value.returncode = 0
-      mock_connecttotarget.return_value = True
+      mock_waituntilready.return_value = True
       self.assertIsNone(device_target_instance.Start())
       self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
@@ -105,7 +103,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(DeviceTarget, '_Discover') as mock_discover, \
-         mock.patch.object(DeviceTarget, '_ConnectToTarget') as mock_connect, \
+         mock.patch.object(DeviceTarget, '_WaitUntilReady') as mock_ready, \
          mock.patch.object(DeviceTarget, '_GetSdkHash') as mock_hash, \
          mock.patch.object(
             DeviceTarget, '_GetInstalledSdkVersion') as mock_version, \
@@ -121,7 +119,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(DeviceTarget, '_Discover') as mock_discover, \
-         mock.patch.object(DeviceTarget, '_ConnectToTarget') as mock_ready, \
+         mock.patch.object(DeviceTarget, '_WaitUntilReady') as mock_ready, \
          mock.patch.object(DeviceTarget, '_GetSdkHash') as mock_hash, \
          mock.patch.object(
             DeviceTarget, '_GetInstalledSdkVersion') as mock_version, \

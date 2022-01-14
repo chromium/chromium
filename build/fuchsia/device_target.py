@@ -13,11 +13,8 @@ import subprocess
 import target
 import time
 
-import ffx_session
-
-from common import ATTACH_RETRY_SECONDS, EnsurePathExists, \
-                   GetHostToolPathFromPlatform, RunGnSdkFunction, \
-                   SubprocessCallWithTimeout
+from common import EnsurePathExists, GetHostToolPathFromPlatform, \
+                   RunGnSdkFunction, SubprocessCallWithTimeout
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
@@ -93,7 +90,6 @@ class DeviceTarget(target.Target):
     self._system_image_dir = system_image_dir
     self._os_check = os_check
     self._pkg_repo = None
-    self._ffx_target = None
     if not self._system_image_dir and self._os_check != 'ignore':
       raise Exception("Image directory must be provided if a repave is needed.")
 
@@ -221,12 +217,12 @@ class DeviceTarget(target.Target):
 
   def Start(self):
     if self._host:
-      self._ConnectToTarget()
+      self._WaitUntilReady()
     else:
       device_found = self._Discover()
 
       if device_found:
-        self._ConnectToTarget()
+        self._WaitUntilReady()
         if self._os_check == 'ignore':
           return
 
@@ -255,10 +251,6 @@ class DeviceTarget(target.Target):
         raise Exception('Could not find device. If the device is connected '
                         'to the host remotely, make sure that --host flag '
                         'is set and that remote serving is set up.')
-
-  def GetFfxTarget(self):
-    assert self._ffx_target
-    return self._ffx_target
 
   def _GetInstalledSdkVersion(self):
     """Retrieves installed OS version from device.
@@ -335,24 +327,10 @@ class DeviceTarget(target.Target):
       raise Exception('Device %s couldn\'t be discovered via mDNS.' %
                       self._node_name)
 
-    self._ConnectToTarget()
+    self._WaitUntilReady();
 
   def _GetEndpoint(self):
     return (self._host, self._port)
-
-  def _ConnectToTarget(self):
-    logging.info('Connecting to Fuchsia using ffx.')
-    # Prefer connecting via node name over address:port. Assume that ffx already
-    # knows about the target, so there's no need to add/remove it.
-    self._ffx_target = ffx_session.FfxTarget(
-        self._ffx_runner, node_name=self._node_name) if self._node_name else \
-        ffx_session.FfxTarget(self._ffx_runner, self._host, self._port)
-    self._ffx_target.wait(ATTACH_RETRY_SECONDS)
-    return super(DeviceTarget, self)._ConnectToTarget()
-
-  def _DisconnectFromTarget(self):
-    super(DeviceTarget, self)._DisconnectFromTarget()
-    self._ffx_target = None
 
   def _GetSshConfigPath(self):
     return self._ssh_config_path
@@ -382,10 +360,9 @@ class DeviceTarget(target.Target):
 
   def Stop(self):
     try:
+      super(DeviceTarget, self).Stop()
+    finally:
       # End multiplexed ssh connection, ensure that ssh logging stops before
       # tests/scripts return.
       if self.IsStarted():
         self.RunCommand(['-O', 'exit'])
-    finally:
-      self._DisconnectFromTarget()
-      super(DeviceTarget, self).Stop()

@@ -18,10 +18,6 @@ IMAGES_ROOT = os.path.join(
     DIR_SOURCE_ROOT, 'third_party', 'fuchsia-sdk', 'images')
 SDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
 
-# The number of seconds to wait when trying to attach to a target.
-ATTACH_RETRY_SECONDS = 120
-
-
 def EnsurePathExists(path):
   """Checks that the file |path| exists on the filesystem and returns the path
   if it does, raising an exception otherwise."""

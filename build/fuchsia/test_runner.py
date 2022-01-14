@@ -12,7 +12,6 @@ import shutil
 import sys
 import tempfile
 
-import ffx_session
 from common_args import AddCommonArgs, AddTargetSpecificArgs, \
                         ConfigureLogging, GetDeploymentTargetForArgs
 from net_test_server import SetupTestServer
@@ -42,9 +41,6 @@ class TestOutputs(object):
   def __exit__(self, exc_type, exc_val, exc_tb):
     return False
 
-  def GetFfxSession(self):
-    raise NotImplementedError()
-
   def GetDevicePath(self, path):
     """Returns an absolute device-local variant of a path."""
     return ''
@@ -55,7 +51,7 @@ class TestOutputs(object):
 
 
 class TargetTestOutputs(TestOutputs):
-  """A TestOutputs implementation for CFv1 tests, where tests emit files into
+  """A TestOutputs implementation for CFv2 tests, where tests emit files into
   /tmp that are retrieved from the device via ssh."""
 
   def __init__(self, target, package_name, test_realms):
@@ -63,9 +59,6 @@ class TargetTestOutputs(TestOutputs):
     self._target = target
     self._package_name = package_name
     self._test_realms = test_realms
-
-  def GetFfxSession(self):
-    return None  # ffx is not used to run CFv1 tests.
 
   def GetDevicePath(self, path):
     return TEST_DATA_DIR + '/' + path
@@ -87,41 +80,33 @@ class CustomArtifactsTestOutputs(TestOutputs):
   """A TestOutputs implementation for CFv2 tests, where tests emit files into
   /custom_artifacts that are retrieved from the device automatically via ffx."""
 
-  def __init__(self, target):
+  def __init__(self):
     super(CustomArtifactsTestOutputs, self).__init__()
-    self._target = target
-    self._ffx_session_context = ffx_session.FfxSession(target._log_manager)
-    self._ffx_session = None
+    self._directory_manager = tempfile.TemporaryDirectory()
 
   def __enter__(self):
-    self._ffx_session = self._ffx_session_context.__enter__()
+    self._directory_manager.__enter__()
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
-    self._ffx_session = None
-    self._ffx_session_context.__exit__(exc_type, exc_val, exc_tb)
-    return False
-
-  def GetFfxSession(self):
-    assert self._ffx_session
-    return self._ffx_session
+    return self._directory_manager.__exit__(exc_type, exc_val, exc_tb)
 
   def GetDevicePath(self, path):
     return '/custom_artifacts/' + path
 
   def GetOutputDirectory(self):
-    return self._ffx_session.get_output_dir()
+    return self._directory_manager.name
 
   def GetFile(self, glob, destination):
     """Places all files/directories matched by a glob into a destination."""
     shutil.copy(
-        os.path.join(self.GetOutputDirectory(), 'artifact-0', 'custom-0', glob),
-        destination)
+        os.path.join(self._directory_manager.name, 'artifact-0', 'custom-0',
+                     glob), destination)
 
 
 def MakeTestOutputs(component_version, target, package_name, test_realms):
   if component_version == '2':
-    return CustomArtifactsTestOutputs(target)
+    return CustomArtifactsTestOutputs()
   return TargetTestOutputs(target, package_name, test_realms)
 
 
@@ -349,10 +334,9 @@ def main():
         run_package_args.use_run_test_component = True
       if args.component_version == "2":
         run_package_args.output_directory = test_outputs.GetOutputDirectory()
-      returncode = RunTestPackage(target, test_outputs.GetFfxSession(),
-                                  args.package, args.package_name,
-                                  args.component_version, child_args,
-                                  run_package_args)
+      returncode = RunTestPackage(args.out_dir, target, args.package,
+                                  args.package_name, args.component_version,
+                                  child_args, run_package_args)
 
       if test_server:
         test_server.Stop()
