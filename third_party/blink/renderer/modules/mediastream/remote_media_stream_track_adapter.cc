@@ -20,11 +20,8 @@ namespace blink {
 RemoteVideoTrackAdapter::RemoteVideoTrackAdapter(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
     webrtc::VideoTrackInterface* webrtc_track,
-    scoped_refptr<MetronomeProvider> metronome_provider,
-    ExecutionContext* track_execution_context)
-    : RemoteMediaStreamTrackAdapter(main_thread,
-                                    webrtc_track,
-                                    track_execution_context),
+    scoped_refptr<MetronomeProvider> metronome_provider)
+    : RemoteMediaStreamTrackAdapter(main_thread, webrtc_track),
       metronome_provider_(std::move(metronome_provider)) {
   std::unique_ptr<TrackObserver> observer(
       new TrackObserver(main_thread, observed_track().get()));
@@ -68,11 +65,8 @@ void RemoteVideoTrackAdapter::InitializeWebVideoTrack(
 
 RemoteAudioTrackAdapter::RemoteAudioTrackAdapter(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
-    webrtc::AudioTrackInterface* webrtc_track,
-    ExecutionContext* track_execution_context)
-    : RemoteMediaStreamTrackAdapter(main_thread,
-                                    webrtc_track,
-                                    track_execution_context),
+    webrtc::AudioTrackInterface* webrtc_track)
+    : RemoteMediaStreamTrackAdapter(main_thread, webrtc_track),
 #if DCHECK_IS_ON()
       unregistered_(false),
 #endif
