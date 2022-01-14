@@ -40,7 +40,7 @@
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_view.h"
 
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #include "base/files/file_util.h"
 #include "printing/image.h"
 
@@ -646,11 +646,11 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
 
 // RenderViewTest-based tests crash on Android
 // http://crbug.com/187500
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PrintRenderFrameHelperTest DISABLED_PrintRenderFrameHelperTest
 #else
 #define MAYBE_PrintRenderFrameHelperTest PrintRenderFrameHelperTest
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class MAYBE_PrintRenderFrameHelperTest : public PrintRenderFrameHelperTestBase {
  public:
@@ -793,7 +793,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BasicBeforePrintAfterPrintSubFrame) {
   VerifyPagesPrinted(true, sub_render_frame);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // TODO(estade): I don't think this test is worth porting to Linux. We will have
 // to rip out and replace most of the IPC code if we ever plan to improve
 // printing, and the comment below by sverrir suggests that it doesn't do much
@@ -836,7 +836,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
   EXPECT_NE(0, image1.size().width());
   EXPECT_NE(0, image1.size().height());
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 // Tests if we can print a page and verify its results.
 // This test prints HTML pages into a pseudo printer and check their outputs,
@@ -852,7 +852,7 @@ struct TestPageData {
   const wchar_t* file;
 };
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 const TestPageData kTestPages[] = {
     {
         "<html>"
@@ -872,14 +872,14 @@ const TestPageData kTestPages[] = {
         600, 780, nullptr, nullptr,
     },
 };
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }  // namespace
 
 // TODO(estade): need to port MockPrinter to get this on Linux. This involves
 // hooking up Cairo to read a pdf stream, or accessing the cairo surface in the
 // metafile directly.
 // Same for printing via PDF on Windows.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest) {
   bool baseline = false;
 
@@ -931,7 +931,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest) {
     }
   }
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 // These print preview tests do not work on Chrome OS yet.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

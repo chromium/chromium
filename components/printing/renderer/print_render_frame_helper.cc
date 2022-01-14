@@ -129,7 +129,7 @@ void ExecuteScript(blink::WebLocalFrame* frame,
 }
 
 int GetDPI(const mojom::PrintParams& print_params) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On Mac, the printable area is in points, don't do any scaling based on DPI.
   return kPointsPerInch;
 #else
@@ -137,7 +137,7 @@ int GetDPI(const mojom::PrintParams& print_params) {
   // prevent bad quality print jobs on rectantular DPI printers.
   return static_cast<int>(
       std::max(print_params.dpi.width(), print_params.dpi.height()));
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 bool PrintMsg_Print_Params_IsValid(const mojom::PrintParams& params) {
@@ -327,7 +327,7 @@ void ComputeWebKitPrintParamsInDesiredDpi(
     webkit_print_params->scale_factor =
         static_cast<int>(print_params.scale_factor * 100);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // For Mac, GetDPI() returns a value that avoids DPI-based scaling. This is
     // correct except when rastering PDFs, which uses |printer_dpi|, and the
     // value for |printer_dpi| is too low. Adjust that here.
@@ -2109,7 +2109,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
   page_params->content = mojom::DidPrintContentParams::New();
   gfx::Size* page_size_in_dpi;
   gfx::Rect* content_area_in_dpi;
-#if defined(OS_APPLE) || defined(OS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   page_size_in_dpi = &page_params->page_size;
   content_area_in_dpi = &page_params->content_area;
 #else
@@ -2136,7 +2136,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
   }
 
   page_params->document_cookie = print_params.document_cookie;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   page_params->physical_offsets = printer_printable_area_.origin();
 #endif
   bool completed = false;
@@ -2407,7 +2407,7 @@ bool PrintRenderFrameHelper::RenderPagesForPrint(blink::WebLocalFrame* frame,
   return true;
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
                                                uint32_t page_number,
                                                uint32_t page_count,
@@ -2446,7 +2446,7 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
       params.display_header_footer ? gfx::Rect(page_size) : content_area;
 
   // TODO(thestig): Figure out why Linux is different.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   float webkit_page_shrink_factor = frame->GetPrintPageShrink(page_number);
   float final_scale_factor = css_scale_factor * webkit_page_shrink_factor;
 #else
@@ -2461,7 +2461,7 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   canvas->SetPrintingMetafile(metafile);
 
   if (params.display_header_footer) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     const float fudge_factor = 1;
 #else
     // TODO(thestig): Figure out why Linux needs this. It is almost certainly
@@ -2483,7 +2483,7 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   bool ret = metafile->FinishPage();
   DCHECK(ret);
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::ShowScriptedPrintPreview() {

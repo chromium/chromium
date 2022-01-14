@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
@@ -229,7 +230,7 @@ void PdfPrintManager::SetAccessibilityTree(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PdfPrintManager::PdfWritingDone(int page_count) {}
 #endif
 

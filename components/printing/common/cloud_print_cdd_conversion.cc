@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "printing/backend/print_backend.h"
@@ -38,7 +39,7 @@ printer::DuplexType ToCloudDuplexType(printing::mojom::DuplexMode mode) {
   return printer::DuplexType::NO_DUPLEX;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 printer::TypedValueVendorCapability::ValueType ToCloudValueType(
     printing::AdvancedCapability::Type type) {
   switch (type) {
@@ -55,7 +56,7 @@ printer::TypedValueVendorCapability::ValueType ToCloudValueType(
   }
   return printer::TypedValueVendorCapability::ValueType::STRING;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 printer::Media ConvertPaperToMedia(
     const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
@@ -134,7 +135,7 @@ printer::DpiCapability GetDpiCapabilities(
   return dpi_capabilities;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 printer::VendorCapabilities GetVendorCapabilities(
     const printing::PrinterSemanticCapsAndDefaults& semantic_info) {
   printer::VendorCapabilities vendor_capabilities;
@@ -164,7 +165,7 @@ printer::VendorCapabilities GetVendorCapabilities(
 
   return vendor_capabilities;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -231,7 +232,7 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
   orientation.AddOption(printer::OrientationType::AUTO_ORIENTATION);
   orientation.SaveTo(&description);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   printer::PinCapability pin;
   pin.set_value(semantic_info.pin_supported);
   pin.SaveTo(&description);
@@ -241,7 +242,7 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
         GetVendorCapabilities(semantic_info);
     vendor_capabilities.SaveTo(&description);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return std::move(description).ToValue();
 }

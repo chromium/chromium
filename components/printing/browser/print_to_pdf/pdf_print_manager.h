@@ -93,7 +93,7 @@ class PdfPrintManager : public printing::PrintManager,
       int32_t cookie,
       const ui::AXTreeUpdate& accessibility_tree) override;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void PdfWritingDone(int page_count) override;
 #endif
 

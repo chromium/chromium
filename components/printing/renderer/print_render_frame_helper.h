@@ -34,11 +34,11 @@
 
 // RenderViewTest-based tests crash on Android
 // http://crbug.com/187500
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PrintRenderFrameHelperTest DISABLED_PrintRenderFrameHelperTest
 #else
 #define MAYBE_PrintRenderFrameHelperTest PrintRenderFrameHelperTest
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
 class DictionaryValue;
@@ -173,10 +173,10 @@ class PrintRenderFrameHelper
                            BlockScriptInitiatedPrinting);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
                            BlockScriptInitiatedPrintingFromPopup);
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe);
-#endif  // defined(OS_WIN) || defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
   // CREATE_IN_PROGRESS signifies that the preview document is being rendered
   // asynchronously by a PrintRenderer.
