@@ -964,11 +964,6 @@
     "expiry_milestone": 110
   },
   {
-      "name": "cross-origin-embedder-policy-credentialless",
-      "owners": ["arthursonzogni", "clamy", "mkwst"],
-      "expiry_milestone": 96
-  },
-  {
     "name": "crostini-bullseye-upgrade",
     "owners": [ "sidereal@google.com", "clumptini@google.com" ],
     "expiry_milestone": 110
