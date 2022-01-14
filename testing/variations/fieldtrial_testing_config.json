@@ -1290,29 +1290,6 @@
             ]
         }
     ],
-    "AutofillRendererFormCacheMemoryLeak": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NewFormExtraction_20210815",
-                    "enable_features": [
-                        "AutofillUseNewFormExtraction",
-                        "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillServerTypeTakesPrecedence": [
         {
             "platforms": [
@@ -6479,6 +6456,21 @@
             ]
         }
     ],
+    "PrewarmSearchResultsPageFonts": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrewarmSearchResultsPageFonts"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyPreservingPrefetchProxy": [
         {
             "platforms": [
@@ -9330,21 +9322,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WifiSyncAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "Win11StyleMenus": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "Win11StyleMenus"
                     ]
                 }
             ]
