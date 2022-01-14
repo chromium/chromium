@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -29,7 +30,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       bool is_web_secure_context,
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
-      const network::CrossOriginOpenerPolicy& cross_origin_opener_policy);
+      const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
   PolicyContainerPolicies operator=(const PolicyContainerPolicies&) = delete;
   ~PolicyContainerPolicies();
@@ -72,6 +74,11 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // See:
   // https://html.spec.whatwg.org/multipage/origin.html#cross-origin-opener-policies
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
+
+  // The cross-origin-embedder-policy (COEP) of the document
+  // See:
+  // https://html.spec.whatwg.org/multipage/origin.html#coep
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -147,6 +154,11 @@ class CONTENT_EXPORT PolicyContainerHost
 
   network::CrossOriginOpenerPolicy cross_origin_opener_policy() const {
     return policies_->cross_origin_opener_policy;
+  }
+
+  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
+      const {
+    return policies_->cross_origin_embedder_policy;
   }
 
   void AddContentSecurityPolicies(

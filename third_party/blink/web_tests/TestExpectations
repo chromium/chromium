@@ -6859,7 +6859,6 @@ crbug.com/1221420 virtual/gpu/fast/canvas/canvas-ellipse-zero-lineto.html [ Fail
 # Sheriff
 crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
 crbug.com/1223327 virtual/prerender/wpt_internal/prerender/unload.html [ Pass Timeout ]
-crbug.com/1222097 external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
 crbug.com/1222097 external/wpt/mediacapture-image/detached-HTMLCanvasElement.html [ Skip ]
 crbug.com/1222097 http/tests/canvas/captureStream-on-detached-canvas.html [ Skip ]
 crbug.com/1222097 external/wpt/html/cross-origin-embedder-policy/worker-inheritance.sub.https.html [ Skip ]

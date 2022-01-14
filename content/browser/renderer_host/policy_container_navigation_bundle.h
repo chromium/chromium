@@ -84,6 +84,11 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // This must be called before |ComputePolicies()|.
   void SetCrossOriginOpenerPolicy(network::CrossOriginOpenerPolicy coop);
 
+  // Sets the cross origin embedder policy of the new document.
+  //
+  // This must be called before |ComputePolicies()|.
+  void SetCrossOriginEmbedderPolicy(network::CrossOriginEmbedderPolicy coep);
+
   // Sets the IP address space of the delivered policies of the new document.
   //
   // This must be called before |ComputePolicies()|.

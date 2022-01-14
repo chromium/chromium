@@ -407,6 +407,37 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       BlobInheritsInitiatorSameOriginPlusCoepCredentialless) {
+  GURL starting_page(
+      https_server()->GetURL("a.test",
+                             "/set-header"
+                             "?cross-origin-opener-policy: same-origin"
+                             "&cross-origin-embedder-policy: credentialless"));
+  EXPECT_TRUE(NavigateToURL(shell(), starting_page));
+
+  // Create and open blob.
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+    const blob = new Blob(['foo'], {type : 'text/html'});
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(shell_observer.GetShell()->web_contents()));
+  RenderFrameHostImpl* popup_rfh =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents())
+          ->GetMainFrame();
+
+  // COOP and COEP inherited from Blob creator
+  // TODO(https://crbug.com/1059300) COOP should be inherited from creator and
+  // be same-origin-plus-coep.
+  EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
+            CoopUnsafeNoneWithSoapByDefault());
+
+  EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
+            network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless);
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        BlobInheritsInitiatorSameOriginPlusCoep) {
   GURL starting_page(
       https_server()->GetURL("a.test",
@@ -433,10 +464,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopUnsafeNoneWithSoapByDefault());
 
-  // TODO(https://crbug.com/1151223) COEP should be inherited from creator and
-  // be require-corp
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
-            network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -466,10 +495,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopUnsafeNoneWithSoapByDefault());
 
-  // TODO(https://crbug.com/1151223) COEP should be inherited from creator and
-  // be require-corp
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
-            network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -512,10 +539,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopUnsafeNoneWithSoapByDefault());
 
-  // TODO(https://crbug.com/1151223) COEP should be inherited from creator and
-  // be require-corp
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
-            network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,

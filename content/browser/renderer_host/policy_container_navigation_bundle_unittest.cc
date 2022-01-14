@@ -46,7 +46,7 @@ std::unique_ptr<PolicyContainerPolicies> MakeTestPolicies() {
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kPublic,
       /*is_web_secure_context=*/true, std::move(csp_list),
-      network::CrossOriginOpenerPolicy());
+      network::CrossOriginOpenerPolicy(), network::CrossOriginEmbedderPolicy());
 }
 
 // Shorthand.

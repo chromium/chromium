@@ -135,6 +135,13 @@ void PolicyContainerNavigationBundle::SetCrossOriginOpenerPolicy(
   delivered_policies_->cross_origin_opener_policy = coop;
 }
 
+void PolicyContainerNavigationBundle::SetCrossOriginEmbedderPolicy(
+    network::CrossOriginEmbedderPolicy coep) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_->cross_origin_embedder_policy = coep;
+}
+
 const PolicyContainerPolicies&
 PolicyContainerNavigationBundle::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());

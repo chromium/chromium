@@ -27,6 +27,7 @@ struct SameSizeAsPolicyContainerPolicies {
   std::vector<network::mojom::ContentSecurityPolicyPtr>
       content_security_policies;
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
 };
 
 }  // namespace
@@ -54,11 +55,17 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
   coop.reporting_endpoint = "endpoint 1";
   coop.report_only_reporting_endpoint = "endpoint 2";
+  network::CrossOriginEmbedderPolicy coep;
+  coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  coep.report_only_value =
+      network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+  coep.reporting_endpoint = "endpoint 1";
+  coep.report_only_reporting_endpoint = "endpoint 2";
 
   auto policies = std::make_unique<PolicyContainerPolicies>(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kUnknown,
-      /*is_web_secure_context=*/true, std::move(csps), coop);
+      /*is_web_secure_context=*/true, std::move(csps), coop, coep);
 
   EXPECT_THAT(policies->Clone(), Pointee(Eq(ByRef(*policies))));
 }

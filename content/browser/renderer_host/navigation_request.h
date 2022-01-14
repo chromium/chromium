@@ -813,10 +813,6 @@ class CONTENT_EXPORT NavigationRequest
   //          NavigationThrottle.
   bool NeedsUrlLoader();
 
-  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy() const {
-    return cross_origin_embedder_policy_;
-  }
-
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy()
       const {
     return private_network_request_policy_;
@@ -1360,8 +1356,18 @@ class CONTENT_EXPORT NavigationRequest
 
   void CreateCoepReporter(StoragePartition* storage_partition);
 
-  bool CheckResponseAdherenceToCoep(network::CrossOriginEmbedderPolicy* coep,
-                                    const GURL& url);
+  // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
+  //
+  // Returns the CrossOriginEmbedderPolicy for the document, which is inherited
+  // or retrieved from response headers.
+  network::CrossOriginEmbedderPolicy ComputeCrossOriginEmbedderPolicy();
+
+  // [spec]:
+  // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
+  //
+  // Return whether the response's COEP is compatible with its parent's COEP. It
+  // also sends COEP reports if needed.
+  bool CheckResponseAdherenceToCoep(const GURL& url);
 
   absl::optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
 
@@ -1949,7 +1955,6 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(ahemery, titouan): Move some elements to the policy container or
   // rework inheritance.
   // https://crbug.com/1154729
-  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kWarn;
 

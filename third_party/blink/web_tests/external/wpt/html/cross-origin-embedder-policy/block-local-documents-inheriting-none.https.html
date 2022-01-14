@@ -2,7 +2,6 @@
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <div id=log></div>
@@ -58,7 +57,7 @@ promise_test(async t => {
   // They initially navigate to blank.html and have COEP: require-corp set.
   // This initial navigation is required because it uses the parent frame as the
   // initiator. That is first_iframe is the initiator, while we want top to be
-  // the initiator for this test, which will be done in step 3 with a second
+  // the initiator for this test, which will be done in step 4 with a second
   // navigation from that blank.html document to the local scheme one.
   const nested_frames = {};
   const nested_frames_promises = [];
@@ -74,7 +73,16 @@ promise_test(async t => {
   // 2. Wait for the loads of all iframes to complete.
   await Promise.all(nested_frames_promises);
 
-  // 3. Navigate nested frames to a local scheme document.
+  // 3. Navigate a dummy frame. This is required because some browsers (Chrome)
+  // might consider the first navigation in 4. as a redirect otherwise.
+  const dummy_Frame = document.createElement("iframe");
+  t.add_cleanup( () => dummy_Frame.remove() );
+  dummy_Frame.src = "/common/blank.html";
+  iframe_load_promise = new Promise( resolve => dummy_Frame.addEventListener("load", resolve) );
+  document.body.append(dummy_Frame);
+  await iframe_load_promise;
+
+  // 4. Navigate nested frames to a local scheme document.
   // COEP should be inherited from the initiator or blobURL's creator (top in both
   // cases), this results in COEP being none and the documents not being allowed
   // to load under the COEP: require-corp iframe (first_iframe).
@@ -87,7 +95,7 @@ promise_test(async t => {
     frame.contentDocument.location = test.url;
   });
 
-  // 4. Wait and validate reports.
+  // 5. Wait and validate reports.
   const reports = await reportPromise;
   assert_equals(reports.length, test_cases.length);
   test_cases.forEach(test => {
@@ -99,6 +107,6 @@ promise_test(async t => {
   });
   // Also verify that no message was sent by the nested frames and stored in
   // received_events.
-  assert_equals([], received_events.sort());
+  assert_equals(received_events.length, 0);
 }, "Prevent local scheme documents from loading within a COEP: require-corp iframe if they inherit COEP: none");
 </script>

@@ -1834,11 +1834,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
-    return cross_origin_embedder_policy_;
-  }
-  void set_cross_origin_embedder_policy(
-      network::CrossOriginEmbedderPolicy policy) {
-    cross_origin_embedder_policy_ = policy;
+    return policy_container_host_->cross_origin_embedder_policy();
   }
   CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_.get();
@@ -3374,8 +3370,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // behavior it explains is fixed.
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kBlock;
-
-  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 
   // Track the SiteInfo of the last site we committed successfully, as obtained
   // from SiteInstanceImpl::GetSiteInfoForURL().

@@ -1446,15 +1446,6 @@ NavigationRequest::NavigationRequest(
       initiator_frame_token_.has_value() ? &*initiator_frame_token_ : nullptr,
       frame_entry);
 
-  // Initialize the ClientSecurityState's COEP to that of the current document.
-  // It will be updated when a network response is received. For navigations
-  // that do not result in a network request, the COEP of the current document
-  // is passed to the next one.
-  // TODO(pmeuleman, clamy): Should we take into account the initiator COEP
-  // instead?
-  cross_origin_embedder_policy_ =
-      frame_tree_node_->current_frame_host()->cross_origin_embedder_policy();
-
   NavigationControllerImpl* controller = GetNavigationController();
 
   if (frame_entry) {
@@ -2057,6 +2048,21 @@ void NavigationRequest::BeginNavigationImpl() {
     if (IsSameDocument()) {
       render_frame_host_ = frame_tree_node_->current_frame_host();
     } else {
+      // [spec]: https://html.spec.whatwg.org/C/#process-a-navigate-response
+      // 4. if [...] the result of checking a navigation response's adherence to
+      // its embedder policy [...], then set failure to true.
+      if (!CheckResponseAdherenceToCoep(common_params_->url)) {
+        OnRequestFailedInternal(network::URLLoaderCompletionStatus(
+                                    network::mojom::BlockedByResponseReason::
+                                        kCoepFrameResourceNeedsCoepHeader),
+                                false /* skip_throttles */,
+                                absl::nullopt /* error_page_content */,
+                                false /* collapse_frame */);
+        return;
+        // DO NOT ADD CODE after this. The previous call to
+        // OnRequestFailedInternal has destroyed the NavigationRequest.
+      }
+
       // Enforce cross-origin-opener-policy for about:blank, about:srcdoc and
       // MHTML iframe, before selecting the RenderFrameHost.
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
@@ -2418,10 +2424,13 @@ void NavigationRequest::CreateCoepReporter(
     StoragePartition* storage_partition) {
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
+  const PolicyContainerPolicies& policies =
+      policy_container_navigation_bundle_->FinalPolicies();
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
       static_cast<StoragePartitionImpl*>(storage_partition)->GetWeakPtr(),
-      common_params_->url, cross_origin_embedder_policy_.reporting_endpoint,
-      cross_origin_embedder_policy_.report_only_reporting_endpoint,
+      common_params_->url,
+      policies.cross_origin_embedder_policy.reporting_endpoint,
+      policies.cross_origin_embedder_policy.report_only_reporting_endpoint,
       render_frame_host_->GetFrameToken().value(),
       isolation_info_for_subresources_.network_isolation_key());
 }
@@ -3235,44 +3244,10 @@ void NavigationRequest::OnResponseStarted(
     return;
   }
 
-  auto cross_origin_embedder_policy =
-      CoepFromMainResponse(url, response_head_.get());
-
-  // Compute "topLevelCreationURL" for COEP and secure context.
-  //
-  // [spec]: https://html.spec.whatwg.org/C/#initialise-the-document-object
-  // 3. Let creationURL be navigationParams's response's URL.
-  // 5. If browsingContext is still on its initial about:blank Document [...]
-  // 6. Otherwise:
-  // 6.6. Let topLevelCreationURL be creationURL.
-  // 6.8. If browsingContext is not a top-level browsing context, then:
-  // 6.8.2. Set topLevelCreationURL to parentEnvironment's top-level creation
-  //        URL.
-  //
-  // TODO(arthursonzogni): It would be good clarifying what means
-  // |topLevelCreationURL| when loading FencedFrame/Portals/GuestView, and how
-  // it should affects COEP.
-  // Tracking bug:
-  // - FencedFrame: https://crbug.com/1277430
-  // - Portals: https://crbug.com/1278207
-  // - GuestView: XXX or slightly related https://crbug.com/1260747
-  const GURL& top_level_creation_url =
-      IsInMainFrame() ? url
-                      : frame_tree_node_->current_frame_host()
-                            ->GetMainFrame()
-                            ->GetLastCommittedURL();
-
-  // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
-  //
-  // 1. Let policy be a new embedder policy.
-  // 2. If environment is a non-secure context, then return policy.
-  if (!network::IsUrlPotentiallyTrustworthy(top_level_creation_url))
-    cross_origin_embedder_policy = network::CrossOriginEmbedderPolicy();
-
   // [spec]: https://html.spec.whatwg.org/C/#process-a-navigate-response
   // 4. if [...] the result of checking a navigation response's adherence to its
   // embedder policy [...], then set failure to true.
-  if (!CheckResponseAdherenceToCoep(&cross_origin_embedder_policy, url)) {
+  if (!CheckResponseAdherenceToCoep(url)) {
     // TODO(https://crbug.com/1172169): Investigate what must be done in
     // case of a download.
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(
@@ -3337,8 +3312,6 @@ void NavigationRequest::OnResponseStarted(
 
   if (render_frame_host_)
     DetermineOriginAgentClusterEndResult();
-
-  cross_origin_embedder_policy_ = cross_origin_embedder_policy;
 
   if (!commit_params_->is_browser_initiated && render_frame_host_ &&
       render_frame_host_->GetProcess() !=
@@ -4520,7 +4493,9 @@ void NavigationRequest::CommitNavigation() {
     // Notify the service worker navigation handle that navigation commit is
     // about to go.
     service_worker_handle_->OnBeginNavigationCommit(
-        render_frame_host_->GetGlobalId(), cross_origin_embedder_policy_,
+        render_frame_host_->GetGlobalId(),
+        policy_container_navigation_bundle_->FinalPolicies()
+            .cross_origin_embedder_policy,
         std::move(reporter_remote), &service_worker_container_info,
         commit_params_->document_ukm_source_id);
   }
@@ -6715,14 +6690,75 @@ void NavigationRequest::ForceEnableOriginTrials(
   commit_params_->force_enabled_origin_trials = trials;
 }
 
+network::CrossOriginEmbedderPolicy
+NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
+  const auto& url = common_params_->url;
+  // Fenced Frames should respect the outer frame's COEP.
+  // Note: we only check the outer document for fenced frames, because it's
+  // unclear if other embedded cases like Portals should inherit COEP from
+  // the embedder as well.
+  // TODO(https://crbug.com/1278207) add other embedded cases if needed.
+  RenderFrameHostImpl* const parent =
+      GetNavigatingFrameType() == FrameType::kFencedFrameRoot
+          ? GetParentFrameOrOuterDocument()
+          : GetParentFrame();
+  bool is_fenced_frame_from_local_scheme =
+      GetNavigatingFrameType() == FrameType::kFencedFrameRoot &&
+      (url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme));
+
+  // Some special URLs not loaded using the network inherit the
+  // Cross-Origin-Embedder-Policy header from their parent.
+  if (parent && (GetContentClient()
+                     ->browser()
+                     ->ShouldInheritCrossOriginEmbedderPolicyImplicitly(url) ||
+                 is_fenced_frame_from_local_scheme)) {
+    return parent->cross_origin_embedder_policy();
+  }
+
+  // Compute "topLevelCreationURL" for COEP and secure context.
+  //
+  // [spec]: https://html.spec.whatwg.org/C/#initialise-the-document-object
+  // 3. Let creationURL be navigationParams's response's URL.
+  // 5. If browsingContext is still on its initial about:blank Document [...]
+  // 6. Otherwise:
+  // 6.6. Let topLevelCreationURL be creationURL.
+  // 6.8. If browsingContext is not a top-level browsing context, then:
+  // 6.8.2. Set topLevelCreationURL to parentEnvironment's top-level creation
+  //        URL.
+  //
+  // TODO(arthursonzogni): It would be good to clarify what
+  // |topLevelCreationURL| means when loading FencedFrame/Portals/GuestView, and
+  // how it should affect COEP.
+  // Tracking bug:
+  // - FencedFrame: https://crbug.com/1277430
+  // - Portals: https://crbug.com/1278207
+  // - GuestView: XXX or slightly related https://crbug.com/1260747
+  const GURL& top_level_creation_url =
+      IsInMainFrame() ? url
+                      : frame_tree_node_->current_frame_host()
+                            ->GetMainFrame()
+                            ->GetLastCommittedURL();
+  // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
+  //
+  // 1. Let policy be a new embedder policy.
+  // 2. If environment is a non-secure context, then return policy.
+  if (network::IsUrlPotentiallyTrustworthy(top_level_creation_url)) {
+    if (response_head_) {
+      return CoepFromMainResponse(url, response_head_.get());
+    }
+  }
+  return network::CrossOriginEmbedderPolicy();
+}
+
 // [spec]:
 // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
 //
 // Return whether the child's |coep| is compatible with its parent's COEP. It
 // also sends COEP reports if needed.
-bool NavigationRequest::CheckResponseAdherenceToCoep(
-    network::CrossOriginEmbedderPolicy* coep,
-    const GURL& url) {
+bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
+  const auto& coep = policy_container_navigation_bundle_->FinalPolicies()
+                         .cross_origin_embedder_policy;
+
   // Fenced Frames should respect the outer frame's COEP.
   // Note: we only check the outer document for fenced frames, because it's
   // unclear if other embedded cases like Portals should inherit COEP from
@@ -6743,23 +6779,10 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(
   CrossOriginEmbedderPolicyReporter* parent_coep_reporter =
       parent->coep_reporter();
 
-  // Some special URLs not loaded using the network are inheriting the
-  // Cross-Origin-Embedder-Policy header from their parent.
-  // TODO(https://crbug.com/1153648) Add COEP into the PolicyContainer and
-  // remove this fragile inheritance mechanism.
-  const bool inherit_coep_from_parent =
-      url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme) ||
-      GetContentClient()
-          ->browser()
-          ->ShouldInheritCrossOriginEmbedderPolicyImplicitly(url);
-  if (inherit_coep_from_parent)
-    coep->value = parent_coep.value;
-
   // [spec]: 3. If parentPolicy's report-only value is compatible with
   // cross-origin isolation and responsePolicy's value is not, then queue a
   // cross-origin embedder policy inheritance violation [...].
-  if (CoepBlockIframe(parent_coep.report_only_value, coep->value,
-                      anonymous())) {
+  if (CoepBlockIframe(parent_coep.report_only_value, coep.value, anonymous())) {
     if (parent_coep_reporter) {
       parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
                                                   /*report_only=*/true);
@@ -6769,7 +6792,7 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(
   // [spec]: 4. If parentPolicy's value is not compatible with cross-origin
   // isolation or responsePolicy's value is compatible with cross-origin
   // isolation, then return true.
-  if (!CoepBlockIframe(parent_coep.value, coep->value, anonymous()))
+  if (!CoepBlockIframe(parent_coep.value, coep.value, anonymous()))
     return true;
 
   // [spec]: 5 Queue a cross-origin embedder policy inheritance violation with
@@ -6808,14 +6831,17 @@ NavigationRequest::EnforceCOEP() {
 }
 
 bool NavigationRequest::CoopCoepSanityCheck() {
+  const PolicyContainerPolicies& policies =
+      policy_container_navigation_bundle_->FinalPolicies();
   network::mojom::CrossOriginOpenerPolicyValue coop_value =
-      IsInMainFrame() ? coop_status_.current_coop().value
+      IsInMainFrame() ? policies.cross_origin_opener_policy.value
                       : render_frame_host_->GetMainFrame()
                             ->cross_origin_opener_policy()
                             .value;
   if (coop_value ==
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
-      !CompatibleWithCrossOriginIsolated(cross_origin_embedder_policy_)) {
+      !CompatibleWithCrossOriginIsolated(
+          policies.cross_origin_embedder_policy)) {
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return false;
@@ -6843,7 +6869,7 @@ NavigationRequest::BuildClientSecurityState() {
   client_security_state->ip_address_space = policies.ip_address_space;
 
   client_security_state->cross_origin_embedder_policy =
-      cross_origin_embedder_policy_;
+      policies.cross_origin_embedder_policy;
   client_security_state->private_network_request_policy =
       private_network_request_policy_;
 
@@ -6960,8 +6986,10 @@ void NavigationRequest::RecordAddressSpaceFeature() {
 }
 
 void NavigationRequest::ComputePoliciesToCommit() {
+  const auto& url = common_params_->url;
+
   network::mojom::IPAddressSpace response_address_space =
-      CalculateIPAddressSpace(common_params_->url, response_head_.get());
+      CalculateIPAddressSpace(url, response_head_.get());
   policy_container_navigation_bundle_->SetIPAddressSpace(
       response_address_space);
 
@@ -6976,7 +7004,11 @@ void NavigationRequest::ComputePoliciesToCommit() {
   policy_container_navigation_bundle_->SetIsOriginPotentiallyTrustworthy(
       network::IsOriginPotentiallyTrustworthy(
           GetOriginForURLLoaderFactoryUnchecked(this)));
-  policy_container_navigation_bundle_->ComputePolicies(common_params_->url);
+
+  policy_container_navigation_bundle_->SetCrossOriginEmbedderPolicy(
+      ComputeCrossOriginEmbedderPolicy());
+
+  policy_container_navigation_bundle_->ComputePolicies(url);
 
   ComputeSandboxFlagsToCommit();
 }
