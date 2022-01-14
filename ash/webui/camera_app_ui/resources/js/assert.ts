@@ -52,8 +52,13 @@ export function assertNotReached(optMessage = 'Unreachable code hit'): never {
  * @param optMessage A message to show when this is hit.
  */
 export function assertInstanceof<T>(
-    value: unknown, ctor: new (...args: unknown[]) => T,
-    optMessage?: string): T {
+    value: unknown,
+    // "unknown" doesn't work well here if the constructor have overloads with
+    // different numbers of argument and strictNullChecks on.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ctor: new (...args: any[]) => T,
+    optMessage?: string,
+    ): T {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (!(value instanceof ctor)) {
