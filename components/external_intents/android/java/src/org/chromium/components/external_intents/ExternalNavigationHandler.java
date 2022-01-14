@@ -1881,16 +1881,14 @@ public class ExternalNavigationHandler {
         }
     }
 
+    // TODO(https://crbug.com/1287233): Rename this function since we're no longer calling
+    // startActivityIfNeeded.
     private OverrideUrlLoadingResult doStartActivityIfNeeded(Intent intent, Activity activity) {
-        if (activity.startActivityIfNeeded(intent, -1)) {
-            if (DEBUG) Log.i(TAG, "startActivityIfNeeded");
-            mDelegate.didStartActivity(intent);
-            recordExternalNavigationDispatched(intent);
-            return OverrideUrlLoadingResult.forExternalIntent();
-        } else {
-            if (DEBUG) Log.i(TAG, "The current Activity was the only targeted Activity.");
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
+        if (DEBUG) Log.i(TAG, "startActivity");
+        activity.startActivity(intent);
+        mDelegate.didStartActivity(intent);
+        recordExternalNavigationDispatched(intent);
+        return OverrideUrlLoadingResult.forExternalIntent();
     }
 
     @SuppressWarnings("UseCompatLoadingForDrawables")
