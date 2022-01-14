@@ -942,8 +942,8 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(
           run_loop.Quit();
       }));
   {
-    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                    prefs::kWebAppInstallForceList);
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kWebAppInstallForceList);
     size_t removed_count =
         update->EraseListValueIf([&](const base::Value& item) {
           const base::Value* url_value = item.FindKey(kUrlKey);
@@ -1435,8 +1435,8 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     item.SetKey(kDefaultLaunchContainerKey,
                 std::move(default_launch_container));
     item.SetKey(kCreateDesktopShortcutKey, base::Value(create_shortcut));
-    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                    prefs::kWebAppInstallForceList);
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kWebAppInstallForceList);
     update->Append(item.Clone());
   }
   active_app_id_ = observer.Wait();
@@ -1460,8 +1460,8 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
       }));
   std::string url_spec = provider()->registrar().GetAppStartUrl(id).spec();
   {
-    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                    prefs::kWebAppInstallForceList);
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kWebAppInstallForceList);
     size_t removed_count =
         update->EraseListValueIf([&](const base::Value& item) {
           const base::Value* url_value = item.FindKey(kUrlKey);
