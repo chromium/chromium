@@ -19,11 +19,11 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 
 /**
- * The coordinator for the tab switcher mode top toolbar shown on phones, responsible for
+ * The coordinator for the tab switcher mode top toolbar, responsible for
  * communication with other UI components and lifecycle. Lazily creates the tab
  * switcher mode top toolbar the first time it's needed.
  */
-class TabSwitcherModeTTCoordinatorPhone {
+class TabSwitcherModeTTCoordinator {
     private final ViewStub mTabSwitcherToolbarStub;
 
     // TODO(twellington): Create a model to hold all of these properties. Consider using
@@ -37,7 +37,7 @@ class TabSwitcherModeTTCoordinatorPhone {
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private boolean mAccessibilityEnabled;
 
-    private TabSwitcherModeTTPhone mTabSwitcherModeToolbar;
+    private TabSwitcherModeTopToolbar mTabSwitcherModeToolbar;
 
     @Nullable
     private IncognitoTabModelObserver mIncognitoTabModelObserver;
@@ -46,7 +46,7 @@ class TabSwitcherModeTTCoordinatorPhone {
     private final boolean mIsTabToGtsAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
 
-    TabSwitcherModeTTCoordinatorPhone(ViewStub tabSwitcherToolbarStub,
+    TabSwitcherModeTTCoordinator(ViewStub tabSwitcherToolbarStub,
             MenuButtonCoordinator menuButtonCoordinator, boolean isGridTabSwitcherEnabled,
             boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
@@ -155,7 +155,7 @@ class TabSwitcherModeTTCoordinatorPhone {
     }
 
     private void initializeTabSwitcherToolbar() {
-        mTabSwitcherModeToolbar = (TabSwitcherModeTTPhone) mTabSwitcherToolbarStub.inflate();
+        mTabSwitcherModeToolbar = (TabSwitcherModeTopToolbar) mTabSwitcherToolbarStub.inflate();
         mTabSwitcherModeToolbar.initialize(mIsGridTabSwitcherEnabled, mIsTabToGtsAnimationEnabled,
                 mIsIncognitoModeEnabledSupplier);
         mMenuButtonCoordinator.setMenuButton(

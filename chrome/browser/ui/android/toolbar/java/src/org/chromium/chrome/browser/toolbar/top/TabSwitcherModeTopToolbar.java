@@ -33,8 +33,8 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
-/** The tab switcher mode top toolbar shown on phones. */
-public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
+/** The tab switcher mode top toolbar */
+public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         implements View.OnClickListener, IncognitoStateProvider.IncognitoStateObserver {
     private View.OnClickListener mNewTabListener;
 
@@ -65,7 +65,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     private boolean mIsGridTabSwitcherEnabled;
     private boolean mShowZoomingAnimation;
 
-    public TabSwitcherModeTTPhone(Context context, AttributeSet attrs) {
+    public TabSwitcherModeTopToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

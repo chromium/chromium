@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTTPhone
+<org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTopToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -98,4 +98,4 @@
 
     </LinearLayout>
 
-</org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTTPhone>
+</org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTopToolbar>
