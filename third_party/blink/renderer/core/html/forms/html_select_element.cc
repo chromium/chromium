@@ -1157,8 +1157,7 @@ void HTMLSelectElement::SelectOptionByAccessKey(HTMLOptionElement* option) {
 
 unsigned HTMLSelectElement::length() const {
   unsigned options = 0;
-  for (auto* const option : GetOptionList()) {
-    ALLOW_UNUSED_LOCAL(option);
+  for ([[maybe_unused]] auto* const option : GetOptionList()) {
     ++options;
   }
   return options;

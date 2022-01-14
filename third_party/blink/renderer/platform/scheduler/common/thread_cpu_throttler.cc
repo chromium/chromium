@@ -148,7 +148,7 @@ void ThreadCPUThrottler::ThrottlingThread::HandleSignal(int signal) {
 #endif  // USE_SIGNALS
 
 void ThreadCPUThrottler::ThrottlingThread::Throttle() {
-  const int quant_time_us = 200;
+  [[maybe_unused]] const int quant_time_us = 200;
 #ifdef USE_SIGNALS
   pthread_kill(throttled_thread_handle_.platform_handle(), SIGUSR2);
   Sleep(base::Microseconds(quant_time_us));
@@ -162,8 +162,6 @@ void ThreadCPUThrottler::ThrottlingThread::Throttle() {
   ::SuspendThread(throttled_thread_handle_.platform_handle());
   Sleep(sleep_duration);
   ::ResumeThread(throttled_thread_handle_.platform_handle());
-#else
-  ALLOW_UNUSED_LOCAL(quant_time_us);
 #endif
 }
 

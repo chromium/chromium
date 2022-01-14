@@ -152,9 +152,8 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
 
 TEST(MediaTrackConstraintsTest, ConvertWebConstraintsBasic) {
   MediaConstraints input;
-  MediaTrackConstraints* output =
+  [[maybe_unused]] MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
-  ALLOW_UNUSED_LOCAL(output);
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {

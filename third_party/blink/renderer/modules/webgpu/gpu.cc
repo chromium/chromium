@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -101,8 +100,8 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   return context_provider;
 }
 
-ALLOW_UNUSED_TYPE void AddConsoleWarning(ExecutionContext* execution_context,
-                                         const char* message) {
+[[maybe_unused]] void AddConsoleWarning(ExecutionContext* execution_context,
+                                        const char* message) {
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,

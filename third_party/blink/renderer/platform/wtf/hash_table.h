@@ -609,7 +609,7 @@ struct HashTableAddResult final {
   STACK_ALLOCATED();
 
  public:
-  HashTableAddResult(const HashTableType* container,
+  HashTableAddResult([[maybe_unused]] const HashTableType* container,
                      ValueType* stored_value,
                      bool is_new_entry)
       : stored_value(stored_value),
@@ -620,7 +620,6 @@ struct HashTableAddResult final {
         container_modifications_(container->Modifications())
 #endif
   {
-    ALLOW_UNUSED_LOCAL(container);
     DCHECK(container);
   }
 

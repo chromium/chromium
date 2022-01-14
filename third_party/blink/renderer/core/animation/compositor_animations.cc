@@ -849,10 +849,9 @@ void CompositorAnimations::GetAnimationOnCompositor(
     double animation_playback_rate) {
   DCHECK(keyframe_models.IsEmpty());
   CompositorTiming compositor_timing;
-  bool timing_valid =
+  [[maybe_unused]] bool timing_valid =
       ConvertTimingForCompositor(timing, normalized_timing, time_offset,
                                  compositor_timing, animation_playback_rate);
-  ALLOW_UNUSED_LOCAL(timing_valid);
 
   PropertyHandleSet properties = effect.Properties();
   DCHECK(!properties.IsEmpty());

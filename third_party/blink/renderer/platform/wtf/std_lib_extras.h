@@ -97,11 +97,10 @@ class StaticSingleton final {
   StaticSingleton(const StaticSingleton&) = delete;
   StaticSingleton& operator=(const StaticSingleton&) = delete;
 
-  Type& Get(bool allow_cross_thread_use) {
+  Type& Get([[maybe_unused]] bool allow_cross_thread_use) {
 #if DCHECK_IS_ON()
     DCHECK(IsNotRacy(allow_cross_thread_use));
 #endif
-    ALLOW_UNUSED_LOCAL(allow_cross_thread_use);
     return Wrapper<Type>::Unwrap(instance_.Get());
   }
 

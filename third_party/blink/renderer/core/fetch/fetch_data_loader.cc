@@ -154,8 +154,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
         if (available > 0) {
           bool ok = Append(buffer, SafeCast<wtf_size_t>(available));
           if (!ok) {
-            auto unused = consumer_->EndRead(0);
-            ALLOW_UNUSED_LOCAL(unused);
+            [[maybe_unused]] auto unused = consumer_->EndRead(0);
             consumer_->Cancel();
             client_->DidFetchDataLoadFailed();
             return;

@@ -182,12 +182,11 @@ void ScriptPromise::InternalResolver::Resolve(v8::Local<v8::Value> value) {
     return;
   v8::MicrotasksScope microtasks_scope(
       script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::Maybe<bool> result =
+  // |result| can be empty when the thread is being terminated. We ignore such
+  // errors, thus [[maybe_unused]].
+  [[maybe_unused]] v8::Maybe<bool> result =
       resolver_.V8Value().As<v8::Promise::Resolver>()->Resolve(
           script_state_->GetContext(), value);
-  // |result| can be empty when the thread is being terminated. We ignore such
-  // errors.
-  ALLOW_UNUSED_LOCAL(result);
 
   Clear();
 }
@@ -197,12 +196,11 @@ void ScriptPromise::InternalResolver::Reject(v8::Local<v8::Value> value) {
     return;
   v8::MicrotasksScope microtasks_scope(
       script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::Maybe<bool> result =
+  // |result| can be empty when the thread is being terminated. We ignore such
+  // errors, thus [[maybe_unused]].
+  [[maybe_unused]] v8::Maybe<bool> result =
       resolver_.V8Value().As<v8::Promise::Resolver>()->Reject(
           script_state_->GetContext(), value);
-  // |result| can be empty when the thread is being terminated. We ignore such
-  // errors.
-  ALLOW_UNUSED_LOCAL(result);
 
   Clear();
 }

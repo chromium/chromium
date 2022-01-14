@@ -946,9 +946,8 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   ImageResource* image_resource = ImageResource::CreateForTest(test_url);
 
   // Ensure that |image_resource| has a loader.
-  auto* loader =
+  [[maybe_unused]] auto* loader =
       MakeGarbageCollected<ResourceLoader>(fetcher, scheduler, image_resource);
-  ALLOW_UNUSED_LOCAL(loader);
 
   image_resource->NotifyStartLoad();
 

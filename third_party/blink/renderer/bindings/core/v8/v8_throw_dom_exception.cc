@@ -37,10 +37,9 @@ void DomExceptionStackGetter(v8::Local<v8::Name> name,
 void DomExceptionStackSetter(v8::Local<v8::Name> name,
                              v8::Local<v8::Value> value,
                              const v8::PropertyCallbackInfo<void>& info) {
-  v8::Maybe<bool> unused = info.Data().As<v8::Object>()->Set(
+  [[maybe_unused]] v8::Maybe<bool> unused = info.Data().As<v8::Object>()->Set(
       info.GetIsolate()->GetCurrentContext(),
       V8AtomicString(info.GetIsolate(), "stack"), value);
-  ALLOW_UNUSED_LOCAL(unused);
 }
 
 }  // namespace
