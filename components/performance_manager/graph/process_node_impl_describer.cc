@@ -17,7 +17,7 @@
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "content/public/common/child_process_host.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -57,9 +57,9 @@ base::Value GetProcessValueDict(const base::Process& process) {
 
   // On Windows, handle is a void *. On Fuchsia it's an int. On other platforms
   // it is equal to the pid, so don't bother to record it.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ret.SetIntKey("handle", base::win::HandleToUint32(process.Handle()));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   ret.SetIntKey("handle", process.Handle());
 #endif
 
@@ -74,7 +74,7 @@ base::Value GetProcessValueDict(const base::Process& process) {
   }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Creation time is always available on Windows, even for dead processes.
   // On other platforms it is available only for valid processes (see below).
   ret.SetStringKey("creation_time", base::TimeFormatTimeOfDayWithMilliseconds(
@@ -84,14 +84,14 @@ base::Value GetProcessValueDict(const base::Process& process) {
   if (process.IsValid()) {
     // These properties can only be accessed for valid processes.
     ret.SetIntKey("os_priority", process.GetPriority());
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
     ret.SetBoolKey("is_backgrounded", process.IsProcessBackgrounded());
 #endif
-#if !defined(OS_ANDROID) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
     ret.SetStringKey("creation_time", base::TimeFormatTimeOfDayWithMilliseconds(
                                           process.CreationTime()));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Most processes are running, so only show the outliers.
     if (!process.IsRunning()) {
       ret.SetBoolKey("is_running", false);

@@ -1687,7 +1687,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
 }
 
 // TODO(crbug.com/1203439) Sometimes timing out on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SingleProcessRequest DISABLED_SingleProcessRequest
 #else
 #define MAYBE_SingleProcessRequest SingleProcessRequest

@@ -24,7 +24,7 @@
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "components/performance_manager/v8_memory/web_memory_stress_tester.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #endif
 
@@ -65,7 +65,7 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   if (flags_.worker_node_impl_describer)
     Install<WorkerNodeImplDescriber>(graph);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (flags_.site_data_recorder)
     Install<SiteDataRecorder>(graph);
 #endif

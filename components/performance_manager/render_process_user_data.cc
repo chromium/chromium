@@ -77,7 +77,7 @@ RenderProcessUserData* RenderProcessUserData::CreateForRenderProcessHost(
 void RenderProcessUserData::RenderProcessReady(
     content::RenderProcessHost* host) {
   const base::Time launch_time =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // Process::CreationTime() is not available on Android. Since this
       // method is called immediately after the process is launched, the
       // process launch time can be approximated with the current time.

@@ -17,12 +17,12 @@ namespace features {
 const base::Feature kRunOnMainThread{"RunOnMainThread",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const base::Feature kUrgentDiscardingFromPerformanceManager {
   "UrgentDiscardingFromPerformanceManager",
 // Ash Chrome uses memory pressure evaluator instead of performance manager to
 // discard tabs.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT

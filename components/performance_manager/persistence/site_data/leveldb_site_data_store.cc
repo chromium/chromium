@@ -351,7 +351,7 @@ DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DatabaseSizeResult ret;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows has an annoying mis-feature that the size of an open file is not
   // written to the parent directory until the file is closed. Since this is a
   // diagnostic interface that should be rarely called, go to the trouble of
@@ -360,7 +360,7 @@ DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
   db_.reset();
 #endif
   ret.on_disk_size_kb = base::ComputeDirectorySize(db_path_) / 1024;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   OpenOrCreateDatabase();
   if (!db_)
     return DatabaseSizeResult();

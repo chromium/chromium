@@ -22,7 +22,7 @@ const base::TimeDelta kTestMetricsReportDelayTimeout =
 const char kHtmlMimeType[] = "text/html";
 
 // TODO(crbug.com/759905) Enable on Windows once this bug is fixed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_MetricsCollectorTest DISABLED_MetricsCollectorTest
 #else
 #define MAYBE_MetricsCollectorTest MetricsCollectorTest
