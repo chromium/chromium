@@ -4912,6 +4912,10 @@ const char kNearbySharingOnePageOnboardingName[] =
 const char kNearbySharingOnePageOnboardingDescription[] =
     "Enable new One-page onboarding workflow for Nearby Share.";
 
+const char kNearbySharingSelfShareName[] = "Nearby Sharing Self Share";
+const char kNearbySharingSelfShareDescription[] =
+    "Enables seamless sharing between a user's own devices.";
+
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =
     "Enable Pcie peripheral billboard notification.";

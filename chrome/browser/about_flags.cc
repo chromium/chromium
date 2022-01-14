@@ -6443,6 +6443,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNearbySharingOnePageOnboardingName,
      flag_descriptions::kNearbySharingOnePageOnboardingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharingOnePageOnboarding)},
+    {"nearby-sharing-self-share",
+     flag_descriptions::kNearbySharingSelfShareName,
+     flag_descriptions::kNearbySharingSelfShareDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kNearbySharingSelfShare)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

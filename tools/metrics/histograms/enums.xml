@@ -53377,6 +53377,7 @@ from previous Chrome versions.
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
   <int value="-152632720" label="RuntimeHostPermissions:enabled"/>
+  <int value="-152596707" label="NearbySharingSelfShare:enabled"/>
   <int value="-152439608" label="download-later-debug-on-wifi"/>
   <int value="-150077791" label="FontAccessChooser:disabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
@@ -55631,6 +55632,7 @@ from previous Chrome versions.
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
   <int value="1505194447" label="disable-transition-compositing"/>
+  <int value="1506372577" label="NearbySharingSelfShare:disabled"/>
   <int value="1507233295" label="FilesTrash:disabled"/>
   <int value="1508761653" label="disable-site-isolation-trials"/>
   <int value="1509586356" label="CrossOriginOpenerPolicy:disabled"/>

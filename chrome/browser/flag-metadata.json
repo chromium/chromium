@@ -3987,6 +3987,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "nearby-sharing-self-share",
+    "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "new-canvas-2d-api",
     "owners": [ "aaronhk", "fserb", "juanmihd", "yiyix" ],
     "expiry_milestone": 100
