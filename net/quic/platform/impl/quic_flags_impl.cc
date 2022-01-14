@@ -51,15 +51,15 @@ namespace quic {
 namespace {
 
 // Overload for platforms where base::CommandLine::StringType == std::string.
-std::vector<std::string> __attribute__((unused))
-ToQuicStringVector(const std::vector<std::string>& v) {
+[[maybe_unused]] std::vector<std::string> ToQuicStringVector(
+    const std::vector<std::string>& v) {
   return v;
 }
 
 #if defined(WCHAR_T_IS_UTF16)
 // Overload for platforms where base::CommandLine::StringType == std::wstring.
-std::vector<std::string> __attribute__((unused))
-ToQuicStringVector(const std::vector<std::wstring>& v) {
+[[maybe_unused]] std::vector<std::string> ToQuicStringVector(
+    const std::vector<std::wstring>& v) {
   std::vector<std::string> qsv;
   for (const auto& s : v) {
     if (!base::IsStringASCII(s)) {

@@ -139,7 +139,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   }
 
   // We intentionally leak this object.
-  static __attribute__((unused)) KeyboardInputSourceListener* listener =
+  [[maybe_unused]] static KeyboardInputSourceListener* listener =
       [[KeyboardInputSourceListener alloc] init];
 
   // We typically want to compare [NSMenuItem keyEquivalent] against [NSEvent

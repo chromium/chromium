@@ -1122,8 +1122,7 @@ namespace policy {
   # GetChromePolicyDetails() below.
   # TODO(crbug.com/1074336): kChromePolicyDetails shouldn't be declare if there
   # is no policy.
-  f.write(
-      '''const __attribute__((unused)) PolicyDetails kChromePolicyDetails[] = {
+  f.write('''[[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
 // is_deprecated is_future is_device_policy id max_external_data_size, risk tags
 ''')
   for policy in policies:

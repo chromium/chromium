@@ -333,7 +333,7 @@ EXPECTED_POLICY_CONSTANTS_SOURCE = '''\
 
 namespace policy {
 
-const __attribute__((unused)) PolicyDetails kChromePolicyDetails[] = {
+[[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
 // is_deprecated is_future is_device_policy id max_external_data_size, risk tags
   // ExampleStringPolicy
   { false,        false,    false,              1,                     0, {  } },
