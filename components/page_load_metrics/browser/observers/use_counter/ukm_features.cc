@@ -205,7 +205,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kSerialPortOpen,
           WebFeature::kHidRequestDevice,
           WebFeature::kHidDeviceOpen,
-          WebFeature::kCrossOriginWasmModuleSharing,
           WebFeature::kControlledNonBlobURLWorkerWillBeUncontrolled,
           WebFeature::kSameSiteCookieInclusionChangedByCrossSiteRedirect,
           WebFeature::

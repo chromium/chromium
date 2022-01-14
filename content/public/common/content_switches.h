@@ -29,7 +29,6 @@ CONTENT_EXPORT extern const char kChangeStackGuardOnFork[];
 CONTENT_EXPORT extern const char kChangeStackGuardOnForkEnabled[];
 CONTENT_EXPORT extern const char kChangeStackGuardOnForkDisabled[];
 CONTENT_EXPORT extern const char kConversionsDebugMode[];
-CONTENT_EXPORT extern const char kCrossOriginWebAssemblyModuleSharingAllowed[];
 CONTENT_EXPORT extern const char kRestrictedApiOrigins[];
 CONTENT_EXPORT extern const char kDisplayCapturePermissionsPolicyAllowed[];
 CONTENT_EXPORT extern const char kDisable2dCanvasAntialiasing[];

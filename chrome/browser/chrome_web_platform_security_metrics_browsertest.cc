@@ -152,20 +152,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-// An extension to the ChromeWebPlatformSecurityMetricsBrowserTest that
-// enables cross-origin sharing of WebAssembly modules.
-class ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest
-    : public ChromeWebPlatformSecurityMetricsBrowserTest {
- public:
-  ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest() {
-    sharing_feature_.InitWithFeatures(
-        {features::kCrossOriginWebAssemblyModuleSharingEnabled}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList sharing_feature_;
-};
-
 // Check the kCrossOriginOpenerPolicyReporting feature usage. No header => 0
 // count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -737,8 +723,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  CheckCounter(WebFeature::kWasmModuleSharing, 0);
-  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -779,49 +766,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
-
-  CheckCounter(WebFeature::kWasmModuleSharing, 0);
-  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest,
-    WasmModuleSharingSameSite) {
-  GURL main_url = https_server().GetURL("a.a.com", "/empty.html");
-  GURL sub_url = https_server().GetURL("b.a.com", "/empty.html");
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
-  LoadIFrame(sub_url);
-
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
-  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
-
-  EXPECT_EQ(true, content::ExecJs(main_document, R"(
-    received_module = undefined;
-    addEventListener("message", event => {
-      received_module = event.data;
-    });
-  )"));
-
-  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
-    let module = new WebAssembly.Module(new Uint8Array([
-      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
-    parent.postMessage(module, "*");
-  )"));
-
-  EXPECT_EQ(true, content::EvalJs(main_document, R"(
-    new Promise(async resolve => {
-      while (!received_module)
-        await new Promise(r => setTimeout(r, 10));
-      resolve(true);
-    });
-  )"));
-
-  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
-  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
-
-  CheckCounter(WebFeature::kWasmModuleSharing, 1);
-  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -859,8 +803,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  CheckCounter(WebFeature::kWasmModuleSharing, 1);
-  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -903,51 +848,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
-
-  CheckCounter(WebFeature::kWasmModuleSharing, 0);
-  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest,
-    WasmModuleSharingSameSiteBeforeSetDocumentDomain) {
-  GURL main_url = https_server().GetURL("sub.a.com", "/empty.html");
-  GURL sub_url = https_server().GetURL("a.com", "/empty.html");
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
-  LoadIFrame(sub_url);
-
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
-  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
-
-  EXPECT_EQ(true, content::ExecJs(main_document, R"(
-    document.domain = "a.com";
-    received_module = undefined;
-    addEventListener("message", event => {
-      received_module = event.data;
-    });
-  )"));
-
-  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
-    document.domain = "a.com";
-    let module = new WebAssembly.Module(new Uint8Array([
-      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
-    parent.postMessage(module, "*");
-  )"));
-
-  EXPECT_EQ(true, content::EvalJs(main_document, R"(
-    new Promise(async resolve => {
-      while (!received_module)
-        await new Promise(r => setTimeout(r, 10));
-      resolve(true);
-    });
-  )"));
-
-  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
-  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
-
-  CheckCounter(WebFeature::kWasmModuleSharing, 1);
-  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -987,8 +887,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  CheckCounter(WebFeature::kWasmModuleSharing, 1);
-  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
 }
 
 // Check that two pages with same-origin documents do not get reported when the

@@ -511,9 +511,6 @@
       status: "experimental",
     },
     {
-      name: "CrossOriginWebAssemblyModuleSharingAllowed",
-    },
-    {
       name: "CSS3Text",
       status: "experimental",
     },

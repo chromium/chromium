@@ -527,12 +527,6 @@ void WebRuntimeFeatures::EnableSharedArrayBufferUnrestrictedAccessAllowed(
       enable);
 }
 
-void WebRuntimeFeatures::EnableCrossOriginWebAssemblyModuleSharingAllowed(
-    bool enable) {
-  RuntimeEnabledFeatures::SetCrossOriginWebAssemblyModuleSharingAllowedEnabled(
-      enable);
-}
-
 void WebRuntimeFeatures::EnableDisplayCapturePermissionsPolicy(bool enable) {
   RuntimeEnabledFeatures::SetDisplayCapturePermissionsPolicyEnabled(enable);
 }

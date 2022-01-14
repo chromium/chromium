@@ -28180,7 +28180,6 @@ Called by update_document_policy_enum.py.-->
   <int value="875" label="ReportDeviceNetworkConfiguration"/>
   <int value="876" label="ReportDeviceNetworkStatus"/>
   <int value="877" label="DataLeakPreventionClipboardCheckSizeLimit"/>
-  <int value="878" label="CrossOriginWebAssemblyModuleSharingEnabled"/>
   <int value="879"
       label="RestrictedManagedGuestSessionExtensionCleanupExemptList"/>
   <int value="880" label="DisplayCapturePermissionsPolicyEnabled"/>
@@ -36388,8 +36387,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3798" label="AVIFImage"/>
   <int value="3799" label="SVGTextEdited"/>
   <int value="3800" label="V8WasmExceptionHandling"/>
-  <int value="3801" label="WasmModuleSharing"/>
-  <int value="3802" label="CrossOriginWasmModuleSharing"/>
   <int value="3803" label="OverflowClipAlongEitherAxis"/>
   <int value="3804" label="CreateJSONModuleScript"/>
   <int value="3805" label="CreateCSSModuleScript"/>

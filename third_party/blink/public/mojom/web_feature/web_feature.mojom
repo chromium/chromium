@@ -3107,8 +3107,6 @@ enum WebFeature {
   kAVIFImage = 3798,
   kSVGTextEdited = 3799,
   kV8WasmExceptionHandling = 3800,
-  kWasmModuleSharing = 3801,
-  kCrossOriginWasmModuleSharing = 3802,
   kOverflowClipAlongEitherAxis = 3803,
   kCreateJSONModuleScript = 3804,
   kCreateCSSModuleScript = 3805,

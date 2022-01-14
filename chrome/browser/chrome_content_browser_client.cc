@@ -2309,12 +2309,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       if (!prefs->GetBoolean(prefs::kSandboxExternalProtocolBlocked))
         command_line->AppendSwitch(kDisableSandboxExternalProtocolSwitch);
 
-      if (prefs->GetBoolean(
-              prefs::kCrossOriginWebAssemblyModuleSharingEnabled)) {
-        command_line->AppendSwitch(
-            switches::kCrossOriginWebAssemblyModuleSharingAllowed);
-      }
-
       if (prefs->GetBoolean(prefs::kDisplayCapturePermissionsPolicyEnabled)) {
         command_line->AppendSwitch(
             switches::kDisplayCapturePermissionsPolicyAllowed);

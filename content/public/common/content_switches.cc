@@ -59,12 +59,6 @@ const char kChangeStackGuardOnForkDisabled[] = "disable";
 // Causes the Conversion Measurement API to run without delays or noise.
 const char kConversionsDebugMode[] = "conversions-debug-mode";
 
-// Enables cross-origin sharing of WebAssembly modules. This switch supports the
-// deprecation of cross-origin WebAssembly module sharing as it allows admins to
-// re-enable cross-origin module sharing temporarily with an enterprise policy.
-const char kCrossOriginWebAssemblyModuleSharingAllowed[] =
-    "cross-origin-webassembly-module-sharing-allowed";
-
 // Enable restricted APIs for a set of origins, specified as a
 // comma-separated list. For example:
 //   --restricted-api-origins=https://www.foo.com,https://www.bar.com
