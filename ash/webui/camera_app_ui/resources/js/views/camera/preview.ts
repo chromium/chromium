@@ -4,7 +4,7 @@
 
 import {assert, assertInstanceof} from '../../assert.js';
 import {
-  StreamConstraints,  // eslint-disable-line no-unused-vars
+  StreamConstraints,
   toMediaStreamConstraints,
 } from '../../device/stream_constraints.js';
 import * as dom from '../../dom.js';
@@ -26,7 +26,7 @@ import {
 } from '../../mojo/type.js';
 import {
   closeEndpoint,
-  MojoEndpoint,  // eslint-disable-line no-unused-vars
+  MojoEndpoint,
 } from '../../mojo/util.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
@@ -46,183 +46,120 @@ import {windowController} from '../../window_controller.js';
  */
 export class Preview {
   /**
-   * @param {function(): !Promise} onNewStreamNeeded Callback to request new
-   *     stream.
+   * Video element to capture the stream.
    */
-  constructor(onNewStreamNeeded) {
-    /**
-     * @type {function(): !Promise}
-     * @private
-     */
-    this.onNewStreamNeeded_ = onNewStreamNeeded;
+  private video = dom.get('#preview-video', HTMLVideoElement);
 
-    /**
-     * Video element to capture the stream.
-     * @type {!HTMLVideoElement}
-     * @private
-     */
-    this.video_ = dom.get('#preview-video', HTMLVideoElement);
+  /**
+   * The observer endpoint for preview metadata.
+   */
+  private metadataObserver: MojoEndpoint|null = null;
 
-    /**
-     * The observer endpoint for preview metadata.
-     * @type {?MojoEndpoint}
-     * @private
-     */
-    this.metadataObserver_ = null;
+  /**
+   * The face overlay for showing faces over preview.
+   */
+  private faceOverlay: FaceOverlay|null = null;
 
-    /**
-     * The face overlay for showing faces over preview.
-     * @type {?FaceOverlay}
-     * @private
-     */
-    this.faceOverlay_ = null;
+  /**
+   * Current active stream.
+   */
+  private streamInternal: MediaStream|null = null;
 
-    /**
-     * Current active stream.
-     * @type {?MediaStream}
-     * @private
-     */
-    this.stream_ = null;
+  /**
+   * Watchdog for stream-end.
+   */
+  private watchdog: number|null = null;
 
-    /**
-     * Watchdog for stream-end.
-     * @type {?number}
-     * @private
-     */
-    this.watchdog_ = null;
+  /**
+   * Promise for the current applying focus.
+   */
+  private focus: Promise<void>|null = null;
 
-    /**
-     * Promise for the current applying focus.
-     * @type {?Promise}
-     * @private
-     */
-    this.focus_ = null;
+  private facing = Facing.NOT_SET;
+  private vidPid: string|null = null;
+  private isSupportPTZInternal = false;
 
-    /**
-     * @type {!Facing}
-     * @private
-     */
-    this.facing_ = Facing.NOT_SET;
+  /**
+   * Device id to constraints to reset default PTZ setting.
+   */
+  private readonly deviceDefaultPTZ =
+      new Map<string, MediaTrackConstraintSet>();
 
-    /**
-     * @type {?string}
-     * @private
-     */
-    this.vidPid_ = null;
+  private constraints: StreamConstraints|null = null;
+  private cancelWaitReadyForTakePhoto: (() => void)|null = null;
 
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this.isSupportPTZ_ = false;
+  /**
+   * @param onNewStreamNeeded Callback to request new stream.
+   */
+  constructor(private readonly onNewStreamNeeded: () => Promise<void>) {
+    window.addEventListener('resize', () => this.onWindowStatusChanged());
 
-    /**
-     * Device id to constraints to reset default PTZ setting.
-     * @type {!Map<string, !MediaTrackConstraints>}
-     * @private
-     */
-    this.deviceDefaultPTZ_ = new Map();
+    windowController.addListener(() => this.onWindowStatusChanged());
 
-    /**
-     * @type {?StreamConstraints}
-     * @private
-     */
-    this.constraints_ = null;
-
-    /**
-     * @type {?function(): void}
-     * @private
-     */
-    this.cancelWaitReadyForTakePhoto_ = null;
-
-    window.addEventListener('resize', () => this.onWindowStatusChanged_());
-
-    windowController.addListener(() => this.onWindowStatusChanged_());
-
-    [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
-      state.addObserver(s, () => this.updateShowMetadata_());
-    });
+    for (const s of [state.State.EXPERT, state.State.SHOW_METADATA]) {
+      state.addObserver(s, () => this.updateShowMetadata());
+    }
   }
 
   /**
    * Current active stream.
-   * @return {!MediaStream}
    */
-  get stream() {
-    return assertInstanceof(this.stream_, MediaStream);
+  get stream(): MediaStream {
+    return assertInstanceof(this.streamInternal, MediaStream);
   }
 
-  /**
-   * @return {!HTMLVideoElement}
-   */
-  getVideoElement() {
-    return this.video_;
+  getVideoElement(): HTMLVideoElement {
+    return this.video;
   }
 
-  /**
-   * @return {!MediaStreamTrack}
-   */
-  getVideoTrack_() {
+  private getVideoTrack(): MediaStreamTrack {
     return this.stream.getVideoTracks()[0];
   }
 
-  /**
-   * @return {!Facing}
-   */
-  getFacing() {
-    return this.facing_;
+  getFacing(): Facing {
+    return this.facing;
   }
 
   /**
    * USB camera vid:pid identifier of the opened stream.
-   * @return {?string} Identifier formatted as "vid:pid" or null for non-USB
-   *     camera.
+   * @return Identifier formatted as "vid:pid" or null for non-USB camera.
    */
-  getVidPid() {
-    return this.vidPid_;
+  getVidPid(): string|null {
+    return this.vidPid;
   }
 
-  /**
-   * @return {!StreamConstraints}
-   */
-  getConstraints() {
-    assert(this.constraints_ !== null);
-    return this.constraints_;
+  getConstraints(): StreamConstraints {
+    assert(this.constraints !== null);
+    return this.constraints;
   }
 
-  /**
-   * @private
-   */
-  async updateFacing_() {
+  private async updateFacing() {
     if (!(await DeviceOperator.isSupported())) {
-      this.facing_ = Facing.NOT_SET;
+      this.facing = Facing.NOT_SET;
       return;
     }
-    const {facingMode} = this.getVideoTrack_().getSettings();
+    const {facingMode} = this.getVideoTrack().getSettings();
     if (facingMode === undefined) {
-      this.facing_ = Facing.EXTERNAL;
+      this.facing = Facing.EXTERNAL;
       return;
     }
     switch (facingMode) {
       case 'user':
-        this.facing_ = Facing.USER;
+        this.facing = Facing.USER;
         return;
       case 'environment':
-        this.facing_ = Facing.ENVIRONMENT;
+        this.facing = Facing.ENVIRONMENT;
         return;
       default:
         throw new Error('Unknown facing: ' + facingMode);
     }
   }
 
-  /**
-   * @private
-   */
-  async updatePTZ_() {
+  private async updatePTZ() {
     const deviceOperator = await DeviceOperator.getInstance();
-    const {pan, tilt, zoom} = this.getVideoTrack_().getCapabilities();
+    const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
 
-    this.isSupportPTZ_ = await (async () => {
+    this.isSupportPTZInternal = await (async () => {
       if (pan === undefined && tilt === undefined && zoom === undefined) {
         return false;
       }
@@ -230,7 +167,7 @@ export class Preview {
         // Enable PTZ on fake camera for testing.
         return true;
       }
-      if (this.facing_ !== Facing.EXTERNAL) {
+      if (this.facing !== Facing.EXTERNAL) {
         // PTZ function is excluded from builtin camera until we set up
         // its AVL calibration standard.
         return false;
@@ -239,16 +176,16 @@ export class Preview {
       return true;
     })();
 
-    if (!this.isSupportPTZ_) {
+    if (!this.isSupportPTZInternal) {
       return;
     }
 
-    const {deviceId} = this.getVideoTrack_().getSettings();
-    if (this.deviceDefaultPTZ_.has(deviceId)) {
+    const {deviceId} = this.getVideoTrack().getSettings();
+    if (this.deviceDefaultPTZ.has(deviceId)) {
       return;
     }
 
-    const defaultConstraints = {};
+    const defaultConstraints: MediaTrackConstraintSet = {};
     if (deviceOperator === null) {
       // VCD of fake camera will always reset to default when first opened. Use
       // current value at first open as default.
@@ -272,55 +209,47 @@ export class Preview {
         defaultConstraints.zoom = await deviceOperator.getZoomDefault(deviceId);
       }
     }
-    this.deviceDefaultPTZ_.set(deviceId, defaultConstraints);
+    this.deviceDefaultPTZ.set(deviceId, defaultConstraints);
   }
 
   /**
    * If the preview camera support PTZ controls.
-   * @return {boolean}
    */
-  isSupportPTZ() {
-    return this.isSupportPTZ_;
+  isSupportPTZ(): boolean {
+    return this.isSupportPTZInternal;
   }
 
-  /**
-   * @return {!Promise}
-   */
-  async resetPTZ() {
-    if (this.stream_ === null || !this.isSupportPTZ_) {
+  async resetPTZ(): Promise<void> {
+    if (this.streamInternal === null || !this.isSupportPTZInternal) {
       return;
     }
-    const {deviceId} = this.getVideoTrack_().getSettings();
-    const defaultPTZ = this.deviceDefaultPTZ_.get(deviceId);
-    await this.getVideoTrack_().applyConstraints({advanced: [defaultPTZ]});
+    const {deviceId} = this.getVideoTrack().getSettings();
+    const defaultPTZ = this.deviceDefaultPTZ.get(deviceId);
+    await this.getVideoTrack().applyConstraints({advanced: [defaultPTZ]});
   }
 
   /**
    * Preview resolution.
-   * @return {!Resolution}
    */
-  getResolution() {
-    const {videoWidth, videoHeight} = this.video_;
+  getResolution(): Resolution {
+    const {videoWidth, videoHeight} = this.video;
     return new Resolution(videoWidth, videoHeight);
   }
 
-  /**
-   * @override
-   */
-  toString() {
-    const {videoWidth, videoHeight} = this.video_;
+  toString(): string {
+    const {videoWidth, videoHeight} = this.video;
     return videoHeight ? `${videoWidth} x ${videoHeight}` : '';
   }
 
   /**
    * Sets video element's source.
-   * @param {!MediaStream} stream Stream to be the source.
-   * @return {!Promise} Promise for the operation.
+   * @param stream Stream to be the source.
+   * @return Promise for the operation.
    */
-  async setSource_(stream) {
+  private async setSource(stream: MediaStream): Promise<void> {
     const tpl = util.instantiateTemplate('#preview-video-template');
     const video = dom.getFrom(tpl, 'video', HTMLVideoElement);
-    await new Promise((resolve) => {
+    await new Promise<void>((resolve) => {
       const handler = () => {
         video.removeEventListener('canplay', handler);
         resolve();
@@ -329,46 +258,46 @@ export class Preview {
       video.srcObject = stream;
     });
     await video.play();
-    this.video_.parentElement.replaceChild(tpl, this.video_);
-    this.video_.srcObject = null;
-    this.video_ = video;
-    video.addEventListener('resize', () => this.onIntrinsicSizeChanged_());
+    this.video.parentElement.replaceChild(tpl, this.video);
+    this.video.srcObject = null;
+    this.video = video;
+    video.addEventListener('resize', () => this.onIntrinsicSizeChanged());
     video.addEventListener(
         'click',
-        (event) => this.onFocusClicked_(assertInstanceof(event, MouseEvent)));
-    return this.onIntrinsicSizeChanged_();
+        (event) => this.onFocusClicked(assertInstanceof(event, MouseEvent)));
+    return this.onIntrinsicSizeChanged();
   }
 
   /**
    * Opens preview stream.
-   * @param {!StreamConstraints} constraints Constraints of preview stream.
-   * @return {!Promise<!MediaStream>} Promise resolved to opened preview stream.
+   * @param constraints Constraints of preview stream.
+   * @return Promise resolved to opened preview stream.
    */
-  async open(constraints) {
-    this.constraints_ = constraints;
-    this.stream_ = await navigator.mediaDevices.getUserMedia(
+  async open(constraints: StreamConstraints): Promise<MediaStream> {
+    this.constraints = constraints;
+    this.streamInternal = await navigator.mediaDevices.getUserMedia(
         toMediaStreamConstraints(constraints));
     try {
-      await this.setSource_(this.stream_);
+      await this.setSource(this.streamInternal);
       // Use a watchdog since the stream.onended event is unreliable in the
       // recent version of Chrome. As of 55, the event is still broken.
-      this.watchdog_ = setInterval(() => {
+      this.watchdog = setInterval(() => {
         // Check if video stream is ended (audio stream may still be live).
-        if (this.stream_.getVideoTracks().length === 0 ||
-            this.stream_.getVideoTracks()[0].readyState === 'ended') {
-          clearInterval(this.watchdog_);
-          this.watchdog_ = null;
-          this.stream_ = null;
-          this.onNewStreamNeeded_();
+        if (this.streamInternal.getVideoTracks().length === 0 ||
+            this.streamInternal.getVideoTracks()[0].readyState === 'ended') {
+          clearInterval(this.watchdog);
+          this.watchdog = null;
+          this.streamInternal = null;
+          this.onNewStreamNeeded();
         }
       }, 100);
-      await this.updateFacing_();
-      this.updateShowMetadata_();
-      await this.updatePTZ_();
+      await this.updateFacing();
+      this.updateShowMetadata();
+      await this.updatePTZ();
 
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator !== null) {
-        const {deviceId} = this.getVideoTrack_().getSettings();
+        const {deviceId} = this.getVideoTrack().getSettings();
         const isSuccess =
             await deviceOperator.setCameraFrameRotationEnabledAtSource(
                 deviceId, false);
@@ -379,7 +308,7 @@ export class Preview {
                   'Cannot disable camera frame rotation. ' +
                   'The camera is probably being used by another app.'));
         }
-        this.vidPid_ = await deviceOperator.getVidPid(deviceId);
+        this.vidPid = await deviceOperator.getVidPid(deviceId);
       }
 
       state.set(state.State.STREAMING, true);
@@ -387,43 +316,41 @@ export class Preview {
       await this.close();
       throw e;
     }
-    return this.stream_;
+    return this.streamInternal;
   }
 
   /**
    * Closes the preview.
-   * @return {!Promise}
    */
-  async close() {
-    if (this.watchdog_ !== null) {
-      clearInterval(this.watchdog_);
-      this.watchdog_ = null;
+  async close(): Promise<void> {
+    if (this.watchdog !== null) {
+      clearInterval(this.watchdog);
+      this.watchdog = null;
     }
     // Pause video element to avoid black frames during transition.
-    this.video_.pause();
-    this.disableShowMetadata_();
-    if (this.stream_ !== null) {
-      const track = this.getVideoTrack_();
+    this.video.pause();
+    this.disableShowMetadata();
+    if (this.streamInternal !== null) {
+      const track = this.getVideoTrack();
       const {deviceId} = track.getSettings();
       track.stop();
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         deviceOperator.dropConnection(deviceId);
       }
-      if (this.cancelWaitReadyForTakePhoto_ !== null) {
-        this.cancelWaitReadyForTakePhoto_();
+      if (this.cancelWaitReadyForTakePhoto !== null) {
+        this.cancelWaitReadyForTakePhoto();
       }
-      this.stream_ = null;
+      this.streamInternal = null;
     }
     state.set(state.State.STREAMING, false);
   }
 
   /**
    * Waits for preview stream ready for taking photo.
-   * @return {!Promise}
    */
-  async waitReadyForTakePhoto() {
-    if (this.stream_ === null) {
+  async waitReadyForTakePhoto(): Promise<void> {
+    if (this.streamInternal === null) {
       throw new CanceledError('Preview is closed');
     }
 
@@ -432,19 +359,19 @@ export class Preview {
     // video track in muted state will fail with |kInvalidStateError| exception.
     // To mitigate chance of hitting this error, here we ensure frame inputs
     // from the preview and checked video muted state before taking photo.
-    const track = this.getVideoTrack_();
+    const track = this.getVideoTrack();
     const waitFrame = async () => {
       /** @type {WaitableEvent<boolean>} */
-      const onReady = new WaitableEvent();
-      const callbackId = this.video_.requestVideoFrameCallback((now) => {
+      const onReady: WaitableEvent<boolean> = new WaitableEvent();
+      const callbackId = this.video.requestVideoFrameCallback(() => {
         onReady.signal(true);
       });
-      this.cancelWaitReadyForTakePhoto_ = () => {
-        this.video_.cancelVideoFrameCallback(callbackId);
+      this.cancelWaitReadyForTakePhoto = () => {
+        this.video.cancelVideoFrameCallback(callbackId);
         onReady.signal(false);
       };
       const ready = await onReady.wait();
-      this.cancelWaitReadyForTakePhoto_ = null;
+      this.cancelWaitReadyForTakePhoto = null;
       return ready;
     };
     do {
@@ -456,24 +383,23 @@ export class Preview {
 
   /**
    * Checks preview whether to show preview metadata or not.
-   * @private
    */
-  updateShowMetadata_() {
+  private updateShowMetadata() {
     if (state.get(state.State.EXPERT) && state.get(state.State.SHOW_METADATA)) {
-      this.enableShowMetadata_();
+      this.enableShowMetadata();
     } else {
-      this.disableShowMetadata_();
+      this.disableShowMetadata();
     }
   }
 
   /**
    * Creates an image blob of the current frame.
-   * @return {!Promise<!Blob>} Promise for the result.
+   * @return Promise for the result.
    */
-  toImage() {
+  toImage(): Promise<Blob> {
     const {canvas, ctx} = util.newDrawingCanvas(
-        {width: this.video_.videoWidth, height: this.video_.videoHeight});
-    ctx.drawImage(this.video_, 0, 0);
+        {width: this.video.videoWidth, height: this.video.videoHeight});
+    ctx.drawImage(this.video, 0, 0);
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) {
@@ -487,11 +413,10 @@ export class Preview {
 
   /**
    * Displays preview metadata on preview screen.
-   * @return {!Promise} Promise for the operation.
-   * @private
+   * @return Promise for the operation.
    */
-  async enableShowMetadata_() {
-    if (!this.stream_) {
+  private async enableShowMetadata(): Promise<void> {
+    if (!this.streamInternal) {
       return;
     }
 
@@ -509,27 +434,23 @@ export class Preview {
       element.textContent = val;
     };
 
-    /**
-     * @param {!Object<string, number>} obj
-     * @param {string} prefix
-     * @return {!Map<number, string>}
-     */
-    const buildInverseMap = (obj, prefix) => {
-      const map = new Map();
-      for (const [key, val] of Object.entries(obj)) {
-        if (!key.startsWith(prefix)) {
-          continue;
-        }
-        if (map.has(val)) {
-          reportError(
-              ErrorType.METADATA_MAPPING_FAILURE, ErrorLevel.ERROR,
-              new Error(`Duplicated value: ${val}`));
-          continue;
-        }
-        map.set(val, key.slice(prefix.length));
-      }
-      return map;
-    };
+    const buildInverseMap =
+        (obj: Record<string, number>, prefix: string): Map<number, string> => {
+          const map = new Map<number, string>();
+          for (const [key, val] of Object.entries(obj)) {
+            if (!key.startsWith(prefix)) {
+              continue;
+            }
+            if (map.has(val)) {
+              reportError(
+                  ErrorType.METADATA_MAPPING_FAILURE, ErrorLevel.ERROR,
+                  new Error(`Duplicated value: ${val}`));
+              continue;
+            }
+            map.set(val, key.slice(prefix.length));
+          }
+          return map;
+        };
 
     const afStateName =
         buildInverseMap(AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
@@ -551,8 +472,7 @@ export class Preview {
     };
 
     const tag = CameraMetadataTag;
-    /** @type {!Object<string, function(!Array<number>): void>} */
-    const metadataEntryHandlers = {
+    const metadataEntryHandlers: Record<string, (values: number[]) => void> = {
       [tag.ANDROID_LENS_FOCUS_DISTANCE]: ([value]) => {
         if (value === 0) {
           // Fixed-focus camera
@@ -617,9 +537,9 @@ export class Preview {
 
     // These should be per session static information and we don't need to
     // recalculate them in every callback.
-    const {videoWidth, videoHeight} = this.video_;
+    const {videoWidth, videoHeight} = this.video;
     const resolution = `${videoWidth}x${videoHeight}`;
-    const videoTrack = this.getVideoTrack_();
+    const videoTrack = this.getVideoTrack();
     const deviceName = videoTrack.label;
 
     // Currently there is no easy way to calculate the fps of a video element.
@@ -649,7 +569,7 @@ export class Preview {
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
     const cameraFrameRotation =
         await deviceOperator.getCameraFrameRotation(deviceId);
-    this.faceOverlay_ =
+    this.faceOverlay =
         new FaceOverlay(activeArraySize, (360 - cameraFrameRotation) % 360);
 
     const updateFace = (mode, rects) => {
@@ -657,14 +577,14 @@ export class Preview {
           AndroidStatisticsFaceDetectMode
               .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
         dom.get('#preview-num-faces', HTMLDivElement).style.display = 'none';
-        this.faceOverlay_.clear();
+        this.faceOverlay.clear();
         return;
       }
       assert(rects.length % 4 === 0);
       const numFaces = rects.length / 4;
       const label = numFaces >= 2 ? 'Faces' : 'Face';
       showValue('#preview-num-faces', `${numFaces} ${label}`);
-      this.faceOverlay_.show(rects);
+      this.faceOverlay.show(rects);
     };
 
     const callback = (metadata) => {
@@ -714,17 +634,16 @@ export class Preview {
       updateFace(faceMode, faceRects);
     };
 
-    this.metadataObserver_ = await deviceOperator.addMetadataObserver(
+    this.metadataObserver = await deviceOperator.addMetadataObserver(
         deviceId, callback, StreamType.PREVIEW_OUTPUT);
   }
 
   /**
    * Hide display preview metadata on preview screen.
-   * @return {!Promise} Promise for the operation.
-   * @private
+   * @return Promise for the operation.
    */
-  async disableShowMetadata_() {
-    if (!this.stream_ || this.metadataObserver_ === null) {
+  private async disableShowMetadata(): Promise<void> {
+    if (!this.streamInternal || this.metadataObserver === null) {
       return;
     }
 
@@ -733,86 +652,80 @@ export class Preview {
       return;
     }
 
-    closeEndpoint(this.metadataObserver_);
-    this.metadataObserver_ = null;
+    closeEndpoint(this.metadataObserver);
+    this.metadataObserver = null;
 
-    if (this.faceOverlay_ !== null) {
-      this.faceOverlay_.clear();
-      this.faceOverlay_ = null;
+    if (this.faceOverlay !== null) {
+      this.faceOverlay.clear();
+      this.faceOverlay = null;
     }
   }
 
   /**
    * Handles the the window state or window size changed.
-   * @private
    */
-  onWindowStatusChanged_() {
+  private onWindowStatusChanged() {
     nav.onWindowStatusChanged();
   }
 
   /**
    * Handles changed intrinsic size (first loaded or orientation changes).
-   * @return {!Promise}
-   * @private
    */
-  async onIntrinsicSizeChanged_() {
-    if (this.video_.videoWidth && this.video_.videoHeight) {
-      this.onWindowStatusChanged_();
+  private async onIntrinsicSizeChanged(): Promise<void> {
+    if (this.video.videoWidth && this.video.videoHeight) {
+      this.onWindowStatusChanged();
     }
-    this.cancelFocus_();
+    this.cancelFocus();
   }
 
   /**
    * Apply point of interest to the stream.
-   * @param {!Point} point The point in normalize coordidate system, which means
-   *     both |x| and |y| are in range [0, 1).
-   * @return {!Promise<void>}
+   * @param point The point in normalize coordidate system, which means both
+   *     |x| and |y| are in range [0, 1).
    */
-  setPointOfInterest(point) {
+  setPointOfInterest(point: Point): Promise<void> {
     const constraints = {
       advanced: [{pointsOfInterest: [{x: point.x, y: point.y}]}],
     };
-    const track = this.getVideoTrack_();
+    const track = this.getVideoTrack();
     return track.applyConstraints(constraints);
   }
 
   /**
    * Handles clicking for focus.
-   * @param {!MouseEvent} event Click event.
-   * @private
+   * @param event Click event.
    */
-  onFocusClicked_(event) {
-    this.cancelFocus_();
+  private onFocusClicked(event: MouseEvent) {
+    this.cancelFocus();
     const focus = (async () => {
       try {
         // Normalize to square space coordinates by W3C spec.
-        const x = event.offsetX / this.video_.offsetWidth;
-        const y = event.offsetY / this.video_.offsetHeight;
+        const x = event.offsetX / this.video.offsetWidth;
+        const y = event.offsetY / this.video.offsetHeight;
         await this.setPointOfInterest(new Point(x, y));
       } catch {
         // The device might not support setting pointsOfInterest. Ignore the
         // error and return.
         return;
       }
-      if (focus !== this.focus_) {
+      if (focus !== this.focus) {
         return;  // Focus was cancelled.
       }
       const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
       const clone = assertInstanceof(aim.cloneNode(true), HTMLObjectElement);
-      clone.style.left = `${event.offsetX + this.video_.offsetLeft}px`;
-      clone.style.top = `${event.offsetY + this.video_.offsetTop}px`;
+      clone.style.left = `${event.offsetX + this.video.offsetLeft}px`;
+      clone.style.top = `${event.offsetY + this.video.offsetTop}px`;
       clone.hidden = false;
       aim.parentElement.replaceChild(clone, aim);
     })();
-    this.focus_ = focus;
+    this.focus = focus;
   }
 
   /**
    * Cancels the current applying focus.
-   * @private
    */
-  cancelFocus_() {
-    this.focus_ = null;
+  private cancelFocus() {
+    this.focus = null;
     const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
     aim.hidden = true;
   }

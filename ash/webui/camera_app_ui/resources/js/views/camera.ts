@@ -190,7 +190,9 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
       new View(ViewName.FLASH),
     ];
 
-    this.preview = new Preview(() => this.start());
+    this.preview = new Preview(async () => {
+      await this.start();
+    });
 
     this.scanOptions =
         new ScanOptions((point) => this.preview.setPointOfInterest(point));
