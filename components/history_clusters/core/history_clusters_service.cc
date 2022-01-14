@@ -220,6 +220,22 @@ std::string GetDebugJSONForClusters(
   return debug_string;
 }
 
+std::string GetDebugJSONForKeywordSet(
+    const HistoryClustersService::KeywordSet& keyword_set) {
+  std::vector<base::Value> keyword_list;
+  for (const auto& keyword : keyword_set) {
+    keyword_list.emplace_back(keyword);
+  }
+
+  std::string debug_string;
+  if (!base::JSONWriter::WriteWithOptions(
+          base::Value(keyword_list), base::JSONWriter::OPTIONS_PRETTY_PRINT,
+          &debug_string)) {
+    debug_string = "Error: Could not write keywords list to JSON.";
+  }
+  return debug_string;
+}
+
 // TODO(tommycli): Explicitly link this number to what's in WebUI.
 constexpr int kMaxCountForKeywordCacheBatch = 10;
 
@@ -413,6 +429,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     //  `query` parameter is set to empty. However, it would be nice if this
     //  was more explicit, rather than just a happy coincidence. Likely the real
     //  solution will be to explicitly ask the backend for this bag of keywords.
+    NotifyDebugMessage("Starting all_keywords_cache_ generation.");
     QueryClusters(
         /*query=*/"", begin_time, /*end_time=*/
         base::Time(), kMaxCountForKeywordCacheBatch,
@@ -436,6 +453,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     // Update the timestamp right away, to prevent this from running again.
     short_keyword_cache_timestamp_ = base::Time::Now();
 
+    NotifyDebugMessage("Starting short_keywords_cache_ generation.");
     QueryClusters(
         /*query=*/"",
         /*begin_time=*/all_keywords_cache_timestamp_, /*end_time=*/
@@ -521,6 +539,8 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // via the constructor for efficiency (as recommended by the flat_set docs).
   // De-duplication is handled by the flat_set itself.
   *cache = KeywordSet(*keyword_accumulator);
+  NotifyDebugMessage("Cache construction complete:");
+  NotifyDebugMessage(GetDebugJSONForKeywordSet(*cache));
 
   // Record keyword phrase & keyword counts for the appropriate cache.
   if (cache == &all_keywords_cache_) {
