@@ -7898,24 +7898,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Extensions
         </message>
 
-        <message name="IDS_GOOGLE_CLOUD_PRINT" desc="The name of the Google Cloud Print product.">
-          Google Cloud Print
-        </message>
-        <if expr="not chromeos">
-          <message name="IDS_CLOUD_PRINT_CONNECTOR_DISABLED_BUTTON" desc="The label of the cloud connector configure button when it hasn't been set up yet.">
-            Add printers
-          </message>
-          <message name="IDS_CLOUD_PRINT_CONNECTOR_ENABLED_LABEL" desc="The label of the cloud print setup button when it has been set up.">
-            You have registered your printers with <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph> using the account <ph name="EMAIL">$2<ex>foo@bar.com</ex></ph>
-          </message>
-          <message name="IDS_CLOUD_PRINT_CONNECTOR_ENABLED_BUTTON" desc="The label of the cloud print connector configure button when it has been set up.">
-            Disconnect printers
-          </message>
-          <message name="IDS_CLOUD_PRINT_CONNECTOR_ENABLING_BUTTON" desc="The label of the cloud connector configure button while it is being set up.">
-            Enabling...
-          </message>
-        </if>
-
         <message name="IDS_CONTROLLED_SETTING_POLICY" desc="Text displayed in the controlled settings bubble when a setting's value is managed by policy.">
           This setting is managed by your administrator.
         </message>
