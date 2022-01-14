@@ -1360,6 +1360,12 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the privacy review.">
     Privacy guide
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the privacy review.">
+    Review key privacy and security controls
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_HEADER" desc="Text of a button on a card in the settings page that starts the privacy review feature.">
+    Take the privacy guide
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON" desc="Text of a button on a card in the settings page that starts the privacy review feature.">
     Get started
   </message>
@@ -1372,20 +1378,20 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON" desc="Text of a button in the privacy review that advances to the next step in the review.">
     Next
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_FEATURE_DESCRIPTION_HEADER" desc="Header of a description text that describes the benefits that a particular feature has. This description is shown to users alongside the feature itself in the privacy review.">
-    What you get
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_FEATURE_DESCRIPTION_HEADER" desc="Header of a description text that describes the behavior of a particular feature. This description is shown to users alongside the feature itself in the privacy review.">
+    When on
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WHAT_YOU_SHARE_WITH_GOOGLE" desc="Header of a text column that describes the information a feature shares with Google.">
-    What you share with Google
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_THINGS_TO_CONSIDER" desc="Header of a text column that describes things users should consider about a feature. This description is shown to users alongside the feature itself in the privacy review.">
+    Things to consider
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WHAT_YOU_SHARE_WITH_WEBSITES" desc="Header of a text column that describes the information a feature shares with websites.">
-    What you share with websites
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_HEADER" desc="A header shown at the top of the welcome card in the privacy review, explaining to users what privacy review is.">
+    A guide of your privacy choices
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_START_BUTTON" desc="Text of a button in the welcome card in the privacy review that starts the privacy review.">
-    Get started
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_SUB_HEADER" desc="A subheader shown at on the welcome card in the privacy review, explaining to users what privacy review is.">
+    Take a guided tour of key privacy and security controls. For more options, go to individual settings.
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_HEADER" desc="A header shown at the top of the completion card in the privacy review that informs users that they completed the privacy review.">
-    Review complete!
+    Review complete
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_SUB_HEADER" desc="A subheader shown at the top of the completion card in the privacy review that informs users that they can explore more settings or complete the privacy review.">
     Explore more settings below or finish now
@@ -1400,34 +1406,28 @@
     Web &#38; App Activity
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_CARD_HEADER" desc="Header of the 'make searches and browsing better' card in the privacy review.">
-    Review settings for search and browsing optimization
+    Choose your search and browsing quality
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'make searches and browsing better' in the privacy review.">
-    Faster browsing: For example, proactively load specific further content based on the current page
+    You'll browse faster because content is proactively loaded based on your current webpage visit
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'make searches and browsing better' in the privacy review.">
-    Improved browsing: For example, suggestions in the Omnibox before you start typing
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'make searches and browsing better' in the privacy review.">
-    Improved Chrome using page metrics
+    You'll get improved suggestions in the address bar
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of 'make searches and browsing better' in the privacy review.">
-    URL of the pages you visit, e.g. https://www.google.com
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the privacy review.">
-    The URLs are shared with Google to understand the browsing behavior
+    URLs you visit are sent to Google to predict what sites you might visit next
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_CARD_HEADER" desc="Header of the 'clear cookies on exit' card in the privacy review.">
     Review automatic data clearing
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_CARD_HEADER" desc="Header of the history sync card in the privacy review.">
-    Review whether to sync history
+    Choose whether to sync history
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history sync in the privacy review.">
-    You can continue your browsing session on any of your synced devices
+    You'll have your history on all your synced devices so you can continue what you were doing
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION2" desc="A part of the feature description of history sync in the privacy review.">
-    You'll see your Chrome history on all your synced devices
+    If Google is also your default search engine, you'll see better, contextually relevant suggestions
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of history sync in the privacy review.">
     The URLs you visit are saved to your Google Account
@@ -1442,10 +1442,13 @@
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_FEATURE_DESCRIPTION2" desc="A part of the feature description of the third party cookie blocking in incognito section of the cookies card in the privacy review.">
-    Features on some sites may not work
+    Features on some sites may not work in Incognito
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking in incognito section of the cookies card in the privacy review.">
-    When you aren't in Incognito mode, sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
+    Sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of the third party cookie blocking in incognito section of the cookies card in the privacy review.">
+    When you’re in Incognito mode, sites can only use cookies to see your browsing activity on their own site. Cookies are deleted at the end of the Incognito session.
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_SUBHEADER" desc="A subheader for the cookies card of the privacy review, for blocking third party cookies.">
     Block all third-party cookies
