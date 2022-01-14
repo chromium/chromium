@@ -1863,6 +1863,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1258230")
     public void test_landmark() {
         performHtmlTest("landmark.html");
     }
