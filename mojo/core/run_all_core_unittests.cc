@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 base::FilePath GetMojoCoreLibraryPath() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const char kLibraryFilename[] = "mojo_core.dll";
 #else
   const char kLibraryFilename[] = "libmojo_core.so";

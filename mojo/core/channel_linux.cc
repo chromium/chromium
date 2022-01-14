@@ -40,7 +40,7 @@
 #include "mojo/core/core.h"
 #include "mojo/core/embedder/features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -933,7 +933,7 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
       return false;
     }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Finally, if running on Android it must have API version of at
     // least 29 (Q). The reason for this was SELinux seccomp policies prior to
     // that API version wouldn't allow moving a memfd.

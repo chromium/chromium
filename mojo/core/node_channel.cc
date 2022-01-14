@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "mojo/core/broker_host.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/configuration.h"
@@ -34,11 +35,11 @@ enum class MessageType : uint32_t {
   REQUEST_PORT_MERGE,
   REQUEST_INTRODUCTION,
   INTRODUCE,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RELAY_EVENT_MESSAGE,
 #endif
   BROADCAST_EVENT,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EVENT_MESSAGE_FROM_RELAY,
 #endif
   ACCEPT_PEER,
@@ -87,14 +88,14 @@ using AcceptPeerData = AcceptPeerDataV0;
 // This message may include a process handle on platforms that require it.
 struct alignas(8) AddBrokerClientDataV0 {
   ports::NodeName client_name;
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   uint32_t process_handle = 0;
 #endif
 };
 
 using AddBrokerClientData = AddBrokerClientDataV0;
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 static_assert(sizeof(base::ProcessHandle) == sizeof(uint32_t),
               "Unexpected pid size");
 static_assert(sizeof(AddBrokerClientData) % kChannelMessageAlignment == 0,
@@ -150,7 +151,7 @@ struct alignas(8) BindBrokerHostDataV0 {};
 
 using BindBrokerHostData = BindBrokerHostDataV0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This struct alignas(8) is followed by the full payload of a message to be
 // relayed.
 // NOTE: Because this field is variable length it cannot be versioned.
@@ -251,7 +252,7 @@ scoped_refptr<NodeChannel> NodeChannel::Create(
     Channel::HandlePolicy channel_handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     const ProcessErrorCallback& process_error_callback) {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   LOG(FATAL) << "Multi-process not yet supported on NaCl-SFI";
   return nullptr;
 #else
@@ -376,7 +377,7 @@ void NodeChannel::AddBrokerClient(const ports::NodeName& client_name,
                                   base::Process process_handle) {
   AddBrokerClientData* data;
   std::vector<PlatformHandle> handles;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   handles.emplace_back(base::win::ScopedHandle(process_handle.Release()));
 #endif
   Channel::MessagePtr message =
@@ -384,7 +385,7 @@ void NodeChannel::AddBrokerClient(const ports::NodeName& client_name,
                     handles.size(), &data);
   message->SetHandles(std::move(handles));
   data->client_name = client_name;
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   data->process_handle = process_handle.Handle();
 #endif
   WriteChannelMessage(std::move(message));
@@ -471,7 +472,7 @@ void NodeChannel::Broadcast(Channel::MessagePtr message) {
 }
 
 void NodeChannel::BindBrokerHost(PlatformHandle broker_host_handle) {
-#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   DCHECK(broker_host_handle.is_valid());
   BindBrokerHostData* data;
   std::vector<PlatformHandle> handles;
@@ -484,7 +485,7 @@ void NodeChannel::BindBrokerHost(PlatformHandle broker_host_handle) {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NodeChannel::RelayEventMessage(const ports::NodeName& destination,
                                     Channel::MessagePtr message) {
   DCHECK(message->has_handles());
@@ -529,7 +530,7 @@ void NodeChannel::EventMessageFromRelay(const ports::NodeName& source,
   relayed_message->SetHandles(message->TakeHandles());
   WriteChannelMessage(std::move(relayed_message));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 NodeChannel::NodeChannel(
     Delegate* delegate,
@@ -540,7 +541,7 @@ NodeChannel::NodeChannel(
     : base::RefCountedDeleteOnSequence<NodeChannel>(io_task_runner),
       delegate_(delegate),
       process_error_callback_(process_error_callback)
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
       ,
       channel_(Channel::Create(this,
                                std::move(connection_params),
@@ -557,7 +558,7 @@ NodeChannel::~NodeChannel() {
 
 void NodeChannel::CreateAndBindLocalBrokerHost(
     PlatformHandle broker_host_handle) {
-#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   // Self-owned.
   ConnectionParams connection_params(
       PlatformChannelEndpoint(std::move(broker_host_handle)));
@@ -610,7 +611,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
     case MessageType::ADD_BROKER_CLIENT: {
       AddBrokerClientData data;
       if (GetMessagePayload(payload, payload_size, &data)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         if (handles.size() != 1) {
           DLOG(ERROR) << "Dropping invalid AddBrokerClient message.";
           break;
@@ -725,7 +726,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
       break;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case MessageType::RELAY_EVENT_MESSAGE: {
       base::ProcessHandle from_process;
       {
@@ -779,7 +780,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
       return;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case MessageType::EVENT_MESSAGE_FROM_RELAY: {
       EventMessageFromRelayData data;
       if (GetMessagePayload(payload, payload_size, &data)) {
@@ -802,7 +803,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
       }
       break;
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     case MessageType::ACCEPT_PEER: {
       AcceptPeerData data;
@@ -861,7 +862,7 @@ void NodeChannel::WriteChannelMessage(Channel::MessagePtr message) {
 }
 
 void NodeChannel::OfferChannelUpgrade() {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   base::AutoLock lock(channel_lock_);
   channel_->OfferChannelUpgrade();
 #endif

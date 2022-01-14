@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -58,7 +58,7 @@ class PlatformHandleInTransit {
   // Transfers ownership of this (local) handle to |target_process|.
   bool TransferToProcess(base::Process target_process);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HANDLE remote_handle() const { return remote_handle_; }
 
   // Indicates whether |handle| is a known pseudo handle value. In a fuzzing
@@ -89,7 +89,7 @@ class PlatformHandleInTransit {
 #endif
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We don't use a ScopedHandle (or, by extension, PlatformHandle) here because
   // the handle verifier expects all handle values to be owned by this process.
   // On Windows we use |handle_| for locally owned handles and |remote_handle_|

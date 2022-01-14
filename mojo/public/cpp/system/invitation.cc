@@ -21,7 +21,7 @@ static constexpr base::StringPiece kIsolatedPipeName = {"\0\0\0\0", 4};
 void ProcessHandleToMojoProcessHandle(base::ProcessHandle target_process,
                                       MojoPlatformProcessHandle* handle) {
   handle->struct_size = sizeof(*handle);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   handle->value =
       static_cast<uint64_t>(reinterpret_cast<uintptr_t>(target_process));
 #else

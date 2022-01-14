@@ -94,14 +94,14 @@ class GlobalStateInitializer {
                          true,   // Timestamp
                          true);  // Tick count
 
-#if !defined(OFFICIAL_BUILD) && !defined(OS_WIN)
+#if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_WIN)
     // Correct stack dumping behavior requires symbol names in all loaded
     // libraries to be cached. We do this here in case the calling process will
     // imminently enter a sandbox.
     base::debug::EnableInProcessStackDumping();
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     // Tickle base's PRNG. This lazily opens a static handle to /dev/urandom.
     // Mojo Core uses the API internally, so it's important to warm the handle
     // before potentially entering a sandbox.

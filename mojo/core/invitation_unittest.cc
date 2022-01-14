@@ -84,14 +84,14 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
                                  base::CommandLine* command_line,
                                  base::StringPiece switch_name = {}) {
   std::string value;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   channel->PrepareToPassRemoteEndpoint(&options->handles_to_transfer, &value);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   channel->PrepareToPassRemoteEndpoint(&options->mach_ports_for_rendezvous,
                                        &value);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   channel->PrepareToPassRemoteEndpoint(&options->fds_to_remap, &value);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   channel->PrepareToPassRemoteEndpoint(&options->handles_to_inherit, &value);
 #else
 #error "Platform not yet supported."
@@ -306,11 +306,11 @@ base::Process InvitationTest::LaunchChildTestClient(
   base::LaunchOptions default_launch_options;
   base::LaunchOptions& launch_options =
       custom_launch_options ? *custom_launch_options : default_launch_options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   launch_options.start_hidden = true;
 #endif
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   absl::optional<NamedPlatformChannel> named_channel;
 #endif
   absl::optional<PlatformChannel> channel;
@@ -321,9 +321,9 @@ base::Process InvitationTest::LaunchChildTestClient(
                                 &command_line);
     local_endpoint_handle = channel->TakeLocalEndpoint().TakePlatformHandle();
   } else {
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     NamedPlatformChannel::Options named_channel_options;
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     CHECK(base::PathService::Get(base::DIR_TEMP,
                                  &named_channel_options.socket_dir));
 #endif
@@ -331,9 +331,9 @@ base::Process InvitationTest::LaunchChildTestClient(
     named_channel->PassServerNameOnCommandLine(&command_line);
     local_endpoint_handle =
         named_channel->TakeServerEndpoint().TakePlatformHandle();
-#else   //  !defined(OS_FUCHSIA)
+#else   //  !BUILDFLAG(IS_FUCHSIA)
     NOTREACHED() << "Named pipe support does not exist for Mojo on Fuchsia.";
-#endif  //  !defined(OS_FUCHSIA)
+#endif  //  !BUILDFLAG(IS_FUCHSIA)
   }
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
@@ -374,7 +374,7 @@ void InvitationTest::SendInvitationToClient(
 
   MojoPlatformProcessHandle process_handle;
   process_handle.struct_size = sizeof(process_handle);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   process_handle.value =
       static_cast<uint64_t>(reinterpret_cast<uintptr_t>(process));
 #else
@@ -412,7 +412,7 @@ class TestClientBase : public InvitationTest {
                                      base::StringPiece switch_name = {}) {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
     PlatformChannelEndpoint channel_endpoint;
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     channel_endpoint = NamedPlatformChannel::ConnectToServer(command_line);
 #endif
     if (!channel_endpoint.is_valid()) {
@@ -543,7 +543,7 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
   WaitForSignals(pipes[1], MOJO_HANDLE_SIGNAL_PEER_CLOSED);
 }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(InvitationTest, SendInvitationWithServer) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
@@ -579,7 +579,7 @@ DEFINE_TEST_CLIENT(SendInvitationWithServerClient) {
 
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
 }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 const char kErrorMessage[] = "ur bad :(";
 const char kDisconnectMessage[] = "go away plz";

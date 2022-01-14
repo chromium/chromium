@@ -66,7 +66,7 @@ MojoResult ExtractRegionFromSharedBuffer(MojoHandle handle, T* region) {
 }
 
 // The multiprocess tests that use these don't compile on iOS.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 const char kHelloWorld[] = "hello world";
 const char kByeWorld[] = "bye world";
 #endif
@@ -178,7 +178,7 @@ TEST_F(EmbedderTest, ChannelsHandlePassing) {
 //  11.                                      (wait/cl.)
 //  12.                                                  (wait/cl.)
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 TEST_F(EmbedderTest, MultiprocessChannels) {
   RunTestClient("MultiprocessChannelsClient", [&](MojoHandle server_mp) {
@@ -344,7 +344,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessSharedMemoryClient,
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(sb1));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 enum class HandleType {
   POSIX,
@@ -421,9 +421,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessMixMachAndFdsClient,
   WriteMessage(client_mp, "bye");
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace core

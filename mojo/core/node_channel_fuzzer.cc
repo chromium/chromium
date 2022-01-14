@@ -17,7 +17,7 @@
 #include "mojo/core/test/mock_node_channel_delegate.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -62,7 +62,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
       Channel::HandlePolicy::kRejectHandles,
       environment->main_thread_task_executor.task_runner(), base::DoNothing());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, it's important that the receiver behaves like a broker process
   // receiving messages from a non-broker process. This is because that case can
   // safely handle invalid HANDLE attachments without crashing. The same is not

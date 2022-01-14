@@ -379,7 +379,7 @@ TEST(ChannelTest, DeserializeMessage_BadExtraHeaderSize) {
                                           base::kNullProcessHandle));
 }
 
-#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 TEST(ChannelTest, DeserializeMessage_NonZeroExtraHeaderSize) {
   // Verifies that a message payload is rejected when the extra header chunk
   // size anything but zero on Linux, even if it's aligned.
@@ -605,7 +605,7 @@ TEST(ChannelTest, MessageSizeTest) {
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST(ChannelTest, SendToDeadMachPortName) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
@@ -709,7 +709,7 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   EXPECT_EQ(0u, send);
   EXPECT_EQ(1u, dead);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace core

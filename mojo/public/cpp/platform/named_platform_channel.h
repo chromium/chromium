@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_path.h"
 #endif
 
@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
  public:
   static const char kNamedHandleSwitch[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   using ServerName = std::wstring;
 #else
   using ServerName = std::string;
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
     // generated.
     ServerName server_name;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // If non-empty, a security descriptor to use when creating the pipe. If
     // empty, a default security descriptor will be used. See
     // |kDefaultSecurityDescriptor|.
@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
     // NamedPlatformChannel instances can be created with the same name and
     // a different client can connect to each one.
     bool enforce_uniqueness = true;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     // On POSIX, every new unnamed NamedPlatformChannel creates a server socket
     // with a random name. This controls the directory where that happens.
     // Ignored if |server_name| was set explicitly.

@@ -36,13 +36,13 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
 
 // Unfortunately base process support code has no unified handle-passing
 // data pipe, so we have this.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   using HandlePassingInfo = base::HandlesToInheritVector;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   using HandlePassingInfo = base::HandlesToTransferVector;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   using HandlePassingInfo = base::MachPortsForRendezvous;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   using HandlePassingInfo = base::FileHandleMappingVector;
 #else
 #error "Unsupported platform."

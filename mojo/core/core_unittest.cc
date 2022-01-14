@@ -14,7 +14,7 @@
 #include "mojo/core/core_test_base.h"
 #include "mojo/public/cpp/system/wait.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 

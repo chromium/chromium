@@ -7,19 +7,19 @@
 #include "base/files/file.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <winternl.h>
 #endif
 
 namespace mojo {
 namespace {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool GetGrantedAccess(HANDLE handle, DWORD* flags) {
   static const auto nt_query_object =
       reinterpret_cast<decltype(&NtQueryObject)>(
@@ -34,7 +34,7 @@ bool GetGrantedAccess(HANDLE handle, DWORD* flags) {
   *flags = info.GrantedAccess;
   return true;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // True if the underlying handle is only readable. Where possible this excludes
 // deletion, writing, truncation, append and other operations that might modify
@@ -42,7 +42,7 @@ bool GetGrantedAccess(HANDLE handle, DWORD* flags) {
 // On platforms where we cannot test the handle, always returns true.
 bool IsReadOnlyFile(base::File& file) {
   bool is_readonly = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD flags = 0;
   if (!GetGrantedAccess(file.GetPlatformFile(), &flags))
     return false;
@@ -52,8 +52,8 @@ bool IsReadOnlyFile(base::File& file) {
   is_readonly =
       !(flags & (FILE_APPEND_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_DATA |
                  FILE_WRITE_EA | WRITE_DAC | WRITE_OWNER | DELETE));
-#elif defined(OS_FUCHSIA) || \
-    (defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_AIX))
+#elif BUILDFLAG(IS_FUCHSIA) || \
+    (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX))
   is_readonly =
       (fcntl(file.GetPlatformFile(), F_GETFL) & O_ACCMODE) == O_RDONLY;
 #endif
@@ -61,7 +61,7 @@ bool IsReadOnlyFile(base::File& file) {
 }
 
 bool IsPhysicalFile(base::File& file) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Verify if this is a real file (not a socket/pipe etc.).
   DWORD type = GetFileType(file.GetPlatformFile());
   return type == FILE_TYPE_DISK;

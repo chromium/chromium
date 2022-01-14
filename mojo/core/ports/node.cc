@@ -25,7 +25,7 @@
 #include "mojo/core/ports/port_locker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "crypto/random.h"
 #else
 #include "base/rand_util.h"
@@ -58,7 +58,7 @@ class RandomNameGenerator {
   PortName GenerateRandomPortName() {
     base::AutoLock lock(lock_);
     if (cache_index_ == kRandomNameCacheSize) {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
       base::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
 #else
       crypto::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
@@ -161,7 +161,7 @@ int Node::GetPort(const PortName& port_name, PortRef* port_ref) {
   if (iter == ports_.end())
     return ERROR_PORT_UNKNOWN;
 
-#if defined(OS_ANDROID) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
   // Workaround for https://crbug.com/665869.
   std::atomic_thread_fence(std::memory_order_seq_cst);
 #endif

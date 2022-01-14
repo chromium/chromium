@@ -36,7 +36,7 @@ struct BufferResponseData {
   uint64_t guid_low;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 struct InitData {
   // NOTE: InitData in the payload is followed by string16 data with exactly
   // |pipe_name_length| wide characters (i.e., |pipe_name_length|*2 bytes.)

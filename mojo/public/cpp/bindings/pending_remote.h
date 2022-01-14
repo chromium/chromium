@@ -66,7 +66,7 @@ class PendingRemote {
       : state_(std::move(pipe), version) {}
 
   // Disabled on NaCl since it crashes old version of clang.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom remote types. Only participates in
   // overload resolution if a typesafe conversion is supported.
   template <
@@ -78,7 +78,7 @@ class PendingRemote {
   PendingRemote(T&& other)
       : PendingRemote(PendingRemoteConverter<T>::template To<Interface>(
             std::move(other))) {}
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   PendingRemote(const PendingRemote&) = delete;
   PendingRemote& operator=(const PendingRemote&) = delete;

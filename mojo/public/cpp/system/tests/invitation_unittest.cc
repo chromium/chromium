@@ -27,7 +27,7 @@
 #include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #endif
 
@@ -41,7 +41,7 @@ enum class InvitationType {
 
 enum class TransportType {
   kChannel,
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   kChannelServer,
 #endif
 };
@@ -50,7 +50,7 @@ enum class TransportType {
 // should be testing against.
 const char kTransportTypeSwitch[] = "test-transport-type";
 const char kTransportTypeChannel[] = "channel";
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 const char kTransportTypeChannelServer[] = "channel-server";
 #endif
 
@@ -84,18 +84,18 @@ class InvitationCppTest : public testing::Test,
                                        kTransportTypeChannel);
         channel.emplace();
         channel->PrepareToPassRemoteEndpoint(&launch_options, &command_line);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         launch_options.start_hidden = true;
 #endif
         channel_endpoint = channel->TakeLocalEndpoint();
         break;
       }
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
       case TransportType::kChannelServer: {
         command_line.AppendSwitchASCII(kTransportTypeSwitch,
                                        kTransportTypeChannelServer);
         NamedPlatformChannel::Options named_channel_options;
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
         CHECK(base::PathService::Get(base::DIR_TEMP,
                                      &named_channel_options.socket_dir));
 #endif
@@ -104,7 +104,7 @@ class InvitationCppTest : public testing::Test,
         server_endpoint = named_channel.TakeServerEndpoint();
         break;
       }
-#endif  //  !defined(OS_FUCHSIA)
+#endif  //  !BUILDFLAG(IS_FUCHSIA)
     }
 
     child_process_ = base::SpawnMultiProcessTestChild(
@@ -132,7 +132,7 @@ class InvitationCppTest : public testing::Test,
               OutgoingInvitation::SendIsolated(std::move(channel_endpoint));
         }
         break;
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
       case TransportType::kChannelServer:
         DCHECK(server_endpoint.is_valid());
         if (invitation_type == InvitationType::kNormal) {
@@ -146,7 +146,7 @@ class InvitationCppTest : public testing::Test,
               OutgoingInvitation::SendIsolated(std::move(server_endpoint));
         }
         break;
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
     }
   }
 
@@ -187,7 +187,7 @@ class TestClientBase : public InvitationCppTest {
 
   static PlatformChannelEndpoint RecoverEndpointFromCommandLine() {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     std::string transport_type_string =
         command_line.GetSwitchValueASCII(kTransportTypeSwitch);
     CHECK(!transport_type_string.empty());
@@ -282,7 +282,7 @@ const char kDisconnectMessage[] = "go away plz";
 
 // Flakily times out on Android under ASAN.
 // crbug.com/1011494
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ProcessErrors DISABLED_ProcessErrors
 #else
 #define MAYBE_ProcessErrors ProcessErrors
@@ -335,7 +335,7 @@ DEFINE_TEST_CLIENT(CppProcessErrorsClient) {
 INSTANTIATE_TEST_SUITE_P(All,
                          InvitationCppTest,
                          testing::Values(TransportType::kChannel
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
                                          ,
                                          TransportType::kChannelServer
 #endif

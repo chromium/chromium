@@ -58,7 +58,7 @@ base::TimeDelta EpsilonDeadline() {
 // Currently, |tiny_timeout()| is usually 100 ms (possibly scaled under ASAN,
 // etc.). Based on this, set it to (usually be) 30 ms on Windows and 20 ms
 // elsewhere.
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   const int64_t deadline = (tiny_timeout * 3) / 10;
 #else
   const int64_t deadline = (tiny_timeout * 2) / 10;
@@ -1762,7 +1762,7 @@ TEST_F(DataPipeTest, CreateOversized) {
   ASSERT_EQ(MOJO_RESULT_RESOURCE_EXHAUSTED, Create(&options));
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 TEST_F(DataPipeTest, Multiprocess) {
   const uint32_t kTestDataSize =
@@ -2102,7 +2102,7 @@ TEST_F(DataPipeTest, CreateOversizedInChild) {
   });
 }
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace core

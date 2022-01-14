@@ -20,40 +20,40 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/scoped_handle.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_mach_port.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define SIMPLE_PLATFORM_HANDLE_TYPE MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define SIMPLE_PLATFORM_HANDLE_TYPE MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE \
   MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT
-#elif defined(OS_WIN) || defined(OS_POSIX)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE SIMPLE_PLATFORM_HANDLE_TYPE
 #endif
 
 uint64_t PlatformHandleValueFromPlatformFile(base::PlatformFile file) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return reinterpret_cast<uint64_t>(file);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return static_cast<uint64_t>(file);
 #endif
 }
 
 base::PlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return reinterpret_cast<base::PlatformFile>(value);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return static_cast<base::PlatformFile>(value);
 #endif
 }
@@ -131,13 +131,13 @@ TEST_F(PlatformWrapperTest, WrapPlatformSharedMemoryRegion) {
     MojoPlatformHandle os_buffer;
     os_buffer.struct_size = sizeof(MojoPlatformHandle);
     os_buffer.type = SHARED_BUFFER_PLATFORM_HANDLE_TYPE;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     os_buffer.value =
         reinterpret_cast<uint64_t>(platform_region.PassPlatformHandle().Take());
-#elif defined(OS_MAC) || defined(OS_FUCHSIA) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
     os_buffer.value =
         static_cast<uint64_t>(platform_region.PassPlatformHandle().release());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     os_buffer.value = static_cast<uint64_t>(
         platform_region.PassPlatformHandle().fd.release());
 #else
@@ -191,18 +191,18 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   auto mode = base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe;
   base::UnguessableToken guid =
       base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE, os_buffer.type);
   auto platform_handle =
       base::win::ScopedHandle(reinterpret_cast<HANDLE>(os_buffer.value));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE, os_buffer.type);
   auto platform_handle = zx::vmo(static_cast<zx_handle_t>(os_buffer.value));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT, os_buffer.type);
   auto platform_handle =
       base::mac::ScopedMachSendRight(static_cast<mach_port_t>(os_buffer.value));
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR, os_buffer.type);
   auto platform_handle = base::ScopedFD(static_cast<int>(os_buffer.value));
 #endif
