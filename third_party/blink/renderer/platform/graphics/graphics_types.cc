@@ -55,9 +55,9 @@ const int kNumCompositeOperatorNames =
     base::size(kCanvasCompositeOperatorNames);
 const int kNumBlendModeNames = base::size(kCanvasBlendModeNames);
 
-bool ParseCompositeAndBlendMode(const String& s,
-                                CompositeOperator& op,
-                                BlendMode& blend_op) {
+bool ParseCanvasCompositeAndBlendMode(const String& s,
+                                      CompositeOperator& op,
+                                      BlendMode& blend_op) {
   for (int i = 0; i < kNumCompositeOperatorNames; i++) {
     if (s == kCanvasCompositeOperatorNames[i]) {
       op = static_cast<CompositeOperator>(i);
@@ -77,13 +77,55 @@ bool ParseCompositeAndBlendMode(const String& s,
   return false;
 }
 
-String CompositeOperatorName(CompositeOperator op, BlendMode blend_op) {
+String CanvasCompositeOperatorName(CompositeOperator op, BlendMode blend_op) {
   DCHECK_GE(op, 0);
   DCHECK_LT(op, kNumCompositeOperatorNames);
-  DCHECK_GE(static_cast<unsigned>(blend_op), 0u);
+  DCHECK_GE(static_cast<int>(blend_op), 0);
+  DCHECK_LT(static_cast<int>(blend_op), kNumBlendModeNames);
   if (blend_op != BlendMode::kNormal)
     return kCanvasBlendModeNames[static_cast<unsigned>(blend_op)];
   return kCanvasCompositeOperatorNames[op];
+}
+
+String BlendModeToString(BlendMode blend_op) {
+  switch (blend_op) {
+    case BlendMode::kNormal:
+      return "normal";
+    case BlendMode::kMultiply:
+      return "multiply";
+    case BlendMode::kScreen:
+      return "screen";
+    case BlendMode::kOverlay:
+      return "overlay";
+    case BlendMode::kDarken:
+      return "darken";
+    case BlendMode::kLighten:
+      return "lighten";
+    case BlendMode::kColorDodge:
+      return "color-dodge";
+    case BlendMode::kColorBurn:
+      return "color-burn";
+    case BlendMode::kHardLight:
+      return "hard-light";
+    case BlendMode::kSoftLight:
+      return "soft-light";
+    case BlendMode::kDifference:
+      return "difference";
+    case BlendMode::kExclusion:
+      return "exclusion";
+    case BlendMode::kHue:
+      return "hue";
+    case BlendMode::kSaturation:
+      return "saturation";
+    case BlendMode::kColor:
+      return "color";
+    case BlendMode::kLuminosity:
+      return "luminosity";
+    case BlendMode::kPlusLighter:
+      return "plus-lighter";
+  }
+  NOTREACHED();
+  return "";
 }
 
 bool ParseImageEncodingMimeType(const String& mime_type_name,

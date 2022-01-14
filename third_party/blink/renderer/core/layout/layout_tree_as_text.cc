@@ -663,9 +663,7 @@ static void Write(WTF::TextStream& ts,
 
   if (layer.GetLayoutObject().StyleRef().HasBlendMode()) {
     ts << " blendMode: "
-       << CompositeOperatorName(
-              kCompositeSourceOver,
-              layer.GetLayoutObject().StyleRef().GetBlendMode());
+       << BlendModeToString(layer.GetLayoutObject().StyleRef().GetBlendMode());
   }
 
   if (behavior & kLayoutAsTextShowPaintProperties) {

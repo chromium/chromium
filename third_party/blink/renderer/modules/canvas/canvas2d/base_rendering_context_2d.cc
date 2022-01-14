@@ -714,17 +714,16 @@ void BaseRenderingContext2D::setGlobalAlpha(double alpha) {
 }
 
 String BaseRenderingContext2D::globalCompositeOperation() const {
-  auto compositing_blend_mode_pair =
+  auto [composite_op, blend_mode] =
       CompositeAndBlendOpsFromSkBlendMode(GetState().GlobalComposite());
-  return CompositeOperatorName(compositing_blend_mode_pair.first,
-                               compositing_blend_mode_pair.second);
+  return CanvasCompositeOperatorName(composite_op, blend_mode);
 }
 
 void BaseRenderingContext2D::setGlobalCompositeOperation(
     const String& operation) {
   CompositeOperator op = kCompositeSourceOver;
   BlendMode blend_mode = BlendMode::kNormal;
-  if (!ParseCompositeAndBlendMode(operation, op, blend_mode))
+  if (!ParseCanvasCompositeAndBlendMode(operation, op, blend_mode))
     return;
   SkBlendMode sk_blend_mode = WebCoreCompositeToSkiaComposite(op, blend_mode);
   if (GetState().GlobalComposite() == sk_blend_mode)

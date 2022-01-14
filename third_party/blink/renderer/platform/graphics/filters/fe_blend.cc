@@ -59,11 +59,7 @@ WTF::TextStream& FEBlend::ExternalRepresentation(WTF::TextStream& ts,
   WriteIndent(ts, indent);
   ts << "[feBlend";
   FilterEffect::ExternalRepresentation(ts);
-  ts << " mode=\""
-     << (mode_ == BlendMode::kNormal
-             ? "normal"
-             : CompositeOperatorName(kCompositeSourceOver, mode_))
-     << "\"]\n";
+  ts << " mode=\"" << BlendModeToString(mode_) << "\"]\n";
   InputEffect(0)->ExternalRepresentation(ts, indent + 1);
   InputEffect(1)->ExternalRepresentation(ts, indent + 1);
   return ts;
