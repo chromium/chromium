@@ -132,6 +132,14 @@ signin::Tribool FindAccountCapabilityPath(const base::Value& value,
   }
 }
 
+void GetString(const base::Value& dict,
+               base::StringPiece key,
+               std::string& result) {
+  if (const std::string* value = dict.FindStringKey(key)) {
+    result = *value;
+  }
+}
+
 }  // namespace
 
 AccountTrackerService::AccountTrackerService() {
@@ -528,9 +536,8 @@ void AccountTrackerService::OnAccountImageUpdated(
     base::Value& dict_value = update->GetList()[i];
     if (dict_value.is_dict()) {
       dict = static_cast<base::DictionaryValue*>(&dict_value);
-      std::string value;
-      if (dict->GetString(kAccountKeyPath, &value) &&
-          value == account_id.ToString()) {
+      const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
+      if (account_key && *account_key == account_id.ToString()) {
         break;
       }
     }
@@ -558,35 +565,28 @@ void AccountTrackerService::LoadFromPrefs() {
     if (dict_value.is_dict()) {
       const base::DictionaryValue& dict =
           base::Value::AsDictionaryValue(dict_value);
-      std::string value;
-      if (dict.GetString(kAccountKeyPath, &value)) {
+      if (const std::string* account_key =
+              dict.FindStringKey(kAccountKeyPath)) {
         // Ignore incorrectly persisted non-canonical account ids.
-        if (value.find('@') != std::string::npos &&
-            value != gaia::CanonicalizeEmail(value)) {
-          to_remove.insert(CoreAccountId::FromString(value));
+        if (account_key->find('@') != std::string::npos &&
+            *account_key != gaia::CanonicalizeEmail(*account_key)) {
+          to_remove.insert(CoreAccountId::FromString(*account_key));
           continue;
         }
 
-        CoreAccountId account_id = CoreAccountId::FromString(value);
+        CoreAccountId account_id = CoreAccountId::FromString(*account_key);
         StartTrackingAccount(account_id);
         AccountInfo& account_info = accounts_[account_id];
 
-        if (dict.GetString(kAccountGaiaPath, &value))
-          account_info.gaia = value;
-        if (dict.GetString(kAccountEmailPath, &value))
-          account_info.email = value;
-        if (dict.GetString(kAccountHostedDomainPath, &value))
-          account_info.hosted_domain = value;
-        if (dict.GetString(kAccountFullNamePath, &value))
-          account_info.full_name = value;
-        if (dict.GetString(kAccountGivenNamePath, &value))
-          account_info.given_name = value;
-        if (dict.GetString(kAccountLocalePath, &value))
-          account_info.locale = value;
-        if (dict.GetString(kAccountPictureURLPath, &value))
-          account_info.picture_url = value;
-        if (dict.GetString(kLastDownloadedImageURLWithSizePath, &value))
-          account_info.last_downloaded_image_url_with_size = value;
+        GetString(dict, kAccountGaiaPath, account_info.gaia);
+        GetString(dict, kAccountEmailPath, account_info.email);
+        GetString(dict, kAccountHostedDomainPath, account_info.hosted_domain);
+        GetString(dict, kAccountFullNamePath, account_info.full_name);
+        GetString(dict, kAccountGivenNamePath, account_info.given_name);
+        GetString(dict, kAccountLocalePath, account_info.locale);
+        GetString(dict, kAccountPictureURLPath, account_info.picture_url);
+        GetString(dict, kLastDownloadedImageURLWithSizePath,
+                  account_info.last_downloaded_image_url_with_size);
 
         if (absl::optional<bool> is_child_status =
                 dict.FindBoolKey(kDeprecatedChildStatusPath)) {
@@ -667,9 +667,8 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
     base::Value& dict_value = update->GetList()[i];
     if (dict_value.is_dict()) {
       dict = static_cast<base::DictionaryValue*>(&dict_value);
-      std::string value;
-      if (dict->GetString(kAccountKeyPath, &value) &&
-          value == account_info.account_id.ToString()) {
+      const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
+      if (account_key && *account_key == account_info.account_id.ToString()) {
         break;
       }
     }
