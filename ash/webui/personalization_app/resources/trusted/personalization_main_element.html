@@ -1,4 +1,14 @@
-<style></style>
+<style>
+  #ambientSubpageLink {
+    background: none;
+    border: none;
+  }
+
+  iron-icon {
+    height: 20px;
+    width: 20px;
+  }
+</style>
 <div id="container">
   <h1>Personalization</h1>
   <user-preview>
@@ -6,6 +16,12 @@
         on-click="onClickUserSubpageLink_"></cr-icon-button>
   </user-preview>
   <wallpaper-preview></wallpaper-preview>
+  <ambient-preview>
+    <cr-button id="ambientSubpageLink" on-click="onClickAmbientSubpageLink_">
+      <div class="text">Screensaver</div>
+      <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+    </cr-button>
+  </ambient-preview>
   <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
     <personalization-theme></personalization-theme>
   </template>

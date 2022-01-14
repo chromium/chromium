@@ -9,6 +9,7 @@
  */
 
 import '/strings.m.js';
+import './ambient/ambient_preview_element.js';
 import './ambient/ambient_subpage_element.js';
 import './personalization_router_element.js';
 import './personalization_test_api.js';

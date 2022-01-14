@@ -32,6 +32,10 @@ export class PersonalizationMain extends WithPersonalizationStore {
   private onClickUserSubpageLink_() {
     PersonalizationRouter.instance().goToRoute(Paths.User);
   }
+
+  private onClickAmbientSubpageLink_() {
+    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+  }
 }
 
 customElements.define(PersonalizationMain.is, PersonalizationMain);

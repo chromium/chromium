@@ -1,17 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
- * @fileoverview The ambient-main component displays the main content of
- * the ambient mode settings.
+ * @fileoverview A polymer component that previews the current selected
+ * screensaver.
  */
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class AmbientSubpage extends PolymerElement {
+export class AmbientPreview extends PolymerElement {
   static get is() {
-    return 'ambient-subpage';
+    return 'ambient-preview';
   }
 
   static get template() {
@@ -22,5 +22,4 @@ export class AmbientSubpage extends PolymerElement {
     return {};
   }
 }
-
-customElements.define(AmbientSubpage.is, AmbientSubpage);
+customElements.define(AmbientPreview.is, AmbientPreview);
