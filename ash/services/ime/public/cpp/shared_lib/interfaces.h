@@ -65,15 +65,6 @@ struct MojoSystemThunks;
 namespace chromeos {
 namespace ime {
 
-// Callback upon async completion of DownloadToFile(), passing the originally
-// issued |request_id| (as returned by DownloadToFile()) and an |error_code| (as
-// defined at
-// https://cs.chromium.org/chromium/src/net/base/net_error_list.h?rcl=f9c935b73381772d508eebba1e216c437139d475).
-typedef void (*ImeCrosDownloadCallback)(int request_id, int status_code);
-
-// A simple downloading callback.
-typedef void (*SimpleDownloadCallback)(int status_code, const char* file_path);
-
 // A simple downloading callback with the downloading URL as return.
 typedef void (*SimpleDownloadCallbackV2)(int status_code,
                                          const char* url,
@@ -84,65 +75,6 @@ typedef void (*ImeSequencedTask)(int task_id);
 
 // A logger function pointer from chrome.
 typedef void (*ChromeLoggerFunc)(int severity, const char* message);
-
-// Based on RequestPriority defined at
-// https://cs.chromium.org/chromium/src/net/base/request_priority.h?rcl=f9c935b73381772d508eebba1e216c437139d475
-enum DownloadPriority {
-  THROTTLED = 0,
-  MINIMUM_PRIORITY = THROTTLED,
-  IDLE = 1,
-  LOWEST = 2,
-  DEFAULT_PRIORITY = LOWEST,
-  LOW = 3,
-  MEDIUM = 4,
-  HIGHEST = 5,
-  MAXIMUM_PRIORITY = HIGHEST,
-};
-
-// Extendable extra options for a download.
-struct DownloadOptions {
-  // Duration (in milliseconds) to wait before giving up on the download and
-  // considering it an error. Negative value means it can take indefinitely.
-  long timeout_ms;
-
-  // Priority level for the download.
-  DownloadPriority priority;
-
-  // Max number of times to retry a download (exclusive of the initial attempt).
-  unsigned int max_retries;
-
-  // Always add more stuff at the end only. Just like protobuf, refrain from
-  // deleting or re-ordering for maximal API stability and backward
-  // compatibility. Simply mark fields as "deprecated" if need be.
-};
-
-// Provides CrOS network download service to the shared library.
-class ImeCrosDownloader {
- protected:
-  virtual ~ImeCrosDownloader() = default;
-
- public:
-  // Download data from the given |url| and store into a file located at the
-  // given |file_path|, using the specified download |options|. The method
-  // returns a |request_id| (unique among those issued by the same Downloader),
-  // while actual download operation takes place asynchronously. Upon async
-  // completion of the download (either success or failure), the given
-  // |callback| function will be invoked, passing a matching |request_id| and
-  // the status via an |error_code|. All arguments are const and completely
-  // owned by the caller at all times; they should remain alive till the sync
-  // return of this method.
-  virtual int DownloadToFile(const char* url,
-                             const DownloadOptions& options,
-                             const char* file_path,
-                             ImeCrosDownloadCallback callback) = 0;
-
-  // Cancel the download whose |request_id| is given (|request_id| is issued
-  // in the return value of each DownloadToFile() call). The callback of a
-  // cancelled download will never be invoked. If the |request_id| is invalid
-  // or belongs to an already completed download (either success or failure),
-  // this method will just no-op.
-  virtual void Cancel(int request_id) = 0;
-};
 
 // This defines the `ImeCrosPlatform` interface, which is used throughout the
 // shared library to manage platform-specific data/operations.
@@ -171,17 +103,11 @@ class ImeCrosPlatform {
   // is only accessible to the user itself.
   virtual const char* GetImeUserHomeDir() = 0;
 
-  // Get the Downloader that provides CrOS network download service. Ownership
-  // of the returned Downloader instance is never transferred, i.e. it remains
-  // owned by the IME service / Platform at all times.
-  virtual ImeCrosDownloader* GetDownloader() = 0;
+  // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.
+  virtual void Unused1() = 0;
 
-  // A shortcut for starting a downloading by the network |SimpleURLLoader|.
-  // Each SimpleDownloadToFile can only be used for a single request.
-  // Make a call after the previous task completes or cancels.
-  virtual int SimpleDownloadToFile(const char* url,
-                                   const char* file_path,
-                                   SimpleDownloadCallback callback) = 0;
+  // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.
+  virtual void Unused2() = 0;
 
   // This is used for decoder to run some Mojo-specific operation which is
   // required to run in the thread creating its remote.
@@ -190,8 +116,9 @@ class ImeCrosPlatform {
   // Returns whether a Chrome OS experimental feature is enabled or not.
   virtual bool IsFeatureEnabled(const char* feature_name) = 0;
 
-  // Version 2 for |SimpleDownloadToFile|. Downloading URL is added into its
-  // callback.
+  // Start a download using |SimpleURLLoader|. Each SimpleDownloadToFileV2 can
+  // only be used for a single request. Make a call after the previous task
+  // completes or cancels. There's download URL included in the callback.
   virtual int SimpleDownloadToFileV2(const char* url,
                                      const char* file_path,
                                      SimpleDownloadCallbackV2 callback) = 0;

@@ -60,21 +60,14 @@ class ImeService : public mojom::ImeService,
   // To be deprecated soon. Do not make a call on it anymore.
   const char* GetImeGlobalDir() override;
 
-  int SimpleDownloadToFile(const char* url,
-                           const char* file_path,
-                           SimpleDownloadCallback callback) override;
+  void Unused2() override;
   int SimpleDownloadToFileV2(const char* url,
                              const char* file_path,
                              SimpleDownloadCallbackV2 callback) override;
-  ImeCrosDownloader* GetDownloader() override;
+  void Unused1() override;
   void RunInMainSequence(ImeSequencedTask task, int task_id) override;
   bool IsFeatureEnabled(const char* feature_name) override;
 
-  // Callback used when a file download finishes by the |SimpleURLLoader|.
-  // On failure, |file| will be empty.
-  void SimpleDownloadFinished(SimpleDownloadCallback callback,
-                              const base::FilePath& file);
-  // V2 of |SimpleDownloadFinished|, returns an extra URL with |file|.
   // Callback used when a file download finishes by the |SimpleURLLoader|.
   // The |url| is the original download url and bound when downloading request
   // starts. On failure, |file| will be empty.

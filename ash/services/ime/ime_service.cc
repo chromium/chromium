@@ -171,30 +171,8 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   return false;
 }
 
-int ImeService::SimpleDownloadToFile(const char* url,
-                                     const char* file_path,
-                                     SimpleDownloadCallback callback) {
-  if (!platform_access_.is_bound()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_ABORTED, "");
-    LOG(ERROR) << "Failed to download due to missing binding.";
-  } else {
-    platform_access_->DownloadImeFileTo(
-        GURL(url), RelativePathFromCStr(file_path),
-        base::BindOnce(&ImeService::SimpleDownloadFinished,
-                       base::Unretained(this), std::move(callback)));
-  }
-
-  // For |SimpleDownloadToFile|, always returns 0.
-  return 0;
-}
-
-void ImeService::SimpleDownloadFinished(SimpleDownloadCallback callback,
-                                        const base::FilePath& file) {
-  if (file.empty()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_FAILED, "");
-  } else {
-    callback(SIMPLE_DOWNLOAD_ERROR_OK, ResolveDownloadPath(file).c_str());
-  }
+void ImeService::Unused2() {
+  NOTIMPLEMENTED();
 }
 
 int ImeService::SimpleDownloadToFileV2(const char* url,
@@ -230,11 +208,8 @@ const MojoSystemThunks* ImeService::GetMojoSystemThunks() {
   return MojoEmbedderGetSystemThunks();
 }
 
-ImeCrosDownloader* ImeService::GetDownloader() {
-  // TODO(https://crbug.com/837156): Create an ImeCrosDownloader based on its
-  // specification defined in interfaces. The caller should free it after use.
+void ImeService::Unused1() {
   NOTIMPLEMENTED();
-  return nullptr;
 }
 
 }  // namespace ime
