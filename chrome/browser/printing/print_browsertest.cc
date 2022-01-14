@@ -197,7 +197,11 @@ void UpdatePrintSettingsOnIO(
 
 class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
  public:
-  explicit PrintPreviewObserver(bool wait_for_loaded) {
+  explicit PrintPreviewObserver(bool wait_for_loaded)
+      : PrintPreviewObserver(wait_for_loaded, /*pages_per_sheet=*/1) {}
+
+  PrintPreviewObserver(bool wait_for_loaded, int pages_per_sheet)
+      : pages_per_sheet_(pages_per_sheet) {
     if (wait_for_loaded)
       queue_.emplace();  // DOMMessageQueue doesn't allow assignment
     PrintPreviewUI::SetDelegateForTesting(this);
@@ -211,7 +215,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   }
 
   void WaitUntilPreviewIsReady() {
-    if (rendered_page_count_ >= total_page_count_)
+    if (rendered_page_count_ >= expected_rendered_page_count_)
       return;
 
     base::RunLoop run_loop;
@@ -227,17 +231,24 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
 
   content::WebContents* GetPrintPreviewDialog() { return preview_dialog_; }
 
+  uint32_t rendered_page_count() const { return rendered_page_count_; }
+
  private:
   // PrintPreviewUI::TestDelegate:
   void DidGetPreviewPageCount(uint32_t page_count) override {
-    total_page_count_ = page_count;
+    // `page_count` is the number of pages to be generated but doesn't take
+    // N-up into consideration.  Since `DidRenderPreviewPage()` is called after
+    // any N-up processing is performed, determine the number of times that
+    // function is expected to be called.
+    expected_rendered_page_count_ =
+        (page_count + pages_per_sheet_ - 1) / pages_per_sheet_;
   }
 
   // PrintPreviewUI::TestDelegate:
   void DidRenderPreviewPage(content::WebContents* preview_dialog) override {
     ++rendered_page_count_;
-    CHECK(rendered_page_count_ <= total_page_count_);
-    if (rendered_page_count_ == total_page_count_ && run_loop_) {
+    CHECK_LE(rendered_page_count_, expected_rendered_page_count_);
+    if (rendered_page_count_ == expected_rendered_page_count_ && run_loop_) {
       run_loop_->Quit();
       preview_dialog_ = preview_dialog;
 
@@ -254,8 +265,14 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   }
 
   absl::optional<content::DOMMessageQueue> queue_;
-  uint32_t total_page_count_ = 1;
+
+  // Rendered pages are provided after N-up processing, which will be different
+  // from the count provided to `DidGetPreviewPageCount()` when
+  // `pages_per_sheet_` is larger than one.
+  const int pages_per_sheet_;
+  uint32_t expected_rendered_page_count_ = 1;
   uint32_t rendered_page_count_ = 0;
+
   raw_ptr<content::WebContents> preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
 };
@@ -514,6 +531,11 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
 
 class PrintBrowserTest : public InProcessBrowserTest {
  public:
+  struct PrintParams {
+    bool print_only_selection = false;
+    int pages_per_sheet = 1;
+  };
+
   PrintBrowserTest() = default;
   ~PrintBrowserTest() override = default;
 
@@ -529,24 +551,40 @@ class PrintBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  void PrintAndWaitUntilPreviewIsReady(bool print_only_selection) {
-    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
-
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false, print_only_selection);
-
-    print_preview_observer.WaitUntilPreviewIsReady();
+  void PrintAndWaitUntilPreviewIsReady() {
+    const PrintParams kParams;
+    PrintAndWaitUntilPreviewIsReady(kParams);
   }
 
-  void PrintAndWaitUntilPreviewIsReadyAndLoaded(bool print_only_selection) {
-    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+  void PrintAndWaitUntilPreviewIsReady(const PrintParams& params) {
+    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false,
+                                                params.pages_per_sheet);
 
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
                /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false, print_only_selection);
+               /*print_preview_disabled=*/false, params.print_only_selection);
 
     print_preview_observer.WaitUntilPreviewIsReady();
+
+    set_rendered_page_count(print_preview_observer.rendered_page_count());
+  }
+
+  void PrintAndWaitUntilPreviewIsReadyAndLoaded() {
+    const PrintParams kParams;
+    PrintAndWaitUntilPreviewIsReadyAndLoaded(kParams);
+  }
+
+  void PrintAndWaitUntilPreviewIsReadyAndLoaded(const PrintParams& params) {
+    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true,
+                                                params.pages_per_sheet);
+
+    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+               /*print_renderer=*/mojo::NullAssociatedRemote(),
+               /*print_preview_disabled=*/false, params.print_only_selection);
+
+    print_preview_observer.WaitUntilPreviewIsReady();
+
+    set_rendered_page_count(print_preview_observer.rendered_page_count());
   }
 
   // The following are helper functions for having a wait loop in the test and
@@ -590,6 +628,13 @@ class PrintBrowserTest : public InProcessBrowserTest {
     return remote_;
   }
 
+  uint32_t rendered_page_count() const { return rendered_page_count_; }
+
+ protected:
+  void set_rendered_page_count(uint32_t page_count) {
+    rendered_page_count_ = page_count;
+  }
+
  private:
   TestPrintRenderFrame* GetFrameContent(content::RenderFrameHost* host) const {
     auto iter = frame_content_.find(host);
@@ -605,6 +650,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
                 base::Unretained(GetFrameContent(render_frame_host))));
   }
 
+  uint32_t rendered_page_count_ = 0;
   unsigned int num_expected_messages_;
   unsigned int num_received_messages_;
   base::OnceClosure quit_callback_;
@@ -721,12 +767,13 @@ class PrintExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   PrintExtensionBrowserTest() = default;
   ~PrintExtensionBrowserTest() override = default;
 
-  void PrintAndWaitUntilPreviewIsReady(bool print_only_selection) {
+  void PrintAndWaitUntilPreviewIsReady() {
     PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
 
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
                /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false, print_only_selection);
+               /*print_preview_disabled=*/false,
+               /*has_selection=*/false);
 
     print_preview_observer.WaitUntilPreviewIsReady();
   }
@@ -770,7 +817,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, SelectionContainsIframe) {
   GURL url(embedded_test_server()->GetURL("/printing/selection_iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/true);
+  const PrintParams kParams{.print_only_selection = true};
+  PrintAndWaitUntilPreviewIsReady(kParams);
 }
 
 // https://crbug.com/1125972
@@ -789,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrolling) {
   double old_scroll2 = content::EvalJs(contents, kExpression2).ExtractDouble();
   double old_scroll3 = content::EvalJs(contents, kExpression3).ExtractDouble();
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 
   double new_scroll1 = content::EvalJs(contents, kExpression1).ExtractDouble();
 
@@ -816,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_NoScrollingFrameset) {
 
   double old_scroll = content::EvalJs(contents, kExpression).ExtractDouble();
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 
   double new_scroll = content::EvalJs(contents, kExpression).ExtractDouble();
 
@@ -828,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrollingVerticalRl) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/vertical-rl.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 
   // Test that entering print preview didn't mess up the scroll position.
   EXPECT_EQ(
@@ -859,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LegacyLayoutEngineFallback) {
 
   // Entering print preview may trigger legacy engine fallback, but this should
   // only be temporary.
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 
   // The non-printed document should still be laid out with LayoutNG.
   double new_height = content::EvalJs(contents, kExpression).ExtractDouble();
@@ -877,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, ResetPageScaleAfterPrintPreview) {
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   contents->SetPageScale(1.5);
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 
   double contents_page_scale_after_print =
       content::EvalJs(contents, "window.visualViewport.scale").ExtractDouble();
@@ -1092,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, BasicPrint) {
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 }
 
 // Printing a web page with a dead subframe for site per process should succeed.
@@ -1119,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
   render_process_watcher.Wait();
   ASSERT_FALSE(test_frame->IsRenderFrameLive());
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 }
 
 // If a subframe dies during printing, the page printing should still succeed.
@@ -1177,7 +1225,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPrintBrowserTest,
   auto* subframe = ChildFrameAt(main_frame, 0);
   ASSERT_NE(main_frame->GetProcess(), subframe->GetProcess());
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 }
 
 // Printing preview a webpage.
@@ -1213,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowed) {
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
              /*print_renderer=*/mojo::NullAssociatedRemote(),
              /*print_preview_disabled=*/false,
-             /*print_only_selection=*/false);
+             /*has_selection=*/false);
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kAllowed);
@@ -1367,7 +1415,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePrintBrowserTest, DisableCaching) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* rfh_a = current_frame_host();
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 
   // 2) Navigate to B.
   // The first page is not cached because printing preview was open.
@@ -1387,7 +1435,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePrintBrowserTest, DisableCaching) {
 // The test should not crash or timeout.
 IN_PROC_BROWSER_TEST_F(PrintExtensionBrowserTest, PrintOptionPage) {
   LoadExtensionAndNavigateToOptionPage();
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 }
 
 // Printing an extension option page with site per process is enabled.
@@ -1395,14 +1443,14 @@ IN_PROC_BROWSER_TEST_F(PrintExtensionBrowserTest, PrintOptionPage) {
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintExtensionBrowserTest,
                        PrintOptionPage) {
   LoadExtensionAndNavigateToOptionPage();
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReady();
 }
 
 // Printing frame content for the main frame of a generic webpage with N-up
-// priting. This is a regression test for https://crbug.com/937247
+// printing. This is a regression test for https://crbug.com/937247
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1411,15 +1459,23 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintNup) {
   TestPrintViewManager print_view_manager(web_contents);
   PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  // TODO(crbug.com/1283182)  Match the hard-coded `pages_per_sheet` in
+  // `GetPrintParams()`.  The number of pages per sheet should really be
+  // specified locally here in this test.
+  const PrintParams kParams{.pages_per_sheet = 4};
+  PrintAndWaitUntilPreviewIsReady(kParams);
 
   PrintViewManager::SetReceiverImplForTesting(nullptr);
+
+  // With 4 pages per sheet requested by `GetPrintParams()`, a 7 page input
+  // will result in 2 pages in the print preview.
+  EXPECT_EQ(rendered_page_count(), 2u);
 }
 
 // Site per process version of PrintBrowserTest.PrintNup.
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1428,9 +1484,17 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, PrintNup) {
   TestPrintViewManager print_view_manager(web_contents);
   PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  // TODO(crbug.com/1283182)  Match the hard-coded `pages_per_sheet` in
+  // `GetPrintParams()`.  The number of pages per sheet should really be
+  // specified locally here in this test.
+  const PrintParams kParams{.pages_per_sheet = 4};
+  PrintAndWaitUntilPreviewIsReady(kParams);
 
   PrintViewManager::SetReceiverImplForTesting(nullptr);
+
+  // With 4 pages per sheet requested by `GetPrintParams()`, a 7 page input
+  // will result in 2 pages in the print preview.
+  EXPECT_EQ(rendered_page_count(), 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, MultipagePrint) {
@@ -1438,7 +1502,9 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, MultipagePrint) {
   GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  PrintAndWaitUntilPreviewIsReadyAndLoaded(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(rendered_page_count(), 3u);
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
@@ -1446,7 +1512,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
   GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  PrintAndWaitUntilPreviewIsReadyAndLoaded(/*print_only_selection=*/false);
+  PrintAndWaitUntilPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(rendered_page_count(), 3u);
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PDFPluginNotKeyboardFocusable) {
@@ -1457,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PDFPluginNotKeyboardFocusable) {
   PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
              /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false, /*print_only_selection=*/false);
+             /*print_preview_disabled=*/false, /*has_selection=*/false);
   print_preview_observer.WaitUntilPreviewIsReady();
 
   content::WebContents* preview_dialog =
@@ -1823,6 +1891,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
                /*has_selection=*/false);
     print_preview_observer.WaitUntilPreviewIsReady();
 
+    set_rendered_page_count(print_preview_observer.rendered_page_count());
+
     content::WebContents* preview_dialog =
         print_preview_observer.GetPrintPreviewDialog();
     ASSERT_TRUE(preview_dialog);
@@ -1951,7 +2021,7 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   SetPrinterNameForSubsequentContexts("printer1");
 
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1960,7 +2030,17 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   TestPrintViewManager print_view_manager(web_contents);
   PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
 
-  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+  // TODO(crbug.com/1283182)  Match the hard-coded `pages_per_sheet` from
+  // `GetPrintParams()` which is called because of use of
+  // `TestPrintViewManager`.  This should go away once `GetPrintParams()` is
+  // removed, as this test is not interested in N-up.
+  const PrintParams kParams{.pages_per_sheet = 4};
+  PrintAndWaitUntilPreviewIsReady(kParams);
+
+  // TODO(crbug.com/1283182)  This should really generate 3 pages, but only
+  // generates 1 because of the hard-coded `pages_per_sheet` in
+  // `GetPrintParams()`.
+  EXPECT_EQ(rendered_page_count(), 1u);
 
   ASSERT_TRUE(print_view_manager.snooped_settings());
   EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
