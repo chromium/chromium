@@ -111,7 +111,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
    */
   runWithFakeScrollable(site, scrolledPredicate, callback) {
     this.runWithLoadedTree(site, function(root) {
-      const list = root.firstChild;
+      const list = root.find({role: RoleType.LIST});
       Object.defineProperty(list, 'focusable', {get: () => false});
       Object.defineProperty(list, 'scrollable', {get: () => true});
       Object.defineProperty(list, 'standardActions', {
@@ -230,6 +230,52 @@ TEST_F('ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByObject', function() {
         .expectSpeech('3rd item')
         .call(doCmd('previousObject'))  // scroll backward
         .expectSpeech('2nd item')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByWord', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithFakeArcRecyclerView(function(root) {
+    mockFeedback.expectSpeech('1st item')
+        .call(doCmd('nextObject'))
+        .expectSpeech('2nd item')
+        .call(doCmd('nextWord'))
+        .expectSpeech('item')
+        .call(doCmd('nextWord'))  // scroll forward
+        .expectSpeech('3rd')
+        .call(doCmd('previousWord'))  // scroll backward
+        .expectSpeech('item')
+        .call(doCmd('previousWord'))
+        .expectSpeech('2nd')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByCharacter', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithFakeArcRecyclerView(function(root) {
+    mockFeedback.expectSpeech('1st item')
+        .call(doCmd('nextObject'))
+        .expectSpeech('2nd item')
+        .call(doCmd('nextWord'))
+        .expectSpeech('item')
+        .call(doCmd('nextCharacter'))
+        .expectSpeech('t')
+        .call(doCmd('nextCharacter'))
+        .expectSpeech('e')
+        .call(doCmd('nextCharacter'))
+        .expectSpeech('m')
+        .call(doCmd('nextCharacter'))  // scroll forward
+        .expectSpeech('3')
+        .call(doCmd('nextCharacter'))
+        .expectSpeech('r')
+        .call(doCmd('previousCharacter'))
+        .expectSpeech('3')
+        .call(doCmd('previousCharacter'))  // scroll backward
+        .expectSpeech('m')
+        .call(doCmd('previousCharacter'))
+        .expectSpeech('e')
         .replay();
   });
 });

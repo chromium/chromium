@@ -256,6 +256,81 @@ cursors.Range = class {
   }
 
   /**
+   * Returns a new range that matches to the given unit and direction in the
+   * current range. If no matching range is found, then null is returned.
+   * Note that there is a chance that new range's end spans beyond the current
+   * end when the given unit is larger than the current range.
+   * @param {cursors.Unit} unit
+   * @param {Dir} dir
+   * @return {cursors.Range}
+   */
+  sync(unit, dir) {
+    switch (unit) {
+      case cursors.Unit.CHARACTER:
+      case cursors.Unit.WORD:
+        let startCursor = this.start;
+        if (!AutomationPredicate.leafWithWordStop(startCursor.node)) {
+          let startNode = startCursor.node;
+          if (dir === Dir.FORWARD) {
+            startNode = AutomationUtil.findNextNode(
+                startNode, Dir.FORWARD, AutomationPredicate.leafWithWordStop,
+                {skipInitialSubtree: false});
+          } else {
+            startNode = AutomationUtil.findNodePost(
+                startNode, dir, AutomationPredicate.leafWithWordStop);
+          }
+          if (!startNode) {
+            return null;
+          }
+          startCursor = cursors.WrappingCursor.fromNode(startNode);
+        }
+
+        const start = startCursor.move(unit, cursors.Movement.SYNC, dir);
+        if (!start) {
+          return null;
+        }
+        let end = start.move(unit, cursors.Movement.BOUND, Dir.FORWARD);
+        if (start.node !== end.node || start.equals(end)) {
+          // Character crossed a node or reached the end.
+          // Collapses to the end of the node.
+          end = new cursors.WrappingCursor(start.node, start.getText().length);
+        }
+        return new cursors.Range(start, end);
+      case cursors.Unit.LINE:
+        let newNode;
+        if (dir === Dir.FORWARD) {
+          newNode = AutomationUtil.findNodeUntil(
+              this.start.node, dir, AutomationPredicate.linebreak);
+        } else {
+          newNode = AutomationUtil.findLastNode(
+              this.start.node, AutomationPredicate.leaf);
+        }
+        if (!newNode) {
+          return null;
+        }
+        return cursors.Range.fromNode(newNode);
+      case cursors.Unit.TEXT:
+      case cursors.Unit.NODE:
+        const pred = unit === cursors.Unit.TEXT ? AutomationPredicate.leaf :
+                                                  AutomationPredicate.object;
+        let node;
+        if (dir === Dir.FORWARD) {
+          node = AutomationUtil.findNextNode(
+              this.start.node, Dir.FORWARD, pred, {skipInitialSubtree: false});
+        } else {
+          node = AutomationUtil.findNodePost(this.start.node, dir, pred);
+        }
+        if (!node) {
+          return null;
+        }
+
+        return cursors.Range.fromNode(node);
+      default:
+        throw Error('Invalid unit: ' + unit);
+    }
+  }
+
+  /**
    * Returns true if this range has either cursor end on web content.
    * @return {boolean}
    */

@@ -395,6 +395,7 @@ CommandHandler.onCommand = function(command) {
   let pred = null;
   let predErrorMsg = undefined;
   let rootPred = AutomationPredicate.rootOrEditableRoot;
+  let unit = null;
   let shouldWrap = true;
   const speechProps = {};
   let skipSync = false;
@@ -407,6 +408,7 @@ CommandHandler.onCommand = function(command) {
       shouldSetSelection = true;
       didNavigate = true;
       speechProps['phoneticCharacters'] = true;
+      unit = cursors.Unit.CHARACTER;
       current = current.move(cursors.Unit.CHARACTER, Dir.FORWARD);
       break;
     case 'previousCharacter':
@@ -414,6 +416,7 @@ CommandHandler.onCommand = function(command) {
       dir = Dir.BACKWARD;
       didNavigate = true;
       speechProps['phoneticCharacters'] = true;
+      unit = cursors.Unit.CHARACTER;
       current = current.move(cursors.Unit.CHARACTER, dir);
       break;
     case 'nativeNextCharacter':
@@ -429,12 +432,14 @@ CommandHandler.onCommand = function(command) {
     case 'nextWord':
       shouldSetSelection = true;
       didNavigate = true;
+      unit = cursors.Unit.WORD;
       current = current.move(cursors.Unit.WORD, Dir.FORWARD);
       break;
     case 'previousWord':
       shouldSetSelection = true;
       dir = Dir.BACKWARD;
       didNavigate = true;
+      unit = cursors.Unit.WORD;
       current = current.move(cursors.Unit.WORD, dir);
       break;
     case 'nativeNextWord':
@@ -452,12 +457,14 @@ CommandHandler.onCommand = function(command) {
     case 'forward':
     case 'nextLine':
       didNavigate = true;
+      unit = cursors.Unit.LINE;
       current = current.move(cursors.Unit.LINE, Dir.FORWARD);
       break;
     case 'backward':
     case 'previousLine':
       dir = Dir.BACKWARD;
       didNavigate = true;
+      unit = cursors.Unit.LINE;
       current = current.move(cursors.Unit.LINE, dir);
       break;
     case 'nextButton':
@@ -625,8 +632,9 @@ CommandHandler.onCommand = function(command) {
     case 'right':
     case 'nextObject':
       didNavigate = true;
+      unit = cursors.Unit.NODE;
       current = current.move(cursors.Unit.NODE, dir);
-      current = CommandHandler.skipLabelOrDescriptionFor_(current, dir);
+      current = CommandHandler.skipLabelOrDescriptionFor(current, dir);
       break;
     case 'previousGroup':
       skipSync = true;
@@ -1255,7 +1263,7 @@ CommandHandler.onCommand = function(command) {
 
   if (tryScrolling &&
       !AutoScrollHandler.getInstance().onCommandNavigation(
-          current, dir, pred, speechProps, rootPred, () => {
+          current, dir, pred, unit, speechProps, rootPred, () => {
             CommandHandler.onCommand(command);
             CommandHandler.onFinishCommand();
           })) {
@@ -1473,7 +1481,7 @@ CommandHandler.onEditCommand_ = function(command) {
  * @param {Dir} dir
  * @return {cursors.Range} The resulting range.
  */
-CommandHandler.skipLabelOrDescriptionFor_ = function(current, dir) {
+CommandHandler.skipLabelOrDescriptionFor = function(current, dir) {
   if (!current) {
     return null;
   }

@@ -64,7 +64,13 @@ cursors.Movement = {
   BOUND: 'bound',
 
   /** Move to the next unit in a particular direction. */
-  DIRECTIONAL: 'directional'
+  DIRECTIONAL: 'directional',
+
+  /**
+   * Move to the beginning or end of the current cursor. Only supports
+   * Unit.CHARACTER and Unit.WORD
+   */
+  SYNC: 'sync'
 };
 
 /**
@@ -308,26 +314,47 @@ cursors.Cursor = class {
 
     switch (unit) {
       case cursors.Unit.CHARACTER:
-        if (newIndex === cursors.NODE_INDEX) {
-          newIndex = 0;
-        }
-        // BOUND and DIRECTIONAL are the same for characters.
         const text = this.getText();
-        newIndex = dir === Dir.FORWARD ?
-            StringUtil.nextCodePointOffset(text, newIndex) :
-            StringUtil.previousCodePointOffset(text, newIndex);
-        if (newIndex < 0 || newIndex >= text.length) {
-          newNode = AutomationUtil.findNextNode(
-              newNode, dir, AutomationPredicate.leafWithText);
-          if (newNode) {
-            const newText = AutomationUtil.getText(newNode);
+
+        switch (movement) {
+          case cursors.Movement.BOUND:
+          case cursors.Movement.DIRECTIONAL:
+            if (newIndex === cursors.NODE_INDEX) {
+              newIndex = 0;
+            }
+
             newIndex = dir === Dir.FORWARD ?
-                0 :
-                StringUtil.previousCodePointOffset(newText, newText.length);
-            newIndex = Math.max(newIndex, 0);
-          } else {
-            newIndex = this.index_;
-          }
+                StringUtil.nextCodePointOffset(text, newIndex) :
+                StringUtil.previousCodePointOffset(text, newIndex);
+            if (newIndex < 0 || newIndex >= text.length) {
+              newNode = AutomationUtil.findNextNode(
+                  newNode, dir, AutomationPredicate.leafWithText);
+              if (newNode) {
+                const newText = AutomationUtil.getText(newNode);
+                newIndex = dir === Dir.FORWARD ?
+                    0 :
+                    StringUtil.previousCodePointOffset(newText, newText.length);
+                newIndex = Math.max(newIndex, 0);
+              } else {
+                newIndex = this.index_;
+              }
+            }
+            break;
+          case cursors.Movement.SYNC:
+            if (newIndex === cursors.NODE_INDEX) {
+              newIndex = dir === Dir.FORWARD ?
+                  0 :
+                  StringUtil.previousCodePointOffset(text, text.length);
+            } else {
+              newIndex = dir === Dir.FORWARD ?
+                  StringUtil.nextCodePointOffset(text, newIndex) :
+                  StringUtil.previousCodePointOffset(text, newIndex);
+            }
+            if (newIndex < 0 || newIndex >= text.length) {
+              // unfortunate case. Fallback to return the same one as |this|.
+              newIndex = this.index_;
+            }
+            break;
         }
         break;
       case cursors.Unit.WORD:
@@ -345,7 +372,7 @@ cursors.Cursor = class {
             (newNode.wordStarts && newNode.wordStarts.length) ?
             newNode.wordStarts[0] :
             0;
-        if (newIndex < firstWordStart) {
+        if (newIndex < firstWordStart && movement !== cursors.Movement.SYNC) {
           // Also catches cursors.NODE_INDEX case.
           newIndex = firstWordStart;
         }
@@ -372,6 +399,12 @@ cursors.Cursor = class {
               newIndex = dir === Dir.FORWARD ? end : start;
             }
           } break;
+          case cursors.Movement.SYNC:
+            if (newIndex === cursors.NODE_INDEX) {
+              newIndex = dir === Dir.FORWARD ? firstWordStart - 1 :
+                                               this.getText().length;
+            }
+            // fallthrough
           case cursors.Movement.DIRECTIONAL: {
             let wordStarts, wordEnds;
             let start;
@@ -396,7 +429,7 @@ cursors.Cursor = class {
               // Successfully found the next word stop within the same text
               // node.
               newIndex = start;
-            } else {
+            } else if (movement === cursors.Movement.DIRECTIONAL) {
               // Use adjacent word in adjacent next node in direction |dir|.
               if (dir === Dir.BACKWARD && newIndex > firstWordStart) {
                 // The backward case is special at the beginning of nodes.
@@ -657,7 +690,8 @@ cursors.WrappingCursor = class extends cursors.Cursor {
     }
 
     // Moving to the bounds of a unit never wraps.
-    if (movement === cursors.Movement.BOUND) {
+    if (movement === cursors.Movement.BOUND ||
+        movement === cursors.Movement.SYNC) {
       return new cursors.WrappingCursor(result.node, result.index);
     }
 

@@ -47,6 +47,7 @@ AutoScrollHandler = class {
    *     before scrolling.
    * @param {Dir} dir The direction to navigate.
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
+   * @param {?cursors.Unit} unit The unit to navigate by.
    * @param {?Object} speechProps The optional speech properties given to
    *     |navigateToRange| to provide feedback of the current command.
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
@@ -58,7 +59,7 @@ AutoScrollHandler = class {
    *     the command instead.
    */
   onCommandNavigation(
-      target, dir, pred, speechProps, rootPred, retryCommandFunc) {
+      target, dir, pred, unit, speechProps, rootPred, retryCommandFunc) {
     if (this.isScrolling_) {
       // Prevent interrupting the current scrolling.
       return false;
@@ -69,13 +70,39 @@ AutoScrollHandler = class {
       return true;
     }
 
+    const rangeBeforeScroll = ChromeVoxState.instance.currentRange;
+
+    // When navigation without scrolling exits a scrollable, we first try to
+    // scroll it. By doing this, a new item may appears.
     const exited = AutomationUtil.getUniqueAncestors(
-        target.start.node, ChromeVoxState.instance.currentRange.start.node);
+        target.start.node, rangeBeforeScroll.start.node);
     let scrollable = null;
     for (let i = 0; i < exited.length; i++) {
       if (AutomationPredicate.autoScrollable(exited[i])) {
         scrollable = exited[i];
         break;
+      }
+    }
+
+    // Corner case.
+    // At the beginning or the end of the document, there is a case where the
+    // range stays there. It's worth trying scrolling the containing scrollable.
+    if (!scrollable && target.equals(rangeBeforeScroll) &&
+        (unit === cursors.Unit.WORD || unit === cursors.Unit.CHARACTER)) {
+      let current = target.start.node;
+      let parent = current.parent;
+      while (parent && parent.root === current.root) {
+        if (!(dir === Dir.BACKWARD && parent.firstChild === current) &&
+            !(dir === Dir.FORWARD && parent.lastChild === current)) {
+          // Currently on non-edge node. Don't try scrolling.
+          scrollable = null;
+          break;
+        }
+        if (AutomationPredicate.autoScrollable(current)) {
+          scrollable = current;
+        }
+        current = parent;
+        parent = current.parent;
       }
     }
 
@@ -90,8 +117,6 @@ AutoScrollHandler = class {
     this.scrollingNode_ = scrollable;
     this.lastScrolledTime_ = new Date();
     this.relatedFocusEventHappened_ = false;
-
-    const rangeBeforeScroll = ChromeVoxState.instance.currentRange;
 
     (async () => {
       const scrollResult = await new Promise(resolve => {
@@ -139,9 +164,12 @@ AutoScrollHandler = class {
 
       this.isScrolling_ = false;
 
-      if (!this.scrollingNode_) {
-        throw Error(
-            'Illegal state in AutoScrollHandler. |scrollingNode_| is null.');
+      if (!this.scrollingNode_ || !scrollable) {
+        throw Error('Illegal state in AutoScrollHandler.');
+      }
+      if (!scrollable.root) {
+        // Maybe scrollable node has disappeared. Do nothing.
+        return;
       }
 
       // This block handles scrolling on Android RecyclerView.
@@ -153,21 +181,24 @@ AutoScrollHandler = class {
       // first or the last matching range in the scrollable.
       if (this.relatedFocusEventHappened_) {
         let nextRange = null;
-        if (!pred) {
-          // Currently this only supports nextObject/previousObject.
-          // TODO(hirokisato): Support navigation by unit.
-          pred = AutomationPredicate.object;
-        }
-        let node;
-        if (dir === Dir.FORWARD) {
-          node = AutomationUtil.findNextNode(
-              this.scrollingNode_, dir, pred,
-              {root: rootPred, skipInitialSubtree: false});
-        } else {
-          node = AutomationUtil.findNodePost(this.scrollingNode_, dir, pred);
-        }
-        if (node) {
-          nextRange = cursors.Range.fromNode(node);
+        if (!pred && unit) {
+          nextRange = cursors.Range.fromNode(scrollable).sync(unit, dir);
+          if (unit === cursors.Unit.NODE) {
+            nextRange =
+                CommandHandler.skipLabelOrDescriptionFor(nextRange, dir);
+          }
+        } else if (pred) {
+          let node;
+          if (dir === Dir.FORWARD) {
+            node = AutomationUtil.findNextNode(
+                this.scrollingNode_, dir, pred,
+                {root: rootPred, skipInitialSubtree: false});
+          } else {
+            node = AutomationUtil.findNodePost(this.scrollingNode_, dir, pred);
+          }
+          if (node) {
+            nextRange = cursors.Range.fromNode(node);
+          }
         }
 
         ChromeVoxState.instance.navigateToRange(

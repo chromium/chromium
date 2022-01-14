@@ -33,18 +33,19 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     window.NODE = cursors.Unit.NODE;
     window.BOUND = cursors.Movement.BOUND;
     window.DIRECTIONAL = cursors.Movement.DIRECTIONAL;
+    window.SYNC = cursors.Movement.SYNC;
   }
 
   /**
    * Performs a series of operations on a cursor and asserts the result.
    * @param {cursors.Cursor} cursor The starting cursor.
    * @param {!Array<Array<
-   *     cursors.Unit|
-   *     cursors.Movement|
-   *     constants.Dir|
-   *     Object>>}
-   *     moves An array of arrays. Each inner array contains 4 items: unit,
-   *     movement, direction, and assertions object. See example below.
+   *          cursors.Unit|
+   *          cursors.Movement|
+   *          constants.Dir|
+   *          {index: number, value: string}>>} moves An array of arrays. Each
+   *     inner array contains 4 items: unit, movement, direction, and assertions
+   *     object. See example below.
    */
   cursorMoveAndAssert(cursor, moves) {
     let move = null;
@@ -59,12 +60,11 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
    * Performs a series of operations on a range and asserts the result.
    * @param {cursors.Range} range The starting range.
    * @param {!Array<Array<
-   *          cursors.Unit|
-   *          cursors.Movement|
-   *          constants.Dir|
-   *          Object>>}
-   *     moves An array of arrays. Each inner array contains 4 items: unit,
-   *     direction, start and end assertions objects. See example below.
+   *         cursors.Unit|
+   *         constants.Dir|
+   *         {index: number, value: string}>>} moves An array of arrays. Each
+   *     inner array contains 4 items: unit, direction, start and end assertions
+   *     objects. See example below.
    */
   rangeMoveAndAssert(range, moves) {
     let move = null;
@@ -80,7 +80,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
 
   /**
    * Makes assertions about the given |cursor|.
-   * @param {Object} expected
+   * @param {{index: number, value: string}} expected
    * @param {Cursor} cursor
    */
   makeCursorAssertion(expected, cursor) {
@@ -88,13 +88,21 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
       assertEquals(expected.value, cursor.node.name);
     }
     if (goog.isDef(expected.index)) {
-      assertEquals(expected.index, cursor.index);
+      assertEquals(expected.index, cursor.index,
+        'wrong index at ' + expected.value + ', expected: ' + expected.index + ' actual: ' + cursor.index);
     }
   }
 
   /**
    * Runs the specified moves on the |doc| and asserts expectations.
    * @param {function} doc
+   * @param {!Array<Array<
+   *          cursors.Unit|
+   *          cursors.Movement|
+   *          constants.Dir|
+   *          {index: number, value: string}>>} moves An array of arrays. Each
+   *     inner array contains 4 items: see |cursorMoveAndAssert| and
+   *     |rangeMoveAndAssert|.
    * @param {string=} opt_testType Either CURSOR or RANGE.
    */
   runCursorMovesOnDocument(doc, moves, opt_testType) {
@@ -215,6 +223,21 @@ TEST_F('AccessibilityExtensionCursorsTest', 'LineCursor', function() {
     // Bump against an edge.
     [LINE, DIRECTIONAL, BACKWARD, {value: 'same line'}],
     [LINE, BOUND, BACKWARD, {value: 'start '}]
+  ]);
+});
+
+TEST_F('AccessibilityExtensionCursorsTest', 'SyncCursor', function() {
+  this.runCursorMovesOnDocument(this.simpleDoc, [
+    [WORD, SYNC, FORWARD, {index: 0, value: 'start '}],
+
+    [NODE, DIRECTIONAL, FORWARD, {value: 'same line'}],
+    [CHARACTER, SYNC, FORWARD, {index: 0, value: 'same line'}],
+
+    [NODE, DIRECTIONAL, BACKWARD, {value: 'start '}],
+    [CHARACTER, SYNC, BACKWARD, {index: 5, value: 'start '}],
+
+    [NODE, DIRECTIONAL, FORWARD, {value: 'same line'}],
+    [WORD, SYNC, BACKWARD, {index: 5, value: 'same line'}],
   ]);
 });
 
