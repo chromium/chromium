@@ -223,7 +223,8 @@ void DownloadProtectionService::CheckClientDownload(
       item, std::move(callback), this, database_manager_,
       binary_feature_extractor_);
   CheckClientDownloadRequest* request_copy = request.get();
-  download_requests_[request_copy] = std::move(request);
+  context_download_requests_[content::DownloadItemUtils::GetBrowserContext(
+      item)][request_copy] = std::move(request);
   request_copy->Start();
 }
 
@@ -353,11 +354,13 @@ void DownloadProtectionService::CheckPPAPIDownloadRequest(
 void DownloadProtectionService::CheckFileSystemAccessWrite(
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
     CheckDownloadCallback callback) {
+  content::BrowserContext* browser_context = item->browser_context;
   auto request = std::make_unique<CheckFileSystemAccessWriteRequest>(
       std::move(item), std::move(callback), this, database_manager_,
       binary_feature_extractor_);
   CheckClientDownloadRequestBase* request_copy = request.get();
-  download_requests_[request_copy] = std::move(request);
+  context_download_requests_[browser_context][request_copy] =
+      std::move(request);
   request_copy->Start();
 }
 
@@ -385,7 +388,7 @@ DownloadProtectionService::RegisterPPAPIDownloadRequestCallback(
 void DownloadProtectionService::CancelPendingRequests() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // It is sufficient to delete the list of CheckClientDownloadRequests.
-  download_requests_.clear();
+  context_download_requests_.clear();
 
   // It is sufficient to delete the list of PPAPI download requests.
   ppapi_download_requests_.clear();
@@ -397,9 +400,9 @@ void DownloadProtectionService::RequestFinished(
     DownloadCheckResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   MaybeLogSecuritySensitiveDownloadEvent(browser_context, result);
-  auto it = download_requests_.find(request);
-  DCHECK(it != download_requests_.end());
-  download_requests_.erase(it);
+  DCHECK(context_download_requests_.contains(browser_context));
+  DCHECK(context_download_requests_[browser_context].contains(request));
+  context_download_requests_[browser_context].erase(request);
 }
 
 void DownloadProtectionService::PPAPIDownloadCheckRequestFinished(
@@ -771,6 +774,11 @@ DownloadProtectionService::GetURLLoaderFactory(
     content::BrowserContext* browser_context) {
   return sb_service_->GetURLLoaderFactory(
       Profile::FromBrowserContext(browser_context));
+}
+
+void DownloadProtectionService::RemovePendingDownloadRequests(
+    content::BrowserContext* browser_context) {
+  context_download_requests_.erase(browser_context);
 }
 
 void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {

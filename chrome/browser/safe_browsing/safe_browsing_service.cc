@@ -434,6 +434,7 @@ void SafeBrowsingService::OnOffTheRecordProfileCreated(
 void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
   services_delegate_->RemoveTelemetryService(profile);
+  services_delegate_->OnProfileWillBeDestroyed(profile);
 
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
