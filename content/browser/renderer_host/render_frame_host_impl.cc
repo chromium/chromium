@@ -1364,7 +1364,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   site_instance_->AddObserver(this);
   auto* process = GetProcess();
   process->RegisterRenderFrameHost(GetGlobalId());
-  process->AddObserver(this);
   GetSiteInstance()->IncrementActiveFrameCount();
 
   if (parent_) {
@@ -1500,7 +1499,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   auto* process = GetProcess();
   site_instance_->RemoveObserver(this);
   process->UnregisterRenderFrameHost(GetGlobalId());
-  process->RemoveObserver(this);
 
   const bool was_created = is_render_frame_created();
   render_frame_state_ = RenderFrameState::kDeleted;
@@ -2826,7 +2824,6 @@ void RenderFrameHostImpl::RenderProcessGone(
                   kRendererProcessCrashed
             : BackForwardCacheMetrics::NotRestoredReason::
                   kRendererProcessKilled);
-    return;
   }
 
   if (frame_tree()->is_prerendering()) {
@@ -2834,7 +2831,6 @@ void RenderFrameHostImpl::RenderProcessGone(
         info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
             ? PrerenderHost::FinalStatus::kRendererProcessCrashed
             : PrerenderHost::FinalStatus::kRendererProcessKilled);
-    return;
   }
 
   if (owned_render_widget_host_)
@@ -2850,6 +2846,8 @@ void RenderFrameHostImpl::RenderProcessGone(
 
   if (is_audible_)
     OnAudibleStateChanged(false);
+
+  RenderProcessExited(site_instance->GetProcess(), info);
 }
 
 void RenderFrameHostImpl::PerformAction(const ui::AXActionData& data) {
