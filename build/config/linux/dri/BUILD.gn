@@ -9,7 +9,7 @@ assert(is_linux, "This file should only be referenced on Linux")
 pkg_config("dri") {
   packages = [ "dri" ]
   dri_driver_dir = exec_script(pkg_config_script,
-                               pkg_config_args + [
+                               common_pkg_config_args + pkg_config_args + [
                                      "--dridriverdir",
                                      "dri",
                                    ],

@@ -12,7 +12,7 @@ if (use_atk) {
   pkg_config("atspi2") {
     packages = [ "atspi-2" ]
     atspi_version = exec_script(pkg_config_script,
-                                pkg_config_args + [
+                                common_pkg_config_args + pkg_config_args + [
                                       "atspi-2",
                                       "--version-as-components",
                                     ],

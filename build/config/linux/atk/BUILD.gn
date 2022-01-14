@@ -23,7 +23,7 @@ pkg_config("atk") {
     "atk-bridge-2.0",
   ]
   atk_lib_dir = exec_script(pkg_config_script,
-                            pkg_config_args + [
+                            common_pkg_config_args + pkg_config_args + [
                                   "--libdir",
                                   "atk",
                                 ],
