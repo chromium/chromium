@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/common/form_data.h"
@@ -82,15 +81,16 @@ ContentPasswordManagerDriverFactory::GetDriverForFrame(
   if (!render_frame_host->IsRenderFrameLive())
     return nullptr;
 
-  // TryEmplace() will return an iterator to the driver corresponding to
-  // `render_frame_host`. It creates a new one if required.
-  return &base::TryEmplace(frame_driver_map_, render_frame_host,
-                           // Args passed to the ContentPasswordManagerDriver
-                           // constructor if none exists for `render_frame_host`
-                           // yet.
-                           render_frame_host, password_client_,
-                           autofill_client_)
-              .first->second;
+  // try_emplace() will return an iterator to the driver corresponding to
+  // `render_frame_host`, creating a new one if `render_frame_host` is not
+  // already a key in the map.
+  auto [it, inserted] = frame_driver_map_.try_emplace(
+      render_frame_host,
+      // Args passed to the ContentPasswordManagerDriver
+      // constructor if none exists for `render_frame_host`
+      // yet.
+      render_frame_host, password_client_, autofill_client_);
+  return &it->second;
 }
 
 void ContentPasswordManagerDriverFactory::RenderFrameDeleted(

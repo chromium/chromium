@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/win/vector.h"
 #include "base/win/winrt_foundation_helpers.h"
 
@@ -344,7 +343,8 @@ class Map
   }
 
   IFACEMETHODIMP Insert(AbiK key, AbiV value, boolean* replaced) override {
-    *replaced = !InsertOrAssign(map_, key, std::move(value)).second;
+    auto [it, inserted] = map_.insert_or_assign(key, std::move(value));
+    *replaced = !inserted;
     NotifyMapChanged(*replaced ? ABI::Windows::Foundation::Collections::
                                      CollectionChange_ItemChanged
                                : ABI::Windows::Foundation::Collections::

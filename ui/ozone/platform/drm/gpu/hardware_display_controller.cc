@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "base/trace_event/trace_conversion_helper.h"
@@ -325,12 +324,11 @@ void HardwareDisplayController::UpdatePreferredModiferForFormat(
     gfx::BufferFormat buffer_format,
     uint64_t modifier) {
   uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(buffer_format);
-  base::InsertOrAssign(preferred_format_modifier_, fourcc_format, modifier);
+  preferred_format_modifier_[fourcc_format] = modifier;
 
   uint32_t opaque_fourcc_format =
       GetFourCCFormatForOpaqueFramebuffer(buffer_format);
-  base::InsertOrAssign(preferred_format_modifier_, opaque_fourcc_format,
-                       modifier);
+  preferred_format_modifier_[opaque_fourcc_format] = modifier;
 }
 
 void HardwareDisplayController::MoveCursor(const gfx::Point& location) {

@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -351,7 +350,7 @@ void CommandLine::AppendSwitchNative(StringPiece switch_string,
     g_duplicate_switch_handler->ResolveDuplicate(key, value,
                                                  switches_[std::string(key)]);
   } else {
-    base::InsertOrAssign(switches_, std::string(key), StringType(value));
+    switches_[std::string(key)] = StringType(value);
   }
 
   // Preserve existing switch prefixes in |argv_|; only append one if necessary.

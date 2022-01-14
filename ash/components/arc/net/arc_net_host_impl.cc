@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -1089,8 +1088,7 @@ void ArcNetHostImpl::ReceiveShillProperties(
   if (!IsActiveNetworkState(network))
     return;
 
-  base::InsertOrAssign(shill_network_properties_, service_path,
-                       std::move(*shill_properties));
+  shill_network_properties_[service_path] = std::move(*shill_properties);
   UpdateActiveNetworks();
 }
 

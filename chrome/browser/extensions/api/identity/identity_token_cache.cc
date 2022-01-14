@@ -8,7 +8,6 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
 namespace extensions {
@@ -169,10 +168,9 @@ void IdentityTokenCache::SetToken(const ExtensionTokenKey& key,
     intermediate_value_cache_.erase(key);
 
     AccessTokensKey access_tokens_key(key);
-    auto emplace_result =
-        base::TryEmplace(access_tokens_cache_, access_tokens_key);
+    auto [it, inserted] = access_tokens_cache_.try_emplace(access_tokens_key);
 
-    AccessTokensValue& cached_tokens = emplace_result.first->second;
+    AccessTokensValue& cached_tokens = it->second;
     // If a cached tokens set already exists, remove any existing token with the
     // same set of scopes.
     cached_tokens.erase(token_data);

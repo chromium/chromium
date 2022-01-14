@@ -11,13 +11,11 @@
 #include <initializer_list>
 #include <iterator>
 #include <list>
-#include <map>
 #include <queue>
 #include <set>
 #include <stack>
 #include <string>
 #include <type_traits>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -302,104 +300,6 @@ TEST(Erase, IsNotIn) {
   std::vector<int> expected = {2, 2, 4, 6};
   EXPECT_EQ(5u, EraseIf(lhs, IsNotIn<std::vector<int>>(rhs)));
   EXPECT_EQ(expected, lhs);
-}
-
-TEST(STLUtilTest, InsertOrAssign) {
-  std::map<std::string, int> my_map;
-  auto result = InsertOrAssign(my_map, "Hello", 42);
-  EXPECT_THAT(*result.first, Pair("Hello", 42));
-  EXPECT_TRUE(result.second);
-
-  result = InsertOrAssign(my_map, "Hello", 43);
-  EXPECT_THAT(*result.first, Pair("Hello", 43));
-  EXPECT_FALSE(result.second);
-}
-
-TEST(STLUtilTest, InsertOrAssignHint) {
-  std::map<std::string, int> my_map;
-  auto result = InsertOrAssign(my_map, my_map.end(), "Hello", 42);
-  EXPECT_THAT(*result, Pair("Hello", 42));
-
-  result = InsertOrAssign(my_map, my_map.begin(), "Hello", 43);
-  EXPECT_THAT(*result, Pair("Hello", 43));
-}
-
-TEST(STLUtilTest, InsertOrAssignWrongHints) {
-  std::map<int, int> my_map;
-  // Since we insert keys in sorted order, my_map.begin() will be a wrong hint
-  // after the first iteration. Check that insertion happens anyway.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(i);
-    auto result = InsertOrAssign(my_map, my_map.begin(), i, i);
-    EXPECT_THAT(*result, Pair(i, i));
-  }
-
-  // Overwrite the keys we just inserted. Since we no longer insert into the
-  // map, my_map.end() will be a wrong hint for all iterations but the last.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(10 + i);
-    auto result = InsertOrAssign(my_map, my_map.end(), i, 10 + i);
-    EXPECT_THAT(*result, Pair(i, 10 + i));
-  }
-}
-
-TEST(STLUtilTest, TryEmplace) {
-  std::map<std::string, std::unique_ptr<int>> my_map;
-  auto result = TryEmplace(my_map, "Hello", nullptr);
-  EXPECT_THAT(*result.first, Pair("Hello", IsNull()));
-  EXPECT_TRUE(result.second);
-
-  auto new_value = std::make_unique<int>(42);
-  result = TryEmplace(my_map, "Hello", std::move(new_value));
-  EXPECT_THAT(*result.first, Pair("Hello", IsNull()));
-  EXPECT_FALSE(result.second);
-  // |new_value| should not be touched following a failed insertion.
-  ASSERT_NE(nullptr, new_value);
-  EXPECT_EQ(42, *new_value);
-
-  result = TryEmplace(my_map, "World", std::move(new_value));
-  EXPECT_EQ("World", result.first->first);
-  EXPECT_EQ(42, *result.first->second);
-  EXPECT_TRUE(result.second);
-  EXPECT_EQ(nullptr, new_value);
-}
-
-TEST(STLUtilTest, TryEmplaceHint) {
-  std::map<std::string, std::unique_ptr<int>> my_map;
-  auto result = TryEmplace(my_map, my_map.begin(), "Hello", nullptr);
-  EXPECT_THAT(*result, Pair("Hello", IsNull()));
-
-  auto new_value = std::make_unique<int>(42);
-  result = TryEmplace(my_map, result, "Hello", std::move(new_value));
-  EXPECT_THAT(*result, Pair("Hello", IsNull()));
-  // |new_value| should not be touched following a failed insertion.
-  ASSERT_NE(nullptr, new_value);
-  EXPECT_EQ(42, *new_value);
-
-  result = TryEmplace(my_map, result, "World", std::move(new_value));
-  EXPECT_EQ("World", result->first);
-  EXPECT_EQ(42, *result->second);
-  EXPECT_EQ(nullptr, new_value);
-}
-
-TEST(STLUtilTest, TryEmplaceWrongHints) {
-  std::map<int, int> my_map;
-  // Since we emplace keys in sorted order, my_map.begin() will be a wrong hint
-  // after the first iteration. Check that emplacement happens anyway.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(i);
-    auto result = TryEmplace(my_map, my_map.begin(), i, i);
-    EXPECT_THAT(*result, Pair(i, i));
-  }
-
-  // Fail to overwrite the keys we just inserted. Since we no longer emplace
-  // into the map, my_map.end() will be a wrong hint for all tried emplacements
-  // but the last.
-  for (int i = 0; i < 10; ++i) {
-    SCOPED_TRACE(10 + i);
-    auto result = TryEmplace(my_map, my_map.end(), i, 10 + i);
-    EXPECT_THAT(*result, Pair(i, i));
-  }
 }
 
 TEST(STLUtilTest, OptionalOrNullptr) {

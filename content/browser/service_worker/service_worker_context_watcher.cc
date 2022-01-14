@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -345,7 +344,7 @@ void ServiceWorkerContextWatcher::OnControlleeAdded(
     return;
   ServiceWorkerVersionInfo* version = it->second.get();
 
-  base::InsertOrAssign(version->clients, uuid, info);
+  version->clients.insert_or_assign(uuid, info);
 
   SendVersionInfo(*version);
 }
