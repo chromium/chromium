@@ -732,9 +732,8 @@ ax::mojom::blink::ListStyle AXLayoutObject::GetListStyle() const {
 }
 
 static bool ShouldUseLayoutNG(const LayoutObject& layout_object) {
-  return (layout_object.IsInline() || layout_object.IsLayoutInline() ||
-          layout_object.IsText()) &&
-         layout_object.ContainingNGBlockFlow();
+  return layout_object.IsInline() &&
+         layout_object.IsInLayoutNGInlineFormattingContext();
 }
 
 // Get the deepest descendant that is included in the tree.

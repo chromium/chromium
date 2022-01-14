@@ -52,7 +52,7 @@ bool ShouldUseLayoutNGTextContent(const Node& node) {
   LayoutObject* layout_object = node.GetLayoutObject();
   DCHECK(layout_object);
   if (layout_object->IsInline())
-    return layout_object->ContainingNGBlockFlow();
+    return layout_object->IsInLayoutNGInlineFormattingContext();
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object))
     return NGBlockNode::CanUseNewLayout(*block_flow);
   return false;

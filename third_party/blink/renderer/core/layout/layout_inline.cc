@@ -1176,7 +1176,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
                                const PhysicalOffset& accumulated_offset,
                                HitTestAction hit_test_action) {
   NOT_DESTROYED();
-  if (ContainingNGBlockFlow()) {
+  if (IsInLayoutNGInlineFormattingContext()) {
     // TODO(crbug.com/965976): We should fix the root cause of the missed
     // layout.
     if (UNLIKELY(NeedsLayout())) {
@@ -1261,7 +1261,7 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
       yield(cursor.Current().RectInContainerFragment());
   } else {
-    DCHECK(!ContainingNGBlockFlow());
+    DCHECK(!IsInLayoutNGInlineFormattingContext());
     CollectCulledLineBoxRects(yield);
   }
 
