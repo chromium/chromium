@@ -1686,8 +1686,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter',
         ],
       },
-      'cronet_tests': {},
-      'cronet_unittests': {},
       'crypto_unittests': {},
       'events_unittests': {},
       'fuchsia_mojo_unittests': {},
