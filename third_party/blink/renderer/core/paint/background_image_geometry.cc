@@ -424,13 +424,13 @@ BackgroundImageGeometry::BackgroundImageGeometry(
     // specified for that element. For all other elements that are effected
     // by a transform, a value of fixed for the background-attachment property
     // is treated as if it had a value of scroll.
-    for (const LayoutObject* container = box;
-         container && !IsA<LayoutView>(container);
-         container = container->Container()) {
-      // Not using HasTransformRelatedProperty(), to excludes will-change:
-      // transform, etc. Otherwise at least
-      // compositing/backgrounds/fixed-backgrounds.html will fail.
-      if (container->HasTransform()) {
+    for (const PaintLayer* layer = box->EnclosingLayer();
+         layer && !layer->IsRootLayer(); layer = layer->Parent()) {
+      // Check LayoutObject::HasTransformRelatedProperty() first to exclude
+      // non-applicable transforms and will-change: transform.
+      if (layer->GetLayoutObject().HasTransformRelatedProperty() &&
+          (layer->Transform() ||
+           layer->GetLayoutObject().StyleRef().HasWillChangeTransformHint())) {
         has_background_fixed_to_viewport_ = false;
         break;
       }
