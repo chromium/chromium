@@ -83,10 +83,13 @@ const char kSyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync/";
 
 const char kOnDeviceEncryptionOptInURL[] =
-    "https://passwords.google.com/encryption/enroll/intro";
+    "https://passwords.google.com/encryption/enroll/intro?"
+    "utm_source=chrome&utm_medium=ios&utm_campaign=encryption_enroll";
 
-// TODO(crbug.com/1202088): Check the actual URL to use.
-const char kOnDeviceEncryptionLearnMoreURL[] = "https://password.google.com";
+const char kOnDeviceEncryptionLearnMoreURL[] =
+    "https://support.google.com/accounts?"
+    "p=settings_password_ode&utm_source=chrome&utm_medium=ios&"
+    "utm_campaign=encryption_enroll";
 
 const char kPageInfoHelpCenterURL[] =
     "https://support.google.com/chrome?p=ui_security_indicator&ios=1";
