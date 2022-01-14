@@ -563,7 +563,7 @@ class NGInlineNodeDataEditor final {
 
  public:
   explicit NGInlineNodeDataEditor(const LayoutText& layout_text)
-      : block_flow_(layout_text.ContainingNGBlockFlow()),
+      : block_flow_(layout_text.FragmentItemsContainer()),
         layout_text_(layout_text) {
     DCHECK(layout_text_.HasValidInlineItems());
   }

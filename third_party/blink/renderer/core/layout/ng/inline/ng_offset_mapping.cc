@@ -246,7 +246,7 @@ const NGOffsetMapping* NGOffsetMapping::GetFor(
     return nullptr;
   if (!layout_object)
     return nullptr;
-  LayoutBlockFlow* context = layout_object->ContainingNGBlockFlow();
+  LayoutBlockFlow* context = layout_object->FragmentItemsContainer();
   if (!context)
     return nullptr;
   return NGInlineNode::GetOffsetMapping(context);

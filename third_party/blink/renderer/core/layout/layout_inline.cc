@@ -1291,7 +1291,7 @@ PositionWithAffinity LayoutInline::PositionForPoint(
         To<LayoutBlockFlow>(continuation)->InlineElementContinuation();
   }
 
-  if (const LayoutBlockFlow* ng_block_flow = ContainingNGBlockFlow())
+  if (const LayoutBlockFlow* ng_block_flow = FragmentItemsContainer())
     return ng_block_flow->PositionForPoint(point);
 
   DCHECK(CanUseInlineBox(*this));

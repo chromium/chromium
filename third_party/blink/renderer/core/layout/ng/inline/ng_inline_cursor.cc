@@ -423,9 +423,9 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
   }
 
   if (IsAtomicInline()) {
-    DCHECK(GetLayoutObject()->ContainingNGBlockFlow());
+    DCHECK(GetLayoutObject()->FragmentItemsContainer());
     const LayoutBlockFlow& block_flow =
-        *GetLayoutObject()->ContainingNGBlockFlow();
+        *GetLayoutObject()->FragmentItemsContainer();
     const auto& items =
         block_flow.GetNGInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
     const LayoutObject* const layout_object = GetLayoutObject();

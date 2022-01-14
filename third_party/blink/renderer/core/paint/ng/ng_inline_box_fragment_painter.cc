@@ -290,7 +290,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
     const PhysicalOffset& paint_offset) {
   // TODO(kojii): If the block flow is dirty, children of these fragments
   // maybe already deleted. crbug.com/963103
-  const LayoutBlockFlow* block_flow = layout_inline.ContainingNGBlockFlow();
+  const LayoutBlockFlow* block_flow = layout_inline.FragmentItemsContainer();
   if (UNLIKELY(block_flow->NeedsLayout()))
     return;
 

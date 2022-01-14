@@ -1001,36 +1001,41 @@ LayoutBox* LayoutObject::EnclosingBox() const {
 
 LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
   NOT_DESTROYED();
-  for (LayoutObject* parent = Parent(); parent; parent = parent->Parent()) {
-    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(parent))
-      return block_flow;
-  }
-  return nullptr;
+  DCHECK(!IsOutOfFlowPositioned());
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(ContainingNGBlock());
+  if (!block_flow || !block_flow->IsLayoutNGObject())
+    return nullptr;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // Make sure that we don't skip blocks in the ancestry chain (which might
+  // happen if there are out-of-flow positioned objects, for instance). In this
+  // method we don't want to escape the enclosing inline formatting context.
+  for (const LayoutObject* walker = Parent(); walker != block_flow;
+       walker = walker->Parent())
+    DCHECK(!walker->IsLayoutBlock());
+#endif
+  return block_flow;
 }
 
-LayoutBlockFlow* LayoutObject::ContainingNGBlockFlow() const {
+LayoutBlock* LayoutObject::ContainingNGBlock() const {
   NOT_DESTROYED();
-  DCHECK(IsInline());
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
-  for (LayoutObject* parent = Parent(); parent; parent = parent->Parent()) {
-    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(parent)) {
-      // Skip |LayoutFlowThread| because it is skipped when finding the first
-      // child in |GetLayoutObjectForFirstChildNode|.
-      if (UNLIKELY(block_flow->IsLayoutFlowThread()))
-        block_flow = DynamicTo<LayoutBlockFlow>(block_flow->Parent());
-      if (!NGBlockNode::CanUseNewLayout(*block_flow))
-        return nullptr;
-      return block_flow;
-    }
-  }
-  return nullptr;
+  LayoutBlock* containing_block = ContainingBlock();
+  if (!containing_block)
+    return nullptr;
+  // Flow threads should be invisible to LayoutNG, so skip to the multicol
+  // container.
+  if (UNLIKELY(containing_block->IsLayoutFlowThread()))
+    containing_block = To<LayoutBlockFlow>(containing_block->Parent());
+  if (!containing_block->IsLayoutNGObject())
+    return nullptr;
+  return containing_block;
 }
 
 bool LayoutObject::IsFirstInlineFragmentSafe() const {
   NOT_DESTROYED();
   DCHECK(IsInline());
-  LayoutBlockFlow* block_flow = ContainingNGBlockFlow();
+  LayoutBlockFlow* block_flow = FragmentItemsContainer();
   return block_flow && !block_flow->NeedsLayout();
 }
 

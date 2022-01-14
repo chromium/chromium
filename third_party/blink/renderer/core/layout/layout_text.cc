@@ -2465,7 +2465,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
     float scaling_factor =
         svg_inline_text ? svg_inline_text->ScalingFactor() : 1.0f;
     PhysicalRect rect;
-    NGInlineCursor cursor(*ContainingNGBlockFlow());
+    NGInlineCursor cursor(*FragmentItemsContainer());
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (cursor.Current().IsHiddenForPaint())
         continue;
