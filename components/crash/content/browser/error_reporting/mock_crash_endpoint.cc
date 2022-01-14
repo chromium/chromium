@@ -31,7 +31,7 @@ class MockCrashEndpoint::Client : public crash_reporter::CrashReporterClient {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     return owner_->consented_;
   }
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   void GetProductNameAndVersion(std::string* product_name,
                                 std::string* version,
                                 std::string* channel) override {

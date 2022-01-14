@@ -21,7 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/crash/core/app/breakpad_linux_impl.h"
 #endif
 
@@ -30,7 +30,7 @@ class SequencedTaskRunner;
 class Thread;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace breakpad {
 
@@ -103,7 +103,7 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
 
   const std::string process_type_;
   const base::FilePath dumps_path_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const bool upload_;
 #endif
 
@@ -119,7 +119,7 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
 
 }  // namespace breakpad
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
