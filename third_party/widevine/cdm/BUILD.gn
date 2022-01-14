@@ -32,9 +32,6 @@ widevine_cdm_manifest_and_license_files = []
 # so we don't need to copy it in most cases.
 if (bundle_widevine_cdm) {
   widevine_arch = target_cpu
-  if (widevine_arch == "x86") {
-    widevine_arch = "ia32"
-  }
 
   widevine_cdm_root = "${widevine_root}/${target_os}/${widevine_arch}"
   cdm_file_name = "${shlib_prefix}widevinecdm${shlib_extension}"
