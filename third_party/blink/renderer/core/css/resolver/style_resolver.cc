@@ -202,39 +202,51 @@ bool ShouldComputeBaseComputedStyle(const ComputedStyle* base_computed_style) {
 String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
                                     const ComputedStyle& computed_style) {
 #if DCHECK_IS_ON()
+  using DebugField = ComputedStyleBase::DebugField;
+
   if (!base_computed_style)
     return g_null_atom;
+  if (*base_computed_style == computed_style)
+    return g_null_atom;
+
+  HashSet<DebugField> exclusions;
+
   // Under certain conditions ComputedStyle::operator==() may return false for
   // differences that are permitted during an animation.
   // The FontFaceCache version number may be increased without forcing a style
   // recalc (see crbug.com/471079).
   if (!base_computed_style->GetFont().IsFallbackValid())
-    return g_null_atom;
+    exclusions.insert(DebugField::font_);
+
   // Images use instance equality rather than value equality (see
   // crbug.com/781461).
-  for (CSSPropertyID id :
-       {CSSPropertyID::kBackgroundImage, CSSPropertyID::kWebkitMaskImage}) {
-    if (!CSSPropertyEquality::PropertiesEqual(
-            PropertyHandle(CSSProperty::Get(id)), *base_computed_style,
-            computed_style)) {
-      return g_null_atom;
-    }
+  if (!CSSPropertyEquality::PropertiesEqual(
+          PropertyHandle(CSSProperty::Get(CSSPropertyID::kBackgroundImage)),
+          *base_computed_style, computed_style)) {
+    exclusions.insert(DebugField::background_);
+  }
+  if (!CSSPropertyEquality::PropertiesEqual(
+          PropertyHandle(CSSProperty::Get(CSSPropertyID::kWebkitMaskImage)),
+          *base_computed_style, computed_style)) {
+    exclusions.insert(DebugField::mask_);
   }
 
-  if (*base_computed_style == computed_style)
-    return g_null_atom;
+  Vector<DebugField> diff =
+      base_computed_style->DebugDiffFields(computed_style);
 
   StringBuilder builder;
-  builder.Append("Field diff: ");
 
-  Vector<String> diff = base_computed_style->DebugDiffFields(computed_style);
-
-  for (const String& s : diff) {
-    builder.Append(s);
+  for (DebugField field : diff) {
+    if (exclusions.Contains(field))
+      continue;
+    builder.Append(ComputedStyleBase::DebugFieldToString(field));
     builder.Append(" ");
   }
 
-  return builder.ReleaseString();
+  if (builder.IsEmpty())
+    return g_null_atom;
+
+  return String("Field diff: ") + builder.ReleaseString();
 #else
   return g_null_atom;
 #endif  // DCHECK_IS_ON()

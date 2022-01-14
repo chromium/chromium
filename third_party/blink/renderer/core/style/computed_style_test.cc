@@ -1291,6 +1291,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
 #if DCHECK_IS_ON()
 
 TEST_F(ComputedStyleTest, DebugDiffFields) {
+  using DebugField = ComputedStyleBase::DebugField;
+
   scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
   scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
 
@@ -1301,7 +1303,9 @@ TEST_F(ComputedStyleTest, DebugDiffFields) {
   EXPECT_EQ(0u, style2->DebugDiffFields(*style2).size());
 
   EXPECT_EQ(1u, style1->DebugDiffFields(*style2).size());
-  EXPECT_EQ("width_", style1->DebugDiffFields(*style2)[0]);
+  EXPECT_EQ(DebugField::width_, style1->DebugDiffFields(*style2)[0]);
+  EXPECT_EQ("width_",
+            ComputedStyleBase::DebugFieldToString(DebugField::width_));
 }
 
 #endif  // #if DCHECK_IS_ON()

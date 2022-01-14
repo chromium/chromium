@@ -116,7 +116,7 @@ const {{field.type_name}}&
 // Group: {{group.name}}
 {% for field in group.fields|rejectattr("custom_compare")|select("in", fields_to_compare) -%}
   if (!({{compare(field.wrapper_pointer_name, getter_expression(field), "o")}}))
-    diff.push_back("{{field.name}}");
+    diff.push_back(DebugField::{{field.name}});
 {% endfor %}
 {% endmacro %}
 

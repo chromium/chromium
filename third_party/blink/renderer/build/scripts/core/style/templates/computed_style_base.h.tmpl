@@ -167,8 +167,16 @@ class ComputedStyleBase {
   {% endfor %}
 
 #if DCHECK_IS_ON()
-  // Returns a list of all field names that differ between |this| and |o|.
-  CORE_EXPORT Vector<String> DebugDiffFields(const ComputedStyleBase& o) const;
+  enum class DebugField {
+    {% for field in computed_style.all_fields|sort(attribute='name') %}
+    {{field.name}},
+    {% endfor %}
+  };
+
+  CORE_EXPORT static String DebugFieldToString(DebugField);
+
+  // Returns a list of all fields that differ between |this| and |o|.
+  CORE_EXPORT Vector<DebugField> DebugDiffFields(const ComputedStyleBase& o) const;
 #endif // DCHECK_IS_ON()
 
  private:
