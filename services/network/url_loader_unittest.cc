@@ -15,7 +15,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -660,7 +659,7 @@ class URLLoaderTest : public testing::Test {
   }
 
   // Attempts to load |url| and returns the resulting error code.
-  int Load(const GURL& url, std::string* body = nullptr) WARN_UNUSED_RESULT {
+  [[nodiscard]] int Load(const GURL& url, std::string* body = nullptr) {
     DCHECK(!ran_);
 
     ResourceRequest request =
@@ -684,8 +683,8 @@ class URLLoaderTest : public testing::Test {
   // using |body| instead of calling ReadBody() after Load is that it will load
   // the response body before URLLoader is complete, so URLLoader completion
   // won't block on trying to write the body buffer.
-  int LoadRequest(const ResourceRequest& request,
-                  std::string* body = nullptr) WARN_UNUSED_RESULT {
+  [[nodiscard]] int LoadRequest(const ResourceRequest& request,
+                                std::string* body = nullptr) {
     uint32_t options = mojom::kURLLoadOptionNone;
     if (send_ssl_with_response_)
       options |= mojom::kURLLoadOptionSendSSLInfoWithResponse;

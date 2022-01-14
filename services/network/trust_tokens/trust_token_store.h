@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -85,8 +84,8 @@ class TrustTokenStore {
   // of, for instance, corruption or clock skew).
   //
   // |issuer| must not be opaque.
-  WARN_UNUSED_RESULT virtual absl::optional<base::TimeDelta>
-  TimeSinceLastIssuance(const SuitableTrustTokenOrigin& issuer);
+  [[nodiscard]] virtual absl::optional<base::TimeDelta> TimeSinceLastIssuance(
+      const SuitableTrustTokenOrigin& issuer);
 
   // Updates the given (issuer, top-level) origin pair's last redemption time
   // to now.
@@ -100,12 +99,12 @@ class TrustTokenStore {
   // top-level origin) pair.
   // 2. the time since the last redepmption is negative (because
   // of, for instance, corruption or clock skew).
-  WARN_UNUSED_RESULT virtual absl::optional<base::TimeDelta>
-  TimeSinceLastRedemption(const SuitableTrustTokenOrigin& issuer,
-                          const SuitableTrustTokenOrigin& top_level);
+  [[nodiscard]] virtual absl::optional<base::TimeDelta> TimeSinceLastRedemption(
+      const SuitableTrustTokenOrigin& issuer,
+      const SuitableTrustTokenOrigin& top_level);
 
   // Returns whether |issuer| is associated with |top_level|.
-  WARN_UNUSED_RESULT virtual bool IsAssociated(
+  [[nodiscard]] virtual bool IsAssociated(
       const SuitableTrustTokenOrigin& issuer,
       const SuitableTrustTokenOrigin& top_level);
 
@@ -117,7 +116,7 @@ class TrustTokenStore {
   // issuers, it'd be good to make these associations expire after some
   // reasonably long amount of time, so that top-level origins can change their
   // minds about their associated issuers.
-  WARN_UNUSED_RESULT virtual bool SetAssociation(
+  [[nodiscard]] virtual bool SetAssociation(
       const SuitableTrustTokenOrigin& issuer,
       const SuitableTrustTokenOrigin& top_level);
 
@@ -150,16 +149,15 @@ class TrustTokenStore {
                          base::StringPiece issuing_key);
 
   // Returns the number of tokens stored for |issuer|.
-  WARN_UNUSED_RESULT virtual int CountTokens(
-      const SuitableTrustTokenOrigin& issuer);
+  [[nodiscard]] virtual int CountTokens(const SuitableTrustTokenOrigin& issuer);
 
   // Returns the number of stored tokens per issuer.
-  WARN_UNUSED_RESULT virtual base::flat_map<SuitableTrustTokenOrigin, int>
+  [[nodiscard]] virtual base::flat_map<SuitableTrustTokenOrigin, int>
   GetStoredTrustTokenCounts();
 
   // Returns all signed tokens from |issuer| signed by keys matching
   // the given predicate.
-  WARN_UNUSED_RESULT virtual std::vector<TrustToken> RetrieveMatchingTokens(
+  [[nodiscard]] virtual std::vector<TrustToken> RetrieveMatchingTokens(
       const SuitableTrustTokenOrigin& issuer,
       base::RepeatingCallback<bool(const std::string&)> key_matcher);
 
@@ -180,7 +178,7 @@ class TrustTokenStore {
   // top-level) origins.
   // - If the pair has a current (i.e., non-expired) RR, returns that RR.
   // - Otherwise, returns nullopt.
-  WARN_UNUSED_RESULT virtual absl::optional<TrustTokenRedemptionRecord>
+  [[nodiscard]] virtual absl::optional<TrustTokenRedemptionRecord>
   RetrieveNonstaleRedemptionRecord(const SuitableTrustTokenOrigin& issuer,
                                    const SuitableTrustTokenOrigin& top_level);
 
@@ -201,13 +199,13 @@ class TrustTokenStore {
   // that all data should be cleared.
   //
   // Returns whether any data was deleted.
-  WARN_UNUSED_RESULT virtual bool ClearDataForFilter(
+  [[nodiscard]] virtual bool ClearDataForFilter(
       mojom::ClearDataFilterPtr filter);
 
   // Deletes all stored tokens issued by |issuer| but leaves other stored
   // data, including the issuer's Redemption Records (RRs), intact.
   // Returns whether any data was deleted.
-  WARN_UNUSED_RESULT virtual bool DeleteStoredTrustTokens(
+  [[nodiscard]] virtual bool DeleteStoredTrustTokens(
       const SuitableTrustTokenOrigin& issuer);
 
  private:

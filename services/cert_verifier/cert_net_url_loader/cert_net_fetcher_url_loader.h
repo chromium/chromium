@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(CERT_VERIFIER_CPP) CertNetFetcherURLLoader
   std::unique_ptr<Request> FetchCrl(const GURL& url,
                                     int timeout_milliseconds,
                                     int max_response_bytes) override;
-  WARN_UNUSED_RESULT std::unique_ptr<Request> FetchOcsp(
+  [[nodiscard]] std::unique_ptr<Request> FetchOcsp(
       const GURL& url,
       int timeout_milliseconds,
       int max_response_bytes) override;

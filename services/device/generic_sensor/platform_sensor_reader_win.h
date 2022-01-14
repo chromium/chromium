@@ -36,8 +36,8 @@ class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
   // Following methods are thread safe.
   void SetClient(Client* client) override;
   base::TimeDelta GetMinimalReportingInterval() const override;
-  bool StartSensor(const PlatformSensorConfiguration& configuration) override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartSensor(
+      const PlatformSensorConfiguration& configuration) override;
   void StopSensor() override;
 
   PlatformSensorReaderWin32(const PlatformSensorReaderWin32&) = delete;
@@ -55,11 +55,11 @@ class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
       REFSENSOR_TYPE_ID sensor_type,
       Microsoft::WRL::ComPtr<ISensorManager> sensor_manager);
 
-  bool SetReportingInterval(const PlatformSensorConfiguration& configuration)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetReportingInterval(
+      const PlatformSensorConfiguration& configuration);
   void ListenSensorEvent();
-  HRESULT SensorReadingChanged(ISensorDataReport* report,
-                               SensorReading* reading) WARN_UNUSED_RESULT;
+  [[nodiscard]] HRESULT SensorReadingChanged(ISensorDataReport* report,
+                                             SensorReading* reading);
   void SensorError();
 
  private:

@@ -1080,8 +1080,8 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
   ~TLSClientSocketTestWithEmbeddedTestServerBase() override {}
 
   // Starts the test server using the specified certificate.
-  bool StartTestServer(net::EmbeddedTestServer::ServerCertificate certificate)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool StartTestServer(
+      net::EmbeddedTestServer::ServerCertificate certificate) {
     server_.RegisterRequestHandler(
         base::BindRepeating([](const net::test_server::HttpRequest& request) {
           if (base::StartsWith(request.relative_url, "/secret",
@@ -1099,7 +1099,7 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
   // Attempts to eastablish a TLS connection to the test server by first
   // establishing a TCP connection, and then upgrading it.  Returns the
   // resulting network error code.
-  int CreateTLSSocket() WARN_UNUSED_RESULT {
+  [[nodiscard]] int CreateTLSSocket() {
     SocketHandle client_socket;
     net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(),
                                 server_.port());
@@ -1116,8 +1116,8 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
     return result;
   }
 
-  int CreateTLSSocketWithOptions(mojom::TLSClientSocketOptionsPtr options)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] int CreateTLSSocketWithOptions(
+      mojom::TLSClientSocketOptionsPtr options) {
     // Proxy connections don't support TLSClientSocketOptions.
     DCHECK_EQ(kDirect, mode());
 

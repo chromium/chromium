@@ -67,10 +67,10 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
   // for testing purposes.
   bool IsUnderlyingWinrtObjectValidForTesting() { return sensor_; }
 
-  bool Initialize() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize();
 
-  bool StartSensor(const PlatformSensorConfiguration& configuration) override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartSensor(
+      const PlatformSensorConfiguration& configuration) override;
   base::TimeDelta GetMinimalReportingInterval() const override;
   void StopSensor() override;
 

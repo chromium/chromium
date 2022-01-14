@@ -179,10 +179,9 @@ class Job : public base::RefCountedThreadSafe<Job>,
                              std::string* output,
                              bool* terminate);
 
-  bool PostDnsOperationAndWait(const std::string& host,
-                               net::ProxyResolveDnsOperation op,
-                               bool* completed_synchronously)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool PostDnsOperationAndWait(const std::string& host,
+                                             net::ProxyResolveDnsOperation op,
+                                             bool* completed_synchronously);
 
   void DoDnsOperation();
   void OnDnsOperationComplete(int result);

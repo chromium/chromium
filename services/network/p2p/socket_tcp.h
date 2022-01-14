@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
@@ -87,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
       const net::NetworkTrafficAnnotationTag traffic_annotation) = 0;
 
   void WriteOrQueue(SendBuffer& send_buffer);
-  WARN_UNUSED_RESULT bool OnPacket(std::vector<int8_t> data);
+  [[nodiscard]] bool OnPacket(std::vector<int8_t> data);
 
  private:
   friend class P2PSocketTcpTestBase;
@@ -98,8 +97,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
 
   // Return |false| in case of an error. The socket is destroyed in that case,
   // so the caller should not use |this|.
-  WARN_UNUSED_RESULT bool HandleReadResult(int result);
-  WARN_UNUSED_RESULT bool HandleWriteResult(int result);
+  [[nodiscard]] bool HandleReadResult(int result);
+  [[nodiscard]] bool HandleWriteResult(int result);
 
   // Callbacks for Connect(), Read() and Write().
   void OnConnected(int result);
