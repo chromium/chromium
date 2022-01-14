@@ -64,7 +64,8 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   // Simulates a page navigating itself to an URL and waits for the
   // navigation.
-  void NavigateInRenderer(content::WebContents* contents, const GURL& url);
+  WARN_UNUSED_RESULT bool NavigateInRenderer(content::WebContents* contents,
+                                             const GURL& url);
 
   // Returns whether the installable check passed.
   static bool NavigateAndAwaitInstallabilityCheck(Browser* browser,

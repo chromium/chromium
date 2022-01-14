@@ -118,13 +118,14 @@ content::WebContents* WebAppControllerBrowserTest::OpenWindow(
   return new_contents;
 }
 
-void WebAppControllerBrowserTest::NavigateInRenderer(
+bool WebAppControllerBrowserTest::NavigateInRenderer(
     content::WebContents* contents,
     const GURL& url) {
   EXPECT_TRUE(content::ExecuteScript(
       contents, "window.location = '" + url.spec() + "';"));
-  content::WaitForLoadStop(contents);
+  bool success = content::WaitForLoadStop(contents);
   EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
+  return success;
 }
 
 // static
