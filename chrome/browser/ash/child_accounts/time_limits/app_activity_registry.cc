@@ -627,9 +627,8 @@ void AppActivityRegistry::OnTimeLimitAllowlistChanged(
 
 void AppActivityRegistry::SaveAppActivity() {
   {
-    ListPrefUpdateDeprecated update(pref_service_,
-                                    prefs::kPerAppTimeLimitsAppActivities);
-    base::ListValue* list_value = update.Get();
+    ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
+    base::Value* list_value = update.Get();
 
     const base::Time now = base::Time::Now();
 
@@ -699,10 +698,9 @@ void AppActivityRegistry::OnResetTimeReached(base::Time timestamp) {
 }
 
 void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
-  ListPrefUpdateDeprecated update(pref_service_,
-                                  prefs::kPerAppTimeLimitsAppActivities);
+  ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
 
-  base::ListValue* list_value = update.Get();
+  base::Value* list_value = update.Get();
 
   // base::Value::ListStorage is an alias for std::vector<base::Value>.
   base::Value::ListStorage list_storage = std::move(*list_value).TakeList();
@@ -729,7 +727,7 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
     }
   }
 
-  *list_value = base::ListValue(std::move(list_storage));
+  *list_value = base::Value(std::move(list_storage));
 }
 
 void AppActivityRegistry::OnAppReinstalled(const AppId& app_id) {

@@ -279,8 +279,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
                                            base::Hours(1), base::Time::Now()));
 
     builder.SetResetTime(6, 0);
-    DictionaryPrefUpdateDeprecated update(GetPrefs(),
-                                          prefs::kPerAppTimeLimitsPolicy);
+    DictionaryPrefUpdate update(GetPrefs(), prefs::kPerAppTimeLimitsPolicy);
     base::Value* value = update.Get();
     *value = builder.value().Clone();
   }
@@ -383,10 +382,10 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Blocks `kExampleHost0`.
   {
-    DictionaryPrefUpdateDeprecated hosts_update(
-        GetPrefs(), prefs::kSupervisedUserManualHosts);
-    base::DictionaryValue* hosts = hosts_update.Get();
-    hosts->SetKey(kExampleHost0, base::Value(false));
+    DictionaryPrefUpdate hosts_update(GetPrefs(),
+                                      prefs::kSupervisedUserManualHosts);
+    base::Value* hosts = hosts_update.Get();
+    hosts->SetBoolKey(kExampleHost0, false);
   }
 
   histogram_tester_.ExpectBucketCount(
@@ -403,10 +402,10 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Approves `kExampleHost0`.
   {
-    DictionaryPrefUpdateDeprecated hosts_update(
-        GetPrefs(), prefs::kSupervisedUserManualHosts);
-    base::DictionaryValue* hosts = hosts_update.Get();
-    hosts->SetKey(kExampleHost0, base::Value(true));
+    DictionaryPrefUpdate hosts_update(GetPrefs(),
+                                      prefs::kSupervisedUserManualHosts);
+    base::Value* hosts = hosts_update.Get();
+    hosts->SetBoolKey(kExampleHost0, true);
   }
 
   histogram_tester_.ExpectBucketCount(
@@ -423,10 +422,10 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Blocks `kExampleURL1`.
   {
-    DictionaryPrefUpdateDeprecated urls_update(
-        GetPrefs(), prefs::kSupervisedUserManualURLs);
-    base::DictionaryValue* urls = urls_update.Get();
-    urls->SetKey(kExampleURL1, base::Value(false));
+    DictionaryPrefUpdate urls_update(GetPrefs(),
+                                     prefs::kSupervisedUserManualURLs);
+    base::Value* urls = urls_update.Get();
+    urls->SetBoolKey(kExampleURL1, false);
   }
 
   histogram_tester_.ExpectBucketCount(
