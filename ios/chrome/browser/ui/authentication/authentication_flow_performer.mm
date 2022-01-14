@@ -278,15 +278,12 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                                browser:browser];
     return;
   }
-  BOOL isCurrentUserSyncing =
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   _navigationController = [SettingsNavigationController
       importDataControllerForBrowser:browser
                             delegate:self
                   importDataDelegate:self
                            fromEmail:lastSyncingEmail
-                             toEmail:[identity userEmail]
-                           isSyncing:isCurrentUserSyncing];
+                             toEmail:[identity userEmail]];
   [_delegate presentViewController:_navigationController
                           animated:YES
                         completion:nil];

@@ -19,6 +19,15 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+typedef NS_ENUM(NSInteger, ItemIndex) {
+  kImportDataItemIndex = 0,
+  kKeepDataSeparateItemIndex = 1,
+};
+
+}  // namespace
+
 @interface ImportDataControllerTestDelegate
     : NSObject <ImportDataControllerDelegate>
 @property(nonatomic, readonly) BOOL didChooseClearDataPolicyCalled;
@@ -45,53 +54,27 @@ class ImportDataTableViewControllerTest : public ChromeTableViewControllerTest {
   ImportDataControllerTestDelegate* delegate() { return delegate_; }
 
  protected:
-  void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
-    is_syncing_ = true;
-  }
-
   ChromeTableViewController* InstantiateController() override {
     delegate_ = [[ImportDataControllerTestDelegate alloc] init];
     return [[ImportDataTableViewController alloc]
         initWithDelegate:delegate_
                fromEmail:@"fromEmail@gmail.com"
-                 toEmail:@"toEmail@gmail.com"
-               isSyncing:is_syncing_];
+                 toEmail:@"toEmail@gmail.com"];
   }
 
-  void set_is_syncing(bool is_syncing) { is_syncing_ = is_syncing; }
+  void SelectRowAtIndex(NSInteger itemIndex) {
+    ImportDataTableViewController* import_data_controller =
+        base::mac::ObjCCastStrict<ImportDataTableViewController>(controller());
+    NSIndexPath* itemPath = [NSIndexPath indexPathForItem:itemIndex
+                                                inSection:1];
+    [import_data_controller tableView:[import_data_controller tableView]
+              didSelectRowAtIndexPath:itemPath];
+  }
 
-  bool is_syncing_;
   ImportDataControllerTestDelegate* delegate_;
 };
 
-TEST_F(ImportDataTableViewControllerTest, TestModelSignedIn) {
-  CreateController();
-  CheckController();
-  ASSERT_EQ(2, NumberOfSections());
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  SettingsImageDetailTextItem* item = GetTableViewItem(0, 0);
-  EXPECT_NSEQ(
-      l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_HEADER,
-                              base::SysNSStringToUTF16(@"fromEmail@gmail.com")),
-      item.text);
-  EXPECT_EQ(2, NumberOfItemsInSection(1));
-  CheckTextCellTextAndDetailText(
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE),
-      l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SWITCH,
-                              base::SysNSStringToUTF16(@"fromEmail@gmail.com")),
-      1, 0);
-  CheckAccessoryType(UITableViewCellAccessoryCheckmark, 1, 0);
-  CheckTextCellTextAndDetailText(
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_TITLE),
-      l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE,
-                              base::SysNSStringToUTF16(@"toEmail@gmail.com")),
-      1, 1);
-  CheckAccessoryType(UITableViewCellAccessoryNone, 1, 1);
-}
-
 TEST_F(ImportDataTableViewControllerTest, TestModelSignedOut) {
-  set_is_syncing(false);
   CreateController();
   CheckController();
   ASSERT_EQ(2, NumberOfSections());
@@ -107,12 +90,17 @@ TEST_F(ImportDataTableViewControllerTest, TestModelSignedOut) {
       l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE,
                               base::SysNSStringToUTF16(@"toEmail@gmail.com")),
       1, 0);
-  CheckAccessoryType(UITableViewCellAccessoryCheckmark, 1, 0);
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE),
       l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN),
       1, 1);
+
+  // No item is selected by default.
   CheckAccessoryType(UITableViewCellAccessoryNone, 1, 1);
+  CheckAccessoryType(UITableViewCellAccessoryNone, 1, 1);
+
+  // Continue button is disabled by default.
+  EXPECT_FALSE(controller().navigationItem.rightBarButtonItem.enabled);
 }
 
 // Tests that checking a checkbox correctly uncheck the other one.
@@ -121,9 +109,10 @@ TEST_F(ImportDataTableViewControllerTest, TestUniqueBoxChecked) {
 
   ImportDataTableViewController* import_data_controller =
       base::mac::ObjCCastStrict<ImportDataTableViewController>(controller());
-  NSIndexPath* importIndexPath = [NSIndexPath indexPathForItem:0 inSection:1];
-  NSIndexPath* keepSeparateIndexPath = [NSIndexPath indexPathForItem:1
-                                                           inSection:1];
+  NSIndexPath* importIndexPath =
+      [NSIndexPath indexPathForItem:kImportDataItemIndex inSection:1];
+  NSIndexPath* keepSeparateIndexPath =
+      [NSIndexPath indexPathForItem:kKeepDataSeparateItemIndex inSection:1];
   SettingsImageDetailTextItem* importItem =
       base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(
           [import_data_controller.tableViewModel
@@ -132,53 +121,58 @@ TEST_F(ImportDataTableViewControllerTest, TestUniqueBoxChecked) {
       base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(
           [import_data_controller.tableViewModel
               itemAtIndexPath:keepSeparateIndexPath]);
+  EXPECT_EQ(UITableViewCellAccessoryNone, importItem.accessoryType);
+  EXPECT_EQ(UITableViewCellAccessoryNone, keepSeparateItem.accessoryType);
 
-  [import_data_controller tableView:[import_data_controller tableView]
-            didSelectRowAtIndexPath:importIndexPath];
+  SelectRowAtIndex(kImportDataItemIndex);
   EXPECT_EQ(UITableViewCellAccessoryCheckmark, importItem.accessoryType);
   EXPECT_EQ(UITableViewCellAccessoryNone, keepSeparateItem.accessoryType);
 
-  [import_data_controller tableView:[import_data_controller tableView]
-            didSelectRowAtIndexPath:keepSeparateIndexPath];
+  SelectRowAtIndex(kKeepDataSeparateItemIndex);
   EXPECT_EQ(UITableViewCellAccessoryNone, importItem.accessoryType);
   EXPECT_EQ(UITableViewCellAccessoryCheckmark, keepSeparateItem.accessoryType);
 }
 
-// Tests that the default choice when the user is signed in is Clear Data and
-// that tapping continue will correctly select it. Regression test for
-// crbug.com/649533
-TEST_F(ImportDataTableViewControllerTest, TestDefaultChoiceSignedIn) {
+TEST_F(ImportDataTableViewControllerTest, TestImportDataCalled) {
   CreateController();
 
   EXPECT_FALSE(delegate().didChooseClearDataPolicyCalled);
-  UIBarButtonItem* item = controller().navigationItem.rightBarButtonItem;
-  ASSERT_TRUE(item);
+  UIBarButtonItem* continueItem =
+      controller().navigationItem.rightBarButtonItem;
+  ASSERT_TRUE(continueItem);
+
+  EXPECT_FALSE(continueItem.enabled);
+  SelectRowAtIndex(kImportDataItemIndex);
+  EXPECT_TRUE(continueItem.enabled);
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [item.target performSelector:item.action];
-#pragma clang diagnostic pop
-
-  EXPECT_TRUE(delegate().didChooseClearDataPolicyCalled);
-  EXPECT_EQ(SHOULD_CLEAR_DATA_CLEAR_DATA, delegate().shouldClearData);
-}
-
-// Tests that the default choice when the user is signed out is Merge Data and
-// that tapping continue will correctly select it. Regression test for
-// crbug.com/649533
-TEST_F(ImportDataTableViewControllerTest, TestDefaultChoiceSignedOut) {
-  set_is_syncing(false);
-  CreateController();
-
-  EXPECT_FALSE(delegate().didChooseClearDataPolicyCalled);
-  UIBarButtonItem* item = controller().navigationItem.rightBarButtonItem;
-  ASSERT_TRUE(item);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [item.target performSelector:item.action];
+  [continueItem.target performSelector:continueItem.action];
 #pragma clang diagnostic pop
 
   EXPECT_TRUE(delegate().didChooseClearDataPolicyCalled);
   EXPECT_EQ(SHOULD_CLEAR_DATA_MERGE_DATA, delegate().shouldClearData);
+}
+
+TEST_F(ImportDataTableViewControllerTest, TestClearDataCalled) {
+  CreateController();
+
+  EXPECT_FALSE(delegate().didChooseClearDataPolicyCalled);
+  UIBarButtonItem* continueItem =
+      controller().navigationItem.rightBarButtonItem;
+  ASSERT_TRUE(continueItem);
+
+  EXPECT_FALSE(continueItem.enabled);
+  SelectRowAtIndex(kKeepDataSeparateItemIndex);
+  EXPECT_TRUE(continueItem.enabled);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  [continueItem.target performSelector:continueItem.action];
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE(delegate().didChooseClearDataPolicyCalled);
+  EXPECT_EQ(SHOULD_CLEAR_DATA_CLEAR_DATA, delegate().shouldClearData);
 }
 
 }  // namespace

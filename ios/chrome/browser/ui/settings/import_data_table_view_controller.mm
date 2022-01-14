@@ -46,8 +46,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   __weak id<ImportDataControllerDelegate> _delegate;
   NSString* _fromEmail;
   NSString* _toEmail;
-  BOOL _isSyncing;
+
+  // Set to |SHOULD_CLEAR_DATA_USER_CHOICE| to indicate the user did not make
+  // any choice to import or clear the data.
   ShouldClearData _shouldClearData;
+
   SettingsImageDetailTextItem* _importDataItem;
   SettingsImageDetailTextItem* _keepDataSeparateItem;
 }
@@ -56,8 +59,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithDelegate:(id<ImportDataControllerDelegate>)delegate
                        fromEmail:(NSString*)fromEmail
-                         toEmail:(NSString*)toEmail
-                       isSyncing:(BOOL)isSyncing {
+                         toEmail:(NSString*)toEmail {
   DCHECK(fromEmail);
   DCHECK(toEmail);
 
@@ -66,13 +68,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _delegate = delegate;
     _fromEmail = [fromEmail copy];
     _toEmail = [toEmail copy];
-    _isSyncing = isSyncing;
-    _shouldClearData =
-        isSyncing ? SHOULD_CLEAR_DATA_CLEAR_DATA : SHOULD_CLEAR_DATA_MERGE_DATA;
+    _shouldClearData = SHOULD_CLEAR_DATA_USER_CHOICE;
     self.title =
-        isSyncing
-            ? l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SWITCH)
-            : l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
+        l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
     [self setShouldHideDoneButton:YES];
   }
   return self;
@@ -90,6 +88,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
              action:@selector(didTapContinue)];
   self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
       kImportDataContinueButtonId;
+  self.navigationItem.rightBarButtonItem.enabled = NO;
   [self loadModel];
 }
 
@@ -103,20 +102,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self descriptionItem]
       toSectionWithIdentifier:SectionIdentifierDisclaimer];
 
-  [model addSectionWithIdentifier:SectionIdentifierOptions];
   _importDataItem = [self importDataItem];
   _keepDataSeparateItem = [self keepDataSeparateItem];
-  if (_isSyncing) {
-    [model addItem:_keepDataSeparateItem
-        toSectionWithIdentifier:SectionIdentifierOptions];
-    [model addItem:_importDataItem
-        toSectionWithIdentifier:SectionIdentifierOptions];
-  } else {
-    [model addItem:_importDataItem
-        toSectionWithIdentifier:SectionIdentifierOptions];
-    [model addItem:_keepDataSeparateItem
-        toSectionWithIdentifier:SectionIdentifierOptions];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierOptions];
+  [model addItem:_importDataItem
+      toSectionWithIdentifier:SectionIdentifierOptions];
+  [model addItem:_keepDataSeparateItem
+      toSectionWithIdentifier:SectionIdentifierOptions];
 }
 
 #pragma mark - Items
@@ -130,32 +122,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (SettingsImageDetailTextItem*)importDataItem {
+  DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, _shouldClearData);
+
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeOptionImportData];
   item.text = l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_TITLE);
   item.detailText =
       l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE,
                               base::SysNSStringToUTF16(_toEmail));
-  item.accessoryType = _isSyncing ? UITableViewCellAccessoryNone
-                                  : UITableViewCellAccessoryCheckmark;
+  item.accessoryType = UITableViewCellAccessoryNone;
   item.accessibilityIdentifier = kImportDataImportCellId;
   return item;
 }
 
 - (SettingsImageDetailTextItem*)keepDataSeparateItem {
+  DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, _shouldClearData);
+
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeOptionKeepDataSeparate];
   item.text = l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE);
-  if (_isSyncing) {
-    item.detailText = l10n_util::GetNSStringF(
-        IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SWITCH,
-        base::SysNSStringToUTF16(_fromEmail));
-  } else {
-    item.detailText = l10n_util::GetNSString(
-        IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN);
-  }
-  item.accessoryType = _isSyncing ? UITableViewCellAccessoryCheckmark
-                                  : UITableViewCellAccessoryNone;
+  item.detailText =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN);
+  item.accessoryType = UITableViewCellAccessoryNone;
   item.accessibilityIdentifier = kImportDataKeepSeparateCellId;
   return item;
 }
@@ -193,17 +181,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Updates the UI based on the value of |_shouldClearData|.
 - (void)updateUI {
-  BOOL importDataSelected = _shouldClearData == SHOULD_CLEAR_DATA_MERGE_DATA;
-  _importDataItem.accessoryType = importDataSelected
-                                      ? UITableViewCellAccessoryCheckmark
-                                      : UITableViewCellAccessoryNone;
-  _keepDataSeparateItem.accessoryType = importDataSelected
-                                            ? UITableViewCellAccessoryNone
-                                            : UITableViewCellAccessoryCheckmark;
+  switch (_shouldClearData) {
+    case SHOULD_CLEAR_DATA_USER_CHOICE:
+      self.navigationItem.rightBarButtonItem.enabled = NO;
+      _importDataItem.accessoryType = UITableViewCellAccessoryNone;
+      _keepDataSeparateItem.accessoryType = UITableViewCellAccessoryNone;
+      break;
+    case SHOULD_CLEAR_DATA_CLEAR_DATA:
+      self.navigationItem.rightBarButtonItem.enabled = YES;
+      _importDataItem.accessoryType = UITableViewCellAccessoryNone;
+      _keepDataSeparateItem.accessoryType = UITableViewCellAccessoryCheckmark;
+      break;
+    case SHOULD_CLEAR_DATA_MERGE_DATA:
+      self.navigationItem.rightBarButtonItem.enabled = YES;
+      _importDataItem.accessoryType = UITableViewCellAccessoryCheckmark;
+      _keepDataSeparateItem.accessoryType = UITableViewCellAccessoryNone;
+      break;
+  }
   [self reconfigureCellsForItems:@[ _importDataItem, _keepDataSeparateItem ]];
 }
 
 - (void)didTapContinue {
+  DCHECK_NE(SHOULD_CLEAR_DATA_USER_CHOICE, _shouldClearData);
   [_delegate didChooseClearDataPolicy:self shouldClearData:_shouldClearData];
 }
 

@@ -1434,14 +1434,8 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN" desc="The subtitle of the Keep Data Separate option on the Import Data settings screen when signing in. [400em]">
         Delete existing data.
       </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SWITCH" desc="The subtitle of the Keep Data separate option on the Import Data settings screen when switching accounts. [400em]">
-        Delete existing data. You can retrieve it by switching back to <ph name="USER_EMAIL1">$1<ex>john@doe.com</ex></ph>.
-      </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE" desc="The title of the Keep Data Separate option on the Import Data settings screen. [60em]">
         Keep my data separate
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SWITCH" desc="The title of the Import Data settings screen when switching accounts. [30em]">
-        Switch Sync Account
       </message>
       <message name="IDS_IOS_OPTIONS_PRELOAD_WEBPAGES" desc="Title for opening the setting for if/when to preload webpages. [Length: 20em] [iOS only]">
         Preload Webpages

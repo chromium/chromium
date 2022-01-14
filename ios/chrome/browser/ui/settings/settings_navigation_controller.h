@@ -116,8 +116,7 @@ extern NSString* const kSettingsDoneButtonId;
                 importDataDelegate:
                     (id<ImportDataControllerDelegate>)importDataDelegate
                          fromEmail:(NSString*)fromEmail
-                           toEmail:(NSString*)toEmail
-                         isSyncing:(BOOL)isSyncing;
+                           toEmail:(NSString*)toEmail;
 
 // Creates a new AutofillProfileTableViewController and the chrome around
 // it. |browser| is the browser where settings are being displayed and should
