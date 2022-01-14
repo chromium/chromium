@@ -169,7 +169,7 @@ const char kSpdyGoAwayOnIpChange[] = "spdy_go_away_on_ip_change";
 
 // "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
 // experimental options explicitly.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 const bool kDefaultQuicGoAwaySessionsOnIpChange = true;
 #else
 const bool kDefaultQuicGoAwaySessionsOnIpChange = false;

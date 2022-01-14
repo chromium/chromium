@@ -621,7 +621,7 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
 }
 
 // Test that goaway_sessions_on_ip_change is set on by default for iOS.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_SetQuicGoAwaySessionsOnIPChangeByDefault \
   SetQuicGoAwaySessionsOnIPChangeByDefault
 #else
@@ -681,7 +681,7 @@ TEST(URLRequestContextConfigTest,
 
 // Tests that goaway_sessions_on_ip_changes can be set on via
 // experimental options on non-iOS.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #define MAYBE_SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions \
   SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions
 #else
@@ -740,8 +740,8 @@ TEST(URLRequestContextConfigTest,
 }
 
 // Test that goaway_sessions_on_ip_change can be set to false via
-// exprimental options on iOS.
-#if defined(OS_IOS)
+// experimental options on iOS.
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_DisableQuicGoAwaySessionsOnIPChangeViaExperimentOptions \
   DisableQuicGoAwaySessionsOnIPChangeViaExperimentOptions
 #else

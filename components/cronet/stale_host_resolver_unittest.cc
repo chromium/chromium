@@ -549,7 +549,7 @@ TEST_F(StaleHostResolverTest, ReturnStaleCacheSync) {
 
 // Disallow other networks cases fail under Fuchsia (crbug.com/816143).
 // Flaky on Win buildbots. See crbug.com/836106
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_StaleUsability DISABLED_StaleUsability
 #else
 #define MAYBE_StaleUsability StaleUsability

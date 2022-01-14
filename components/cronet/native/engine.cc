@@ -123,7 +123,7 @@ Cronet_RESULT Cronet_EngineImpl::StartWithParams(
       break;
     case Cronet_EngineParams_HTTP_CACHE_MODE_DISK: {
       context_config_builder.http_cache = URLRequestContextConfig::DISK;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       const base::FilePath storage_path(
           base::FilePath::FromUTF8Unsafe(params->storage_path));
 #else
