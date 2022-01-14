@@ -119,6 +119,7 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #import "ios/web/common/features.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
@@ -431,8 +432,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   _chromeMain = [ChromeMainStarter startChromeMain];
 
-  // Initialize the ChromeBrowserProvider.
-  ios::GetChromeBrowserProvider().Initialize();
+  // Initialize the provider UI global state.
+  provider::InitializeUI();
 
   // If the user has interacted with the app, then start (or continue) watching
   // for crashes. Otherwise, do not watch for crashes.

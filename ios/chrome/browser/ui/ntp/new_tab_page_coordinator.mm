@@ -65,6 +65,7 @@
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -847,8 +848,8 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
         accountManagerService:ChromeAccountManagerServiceFactory::
                                   GetForBrowserState(
                                       self.browser->GetBrowserState())
-                   logoVendor:ios::GetChromeBrowserProvider().CreateLogoVendor(
-                                  self.browser, self.webState)
+                   logoVendor:provider::CreateLogoVendor(self.browser,
+                                                         self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];
   ntpMediator.browser = self.browser;
   ntpMediator.ntpViewController = self.ntpViewController;

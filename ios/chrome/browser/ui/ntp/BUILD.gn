@@ -83,6 +83,7 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/web/public",
     "//ui/base",
   ]

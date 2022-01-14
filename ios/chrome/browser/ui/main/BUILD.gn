@@ -193,6 +193,7 @@ source_set("scene") {
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ui/base:base",
   ]

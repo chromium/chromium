@@ -15,7 +15,6 @@ source_set("providers") {
     "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/follow",
     "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ui/base",
   ]
