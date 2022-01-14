@@ -2,7 +2,6 @@ elf_algorithm=linker_map
 git_revision=abc123
 linker_name=gold
 map_file_name=test.map
-tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
 Section .text: has 100.0% of 35982248 bytes accounted for from 17 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).

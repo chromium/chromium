@@ -9,18 +9,18 @@ import subprocess
 import path_util
 
 
-def BuildIdFromElf(elf_path, tool_prefix):
+def BuildIdFromElf(elf_path):
   """Returns the Build ID for the given binary."""
-  args = [path_util.GetReadElfPath(tool_prefix), '-n', elf_path]
+  args = [path_util.GetReadElfPath(), '-n', elf_path]
   stdout = subprocess.check_output(args, encoding='ascii')
   match = re.search(r'Build ID: (\w+)', stdout)
   assert match, 'Build ID not found from running: ' + ' '.join(args)
   return match.group(1)
 
 
-def ArchFromElf(elf_path, tool_prefix):
+def ArchFromElf(elf_path):
   """Returns the GN architecture for the given binary."""
-  args = [path_util.GetReadElfPath(tool_prefix), '-h', elf_path]
+  args = [path_util.GetReadElfPath(), '-h', elf_path]
   stdout = subprocess.check_output(args, encoding='ascii')
   machine = re.search('Machine:\s*(.+)', stdout).group(1)
   if machine == 'Intel 80386':
@@ -34,13 +34,13 @@ def ArchFromElf(elf_path, tool_prefix):
   return machine
 
 
-def SectionInfoFromElf(elf_path, tool_prefix):
+def SectionInfoFromElf(elf_path):
   """Finds the address and size of all ELF sections
 
   Returns:
     A dict of section_name->(start_address, size).
   """
-  args = [path_util.GetReadElfPath(tool_prefix), '-S', '--wide', elf_path]
+  args = [path_util.GetReadElfPath(), '-S', '--wide', elf_path]
   stdout = subprocess.check_output(args, encoding='ascii')
   section_ranges = {}
   # Matches  [ 2] .hash HASH 00000000006681f0 0001f0 003154 04   A  3   0  8
@@ -50,9 +50,9 @@ def SectionInfoFromElf(elf_path, tool_prefix):
   return section_ranges
 
 
-def CollectRelocationAddresses(elf_path, tool_prefix):
+def CollectRelocationAddresses(elf_path):
   """Returns the list of addresses that are targets for relative relocations."""
-  cmd = [path_util.GetReadElfPath(tool_prefix), '--relocs', elf_path]
+  cmd = [path_util.GetReadElfPath(), '--relocs', elf_path]
   ret = subprocess.check_output(cmd, encoding='ascii').splitlines()
   # Grab first column from (sample output) '02de6d5c  00000017 R_ARM_RELATIVE'
   return [int(l.split(maxsplit=1)[0], 16) for l in ret if 'R_ARM_RELATIVE' in l]

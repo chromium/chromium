@@ -9,7 +9,6 @@ Metadata:
     gn_args=var1=true var2="foo"
     linker_name=gold
     map_file_name=../../../test.map
-    tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
 
 Section Sizes (Total=128.0mb (134218045 bytes)):
     .bss: 1.24mb (1300456 bytes) (not included in totals)

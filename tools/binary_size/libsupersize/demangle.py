@@ -51,7 +51,7 @@ def _ExtractDemanglablePart(names):
       name = name[pos:]
 
     # Some mangled symbols end with '$' followed by 32 lower-case hex digits,
-    # and possibly '.cfi'. These interfere with demangling by c++filt, and
+    # and possibly '.cfi'. These interfere with demangling by cxxfilt, and
     # should be stripped.
     if name.endswith('.cfi'):
       name = name[:-4]
@@ -68,10 +68,10 @@ def _PostProcessDemangledSymbol(old_name, new_name):
   return new_name
 
 
-def _DemangleNames(names, tool_prefix):
-  """Uses c++filt to demangle a list of names."""
+def _DemangleNames(names):
+  """Uses cxxfilt to demangle a list of names."""
   # pylint: disable=unexpected-keyword-arg
-  proc = subprocess.Popen([path_util.GetCppFiltPath(tool_prefix)],
+  proc = subprocess.Popen([path_util.GetCppFiltPath()],
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE,
                           encoding='utf-8')
@@ -89,19 +89,19 @@ def _DemangleNames(names, tool_prefix):
   return ret
 
 
-def DemangleRemainingSymbols(raw_symbols, tool_prefix):
+def DemangleRemainingSymbols(raw_symbols):
   """Demangles any symbols that need it."""
   to_process = [s for s in raw_symbols if _CanDemangle(s.full_name)]
   if not to_process:
     return
 
   logging.info('Demangling %d symbols', len(to_process))
-  names = _DemangleNames([s.full_name for s in to_process], tool_prefix)
+  names = _DemangleNames([s.full_name for s in to_process])
   for i, name in enumerate(names):
     to_process[i].full_name = name
 
 
-def DemangleSetsInDictsInPlace(key_to_names, tool_prefix):
+def DemangleSetsInDictsInPlace(key_to_names):
   """Demangles values as sets.
 
   |key_to_names| is a dict from key to sets (or lists) of mangled names.
@@ -113,7 +113,7 @@ def DemangleSetsInDictsInPlace(key_to_names, tool_prefix):
     return key_to_names
 
   logging.info('Demangling %d values', len(all_names))
-  it = iter(_DemangleNames(all_names, tool_prefix))
+  it = iter(_DemangleNames(all_names))
   for key, names in key_to_names.items():
     key_to_names[key] = set(next(it) if _CanDemangle(n) else n for n in names)
   assert(next(it, None) is None)
@@ -121,7 +121,7 @@ def DemangleSetsInDictsInPlace(key_to_names, tool_prefix):
   return None
 
 
-def DemangleKeysAndMergeLists(name_to_list, tool_prefix):
+def DemangleKeysAndMergeLists(name_to_list):
   """Demangles keys of a dict of lists, and returns the result.
 
   Keys may demangle to a common name. When this happens, the corresponding lists
@@ -132,7 +132,7 @@ def DemangleKeysAndMergeLists(name_to_list, tool_prefix):
     return name_to_list
 
   logging.info('Demangling %d keys', len(keys))
-  key_iter = iter(_DemangleNames(keys, tool_prefix))
+  key_iter = iter(_DemangleNames(keys))
   ret = collections.defaultdict(list)
   for key, val in name_to_list.items():
     ret[next(key_iter) if _CanDemangle(key) else key] += val

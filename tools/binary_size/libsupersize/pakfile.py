@@ -14,7 +14,7 @@ import zlib
 import models
 import path_util
 
-sys.path.insert(1, os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'grit'))
+sys.path.insert(1, path_util.FromToolsSrcRoot('tools', 'grit'))
 from grit.format import data_pack
 
 _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD = 0.9
