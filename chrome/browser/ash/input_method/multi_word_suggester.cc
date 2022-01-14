@@ -362,7 +362,8 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
       ((new_confirmed_length == 0 ||
         new_confirmed_length < suggestion_->initial_confirmed_length) ||
        (new_confirmed_length == suggestion_->confirmed_length &&
-        surrounding_text_->cursor_pos != surrounding_text_->prev_cursor_pos));
+        surrounding_text_->cursor_pos != surrounding_text_->prev_cursor_pos) ||
+       new_confirmed_length == suggestion_->text.length());
 
   if (no_longer_tracking || !surrounding_text_->cursor_at_end_of_text) {
     UpdateState(State::kSuggestionDismissed);

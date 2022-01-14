@@ -635,6 +635,27 @@ TEST_F(MultiWordSuggesterTest,
   EXPECT_FALSE(suggester_->Suggest(u"this is some text for", 15, 15));
 }
 
+TEST_F(MultiWordSuggesterTest, DismissesSuggestionOnUserTypingFullSuggestion) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = " are"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->Suggest(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->Suggest(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->Suggest(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+
+  EXPECT_FALSE(suggester_->Suggest(u"how are", 7, 7));
+}
+
 TEST_F(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
