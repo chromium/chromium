@@ -82,7 +82,7 @@ bool RulesetConverter::Convert() {
 
 bool RulesetConverter::SetInputFiles(
     const base::CommandLine::StringType& comma_separated_paths) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring separatorw = L",";
   base::WStringPiece separator(separatorw);
 #else

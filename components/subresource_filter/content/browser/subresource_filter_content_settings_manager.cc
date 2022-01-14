@@ -28,7 +28,7 @@ const char kActivatedKey[] = "Activated";
 const char kNonRenewingExpiryTime[] = "NonRenewingExpiryTime";
 
 bool ShouldUseSmartUI() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;

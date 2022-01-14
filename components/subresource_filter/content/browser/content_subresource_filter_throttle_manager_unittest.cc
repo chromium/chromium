@@ -436,12 +436,12 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        NoCrashWhenInfoBarManagerIsNotPresent) {
   auto* web_contents = RenderViewHostTestHarness::web_contents();
@@ -478,7 +478,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest, NoPageActivation) {
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -503,7 +503,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                                  true /* is_ad_subframe */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -525,7 +525,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                 navigation_simulator(),
                 GURL("https://www.example.com/disallowed.html")));
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -552,7 +552,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(child, true /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -572,7 +572,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 
@@ -582,7 +582,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -600,7 +600,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 
@@ -609,7 +609,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 
@@ -619,7 +619,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -639,7 +639,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 
@@ -655,7 +655,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                                  false /* expect_activation_sent_to_agent */);
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 
@@ -665,7 +665,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -691,7 +691,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(child, false /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -708,7 +708,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest, RulesetHandleRegeneration) {
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 
@@ -722,7 +722,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest, RulesetHandleRegeneration) {
   ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 
@@ -732,7 +732,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest, RulesetHandleRegeneration) {
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -772,7 +772,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(child, false /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -803,7 +803,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -832,7 +832,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(child, false /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -874,14 +874,14 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest, ActivationPropagation) {
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
 
 // Ensure activation propagates through allowlisted documents.
 // crbug.com/1010000: crashes on win
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ActivationPropagation2 DISABLED_ActivationPropagation2
 #else
 #define MAYBE_ActivationPropagation2 ActivationPropagation2
@@ -913,7 +913,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(subframe2, true /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 
@@ -935,7 +935,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -967,7 +967,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(child, false /* expect_activation */);
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -1091,7 +1091,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateStartAndGetResult(navigation_simulator()));
 
   EXPECT_TRUE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -1264,7 +1264,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(greatGrandchild));
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -1303,7 +1303,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_FALSE(throttle_manager()->IsRenderFrameHostTaggedAsAd(grandchild));
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -1334,7 +1334,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 }

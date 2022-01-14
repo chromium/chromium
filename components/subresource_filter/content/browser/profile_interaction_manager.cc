@@ -5,6 +5,7 @@
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
@@ -17,7 +18,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/infobars/content/content_infobar_manager.h"  // nogncheck
 #include "components/messages/android/messages_feature.h"
 #include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
@@ -137,7 +138,7 @@ void ProfileInteractionManager::MaybeShowNotification() {
   const GURL& top_level_url = page_->GetMainDocument().GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (messages::IsAdsBlockedMessagesUiEnabled()) {
       subresource_filter::AdsBlockedMessageDelegate::CreateForWebContents(
           GetWebContents());

@@ -588,7 +588,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   content::RenderFrameHost* rfh = SimulateNavigateAndCommit({url}, main_rfh());
 
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(rfh));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
@@ -758,7 +758,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   // Navigate initially, should be no activation.
   SimulateNavigateAndCommit({url}, main_rfh());
   EXPECT_TRUE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
 #endif
 
@@ -770,7 +770,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 
   SimulateNavigateAndCommit({url}, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 
@@ -803,7 +803,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 
   // Resource should be disallowed, since navigation commit had activation.
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(presenting_ads_blocked_infobar());
 #endif
 }
