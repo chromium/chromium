@@ -530,7 +530,6 @@ public class TabPersistentStore {
      *                     loaded asynchronously.
      */
     public void restoreTabs(boolean setActiveTab) {
-        Log.i(TAG, "restoreTabs starts, setActiveTab = " + setActiveTab);
         if (setActiveTab) {
             // Restore and select the active tab, which is first in the restore list.
             // If the active tab can't be restored, restore and select another tab. Otherwise, the
@@ -545,7 +544,6 @@ public class TabPersistentStore {
             }
         }
         loadNextTab();
-        Log.i(TAG, "restoreTabs ends, setActiveTab = " + setActiveTab);
     }
 
     /**
@@ -607,14 +605,11 @@ public class TabPersistentStore {
             int restoredTabId = SharedPreferencesManager.getInstance().readInt(
                     ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, Tab.INVALID_TAB_ID);
             if (restoredTabId == tabToRestore.id && mPrefetchActiveTabTask != null) {
-                Log.i(TAG, "restoreTab from mPrefetchActiveTabTask");
                 state = mPrefetchActiveTabTask.get();
             } else {
                 // Necessary to do on the UI thread as a last resort.
-                Log.i(TAG, "restoreTab on the UI thread");
                 state = TabStateFileManager.restoreTabState(getStateDirectory(), tabToRestore.id);
             }
-            Log.i(TAG, "restoreTab with state " + state);
 
             restoreTab(tabToRestore, state,
                     maybeRestoreCriticalPersistedTabDataSynchronously(tabToRestore), setAsActive);
@@ -745,7 +740,6 @@ public class TabPersistentStore {
             }
         }
         restoredTabs.put(tabToRestore.originalIndex, tabId);
-        Log.i(TAG, "Done restoreTab of tabId " + tabId);
     }
 
     /**
@@ -1376,11 +1370,9 @@ public class TabPersistentStore {
     }
 
     private void loadNextTab() {
-        Log.i(TAG, "loadNextTab starts");
         if (mDestroyed) return;
 
         if (mTabsToRestore.isEmpty()) {
-            Log.i(TAG, "loadNextTab: mTabsToRestore is Empty");
             mNormalTabsRestored = null;
             mIncognitoTabsRestored = null;
             mLoadInProgress = false;
@@ -1415,12 +1407,10 @@ public class TabPersistentStore {
                     "Loaded tab lists; counts: " + mTabModelSelector.getModel(false).getCount()
                             + "," + mTabModelSelector.getModel(true).getCount());
         } else {
-            Log.i(TAG, "loadNextTab: mTabsToRestore is NOT Empty");
             TabRestoreDetails tabToRestore = mTabsToRestore.removeFirst();
             mTabLoader = new TabLoader(tabToRestore);
             mTabLoader.load();
         }
-        Log.i(TAG, "loadNextTab ends");
     }
 
     /**
