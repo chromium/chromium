@@ -1873,7 +1873,10 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Personalization App -->
-      <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
+      <message name="IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
+        Personalization
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_WALLPAPER_LABEL" desc="Label for wallpaper element in personalization hub">
         Wallpaper
       </message>
       <message name="IDS_PERSONALIZATION_APP_BACK_BUTTON" desc="Aria label for the back button to return to a prior page">

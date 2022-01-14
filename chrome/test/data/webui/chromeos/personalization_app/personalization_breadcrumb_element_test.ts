@@ -71,7 +71,8 @@ export function PersonalizationBreadcrumbTest() {
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer!, [breadcrumbElement.i18n('title')]);
+    assertBreadcrumbs(
+        breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
   });
 
   test('shows collection name when collection is selected', async () => {
@@ -91,7 +92,7 @@ export function PersonalizationBreadcrumbTest() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer!,
-        [breadcrumbElement.i18n('title'), collection!.name]);
+        [breadcrumbElement.i18n('wallpaperLabel'), collection!.name]);
   });
 
   test('show album name when Google Photos subpage is loaded', async () => {
@@ -116,7 +117,7 @@ export function PersonalizationBreadcrumbTest() {
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer!, [
-      breadcrumbElement.i18n('title'),
+      breadcrumbElement.i18n('wallpaperLabel'),
       breadcrumbElement.i18n('googlePhotosLabel'), googlePhotosAlbum.name
     ]);
   });
@@ -133,7 +134,7 @@ export function PersonalizationBreadcrumbTest() {
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer!, [
-      breadcrumbElement.i18n('title'),
+      breadcrumbElement.i18n('wallpaperLabel'),
       breadcrumbElement.i18n('googlePhotosLabel')
     ]);
   });
@@ -152,7 +153,8 @@ export function PersonalizationBreadcrumbTest() {
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer!, [
-      breadcrumbElement.i18n('title'), breadcrumbElement.i18n('myImagesLabel')
+      breadcrumbElement.i18n('wallpaperLabel'),
+      breadcrumbElement.i18n('myImagesLabel')
     ]);
   });
 }

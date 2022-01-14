@@ -223,8 +223,11 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                        PersonalizationAppInstalls) {
   const GURL url(ash::kChromeUIPersonalizationAppURL);
+  std::string appTitle = (chromeos::features::IsPersonalizationHubEnabled())
+                             ? "Personalization"
+                             : "Wallpaper";
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::PERSONALIZATION, url, "Wallpaper"));
+      web_app::SystemAppType::PERSONALIZATION, url, appTitle));
 }
 
 // Test that the widget is modified to be transparent.

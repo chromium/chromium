@@ -13,7 +13,7 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const ROOT_PAGE = 'chrome://personalization/';
-const WALLPAPER_SUBPAGE = 'chrome://personalization/wallpaper/';
+const WALLPAPER_SUBPAGE = 'chrome://personalization/wallpaper';
 
 class PersonalizationAppBrowserTest extends testing.Test {
   /** @override */
@@ -142,7 +142,7 @@ this[WallpaperSubpageBrowserTest.name] = WallpaperSubpageBrowserTest;
 // somewhere instead of 404ing or crashing.
 TEST_F('WallpaperSubpageBrowserTest', 'HasWallpaperSubpageUrl', () => {
   assertEquals(document.location.href, WALLPAPER_SUBPAGE);
-
+  
   const title = document.querySelector('head > title');
   assertEquals('Wallpaper', title.innerText);
   testDone();

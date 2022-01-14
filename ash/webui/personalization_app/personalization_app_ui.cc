@@ -53,7 +53,9 @@ void AddResources(content::WebUIDataSource* source) {
 
 void AddStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"title", IDS_PERSONALIZATION_APP_TITLE},
+      {"personalizationTitle",
+       IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE},
+      {"wallpaperLabel", IDS_PERSONALIZATION_APP_WALLPAPER_LABEL},
       {"back", IDS_PERSONALIZATION_APP_BACK_BUTTON},
       {"currentlySet", IDS_PERSONALIZATION_APP_CURRENTLY_SET},
       {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},

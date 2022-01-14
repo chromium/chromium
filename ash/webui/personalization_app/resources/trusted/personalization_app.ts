@@ -19,7 +19,13 @@ import './personalization_theme_element.js';
 import './user_preview_element.js';
 import './user/user_subpage_element.js';
 import './wallpaper/wallpaper_subpage.js';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import {emptyState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
 
 PersonalizationStore.getInstance().init(emptyState());
+document.title = loadTimeData.getBoolean('isPersonalizationHubEnabled') ?
+    loadTimeData.getString('personalizationTitle') :
+    loadTimeData.getString('wallpaperLabel');

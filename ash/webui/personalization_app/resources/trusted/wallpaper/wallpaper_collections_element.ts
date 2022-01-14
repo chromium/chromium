@@ -176,7 +176,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
    */
   private async onHiddenChanged_(hidden: boolean) {
     if (!hidden) {
-      document.title = this.i18n('title');
+      document.title = this.i18n('wallpaperLabel');
     }
     const iframe = await this.iframePromise_;
     IFrameApi.getInstance().sendVisible(iframe.contentWindow!, !hidden);

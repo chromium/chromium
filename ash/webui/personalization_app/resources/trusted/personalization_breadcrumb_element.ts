@@ -107,7 +107,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       path: string, collections: WallpaperCollection[]|null,
       collectionId: string, googlePhotosAlbums: WallpaperCollection[]|null,
       googlePhotosAlbumId: string|null): string[] {
-    const breadcrumbs = [this.i18n('title')];
+    const breadcrumbs = [this.i18n('wallpaperLabel')];
 
     switch (path) {
       case Paths.CollectionImages:
@@ -144,7 +144,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   }
 
   private getBackButtonAriaLabel_(): string {
-    return this.i18n('back', this.i18n('title'));
+    return this.i18n('back', this.i18n('wallpaperLabel'));
   }
 
   private onBackClick_() {

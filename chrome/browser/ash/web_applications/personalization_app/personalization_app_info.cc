@@ -20,7 +20,11 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPersonalizationApp() {
       std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIPersonalizationAppURL);
   info->scope = GURL(ash::kChromeUIPersonalizationAppURL);
-  info->title = l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_TITLE);
+  info->title =
+      (chromeos::features::IsPersonalizationHubEnabled())
+          ? l10n_util::GetStringUTF16(
+                IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE)
+          : l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_WALLPAPER_LABEL);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {{"app_icon_192.png", 192, IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG}},
