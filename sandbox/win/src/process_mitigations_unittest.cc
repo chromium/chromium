@@ -920,13 +920,9 @@ TEST(ProcessMitigationsTest, CheckWin10MsSigned_Failure) {
 // ASAN doesn't initialize early enough for the intercepts in NtCreateSection to
 // be able to use std::unique_ptr, so disable pre-launch CIG on ASAN builds.
 #if !defined(ADDRESS_SANITIZER)
-#define MAYBE_CheckWin10MsSignedWithIntercept_Success \
-  CheckWin10MsSignedWithIntercept_Success
 #define MAYBE_CheckWin10MsSigned_FailurePreSpawn \
   CheckWin10MsSigned_FailurePreSpawn
 #else
-#define MAYBE_CheckWin10MsSignedWithIntercept_Success \
-  DISABLED_CheckWin10MsSignedWithIntercept_Success
 #define MAYBE_CheckWin10MsSigned_FailurePreSpawn \
   DISABLED_CheckWin10MsSigned_FailurePreSpawn
 #endif
