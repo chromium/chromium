@@ -963,7 +963,7 @@ TEST_F(PasswordSyncBridgeTest,
                             mock_password_store_sync(), base::DoNothing());
 }
 
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that in case ReadAllLogins() during initial merge returns encryption
 // service failure, the bridge would try to do a DB clean up.
 class PasswordSyncBridgeMergeTest
@@ -971,7 +971,7 @@ class PasswordSyncBridgeMergeTest
       public testing::WithParamInterface<FormRetrievalResult> {
  protected:
   void ShouldDeleteUndecryptableLoginsDuringMerge() {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         features::kSyncUndecryptablePasswordsLinux);

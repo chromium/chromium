@@ -187,14 +187,14 @@ void RemoveUselessCredentials(
         network_context_getter) {
   DCHECK(cleaning_tasks_runner);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Can be null for some unittests.
   if (!network_context_getter.is_null()) {
     cleaning_tasks_runner->MaybeAddCleaningTask(
         std::make_unique<password_manager::HttpCredentialCleaner>(
             store, network_context_getter, prefs));
   }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/450621): Remove this when enough number of clients switch
   // to the new version of Chrome.

@@ -147,7 +147,7 @@ autofill::FormData GenerateWithDataAccessor(
       }
     }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     result.fields[i].unique_id =
         result.fields[i].id_attribute + u"-" + base::NumberToString16(i);
 #endif

@@ -52,7 +52,7 @@ void CSVFormatter::AppendValue(const std::string& raw_value) {
 }
 
 void CSVFormatter::EndLine() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const char kLineEnding[] = "\r\n";
 #else
   const char kLineEnding[] = "\n";

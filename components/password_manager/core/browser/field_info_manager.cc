@@ -28,7 +28,7 @@ void FieldInfoManagerImpl::AddFieldType(
     autofill::FormSignature form_signature,
     autofill::FieldSignature field_signature,
     autofill::ServerFieldType field_type) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/1051914): Enable on Android after making local
   // heuristics reliable.
   field_types_[std::make_pair(form_signature, field_signature)] = field_type;
@@ -37,7 +37,7 @@ void FieldInfoManagerImpl::AddFieldType(
     info_store->AddFieldInfo(
         {form_signature, field_signature, field_type, base::Time::Now()});
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 autofill::ServerFieldType FieldInfoManagerImpl::GetFieldType(

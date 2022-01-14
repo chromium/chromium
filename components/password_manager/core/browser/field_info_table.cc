@@ -16,7 +16,7 @@ namespace {
 
 constexpr char kFieldInfoTableName[] = "field_info";
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Represents columns of the FieldInfoTable. Used with SQL queries that use all
 // the columns.
 enum class FieldInfoTableColumn {
@@ -71,16 +71,16 @@ bool operator==(const FieldInfo& lhs, const FieldInfo& rhs) {
 
 void FieldInfoTable::Init(sql::Database* db) {
   db_ = db;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Local predictions on Android are not reliable, so they are not used now.
   // Remove the table which might have created in the old versions.
   // TODO(https://crbug.com/1051914): remove this after M-83.
   DropTableIfExists();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool FieldInfoTable::CreateTableIfNecessary() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   if (db_->DoesTableExist(kFieldInfoTableName))
@@ -88,7 +88,7 @@ bool FieldInfoTable::CreateTableIfNecessary() {
   SQLTableBuilder builder(kFieldInfoTableName);
   InitializeFieldInfoBuilder(&builder);
   return builder.CreateTable(db_);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool FieldInfoTable::DropTableIfExists() {
@@ -98,7 +98,7 @@ bool FieldInfoTable::DropTableIfExists() {
 }
 
 bool FieldInfoTable::AddRow(const FieldInfo& field) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   sql::Statement s(db_->GetCachedStatement(
@@ -115,12 +115,12 @@ bool FieldInfoTable::AddRow(const FieldInfo& field) {
   s.BindInt64(GetColumnNumber(FieldInfoTableColumn::kCreateTime),
               field.create_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   return s.Run();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool FieldInfoTable::RemoveRowsByTime(base::Time remove_begin,
                                       base::Time remove_end) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   sql::Statement s(
@@ -130,11 +130,11 @@ bool FieldInfoTable::RemoveRowsByTime(base::Time remove_begin,
   s.BindInt64(0, remove_begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
   s.BindInt64(1, remove_end.ToDeltaSinceWindowsEpoch().InMicroseconds());
   return s.Run();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::vector<FieldInfo> FieldInfoTable::GetAllRows() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::vector<FieldInfo>();
 #else
   sql::Statement s(db_->GetCachedStatement(
@@ -142,13 +142,13 @@ std::vector<FieldInfo> FieldInfoTable::GetAllRows() {
       "SELECT form_signature, field_signature, field_type, create_time FROM "
       "field_info"));
   return StatementToFieldInfo(&s);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Returns all FieldInfo from the database which have |form_signature|.
 std::vector<FieldInfo> FieldInfoTable::GetAllRowsForFormSignature(
     uint64_t form_signature) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::vector<FieldInfo>();
 #else
   sql::Statement s(
@@ -158,7 +158,7 @@ std::vector<FieldInfo> FieldInfoTable::GetAllRowsForFormSignature(
                               "WHERE form_signature = ?"));
   s.BindInt64(0, form_signature);
   return StatementToFieldInfo(&s);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace password_manager

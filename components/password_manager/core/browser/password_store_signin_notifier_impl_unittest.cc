@@ -61,7 +61,7 @@ TEST_F(PasswordStoreSigninNotifierImplTest, Unsubscribed) {
   identity_test_env()->ClearPrimaryAccount();
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // This test is excluded from iOS since iOS does not support multiple Google
 // accounts. Checks that ClearGaiaPasswordHash() is called when a secondary
 // account is removed.
@@ -92,7 +92,7 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
   identity_test_env()->ClearPrimaryAccount();
   notifier.UnsubscribeFromSigninEvents();
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace password_manager

@@ -818,7 +818,7 @@ void ParseUsingBaseHeuristics(
 // the iOS specific parts of PasswordForm are also built on fuzzer enabled
 // platforms. See http://crbug.com/896594
 std::u16string GetPlatformSpecificIdentifier(const FormFieldData& field) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return field.unique_id;
 #else
   return field.name;

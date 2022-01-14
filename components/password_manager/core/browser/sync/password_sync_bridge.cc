@@ -179,9 +179,9 @@ bool AreLocalAndRemotePasswordsEqual(
 // merge.
 bool ShouldRecoverPasswordsDuringMerge() {
   // Delete the local undecryptable copy when this is MacOS only.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return true;
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(
       features::kSyncUndecryptablePasswordsLinux);
 #else

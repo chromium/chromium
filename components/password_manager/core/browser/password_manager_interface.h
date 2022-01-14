@@ -54,7 +54,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) = 0;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Handles a subframe form submission. In contrast to OnPasswordFormSubmitted
   // this method does not wait for OnPasswordFormsRendered before invoking
   // OnLoginSuccessful), but rather invokes ProvisionallySave immediately and

@@ -370,7 +370,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   if (!backend_)
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!changes.has_value()) {
     // If the changes aren't provided, the store propagates the latest logins.
     backend_->GetAllLoginsAsync(base::BindOnce(

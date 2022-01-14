@@ -152,12 +152,12 @@ class VotesUploader {
 
 // Not calculated on Android, because it's not possible to edit credentials in
 // prompts on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Calculate whether the username value was edited in a prompt based on
   // suggested and saved username values and whether it confirms or
   // contradicts |single_username_vote_data_|.
   void CalculateUsernamePromptEditState(const std::u16string& saved_username);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void set_generation_popup_was_shown(bool generation_popup_was_shown) {
     generation_popup_was_shown_ = generation_popup_was_shown;

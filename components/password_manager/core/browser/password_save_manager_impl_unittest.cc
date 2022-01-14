@@ -250,7 +250,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
 // current navigation.
 // TODO(crbug.com/896689): Expand the logic/application of this to other
 // platforms and/or merge this concept with |unique_renderer_id|.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     for (auto& f : observed_form_.fields) {
       f.unique_id = f.id_attribute;
     }

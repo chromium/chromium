@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -128,7 +129,7 @@ FormPredictions ConvertToFormPredictions(int driver_id,
     field_predictions.back().type = server_type;
     field_predictions.back().may_use_prefilled_placeholder =
         field->may_use_prefilled_placeholder();
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     field_predictions.back().unique_id = field->unique_id;
 #endif
   }

@@ -88,7 +88,7 @@ class PasswordManager : public PasswordManagerInterface {
       autofill::FormRendererId form_id,
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) override;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   void OnSubframeFormSubmission(PasswordManagerDriver* driver,
                                 const autofill::FormData& form_data) override;
   void PresaveGeneratedPassword(
@@ -195,14 +195,14 @@ class PasswordManager : public PasswordManagerInterface {
   }
 #endif  // defined(UNIT_TEST)
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Reports the success from the renderer's PasswordAutofillAgent to fill
   // credentials into a site. This may be called multiple times, but only
   // the first result will be recorded for each PasswordFormManager.
   void LogFirstFillingResult(PasswordManagerDriver* driver,
                              autofill::FormRendererId form_renderer_id,
                              int32_t result);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Notifies that Credential Management API function store() is called.
   void NotifyStorePasswordCalled();
@@ -320,7 +320,7 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Even though the formal submission might not happen, the manager
   // could still be provisionally saved on user input or have autofilled data,
   // in this case submission might be considered successful and a save prompt

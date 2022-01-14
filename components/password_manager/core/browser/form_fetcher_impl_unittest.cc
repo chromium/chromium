@@ -567,7 +567,7 @@ TEST_P(FormFetcherImplTest, Update_Reentrance) {
               UnorderedElementsAre(Pointee(form_b), Pointee(form_c)));
 }
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_P(FormFetcherImplTest, FetchStatistics) {
   InteractionsStats stats;
   stats.origin_domain = form_digest_.url.DeprecatedGetOriginAsURL();

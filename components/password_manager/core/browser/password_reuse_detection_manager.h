@@ -38,7 +38,7 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   ~PasswordReuseDetectionManager() override;
   void DidNavigateMainFrame(const GURL& main_frame_url);
   void OnKeyPressedCommitted(const std::u16string& text);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnKeyPressedUncommitted(const std::u16string& text);
 #endif
   void OnPaste(const std::u16string text);

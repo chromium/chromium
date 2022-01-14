@@ -380,7 +380,7 @@ class PasswordFormManagerTest : public testing::Test,
 // current navigation.
 // TODO(crbug.com/896689): Expand the logic/application of this to other
 // platforms and/or merge this concept with |unique_renderer_id|.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     for (auto& f : observed_form_.fields) {
       f.unique_id = f.id_attribute;
     }
@@ -553,7 +553,7 @@ TEST_P(PasswordFormManagerTest, Autofill) {
 
   // On Android Touch To Fill will prevent autofilling credentials on page load.
   // On iOS bio-metric reauth will prevent autofilling as well.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_TRUE(fill_data.wait_for_username);
 #else
   EXPECT_FALSE(fill_data.wait_for_username);
@@ -605,7 +605,7 @@ TEST_P(PasswordFormManagerTest, AutofillSignUpForm) {
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(fill_data.password_field.unique_renderer_id.is_null());
   EXPECT_EQ(saved_match_.password_value, fill_data.password_field.value);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   EXPECT_EQ(observed_form_.unique_renderer_id,
             generation_data.form_renderer_id);
 #else
@@ -639,7 +639,7 @@ TEST_P(PasswordFormManagerTest, GenerationOnNewAndConfirmPasswordFields) {
   fetcher_->NotifyFetchCompleted();
 
   task_environment_.FastForwardUntilNoTasksRemain();
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   EXPECT_EQ(observed_form_.unique_renderer_id,
             generation_data.form_renderer_id);
 #else
@@ -671,7 +671,7 @@ TEST_P(PasswordFormManagerTest, SetSubmitted) {
 
   FormData another_form = submitted_form_;
   another_form.name += u"1";
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // |another_form| is managed because the same |unique_renderer_id| as
   // |observed_form_|.
   EXPECT_TRUE(
@@ -816,7 +816,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsAlreadySaved) {
   // Tests that depending on whether we fill on page load or account select that
   // correct user action is recorded. Fill on account select is simulated by
   // pretending we are in incognito mode.
-#if !defined(OS_IOS) && !defined(ANDROID)
+#if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
   for (bool is_incognito : {false, true}) {
     EXPECT_CALL(client_, IsIncognito).WillOnce(Return(is_incognito));
 #endif
@@ -825,7 +825,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsAlreadySaved) {
         form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
     CheckPendingCredentials(/* expected */ saved_match_,
                             form_manager_->GetPendingCredentials());
-#if !defined(OS_IOS) && !defined(ANDROID)
+#if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
   }
 #endif
 }
@@ -1736,7 +1736,7 @@ TEST_P(PasswordFormManagerTest, FillForm) {
       form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 1000;
       form.fields[kUsernameFieldIndex].name += u"1";
       form.fields[kUsernameFieldIndex].id_attribute += u"1";
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       form.fields[kUsernameFieldIndex].unique_id += u"1";
 #endif
       form.fields[kPasswordFieldIndex].unique_renderer_id.value() += 1000;
@@ -2076,7 +2076,7 @@ TEST_P(PasswordFormManagerTest, BlocklistHttpAuthCredentials) {
   form_manager_->OnNeverClicked();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
   fetcher_->NotifyFetchCompleted();
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
@@ -2156,7 +2156,7 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
             FieldPropertiesFlags::kAutofilledOnUserTrigger);
 }
 
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 // Tests provisional saving of credentials during username first flow.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
@@ -2305,12 +2305,12 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     testing::InSequence in_sequence;
 
     // Upload username first flow votes on the username form.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(mock_autofill_download_manager_,
                 StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
                                    false, ServerFieldTypeSet{SINGLE_USERNAME},
                                    _, true, nullptr));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // Upload username first flow votes on the password form.
     autofill::AutofillUploadContents::SingleUsernameData
@@ -2325,13 +2325,13 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
             : autofill::AutofillUploadContents::USERNAME_LIKE);
 // As Android does not allow username editing, |NO_INFORMATION| about prompt
 // edits is uploaded.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     expected_single_username_data.set_prompt_edit(
         autofill::AutofillUploadContents::EDITED_POSITIVE);
 #else
     expected_single_username_data.set_prompt_edit(
         autofill::AutofillUploadContents::EDIT_UNSPECIFIED);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(
         mock_autofill_download_manager_,
         StartUploadRequest(
@@ -2413,14 +2413,14 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 
   // Upload for the username form. Ensure that we send `NOT_USERNAME` for the
   // username field.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(
       mock_autofill_download_manager_,
       StartUploadRequest(SignatureIs(kUsernameFormSignature), false,
                          ServerFieldTypeSet{NOT_USERNAME}, _, true, nullptr));
 #else
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Upload for the password form.
   autofill::AutofillUploadContents::SingleUsernameData
@@ -2433,13 +2433,13 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
       autofill::AutofillUploadContents::USERNAME_LIKE);
 // As Android does not allow username editing, |NO_INFORMATION| about prompt
 // edits is uploaded.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   expected_single_username_data.set_prompt_edit(
       autofill::AutofillUploadContents::EDITED_NEGATIVE);
 #else
   expected_single_username_data.set_prompt_edit(
       autofill::AutofillUploadContents::EDIT_UNSPECIFIED);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(
       mock_autofill_download_manager_,
       StartUploadRequest(

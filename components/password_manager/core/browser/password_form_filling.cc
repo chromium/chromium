@@ -58,7 +58,7 @@ bool ContainsAndroidCredentials(const PasswordFormFillData& fill_data) {
   return PreferredRealmIsFromAndroid(fill_data);
 }
 
-#if !defined(OS_IOS) && !defined(ANDROID)
+#if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
 bool IsFillOnAccountSelectFeatureEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kFillOnAccountSelect);
@@ -177,7 +177,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 
 // This metric will always record kReauthRequired on iOS and Android. So we can
 // drop it there.
-#if !defined(OS_IOS) && !defined(ANDROID)
+#if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
   // Proceed to autofill.
   // Note that we provide the choices but don't actually prefill a value if:
   // (1) we are in Incognito mode, or
@@ -227,7 +227,7 @@ LikelyFormFilling SendFillInformationToRenderer(
       wait_for_username_reason != WaitForUsernameReason::kDontWait;
 #else
   bool wait_for_username = true;
-#endif  // !defined(OS_IOS) && !defined(ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !defined(ANDROID)
 
   if (wait_for_username) {
     metrics_recorder->SetManagerAction(
@@ -290,7 +290,7 @@ PasswordFormFillData CreatePasswordFormFillData(
     result.password_field.form_control_type = "password";
 
     // On iOS, use the unique_id field to refer to elements.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     result.username_field.unique_id = form_on_page.username_element;
     result.password_field.unique_id = form_on_page.password_element;
 #endif

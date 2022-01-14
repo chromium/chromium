@@ -40,15 +40,15 @@ extern const base::Feature kPasswordScriptsFetching;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kReparseServerPredictionsFollowingFormChange;
 extern const base::Feature kSecondaryServerFieldPredictions;
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const base::Feature kSkipUndecryptablePasswords;
 #endif
 extern const base::Feature kSupportForAddPasswordsInSettings;
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 extern const base::Feature kSyncUndecryptablePasswordsLinux;
 #endif
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kUnifiedCredentialManagerDryRun;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerMigration;
@@ -63,7 +63,7 @@ extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
 
 // All features parameters are in alphabetical order.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<int> kMigrationVersion;
 #endif
 

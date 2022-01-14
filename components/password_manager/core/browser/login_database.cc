@@ -645,7 +645,7 @@ std::string GeneratePlaceholders(size_t count) {
   return result;
 }
 
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Fills |form| with necessary data required to be removed from the database
 // and returns it.
 PasswordForm GetFormForRemoval(sql::Statement& statement) {
@@ -662,7 +662,7 @@ PasswordForm GetFormForRemoval(sql::Statement& statement) {
 // Whether we should try to return the decryptable passwords while the
 // encryption service fails for some passwords.
 bool ShouldReturnPartialPasswords() {
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords);
 #else
   return false;
@@ -847,11 +847,11 @@ bool LoginDatabase::Init() {
 }
 
 void LoginDatabase::ReportBubbleSuppressionMetrics() {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   base::UmaHistogramCustomCounts(
       "PasswordManager.BubbleSuppression.AccountsInStatisticsTable",
       stats_table_.GetNumAccounts(), 0, 1000, 100);
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
@@ -1006,7 +1006,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   const PrimaryKeyAndPassword old_primary_key_password =
       GetPrimaryKeyAndPassword(form);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   DeleteEncryptedPasswordFromKeychain(
       old_primary_key_password.encrypted_password);
 #endif
@@ -1108,7 +1108,7 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
   }
   const PrimaryKeyAndPassword old_primary_key_password =
       GetPrimaryKeyAndPassword(form);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   DeleteEncryptedPasswordFromKeychain(
       old_primary_key_password.encrypted_password);
 #endif
@@ -1154,7 +1154,7 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
     DCHECK_EQ(db_primary_key, primary_key.value());
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   DeleteEncryptedPasswordById(primary_key.value());
 #endif
   DCHECK(!delete_by_id_statement_.empty());
@@ -1187,7 +1187,7 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     return false;
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   for (const auto& pair : key_to_form_map) {
     DeleteEncryptedPasswordById(pair.first.value());
   }
@@ -1472,7 +1472,7 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
   // If the Keychain in MacOS or the real secret key in Linux is unavailable,
   // don't delete any logins.

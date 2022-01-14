@@ -44,7 +44,7 @@ using DeleteCallback = PasswordManagerExporter::DeleteCallback;
 using SetPosixFilePermissionsCallback =
     PasswordManagerExporter::SetPosixFilePermissionsCallback;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kNullFileName[] = FILE_PATH_LITERAL("/nul");
 #else
 const base::FilePath::CharType kNullFileName[] = FILE_PATH_LITERAL("/dev/null");
@@ -255,7 +255,7 @@ TEST_F(PasswordManagerExporterTest, CancelAfterExporting) {
   task_environment_.RunUntilIdle();
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Chrome creates files using the broadest permissions allowed. Passwords are
 // sensitive and should be explicitly limited to the owner.
 TEST_F(PasswordManagerExporterTest, OutputHasRestrictedPermissions) {

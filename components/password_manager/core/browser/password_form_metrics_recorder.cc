@@ -518,7 +518,7 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
     is_mixed_content_form_ = true;
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   filling_source_ = FillingSource::kNotFilled;
 #endif
   account_storage_usage_level_ = account_storage_usage_level;
@@ -557,7 +557,7 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
     return;
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // At this point, the password was filled from at least one of the two stores,
   // so compute the filling source now.
   filling_source_ = ComputeFillingSource(

@@ -194,9 +194,9 @@ GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer) {
   GURL url(kPasswordCheckupURL);
   url = net::AppendQueryParameter(url, "utm_source", "chrome");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const char* const medium = "android";
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   const char* const medium = "ios";
 #else
   const char* const medium = "desktop";

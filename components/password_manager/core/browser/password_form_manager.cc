@@ -492,7 +492,7 @@ const PasswordForm* PasswordFormManager::GetSubmittedForm() const {
   return parsed_submitted_form_.get();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void PasswordFormManager::PresaveGeneratedPassword(
     PasswordManagerDriver* driver,
     const FormData& form,
@@ -563,7 +563,7 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
   if (data_found)
     ProvisionallySave(*observed_form(), driver, nullptr);
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 void PasswordFormManager::SaveSuggestedUsernameValueToVotesUploader() {
   votes_uploader_.set_suggested_username(
@@ -810,7 +810,7 @@ void PasswordFormManager::Fill() {
 
   if (observed_password_form->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       .form_renderer_id = observed_password_form->form_data.unique_renderer_id,
 #endif
       .new_password_renderer_id =
@@ -820,7 +820,7 @@ void PasswordFormManager::Fill() {
     });
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Filling on username first flow is not supported on iOS.
   if (observed_password_form->IsSingleUsername())
     return;

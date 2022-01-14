@@ -190,7 +190,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   int driver_id() { return driver_id_; }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Presaves the form with |generated_password|. This function is called once
   // when the user accepts the generated password. The password was generated in
   // the field with identifier |generation_element|. |driver| corresponds to the
@@ -215,7 +215,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void ProvisionallySaveFieldDataManagerInfo(
       const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Create a copy of |*this| which can be passed to the code handling
   // save-password related UI. This omits some parts of the internal data, so

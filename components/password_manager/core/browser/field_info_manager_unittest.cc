@@ -47,7 +47,7 @@ class FieldInfoManagerTest : public testing::Test {
                           Time::FromTimeT(10)});
 
     store_ = new testing::StrictMock<MockPasswordStoreInterface>();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(*store_, GetFieldInfoStore)
         .WillRepeatedly(testing::Return(&mock_field_store_));
     EXPECT_CALL(mock_field_store_, GetAllFieldInfo);
@@ -75,18 +75,18 @@ TEST_F(FieldInfoManagerTest, AddFieldType) {
             field_info_manager_->GetFieldType(autofill::FormSignature(101u),
                                               autofill::FieldSignature(1u)));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(mock_field_store_, AddFieldInfo).Times(0);
 #else
   EXPECT_CALL(mock_field_store_, AddFieldInfo(FieldInfoHasData(
                                      autofill::FormSignature(101u),
                                      autofill::FieldSignature(1u), PASSWORD)));
-#endif  //  !defined(OS_ANDROID)
+#endif  //  !BUILDFLAG(IS_ANDROID)
 
   field_info_manager_->AddFieldType(autofill::FormSignature(101u),
                                     autofill::FieldSignature(1u), PASSWORD);
   task_environment_.RunUntilIdle();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(UNKNOWN_TYPE,
             field_info_manager_->GetFieldType(autofill::FormSignature(101u),
                                               autofill::FieldSignature(1u)));
@@ -94,7 +94,7 @@ TEST_F(FieldInfoManagerTest, AddFieldType) {
   EXPECT_EQ(PASSWORD,
             field_info_manager_->GetFieldType(autofill::FormSignature(101u),
                                               autofill::FieldSignature(1u)));
-#endif  //  !defined(OS_ANDROID)
+#endif  //  !BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(FieldInfoManagerTest, OnGetAllFieldInfo) {

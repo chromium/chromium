@@ -1103,7 +1103,7 @@ TEST(PasswordFormMetricsRecorder, FilledValueMatchesSavedUsernameAndPassword) {
            PasswordFormMetricsRecorder::FillingAssistance::kAutomatic});
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 struct FillingSourceTestCase {
   std::vector<TestCaseFieldInfo> fields;
 

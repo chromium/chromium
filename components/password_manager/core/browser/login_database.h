@@ -26,7 +26,7 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/gtest_prod_util.h"
 #endif
 
@@ -201,7 +201,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest,
                            AddLoginWithEncryptedPasswordAndValue);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   friend class LoginDatabaseIOSTest;
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseIOSTest, KeychainStorage);
 

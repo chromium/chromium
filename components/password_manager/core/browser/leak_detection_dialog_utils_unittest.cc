@@ -198,7 +198,7 @@ INSTANTIATE_TEST_SUITE_P(InstantiationName,
                          BulkCheckCredentialLeakDialogUtilsTest,
                          testing::ValuesIn(kBulkCheckTestCases));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 struct PasswordChangeParams {
   // Specifies the test case. Note that the HasChangeScript(false) cases are
   // covered in a separate test.

@@ -238,7 +238,7 @@ TEST_F(PasswordReuseDetectionManagerTest,
                            reused_credentials, /*saved_passwords=*/1);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordReuseDetectionManagerTest,
        CheckReusedCalledWithUncommittedText) {
   EXPECT_CALL(client_, GetPasswordReuseManager())
