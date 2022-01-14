@@ -39,6 +39,10 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+namespace cc {
+class Region;
+}
+
 namespace blink {
 
 class Element;
@@ -50,7 +54,6 @@ class KURL;
 class MediaStreamDescriptor;
 class NGPhysicalBoxFragment;
 class Node;
-class Region;
 class Scrollbar;
 struct PhysicalOffset;
 
@@ -184,7 +187,7 @@ class CORE_EXPORT HitTestResult {
                                                         const gfx::QuadF& quad);
   ListBasedHitTestBehavior AddNodeToListBasedTestResult(Node*,
                                                         const HitTestLocation&,
-                                                        const Region&);
+                                                        const cc::Region&);
 
   void Append(const HitTestResult&);
 

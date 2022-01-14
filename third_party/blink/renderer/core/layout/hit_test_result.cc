@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 
+#include "cc/base/region.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/platform/geometry/region.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -540,7 +540,7 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
 ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
     Node* node,
     const HitTestLocation& location,
-    const Region& region) {
+    const cc::Region& region) {
   bool should_check_containment;
   ListBasedHitTestBehavior behavior;
   std::tie(should_check_containment, behavior) =

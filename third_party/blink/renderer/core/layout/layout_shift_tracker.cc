@@ -115,12 +115,12 @@ void RectToTracedValue(const gfx::Rect& rect,
 }
 
 void RegionToTracedValue(const LayoutShiftRegion& region, TracedValue& value) {
-  Region blink_region;
+  cc::Region blink_region;
   for (const gfx::Rect& rect : region.GetRects())
-    blink_region.Unite(Region(rect));
+    blink_region.Union(rect);
 
   value.BeginArray("region_rects");
-  for (const gfx::Rect& rect : blink_region.Rects())
+  for (gfx::Rect rect : blink_region)
     RectToTracedValue(rect, value);
   value.EndArray();
 }
@@ -780,10 +780,10 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
       return;
     if (cc_layer->layer_tree_host()->hud_layer()) {
       WebVector<gfx::Rect> rects;
-      Region blink_region;
+      cc::Region blink_region;
       for (const gfx::Rect& rect : int_rects)
-        blink_region.Unite(Region(rect));
-      for (const gfx::Rect& rect : blink_region.Rects())
+        blink_region.Union(rect);
+      for (gfx::Rect rect : blink_region)
         rects.emplace_back(rect);
       cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(
           rects.ReleaseVector());

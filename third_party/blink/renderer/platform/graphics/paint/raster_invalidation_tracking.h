@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_RASTER_INVALIDATION_TRACKING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_RASTER_INVALIDATION_TRACKING_H_
 
-#include "third_party/blink/renderer/platform/geometry/region.h"
+#include "cc/base/region.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
@@ -109,7 +109,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
   // The following fields are for raster under-invalidation detection.
   sk_sp<PaintRecord> last_painted_record_;
   gfx::Rect last_interest_rect_;
-  Region invalidation_region_since_last_paint_;
+  cc::Region invalidation_region_since_last_paint_;
   Vector<RasterUnderInvalidation> under_invalidations_;
   sk_sp<PaintRecord> under_invalidation_record_;
 };

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/layout_shift_region.h"
 
 #include <gtest/gtest.h>
-#include "third_party/blink/renderer/platform/geometry/region.h"
+#include "cc/base/region.h"
 
 namespace blink {
 
@@ -45,7 +45,7 @@ TEST_F(LayoutShiftRegionTest, Basic) {
 
 TEST_F(LayoutShiftRegionTest, LargeRandom) {
   LayoutShiftRegion region;
-  Region naive_region;
+  cc::Region naive_region;
   static const int data[] = {
       52613, 38528, 20785, 40550, 29734, 48229, 37113, 3520,  66776, 26746,
       20527, 11398, 27951, 50399, 37139, 17597, 20593, 57272, 12528, 5907,
@@ -93,10 +93,14 @@ TEST_F(LayoutShiftRegionTest, LargeRandom) {
     const int* d = data + (i * 4);
     gfx::Rect r(d[0], d[1], d[2], d[3]);
     region.AddRect(r);
-    naive_region.Unite(Region(r));
+    naive_region.Union(r);
   }
   EXPECT_EQ(expected_area, region.Area());
-  EXPECT_EQ(expected_area, naive_region.Area());
+
+  uint64_t naive_region_area = 0;
+  for (gfx::Rect rect : naive_region)
+    naive_region_area += rect.size().Area64();
+  EXPECT_EQ(expected_area, naive_region_area);
 }
 
 // Creates a region like this:
