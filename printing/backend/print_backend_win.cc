@@ -212,15 +212,18 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
   const DWORD kLevel = 4;
   EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, kLevel,
                nullptr, 0, &bytes_needed, &count_returned);
-  if (!bytes_needed) {
+  if (bytes_needed == 0) {
     // No bytes needed could mean the operation failed or that there are simply
     // no printer drivers installed.  Rely upon system error code to
     // distinguish between these.
     logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
-    if (code != ERROR_SUCCESS) {
-      LOG(ERROR) << "Error enumerating printers: "
-                 << logging::SystemErrorCodeToString(code);
+    if (code == ERROR_SUCCESS) {
+      VLOG(1) << "Found no printers";
+      return mojom::ResultCode::kSuccess;
     }
+
+    LOG(ERROR) << "Error enumerating printers: "
+               << logging::SystemErrorCodeToString(code);
     return GetResultCodeFromSystemErrorCode(code);
   }
 
@@ -248,6 +251,8 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
       printer_list->push_back(info);
     }
   }
+
+  VLOG(1) << "Found " << count_returned << " printers";
   return mojom::ResultCode::kSuccess;
 }
 
