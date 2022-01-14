@@ -222,7 +222,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
  private:
   // content::MediaStreamUI interface.
   gfx::NativeViewId OnStarted(
-      base::OnceClosure stop_callback,
+      base::RepeatingClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback,
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_capture_ids,
@@ -237,23 +237,21 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 
     if (device_usage_) {
       // |device_usage_| handles |stop_callback| when |ui_| is unspecified.
-      device_usage_->AddDevices(
-          devices_, ui_ ? base::OnceClosure() : std::move(stop_callback));
+      device_usage_->AddDevices(devices_,
+                                ui_ ? base::OnceClosure() : stop_callback);
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1259605): pass the stop callback instead of
-    // base::DoNothing().
     policy::DlpContentManagerAsh::Get()->OnScreenCaptureStarted(
-        label, screen_capture_ids, application_title_, base::DoNothing(),
+        label, screen_capture_ids, application_title_, stop_callback,
         state_change_callback);
 #endif
 
     // If a custom |ui_| is specified, notify it that the stream started and let
     // it handle the |stop_callback| and |source_callback|.
     if (ui_)
-      return ui_->OnStarted(std::move(stop_callback),
-                            std::move(source_callback), screen_capture_ids);
+      return ui_->OnStarted(stop_callback, std::move(source_callback),
+                            screen_capture_ids);
 
     return 0;
   }

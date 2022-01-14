@@ -360,7 +360,8 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardVideoCapture) {
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
           ->RegisterMediaStream(web_contents_, video_devices);
-  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
                 /*label=*/std::string(), /*screen_capture_ids=*/{},
                 content::MediaStreamUI::StateChangeCallback());
   ExpectCanDiscardFalseAllReasons(&tab_lifecycle_unit,
@@ -404,7 +405,8 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardDesktopCapture) {
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
           ->RegisterMediaStream(web_contents_, desktop_capture_devices);
-  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
                 /*label=*/std::string(), /*screen_capture_ids=*/{},
                 content::MediaStreamUI::StateChangeCallback());
   ExpectCanDiscardFalseAllReasons(

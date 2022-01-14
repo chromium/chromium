@@ -105,10 +105,16 @@ class MediaStreamUI {
   // Called when MediaStream capturing is started. Chrome layer can call |stop|
   // to stop the stream, or |source| to change the source of the stream, or
   // |state_change| to pause/unpause the stream.
-  // Returns the platform-dependent window ID for the UI, or 0 if not
-  // applicable.
+  // |stop| is a callback that, once invoked, will stop the stream.
+  // Stopping a stream is irreversible, so only the first invocation
+  // will have an effect. |stop| is defined as RepeatingClosure so as
+  // to allow its duplication upstream, thereby enabling multiple
+  // potential sources for the stop invocation. (For example, allow
+  // multiple UX elements that would stop the capture.)
+  // Returns the platform-dependent window ID for the UI, or 0
+  // if not applicable.
   virtual gfx::NativeViewId OnStarted(
-      base::OnceClosure stop,
+      base::RepeatingClosure stop,
       SourceCallback source,
       const std::string& label,
       std::vector<DesktopMediaID> screen_capture_ids,

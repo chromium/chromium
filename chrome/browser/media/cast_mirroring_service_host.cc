@@ -458,7 +458,7 @@ void CastMirroringServiceHost::ShowCaptureIndicator() {
                          ->GetMediaStreamCaptureIndicator()
                          ->RegisterMediaStream(web_contents(), {device});
   media_stream_ui_->OnStarted(
-      base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
 }

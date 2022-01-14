@@ -37,6 +37,6 @@ MediaStreamRequest::MediaStreamRequest(
 MediaStreamRequest::MediaStreamRequest(const MediaStreamRequest& other) =
     default;
 
-MediaStreamRequest::~MediaStreamRequest() {}
+MediaStreamRequest::~MediaStreamRequest() = default;
 
 }  // namespace content

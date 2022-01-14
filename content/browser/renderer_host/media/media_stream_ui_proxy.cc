@@ -159,8 +159,8 @@ void MediaStreamUIProxy::Core::OnStarted(
   }
 
   *window_id =
-      ui_->OnStarted(base::BindOnce(&Core::ProcessStopRequestFromUI,
-                                    weak_factory_for_ui_.GetWeakPtr()),
+      ui_->OnStarted(base::BindRepeating(&Core::ProcessStopRequestFromUI,
+                                         weak_factory_for_ui_.GetWeakPtr()),
                      device_change_cb, label, screen_share_ids,
                      base::BindRepeating(&Core::ProcessStateChangeFromUI,
                                          weak_factory_for_ui_.GetWeakPtr()));
@@ -364,6 +364,10 @@ void MediaStreamUIProxy::ProcessAccessRequestResponse(
 
 void MediaStreamUIProxy::ProcessStopRequestFromUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Careful when changing the following lines: upstream, this function is
+  // wrapped into a RepeatingClosure, which allows duplicating it and enabling
+  // multiple potentital sources to stop the stream; however only the first
+  // invocation should actually stop the stream.
   if (stop_callback_)
     std::move(stop_callback_).Run();
 }

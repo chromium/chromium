@@ -65,7 +65,7 @@ class MockResponseCallback {
 
 class MockMediaStreamUI : public MediaStreamUI {
  public:
-  gfx::NativeViewId OnStarted(base::OnceClosure stop,
+  gfx::NativeViewId OnStarted(base::RepeatingClosure stop,
                               MediaStreamUI::SourceCallback source,
                               const std::string& label,
                               std::vector<DesktopMediaID> screen_capture_ids,

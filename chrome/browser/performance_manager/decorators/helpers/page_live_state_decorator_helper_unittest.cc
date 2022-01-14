@@ -81,7 +81,8 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
 
   std::unique_ptr<content::MediaStreamUI> ui =
       indicator()->RegisterMediaStream(web_contents(), {device});
-  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
                 /*label=*/std::string(), /*screen_capture_ids=*/{},
                 content::MediaStreamUI::StateChangeCallback());
   testing::TestPageNodePropertyOnPMSequence(
