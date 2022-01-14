@@ -76,6 +76,13 @@ base::Value AXTreeFormatterBase::BuildTreeForNode(ui::AXNode* root) const {
 }
 
 std::string AXTreeFormatterBase::EvaluateScript(
+    const AXTreeSelector& selector,
+    const ui::AXInspectScenario& scenario) const {
+  NOTIMPLEMENTED();
+  return {};
+}
+
+std::string AXTreeFormatterBase::EvaluateScript(
     AXPlatformNodeDelegate* root,
     const std::vector<AXScriptInstruction>& instructions,
     size_t start_index,

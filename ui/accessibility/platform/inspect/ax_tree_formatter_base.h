@@ -39,6 +39,9 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
   std::string FormatTree(const base::Value& tree_node) const override;
   base::Value BuildTreeForNode(ui::AXNode* root) const override;
   std::string EvaluateScript(
+      const AXTreeSelector& selector,
+      const ui::AXInspectScenario& scenario) const override;
+  std::string EvaluateScript(
       AXPlatformNodeDelegate* root,
       const std::vector<AXScriptInstruction>& instructions,
       size_t start_index,

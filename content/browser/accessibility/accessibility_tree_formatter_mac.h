@@ -27,10 +27,18 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
   base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
   std::string EvaluateScript(
+      const AXTreeSelector& selector,
+      const ui::AXInspectScenario& scenario) const override;
+  std::string EvaluateScript(
       ui::AXPlatformNodeDelegate* root,
       const std::vector<ui::AXScriptInstruction>& instructions,
       size_t start_index,
       size_t end_index) const override;
+  std::string EvaluateScript(
+      id platform_root,
+      const std::vector<ui::AXScriptInstruction>& instructions,
+      size_t start_index,
+      size_t end_index) const;
 
   // AccessibilityTreeFormatterMac
   base::Value BuildNode(const id node) const;

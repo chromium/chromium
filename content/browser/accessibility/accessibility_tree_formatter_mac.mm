@@ -15,6 +15,7 @@
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
@@ -117,6 +118,21 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
 }
 
 std::string AccessibilityTreeFormatterMac::EvaluateScript(
+    const AXTreeSelector& selector,
+    const ui::AXInspectScenario& scenario) const {
+  AXUIElementRef root = nil;
+  std::tie(root, std::ignore) = ui::FindAXUIElement(selector);
+  if (!root)
+    return "";
+
+  std::string result =
+      EvaluateScript(static_cast<id>(root), scenario.script_instructions, 0,
+                     scenario.script_instructions.size());
+
+  return result;
+}
+
+std::string AccessibilityTreeFormatterMac::EvaluateScript(
     ui::AXPlatformNodeDelegate* root,
     const std::vector<ui::AXScriptInstruction>& instructions,
     size_t start_index,
@@ -124,6 +140,14 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
   BrowserAccessibilityCocoa* platform_root = ToBrowserAccessibilityCocoa(
       BrowserAccessibility::FromAXPlatformNodeDelegate(root));
 
+  return EvaluateScript(platform_root, instructions, start_index, end_index);
+}
+
+std::string AccessibilityTreeFormatterMac::EvaluateScript(
+    id platform_root,
+    const std::vector<ui::AXScriptInstruction>& instructions,
+    size_t start_index,
+    size_t end_index) const {
   base::Value scripts(base::Value::Type::LIST);
   AXTreeIndexerMac indexer(platform_root);
   std::map<std::string, id> storage;
