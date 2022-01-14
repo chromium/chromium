@@ -41,6 +41,7 @@ class LanguageModelManager : public KeyedService {
   // through a call to AddModel.
   void SetPrimaryModel(ModelType type);
   LanguageModel* GetPrimaryModel() const;
+  ModelType GetPrimaryModelType() const;
   LanguageModel* GetLanguageModel(ModelType type);
 
  private:

@@ -37,6 +37,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "language_model_manager_unittest.cc",
     "language_prefs_unittest.cc",
     "language_usage_metrics_unittest.cc",
     "ulp_metrics_logger_unittest.cc",
@@ -47,6 +48,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/language/core/language_model",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
