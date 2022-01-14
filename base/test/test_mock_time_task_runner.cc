@@ -328,6 +328,17 @@ bool TestMockTimeTaskRunner::PostDelayedTask(const Location& from_here,
   return true;
 }
 
+bool TestMockTimeTaskRunner::PostDelayedTaskAt(
+    subtle::PostDelayedTaskPassKey,
+    const Location& from_here,
+    OnceClosure task,
+    TimeTicks delayed_run_time,
+    subtle::DelayPolicy deadline_policy) {
+  return PostDelayedTask(
+      from_here, std::move(task),
+      delayed_run_time.is_null() ? TimeDelta() : delayed_run_time - now_ticks_);
+}
+
 bool TestMockTimeTaskRunner::PostNonNestableDelayedTask(
     const Location& from_here,
     OnceClosure task,

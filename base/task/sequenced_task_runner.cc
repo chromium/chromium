@@ -66,7 +66,9 @@ bool SequencedTaskRunner::PostDelayedTaskAt(
     TimeTicks delayed_run_time,
     subtle::DelayPolicy deadline_policy) {
   return PostDelayedTask(from_here, std::move(task),
-                         delayed_run_time - TimeTicks::Now());
+                         delayed_run_time.is_null()
+                             ? base::TimeDelta()
+                             : delayed_run_time - TimeTicks::Now());
 }
 
 bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(

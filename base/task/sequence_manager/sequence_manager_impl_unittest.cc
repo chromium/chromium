@@ -853,6 +853,22 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting) {
   EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
 }
 
+TEST_P(SequenceManagerTest, DelayedTaskAtPosting_Immediate) {
+  auto queue = CreateTaskQueue();
+
+  std::vector<EnqueueOrder> run_order;
+  auto handle = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 1, &run_order), TimeTicks());
+  EXPECT_TRUE(queue->GetTaskQueueImpl()->HasTaskToRunImmediately());
+  EXPECT_TRUE(run_order.empty());
+
+  // The task runs immediately.
+  RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, ElementsAre(1u));
+  EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
+}
+
 TEST(SequenceManagerTestWithMockTaskRunner,
      DelayedTaskExecutedInOneMessageLoopTask) {
   FixtureWithMockTaskRunner fixture;

@@ -206,6 +206,11 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        TimeDelta delay) override;
+  bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                         const Location& from_here,
+                         OnceClosure task,
+                         TimeTicks delayed_run_time,
+                         subtle::DelayPolicy deadline_policy) override;
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
                                   TimeDelta delay) override;

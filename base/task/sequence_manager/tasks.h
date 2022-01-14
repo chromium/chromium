@@ -50,8 +50,9 @@ struct BASE_EXPORT PostedTask {
   ~PostedTask();
 
   bool is_delayed() const {
-    return absl::holds_alternative<TimeTicks>(delay_or_delayed_run_time) ||
-           !absl::get<TimeDelta>(delay_or_delayed_run_time).is_zero();
+    return absl::holds_alternative<TimeTicks>(delay_or_delayed_run_time)
+               ? !absl::get<TimeTicks>(delay_or_delayed_run_time).is_null()
+               : !absl::get<TimeDelta>(delay_or_delayed_run_time).is_zero();
   }
 
   OnceClosure callback;
