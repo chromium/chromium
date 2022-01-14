@@ -4,6 +4,8 @@ create {
     unpack_archive: true
     no_archive_prune: true
   }
+  build {
+  }
 }
 
 upload {
