@@ -109,6 +109,9 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
     return policy_;
   }
 
+  LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) override {
+    return policy_;
+  }
   void ReportDisallowedLoad() override { ++*filtered_load_counter_; }
 
   bool ShouldLogToConsole() override { return false; }

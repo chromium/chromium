@@ -142,6 +142,8 @@ class MODULES_EXPORT WebTransport final
                                            bool succeeded,
                                            uint32_t stream_id);
 
+  bool DoesSubresourceFilterBlockConnection(const KURL& url);
+
   Member<DatagramDuplexStream> datagrams_;
 
   Member<ReadableStream> received_datagrams_;

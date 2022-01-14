@@ -126,6 +126,12 @@ WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebSocketConnect(
   return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBSOCKET);
 }
 
+WebLoadPolicy
+WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebTransportConnect(
+    const blink::WebURL& url) {
+  return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBTRANSPORT);
+}
+
 void WebDocumentSubresourceFilterImpl::ReportDisallowedLoad() {
   if (!first_disallowed_load_callback_.is_null())
     std::move(first_disallowed_load_callback_).Run();

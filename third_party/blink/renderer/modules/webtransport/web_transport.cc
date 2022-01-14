@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/base_fetch_context.h"
+#include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -46,6 +48,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -1114,7 +1117,7 @@ void WebTransport::Init(const String& url,
 
   auto* execution_context = GetExecutionContext();
 
-  bool had_csp_failure = false;
+  bool is_url_blocked = false;
   if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
     v8::Local<v8::Value> error = WebTransportError::Create(
@@ -1127,7 +1130,7 @@ void WebTransport::Init(const String& url,
     ready_resolver_->Reject(error);
     closed_resolver_->Reject(error);
 
-    had_csp_failure = true;
+    is_url_blocked = true;
   }
 
   Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
@@ -1170,10 +1173,17 @@ void WebTransport::Init(const String& url,
                          SchedulingPolicy::DisableBackForwardCache()});
   }
 
-  // TODO(ricea): Check the SubresourceFilter and fail asynchronously if
-  // disallowed. Must be done before shipping.
+  if (DoesSubresourceFilterBlockConnection(url_)) {
+    // SubresourceFilter::ReportLoad() may report an actual message.
+    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
+        script_state_->GetIsolate(), DOMExceptionCode::kNetworkError, "");
 
-  if (!had_csp_failure) {
+    ready_resolver_->Reject(dom_exception);
+    closed_resolver_->Reject(dom_exception);
+    is_url_blocked = true;
+  }
+
+  if (!is_url_blocked) {
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         connector_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
@@ -1224,6 +1234,15 @@ void WebTransport::Init(const String& url,
   received_bidirectional_streams_ =
       ReadableStream::CreateWithCountQueueingStrategy(
           script_state_, received_bidirectional_streams_underlying_source_, 1);
+}
+
+bool WebTransport::DoesSubresourceFilterBlockConnection(const KURL& url) {
+  ResourceFetcher* resource_fetcher = GetExecutionContext()->Fetcher();
+  SubresourceFilter* subresource_filter =
+      static_cast<BaseFetchContext*>(&resource_fetcher->Context())
+          ->GetSubresourceFilter();
+  return subresource_filter &&
+         !subresource_filter->AllowWebTransportConnection(url);
 }
 
 void WebTransport::Dispose() {

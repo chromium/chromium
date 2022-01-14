@@ -33,6 +33,12 @@ FakeSubresourceFilter::GetLoadPolicyForWebSocketConnect(
 }
 
 blink::WebDocumentSubresourceFilter::LoadPolicy
+FakeSubresourceFilter::GetLoadPolicyForWebTransportConnect(
+    const blink::WebURL& url) {
+  return GetLoadPolicyImpl(url);
+}
+
+blink::WebDocumentSubresourceFilter::LoadPolicy
 FakeSubresourceFilter::GetLoadPolicyImpl(const blink::WebURL& url) {
   GURL gurl(url);
   base::StringPiece path(gurl.path_piece());

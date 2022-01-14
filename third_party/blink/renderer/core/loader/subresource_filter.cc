@@ -74,10 +74,9 @@ bool SubresourceFilter::AllowLoad(
   return load_policy != WebDocumentSubresourceFilter::kDisallow;
 }
 
-bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
-  WebDocumentSubresourceFilter::LoadPolicy load_policy =
-      subresource_filter_->GetLoadPolicyForWebSocketConnect(url);
-
+void SubresourceFilter::ReportLoadAsync(
+    const KURL& resource_url,
+    WebDocumentSubresourceFilter::LoadPolicy load_policy) {
   // Post a task to notify this load to avoid unduly blocking the worker
   // thread. Note that this unconditionally calls reportLoad unlike allowLoad,
   // because there aren't developer-invisible connections (like speculative
@@ -87,7 +86,22 @@ bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
   DCHECK(task_runner->RunsTasksInCurrentSequence());
   task_runner->PostTask(
       FROM_HERE, WTF::Bind(&SubresourceFilter::ReportLoad, WrapPersistent(this),
-                           url, load_policy));
+                           resource_url, load_policy));
+}
+
+bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
+  WebDocumentSubresourceFilter::LoadPolicy load_policy =
+      subresource_filter_->GetLoadPolicyForWebSocketConnect(url);
+
+  ReportLoadAsync(url, load_policy);
+  return load_policy != WebDocumentSubresourceFilter::kDisallow;
+}
+
+bool SubresourceFilter::AllowWebTransportConnection(const KURL& url) {
+  WebDocumentSubresourceFilter::LoadPolicy load_policy =
+      subresource_filter_->GetLoadPolicyForWebTransportConnect(url);
+
+  ReportLoadAsync(url, load_policy);
   return load_policy != WebDocumentSubresourceFilter::kDisallow;
 }
 

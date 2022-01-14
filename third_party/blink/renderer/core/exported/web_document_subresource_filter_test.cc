@@ -48,6 +48,10 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
     return kAllow;
   }
 
+  LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) override {
+    return kAllow;
+  }
+
   void ReportDisallowedLoad() override {}
 
   bool ShouldLogToConsole() override { return false; }
