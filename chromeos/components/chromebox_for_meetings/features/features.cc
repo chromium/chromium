@@ -12,7 +12,7 @@ const base::Feature kCloudLogger{"MeetDevicesCloudLogger",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMojoServices{"MeetDevicesMojoServices",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace cfm
 }  // namespace chromeos
