@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -74,9 +75,8 @@ const CommitRequestData* MockModelTypeWorker::GetLatestPendingCommitForHash(
     const ClientTagHash& tag_hash) const {
   // Iterate backward through the sets of commit requests to find the most
   // recent one that applies to the specified tag_hash.
-  for (auto rev_it = pending_commits_.rbegin();
-       rev_it != pending_commits_.rend(); ++rev_it) {
-    for (const std::unique_ptr<CommitRequestData>& data : *rev_it) {
+  for (const CommitRequestDataList& commit : base::Reversed(pending_commits_)) {
+    for (const std::unique_ptr<CommitRequestData>& data : commit) {
       if (data && data->entity->client_tag_hash == tag_hash) {
         return data.get();
       }

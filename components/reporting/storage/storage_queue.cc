@@ -17,6 +17,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -727,10 +728,10 @@ Status StorageQueue::RestoreMetadata(
   // No match or failed to load. Let's locate any valid metadata file (from
   // latest to earilest) and use generation from there (last record digest is
   // useless in that case).
-  for (auto rit = meta_files.rbegin(); rit != meta_files.rend(); ++rit) {
-    const auto status = ReadMetadata(
-        /*meta_file_path=*/rit->second.first, /*size=*/rit->second.second,
-        /*sequencing_id=*/rit->first, used_files_set);
+  for (const auto& [sequencing_id, path_and_size] :
+       base::Reversed(meta_files)) {
+    const auto& [path, size] = path_and_size;
+    const auto status = ReadMetadata(path, size, sequencing_id, used_files_set);
     if (status.ok()) {
       return status;
     }

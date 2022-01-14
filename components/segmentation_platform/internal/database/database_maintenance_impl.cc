@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -63,11 +64,11 @@ base::OnceClosure LinkTasks(
   // of linked list, where the last task refers to a callback that does
   // nothing.
   base::OnceClosure first_task = base::DoNothing();
-  for (auto curr_task = tasks.rbegin(); curr_task != tasks.rend();
-       ++curr_task) {
+  for (base::OnceCallback<void(base::OnceClosure)>& curr_task :
+       base::Reversed(tasks)) {
     // We need to first perform the current task, and then move on to the next
     // task which was previously stored in first_task.
-    first_task = base::BindOnce(std::move(*curr_task), std::move(first_task));
+    first_task = base::BindOnce(std::move(curr_task), std::move(first_task));
   }
   // All tasks can now be found following from the first task.
   return first_task;

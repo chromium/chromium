@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 
+#include "base/containers/adapters.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 namespace history_clusters {
@@ -44,9 +45,7 @@ void RankingClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
 void RankingClusterFinalizer::CalculateVisitAttributeScoring(
     history::Cluster& cluster,
     base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
+  for (const history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     auto it = url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
     if (it == url_visit_scores.end()) {
       auto visit_score = VisitScores();
@@ -89,9 +88,7 @@ void RankingClusterFinalizer::CalculateVisitDurationScores(
           visit.annotated_visit.context_annotations.total_foreground_duration;
     }
   }
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
+  for (const history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     float visit_duration_score =
         Smoothstep(0.0f, max_visit_duration.InSecondsF(),
                    visit.annotated_visit.visit_row.visit_duration.InSecondsF());
@@ -119,10 +116,7 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
     history::Cluster& cluster,
     base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   float max_score = -1.0;
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
-
+  for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     // Only canonical visits should have scores > 0.0.
     for (auto& duplicate_visit : visit.duplicate_visits) {
       // Check that no individual scores have been given a visit that is not
@@ -149,9 +143,7 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
 
   // Now normalize the score by `max_score` so they values are all between 0
   // and 1.
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
+  for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     visit.score = visit.score / max_score;
   }
 }

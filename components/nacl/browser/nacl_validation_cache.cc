@@ -4,6 +4,7 @@
 
 #include "components/nacl/browser/nacl_validation_cache.h"
 
+#include "base/containers/adapters.h"
 #include "base/pickle.h"
 #include "base/rand_util.h"
 
@@ -61,10 +62,8 @@ void NaClValidationCache::Serialize(base::Pickle* pickle) const {
   // Serialize the cache in reverse order so that deserializing it can easily
   // preserve the MRU order.  (Last item deserialized => most recently used.)
   ValidationCacheType::const_reverse_iterator iter;
-  for (iter = validation_cache_.rbegin();
-       iter != validation_cache_.rend();
-       ++iter) {
-    pickle->WriteString(iter->first);
+  for (const auto& [signature, value] : base::Reversed(validation_cache_)) {
+    pickle->WriteString(signature);
   }
 
   // Mark the end of the data stream.
@@ -125,5 +124,4 @@ bool NaClValidationCache::DeserializeImpl(const base::Pickle* pickle) {
   return true;
 }
 
-} // namespace nacl
-
+}  // namespace nacl

@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
@@ -589,8 +590,8 @@ bool DocumentProvider::UpdateResults(const std::string& json_data) {
   // be hidden if the user clears their input and starts anew 'london'.
   SetCachedMatchesScoresTo0();
   // 3) Push the <N> new matches to the cache.
-  for (auto it = matches_.rbegin(); it != matches_.rend(); ++it)
-    matches_cache_.Put(it->stripped_destination_url, *it);
+  for (const AutocompleteMatch& match : base::Reversed(matches_))
+    matches_cache_.Put(match.stripped_destination_url, match);
   // 4) Copy the cached matches to |matches_|, skipping the most recent <N>
   // cached matches since they were already added in step (1). Pass
   // |set_scores_to_0| as true as we don't trust cached scores since they may no

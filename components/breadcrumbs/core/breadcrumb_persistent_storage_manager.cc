@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_split.h"
@@ -221,26 +222,25 @@ void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
     const std::vector<std::string> pending_breadcrumbs,
     std::vector<std::string> existing_events) {
   // Add events which had not yet been written.
-  for (const auto& event : pending_breadcrumbs) {
+  for (const std::string& event : pending_breadcrumbs) {
     existing_events.push_back(event);
   }
 
   std::vector<std::string> breadcrumbs;
-  for (auto event_it = existing_events.rbegin();
-       event_it != existing_events.rend(); ++event_it) {
+  for (const std::string& event : base::Reversed(existing_events)) {
     // Reduce saved events to only fill the amount which would be included on
     // a crash log. This allows future events to be appended individually up
     // to |kPersistedFilesizeInBytes|, which is more efficient than writing
     // out the
     const int event_with_seperator_size =
-        event_it->size() + strlen(kEventSeparator);
+        event.size() + strlen(kEventSeparator);
     if (event_with_seperator_size + current_mapped_file_position_.value() >=
         kMaxDataLength) {
       break;
     }
 
     breadcrumbs.push_back(kEventSeparator);
-    breadcrumbs.push_back(*event_it);
+    breadcrumbs.push_back(event);
     current_mapped_file_position_ =
         current_mapped_file_position_.value() + event_with_seperator_size;
   }

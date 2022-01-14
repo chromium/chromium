@@ -4,6 +4,7 @@
 
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 
+#include "base/containers/adapters.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
@@ -39,8 +40,8 @@ size_t BreadcrumbManager::GetEventCount() {
   DropOldEvents();
 
   size_t count = 0;
-  for (auto it = event_buckets_.rbegin(); it != event_buckets_.rend(); ++it) {
-    count += it->events.size();
+  for (const EventBucket& event_bucket : base::Reversed(event_buckets_)) {
+    count += event_bucket.events.size();
   }
   return count;
 }
@@ -50,11 +51,8 @@ const std::list<std::string> BreadcrumbManager::GetEvents(
   DropOldEvents();
 
   std::list<std::string> events;
-  for (auto it = event_buckets_.rbegin(); it != event_buckets_.rend(); ++it) {
-    const std::list<std::string>& bucket_events = it->events;
-    for (auto event_it = bucket_events.rbegin();
-         event_it != bucket_events.rend(); ++event_it) {
-      const std::string& event = *event_it;
+  for (const EventBucket& event_bucket : base::Reversed(event_buckets_)) {
+    for (const std::string& event : base::Reversed(event_bucket.events)) {
       events.push_front(event);
       if (event_count_limit > 0 && events.size() >= event_count_limit) {
         return events;

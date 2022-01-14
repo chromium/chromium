@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
@@ -360,8 +361,8 @@ bool NoStatePrefetchManager::HasRecentlyBeenNavigatedTo(Origin origin,
 
   CleanUpOldNavigations(&navigations_,
                         base::Milliseconds(kNavigationRecordWindowMs));
-  for (auto it = navigations_.rbegin(); it != navigations_.rend(); ++it) {
-    if (it->url == url)
+  for (const NavigationRecord& navigation : base::Reversed(navigations_)) {
+    if (navigation.url == url)
       return true;
   }
 
@@ -841,14 +842,14 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
   if (origin)
     *origin = ORIGIN_NONE;
 
-  for (auto it = prefetches_.crbegin(); it != prefetches_.crend(); ++it) {
-    if (it->url == url) {
+  for (const NavigationRecord& prefetch : base::Reversed(prefetches_)) {
+    if (prefetch.url == url) {
       if (prefetch_age)
-        *prefetch_age = GetCurrentTimeTicks() - it->time;
+        *prefetch_age = GetCurrentTimeTicks() - prefetch.time;
       if (final_status)
-        *final_status = it->final_status;
+        *final_status = prefetch.final_status;
       if (origin)
-        *origin = it->origin;
+        *origin = prefetch.origin;
       return true;
     }
   }
@@ -858,9 +859,9 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
 void NoStatePrefetchManager::SetPrefetchFinalStatusForUrl(
     const GURL& url,
     FinalStatus final_status) {
-  for (auto it = prefetches_.rbegin(); it != prefetches_.rend(); ++it) {
-    if (it->url == url) {
-      it->final_status = final_status;
+  for (NavigationRecord& prefetch : base::Reversed(prefetches_)) {
+    if (prefetch.url == url) {
+      prefetch.final_status = final_status;
       break;
     }
   }

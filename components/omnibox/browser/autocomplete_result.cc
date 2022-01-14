@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/field_trial_params.h"
@@ -1060,10 +1061,13 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
   // "overwrite" the initial matches from that provider's previous results,
   // minimally disturbing the rest of the matches.
   size_t delta = old_matches->size() - new_matches.size();
-  for (auto j = old_matches->rbegin(); j != old_matches->rend() && delta > 0;
-       ++j) {
-    if (!HasMatchByDestination(*j, new_matches)) {
-      matches_.push_back(std::move(*j));
+  for (const AutocompleteMatch& old_match : base::Reversed(*old_matches)) {
+    if (delta == 0) {
+      break;
+    }
+
+    if (!HasMatchByDestination(old_match, new_matches)) {
+      matches_.push_back(std::move(old_match));
       matches_.back().relevance =
           std::min(max_relevance, matches_.back().relevance);
       matches_.back().from_previous = true;

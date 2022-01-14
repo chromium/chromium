@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
@@ -93,13 +94,12 @@ void AddFetchedCategoriesToRankerBasedOnArticlesCategory(
   // Insert categories which follow "Articles" in the response. Note that we
   // insert them in reversed order, because they are inserted right after
   // "Articles", which reverses the order.
-  for (auto fetched_category_it = fetched_categories.rbegin();
-       fetched_category_it != fetched_categories.rend();
-       ++fetched_category_it) {
-    if (fetched_category_it->category == articles_category) {
+  for (const FetchedCategory& fetched_category :
+       base::Reversed(fetched_categories)) {
+    if (fetched_category.category == articles_category) {
       return;
     }
-    ranker->InsertCategoryAfterIfNecessary(fetched_category_it->category,
+    ranker->InsertCategoryAfterIfNecessary(fetched_category.category,
                                            articles_category);
   }
   NOTREACHED() << "Articles category was not found.";
@@ -273,11 +273,12 @@ void CallWithEmptyResults(FetchDoneCallback callback, const Status& status) {
 void AddDismissedIdsToRequest(const RemoteSuggestion::PtrVector& dismissed,
                               RequestParams* request_params) {
   // The latest ids are added first, because they are more relevant.
-  for (auto it = dismissed.rbegin(); it != dismissed.rend(); ++it) {
+  for (const std::unique_ptr<RemoteSuggestion>& suggestion :
+       base::Reversed(dismissed)) {
     if (request_params->excluded_ids.size() == kMaxExcludedDismissedIds) {
       break;
     }
-    request_params->excluded_ids.insert((*it)->id());
+    request_params->excluded_ids.insert(suggestion->id());
   }
 }
 

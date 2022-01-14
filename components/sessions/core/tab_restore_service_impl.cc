@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1280,9 +1281,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::ValidateAndDeleteEmptyEntries(
   std::vector<std::unique_ptr<Entry>> valid_entries;
 
   // Iterate from the back so that we keep the most recently closed entries.
-  for (auto i = entries->rbegin(); i != entries->rend(); ++i) {
-    if (TabRestoreServiceHelper::ValidateEntry(**i))
-      valid_entries.push_back(std::move(*i));
+  for (std::unique_ptr<Entry>& entry : base::Reversed(*entries)) {
+    if (TabRestoreServiceHelper::ValidateEntry(*entry))
+      valid_entries.push_back(std::move(entry));
   }
   // NOTE: at this point the entries are ordered with newest at the front.
   entries->swap(valid_entries);

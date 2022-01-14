@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -420,10 +421,9 @@ HistoryURLProvider::VisitClassifier::VisitClassifier(
   // empty prefix to those that have most components).
   const std::string& desired_tld = input.desired_tld();
   const URLPrefixes& url_prefixes = URLPrefix::GetURLPrefixes();
-  for (auto prefix_it = url_prefixes.rbegin(); prefix_it != url_prefixes.rend();
-       ++prefix_it) {
+  for (const URLPrefix& url_prefix : base::Reversed(url_prefixes)) {
     const GURL url_with_prefix = url_formatter::FixupURL(
-        base::UTF16ToUTF8(prefix_it->prefix + input.text()), desired_tld);
+        base::UTF16ToUTF8(url_prefix.prefix + input.text()), desired_tld);
     if (url_with_prefix.is_valid() &&
         db_->GetRowForURL(url_with_prefix, &url_row_) && !url_row_.hidden()) {
       type_ = Type::kVisited;

@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/undo/undo_manager_observer.h"
@@ -41,8 +42,9 @@ void UndoGroup::AddOperation(std::unique_ptr<UndoOperation> operation) {
 }
 
 void UndoGroup::Undo() {
-  for (auto ri = operations_.rbegin(); ri != operations_.rend(); ++ri)
-    (*ri)->Undo();
+  for (const std::unique_ptr<UndoOperation>& operation :
+       base::Reversed(operations_))
+    operation->Undo();
 }
 
 // UndoManager ----------------------------------------------------------------
