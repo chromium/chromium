@@ -164,15 +164,15 @@ sync_pb::AppListSpecifics::AppListItemType GetAppListItemType(
 
 void RemoveSyncItemFromLocalStorage(Profile* profile,
                                     const std::string& item_id) {
-  DictionaryPrefUpdateDeprecated(profile->GetPrefs(), prefs::kAppListLocalState)
+  DictionaryPrefUpdate(profile->GetPrefs(), prefs::kAppListLocalState)
       ->RemoveKey(item_id);
 }
 
 void UpdateSyncItemInLocalStorage(
     Profile* profile,
     const AppListSyncableService::SyncItem* sync_item) {
-  DictionaryPrefUpdateDeprecated pref_update(profile->GetPrefs(),
-                                             prefs::kAppListLocalState);
+  DictionaryPrefUpdate pref_update(profile->GetPrefs(),
+                                   prefs::kAppListLocalState);
   base::Value* dict_item = pref_update->FindKeyOfType(
       sync_item->item_id, base::Value::Type::DICTIONARY);
   if (!dict_item) {
@@ -1155,8 +1155,8 @@ AppListSyncableService::MergeDataAndStartSyncing(
   HandleUpdateStarted();
 
   // Reset local state and recreate from sync info.
-  DictionaryPrefUpdateDeprecated pref_update(profile_->GetPrefs(),
-                                             prefs::kAppListLocalState);
+  DictionaryPrefUpdate pref_update(profile_->GetPrefs(),
+                                   prefs::kAppListLocalState);
   pref_update->DictClear();
 
   sync_processor_ = std::move(sync_processor);
