@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
+#include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/page_info/core/page_info_history_data_source.h"
 #include "components/strings/grit/components_strings.h"
@@ -40,11 +41,14 @@ void PageInfoHistoryController::UpdateRow(base::Time last_visit) {
   if (!container_tracker_.view())
     return;
 
-  container_tracker_.view()->RemoveAllChildViews();
+  auto* container_view =
+      static_cast<PageInfoMainView::ContainerView*>(container_tracker_.view());
+  container_view->RemoveAllChildViews();
   if (!last_visit.is_null()) {
-    container_tracker_.view()->AddChildView(CreateHistoryButton(
+    container_view->AddChildView(CreateHistoryButton(
         page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
             last_visit)));
+    container_view->Update();
   }
 }
 

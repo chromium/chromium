@@ -44,6 +44,16 @@ class PageInfoMainView : public views::View,
   // The width of the column size for permissions and chosen object icons.
   static constexpr int kIconColumnWidth = 16;
 
+  // Container view that fills the bubble width for button rows. Supports
+  // updating the layout.
+  class ContainerView : public views::View {
+   public:
+    ContainerView();
+
+    // Notifies that preferred size changed and updates the layout.
+    void Update();
+  };
+
   PageInfoMainView(PageInfo* presenter,
                    ChromePageInfoUiDelegate* ui_delegate,
                    PageInfoNavigationHandler* navigation_handler,
@@ -60,6 +70,7 @@ class PageInfoMainView : public views::View,
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
 
   gfx::Size CalculatePreferredSize() const override;
+  void ChildPreferredSizeChanged(views::View* child) override;
 
   // PermissionToggleRowViewObserver:
   void OnPermissionChanged(const PageInfo::PermissionInfo& permission) override;
