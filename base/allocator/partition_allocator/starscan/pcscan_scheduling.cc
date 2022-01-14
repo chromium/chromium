@@ -80,9 +80,11 @@ constexpr double MUAwareTaskBasedBackend::kTargetMutatorUtilizationPercent;
 
 MUAwareTaskBasedBackend::MUAwareTaskBasedBackend(
     PCScanScheduler& scheduler,
-    base::RepeatingCallback<void(TimeDelta)> schedule_delayed_scan)
+    ScheduleDelayedScanFunc schedule_delayed_scan)
     : PCScanSchedulingBackend(scheduler),
-      schedule_delayed_scan_(std::move(schedule_delayed_scan)) {}
+      schedule_delayed_scan_(schedule_delayed_scan) {
+  PA_DCHECK(schedule_delayed_scan_);
+}
 
 MUAwareTaskBasedBackend::~MUAwareTaskBasedBackend() = default;
 
@@ -133,7 +135,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
   // Don't reschedule under the lock as the callback can call free() and
   // recursively enter the lock.
   if (should_reschedule) {
-    schedule_delayed_scan_.Run(reschedule_delay);
+    schedule_delayed_scan_(reschedule_delay.InMicroseconds());
     return false;
   }
   return true;
@@ -199,7 +201,7 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
   // Don't reschedule under the lock as the callback can call free() and
   // recursively enter the lock.
   if (should_reschedule)
-    schedule_delayed_scan_.Run(reschedule_delay);
+    schedule_delayed_scan_(reschedule_delay.InMicroseconds());
   return false;
 }
 

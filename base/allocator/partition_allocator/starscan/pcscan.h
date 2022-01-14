@@ -109,7 +109,7 @@ class BASE_EXPORT PCScan final {
   // Performs scanning only if a certain quarantine threshold was reached.
   static void PerformScanIfNeeded(InvocationMode invocation_mode);
   // Performs scanning with specified delay.
-  static void PerformDelayedScan(TimeDelta delay);
+  static void PerformDelayedScan(int64_t delay_in_microseconds);
 
   // Enables safepoints in mutator threads.
   static void EnableSafepoints();

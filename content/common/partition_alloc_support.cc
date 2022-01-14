@@ -409,9 +409,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     static base::NoDestructor<base::internal::MUAwareTaskBasedBackend>
         mu_aware_task_based_backend{
             base::internal::PCScan::scheduler(),
-            base::BindRepeating([](base::TimeDelta delay) {
-              base::internal::PCScan::PerformDelayedScan(delay);
-            })};
+            &base::internal::PCScan::PerformDelayedScan};
     base::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
   }

@@ -101,8 +101,9 @@ class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
 class BASE_EXPORT MUAwareTaskBasedBackend final
     : public PCScanSchedulingBackend {
  public:
-  MUAwareTaskBasedBackend(PCScanScheduler&,
-                          base::RepeatingCallback<void(TimeDelta)>);
+  using ScheduleDelayedScanFunc = void (*)(int64_t delay_in_microseconds);
+
+  MUAwareTaskBasedBackend(PCScanScheduler&, ScheduleDelayedScanFunc);
   ~MUAwareTaskBasedBackend();
 
   bool LimitReached() final;
@@ -126,7 +127,7 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   bool NeedsToImmediatelyScan() final;
 
   // Callback to schedule a delayed scan.
-  const base::RepeatingCallback<void(TimeDelta)> schedule_delayed_scan_;
+  const ScheduleDelayedScanFunc schedule_delayed_scan_;
 
   PartitionLock scheduler_lock_;
   size_t hard_limit_ GUARDED_BY(scheduler_lock_){0};
