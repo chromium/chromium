@@ -267,22 +267,6 @@ id CreateTextMarkerRange(const AXRange range) {
   return [static_cast<id>(cf_marker_range) autorelease];
 }
 
-AXPosition CreateTreePosition(const BrowserAccessibility& object, int offset) {
-  const BrowserAccessibilityManager* manager = object.manager();
-  DCHECK(manager);
-  return ui::AXNodePosition::CreateTreePosition(manager->ax_tree_id(),
-                                                object.GetId(), offset);
-}
-
-AXPosition CreateTextPosition(const BrowserAccessibility& object,
-                              int offset,
-                              ax::mojom::TextAffinity affinity) {
-  const BrowserAccessibilityManager* manager = object.manager();
-  DCHECK(manager);
-  return ui::AXNodePosition::CreateTextPosition(
-      manager->ax_tree_id(), object.GetId(), offset, affinity);
-}
-
 AXRange CreateAXRange(const BrowserAccessibility& start_object,
                       int start_offset,
                       ax::mojom::TextAffinity start_affinity,
@@ -290,13 +274,8 @@ AXRange CreateAXRange(const BrowserAccessibility& start_object,
                       int end_offset,
                       ax::mojom::TextAffinity end_affinity) {
   AXPosition anchor =
-      start_object.IsLeaf()
-          ? CreateTextPosition(start_object, start_offset, start_affinity)
-          : CreateTreePosition(start_object, start_offset);
-  AXPosition focus =
-      end_object.IsLeaf()
-          ? CreateTextPosition(end_object, end_offset, end_affinity)
-          : CreateTreePosition(end_object, end_offset);
+      start_object.CreatePositionAt(start_offset, start_affinity);
+  AXPosition focus = end_object.CreatePositionAt(end_offset, end_affinity);
   // |AXRange| takes ownership of its anchor and focus.
   return AXRange(std::move(anchor), std::move(focus));
 }
@@ -669,7 +648,7 @@ id content::AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
                              int offset,
                              ax::mojom::TextAffinity affinity) {
   BrowserAccessibility* anchor_node = [anchor owner];
-  AXPosition position = CreateTextPosition(*anchor_node, offset, affinity);
+  AXPosition position = anchor_node->CreateTextPositionAt(offset, affinity);
   return CreateTextMarker(std::move(position));
 }
 
@@ -2464,8 +2443,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       return nil;
 
     int lineStartOffset = lineStarts[lineIndex];
-    AXPosition lineStartPosition = CreateTextPosition(
-        *_owner, lineStartOffset, ax::mojom::TextAffinity::kDownstream);
+    AXPosition lineStartPosition = _owner->CreateTextPositionAt(
+        lineStartOffset, ax::mojom::TextAffinity::kDownstream);
     if (lineStartPosition->IsNullPosition())
       return nil;
 
