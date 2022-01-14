@@ -236,6 +236,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:reclient_goma_comparison",
+    use_python3 = True,
 )
 
 build_recipe(
