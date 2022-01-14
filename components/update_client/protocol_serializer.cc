@@ -26,7 +26,7 @@
 #include "components/update_client/updater_state.h"
 #include "components/update_client/utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -42,7 +42,7 @@ int GetPhysicalMemoryGB() {
 }
 
 std::string GetOSVersion() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const auto ver = base::win::OSInfo::GetInstance()->version_number();
   return base::StringPrintf("%u.%u.%u.%u", ver.major, ver.minor, ver.build,
                             ver.patch);
@@ -52,7 +52,7 @@ std::string GetOSVersion() {
 }
 
 std::string GetServicePack() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::win::OSInfo::GetInstance()->service_pack_str();
 #else
   return {};
@@ -131,7 +131,7 @@ protocol_request::Request MakeProtocolRequest(
   request.dlpref = download_preference;
   request.additional_attributes = additional_attributes;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     request.is_wow64 = true;
 #endif

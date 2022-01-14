@@ -40,7 +40,7 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node->SetKey("@os", Value(request.operating_system));
   request_node->SetKey("arch", Value(request.arch));
   request_node->SetKey("nacl_arch", Value(request.nacl_arch));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (request.is_wow64)
     request_node->SetKey("wow64", Value(request.is_wow64));
 #endif  // OS_WIN

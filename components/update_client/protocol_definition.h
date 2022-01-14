@@ -167,7 +167,7 @@ struct Request {
   std::string arch;
   std::string nacl_arch;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool is_wow64 = false;
 #endif
 

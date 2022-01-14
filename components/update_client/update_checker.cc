@@ -140,10 +140,10 @@ void UpdateCheckerImpl::CheckForUpdates(
 // This function runs on the blocking pool task runner.
 std::unique_ptr<UpdaterState::Attributes>
 UpdateCheckerImpl::ReadUpdaterStateAttributes() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the Chrome and the updater install modes are matched by design.
   return UpdaterState::GetState(!config_->IsPerUserInstall());
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return UpdaterState::GetState(false);
 #else
   return nullptr;

@@ -280,7 +280,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
                        .FindKey("fp")
                        ->GetString());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(request->FindKey("domainjoined"));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const auto* updater = request->FindKey("updater");

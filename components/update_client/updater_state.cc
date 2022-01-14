@@ -28,16 +28,16 @@ UpdaterState::~UpdaterState() = default;
 
 std::unique_ptr<UpdaterState::Attributes> UpdaterState::GetState(
     bool is_machine) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   UpdaterState updater_state(is_machine);
   updater_state.ReadState();
   return std::make_unique<Attributes>(updater_state.BuildAttributes());
 #else
   return nullptr;
-#endif  // OS_WIN or Mac
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void UpdaterState::ReadState() {
   is_enterprise_managed_ = base::IsMachineExternallyManaged();
 
@@ -50,15 +50,15 @@ void UpdaterState::ReadState() {
   update_policy_ = GetUpdatePolicy();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-#endif  // OS_WIN or Mac
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 UpdaterState::Attributes UpdaterState::BuildAttributes() const {
   Attributes attributes;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Only Windows implements this attribute in a meaningful way.
   attributes["ismachine"] = is_machine_ ? "1" : "0";
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   attributes[kIsEnterpriseManaged] = is_enterprise_managed_ ? "1" : "0";
 
   attributes["name"] = updater_name_;

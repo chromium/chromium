@@ -10,7 +10,7 @@
 namespace update_client {
 
 bool CommandLineConfigPolicy::BackgroundDownloadsEnabled() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
