@@ -8,3 +8,16 @@ proto_library("discovery_resources_proto") {
   sources = [ "discovery_resources.proto" ]
   cc_generator_options = "lite=true:"
 }
+
+static_library("access_code_cast_feature") {
+  sources = [
+    "access_code_cast_feature.cc",
+    "access_code_cast_feature.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/pref_registry:pref_registry",
+    "//components/prefs:prefs",
+    "//components/user_prefs:user_prefs",
+  ]
+}

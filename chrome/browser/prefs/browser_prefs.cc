@@ -34,6 +34,7 @@
 #include "chrome/browser/media/media_device_id_salt.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_storage_id_salt.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
@@ -1338,6 +1339,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   gcm::RegisterProfilePrefs(registry);
   HatsService::RegisterProfilePrefs(registry);
   NtpCustomBackgroundService::RegisterProfilePrefs(registry);
+  media_router::RegisterAccessCodeProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);

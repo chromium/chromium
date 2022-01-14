@@ -59,14 +59,6 @@ constexpr char kMediaRouterCastAllowAllIPs[] =
 // hash when externalizing MediaSink IDs.
 constexpr char kMediaRouterReceiverIdHashToken[] =
     "media_router.receiver_id_hash_token";
-// Pref name that allows the AccessCode/QR code scanning dialog button to be
-// shown.
-constexpr char kAccessCodeCastEnabled[] =
-    "media_router.access_code_cast_enabled";
-// Pref name for the pref that determines how long a scanned receiver remains in
-// the receiver list.
-constexpr char kAccessCodeCastDeviceDuration[] =
-    "media_router.access_code_cast_device_duration";
 }  // namespace prefs
 
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
@@ -92,15 +84,7 @@ bool DialMediaRouteProviderEnabled();
 // Media Router is enabled for |context|.
 bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
 
-// Returns true if this user is allowed to use Access Codes & QR codes to
-// discover cast devices.
-bool GetAccessCodeCastEnabledPref(PrefService* pref_service);
-
-// Returns the duration that a scanned cast device is allowed to remain
-// in the cast list.
-base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service);
-
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace media_router
 

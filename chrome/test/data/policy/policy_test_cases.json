@@ -17282,7 +17282,7 @@
       {
         "policies": {},
         "prefs": {
-          "media_router.access_code_cast_enabled": {
+          "media_router.access_code_cast.enabled": {
             "default_value": false
           }
         }
@@ -17290,7 +17290,7 @@
       {
         "policies": { "AccessCodeCastEnabled": false },
         "prefs": {
-          "media_router.access_code_cast_enabled": {
+          "media_router.access_code_cast.enabled": {
             "value": false
           }
         }
@@ -17298,7 +17298,7 @@
       {
         "policies": { "AccessCodeCastEnabled": true },
         "prefs": {
-          "media_router.access_code_cast_enabled": {
+          "media_router.access_code_cast.enabled": {
             "value": true
           }
         }
@@ -17313,7 +17313,7 @@
           "AccessCodeCastDeviceDuration": 10
         },
         "prefs": {
-          "media_router.access_code_cast_device_duration": {
+          "media_router.access_code_cast.device_duration": {
             "value": 10
           }
         }
@@ -17321,7 +17321,7 @@
       {
         "policies": {},
         "prefs": {
-          "media_router.access_code_cast_device_duration": {
+          "media_router.access_code_cast.device_duration": {
             "default_value": 0
           }
         }

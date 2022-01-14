@@ -97,10 +97,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // TODO(imcheng): Migrate existing Media Router prefs to here.
   registry->RegisterStringPref(prefs::kMediaRouterReceiverIdHashToken, "",
                                PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kAccessCodeCastEnabled, false,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kAccessCodeCastDeviceDuration, 0,
-                                PrefRegistry::PUBLIC);
 }
 
 bool GetCastAllowAllIPsPref(PrefService* pref_service) {
@@ -140,26 +136,6 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
          MediaRouterEnabled(context);
 }
 
-bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
-#if !BUILDFLAG(IS_ANDROID)
-  return pref_service->GetBoolean(prefs::kAccessCodeCastEnabled);
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!GetAccessCodeCastEnabledPref(pref_service)) {
-    return base::Seconds(0);
-  }
-  return base::Seconds(
-      pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
-#else
-  return base::Seconds(0);
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace media_router

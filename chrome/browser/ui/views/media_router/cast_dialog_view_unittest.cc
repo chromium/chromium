@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
