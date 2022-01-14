@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
@@ -91,7 +90,7 @@ class TestSink : public Channel {
   // Interface in IPC::Channel. This copies the message to the sink and then
   // deletes it.
   bool Send(IPC::Message* message) override;
-  bool Connect() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Connect() override;
   void Close() override;
 
   // Used by the source of the messages to send the message to the sink. This

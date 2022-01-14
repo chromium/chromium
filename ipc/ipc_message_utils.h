@@ -112,9 +112,9 @@ inline void WriteParam(base::Pickle* m, const P& p) {
 }
 
 template <class P>
-inline bool WARN_UNUSED_RESULT ReadParam(const base::Pickle* m,
-                                         base::PickleIterator* iter,
-                                         P* p) {
+[[nodiscard]] inline bool ReadParam(const base::Pickle* m,
+                                    base::PickleIterator* iter,
+                                    P* p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   return ParamTraits<Type>::Read(m, iter, reinterpret_cast<Type* >(p));
 }

@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
@@ -188,7 +187,7 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   //
   // The subclass implementation must call WillConnect() at the beginning of its
   // implementation.
-  virtual bool Connect() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Connect() = 0;
 
   // Pause the channel. Subsequent sends will be queued internally until
   // Unpause() is called and the channel is flushed either by Unpause() or a
