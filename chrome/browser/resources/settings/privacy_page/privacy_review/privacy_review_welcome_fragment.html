@@ -2,6 +2,7 @@
   :host {
     display: flex;
     flex-flow: column;
+    min-height: 432px;
   }
 
   .main-content {
@@ -16,9 +17,12 @@
 
   .footer {
     align-items: center;
+    bottom: 0;
     display: flex;
     justify-content: flex-end;
-    padding: 8px 0;
+    padding-bottom: 24px;
+    position: absolute;
+    width: calc(100% - 48px); /* 48px = 2x :host horizontal padding */
   }
 </style>
 <div class="main-content">
