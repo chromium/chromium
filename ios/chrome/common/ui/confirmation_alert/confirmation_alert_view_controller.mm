@@ -69,7 +69,6 @@ constexpr CGFloat kContentMaxWidth = 500;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-    _specificContentLayoutGuide = [[UILayoutGuide alloc] init];
   }
   return self;
 }
@@ -92,23 +91,9 @@ constexpr CGFloat kContentMaxWidth = 500;
   UIStackView* stackView =
       [self createStackViewWithArrangedSubviews:stackSubviews];
 
-  // UIView used to set constraints to the scrollable content. Needed in order
-  // to pin UI elements in specific content view above actions buttons. UI
-  // elements can't be added to this view as it does not work with VoiceOver,
-  // see crbug.com/1281364. UILayoutGuide can't be use here as it does not work
-  // with dynamic type, see crbug.com/1283622.
-  UIView* scrollContentView = [[UIView alloc] init];
-  scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
-
   UIScrollView* scrollView = [self createScrollView];
-  [scrollView addSubview:scrollContentView];
   [scrollView addSubview:stackView];
-  [scrollView addLayoutGuide:self.specificContentLayoutGuide];
   [self.view addSubview:scrollView];
-
-  // Needed to have VoiceOver working to elements added in derived view
-  // controller.
-  self.specificContentSuperview = scrollView;
 
   self.view.preservesSuperviewLayoutMargins = YES;
   UILayoutGuide* margins = self.view.layoutMarginsGuide;
@@ -124,6 +109,22 @@ constexpr CGFloat kContentMaxWidth = 500;
   // the content area. No need to contraint horizontally as we don't want
   // horizontal scroll.
   [NSLayoutConstraint activateConstraints:@[
+    [stackView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
+    [stackView.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor
+                                           constant:-kScrollViewBottomInsets]
+  ]];
+
+  // Scroll View constraints to the height of its content. This allows to center
+  // the scroll view.
+  NSLayoutConstraint* heightConstraint = [scrollView.heightAnchor
+      constraintEqualToAnchor:scrollView.contentLayoutGuide.heightAnchor];
+  // UILayoutPriorityDefaultHigh is the default priority for content
+  // compression. Setting this lower avoids compressing the content of the
+  // scroll view.
+  heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+  heightConstraint.active = YES;
+
+  [NSLayoutConstraint activateConstraints:@[
     [stackView.widthAnchor
         constraintLessThanOrEqualToConstant:kContentMaxWidth],
     [stackView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
@@ -132,27 +133,6 @@ constexpr CGFloat kContentMaxWidth = 500;
     [stackView.widthAnchor
         constraintLessThanOrEqualToAnchor:margins.widthAnchor],
 
-    [stackView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:scrollContentView.topAnchor],
-    [stackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentLayoutGuide
-                                              .topAnchor
-                                 constant:-kScrollViewBottomInsets],
-
-    [self.specificContentLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:scrollContentView.bottomAnchor],
-    [self.specificContentLayoutGuide.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    [self.specificContentLayoutGuide.widthAnchor
-        constraintLessThanOrEqualToAnchor:scrollView.widthAnchor],
-
-    // Constrain its height to at least the scroll view height, so that derived
-    // VCs can pin UI elements just above the buttons.
-    [scrollContentView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
-    [scrollContentView.bottomAnchor
-        constraintEqualToAnchor:scrollView.bottomAnchor],
-    [scrollContentView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:scrollView.heightAnchor],
   ]];
 
   // Width Scroll View constraint for regular mode.
@@ -195,8 +175,9 @@ constexpr CGFloat kContentMaxWidth = 500;
   }
 
   [NSLayoutConstraint activateConstraints:@[
-    [scrollView.bottomAnchor constraintEqualToAnchor:scrollViewBottomAnchor
-                                            constant:-kScrollViewBottomInsets],
+    [scrollView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:scrollViewBottomAnchor
+                                 constant:-kScrollViewBottomInsets],
     [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
@@ -210,18 +191,24 @@ constexpr CGFloat kContentMaxWidth = 500;
     scrollViewTopAnchor = self.view.safeAreaLayoutGuide.topAnchor;
     scrollViewTopConstant = self.customSpacingBeforeImageIfNoToolbar;
   }
-
-  [scrollView.topAnchor constraintEqualToAnchor:scrollViewTopAnchor
-                                       constant:scrollViewTopConstant]
-      .active = YES;
-
   if (self.topAlignedLayout) {
-    [stackView.topAnchor constraintEqualToAnchor:scrollContentView.topAnchor]
+    [scrollView.topAnchor constraintEqualToAnchor:scrollViewTopAnchor
+                                         constant:scrollViewTopConstant]
         .active = YES;
   } else {
-    [stackView.centerYAnchor
-        constraintEqualToAnchor:scrollContentView.centerYAnchor]
+    [scrollView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:scrollViewTopAnchor
+                                    constant:scrollViewTopConstant]
         .active = YES;
+
+    // Scroll View constraint to the vertical center.
+    NSLayoutConstraint* centerYConstraint = [scrollView.centerYAnchor
+        constraintEqualToAnchor:margins.centerYAnchor];
+    // This needs to be lower than the height constraint, so it's deprioritized.
+    // If this breaks, the scroll view is still constrained to the top toolbar
+    // and the bottom safe area or button.
+    centerYConstraint.priority = heightConstraint.priority - 1;
+    centerYConstraint.active = YES;
   }
 
   if (!self.imageHasFixedSize) {

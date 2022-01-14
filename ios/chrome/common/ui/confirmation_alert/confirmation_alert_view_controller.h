@@ -86,16 +86,6 @@ extern NSString* const
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
-// Layout guide to specific content added in derived view controller.
-@property(nonatomic, strong, readonly)
-    UILayoutGuide* specificContentLayoutGuide;
-
-// The container view for the screen-specific content. Derived view controllers
-// should add their UI elements to it after -viewDidLoad. This view contains the
-// confirmation alert contents, use |specificContentLayoutGuide| for set
-// constraints below the contents. See crbug.com/1282434 for more.
-@property(nonatomic, strong) UIView* specificContentSuperview;
-
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_CONFIRMATION_ALERT_CONFIRMATION_ALERT_VIEW_CONTROLLER_H_
