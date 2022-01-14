@@ -110,12 +110,12 @@ void OfflineLoginScreen::LoadOffline() {
 
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
   if (!enterprise_domain_manager.empty())
-    params.SetString("enterpriseDomainManager", enterprise_domain_manager);
+    params.SetStringKey("enterpriseDomainManager", enterprise_domain_manager);
   std::string email_domain;
   if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
                                      &email_domain) &&
       !email_domain.empty()) {
-    params.SetString("emailDomain", email_domain);
+    params.SetStringKey("emailDomain", email_domain);
   }
   if (view_)
     view_->LoadParams(params);

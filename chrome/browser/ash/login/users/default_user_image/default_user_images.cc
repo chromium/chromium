@@ -361,11 +361,12 @@ std::unique_ptr<base::ListValue> GetCurrentImageSet() {
     int index = kCurrentImageIndexes[i];
     int string_id = kDefaultImageInfo[index].description_message_id;
 
-    image_data->SetString("url", default_user_image::GetDefaultImageUrl(index));
+    image_data->SetStringKey("url",
+                             default_user_image::GetDefaultImageUrl(index));
     image_data->SetIntKey("index", index);
-    image_data->SetString("title", string_id
-                                       ? l10n_util::GetStringUTF16(string_id)
-                                       : std::u16string());
+    image_data->SetStringKey("title", string_id
+                                          ? l10n_util::GetStringUTF16(string_id)
+                                          : std::u16string());
     image_urls->Append(std::move(image_data));
   }
   return image_urls;

@@ -418,23 +418,19 @@ class AutoEnrollmentClientImplTest
     ASSERT_TRUE(state->GetAsDictionary(&state_dict));
     *local_state_dict = state_dict;
 
-    std::string actual_management_domain;
+    const std::string* actual_management_domain =
+        state_dict->FindStringKey(kDeviceStateManagementDomain);
     if (expected_management_domain.empty()) {
-      EXPECT_FALSE(state_dict->GetString(kDeviceStateManagementDomain,
-                                         &actual_management_domain));
+      EXPECT_FALSE(actual_management_domain);
     } else {
-      EXPECT_TRUE(state_dict->GetString(kDeviceStateManagementDomain,
-                                        &actual_management_domain));
-      EXPECT_EQ(expected_management_domain, actual_management_domain);
+      EXPECT_TRUE(actual_management_domain);
+      EXPECT_EQ(expected_management_domain, *actual_management_domain);
     }
 
-    if (!expected_restore_mode.empty()) {
-      std::string actual_restore_mode;
-      EXPECT_TRUE(
-          state_dict->GetString(kDeviceStateMode, &actual_restore_mode));
-    } else {
+    if (!expected_restore_mode.empty())
+      EXPECT_TRUE(state_dict->FindStringKey(kDeviceStateMode));
+    else
       EXPECT_EQ(state_dict->FindKey(kDeviceStateMode), nullptr);
-    }
   }
 
   void VerifyServerBackedStateForFRE(
@@ -446,26 +442,22 @@ class AutoEnrollmentClientImplTest
                                   expected_restore_mode, &state_dict);
 
     if (!expected_restore_mode.empty()) {
-      std::string actual_restore_mode;
-      EXPECT_TRUE(
-          state_dict->GetString(kDeviceStateMode, &actual_restore_mode));
+      const std::string* actual_restore_mode =
+          state_dict->FindStringKey(kDeviceStateMode);
+      EXPECT_TRUE(actual_restore_mode);
       EXPECT_EQ(GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE
                     ? expected_restore_mode
                     : MapDeviceRestoreStateToDeviceInitialState(
                           expected_restore_mode),
-                actual_restore_mode);
+                *actual_restore_mode);
     }
 
-    std::string actual_disabled_message;
-    EXPECT_TRUE(state_dict->GetString(kDeviceStateDisabledMessage,
-                                      &actual_disabled_message));
-    EXPECT_EQ(expected_disabled_message, actual_disabled_message);
-
+    const std::string* actual_disabled_message =
+        state_dict->FindStringKey(kDeviceStateDisabledMessage);
+    EXPECT_TRUE(actual_disabled_message);
+    EXPECT_EQ(expected_disabled_message, *actual_disabled_message);
     EXPECT_FALSE(state_dict->FindBoolPath(kDeviceStatePackagedLicense));
-
-    std::string actual_license_type;
-    EXPECT_FALSE(
-        state_dict->GetString(kDeviceStateLicenseType, &actual_license_type));
+    EXPECT_FALSE(state_dict->FindStringKey(kDeviceStateLicenseType));
   }
 
   void VerifyServerBackedStateForInitialEnrollment(
@@ -477,9 +469,7 @@ class AutoEnrollmentClientImplTest
     VerifyServerBackedStateForAll(expected_management_domain,
                                   expected_restore_mode, &state_dict);
 
-    std::string actual_disabled_message;
-    EXPECT_FALSE(state_dict->GetString(kDeviceStateDisabledMessage,
-                                       &actual_disabled_message));
+    EXPECT_FALSE(state_dict->FindStringKey(kDeviceStateDisabledMessage));
 
     absl::optional<bool> actual_is_license_packaged_with_device;
     actual_is_license_packaged_with_device =
@@ -491,10 +481,10 @@ class AutoEnrollmentClientImplTest
       EXPECT_FALSE(expected_is_license_packaged_with_device);
     }
 
-    std::string actual_license_type;
-    EXPECT_TRUE(
-        state_dict->GetString(kDeviceStateLicenseType, &actual_license_type));
-    EXPECT_EQ(actual_license_type, expected_license_type);
+    const std::string* actual_license_type =
+        state_dict->FindStringKey(kDeviceStateLicenseType);
+    EXPECT_TRUE(actual_license_type);
+    EXPECT_EQ(*actual_license_type, expected_license_type);
   }
 
   // Expects one sample for |kUMAHashDanceNetworkErrorCode| which has value of

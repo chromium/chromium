@@ -172,7 +172,7 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
       users_list->Append(user_id);
 
     local_state.SetList("LoggedInUsers", std::move(users_list));
-    local_state.SetString("LastActiveUser", kUserId3);
+    local_state.SetStringKey("LastActiveUser", kUserId3);
 
     auto known_users_list = std::make_unique<base::ListValue>();
     int gaia_id = 10000;
@@ -201,7 +201,7 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
     // kGoogleServicesAccountId, so the IdentityManager will not initialize
     // itself with a primary account.
     base::DictionaryValue prefs;
-    prefs.SetString(prefs::kSessionExitType, "Crashed");
+    prefs.SetStringPath(prefs::kSessionExitType, "Crashed");
     std::string prefs_json;
     ASSERT_TRUE(base::JSONWriter::Write(prefs, &prefs_json));
 

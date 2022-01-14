@@ -102,8 +102,8 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
   // Set the profile pref to PAC script mode.
   std::unique_ptr<base::DictionaryValue> proxy_config(
       std::make_unique<base::DictionaryValue>());
-  proxy_config->SetString("mode", ProxyPrefs::kPacScriptProxyModeName);
-  proxy_config->SetString("pac_url", "http://proxy");
+  proxy_config->SetStringKey("mode", ProxyPrefs::kPacScriptProxyModeName);
+  proxy_config->SetStringKey("pac_url", "http://proxy");
   profile->GetPrefs()->Set(proxy_config::prefs::kProxy, *proxy_config.get());
   base::RunLoop().RunUntilIdle();
 

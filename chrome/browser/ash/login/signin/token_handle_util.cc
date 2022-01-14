@@ -151,17 +151,17 @@ void TokenHandleUtil::CheckToken(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
   const base::DictionaryValue* dict = nullptr;
-  std::string token;
   if (!user_manager::known_user::FindPrefs(account_id, &dict)) {
     std::move(callback).Run(account_id, UNKNOWN);
     return;
   }
-  if (!dict->GetString(kTokenHandlePref, &token)) {
+  const std::string* token = dict->FindStringKey(kTokenHandlePref);
+  if (!token) {
     std::move(callback).Run(account_id, UNKNOWN);
     return;
   }
 
-  if (g_invalid_token_for_testing && g_invalid_token_for_testing == token) {
+  if (g_invalid_token_for_testing && g_invalid_token_for_testing == *token) {
     std::move(callback).Run(account_id, INVALID);
     return;
   }
@@ -179,10 +179,10 @@ void TokenHandleUtil::CheckToken(
   }
 
   // Constructor starts validation.
-  validation_delegates_[token] = std::make_unique<TokenDelegate>(
-      weak_factory_.GetWeakPtr(), account_id, token,
+  validation_delegates_[*token] = std::make_unique<TokenDelegate>(
+      weak_factory_.GetWeakPtr(), account_id, *token,
       std::move(url_loader_factory),
-      base::BindOnce(&OnStatusChecked, std::move(callback), token));
+      base::BindOnce(&OnStatusChecked, std::move(callback), *token));
 }
 
 // static

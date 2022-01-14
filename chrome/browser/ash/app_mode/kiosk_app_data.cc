@@ -539,12 +539,14 @@ bool KioskAppData::CheckResponseKeyValue(const std::string& extension_id,
                                          const base::DictionaryValue* response,
                                          const char* key,
                                          std::string* value) {
-  if (!response->GetString(key, value)) {
+  const std::string* value_ptr = response->FindStringKey(key);
+  if (!value_ptr) {
     LOG(ERROR) << "Webstore response error (" << key
                << "): " << ValueToString(*response);
     OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
     return false;
   }
+  *value = *value_ptr;
   return true;
 }
 

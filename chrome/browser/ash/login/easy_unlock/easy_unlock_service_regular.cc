@@ -219,20 +219,21 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &b64_psk);
 
-    dict->SetString(key_names::kKeyPsk, b64_psk);
+    dict->SetStringKey(key_names::kKeyPsk, b64_psk);
 
     // TODO(jhawkins): Remove the bluetoothAddress field from this proto.
-    dict->SetString(key_names::kKeyBluetoothAddress, std::string());
+    dict->SetStringKey(key_names::kKeyBluetoothAddress, std::string());
 
-    dict->SetString(
+    dict->SetStringPath(
         key_names::kKeyPermitPermitId,
         base::StringPrintf(
             key_names::kPermitPermitIdFormat,
             gaia::CanonicalizeEmail(GetAccountId().GetUserEmail()).c_str()));
 
-    dict->SetString(key_names::kKeyPermitId, b64_public_key);
-    dict->SetString(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
-    dict->SetString(key_names::kKeyPermitData, b64_public_key);
+    dict->SetStringPath(key_names::kKeyPermitId, b64_public_key);
+    dict->SetStringPath(key_names::kKeyPermitType,
+                        key_names::kPermitTypeLicence);
+    dict->SetStringPath(key_names::kKeyPermitData, b64_public_key);
 
     std::unique_ptr<base::ListValue> beacon_seed_list(new base::ListValue());
     for (const auto& beacon_seed : device.beacon_seeds()) {
@@ -246,8 +247,8 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
     std::string serialized_beacon_seeds;
     JSONStringValueSerializer serializer(&serialized_beacon_seeds);
     serializer.Serialize(*beacon_seed_list);
-    dict->SetString(key_names::kKeySerializedBeaconSeeds,
-                    serialized_beacon_seeds);
+    dict->SetStringKey(key_names::kKeySerializedBeaconSeeds,
+                       serialized_beacon_seeds);
 
     // This differentiates the local device from the remote device.
     bool unlock_key = device.GetSoftwareFeatureState(

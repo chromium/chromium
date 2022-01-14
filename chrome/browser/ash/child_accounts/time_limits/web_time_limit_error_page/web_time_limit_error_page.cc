@@ -38,16 +38,17 @@ std::string GetWebTimeLimitErrorPage(
   base::DictionaryValue strings;
 
   if (!title.has_value()) {
-    strings.SetString("blockPageTitle",
-                      l10n_util::GetStringFUTF16(
-                          IDS_WEB_TIME_LIMIT_ERROR_PAGE_TITLE,
-                          l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
+    strings.SetStringKey(
+        "blockPageTitle",
+        l10n_util::GetStringFUTF16(
+            IDS_WEB_TIME_LIMIT_ERROR_PAGE_TITLE,
+            l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
   } else {
-    strings.SetString("blockPageTitle", title.value());
+    strings.SetStringKey("blockPageTitle", title.value());
   }
 
-  strings.SetString("blockPageHeader", block_header);
-  strings.SetString(
+  strings.SetStringKey("blockPageHeader", block_header);
+  strings.SetStringKey(
       "blockPageMessage",
       base::StrCat({block_message, u" ",
                     l10n_util::GetStringFUTF16(

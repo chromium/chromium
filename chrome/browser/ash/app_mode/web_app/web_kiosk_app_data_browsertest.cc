@@ -62,12 +62,13 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
     const std::string app_key = std::string(kAppKey) + '.' + kAppId;
     auto app_dict = std::make_unique<base::DictionaryValue>();
 
-    app_dict->SetString(app_key + '.' + std::string(kTitleKey), kAppTitle);
-    app_dict->SetString(app_key + '.' + std::string(kIconKey),
-                        GetFullPathToImage(icon_valid).value());
-    if (installed)
-      app_dict->SetString(app_key + '.' + std::string(kLaunchUrlKey),
-                          kLaunchUrl);
+    app_dict->SetStringPath(app_key + '.' + std::string(kTitleKey), kAppTitle);
+    app_dict->SetStringPath(app_key + '.' + std::string(kIconKey),
+                            GetFullPathToImage(icon_valid).value());
+    if (installed) {
+      app_dict->SetStringPath(app_key + '.' + std::string(kLaunchUrlKey),
+                              kLaunchUrl);
+    }
     g_browser_process->local_state()->Set(
         WebKioskAppManager::kWebKioskDictionaryName, *app_dict);
   }

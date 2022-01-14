@@ -123,9 +123,9 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   DCHECK(!device_id.empty());
 
   base::DictionaryValue request_data;
-  request_data.SetString(kLoginScopedToken, token_info.token);
-  request_data.SetString(kDeviceType, kDeviceTypeArc);
-  request_data.SetString(kDeviceId, device_id);
+  request_data.SetStringKey(kLoginScopedToken, token_info.token);
+  request_data.SetStringKey(kDeviceType, kDeviceTypeArc);
+  request_data.SetStringKey(kDeviceId, device_id);
   std::string request_string;
   base::JSONWriter::Write(request_data, &request_string);
   const net::NetworkTrafficAnnotationTag traffic_annotation =

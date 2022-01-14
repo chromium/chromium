@@ -138,10 +138,10 @@ void TokenHandleFetcher::OnGetTokenInfoResponse(
     std::unique_ptr<base::DictionaryValue> token_info) {
   bool success = false;
   if (!token_info->FindKey("error")) {
-    std::string handle;
-    if (token_info->GetString("token_handle", &handle)) {
+    const std::string* handle = token_info->FindStringKey("token_handle");
+    if (handle) {
       success = true;
-      token_handle_util_->StoreTokenHandle(account_id_, handle);
+      token_handle_util_->StoreTokenHandle(account_id_, *handle);
     }
   }
   const base::TimeDelta duration =

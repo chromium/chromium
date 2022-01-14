@@ -137,10 +137,10 @@ bool DeviceCommandScreenshotJob::ParseCommandPayload(
   base::DictionaryValue* payload = nullptr;
   if (!root->GetAsDictionary(&payload))
     return false;
-  std::string upload_url;
-  if (!payload->GetString(kUploadUrlFieldName, &upload_url))
+  const std::string* upload_url = payload->FindStringKey(kUploadUrlFieldName);
+  if (!upload_url)
     return false;
-  upload_url_ = GURL(upload_url);
+  upload_url_ = GURL(*upload_url);
   return true;
 }
 

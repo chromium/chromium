@@ -95,18 +95,18 @@ void EasyUnlockKeyManager::DeviceDataToRemoteDeviceDictionary(
     const AccountId& account_id,
     const EasyUnlockDeviceKeyData& data,
     base::DictionaryValue* dict) {
-  dict->SetString(key_names::kKeyBluetoothAddress, data.bluetooth_address);
-  dict->SetString(key_names::kKeyPsk, data.psk);
+  dict->SetStringKey(key_names::kKeyBluetoothAddress, data.bluetooth_address);
+  dict->SetStringKey(key_names::kKeyPsk, data.psk);
   base::DictionaryValue permit_record;
   dict->SetKey(key_names::kKeyPermitRecord, std::move(permit_record));
-  dict->SetString(key_names::kKeyPermitId, data.public_key);
-  dict->SetString(key_names::kKeyPermitData, data.public_key);
-  dict->SetString(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
-  dict->SetString(key_names::kKeyPermitPermitId,
-                  base::StringPrintf(key_names::kPermitPermitIdFormat,
-                                     account_id.GetUserEmail().c_str()));
-  dict->SetString(key_names::kKeySerializedBeaconSeeds,
-                  data.serialized_beacon_seeds);
+  dict->SetStringPath(key_names::kKeyPermitId, data.public_key);
+  dict->SetStringPath(key_names::kKeyPermitData, data.public_key);
+  dict->SetStringPath(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
+  dict->SetStringPath(key_names::kKeyPermitPermitId,
+                      base::StringPrintf(key_names::kPermitPermitIdFormat,
+                                         account_id.GetUserEmail().c_str()));
+  dict->SetStringKey(key_names::kKeySerializedBeaconSeeds,
+                     data.serialized_beacon_seeds);
   dict->SetBoolean(key_names::kKeyUnlockKey, data.unlock_key);
 }
 
@@ -114,25 +114,27 @@ void EasyUnlockKeyManager::DeviceDataToRemoteDeviceDictionary(
 bool EasyUnlockKeyManager::RemoteDeviceDictionaryToDeviceData(
     const base::DictionaryValue& dict,
     EasyUnlockDeviceKeyData* data) {
-  std::string bluetooth_address;
-  std::string public_key;
-  std::string psk;
+  const std::string* bluetooth_address_ptr =
+      dict.FindStringKey(key_names::kKeyBluetoothAddress);
+  const std::string* public_key_ptr =
+      dict.FindStringPath(key_names::kKeyPermitId);
+  const std::string* psk_ptr = dict.FindStringKey(key_names::kKeyPsk);
 
-  if (!dict.GetString(key_names::kKeyBluetoothAddress, &bluetooth_address) ||
-      !dict.GetString(key_names::kKeyPermitId, &public_key) ||
-      !dict.GetString(key_names::kKeyPsk, &psk)) {
+  if (!bluetooth_address_ptr || !public_key_ptr || !psk_ptr)
     return false;
-  }
 
-  std::string serialized_beacon_seeds;
-  if (dict.GetString(key_names::kKeySerializedBeaconSeeds,
-                     &serialized_beacon_seeds)) {
-    data->serialized_beacon_seeds = serialized_beacon_seeds;
+  const std::string* serialized_beacon_seeds =
+      dict.FindStringKey(key_names::kKeySerializedBeaconSeeds);
+  if (serialized_beacon_seeds) {
+    data->serialized_beacon_seeds = *serialized_beacon_seeds;
   } else {
     PA_LOG(ERROR) << "Failed to parse key data: "
                   << "expected serialized_beacon_seeds.";
   }
 
+  std::string bluetooth_address = *bluetooth_address_ptr;
+  std::string public_key = *public_key_ptr;
+  std::string psk = *psk_ptr;
   // If FindBoolPath() fails, that means we're reading a Dictionary from
   // user prefs which did not include the bool when it was stored. That means
   // it's an older Dictionary that didn't include this `unlock_key` field --

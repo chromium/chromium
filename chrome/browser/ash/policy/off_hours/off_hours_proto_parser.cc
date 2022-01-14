@@ -51,7 +51,7 @@ std::unique_ptr<base::DictionaryValue> ConvertOffHoursProtoToValue(
   if (!timezone)
     return nullptr;
   auto off_hours = std::make_unique<base::DictionaryValue>();
-  off_hours->SetString("timezone", *timezone);
+  off_hours->SetStringKey("timezone", *timezone);
   std::vector<WeeklyTimeInterval> intervals =
       ExtractWeeklyTimeIntervalsFromProto(container, *timezone,
                                           base::DefaultClock::GetInstance());

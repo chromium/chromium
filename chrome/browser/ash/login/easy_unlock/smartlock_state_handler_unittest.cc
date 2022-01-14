@@ -203,8 +203,11 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // string.
   std::string GetCustomIconId() const {
     std::string result;
-    if (last_custom_icon_)
-      last_custom_icon_->GetString("id", &result);
+    if (last_custom_icon_) {
+      const std::string* result_ptr = last_custom_icon_->FindStringKey("id");
+      if (result_ptr)
+        result = *result_ptr;
+    }
     return result;
   }
 
@@ -216,8 +219,12 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // Gets the custom icon's tooltip text, if one is set.
   std::u16string GetCustomIconTooltip() const {
     std::u16string result;
-    if (last_custom_icon_)
-      last_custom_icon_->GetString("tooltip.text", &result);
+    if (last_custom_icon_) {
+      const std::string* result_ptr =
+          last_custom_icon_->FindStringPath("tooltip.text");
+      if (result_ptr)
+        result = base::UTF8ToUTF16(*result_ptr);
+    }
     return result;
   }
 
@@ -248,7 +255,10 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
     if (last_custom_icon_->FindKey("tooltip")) {
       std::u16string tooltip;
-      EXPECT_TRUE(last_custom_icon_->GetString("tooltip.text", &tooltip));
+      const std::string* tooltip_ptr =
+          last_custom_icon_->FindStringPath("tooltip.text");
+      EXPECT_TRUE(tooltip_ptr);
+      tooltip = base::UTF8ToUTF16(*tooltip_ptr);
       EXPECT_FALSE(tooltip.empty());
       EXPECT_FALSE(StringHasPlaceholders(tooltip));
     }

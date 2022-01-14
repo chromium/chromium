@@ -468,7 +468,7 @@ TEST_F(BrowserUtilTest, GetMissingDataVer) {
 TEST_F(BrowserUtilTest, GetCorruptDataVer) {
   base::DictionaryValue dictionary_value;
   std::string user_id_hash = "1234";
-  dictionary_value.SetString(user_id_hash, "corrupted");
+  dictionary_value.SetStringKey(user_id_hash, "corrupted");
   pref_service_.Set(browser_util::kDataVerPref, dictionary_value);
   base::Version version =
       browser_util::GetDataVer(&pref_service_, user_id_hash);
@@ -479,7 +479,7 @@ TEST_F(BrowserUtilTest, GetDataVer) {
   base::DictionaryValue dictionary_value;
   std::string user_id_hash = "1234";
   base::Version version{"1.1.1.1"};
-  dictionary_value.SetString(user_id_hash, version.GetString());
+  dictionary_value.SetStringKey(user_id_hash, version.GetString());
   pref_service_.Set(browser_util::kDataVerPref, dictionary_value);
 
   base::Version result_version =

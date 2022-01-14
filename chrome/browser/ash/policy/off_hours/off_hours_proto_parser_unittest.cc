@@ -109,7 +109,7 @@ TEST_F(ConvertOffHoursProtoToValueTest, Test) {
       policy::off_hours::ConvertOffHoursProtoToValue(proto.device_off_hours());
 
   base::DictionaryValue off_hours_expected;
-  off_hours_expected.SetString("timezone", kUtcTimezone);
+  off_hours_expected.SetStringKey("timezone", kUtcTimezone);
   base::Value* intervals_value = off_hours_expected.SetKey(
       "intervals", base::Value(base::Value::Type::LIST));
   for (const auto& interval : intervals)
