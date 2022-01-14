@@ -183,24 +183,27 @@ bool UserMatches(const AccountId& account_id,
 }
 
 // Fills relevant |dict| values based on |account_id|.
-void UpdateIdentity(const AccountId& account_id, base::DictionaryValue& dict) {
+// TODO(crbug.com/1287074): Consider a refactor to use base::Value::DictStorage.
+// This would require |dict| to not be modified in-place.
+void UpdateIdentity(const AccountId& account_id, base::Value& dict) {
+  DCHECK(dict.is_dict());
   if (!account_id.GetUserEmail().empty())
-    dict.SetString(kCanonicalEmail, account_id.GetUserEmail());
+    dict.SetStringKey(kCanonicalEmail, account_id.GetUserEmail());
 
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE:
       if (!account_id.GetGaiaId().empty())
-        dict.SetString(kGAIAIdKey, account_id.GetGaiaId());
+        dict.SetStringKey(kGAIAIdKey, account_id.GetGaiaId());
       break;
     case AccountType::ACTIVE_DIRECTORY:
       if (!account_id.GetObjGuid().empty())
-        dict.SetString(kObjGuidKey, account_id.GetObjGuid());
+        dict.SetStringKey(kObjGuidKey, account_id.GetObjGuid());
       break;
     case AccountType::UNKNOWN:
       return;
   }
-  dict.SetString(kAccountTypeKey,
-                 AccountId::AccountTypeToString(account_id.GetAccountType()));
+  dict.SetStringKey(kAccountTypeKey, AccountId::AccountTypeToString(
+                                         account_id.GetAccountType()));
 }
 
 }  // namespace
@@ -252,7 +255,7 @@ void KnownUser::UpdatePrefs(const AccountId& account_id,
   if (!account_id.is_valid())
     return;
 
-  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
+  ListPrefUpdate update(local_state_, kKnownUsers);
   for (base::Value& element_value : update->GetList()) {
     if (element_value.is_dict()) {
       base::DictionaryValue* element =
@@ -266,9 +269,9 @@ void KnownUser::UpdatePrefs(const AccountId& account_id,
       }
     }
   }
-  std::unique_ptr<base::DictionaryValue> new_value(new base::DictionaryValue());
-  new_value->MergeDictionary(&values);
-  UpdateIdentity(account_id, *new_value);
+  base::Value new_value(base::Value::Type::DICTIONARY);
+  new_value.MergeDictionary(&values);
+  UpdateIdentity(account_id, new_value);
   update->Append(std::move(new_value));
 }
 
@@ -785,7 +788,7 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
   if (!account_id.is_valid())
     return;
 
-  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
+  ListPrefUpdate update(local_state_, kKnownUsers);
   base::Value::ListView update_view = update->GetList();
   for (auto it = update_view.begin(); it != update_view.end(); ++it) {
     base::DictionaryValue* element = nullptr;
@@ -799,7 +802,7 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
 }
 
 void KnownUser::CleanEphemeralUsers() {
-  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
+  ListPrefUpdate update(local_state_, kKnownUsers);
   update->EraseListValueIf([](const auto& value) {
     if (!value.is_dict())
       return false;
@@ -810,7 +813,7 @@ void KnownUser::CleanEphemeralUsers() {
 }
 
 void KnownUser::CleanObsoletePrefs() {
-  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
+  ListPrefUpdate update(local_state_, kKnownUsers);
   for (base::Value& user_entry : update.Get()->GetList()) {
     if (!user_entry.is_dict())
       continue;
