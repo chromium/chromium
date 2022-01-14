@@ -1026,9 +1026,9 @@ bool AXNodeData::IsInvocable() const {
   // would be considered a toggle or expand-collapse element - these elements
   // are "clickable" but not "invocable". Similarly, if the action only involves
   // activating the control, such as when clicking a text field, the control is
-  // not considered "invocable".
-  return IsClickable() && !IsActivatable() && !SupportsExpandCollapse() &&
-         !SupportsToggle(role);
+  // not considered "invocable". However, all links are always invocable.
+  return IsLink(role) || (IsClickable() && !IsActivatable() &&
+                          !SupportsExpandCollapse() && !SupportsToggle(role));
 }
 
 bool AXNodeData::IsMenuButton() const {
