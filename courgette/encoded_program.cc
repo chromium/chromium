@@ -610,7 +610,7 @@ class RelocBlock {
     pod.block_size += 2;
   }
 
-  CheckBool Flush(SinkStream* buffer) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool Flush(SinkStream* buffer) {
     bool ok = true;
     if (pod.block_size != 8) {
       if (pod.block_size % 4 != 0) {  // Pad to make size multiple of 4 bytes.

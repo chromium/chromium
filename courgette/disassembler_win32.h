@@ -75,20 +75,19 @@ class DisassemblerWin32 : public Disassembler {
 
   DisassemblerWin32(const uint8_t* start, size_t length);
 
-  CheckBool ParseFile(AssemblyProgram* target,
-                      InstructionReceptor* receptor) const WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool ParseFile(AssemblyProgram* target,
+                                    InstructionReceptor* receptor) const;
   virtual void ParseRel32RelocsFromSection(const Section* section) = 0;
 
-  CheckBool ParseNonSectionFileRegion(FileOffset start_file_offset,
-                                      FileOffset end_file_offset,
-                                      InstructionReceptor* receptor) const
-      WARN_UNUSED_RESULT;
-  CheckBool ParseFileRegion(const Section* section,
-                            FileOffset start_file_offset,
-                            FileOffset end_file_offset,
-                            AssemblyProgram* program,
-                            InstructionReceptor* receptor) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool ParseNonSectionFileRegion(
+      FileOffset start_file_offset,
+      FileOffset end_file_offset,
+      InstructionReceptor* receptor) const;
+  [[nodiscard]] CheckBool ParseFileRegion(const Section* section,
+                                          FileOffset start_file_offset,
+                                          FileOffset end_file_offset,
+                                          AssemblyProgram* program,
+                                          InstructionReceptor* receptor) const;
 
   // Returns address width in byte count.
   virtual int AbsVAWidth() const = 0;

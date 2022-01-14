@@ -49,13 +49,12 @@ class DisassemblerElf32X86 : public DisassemblerElf32 {
 
  protected:
   // DisassemblerElf32 interfaces.
-  CheckBool RelToRVA(Elf32_Rel rel,
-                     RVA* result) const override WARN_UNUSED_RESULT;
-  CheckBool ParseRelocationSection(const Elf32_Shdr* section_header,
-                                   InstructionReceptor* receptor) const override
-      WARN_UNUSED_RESULT;
-  CheckBool ParseRel32RelocsFromSection(const Elf32_Shdr* section)
-      override WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool RelToRVA(Elf32_Rel rel, RVA* result) const override;
+  [[nodiscard]] CheckBool ParseRelocationSection(
+      const Elf32_Shdr* section_header,
+      InstructionReceptor* receptor) const override;
+  [[nodiscard]] CheckBool ParseRel32RelocsFromSection(
+      const Elf32_Shdr* section) override;
 
 #if COURGETTE_HISTOGRAM_TARGETS
   std::map<RVA, int> rel32_target_rvas_;

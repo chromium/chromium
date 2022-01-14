@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -360,7 +359,7 @@ class NoThrowBuffer {
     return size_ == 0;
   }
 
-  CheckBool reserve(size_t size) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool reserve(size_t size) {
     if (failed())
       return false;
 
@@ -386,7 +385,7 @@ class NoThrowBuffer {
     return !failed();
   }
 
-  CheckBool append(const T* data, size_t size) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool append(const T* data, size_t size) {
     if (failed())
       return false;
 
@@ -420,7 +419,7 @@ class NoThrowBuffer {
     return true;
   }
 
-  CheckBool resize(size_t size, const T& init_value) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool resize(size_t size, const T& init_value) {
     if (size > size_) {
       if (!reserve(size))
         return false;
@@ -436,9 +435,7 @@ class NoThrowBuffer {
     return true;
   }
 
-  CheckBool push_back(const T& item) WARN_UNUSED_RESULT {
-    return append(&item, 1);
-  }
+  [[nodiscard]] CheckBool push_back(const T& item) { return append(&item, 1); }
 
   const T& back() const {
     return buffer_[size_ - 1];

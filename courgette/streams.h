@@ -19,7 +19,6 @@
 #include <stdio.h>  // for FILE*
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "courgette/memory_allocator.h"
 #include "courgette/region.h"
 
@@ -136,21 +135,21 @@ class SinkStream {
   ~SinkStream() {}
 
   // Appends |byte_count| bytes from |data| to the stream.
-  CheckBool Write(const void* data, size_t byte_count) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool Write(const void* data, size_t byte_count);
 
   // Appends the 'varint32' encoding of |value| to the stream.
-  CheckBool WriteVarint32(uint32_t value) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteVarint32(uint32_t value);
 
   // Appends the 'varint32' encoding of |value| to the stream.
-  CheckBool WriteVarint32Signed(int32_t value) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteVarint32Signed(int32_t value);
 
   // Appends the 'varint32' encoding of |value| to the stream.
   // On platforms where sizeof(size_t) != sizeof(int32_t), do a safety check.
-  CheckBool WriteSizeVarint32(size_t value) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteSizeVarint32(size_t value);
 
   // Contents of |other| are appended to |this| stream.  The |other| stream
   // becomes retired.
-  CheckBool Append(SinkStream* other) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool Append(SinkStream* other);
 
   // Returns the number of bytes in this SinkStream
   size_t Length() const { return buffer_.size(); }
@@ -164,7 +163,7 @@ class SinkStream {
 
   // Hints that the stream will grow by an additional |length| bytes.
   // Caller must be prepared to handle memory allocation problems.
-  CheckBool Reserve(size_t length) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool Reserve(size_t length) {
     return buffer_.reserve(length + buffer_.size());
   }
 
@@ -239,15 +238,15 @@ class SinkStreamSet {
   // CopyTo serializes the streams in this SinkStreamSet into a single target
   // stream.  The serialized format may be re-read by initializing a
   // SourceStreamSet with a buffer containing the data.
-  CheckBool CopyTo(SinkStream* combined_stream) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool CopyTo(SinkStream* combined_stream);
 
   // Writes the streams of |set| into the corresponding streams of |this|.
   // Stream zero first has some metadata written to it.  |set| becomes retired.
   // Partner to SourceStreamSet::ReadSet.
-  CheckBool WriteSet(SinkStreamSet* set) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteSet(SinkStreamSet* set);
 
  private:
-  CheckBool CopyHeaderTo(SinkStream* stream) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool CopyHeaderTo(SinkStream* stream);
 
   size_t count_;
   SinkStream streams_[kMaxStreams];
