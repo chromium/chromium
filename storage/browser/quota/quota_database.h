@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -145,31 +144,29 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastAccessTime.
-  QuotaError SetStorageKeyLastAccessTime(const blink::StorageKey& storage_key,
-                                         blink::mojom::StorageType type,
-                                         base::Time last_accessed)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] QuotaError SetStorageKeyLastAccessTime(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      base::Time last_accessed);
 
   // Called by QuotaClient implementers to update when the bucket was last
   // accessed.  If `bucket_id` refers to a bucket with an opaque StorageKey, the
   // bucket's last access time will not be updated and the function will return
   // QuotaError::kNotFound. Returns QuotaError::kNone on a successful update.
-  QuotaError SetBucketLastAccessTime(BucketId bucket_id,
-                                     base::Time last_accessed)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] QuotaError SetBucketLastAccessTime(BucketId bucket_id,
+                                                   base::Time last_accessed);
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastModifiedTime.
-  QuotaError SetStorageKeyLastModifiedTime(const blink::StorageKey& storage_key,
-                                           blink::mojom::StorageType type,
-                                           base::Time last_modified)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] QuotaError SetStorageKeyLastModifiedTime(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      base::Time last_modified);
 
   // Called by QuotaClient implementers to update when the bucket was last
   // modified. Returns QuotaError::kNone on a successful update.
-  QuotaError SetBucketLastModifiedTime(BucketId bucket_id,
-                                       base::Time last_modified)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] QuotaError SetBucketLastModifiedTime(BucketId bucket_id,
+                                                     base::Time last_modified);
 
   // Register initial `storage_keys_by_type` into the database.
   // This method is assumed to be called only after the installation or
