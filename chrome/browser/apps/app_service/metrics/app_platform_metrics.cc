@@ -567,8 +567,8 @@ void AppPlatformMetrics::OnNewDay() {
 void AppPlatformMetrics::OnTenMinutes() {
   if (should_refresh_activated_count_pref) {
     should_refresh_activated_count_pref = false;
-    DictionaryPrefUpdateDeprecated activated_count_update(profile_->GetPrefs(),
-                                                          kAppActivatedCount);
+    DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+                                                kAppActivatedCount);
     for (auto it : activated_count_) {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
       DCHECK(!app_type_name.empty());
@@ -578,8 +578,8 @@ void AppPlatformMetrics::OnTenMinutes() {
 
   if (should_refresh_duration_pref) {
     should_refresh_duration_pref = false;
-    DictionaryPrefUpdateDeprecated running_duration_update(profile_->GetPrefs(),
-                                                           kAppRunningDuration);
+    DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+                                                 kAppRunningDuration);
     for (auto it : running_duration_) {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
       DCHECK(!app_type_name.empty());
@@ -864,10 +864,10 @@ void AppPlatformMetrics::SetWindowInActivated(
 }
 
 void AppPlatformMetrics::InitRunningDuration() {
-  DictionaryPrefUpdateDeprecated running_duration_update(profile_->GetPrefs(),
-                                                         kAppRunningDuration);
-  DictionaryPrefUpdateDeprecated activated_count_update(profile_->GetPrefs(),
-                                                        kAppActivatedCount);
+  DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+                                               kAppRunningDuration);
+  DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+                                              kAppActivatedCount);
 
   for (auto app_type_name : GetAppTypeNameSet()) {
     std::string key = GetAppTypeHistogramName(app_type_name);
@@ -892,11 +892,11 @@ void AppPlatformMetrics::ClearRunningDuration() {
   running_duration_.clear();
   activated_count_.clear();
 
-  DictionaryPrefUpdateDeprecated running_duration_update(profile_->GetPrefs(),
-                                                         kAppRunningDuration);
+  DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
+                                               kAppRunningDuration);
   running_duration_update->DictClear();
-  DictionaryPrefUpdateDeprecated activated_count_update(profile_->GetPrefs(),
-                                                        kAppActivatedCount);
+  DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
+                                              kAppActivatedCount);
   activated_count_update->DictClear();
 }
 

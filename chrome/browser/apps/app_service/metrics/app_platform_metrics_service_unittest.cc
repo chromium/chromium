@@ -475,8 +475,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 
   void VerifyAppRunningDuration(const base::TimeDelta time_delta,
                                 AppTypeName app_type_name) {
-    DictionaryPrefUpdateDeprecated update(GetPrefService(),
-                                          kAppRunningDuration);
+    DictionaryPrefUpdate update(GetPrefService(), kAppRunningDuration);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
     absl::optional<base::TimeDelta> unreported_duration =
@@ -527,7 +526,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
   }
 
   void VerifyAppActivatedCount(int count, AppTypeName app_type_name) {
-    DictionaryPrefUpdateDeprecated update(GetPrefService(), kAppActivatedCount);
+    DictionaryPrefUpdate update(GetPrefService(), kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
     absl::optional<int> activated_count = update->FindIntPath(key);
