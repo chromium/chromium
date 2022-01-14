@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/mojom/media_route_provider_id.mojom.h"
 
@@ -27,7 +28,7 @@ MediaSink CreateWiredDisplaySink(const std::string& id,
                    mojom::MediaRouteProviderId::WIRED_DISPLAY};
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TestMediaSinkService::TestMediaSinkService()
     : TestMediaSinkService(base::DoNothing()) {}
 
@@ -38,6 +39,6 @@ TestMediaSinkService::TestMediaSinkService(
 }
 
 TestMediaSinkService::~TestMediaSinkService() = default;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

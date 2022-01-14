@@ -99,13 +99,13 @@ class MockMediaRouter : public MediaRouterBase {
   MOCK_CONST_METHOD0(GetCurrentRoutes, std::vector<MediaRoute>());
 
   MOCK_METHOD0(OnIncognitoProfileShutdown, void());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD3(GetMediaController,
                void(const MediaRoute::Id& route_id,
                     mojo::PendingReceiver<mojom::MediaController> controller,
                     mojo::PendingRemote<mojom::MediaStatusObserver> observer));
   MOCK_METHOD0(GetLogger, LoggerImpl*());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_CONST_METHOD0(GetState, base::Value());
   MOCK_METHOD1(OnAddPresentationConnectionStateChangedCallbackInvoked,
                void(const content::PresentationConnectionStateChangedCallback&

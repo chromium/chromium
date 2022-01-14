@@ -27,12 +27,12 @@
 #include "media/base/flinging_controller.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -156,7 +156,7 @@ class MediaRouter : public KeyedService {
   virtual std::unique_ptr<media::FlingingController> GetFlingingController(
       const MediaRoute::Id& route_id) = 0;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Binds |controller| for sending media commands to a route. The controller
   // will notify |observer| whenever there is a change to the status of the
   // media. It may invalidate bindings from previous calls to this method.
@@ -170,7 +170,7 @@ class MediaRouter : public KeyedService {
 
   // Returns logs collected from Media Router components.
   virtual base::Value GetLogs() const = 0;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns media router state as a JSON string represented by base::Value.
   // Includes known sinks and sink compatibility with media sources.

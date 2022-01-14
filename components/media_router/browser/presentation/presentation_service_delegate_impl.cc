@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -38,7 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/gurl.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -501,7 +502,7 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
     return;
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (IsAutoJoinPresentationId(presentation_id) &&
       ShouldCancelAutoJoinForOrigin(request.frame_origin)) {
     std::move(error_cb).Run(
@@ -509,7 +510,7 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
                           "Auto-join request cancelled by user preferences."));
     return;
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   auto* local_presentation_manager =
       LocalPresentationManagerFactory::GetOrCreateForWebContents(
@@ -708,7 +709,7 @@ MediaRoute::Id PresentationServiceDelegateImpl::GetRouteId(
              : MediaRoute::Id();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool PresentationServiceDelegateImpl::ShouldCancelAutoJoinForOrigin(
     const url::Origin& origin) {
   const base::Value* origins =
@@ -717,7 +718,7 @@ bool PresentationServiceDelegateImpl::ShouldCancelAutoJoinForOrigin(
   return origins &&
          base::Contains(origins->GetList(), base::Value(origin.Serialize()));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PresentationServiceDelegateImpl::EnsurePresentationConnection(
     const content::GlobalRenderFrameHostId& render_frame_host_id,

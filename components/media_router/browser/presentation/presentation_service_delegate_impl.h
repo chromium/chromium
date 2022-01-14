@@ -204,7 +204,7 @@ class PresentationServiceDelegateImpl
       const content::GlobalRenderFrameHostId& render_frame_host_id,
       const std::string& presentation_id) const;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns true if auto-join requests should be cancelled for |origin|.
   bool ShouldCancelAutoJoinForOrigin(const url::Origin& origin);
 #endif

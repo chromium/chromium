@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 
 using blink::mojom::PresentationConnectionState;
@@ -84,7 +85,7 @@ MediaRouterBase::GetFlingingController(const MediaRoute::Id& route_id) {
   return nullptr;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaRouterBase::GetMediaController(
     const MediaRoute::Id& route_id,
     mojo::PendingReceiver<mojom::MediaController> controller,
@@ -93,7 +94,7 @@ void MediaRouterBase::GetMediaController(
 base::Value MediaRouterBase::GetLogs() const {
   return base::Value();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 MediaRouterBase::MediaRouterBase() : initialized_(false) {}
 
