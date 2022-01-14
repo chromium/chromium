@@ -40,9 +40,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -386,7 +386,7 @@ class DownloadItemTest : public testing::Test {
       const base::FilePath& new_file_path,
       DownloadInterruptReason reason) {
     bool use_download_collection = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (DownloadCollectionBridge::ShouldPublishDownload(new_file_path)) {
       use_download_collection = true;
       EXPECT_CALL(*download_file, RenameToIntermediateUri(_, _, _, _, _, _))
@@ -2422,7 +2422,7 @@ DownloadFile::RenameCompletionCallback GetRenameCompletionCallback(
     MockDownloadFile* download_file) {
   DownloadFile::RenameCompletionCallback intermediate_rename_callback;
   bool use_download_collection = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (DownloadCollectionBridge::ShouldPublishDownload(
           base::FilePath(kDummyIntermediatePath))) {
     use_download_collection = true;

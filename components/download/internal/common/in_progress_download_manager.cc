@@ -30,7 +30,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
@@ -146,7 +146,7 @@ void CreateDownloadHandlerForNavigation(
       url_security_policy, std::move(wake_lock_provider), main_task_runner);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void OnDownloadDisplayNamesReturned(
     DownloadCollectionBridge::GetDisplayNamesCallback callback,
     const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
@@ -396,7 +396,7 @@ void InProgressDownloadManager::DetermineDownloadTarget(
   base::FilePath target_path = download->GetForcedFilePath().empty()
                                    ? download->GetTargetFilePath()
                                    : download->GetForcedFilePath();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (target_path.empty()) {
     std::move(callback).Run(
         target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
@@ -440,7 +440,7 @@ void InProgressDownloadManager::DetermineDownloadTarget(
       download->GetDangerType(), download->GetMixedContentStatus(),
       intermediate_path, download->GetDownloadSchedule(),
       DOWNLOAD_INTERRUPT_REASON_NONE);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void InProgressDownloadManager::ResumeInterruptedDownload(
@@ -582,7 +582,7 @@ void InProgressDownloadManager::StartDownloadWithItem(
 void InProgressDownloadManager::OnDBInitialized(
     bool success,
     std::unique_ptr<std::vector<DownloadDBEntry>> entries) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Retrieve display names for all downloads from media store if needed.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_Q) {
@@ -620,7 +620,7 @@ void InProgressDownloadManager::OnDownloadNamesRetrieved(
       num_duplicates++;
       continue;
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const base::FilePath& path = item->GetTargetFilePath();
     if (path.IsContentUri()) {
       base::FilePath display_name = GetDownloadDisplayName(path);
@@ -651,7 +651,7 @@ InProgressDownloadManager::TakeInProgressDownloads() {
 
 base::FilePath InProgressDownloadManager::GetDownloadDisplayName(
     const base::FilePath& path) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!display_names_)
     return base::FilePath();
   auto iter = display_names_->find(path.value());

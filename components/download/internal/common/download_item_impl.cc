@@ -63,9 +63,9 @@
 #include "net/url_request/referrer_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace download {
 
@@ -736,7 +736,7 @@ void DownloadItemImpl::OpenDownload() {
   for (auto& observer : observers_)
     observer.OnDownloadOpened(this);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, don't actually open the file if it has no extension, to prevent
   // Windows from interpreting it as the command for an executable of the same
   // name.
@@ -765,9 +765,9 @@ void DownloadItemImpl::RenameDownloadedFileDone(
     DownloadRenameResult result) {
   if (result == DownloadRenameResult::SUCCESS) {
     bool is_content_uri = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     is_content_uri = GetFullPath().IsContentUri();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     if (is_content_uri) {
       SetDisplayName(display_name);
     } else {
@@ -1833,7 +1833,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   DownloadFile::RenameCompletionCallback callback =
       base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToIntermediateName,
                      weak_ptr_factory_.GetWeakPtr());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if ((download_type_ == TYPE_ACTIVE_DOWNLOAD && !transient_ &&
        DownloadCollectionBridge::ShouldPublishDownload(GetTargetFilePath())) ||
       GetTargetFilePath().IsContentUri()) {
@@ -1847,7 +1847,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
                        std::move(callback)));
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
@@ -1868,14 +1868,14 @@ void DownloadItemImpl::OnDownloadRenamedToIntermediateName(
 
   if (DOWNLOAD_INTERRUPT_REASON_NONE == reason) {
     SetFullPath(full_path);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // For content URIs, target file path is the same as the current path.
     if (full_path.IsContentUri()) {
       destination_info_.target_path = full_path;
       if (display_name_.empty())
         SetDisplayName(download_file_->GetDisplayName());
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     // TODO(asanka): Even though the rename failed, it may still be possible to
     // recover the partial state from the 'before' name.
@@ -2028,7 +2028,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (GetTargetFilePath().IsContentUri()) {
     GetDownloadTaskRunner()->PostTask(
         FROM_HERE,
@@ -2038,7 +2038,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
                        std::move(rename_callback)));
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   mojo::PendingRemote<quarantine::mojom::Quarantine> quarantine;
   auto quarantine_callback = delegate_->GetQuarantineConnectionCallback();

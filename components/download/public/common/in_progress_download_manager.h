@@ -157,7 +157,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
     download_start_observer_ = observer;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Callback to generate an intermediate file path from the given target file
   // path;
   using IntermediatePathCallback =
@@ -275,7 +275,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   // callback to check if an origin is secure.
   IsOriginSecureCallback is_origin_secure_cb_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Callback to generate the intermediate file path.
   IntermediatePathCallback intermediate_path_cb_;
 

@@ -14,7 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "storage/browser/blob/blob_data_handle.h"
 #endif
 
@@ -26,7 +26,7 @@ struct CompletionInfo {
   // to retrieve data.
   base::FilePath path;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // The blob data handle that contains download data.
   // Will be available after the download is completed in incognito mode.
   absl::optional<storage::BlobDataHandle> blob_handle;

@@ -287,7 +287,7 @@ TEST_F(DeviceStatusListenerTest, ConnectionUnknownTreatedCorrectly) {
   base::RunLoop().RunUntilIdle();
 
   // Initial states check.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(NetworkStatus::DISCONNECTED,
             listener_->CurrentDeviceStatus().network_status);
 #else

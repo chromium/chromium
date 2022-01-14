@@ -114,7 +114,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
   virtual void Pause() = 0;
   virtual void Resume() = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Renames the download file to an intermediate URI. If current_path is a
   // content URI, it will be used for the renaming. Otherwise, A new
   // intermediate URI will be created to write the download file. Once
@@ -132,7 +132,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
 
   // Returns the suggested file path from the system.
   virtual base::FilePath GetDisplayName() = 0;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace download
