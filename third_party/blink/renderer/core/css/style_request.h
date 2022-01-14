@@ -80,10 +80,7 @@ class StyleRequest {
         scrollbar(scrollbar) {}
 
   StyleRequest(PseudoId pseudo_id, RequestType request_type)
-      : pseudo_id(pseudo_id),
-        type(request_type),
-        scrollbar_part(kNoPart),
-        scrollbar(nullptr) {}
+      : pseudo_id(pseudo_id), type(request_type) {}
 };
 
 }  // namespace blink
