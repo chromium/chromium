@@ -67,19 +67,11 @@ if (is_wasm) {
       ":caspian-lib",
       "//third_party/re2:re2",
     ]
-    if (!is_debug) {
-      # Use optimize_speed (-O3) to output the _smallest_ code.
-      configs -= [ "//build/config/compiler:default_optimization" ]
-      configs += [ "//build/config/compiler:optimize_speed" ]
-    }
     ldflags = [
       "-s",
       "EXPORTED_FUNCTIONS=['_LoadSizeFile','_LoadBeforeSizeFile','_BuildTree','_Open','_QueryProperty','_malloc','_free']",
       "-s",
-      "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString']",
+      "EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString']",
     ]
-    if (is_official_build) {
-      ldflags += [ "-O3" ]
-    }
   }
 }

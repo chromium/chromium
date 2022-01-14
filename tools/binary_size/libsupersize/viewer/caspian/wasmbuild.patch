@@ -16,7 +16,7 @@ index fcc7e12834733..11d4044003cb3 100644
  # =============================================================================
  # TARGET DEFAULTS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index e49fc28c0893d..413da046c6b4c 100644
+index e49fc28c0893d..5120334fbf373 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
 @@ -643,6 +643,20 @@ config("compiler") {
@@ -24,17 +24,17 @@ index e49fc28c0893d..413da046c6b4c 100644
    }
  
 +  if (is_wasm) {
-+    _emscripten_flags = [
++    ldflags += [
 +      "-s",
 +      "ALLOW_MEMORY_GROWTH=1",
++      "-s",
++      "LLD_REPORT_UNDEFINED=1",
 +    ]
 +
-+    # TODO(agrieve): Figure out why this causes link to fail.
-+    #if (is_official_build) {
-+    #  _emscripten_flags += ["-flto=full"]
-+    #}
-+    cflags += _emscripten_flags
-+    ldflags += _emscripten_flags
++    if (is_official_build) {
++      cflags += ["-flto=full"]
++      ldflags += ["-flto=full"]
++    }
 +  }
 +
    # Add flags for link-time optimization. These flags enable
@@ -51,24 +51,13 @@ index e49fc28c0893d..413da046c6b4c 100644
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -1523,6 +1535,10 @@ config("default_warnings") {
-         "-Wno-ignored-pragma-optimize",
-       ]
- 
-+      if (is_wasm) {
-+        cflags -= [ "-Wenum-compare-conditional" ]
-+      }
-+
-       if (is_chromeos || default_toolchain == "//build/toolchain/cros:target") {
-         # TODO(https://crbug.com/1016945): Re-enable once ChromeOS toolchain is up to date
-         cflags += [ "-Wno-builtin-assume-aligned-alignment" ]
-@@ -2294,6 +2310,9 @@ config("symbols") {
+@@ -2294,6 +2306,9 @@ config("symbols") {
  
      # All configs using /DEBUG should include this:
      configs = [ ":win_pdbaltpath" ]
 +  } else if (is_wasm) {
-+    cflags = [ "-g4" ]
-+    ldflags = [ "-g4" ]
++    cflags = [ "-gseparate-dwarf" ]
++    ldflags = [ "-gseparate-dwarf" ]
    } else {
      cflags = []
      if (is_mac && enable_dsyms) {
