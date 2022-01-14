@@ -204,8 +204,6 @@ component("base") {
       "resource/resource_data_dll_win.cc",
       "resource/resource_data_dll_win.h",
       "win/accessibility_ids_win.h",
-      "win/accessibility_misc_utils.cc",
-      "win/accessibility_misc_utils.h",
       "win/atl_module.h",
       "win/event_creation_utils.cc",
       "win/event_creation_utils.h",

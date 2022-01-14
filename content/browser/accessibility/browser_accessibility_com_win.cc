@@ -29,7 +29,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/win/accessibility_ids_win.h"
-#include "ui/base/win/accessibility_misc_utils.h"
 #include "ui/base/win/atl_module.h"
 
 // There is no easy way to decouple |kScreenReader| and |kHTML| accessibility

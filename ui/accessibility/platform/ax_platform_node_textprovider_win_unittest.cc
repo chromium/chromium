@@ -17,7 +17,6 @@
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
-#include "ui/base/win/accessibility_misc_utils.h"
 
 using Microsoft::WRL::ComPtr;
 
