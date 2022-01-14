@@ -1936,6 +1936,17 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   _markedText = base::SysNSStringToUTF16(im_text);
   _hasMarkedText = (length > 0);
 
+  // Update markedRange assuming blink sets composition text as is.
+  // We need this because the IME checks markedRange before IPC to blink.
+  // If markedRange is not updated, IME won't update the popup window position.
+  if (length > 0) {
+    if (replacementRange.location != NSNotFound)
+      _markedRange.location = replacementRange.location;
+    _markedRange.length = [string length];
+  } else {
+    _markedRange = NSMakeRange(NSNotFound, 0);
+  }
+
   _ime_text_spans.clear();
   if (isAttributedString) {
     ExtractUnderlines(string, &_ime_text_spans);
@@ -1961,6 +1972,9 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
                              gfx::Range(replacementRange), newSelRange.location,
                              NSMaxRange(newSelRange));
   }
+
+  [[self inputContext] invalidateCharacterCoordinates];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)doCommandBySelector:(SEL)selector {
