@@ -43,7 +43,7 @@ void ExternalProcessImporterClient::Start() {
       profile_import_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_UTILITY_PROCESS_PROFILE_IMPORTER_NAME)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // Importing from Firefox involves loading a Firefox dylib into the
           // importer service process. Use the child process that doesn't
           // enforce library validation so that this will work.
