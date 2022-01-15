@@ -285,9 +285,7 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
     return TimeZoneResolveMethodFromInt(
         user_prefs->GetInteger(prefs::kResolveTimezoneByGeolocationMethod));
   }
-  return user_prefs->GetBoolean(prefs::kResolveTimezoneByGeolocation)
-             ? TimeZoneResolveMethod::IP_ONLY
-             : TimeZoneResolveMethod::DISABLED;
+  return TimeZoneResolveMethod::IP_ONLY;
 }
 
 // static

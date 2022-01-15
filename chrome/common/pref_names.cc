@@ -561,13 +561,6 @@ const char kUse24HourClock[] = "settings.clock.use_24hour_clock";
 // A string pref containing Timezone ID for this user.
 const char kUserTimezone[] = "settings.timezone";
 
-// This setting disables manual timezone selection and starts periodic timezone
-// refresh.
-// Deprecated. Replaced with kResolveTimezoneByGeolocationMethod.
-// TODO(https://crbug.com/783367) Remove outdated prefs.
-const char kResolveTimezoneByGeolocation[] =
-    "settings.resolve_timezone_by_geolocation";
-
 // This setting controls what information is sent to the server to get
 // device location to resolve time zone in user session. Values must
 // match TimeZoneResolverManager::TimeZoneResolveMethod enum.

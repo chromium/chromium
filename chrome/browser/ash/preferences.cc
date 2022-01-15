@@ -359,10 +359,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterStringPref(::prefs::kUserTimezone, current_timezone_id);
 
   registry->RegisterBooleanPref(
-      ::prefs::kResolveTimezoneByGeolocation, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-
-  registry->RegisterBooleanPref(
       ::prefs::kResolveTimezoneByGeolocationMigratedToMethod, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
@@ -571,9 +567,6 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   for (auto* remap_pref : kLanguageRemapPrefs)
     pref_change_registrar_.Add(remap_pref, callback);
 
-  // Deprecated 7/2021
-  // TODO(https://crbug.com/783367) Remove outdated prefs.
-  prefs->ClearPref(::prefs::kResolveTimezoneByGeolocation);
 }
 
 void Preferences::Init(Profile* profile, const user_manager::User* user) {

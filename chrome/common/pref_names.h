@@ -231,7 +231,6 @@ extern const char kTouchpadScrollSensitivity[];
 extern const char kPointingStickSensitivity[];
 extern const char kUse24HourClock[];
 extern const char kUserTimezone[];
-extern const char kResolveTimezoneByGeolocation[];
 extern const char kResolveTimezoneByGeolocationMethod[];
 extern const char kResolveTimezoneByGeolocationMigratedToMethod[];
 // TODO(yusukes): Change "kLanguageABC" to "kABC". The current form is too long
@@ -881,7 +880,6 @@ extern const char kEnableAdbSideloadingRequested[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kSigninScreenTimezone[];
-extern const char kResolveDeviceTimezoneByGeolocation[];
 extern const char kResolveDeviceTimezoneByGeolocationMethod[];
 extern const char kSystemTimezoneAutomaticDetectionPolicy[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
