@@ -20,7 +20,7 @@
 // happen and as such executing the statement results in undefined behavior
 // (|statement| is compiled in unsupported configurations nonetheless).
 // Death tests misbehave on Android.
-#if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 // EXPECT/ASSERT_DCHECK_DEATH tests verify that a DCHECK is hit ("Check failed"
 // is part of the error message). Optionally you may specify part of the message
@@ -31,7 +31,7 @@
 #define ASSERT_DCHECK_DEATH_WITH(statement, msg) ASSERT_DEATH(statement, msg)
 
 #else
-// DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+// DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 #define EXPECT_DCHECK_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", )
@@ -43,10 +43,10 @@
   GTEST_UNSUPPORTED_DEATH_TEST(statement, msg, return )
 
 #endif
-// DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+// DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 // As above, but for CHECK().
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 // Official builds will eat stream parameters, so don't check the error message.
 #if defined(OFFICIAL_BUILD) && defined(NDEBUG)
@@ -57,7 +57,7 @@
 #define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "Check failed")
 #endif  // defined(OFFICIAL_BUILD) && defined(NDEBUG)
 
-#else  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#else  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 // Note GTEST_UNSUPPORTED_DEATH_TEST takes a |regex| only to see whether it is a
 // valid regex. It is never evaluated.
@@ -66,7 +66,7 @@
 #define ASSERT_CHECK_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", return )
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 namespace base {
 

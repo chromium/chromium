@@ -39,9 +39,10 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
@@ -462,7 +463,7 @@ void TaskEnvironment::InitializeThreadPool() {
 
   ThreadPoolInstance::InitParams init_params(kNumForegroundThreadPoolThreads);
   init_params.suggested_reclaim_time = TimeDelta::Max();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (thread_pool_com_environment_ == ThreadPoolCOMEnvironment::COM_MTA) {
     init_params.common_thread_pool_environment =
         ThreadPoolInstance::InitParams::CommonThreadPoolEnvironment::COM_MTA;
@@ -474,12 +475,12 @@ void TaskEnvironment::InitializeThreadPool() {
 void TaskEnvironment::CompleteInitialization() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (main_thread_type() == MainThreadType::IO) {
     file_descriptor_watcher_ =
         std::make_unique<FileDescriptorWatcher>(GetMainThreadTaskRunner());
   }
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 }
 
 TaskEnvironment::TaskEnvironment(TaskEnvironment&& other) = default;

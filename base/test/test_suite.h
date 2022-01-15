@@ -42,9 +42,9 @@ class TestSuite {
   typedef bool (*TestMatch)(const testing::TestInfo&);
 
   TestSuite(int argc, char** argv);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   TestSuite(int argc, wchar_t** argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   TestSuite(const TestSuite&) = delete;
   TestSuite& operator=(const TestSuite&) = delete;
@@ -86,9 +86,9 @@ class TestSuite {
   void AddTestLauncherResultPrinter();
 
   void InitializeFromCommandLine(int argc, char** argv);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void InitializeFromCommandLine(int argc, wchar_t** argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Basic initialization for the test suite happens here.
   void PreInitialize();

@@ -32,7 +32,7 @@
 #include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -778,14 +778,14 @@ TEST_F(TestLauncherTest, TestChildTempDir) {
   EXPECT_FALSE(DirectoryExists(task_temp));
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Verifies that test processes have /data, /cache and /tmp available.
 TEST_F(TestLauncherTest, ProvidesDataCacheAndTmpDirs) {
   EXPECT_TRUE(base::DirectoryExists(base::FilePath("/data")));
   EXPECT_TRUE(base::DirectoryExists(base::FilePath("/cache")));
   EXPECT_TRUE(base::DirectoryExists(base::FilePath("/tmp")));
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // Unit tests to validate UnitTestLauncherDelegate implementation.
 class UnitTestLauncherDelegateTester : public testing::Test {
@@ -865,13 +865,13 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   command_line.AppendSwitchPath("test-launcher-summary-output", path);
   command_line.AppendSwitch("gtest_also_run_disabled_tests");
   command_line.AppendSwitchASCII("test-launcher-retry-limit", "0");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // In Windows versions prior to Windows 8, nested job objects are
   // not allowed and cause this test to fail.
   if (win::GetVersion() < win::Version::WIN8) {
     command_line.AppendSwitch(kDontUseJobObjectFlag);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::string output;
   GetAppOutputAndError(command_line, &output);
@@ -950,7 +950,7 @@ TEST(ProcessGTestOutputTest, RunMockTests) {
 }
 
 // TODO(crbug.com/1094369): Enable leaked-child checks on other platforms.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 // Test that leaves a child process running. The test is DISABLED_, so it can
 // be launched explicitly by RunMockLeakProcessTest
@@ -980,13 +980,13 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   command_line.AppendSwitchPath("test-launcher-summary-output", path);
   command_line.AppendSwitch("gtest_also_run_disabled_tests");
   command_line.AppendSwitchASCII("test-launcher-retry-limit", "0");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // In Windows versions prior to Windows 8, nested job objects are
   // not allowed and cause this test to fail.
   if (win::GetVersion() < win::Version::WIN8) {
     command_line.AppendSwitch(kDontUseJobObjectFlag);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::string output;
   int exit_code = 0;
@@ -1006,7 +1006,7 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   // Validate that the leaked child caused the batch to error-out.
   EXPECT_EQ(exit_code, 1);
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // Validate GetTestOutputSnippetTest assigns correct output snippet.
 TEST(TestLauncherTools, GetTestOutputSnippetTest) {

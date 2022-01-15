@@ -40,13 +40,13 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 
 #include "base/files/file_descriptor_watcher_posix.h"
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -361,7 +361,7 @@ TEST_F(TaskEnvironmentTest, MainThreadType) {
   EXPECT_FALSE(CurrentIOThread::IsSet());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(TaskEnvironmentTest, SupportsFileDescriptorWatcherOnIOMainThread) {
   TaskEnvironment task_environment(TaskEnvironment::MainThreadType::IO);
 
@@ -403,7 +403,7 @@ TEST_F(TaskEnvironmentTest,
   // fast-forward-time when idle).
   run_loop.Run();
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 // Verify that the TickClock returned by
 // |TaskEnvironment::GetMockTickClock| gets updated when the
@@ -846,7 +846,7 @@ TEST_F(TaskEnvironmentTest, MultiThreadedMockTimeAndThreadPoolQueuedMode) {
   EXPECT_EQ(expected_value, count);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Regression test to ensure that TaskEnvironment enables the MTA in the
 // thread pool (so that the test environment matches that of the browser process
 // and com_init_util.h's assertions are happy in unit tests).
@@ -856,7 +856,7 @@ TEST_F(TaskEnvironmentTest, ThreadPoolPoolAllowsMTA) {
                                            win::ComApartmentType::MTA));
   task_environment.RunUntilIdle();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(TaskEnvironmentTest, SetsDefaultRunTimeout) {
   const RunLoop::RunLoopTimeout* old_run_timeout =
@@ -1321,7 +1321,7 @@ TEST_F(TaskEnvironmentTest, SingleThreadMockTime) {
   EXPECT_EQ(TimeTicks::Now(), start_time + kDelay);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 enum class ApartmentType {

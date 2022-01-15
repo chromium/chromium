@@ -13,11 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -48,14 +48,14 @@ void SyncPageCacheToDisk();
 // to access this file will result in a cold load from the hard drive.
 bool EvictFileFromSystemCache(const FilePath& file);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Deny |permission| on the file |path| for the current user. |permission| is an
 // ACCESS_MASK structure which is defined in
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa374892.aspx
 // Refer to https://msdn.microsoft.com/en-us/library/aa822867.aspx for a list of
 // possible values.
 bool DenyFilePermission(const FilePath& path, DWORD permission);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // For testing, make the file unreadable or unwritable.
 // In POSIX, this does not apply to the root user.
@@ -78,11 +78,11 @@ class FilePermissionRestorer {
   size_t length_;  // The length of the stored permission information.
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Insert an image file into the MediaStore, and retrieve the content URI for
 // testing purpose.
 FilePath InsertImageIntoMediaStore(const FilePath& path);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace base
 

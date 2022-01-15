@@ -52,7 +52,7 @@ void InitializeTimeout(const char* switch_name,
 #else
   constexpr int kTimeoutMultiplier = 6;
 #endif
-#elif defined(ADDRESS_SANITIZER) && defined(OS_WIN)
+#elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
   // ASan/Win has not been optimized yet, give it a higher
   // timeout multiplier. See http://crbug.com/412471
   constexpr int kTimeoutMultiplier = 3;
@@ -70,7 +70,7 @@ void InitializeTimeout(const char* switch_name,
   // A number of tests on ChromeOS run very close to the base limit, so ChromeOS
   // gets 3x.
   constexpr int kTimeoutMultiplier = 3;
-#elif !defined(NDEBUG) && defined(OS_MAC)
+#elif !defined(NDEBUG) && BUILDFLAG(IS_MAC)
   // A lot of browser_tests on Mac debug time out.
   constexpr int kTimeoutMultiplier = 2;
 #else

@@ -112,7 +112,7 @@ class TestLauncher {
 
     int flags = 0;
     // These mirror values in base::LaunchOptions, see it for details.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::LaunchOptions::Inherit inherit_mode =
         base::LaunchOptions::Inherit::kSpecific;
     base::HandlesToInheritVector handles_to_inherit;
@@ -158,7 +158,7 @@ class TestLauncher {
   // Returns true if child test processes should have dedicated temporary
   // directories.
   static constexpr bool SupportsPerChildTempDirs() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return true;
 #else
     // TODO(https://crbug.com/1038857): Enable for macOS, Linux, and Fuchsia.
@@ -205,7 +205,7 @@ class TestLauncher {
   // Rest counters, retry tests list, and test result tracker.
   void OnTestIterationStart();
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void OnShutdownPipeReadable();
 #endif
 
