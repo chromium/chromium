@@ -16,7 +16,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/blocked_content/android/popup_blocked_infobar_delegate.h"
 #include "components/blocked_content/android/popup_blocked_message_delegate.h"
@@ -47,7 +47,7 @@ ChromePopupNavigationDelegate::NavigateWithGesture(
   params_.user_gesture = true;
   if (updated_disposition)
     params_.disposition = updated_disposition.value();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TabModelList::HandlePopupNavigation(&params_);
 #else
   ::Navigate(&params_);
@@ -68,7 +68,7 @@ ChromePopupNavigationDelegate::NavigateWithGesture(
 void ChromePopupNavigationDelegate::OnPopupBlocked(
     content::WebContents* web_contents,
     int total_popups_blocked_on_page) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool is_created = false;
   if (messages::IsPopupBlockedMessagesUiEnabled()) {
     blocked_content::PopupBlockedMessageDelegate::CreateForWebContents(

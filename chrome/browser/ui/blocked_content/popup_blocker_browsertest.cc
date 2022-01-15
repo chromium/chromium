@@ -77,7 +77,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/common/switches.h"
 #endif
 
@@ -120,7 +120,7 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Testing on some platforms is flaky due to slower loading interacting with
     // deferred commits.
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlockWebContentsCreation) {
 }
 
 // TODO(crbug.com/1115886): Flaky on Mac ASAN and Chrome OS.
-#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER)) || \
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_BlockWebContentsCreationIncognito \
   DISABLED_BlockWebContentsCreationIncognito
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 // https://codereview.chromium.org/23903056
 // BUG=https://code.google.com/p/chromium/issues/detail?id=295299
 // TODO(ananta). Debug and fix this test.
-#if defined(USE_AURA) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_WindowFeatures DISABLED_WindowFeatures
 #else
 #define MAYBE_WindowFeatures WindowFeatures
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
   ASSERT_NE(popup_browser, browser());
 
 // Showing an alert will raise the tab over the popup.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Mac doesn't activate the browser during modal dialogs, see
   // https://crbug.com/687732 for details.
   ui_test_utils::BrowserActivationWaiter alert_waiter(browser());
@@ -653,18 +653,18 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
   javascript_dialogs::AppModalDialogController* dialog =
       ui_test_utils::WaitForAppModalDialog();
   ASSERT_TRUE(dialog);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (chrome::FindLastActive() != browser())
     alert_waiter.WaitForActivation();
 #endif
 
 // Verify that after the dialog is closed, the popup is in front again.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   ui_test_utils::BrowserActivationWaiter waiter(popup_browser);
 #endif
   javascript_dialogs::AppModalDialogManager::GetInstance()
       ->HandleJavaScriptDialog(tab, true, nullptr);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   waiter.WaitForActivation();
 #endif
   ASSERT_EQ(popup_browser, chrome::FindLastActive());
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
 // their parents (https://crbug.com/1073587).
 // TODO(weili): investigate why this failed on Linux and ChromeOS bots,
 // and why it was flaky on Windows. https://crbug.com/1241815.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_PrintPreviewPopUnder PrintPreviewPopUnder
 #else
 #define MAYBE_PrintPreviewPopUnder DISABLED_PrintPreviewPopUnder
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
   bool command = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   command = true;
 #endif
 
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
 
 // Tests that the tapping gesture with cntl/cmd key on a link open the
 // background tab.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TapGestureWithCtrlKey DISABLED_TapGestureWithCtrlKey
 #else
 #define MAYBE_TapGestureWithCtrlKey TapGestureWithCtrlKey
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_TapGestureWithCtrlKey) {
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   unsigned modifiers = blink::WebInputEvent::kMetaKey;
 #else
   unsigned modifiers = blink::WebInputEvent::kControlKey;
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Frequently timing out on Win7 CI builder. See https://crbug.com/1251717.
 #define MAYBE_PopupTriggeredFromDifferentWebContents \
   DISABLED_PopupTriggeredFromDifferentWebContents

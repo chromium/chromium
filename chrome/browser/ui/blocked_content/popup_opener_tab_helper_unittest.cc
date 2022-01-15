@@ -40,7 +40,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "components/infobars/android/infobar_android.h"
 #else
@@ -75,7 +75,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     FramebustBlockTabHelper::CreateForWebContents(web_contents());
 #endif
 
@@ -414,7 +414,7 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
   ~BlockTabUnderTest() override = default;
 
   infobars::InfoBarAndroid* GetInfoBar() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     auto* manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents());
     if (!manager->infobar_count())
@@ -426,11 +426,11 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
     return infobar;
 #else
     return nullptr;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void ExpectUIShown(bool shown) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(shown, !!GetInfoBar());
 #else
     EXPECT_EQ(shown, FramebustBlockTabHelper::FromWebContents(web_contents())
@@ -598,7 +598,7 @@ TEST_F(BlockTabUnderTest, ClickThroughAction) {
   const GURL blocked_url("https://example.test/");
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   infobars::InfoBarAndroid* infobar = GetInfoBar();
   base::android::JavaParamRef<jobject> jobj(nullptr);
   infobar->OnLinkClicked(nullptr /* env */, jobj);

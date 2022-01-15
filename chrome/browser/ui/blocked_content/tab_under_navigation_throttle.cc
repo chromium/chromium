@@ -42,7 +42,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/infobars/framebust_block_infobar.h"
 #include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 #else
@@ -56,7 +56,7 @@ void LogAction(TabUnderNavigationThrottle::Action action) {
                             TabUnderNavigationThrottle::Action::kCount);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 typedef FramebustBlockMessageDelegate::InterventionOutcome InterventionOutcome;
 
 TabUnderNavigationThrottle::Action GetActionForOutcome(
@@ -201,7 +201,7 @@ TabUnderNavigationThrottle::MaybeBlockNavigation() {
 void TabUnderNavigationThrottle::ShowUI() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   const GURL& url = navigation_handle()->GetURL();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   FramebustBlockInfoBar::Show(
       web_contents, std::make_unique<FramebustBlockMessageDelegate>(
                         web_contents, url, base::BindOnce(&LogOutcome)));

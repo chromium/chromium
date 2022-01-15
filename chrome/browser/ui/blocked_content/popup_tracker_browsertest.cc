@@ -42,7 +42,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker
 
   // Mac uses command instead of control for the new tab action.
   bool is_mac = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   is_mac = true;
 #endif
 
@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
 }
 
 // TODO(crbug.com/1178846): Test is flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PopupInWindow_IsWindowTrue DISABLED_PopupInWindow_IsWindowTrue
 #else
 #define MAYBE_PopupInWindow_IsWindowTrue PopupInWindow_IsWindowTrue
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 }
 
 // TODO(crbug.com/1146598): Test is flaky on Lacros, Linux Ozone Wayland.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PopupNoRedirect_RedirectCountZero DISABLED_PopupNoRedirect_RedirectCountZero
 #else
 #define MAYBE_PopupNoRedirect_RedirectCountZero PopupNoRedirect_RedirectCountZero
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        MAYBE_PopupRedirectsTwice_RedirectCountTwo) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kOzonePlatform) &&
@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 }
 
 // TODO(crbug.com/1179859): Test is flaky on Windows, Linux and Lacros.
-#if defined(OS_LINUX) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PopupJavascriptRenavigation_RedirectCountZero \
   DISABLED_PopupJavascriptRenavigation_RedirectCountZero
 #else

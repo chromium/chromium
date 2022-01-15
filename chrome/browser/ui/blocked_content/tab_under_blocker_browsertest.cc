@@ -37,7 +37,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #endif
 
@@ -82,7 +82,7 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
   bool IsUiShownForUrl(content::WebContents* web_contents, const GURL& url) {
 // TODO(csharrison): Implement android checking when crbug.com/611756 is
 // resolved.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return false;
 #else
     return base::Contains(
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
   const std::string script =
       "var evt = new MouseEvent('click', {"
       "  view : window,"
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       "  metaKey : true"
 #else
       "  ctrlKey : true"
