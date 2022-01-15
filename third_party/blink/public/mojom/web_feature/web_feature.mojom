@@ -3183,8 +3183,6 @@ enum WebFeature {
   kElementGetInnerHTML = 3874,
   kFileHandlingLaunch = 3875,
   kSameOriginDocumentsWithDifferentCOOPStatus = 3876,
-  // The items above roughly this point are available in the M91 branch.
-
   kHTMLMediaElementSetSinkId = 3877,
   kPrefixedStorageQuotaThirdPartyContext = 3878,
   kRequestedFileSystemPersistentThirdPartyContext = 3879,
@@ -3194,6 +3192,8 @@ enum WebFeature {
   kPostMessageFromInsecureToInsecure = 3883,
   kWebAppManifestProtocolHandlers = 3884,
   kRTCPeerConnectionOfferAllowExtmapMixedFalse = 3885,
+  // The items above roughly this point are available in the M91 branch.
+
   kNewCanvas2DAPI = 3886,
   kOBSOLETE_ServiceWorkerSubresourceFilterBypassedRequest = 3887,
   kWebGPU = 3888,
@@ -3250,6 +3250,8 @@ enum WebFeature {
   kXRFrameFillPoses = 3940,
   kWindowOpenNewPopupBehaviorMismatch = 3941,
   kExplicitPointerCaptureClickTargetDiff = 3942,
+  // The items above roughly this point are available in the M92 branch.
+
   kControlledNonBlobURLWorkerWillBeUncontrolled = 3943,
   kMediaMetaThemeColor = 3944,
   kClientHintsUABitness = 3945,
@@ -3270,6 +3272,8 @@ enum WebFeature {
   kV8URLPattern_Test_Method = 3960,
   kV8URLPattern_Exec_Method = 3961,
   kSameSiteCookieInclusionChangedByCrossSiteRedirect = 3962,
+  // The items above roughly this point are available in the M93 branch.
+
   kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory = 3963,
   kBlobStoreAccessAcrossAgentClustersInResolveForNavigation = 3964,
   kTapDelayEnabled = 3965,
@@ -3283,6 +3287,8 @@ enum WebFeature {
   kNavigatorPdfViewerEnabled = 3973,
   kCanvasRenderingContext2DContextLostEvent = 3974,
   kCanvasRenderingContext2DContextRestoredEvent = 3975,
+  // The items above roughly this point are available in the M94 branch.
+
   kClientHintsViewportHeight = 3976,
   kV8NavigatorManagedData_GetDirectoryId_Method = 3977,
   kV8NavigatorManagedData_GetHostname_Method = 3978,
@@ -3328,6 +3334,8 @@ enum WebFeature {
   kV8FileSystemSyncAccessHandle_Truncate_Method = 4019,
   kV8SharedArrayBufferConstructedInExtensionWithoutIsolation = 4020,
   kMediaSourceExtensionsForWebCodecs = 4021,
+  // The items above roughly this point are available in the M95 branch.
+
   kPaymentRequestResponse = 4023,
   kPaymentRequestComplete = 4024,
   kHTMLCanvasElement_2D = 4025,
@@ -3365,6 +3373,8 @@ enum WebFeature {
   kFlexboxAlignSingleLineDifference = 4057,
   kExternalProtocolBlockedBySandbox = 4058,
   kWebAssemblyDynamicTiering = 4059,
+  // The items above roughly this point are available in the M96 branch.
+
   kReadOrWriteWebDatabase = 4061,
   kAutoDarkMode = 4062,
   kHttpRefreshWhenScriptingDisabled = 4063,
@@ -3379,6 +3389,8 @@ enum WebFeature {
   kWebCodecsVideoFrameFromBuffer = 4072,
   kOpenWebDatabaseInsecureContext = 4073,
   kScriptWebBundle = 4074,
+  // The items above roughly this point are available in the M97 branch.
+
   kRunAdAuction = 4075,
   kJoinAdInterestGroup = 4076,
   kFileSystemUrlNavigation = 4077,
@@ -3398,6 +3410,8 @@ enum WebFeature {
   kImageLoadAtDismissalEvent = 4091,
   kPrivateNetworkAccessIgnoredPreflightError = 4092,
   kAbortPaymentRespondWithTrue = 4093,
+  // The items above roughly this point are available in the M98 branch.
+
   kAllowPaymentRequestAttributeHasEffect = 4094,
   kV8PaymentResponse_Retry_Method = 4095,
   kWebAppManifestUserPreferences = 4096,
@@ -3414,6 +3428,8 @@ enum WebFeature {
   kWebNfcNdefMakeReadOnly = 4107,
   kV8Navigator_DeprecatedURNToURL_Method = 4108,
   kWebAppManifestHandleLinks = 4109,
+  kHTMLParamElementURLParameterInUsePdf = 4110,
+  kHTMLParamElementURLParameterInUseNonPdf = 4111,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
