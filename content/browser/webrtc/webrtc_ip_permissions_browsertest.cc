@@ -26,7 +26,7 @@ const char kPeerConnectionHtml[] = "/media/peerconnection-call.html";
 
 // Disable these test cases for Android since in some bots, there exists only
 // the loopback interface.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WebRtcIPPermissionGrantedTest \
   DISABLED_WebRtcIPPermissionGrantedTest
 #define MAYBE_WebRtcIPPermissionDeniedTest DISABLED_WebRtcIPPermissionDeniedTest

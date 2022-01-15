@@ -28,7 +28,7 @@ static const int kNumPeerConnections = 10;
 #endif
 }  // namespace
 
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 #define MAYBE_WebRtcStressPauseBrowserTest DISABLED_WebRtcStressPauseBrowserTest
 #else

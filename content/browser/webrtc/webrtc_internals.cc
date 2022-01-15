@@ -446,7 +446,7 @@ void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
 void WebRTCInternals::EnableAudioDebugRecordings(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EnableAudioDebugRecordingsOnAllRenderProcessHosts();
 #else
   selection_type_ = SelectionType::kAudioDebugRecordings;
@@ -493,7 +493,7 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(CanToggleEventLogRecordings());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->EnableLocalLogging(event_log_recordings_file_path_);

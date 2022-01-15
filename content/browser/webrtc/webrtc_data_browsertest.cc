@@ -21,7 +21,7 @@
 
 namespace content {
 
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 #define MAYBE_WebRtcDataBrowserTest DISABLED_WebRtcDataBrowserTest
 #else

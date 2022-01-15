@@ -284,7 +284,7 @@ INSTANTIATE_TEST_SUITE_P(
         TestParams {
           ServiceApi::kMultiClient, media::VideoCaptureBufferType::kSharedMemory
         }
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
         ,
         TestParams{
             ServiceApi::kSingleClient,
@@ -293,7 +293,7 @@ INSTANTIATE_TEST_SUITE_P(
           ServiceApi::kMultiClient,
               media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor
         }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
         ));
 
 }  // namespace content

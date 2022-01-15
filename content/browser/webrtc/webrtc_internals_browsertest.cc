@@ -144,7 +144,7 @@ class UserMediaRequestEntry {
 
 static const int64_t FAKE_TIME_STAMP = 3600000;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // All tests are flaky on Windows: crbug.com/277322.
 #define MAYBE_WebRtcInternalsBrowserTest DISABLED_WebRtcInternalsBrowserTest
 #else
