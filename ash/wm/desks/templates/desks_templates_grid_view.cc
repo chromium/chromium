@@ -27,8 +27,10 @@ namespace ash {
 
 namespace {
 
-// TODO: This will be different for rotated screens.
-constexpr int kMaxNumColumns = 3;
+// Maximum number of columns for items when width >= height.
+constexpr int kLandscapeMaxColumns = 3;
+// Ditto for when width < height.
+constexpr int kPortraitMaxColumns = 2;
 
 // TODO(richui): Replace these temporary values once specs come out.
 constexpr int kGridPaddingDp = 25;
@@ -150,7 +152,10 @@ void DesksTemplatesGridView::UpdateGridUI(
   layout_ = SetLayoutManager(std::make_unique<views::TableLayout>());
 
   // Add the correct number of columns and some padding between each one.
-  size_t column_count = std::min<size_t>(desk_templates.size(), kMaxNumColumns);
+  const size_t max_column_count = grid_bounds.width() >= grid_bounds.height()
+                                      ? kLandscapeMaxColumns
+                                      : kPortraitMaxColumns;
+  size_t column_count = std::min(desk_templates.size(), max_column_count);
   const float fixed_size = views::TableLayout::kFixedSize;
   for (size_t i = 0; i < column_count; ++i) {
     // Add a padding column in front of each column except the first one.

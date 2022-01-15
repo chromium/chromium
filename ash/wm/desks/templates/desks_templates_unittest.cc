@@ -2105,4 +2105,58 @@ TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInOverview) {
   CheckA11yOverrides("desk", desk_widget, item_widget, focus_widget);
 }
 
+TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {
+  UpdateDisplay("800x600");
+
+  // Create a window and add four test entries.
+  auto test_window = CreateAppWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  views::View::Views grid_views = templates_grid_view->children();
+  ASSERT_EQ(4ul, grid_views.size());
+
+  // We expect the first three items to be laid out in one row.
+  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
+  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
+  // The fourth item goes in the second row.
+  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[3]->bounds().y());
+}
+
+TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
+  UpdateDisplay("600x800");
+
+  // Create a window and add four test entries.
+  auto test_window = CreateAppWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  views::View::Views grid_views = templates_grid_view->children();
+  ASSERT_EQ(4ul, grid_views.size());
+
+  // We expect the first two items to be laid out in one row.
+  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
+  // And the last two items on the next row.
+  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
+  EXPECT_EQ(grid_views[2]->bounds().y(), grid_views[3]->bounds().y());
+}
+
 }  // namespace ash
