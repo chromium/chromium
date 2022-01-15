@@ -40,9 +40,9 @@ class MockTaskExecutor : public TaskExecutor {
     ON_CALL(*this, CreateSequencedTaskRunner(_)).WillByDefault(Return(runner_));
     ON_CALL(*this, CreateSingleThreadTaskRunner(_, _))
         .WillByDefault(Return(runner_));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ON_CALL(*this, CreateCOMSTATaskRunner(_, _)).WillByDefault(Return(runner_));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   MockTaskExecutor(const MockTaskExecutor&) = delete;
@@ -69,12 +69,12 @@ class MockTaskExecutor : public TaskExecutor {
                scoped_refptr<SingleThreadTaskRunner>(
                    const TaskTraits& traits,
                    SingleThreadTaskRunnerThreadMode thread_mode));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   MOCK_METHOD2(CreateCOMSTATaskRunner,
                scoped_refptr<SingleThreadTaskRunner>(
                    const TaskTraits& traits,
                    SingleThreadTaskRunnerThreadMode thread_mode));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   TestSimpleTaskRunner* runner() const { return runner_.get(); }
 
@@ -138,11 +138,11 @@ TEST_F(PostTaskTestWithExecutor, PostTaskToTaskExecutor) {
     EXPECT_CALL(executor_, CreateSingleThreadTaskRunner(traits, _)).Times(1);
     auto single_thread_task_runner = CreateSingleThreadTaskRunner(traits);
     EXPECT_EQ(executor_.runner(), single_thread_task_runner);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_CALL(executor_, CreateCOMSTATaskRunner(traits, _)).Times(1);
     auto comsta_task_runner = CreateCOMSTATaskRunner(traits);
     EXPECT_EQ(executor_.runner(), comsta_task_runner);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 }
 

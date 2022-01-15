@@ -105,14 +105,14 @@ class EphemeralTaskExecutor : public TaskExecutor {
     return single_thread_task_runner_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) override {
     CheckTraitsCompatibleWithSequenceTraits(traits);
     return single_thread_task_runner_;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   // Currently ignores |traits.priority()|.

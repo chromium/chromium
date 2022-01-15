@@ -132,7 +132,7 @@ SequenceManager::MetricRecordingSettings InitializeMetricRecordingSettings(
 // Writes |address| in hexadecimal ("0x11223344") form starting from |output|
 // and moving backwards in memory. Returns a pointer to the first digit of the
 // result. Does *not* NUL-terminate the number.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 char* PrependHexAddress(char* output, const void* address) {
   uintptr_t value = reinterpret_cast<uintptr_t>(address);
   static const char kHexChars[] = "0123456789ABCDEF";
@@ -144,7 +144,7 @@ char* PrependHexAddress(char* output, const void* address) {
   *output = '0';
   return output;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // Controls whether canceled tasks are removed from the front of the queue when
 // deciding when the next wake up should happen.
@@ -228,7 +228,7 @@ SequenceManagerImpl::~SequenceManagerImpl() {
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (settings_.message_loop_type == MessagePumpType::UI &&
       associated_thread_->IsBound()) {
     controller_->DetachFromMessagePump();
@@ -350,7 +350,7 @@ void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {
   CompleteInitializationOnBoundThread();
 
   // On Android attach to the native loop when there is one.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (settings_.message_loop_type == MessagePumpType::UI ||
       settings_.message_loop_type == MessagePumpType::JAVA) {
     controller_->AttachToMessagePump();
@@ -358,7 +358,7 @@ void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {
 #endif
 
   // On iOS attach to the native loop when there is one.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (settings_.message_loop_type == MessagePumpType::UI) {
     controller_->AttachToMessagePump();
   }
@@ -586,7 +586,7 @@ SequenceManagerImpl::SelectNextTask(SelectTaskOption option) {
   return selected_task;
 }
 
-#if DCHECK_IS_ON() && !defined(OS_NACL)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
 void SequenceManagerImpl::LogTaskDebugInfo(
     const WorkQueue* selected_work_queue) const {
   const Task* task = selected_work_queue->GetFrontTask();
@@ -638,7 +638,7 @@ void SequenceManagerImpl::LogTaskDebugInfo(
     }
   }
 }
-#endif  // DCHECK_IS_ON() && !defined(OS_NACL)
+#endif  // DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
 
 absl::optional<SequenceManagerImpl::SelectedTask>
 SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
@@ -697,9 +697,9 @@ SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
       return absl::nullopt;
     }
 
-#if DCHECK_IS_ON() && !defined(OS_NACL)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
     LogTaskDebugInfo(work_queue);
-#endif  // DCHECK_IS_ON() && !defined(OS_NACL)
+#endif  // DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
 
     main_thread_only().task_execution_stack.emplace_back(
         work_queue->TakeTaskFromWorkQueue(), work_queue->task_queue(),
@@ -1148,7 +1148,7 @@ bool SequenceManagerImpl::IsTaskExecutionAllowed() const {
   return controller_->IsTaskExecutionAllowed();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void SequenceManagerImpl::AttachToMessagePump() {
   return controller_->AttachToMessagePump();
 }
@@ -1233,17 +1233,17 @@ NOINLINE bool SequenceManagerImpl::Validate() {
 
 void SequenceManagerImpl::EnableCrashKeys(const char* async_stack_crash_key) {
   DCHECK(!main_thread_only().async_stack_crash_key);
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   main_thread_only().async_stack_crash_key = debug::AllocateCrashKeyString(
       async_stack_crash_key, debug::CrashKeySize::Size64);
   static_assert(sizeof(main_thread_only().async_stack_buffer) ==
                     static_cast<size_t>(debug::CrashKeySize::Size64),
                 "Async stack buffer size must match crash key size.");
-#endif  // OS_NACL
+#endif  // BUILDFLAG(IS_NACL)
 }
 
 void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // SetCrashKeyString is a no-op even if the crash key is null, but we'd still
   // have construct the StringPiece that is passed in.
   if (!main_thread_only().async_stack_crash_key)
@@ -1273,7 +1273,7 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
   DCHECK_GE(pos, buffer);
   debug::SetCrashKeyString(main_thread_only().async_stack_crash_key,
                            StringPiece(pos, buffer_end - pos));
-#endif  // OS_NACL
+#endif  // BUILDFLAG(IS_NACL)
 }
 
 internal::TaskQueueImpl* SequenceManagerImpl::currently_executing_task_queue()

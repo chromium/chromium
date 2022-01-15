@@ -53,7 +53,7 @@ class BASE_EXPORT TaskExecutor {
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns a SingleThreadTaskRunner whose PostTask invocations result in
   // scheduling tasks using |traits| in a COM Single-Threaded Apartment. Tasks
   // run in the same Single-Threaded Apartment in posting order for the returned
@@ -62,7 +62,7 @@ class BASE_EXPORT TaskExecutor {
   virtual scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) = 0;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // Register a TaskExecutor with the //base/task/post_task.h API in the current

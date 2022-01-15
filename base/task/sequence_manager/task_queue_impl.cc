@@ -768,7 +768,7 @@ void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
   sequence_manager_->main_thread_only().selector.SetQueuePriority(this,
                                                                   priority);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Updating queue priority can change whether high resolution timer is needed.
   LazyNow lazy_now(sequence_manager_->main_thread_clock());
   UpdateWakeUp(&lazy_now);
@@ -1076,7 +1076,7 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
     delay = absl::get<base::TimeDelta>(delayed_task.delay_or_delayed_run_time);
     delayed_task.delay_or_delayed_run_time = lazy_now->Now() + delay;
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   else {
     delay = absl::get<base::TimeTicks>(delayed_task.delay_or_delayed_run_time) -
             lazy_now->Now();
@@ -1088,7 +1088,7 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
   if (delay < (2 * base::Milliseconds(Time::kMinLowResolutionThresholdMs))) {
     resolution = WakeUpResolution::kHigh;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   return Task(std::move(delayed_task), sequence_number, EnqueueOrder(),
               lazy_now->Now(), resolution);
 }

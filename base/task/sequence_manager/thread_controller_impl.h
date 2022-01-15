@@ -62,10 +62,10 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void SetTaskExecutionAllowed(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   void AttachToMessagePump() override;
 #endif
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   void DetachFromMessagePump() override;
 #endif
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;

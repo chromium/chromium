@@ -38,12 +38,12 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_windows_thread_environment.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 namespace internal {
@@ -298,9 +298,9 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
     // Associated WorkerThread, if any, initialized in OnMainEntry().
     raw_ptr<WorkerThread> worker_thread_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::unique_ptr<win::ScopedWindowsThreadEnvironment> win_thread_environment;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   } worker_only_;
 
   // Writes from the worker thread protected by |outer_->lock_|. Reads from any
@@ -571,10 +571,10 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
 #endif
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   worker_only().win_thread_environment = GetScopedWindowsThreadEnvironment(
       outer_->after_start().worker_environment);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   PlatformThread::SetName(
       StringPrintf("ThreadPool%sWorker", outer_->thread_group_label_.c_str()));
@@ -803,9 +803,9 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainExit(
   }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   worker_only().win_thread_environment.reset();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Count cleaned up workers for tests. It's important to do this here instead
   // of at the end of CleanupLockRequired() because some side-effects of
@@ -1172,7 +1172,7 @@ void ThreadGroupImpl::AdjustMaxTasks() {
 void ThreadGroupImpl::ScheduleAdjustMaxTasks() {
   // |adjust_max_tasks_posted_| can't change before the task posted below runs.
   // Skip check on NaCl to avoid unsafe reference acquisition warning.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   DCHECK(TS_UNCHECKED_READ(adjust_max_tasks_posted_));
 #endif
 

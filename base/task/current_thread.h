@@ -197,7 +197,7 @@ class BASE_EXPORT CurrentThread {
   sequence_manager::internal::SequenceManagerImpl* current_;
 };
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 
 // UI extension of CurrentThread.
 class BASE_EXPORT CurrentUIThread : public CurrentThread {
@@ -211,7 +211,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 
   CurrentUIThread* operator->() { return this; }
 
-#if defined(USE_OZONE) && !defined(OS_FUCHSIA) && !defined(OS_WIN)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
   static_assert(
       std::is_base_of<WatchableIOMessagePumpPosix, MessagePumpForUI>::value,
       "CurrentThreadForUI::WatchFileDescriptor is supported only"
@@ -223,7 +223,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
                            MessagePumpForUI::FdWatcher* delegate);
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Forwards to SequenceManager::Attach().
   // TODO(https://crbug.com/825327): Plumb the actual SequenceManager* to
   // callers and remove ability to access this method from
@@ -231,7 +231,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
   void Attach();
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Forwards to MessagePumpForUI::Abort().
   // TODO(https://crbug.com/825327): Plumb the actual MessagePumpForUI* to
   // callers and remove ability to access this method from
@@ -239,7 +239,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
   void Abort();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void AddMessagePumpObserver(MessagePumpForUI::Observer* observer);
   void RemoveMessagePumpObserver(MessagePumpForUI::Observer* observer);
 #endif
@@ -252,7 +252,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
   MessagePumpForUI* GetMessagePumpForUI() const;
 };
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // ForIO extension of CurrentThread.
 class BASE_EXPORT CurrentIOThread : public CurrentThread {
@@ -266,13 +266,13 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
 
   CurrentIOThread* operator->() { return this; }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Please see MessagePumpWin for definitions of these methods.
   HRESULT RegisterIOHandler(HANDLE file, MessagePumpForIO::IOHandler* handler);
   bool RegisterJobObject(HANDLE job, MessagePumpForIO::IOHandler* handler);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Please see WatchableIOMessagePumpPosix for definition.
   // Prefer base::FileDescriptorWatcher for non-critical IO.
   bool WatchFileDescriptor(int fd,
@@ -280,25 +280,25 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
                            MessagePumpForIO::Mode mode,
                            MessagePumpForIO::FdWatchController* controller,
                            MessagePumpForIO::FdWatcher* delegate);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool WatchMachReceivePort(
       mach_port_t port,
       MessagePumpForIO::MachPortWatchController* controller,
       MessagePumpForIO::MachPortWatcher* delegate);
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Additional watch API for native platform resources.
   bool WatchZxHandle(zx_handle_t handle,
                      bool persistent,
                      zx_signals_t signals,
                      MessagePumpForIO::ZxHandleWatchController* controller,
                      MessagePumpForIO::ZxHandleWatcher* delegate);
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
  private:
   explicit CurrentIOThread(

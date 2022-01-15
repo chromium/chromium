@@ -52,7 +52,7 @@ class BASE_EXPORT ThreadPoolInstance {
     enum class CommonThreadPoolEnvironment {
       // Use the default environment (no environment).
       DEFAULT,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // Place the pool's workers in a COM MTA.
       COM_MTA,
       // Place the pool's *foreground* workers in a COM STA. This exists to
@@ -61,7 +61,7 @@ class BASE_EXPORT ThreadPoolInstance {
       // CreateCOMSTATaskRunner() instead of Create(Sequenced)TaskRunner() +
       // this init param.
       DEPRECATED_COM_STA_IN_FOREGROUND_GROUP,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     };
 
     InitParams(int max_num_foreground_threads_in);
@@ -91,7 +91,7 @@ class BASE_EXPORT ThreadPoolInstance {
     // renderers. Note that the regression is not present in
     // *TaskLatencyMicroseconds.Renderer* histograms.
     TimeDelta suggested_reclaim_time =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         Minutes(5);
 #else
         Seconds(30);
@@ -188,7 +188,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // not thread-safe; proper synchronization is required to use the post_task.h
   // API after registering a new ThreadPoolInstance.
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Creates and starts a thread pool using default params. |name| is used to
   // label histograms, it must not be empty. It should identify the component
   // that calls this. Start() is called by this method; it is invalid to call it
@@ -199,7 +199,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // Same as CreateAndStartWithDefaultParams() but allows callers to split the
   // Create() and StartWithDefaultParams() calls.
   void StartWithDefaultParams();
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   // Creates a ready to start thread pool. |name| is used to label histograms,
   // it must not be empty. It should identify the component that creates the

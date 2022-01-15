@@ -4395,7 +4395,7 @@ TEST_P(SequenceManagerTest, CreateUnboundSequenceManagerWhichIsNeverBound) {
 TEST_P(SequenceManagerTest, HasPendingHighResolutionTasks) {
   auto queue = CreateTaskQueue();
   bool supports_high_res = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   supports_high_res = true;
 #endif
 
@@ -4431,7 +4431,7 @@ TEST_P(SequenceManagerTest, HasPendingHighResolutionTasksLowPriority) {
   auto queue = CreateTaskQueue();
   queue->SetQueuePriority(TaskQueue::QueuePriority::kLowPriority);
   bool supports_high_res = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   supports_high_res = true;
 #endif
 
@@ -4475,7 +4475,7 @@ TEST_P(SequenceManagerTest,
   auto queueNormal = CreateTaskQueue();
   queueNormal->SetQueuePriority(TaskQueue::QueuePriority::kNormalPriority);
   bool supports_high_res = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   supports_high_res = true;
 #endif
 

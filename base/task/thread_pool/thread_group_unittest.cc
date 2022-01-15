@@ -34,11 +34,11 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/task/thread_pool/thread_group_native_win.h"
 #include "base/win/com_init_check_hook.h"
 #include "base/win/com_init_util.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/task/thread_pool/thread_group_native_mac.h"
 #endif
 
@@ -49,9 +49,9 @@ namespace {
 
 #if HAS_NATIVE_THREAD_POOL()
 using ThreadGroupNativeType =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ThreadGroupNativeWin;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
     ThreadGroupNativeMac;
 #endif
 #endif
@@ -131,7 +131,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
 #if HAS_NATIVE_THREAD_POOL()
       case test::GroupType::NATIVE:
         thread_group_ = std::make_unique<ThreadGroupNativeType>(
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
             ThreadPriority::NORMAL,
 #endif
             task_tracker_.GetTrackedRef(),
@@ -514,7 +514,7 @@ TEST_P(ThreadGroupTestAllExecutionModes, ScopedBlockingCallTwice) {
   task_ran.Wait();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(ThreadGroupTestAllExecutionModes, COMMTAWorkerEnvironment) {
   StartThreadGroup(ThreadGroup::WorkerEnvironment::COM_MTA);
   auto task_runner = test::CreatePooledTaskRunnerWithExecutionMode(

@@ -93,14 +93,14 @@ class ThreadController {
   // Returns true if the current run loop should quit when idle.
   virtual bool ShouldQuitRunLoopWhenIdle() = 0;
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // On iOS, the main message loop cannot be Run().  Instead call
   // AttachToMessagePump(), which connects this ThreadController to the
   // UI thread's CFRunLoop and allows PostTask() to work.
   virtual void AttachToMessagePump() = 0;
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Detaches this ThreadController from the message pump, allowing the
   // controller to be shut down cleanly.
   virtual void DetachFromMessagePump() = 0;

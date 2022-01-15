@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_windows_thread_environment.h"
 #endif
 
@@ -47,12 +47,12 @@ class BASE_EXPORT ThreadGroup {
   enum class WorkerEnvironment {
     // No special worker environment required.
     NONE,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Initialize a COM MTA on the worker.
     COM_MTA,
     // Initialize a COM STA on the worker.
     COM_STA,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   };
 
   ThreadGroup(const ThreadGroup&) = delete;
@@ -180,7 +180,7 @@ class BASE_EXPORT ThreadGroup {
               TrackedRef<Delegate> delegate,
               ThreadGroup* predecessor_thread_group = nullptr);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static std::unique_ptr<win::ScopedWindowsThreadEnvironment>
   GetScopedWindowsThreadEnvironment(WorkerEnvironment environment);
 #endif

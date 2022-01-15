@@ -31,12 +31,12 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include "base/task/thread_pool/task_tracker_posix.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
 #endif
 
@@ -51,7 +51,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
                                    public PooledTaskRunnerDelegate {
  public:
   using TaskTrackerImpl =
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
       TaskTrackerPosix;
 #else
       TaskTracker;
@@ -94,11 +94,11 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   scoped_refptr<SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   scoped_refptr<UpdateableSequencedTaskRunner>
   CreateUpdateableSequencedTaskRunner(const TaskTraits& traits);
 
@@ -177,7 +177,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   AtomicFlag join_for_testing_returned_;
 #endif
 
-#if defined(OS_WIN) && defined(COM_INIT_CHECK_HOOK_ENABLED)
+#if BUILDFLAG(IS_WIN) && defined(COM_INIT_CHECK_HOOK_ENABLED)
   // Provides COM initialization verification for supported builds.
   base::win::ComInitCheckHook com_init_check_hook_;
 #endif

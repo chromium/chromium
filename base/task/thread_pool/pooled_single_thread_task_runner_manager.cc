@@ -28,12 +28,13 @@
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/scoped_com_initializer.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 namespace internal {
@@ -242,7 +243,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   AtomicThreadRefChecker thread_ref_checker_;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
  public:
@@ -378,7 +379,7 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
   std::unique_ptr<win::ScopedCOMInitializer> scoped_com_initializer_;
 };
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -504,7 +505,7 @@ PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunnerManager(
       delayed_task_manager_(delayed_task_manager) {
   DCHECK(task_tracker_);
   DCHECK(delayed_task_manager_);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static_assert(std::extent<decltype(shared_com_worker_threads_)>() ==
                     std::extent<decltype(shared_worker_threads_)>(),
                 "The size of |shared_com_worker_threads_| must match "
@@ -516,7 +517,7 @@ PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunnerManager(
               std::remove_reference<decltype(shared_worker_threads_[0])>>(),
       "The size of |shared_com_worker_threads_| must match "
       "|shared_worker_threads_|");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   DCHECK(!g_manager_is_alive);
   g_manager_is_alive = true;
 }
@@ -573,14 +574,14 @@ PooledSingleThreadTaskRunnerManager::CreateSingleThreadTaskRunner(
   return CreateTaskRunnerImpl<WorkerThreadDelegate>(traits, thread_mode);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 scoped_refptr<SingleThreadTaskRunner>
 PooledSingleThreadTaskRunnerManager::CreateCOMSTATaskRunner(
     const TaskTraits& traits,
     SingleThreadTaskRunnerThreadMode thread_mode) {
   return CreateTaskRunnerImpl<WorkerThreadCOMDelegate>(traits, thread_mode);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // static
 PooledSingleThreadTaskRunnerManager::ContinueOnShutdown
@@ -680,7 +681,7 @@ PooledSingleThreadTaskRunnerManager::CreateWorkerThreadDelegate<
       task_tracker_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 std::unique_ptr<WorkerThreadDelegate>
 PooledSingleThreadTaskRunnerManager::CreateWorkerThreadDelegate<
@@ -694,7 +695,7 @@ PooledSingleThreadTaskRunnerManager::CreateWorkerThreadDelegate<
           : WorkerThread::ThreadLabel::SHARED_COM,
       task_tracker_);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 template <typename DelegateType>
 WorkerThread*
@@ -721,7 +722,7 @@ PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
                                [TraitsToContinueOnShutdown(traits)];
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 WorkerThread*&
 PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
@@ -729,7 +730,7 @@ PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
   return shared_com_worker_threads_[GetEnvironmentIndexForTraits(traits)]
                                    [TraitsToContinueOnShutdown(traits)];
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PooledSingleThreadTaskRunnerManager::UnregisterWorkerThread(
     WorkerThread* worker) {
@@ -752,7 +753,7 @@ void PooledSingleThreadTaskRunnerManager::UnregisterWorkerThread(
 
 void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
   decltype(shared_worker_threads_) local_shared_worker_threads;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   decltype(shared_com_worker_threads_) local_shared_com_worker_threads;
 #endif
   {
@@ -761,7 +762,7 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
       for (size_t j = 0; j < base::size(shared_worker_threads_[i]); ++j) {
         local_shared_worker_threads[i][j] = shared_worker_threads_[i][j];
         shared_worker_threads_[i][j] = nullptr;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         local_shared_com_worker_threads[i][j] =
             shared_com_worker_threads_[i][j];
         shared_com_worker_threads_[i][j] = nullptr;
@@ -774,7 +775,7 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
     for (size_t j = 0; j < base::size(local_shared_worker_threads[i]); ++j) {
       if (local_shared_worker_threads[i][j])
         UnregisterWorkerThread(local_shared_worker_threads[i][j]);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       if (local_shared_com_worker_threads[i][j])
         UnregisterWorkerThread(local_shared_com_worker_threads[i][j]);
 #endif

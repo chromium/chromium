@@ -14,6 +14,7 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace sequence_manager {
@@ -336,17 +337,17 @@ MessagePump* ThreadControllerImpl::GetBoundMessagePump() const {
   return nullptr;
 }
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 void ThreadControllerImpl::AttachToMessagePump() {
   NOTREACHED();
 }
-#endif  // OS_IOS || OS_ANDROID
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void ThreadControllerImpl::DetachFromMessagePump() {
   NOTREACHED();
 }
-#endif  // OS_IOS
+#endif  // BUILDFLAG(IS_IOS)
 
 void ThreadControllerImpl::PrioritizeYieldingToNative(base::TimeTicks) {
   NOTREACHED();

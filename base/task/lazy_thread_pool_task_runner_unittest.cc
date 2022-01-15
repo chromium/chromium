@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_util.h"
 #endif
 
@@ -37,7 +37,7 @@ LazyThreadPoolSingleThreadTaskRunner g_single_thread_task_runner_user_blocking =
         TaskTraits(TaskPriority::USER_BLOCKING),
         SingleThreadTaskRunnerThreadMode::SHARED);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 LazyThreadPoolCOMSTATaskRunner g_com_sta_task_runner_user_visible =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
         TaskTraits(TaskPriority::USER_VISIBLE),
@@ -46,7 +46,7 @@ LazyThreadPoolCOMSTATaskRunner g_com_sta_task_runner_user_blocking =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
         TaskTraits(TaskPriority::USER_BLOCKING),
         SingleThreadTaskRunnerThreadMode::SHARED);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void InitCheckers(SequenceCheckerImpl* sequence_checker,
                   ThreadCheckerImpl* thread_checker) {
@@ -67,7 +67,7 @@ void ExpectSequencedEnvironment(SequenceCheckerImpl* sequence_checker,
 void ExpectSingleThreadEnvironment(SequenceCheckerImpl* sequence_checker,
                                    ThreadCheckerImpl* thread_checker,
                                    TaskPriority expected_priority
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                                    ,
                                    bool expect_com_sta = false
 #endif
@@ -76,7 +76,7 @@ void ExpectSingleThreadEnvironment(SequenceCheckerImpl* sequence_checker,
   EXPECT_TRUE(thread_checker->CalledOnValidThread());
   EXPECT_EQ(expected_priority, internal::GetTaskPriorityForCurrentThread());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (expect_com_sta)
     win::AssertComApartmentType(win::ComApartmentType::STA);
 #endif
@@ -95,7 +95,7 @@ class LazyThreadPoolTaskRunnerEnvironmentTest : public testing::Test {
   void TestTaskRunnerEnvironment(scoped_refptr<SequencedTaskRunner> task_runner,
                                  bool expect_single_thread,
                                  TaskPriority expected_priority
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                                  ,
                                  bool expect_com_sta = false
 #endif
@@ -112,7 +112,7 @@ class LazyThreadPoolTaskRunnerEnvironmentTest : public testing::Test {
             ? BindOnce(&ExpectSingleThreadEnvironment,
                        Unretained(&sequence_checker),
                        Unretained(&thread_checker), expected_priority
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                        ,
                        expect_com_sta
 #endif
@@ -153,7 +153,7 @@ TEST_F(LazyThreadPoolTaskRunnerEnvironmentTest,
                             true, TaskPriority::USER_BLOCKING);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(LazyThreadPoolTaskRunnerEnvironmentTest,
        LazyThreadPoolCOMSTATaskRunnerUserVisible) {
   TestTaskRunnerEnvironment(g_com_sta_task_runner_user_visible.Get(), true,
@@ -165,7 +165,7 @@ TEST_F(LazyThreadPoolTaskRunnerEnvironmentTest,
   TestTaskRunnerEnvironment(g_com_sta_task_runner_user_blocking.Get(), true,
                             TaskPriority::USER_BLOCKING, true);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST(LazyThreadPoolTaskRunnerTest, LazyThreadPoolSequencedTaskRunnerReset) {
   for (int i = 0; i < 2; ++i) {
@@ -189,7 +189,7 @@ TEST(LazyThreadPoolTaskRunnerTest, LazyThreadPoolSingleThreadTaskRunnerReset) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(LazyThreadPoolTaskRunnerTest, LazyThreadPoolCOMSTATaskRunnerReset) {
   for (int i = 0; i < 2; ++i) {
     test::TaskEnvironment task_environment;
@@ -199,6 +199,6 @@ TEST(LazyThreadPoolTaskRunnerTest, LazyThreadPoolCOMSTATaskRunnerReset) {
     g_com_sta_task_runner_user_visible.Get()->PostTask(FROM_HERE, DoNothing());
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base

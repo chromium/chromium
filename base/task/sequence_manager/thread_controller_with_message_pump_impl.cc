@@ -16,9 +16,9 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/message_loop/message_pump_mac.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "base/message_loop/message_pump_android.h"
 #endif
 
@@ -59,7 +59,7 @@ ThreadControllerWithMessagePumpImpl::~ThreadControllerWithMessagePumpImpl() {
   // ScopedSetSequenceLocalStorageMapForCurrentThread destructor will
   // de-register the current thread as a sequence.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (main_thread_only().in_high_res_mode) {
     main_thread_only().in_high_res_mode = false;
     Time::ActivateHighResolutionTimer(false);
@@ -390,7 +390,7 @@ TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   TRACE_EVENT0("sequence_manager", "SequenceManager::DoIdleWork");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!power_monitor_.IsProcessInPowerSuspendState()) {
     // Avoid calling Time::ActivateHighResolutionTimer() between
     // suspend/resume as the system hangs if we do (crbug.com/1074028).
@@ -410,7 +410,7 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
       Time::ActivateHighResolutionTimer(need_high_res_mode);
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   {
     auto work_item_scope = BeginWorkItem();
@@ -535,7 +535,7 @@ void ThreadControllerWithMessagePumpImpl::PrioritizeYieldingToNative(
   main_thread_only().yield_to_native_after_batch = prioritize_until;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
   static_cast<MessagePumpCFRunLoopBase*>(pump_.get())->Attach(this);
 }
@@ -543,7 +543,7 @@ void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
 void ThreadControllerWithMessagePumpImpl::DetachFromMessagePump() {
   static_cast<MessagePumpCFRunLoopBase*>(pump_.get())->Detach();
 }
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
   static_cast<MessagePumpForUI*>(pump_.get())->Attach(this);
 }

@@ -76,7 +76,7 @@ using LazyThreadPoolSequencedTaskRunner =
 using LazyThreadPoolSingleThreadTaskRunner =
     internal::LazyThreadPoolTaskRunner<SingleThreadTaskRunner, false>;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Lazy COM-STA enabled SingleThreadTaskRunner.
 using LazyThreadPoolCOMSTATaskRunner =
     internal::LazyThreadPoolTaskRunner<SingleThreadTaskRunner, true>;
@@ -204,7 +204,7 @@ class BASE_EXPORT ScopedLazyTaskRunnerListForTesting {
   friend class LazyThreadPoolTaskRunner<SequencedTaskRunner, false>;
   friend class LazyThreadPoolTaskRunner<SingleThreadTaskRunner, false>;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   friend class LazyThreadPoolTaskRunner<SingleThreadTaskRunner, true>;
 #endif
 

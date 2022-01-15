@@ -48,7 +48,7 @@ extern const BASE_EXPORT Feature kWakeUpStrategyFeature;
 extern const BASE_EXPORT base::FeatureParam<WakeUpStrategy>
     kWakeUpStrategyParam;
 
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #define HAS_NATIVE_THREAD_POOL() 1
 #else
 #define HAS_NATIVE_THREAD_POOL() 0

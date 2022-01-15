@@ -29,13 +29,14 @@
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/task/thread_pool/thread_group_native_win.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/task/thread_pool/thread_group_native_mac.h"
 #endif
 
@@ -140,7 +141,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
     std::unique_ptr<ThreadGroup> old_group =
         std::move(foreground_thread_group_);
     foreground_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
         ThreadPriority::NORMAL,
 #endif
         task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
@@ -153,7 +154,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
     std::unique_ptr<ThreadGroup> old_group =
         std::move(background_thread_group_);
     background_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
         ThreadPriority::BACKGROUND,
 #endif
         task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
@@ -168,7 +169,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   // FileDescriptorWatcher in the scope in which tasks run.
   ServiceThread::Options service_thread_options;
   service_thread_options.message_pump_type =
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
       MessagePumpType::IO;
 #else
       MessagePumpType::DEFAULT;
@@ -178,11 +179,11 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   if (g_synchronous_thread_start_for_testing)
     service_thread_.WaitUntilThreadStarted();
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   // Needs to happen after starting the service thread to get its
   // task_runner().
   task_tracker_->set_io_thread_task_runner(service_thread_.task_runner());
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
   UpdateCanRunPolicy();
@@ -198,7 +199,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
     case InitParams::CommonThreadPoolEnvironment::DEFAULT:
       worker_environment = ThreadGroup::WorkerEnvironment::NONE;
       break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case InitParams::CommonThreadPoolEnvironment::COM_MTA:
       worker_environment = ThreadGroup::WorkerEnvironment::COM_MTA;
       break;
@@ -245,7 +246,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
           ->Start(max_best_effort_tasks, max_best_effort_tasks,
                   suggested_reclaim_time, service_thread_task_runner,
                   worker_thread_observer,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                   // COM STA is a backward-compatibility feature for the
                   // foreground thread group only.
                   worker_environment == ThreadGroup::WorkerEnvironment::COM_STA
@@ -293,7 +294,7 @@ ThreadPoolImpl::CreateSingleThreadTaskRunner(
       traits, thread_mode);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 scoped_refptr<SingleThreadTaskRunner> ThreadPoolImpl::CreateCOMSTATaskRunner(
     const TaskTraits& traits,
     SingleThreadTaskRunnerThreadMode thread_mode) {
@@ -301,7 +302,7 @@ scoped_refptr<SingleThreadTaskRunner> ThreadPoolImpl::CreateCOMSTATaskRunner(
   return single_thread_task_runner_manager_.CreateCOMSTATaskRunner(traits,
                                                                    thread_mode);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 scoped_refptr<UpdateableSequencedTaskRunner>
 ThreadPoolImpl::CreateUpdateableSequencedTaskRunner(const TaskTraits& traits) {
@@ -443,7 +444,7 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
   CHECK(task.task);
   DCHECK(sequence);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Force reading |task.posted_from.file_name()| to produce a useful crash
   // report if the address is invalid. A crash report generated later when the
   // task is executed would not contain the PostTask stack.

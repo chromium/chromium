@@ -173,7 +173,7 @@ class BASE_EXPORT SequenceManagerImpl
   void SetAddQueueTimeToTasks(bool enable);
   void SetTaskExecutionAllowed(bool allowed);
   bool IsTaskExecutionAllowed() const;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   void AttachToMessagePump();
 #endif
   bool IsIdleForTesting() override;

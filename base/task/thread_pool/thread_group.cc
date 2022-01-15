@@ -13,8 +13,9 @@
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/threading/thread_local.h"
+#include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_winrt_initializer.h"
@@ -299,7 +300,7 @@ bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   return max_allowed_sort_key.priority != TaskPriority::BEST_EFFORT;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 std::unique_ptr<win::ScopedWindowsThreadEnvironment>
 ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
