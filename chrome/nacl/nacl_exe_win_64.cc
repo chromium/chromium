@@ -20,7 +20,7 @@ base::LazyInstance<ChromeCrashReporterClient>::Leaky g_chrome_crash_client =
 } // namespace
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   install_static::InitializeProductDetailsForPrimaryModule();
 #endif
 
