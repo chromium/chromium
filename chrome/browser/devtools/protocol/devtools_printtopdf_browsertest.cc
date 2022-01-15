@@ -7,7 +7,7 @@
 // Native headless is currently available only on Linux platform. More
 // platforms will be added soon, so avoid function level clutter by
 // ifdefing the entire file.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 
 #include <string>
 #include <vector>
@@ -467,4 +467,4 @@ IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfAsStream) {
 
 }  // namespace
 
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)

@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 }
 
 // Flaky/failing on Linux/CrOS/Mac builds: crbug.com/1284536
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation \
   DISABLED_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation
 #else

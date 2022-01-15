@@ -148,7 +148,7 @@ class AdbClientSocketTest : public InProcessBrowserTest,
 // Combine all tests into one. Splitting up into multiple tests can be flaky
 // due to failure to bind a hardcoded port. crbug.com/566057
 // The tests seems to be stable on Windows bots only:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestCombined TestCombined
 #else
 #define MAYBE_TestCombined DISABLED_TestCombined
