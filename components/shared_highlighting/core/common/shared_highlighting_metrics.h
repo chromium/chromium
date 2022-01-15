@@ -86,6 +86,21 @@ enum class TextFragmentLinkOpenSource {
   kMaxValue = kSearchEngine,
 };
 
+// These values are persisted in histograms. Entries should not be renumbered
+// and numeric values should never be reused. The status of link to text reshare
+// attempt. Update corresponding |LinkToTextReshareStatus| in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.share.link_to_text
+enum class LinkToTextReshareStatus {
+  kSuccess = 0,
+  kNoRemoteConnection = 1,
+  kTabHidden = 2,
+  kOmniboxNavigation = 3,
+  kTabCrash = 4,
+  kTimeout = 5,
+
+  kMaxValue = kTimeout,
+};
+
 // Records the type of link generation that was copied on desktop.
 void LogDesktopLinkGenerationCopiedLinkType(LinkGenerationCopiedLinkType type);
 
@@ -129,6 +144,9 @@ void LogGenerateSuccessLatency(base::TimeDelta latency);
 
 // Records the latency for failing to generate a link.
 void LogGenerateErrorLatency(base::TimeDelta latency);
+
+// Records the outcome of link to text reshare attempt.
+void LogLinkToTextReshareStatus(LinkToTextReshareStatus status);
 
 // Records a UKM event for opening a link with text fragments. |source_id|
 // refers to the navigation action's ID, |referrer| will be used to record the

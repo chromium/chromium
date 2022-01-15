@@ -96,6 +96,11 @@ void LogGenerateErrorLatency(base::TimeDelta latency) {
                           latency);
 }
 
+void LogLinkToTextReshareStatus(LinkToTextReshareStatus status) {
+  base::UmaHistogramEnumeration("SharedHighlights.ObtainReshareLink.Status",
+                                status);
+}
+
 void LogLinkOpenedUkmEvent(ukm::SourceId source_id,
                            const GURL& referrer,
                            bool success) {

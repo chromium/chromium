@@ -30,6 +30,10 @@ public class LinkToTextBridge {
         LinkToTextBridgeJni.get().logLinkRequestedBeforeStatus(status, readyStatus);
     }
 
+    public static void logLinkToTextReshareStatus(@LinkToTextReshareStatus int status) {
+        LinkToTextBridgeJni.get().logLinkToTextReshareStatus(status);
+    }
+
     @NativeMethods
     interface Natives {
         boolean shouldOfferLinkToText(GURL url);
@@ -37,5 +41,6 @@ public class LinkToTextBridge {
         void logSuccessMetrics();
         void logLinkRequestedBeforeStatus(
                 @LinkGenerationStatus int status, @LinkGenerationReadyStatus int readyStatus);
+        void logLinkToTextReshareStatus(@LinkToTextReshareStatus int status);
     }
 }

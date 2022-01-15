@@ -38,6 +38,15 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         int MAX = 3;
     }
 
+    @IntDef({RemoteRequestStatus.NONE, RemoteRequestStatus.REQUESTED, RemoteRequestStatus.COMPLETED,
+            RemoteRequestStatus.CANCELLED})
+    public @interface RemoteRequestStatus {
+        int NONE = 0;
+        int REQUESTED = 1;
+        int COMPLETED = 2;
+        int CANCELLED = 3;
+    }
+
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String INVALID_SELECTOR = "";
     private static final int TIMEOUT_MS = 100;
@@ -55,10 +64,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     private String mShareUrl;
     private TextFragmentReceiver mProducer;
-    private boolean mCancelRequest;
     private String mSelectedText;
     private ShareParams mShareLinkParams;
     private ShareParams mShareTextParams;
+    private @RemoteRequestStatus int mRemoteRequestStatus;
 
     public LinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl,
@@ -71,7 +80,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mSelectedText = selectedText;
 
         mTab.addObserver(this);
-        mCancelRequest = false;
+        mRemoteRequestStatus = RemoteRequestStatus.NONE;
     }
 
     public ShareParams getShareParams(@LinkToggleState int linkToggleState) {
@@ -91,8 +100,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     @VisibleForTesting
     void onSelectorReady(String selector) {
-        if (mCancelRequest) return;
-
         mShareLinkParams = selector.isEmpty()
                 ? null
                 : new ShareParams
@@ -110,9 +117,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mChromeOptionShareCallback.showShareSheet(
                 getShareParams(selector.isEmpty() ? LinkToggleState.NO_LINK : LinkToggleState.LINK),
                 mChromeShareExtras, mShareStartTime);
-
-        // After generation results are communicated to users, cleanup to remove tab listener.
-        cleanup();
     }
 
     @VisibleForTesting
@@ -146,40 +150,53 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     private void reshareHighlightedText() {
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
         setTextFragmentReceiver();
-
         if (mProducer == null) {
-            onSelectorReady(INVALID_SELECTOR);
+            completeReshareWithFailure(LinkToTextReshareStatus.NO_REMOTE_CONNECTION);
             return;
         }
 
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
+        mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
         LinkToTextHelper.extractTextFragmentsMatches(mProducer, (matches) -> {
             mSelectedText = String.join(",", matches);
-            LinkToTextHelper.getExistingSelectorsAllFrames(
-                    mTab, (selectors) -> { onSelectorReady(selectors); });
+            LinkToTextHelper.getExistingSelectorsAllFrames(mTab, (selectors) -> {
+                if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
+
+                mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
+                completeRemoteRequestWithSuccess(selectors);
+            });
         });
     }
 
     // Discard results if tab is not on foreground anymore.
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
-        completeRequestWithFailure(LinkGenerationError.TAB_HIDDEN);
-        cleanup();
+        if (mChromeShareExtras.isReshareHighlightedText()) {
+            completeReshareWithFailure(LinkToTextReshareStatus.TAB_HIDDEN);
+        } else {
+            completeRequestWithFailure(LinkGenerationError.TAB_HIDDEN);
+        }
     }
 
     // Discard results if tab content is changed by typing new URL in omnibox.
     @Override
     public void onUpdateUrl(Tab tab, GURL url) {
-        completeRequestWithFailure(LinkGenerationError.OMNIBOX_NAVIGATION);
-        cleanup();
+        if (mChromeShareExtras.isReshareHighlightedText()) {
+            completeReshareWithFailure(LinkToTextReshareStatus.OMNIBOX_NAVIGATION);
+        } else {
+            completeRequestWithFailure(LinkGenerationError.OMNIBOX_NAVIGATION);
+        }
     }
 
     // Discard results if tab content crashes.
     @Override
     public void onCrash(Tab tab) {
-        completeRequestWithFailure(LinkGenerationError.TAB_CRASH);
-        cleanup();
+        if (mChromeShareExtras.isReshareHighlightedText()) {
+            completeReshareWithFailure(LinkToTextReshareStatus.TAB_CRASH);
+        } else {
+            completeRequestWithFailure(LinkGenerationError.TAB_CRASH);
+        }
     }
 
     private void requestSelector() {
@@ -195,13 +212,17 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
+        mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
         LinkToTextHelper.requestSelector(mProducer, (selector, error, readyStatus) -> {
+            if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
+
+            mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
             boolean success = !selector.isEmpty();
             assert error != null;
 
             if (success) {
                 assert error == LinkGenerationError.NONE;
-                completeRequestWithSuccess(selector);
+                completeRemoteRequestWithSuccess(selector);
             } else {
                 assert error != LinkGenerationError.NONE;
                 completeRequestWithFailure(error.intValue());
@@ -269,31 +290,79 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
     }
 
+    private void cancel() {
+        // Cancel can be called before remote task was requested requested, for example, blocklist
+        // case. Cancel only if remote request was requested.
+        if (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED) {
+            mRemoteRequestStatus = RemoteRequestStatus.CANCELLED;
+            // Cancelling remote request for reshare is not implemented. Cancelling only for
+            // generated selector request.
+            if (!mChromeShareExtras.isReshareHighlightedText() && mProducer != null) {
+                mProducer.cancel();
+            }
+        }
+    }
+
     private void cleanup() {
         if (mProducer != null) {
-            mProducer.cancel();
             mProducer.close();
         }
-        mCancelRequest = true;
         mTab.removeObserver(this);
     }
 
-    // TODO(crbug.com/1275264): This function is called for AMP with different timeout as well as
-    // for reshare. We should distinguish these cases for metrics purposes.
     private void timeout() {
-        if (!mCancelRequest) {
-            completeRequestWithFailure(LinkGenerationError.TIMEOUT);
+        assert (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED
+                || mRemoteRequestStatus == RemoteRequestStatus.COMPLETED);
+
+        // If the request is already completed, then ignore the timeout.
+        if (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED) {
+            if (mChromeShareExtras.isReshareHighlightedText()) {
+                completeReshareWithFailure(LinkToTextReshareStatus.TIMEOUT);
+            } else {
+                completeRequestWithFailure(LinkGenerationError.TIMEOUT);
+            }
         }
     }
 
     private void completeRequestWithFailure(@LinkGenerationError int error) {
         LinkToTextBridge.logFailureMetrics(error);
-        onSelectorReady(INVALID_SELECTOR);
+
+        switch (error) {
+            case LinkGenerationError.TAB_HIDDEN:
+            case LinkGenerationError.OMNIBOX_NAVIGATION:
+            case LinkGenerationError.TAB_CRASH:
+                break;
+            default:
+                onSelectorReady(INVALID_SELECTOR);
+        }
+
+        cancel();
+        cleanup();
     }
 
-    private void completeRequestWithSuccess(String selector) {
-        LinkToTextBridge.logSuccessMetrics();
+    private void completeRemoteRequestWithSuccess(String selector) {
+        if (mChromeShareExtras.isReshareHighlightedText()) {
+            LinkToTextBridge.logLinkToTextReshareStatus(LinkToTextReshareStatus.SUCCESS);
+        } else {
+            LinkToTextBridge.logSuccessMetrics();
+        }
         onSelectorReady(selector);
+        cleanup();
+    }
+
+    private void completeReshareWithFailure(@LinkToTextReshareStatus int status) {
+        LinkToTextBridge.logLinkToTextReshareStatus(status);
+
+        switch (status) {
+            case LinkToTextReshareStatus.TAB_HIDDEN:
+            case LinkToTextReshareStatus.OMNIBOX_NAVIGATION:
+            case LinkToTextReshareStatus.TAB_CRASH:
+                break;
+            default:
+                onSelectorReady(INVALID_SELECTOR);
+        }
+        cancel();
+        cleanup();
     }
 
     private int getTimeout() {

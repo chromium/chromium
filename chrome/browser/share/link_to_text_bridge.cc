@@ -39,3 +39,9 @@ static void JNI_LinkToTextBridge_LogLinkRequestedBeforeStatus(
       static_cast<LinkGenerationStatus>(status),
       static_cast<LinkGenerationReadyStatus>(ready_status));
 }
+
+static void JNI_LinkToTextBridge_LogLinkToTextReshareStatus(JNIEnv* env,
+                                                            jint status) {
+  shared_highlighting::LogLinkToTextReshareStatus(
+      static_cast<shared_highlighting::LinkToTextReshareStatus>(status));
+}

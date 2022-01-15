@@ -49614,6 +49614,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Selector is received for highlighted text"/>
 </enum>
 
+<enum name="LinkToTextReshareStatus">
+  <int value="0" label="Successful."/>
+  <int value="1" label="Not possible to request. remote connection issues."/>
+  <int value="2" label="Cancelled due to tab getting hidden."/>
+  <int value="3" label="Cancelled due to omnibox navigation."/>
+  <int value="4" label="Cancelled due to tab crash."/>
+  <int value="5" label="Cancelled due to time out"/>
+</enum>
+
 <enum name="LinkToTextShouldOfferResult">
   <int value="0" label="Success"/>
   <int value="1" label="Rejected in JavaScript (deprecated)"/>

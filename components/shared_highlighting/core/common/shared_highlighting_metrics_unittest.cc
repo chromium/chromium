@@ -349,6 +349,23 @@ TEST_F(SharedHighlightingMetricsTest, LogLinkRequestedBeforeStatus) {
       "SharedHighlights.LinkGenerated.RequestedAfterReady", 2);
 }
 
+// Tests that link generation failure latency logs to the right histogram.
+TEST_F(SharedHighlightingMetricsTest, LogLinkToTextReshareStatus) {
+  LogLinkToTextReshareStatus(LinkToTextReshareStatus::kSuccess);
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.ObtainReshareLink.Status",
+      LinkToTextReshareStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.ObtainReshareLink.Status", 1);
+
+  LogLinkToTextReshareStatus(LinkToTextReshareStatus::kTimeout);
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.ObtainReshareLink.Status",
+      LinkToTextReshareStatus::kTimeout, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.ObtainReshareLink.Status", 2);
+}
+
 }  // namespace
 
 }  // namespace shared_highlighting
