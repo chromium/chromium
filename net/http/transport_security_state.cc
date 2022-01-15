@@ -386,6 +386,10 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
 const base::Feature TransportSecurityState::kDynamicExpectCTFeature{
     "DynamicExpectCT", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// static
+const base::Feature TransportSecurityState::kCertificateTransparencyEnforcement{
+    "CertificateTransparencyEnforcement", base::FEATURE_ENABLED_BY_DEFAULT};
+
 void SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source) {
   g_hsts_source = source ? source : kDefaultHSTSSource;
@@ -487,9 +491,12 @@ TransportSecurityState::CheckCTRequirements(
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 
-  // If CT emergency disable flag is set, we don't require CT for any host.
-  if (ct_emergency_disable_)
+  // If CT is emergency disabled, either through a component updater set flag or
+  // through the feature flag, we don't require CT for any host.
+  if (ct_emergency_disable_ ||
+      !base::FeatureList::IsEnabled(kCertificateTransparencyEnforcement)) {
     return CT_NOT_REQUIRED;
+  }
 
   // CT is not required if the certificate does not chain to a publicly
   // trusted root certificate. Testing can override this, as certain tests

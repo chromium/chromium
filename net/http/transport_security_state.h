@@ -359,6 +359,11 @@ class NET_EXPORT TransportSecurityState {
   // and stored.
   static const base::Feature kDynamicExpectCTFeature;
 
+  // Feature that controls whether Certificate Transparency is enforced. This
+  // feature is default enabled and meant only as an emergency killswitch. It
+  // will not enable enforcement in platforms that otherwise have it disabled.
+  static const base::Feature kCertificateTransparencyEnforcement;
+
   TransportSecurityState();
 
   // Creates a TransportSecurityState object that will skip the check to force
