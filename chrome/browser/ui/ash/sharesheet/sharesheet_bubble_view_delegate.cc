@@ -18,9 +18,12 @@ namespace sharesheet {
 SharesheetBubbleViewDelegate::SharesheetBubbleViewDelegate(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* sharesheet_service_delegator)
-    : sharesheet_bubble_view_(
-          new SharesheetBubbleView(native_window,
-                                   sharesheet_service_delegator)) {}
+    : sharesheet_bubble_view_owned_(
+          std::make_unique<SharesheetBubbleView>(native_window,
+                                                 sharesheet_service_delegator)),
+      sharesheet_bubble_view_(sharesheet_bubble_view_owned_.get()) {}
+
+SharesheetBubbleViewDelegate::~SharesheetBubbleViewDelegate() = default;
 
 void SharesheetBubbleViewDelegate::ShowBubble(
     std::vector<::sharesheet::TargetInfo> targets,
@@ -37,10 +40,12 @@ void SharesheetBubbleViewDelegate::ShowBubble(
     }
     return;
   }
-  DCHECK(sharesheet_bubble_view_);
-  sharesheet_bubble_view_->ShowBubble(std::move(targets), std::move(intent),
-                                      std::move(delivered_callback),
-                                      std::move(close_callback));
+  DCHECK(sharesheet_bubble_view_owned_);
+  // The BubbleView gives its own ownership to the widget in ShowBubble(), so we
+  // relinquish our ownership here.
+  sharesheet_bubble_view_owned_.release()->ShowBubble(
+      std::move(targets), std::move(intent), std::move(delivered_callback),
+      std::move(close_callback));
 }
 
 void SharesheetBubbleViewDelegate::ShowNearbyShareBubbleForArc(
@@ -57,8 +62,10 @@ void SharesheetBubbleViewDelegate::ShowNearbyShareBubbleForArc(
     }
     return;
   }
-  DCHECK(sharesheet_bubble_view_);
-  sharesheet_bubble_view_->ShowNearbyShareBubbleForArc(
+  DCHECK(sharesheet_bubble_view_owned_);
+  // The BubbleView gives its own ownership to the widget in
+  // ShowNearbyShareBubbleForArc(), so we relinquish our ownership here.
+  sharesheet_bubble_view_owned_.release()->ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
 }

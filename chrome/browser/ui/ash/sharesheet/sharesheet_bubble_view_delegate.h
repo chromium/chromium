@@ -25,7 +25,7 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
   SharesheetBubbleViewDelegate(
       gfx::NativeWindow native_window,
       ::sharesheet::SharesheetServiceDelegator* sharesheet_service_delegator);
-  ~SharesheetBubbleViewDelegate() override = default;
+  ~SharesheetBubbleViewDelegate() override;
   SharesheetBubbleViewDelegate(const SharesheetBubbleViewDelegate&) = delete;
   SharesheetBubbleViewDelegate& operator=(const SharesheetBubbleViewDelegate&) =
       delete;
@@ -55,8 +55,8 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
 
   SharesheetBubbleView* GetBubbleViewForTesting();
 
-  // Owned by views.
-  raw_ptr<SharesheetBubbleView> sharesheet_bubble_view_;
+  std::unique_ptr<SharesheetBubbleView> sharesheet_bubble_view_owned_;
+  raw_ptr<SharesheetBubbleView> sharesheet_bubble_view_ = nullptr;
 };
 
 }  // namespace sharesheet

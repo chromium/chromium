@@ -262,7 +262,7 @@ void SharesheetBubbleView::ShowBubble(
   main_view_->RequestFocus();
   main_view_->GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
-  views::BubbleDialogDelegateView::CreateBubble(this);
+  views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
   GetWidget()->GetRootView()->Layout();
   RecordFormFactorMetric();
   RecordMimeTypeMetric(intent_);
