@@ -54,7 +54,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -105,10 +105,10 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
 
   bool IsGeolocationAccessed();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool IsGeolocationAllowedOnASystemLevel();
   bool IsGeolocationPermissionDetermined();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
@@ -179,12 +179,12 @@ class ContentSettingMediaImageModel : public ContentSettingImageModel {
   bool IsCamAccessed();
   bool IsMicBlockedOnSiteLevel();
   bool IsCameraBlockedOnSiteLevel();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool DidCameraAccessFailBecauseOfSystemLevelBlock();
   bool DidMicAccessFailBecauseOfSystemLevelBlock();
   bool IsCameraAccessPendingOnSystemLevelPrompt();
   bool IsMicAccessPendingOnSystemLevelPrompt();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
@@ -405,7 +405,7 @@ void ContentSettingImageModel::SetPromoWasShown(
 
 bool ContentSettingImageModel::
     IsMacRestoreLocationPermissionExperimentActive() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(
              features::kLocationPermissionsExperiment) &&
          g_browser_process->local_state()->GetInteger(
@@ -528,7 +528,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
   if (!is_allowed && !is_blocked)
     return false;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   set_explanatory_string_id(0);
   if (is_allowed) {
     if (!IsGeolocationAllowedOnASystemLevel()) {
@@ -576,7 +576,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
       return true;
     }
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   set_icon(vector_icons::kLocationOnIcon,
            is_allowed ? gfx::kNoneIcon : vector_icons::kBlockedBadgeIcon);
@@ -589,7 +589,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
   return true;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
   device::GeolocationManager* geolocation_manager =
       g_browser_process->platform_part()->geolocation_manager();
@@ -608,7 +608,7 @@ bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
   return permission != device::LocationSystemPermissionStatus::kNotDetermined;
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingGeolocationImageModel::CreateBubbleModelImpl(
@@ -749,78 +749,78 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
   if (state_ == PageSpecificContentSettings::MICROPHONE_CAMERA_NOT_ACCESSED)
     return false;
 
-#if defined(OS_MAC)
-    // Don't show an icon when the user has not made a decision yet for
-    // the site level media permissions.
-    if (IsCameraAccessPendingOnSystemLevelPrompt() ||
-        IsMicAccessPendingOnSystemLevelPrompt()) {
-      return false;
-    }
+#if BUILDFLAG(IS_MAC)
+  // Don't show an icon when the user has not made a decision yet for
+  // the site level media permissions.
+  if (IsCameraAccessPendingOnSystemLevelPrompt() ||
+      IsMicAccessPendingOnSystemLevelPrompt()) {
+    return false;
+  }
 
-    set_explanatory_string_id(0);
+  set_explanatory_string_id(0);
 
-    if (IsCamAccessed() && IsMicAccessed()) {
-      if (IsCameraBlockedOnSiteLevel() || IsMicBlockedOnSiteLevel()) {
-        set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED));
-      } else if (DidCameraAccessFailBecauseOfSystemLevelBlock() ||
-                 DidMicAccessFailBecauseOfSystemLevelBlock()) {
-        set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED));
-        if (content_settings->camera_was_just_granted_on_site_level() ||
-            content_settings->mic_was_just_granted_on_site_level()) {
-          // Automatically trigger the new bubble, if the camera
-          // and/or mic was just granted on a site level, but blocked on a
-          // system level.
-          set_should_auto_open_bubble(true);
-        } else {
-          set_explanatory_string_id(IDS_CAMERA_TURNED_OFF);
-        }
+  if (IsCamAccessed() && IsMicAccessed()) {
+    if (IsCameraBlockedOnSiteLevel() || IsMicBlockedOnSiteLevel()) {
+      set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED));
+    } else if (DidCameraAccessFailBecauseOfSystemLevelBlock() ||
+               DidMicAccessFailBecauseOfSystemLevelBlock()) {
+      set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED));
+      if (content_settings->camera_was_just_granted_on_site_level() ||
+          content_settings->mic_was_just_granted_on_site_level()) {
+        // Automatically trigger the new bubble, if the camera
+        // and/or mic was just granted on a site level, but blocked on a
+        // system level.
+        set_should_auto_open_bubble(true);
       } else {
-        set_icon(vector_icons::kVideocamIcon, gfx::kNoneIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_ALLOWED));
+        set_explanatory_string_id(IDS_CAMERA_TURNED_OFF);
       }
-      return true;
+    } else {
+      set_icon(vector_icons::kVideocamIcon, gfx::kNoneIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_ALLOWED));
     }
+    return true;
+  }
 
-    if (IsCamAccessed()) {
-      if (IsCameraBlockedOnSiteLevel()) {
-        set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
-      } else if (DidCameraAccessFailBecauseOfSystemLevelBlock()) {
-        set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
-        if (content_settings->camera_was_just_granted_on_site_level()) {
-          set_should_auto_open_bubble(true);
-        } else {
-          set_explanatory_string_id(IDS_CAMERA_TURNED_OFF);
-        }
+  if (IsCamAccessed()) {
+    if (IsCameraBlockedOnSiteLevel()) {
+      set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
+    } else if (DidCameraAccessFailBecauseOfSystemLevelBlock()) {
+      set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
+      if (content_settings->camera_was_just_granted_on_site_level()) {
+        set_should_auto_open_bubble(true);
       } else {
-        set_icon(vector_icons::kVideocamIcon, gfx::kNoneIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_ACCESSED));
+        set_explanatory_string_id(IDS_CAMERA_TURNED_OFF);
       }
-      return true;
+    } else {
+      set_icon(vector_icons::kVideocamIcon, gfx::kNoneIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_ACCESSED));
     }
+    return true;
+  }
 
-    if (IsMicAccessed()) {
-      if (IsMicBlockedOnSiteLevel()) {
-        set_icon(vector_icons::kMicIcon, vector_icons::kBlockedBadgeIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
-      } else if (DidMicAccessFailBecauseOfSystemLevelBlock()) {
-        set_icon(vector_icons::kMicIcon, vector_icons::kBlockedBadgeIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
-        if (content_settings->mic_was_just_granted_on_site_level()) {
-          set_should_auto_open_bubble(true);
-        } else {
-          set_explanatory_string_id(IDS_MIC_TURNED_OFF);
-        }
+  if (IsMicAccessed()) {
+    if (IsMicBlockedOnSiteLevel()) {
+      set_icon(vector_icons::kMicIcon, vector_icons::kBlockedBadgeIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
+    } else if (DidMicAccessFailBecauseOfSystemLevelBlock()) {
+      set_icon(vector_icons::kMicIcon, vector_icons::kBlockedBadgeIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
+      if (content_settings->mic_was_just_granted_on_site_level()) {
+        set_should_auto_open_bubble(true);
       } else {
-        set_icon(vector_icons::kMicIcon, gfx::kNoneIcon);
-        set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED));
+        set_explanatory_string_id(IDS_MIC_TURNED_OFF);
       }
-      return true;
+    } else {
+      set_icon(vector_icons::kMicIcon, gfx::kNoneIcon);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED));
     }
-#endif  // defined(OS_MAC)
+    return true;
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   DCHECK(IsMicAccessed() || IsCamAccessed());
 
@@ -859,7 +859,7 @@ bool ContentSettingMediaImageModel::IsCameraBlockedOnSiteLevel() {
   return ((state_ & PageSpecificContentSettings::CAMERA_BLOCKED) != 0);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool ContentSettingMediaImageModel::
     DidCameraAccessFailBecauseOfSystemLevelBlock() {
   return (IsCamAccessed() && !IsCameraBlockedOnSiteLevel() &&
@@ -886,7 +886,7 @@ bool ContentSettingMediaImageModel::IsMicAccessPendingOnSystemLevelPrompt() {
           IsMicAccessed() && !IsMicBlockedOnSiteLevel());
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingMediaImageModel::CreateBubbleModelImpl(

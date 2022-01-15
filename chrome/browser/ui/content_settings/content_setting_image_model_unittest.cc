@@ -51,7 +51,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
@@ -287,7 +287,7 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
       /* tooltip_empty = */ false, IDS_SENSORS_BLOCKED_TOOLTIP, 0);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Test the correct ContentSettingImageModel for various permutations of site
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
@@ -641,7 +641,7 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconVisibility) {
   EXPECT_FALSE(content_setting_image_model->is_visible());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContentSettingImageModelTest, NotificationsPrompt) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -731,6 +731,6 @@ TEST_F(ContentSettingImageModelTest, NotificationsContentAbusive) {
   EXPECT_EQ(0, content_setting_image_model->explanatory_string_id());
   manager_->Accept();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

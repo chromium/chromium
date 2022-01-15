@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -84,7 +85,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/ui_resources.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -104,7 +105,7 @@ namespace {
 
 using QuietUiReason = permissions::PermissionRequestManager::QuietUiReason;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 static constexpr char kCameraSettingsURI[] =
     "x-apple.systempreferences:com.apple.preference.security?Privacy_"
     "Camera";
@@ -114,7 +115,7 @@ static constexpr char kMicSettingsURI[] =
 static constexpr char kLocationSettingsURI[] =
     "x-apple.systempreferences:com.apple.preference.security?Privacy_"
     "LocationServices";
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Returns a boolean indicating whether the setting should be managed by the
 // user (i.e. it is not controlled by policy). Also takes a (nullable) out-param
@@ -825,10 +826,10 @@ ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
   // If the permission is turned off in MacOS system preferences, overwrite
   // the bubble to enable the user to trigger the system dialog.
   if (ShouldShowSystemMediaPermissions()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     InitializeSystemMediaPermissionBubble();
     return;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   SetTitle();
@@ -878,7 +879,7 @@ void ContentSettingMediaStreamBubbleModel::OnManageButtonClicked() {
 
 void ContentSettingMediaStreamBubbleModel::OnDoneButtonClicked() {
   if (ShouldShowSystemMediaPermissions()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     DCHECK(CameraAccessed() || MicrophoneAccessed());
 
     base::RecordAction(UserMetricsAction("Media.OpenPreferencesClicked"));
@@ -892,7 +893,7 @@ void ContentSettingMediaStreamBubbleModel::OnDoneButtonClicked() {
           GURL(kMicSettingsURI), web_contents(), content::WeakDocumentPtr());
     }
     return;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 }
 
@@ -1062,7 +1063,7 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void ContentSettingMediaStreamBubbleModel::
     InitializeSystemMediaPermissionBubble() {
   DCHECK(CameraAccessed() || MicrophoneAccessed());
@@ -1102,10 +1103,10 @@ void ContentSettingMediaStreamBubbleModel::
   SetCustomLink();
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_PREFERENCES_LINK));
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return (((system_media_permissions::CheckSystemVideoCapturePermission() ==
                 system_media_permissions::SystemPermission::kDenied &&
             CameraAccessed() && !CameraBlocked()) ||
@@ -1116,7 +1117,7 @@ bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
           !(MicrophoneAccessed() && MicrophoneBlocked()));
 #else
   return false;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void ContentSettingMediaStreamBubbleModel::UpdateDefaultDeviceForType(
@@ -1234,7 +1235,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
                                      web_contents,
                                      ContentSettingsType::GEOLOCATION) {
   SetCustomLink();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
   if (!content_settings)
@@ -1252,7 +1253,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     // the bubble to enable the user to trigger the system dialog.
     InitializeSystemGeolocationPermissionBubble();
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
@@ -1260,7 +1261,7 @@ ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
 
 void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
   if (show_system_geolocation_bubble_) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (show_system_geolocation_bubble_) {
       base::RecordAction(UserMetricsAction(
           "ContentSettings.GeolocationDialog.OpenPreferencesClicked"));
@@ -1269,7 +1270,7 @@ void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
         GURL(kLocationSettingsURI), web_contents(), content::WeakDocumentPtr());
     return;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 }
 
@@ -1286,7 +1287,7 @@ void ContentSettingGeolocationBubbleModel::CommitChanges() {
 
 void ContentSettingGeolocationBubbleModel::
     InitializeSystemGeolocationPermissionBubble() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kLocationPermissionsExperiment)) {
     set_title(l10n_util::GetStringUTF16(
         IDS_GEOLOCATION_TURNED_OFF_IN_MACOS_SETTINGS));
@@ -1303,7 +1304,7 @@ void ContentSettingGeolocationBubbleModel::
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_PREFERENCES_LINK));
   set_radio_group(RadioGroup());
   show_system_geolocation_bubble_ = true;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void ContentSettingGeolocationBubbleModel::SetCustomLink() {

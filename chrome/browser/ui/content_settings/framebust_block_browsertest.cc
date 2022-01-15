@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
                                             ContentSettingsType::POPUPS));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ManageButtonClicked DISABLED_ManageButtonClicked
 #else
 #define MAYBE_ManageButtonClicked ManageButtonClicked
