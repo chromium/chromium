@@ -22,7 +22,6 @@
 
 #include <limits>
 
-#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -163,10 +162,9 @@ void CauseSignal(int sig, int code) {
  * Arm architecture.
  */
 #if defined(ARCH_CPU_X86_FAMILY)
-      volatile int a = 42;
+      [[maybe_unused]] volatile int a = 42;
       volatile int b = 0;
       a /= b;
-      ALLOW_UNUSED_LOCAL(a);
 #endif
       break;
     }

@@ -28,7 +28,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -252,11 +251,10 @@ bool AddKeyValueToMap(std::map<std::string, std::string>* map,
 // a normal exit, or if a CallMetricsRecordNormalExit object is destroyed after
 // something else logs an exit event.
 void MetricsRecordExit(Metrics::LifetimeMilestone milestone) {
-  static bool once = [](Metrics::LifetimeMilestone milestone) {
+  [[maybe_unused]] static bool once = [](Metrics::LifetimeMilestone milestone) {
     Metrics::HandlerLifetimeMilestone(milestone);
     return true;
   }(milestone);
-  ALLOW_UNUSED_LOCAL(once);
 }
 
 // Calls MetricsRecordExit() to record a failure, and returns EXIT_FAILURE for
@@ -422,8 +420,8 @@ void InstallCrashHandler() {
   // enough. Note that destroying the TerminateHandler would wait for its thread
   // to exit, which isn’t necessary or desirable.
   SetConsoleCtrlHandler(ConsoleHandler, true);
-  static TerminateHandler* terminate_handler = new TerminateHandler();
-  ALLOW_UNUSED_LOCAL(terminate_handler);
+  [[maybe_unused]] static TerminateHandler* terminate_handler =
+      new TerminateHandler();
 }
 
 #endif  // OS_APPLE

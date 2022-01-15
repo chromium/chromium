@@ -16,7 +16,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
@@ -86,8 +85,7 @@ TEST(MinidumpStringWriter, MinidumpUTF16StringWriter) {
 
     const size_t expected_utf16_units_with_nul =
         kTestData[index].output_length + 1;
-    MINIDUMP_STRING* tmp;
-    ALLOW_UNUSED_LOCAL(tmp);
+    [[maybe_unused]] MINIDUMP_STRING* tmp;
     const size_t expected_utf16_bytes =
         expected_utf16_units_with_nul * sizeof(tmp->Buffer[0]);
     ASSERT_EQ(string_file.string().size(), sizeof(*tmp) + expected_utf16_bytes);
@@ -130,8 +128,7 @@ TEST(MinidumpStringWriter, ConvertInvalidUTF8ToUTF16) {
     const MINIDUMP_STRING* minidump_string =
         MinidumpStringAtRVA(string_file.string(), 0);
     EXPECT_TRUE(minidump_string);
-    MINIDUMP_STRING* tmp;
-    ALLOW_UNUSED_LOCAL(tmp);
+    [[maybe_unused]] MINIDUMP_STRING* tmp;
     EXPECT_EQ(
         minidump_string->Length,
         string_file.string().size() - sizeof(*tmp) - sizeof(tmp->Buffer[0]));

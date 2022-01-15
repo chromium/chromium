@@ -20,7 +20,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_file_writer.h"
 #include "minidump/test/minidump_file_writer_test_util.h"
@@ -39,8 +38,7 @@ void GetSystemInfoStream(const std::string& file_contents,
                          const MINIDUMP_SYSTEM_INFO** system_info,
                          const MINIDUMP_STRING** csd_version) {
   // The expected number of bytes for the CSD version’s MINIDUMP_STRING::Buffer.
-  MINIDUMP_STRING* tmp;
-  ALLOW_UNUSED_LOCAL(tmp);
+  [[maybe_unused]] MINIDUMP_STRING* tmp;
   const size_t kCSDVersionBytes = csd_version_length * sizeof(tmp->Buffer[0]);
   const size_t kCSDVersionBytesWithNUL =
       kCSDVersionBytes + sizeof(tmp->Buffer[0]);

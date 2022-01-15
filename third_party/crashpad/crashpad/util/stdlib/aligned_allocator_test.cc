@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
 
@@ -93,12 +93,10 @@ TEST(AlignedAllocator, AlignedVector) {
 void BadAlignmentTest() {
 #if defined(OS_WIN)
   // Suppress the assertion MessageBox() normally displayed by the CRT in debug
-  // mode.
-  int previous = _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
-
-  // In release mode, _CrtSetReportMode() is #defined to ((int)0), so |previous|
-  // would appear unused.
-  ALLOW_UNUSED_LOCAL(previous);
+  // mode. In release mode, _CrtSetReportMode() is #defined to ((int)0), so
+  // |previous| would appear unused, thus the [[maybe_unused]].
+  [[maybe_unused]] int previous =
+      _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
 #endif
 
   // Alignment constraints must be powers of 2. 7 is not valid.
