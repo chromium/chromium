@@ -232,7 +232,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   sequence_->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
   TimeTicks next_task_time = sequence_->GetNextTaskTime(&lazy_now);
   // The OnSystemIdle callback allows the TimeDomains to advance virtual time
-  // in which case we now have immediate word to do.
+  // in which case we now have immediate work to do.
   if (next_task_time.is_null() || sequence_->OnSystemIdle()) {
     // The next task needs to run immediately, post a continuation if
     // another thread didn't get there first.
