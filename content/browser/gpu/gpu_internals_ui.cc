@@ -112,7 +112,7 @@ base::Value DxDiagNodeToList(const gpu::DxDiagNode& node) {
   }
   return list;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   std::string vendor = base::StringPrintf("0x%04x", gpu.vendor_id);
@@ -476,7 +476,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
   NOTREACHED();
   return "";
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 base::Value GetDevicePerfInfo() {
   auto list = base::Value(base::Value::Type::LIST);
@@ -504,7 +504,7 @@ base::Value GetDevicePerfInfo() {
     list.Append(display::BuildGpuInfoEntry(
         "Has Discrete GPU",
         HasDiscreteGpuToString(device_perf_info->has_discrete_gpu)));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
     if (device_perf_info->intel_gpu_generation !=
         gpu::IntelGpuGeneration::kNonIntel) {

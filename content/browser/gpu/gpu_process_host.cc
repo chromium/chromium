@@ -454,7 +454,7 @@ class GpuSandboxedProcessLauncherDelegate
 
   // TODO: Remove this once AppContainer sandbox is enabled by default.
   void DisableAppContainer() { enable_appcontainer_ = false; }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   ZygoteHandle GetZygote() override {
@@ -843,7 +843,7 @@ GpuProcessHost::~GpuProcessHost() {
         message += "was protected from out of memory kill.";
         unexpected_exit = true;
         break;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
       case base::TERMINATION_STATUS_LAUNCH_FAILED:
         message += "failed to start!";
         unexpected_exit = true;

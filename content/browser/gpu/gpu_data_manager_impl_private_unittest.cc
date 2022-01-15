@@ -302,7 +302,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabled) {
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #if !defined(CAST_AUDIO_ONLY)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
@@ -310,8 +310,8 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
-#endif  // !IS_CHROMECAST
-#endif  // !OS_ANDROID && !OS_CHROMEOS
+#endif  // !defined(CAST_AUDIO_ONLY)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Chromecast audio-only builds should not launch the GPU process.
 #if defined(CAST_AUDIO_ONLY)
@@ -347,7 +347,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalWithGLDisabled) {
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_VULKAN)
 // TODO(crbug.com/1155622): enable tests when Vulkan is supported on LaCrOS.
@@ -398,7 +398,7 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
-#endif  // !OS_ANDROID && !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -416,8 +416,8 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
-#endif  // !OS_ANDROID && !OS_CHROMEOS
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 #endif  // !IS_CHROMEOS_LACROS
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 

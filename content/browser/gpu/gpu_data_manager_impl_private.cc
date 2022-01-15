@@ -611,7 +611,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
   if (SwiftShaderAllowed())
     fallback_modes_.push_back(gpu::GpuMode::SWIFTSHADER);
-#endif  // !OS_ANDROID && !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableGpu)) {
@@ -1250,7 +1250,7 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     // crashes, instead of 3.
     FallBackToNextGpuMode();
   }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
   if (!gpu_feature_info_for_hardware_gpu_.IsInitialized()) {
     if (gpu_feature_info_for_hardware_gpu.has_value()) {
       DCHECK(gpu_feature_info_for_hardware_gpu->IsInitialized());

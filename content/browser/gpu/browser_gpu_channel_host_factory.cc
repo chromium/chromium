@@ -66,7 +66,7 @@ void DumpGpuStackOnProcessThread() {
   TimedOut();
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -470,7 +470,7 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
 
   timeout_.Start(FROM_HERE, base::Seconds(kGpuChannelTimeoutInSeconds),
                  base::BindOnce(&DumpGpuStackOnProcessThread));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static
