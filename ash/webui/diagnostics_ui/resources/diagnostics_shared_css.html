@@ -32,6 +32,20 @@
       top: 2px;
     }
 
+    /* Style overrides variables with CrOS colors to match classic button.
+       Action buttons are primary and regular buttons are secondary. Diagnostics
+       only uses secondary, thus action variables are not overridden. */
+    cr-button {
+      --border-color: var(--cros-button-stroke-color-secondary);
+      --disabled-bg: var(--cros-button-background-color-secondary-disabled);
+      --disabled-border-color: var(--cros-button-stroke-color-secondary-disabled);
+      --focus-shadow-color: var(--cros-focus-ring-color);
+      --ink-color: var(--cros-button-label-color-secondary);
+      --hover-bg-color: var(--cros-button-background-color-secondary-hover);
+      --hover-border-color: var(--cros-button-stroke-color-secondary-hover);
+      --text-color: var(--cros-button-label-color-secondary);
+    }
+
     .card-width {
       width: 100%;
     }
