@@ -92,7 +92,7 @@
 #include "content/browser/plugin_service_impl.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -153,12 +153,12 @@ void ExpectRequestIsolationInfo(
 class DownloadTestContentBrowserClient : public TestContentBrowserClient {
  public:
   DownloadTestContentBrowserClient() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     content_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>(
         "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
         "This is a test for download mhtml through non http/https urls",
         /* network_accessed */ true, net::OK);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
     file_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>(
         "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
@@ -194,13 +194,13 @@ class DownloadTestContentBrowserClient : public TestContentBrowserClient {
     if (!enable_register_non_network_url_loader_)
       return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         content_factory_remote;
     content_url_loader_factory_->Clone(
         content_factory_remote.InitWithNewPipeAndPassReceiver());
     factories->emplace(url::kContentScheme, std::move(content_factory_remote));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
     mojo::PendingRemote<network::mojom::URLLoaderFactory> file_factory_remote;
     file_url_loader_factory_->Clone(
@@ -3110,8 +3110,9 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RemoveResumedDownload) {
 }
 
 // TODO(qinmin): Flaky crashes on ASAN Linux. https://crbug.com/836689
-#if defined(OS_ANDROID) || \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) ||                           \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+        defined(ADDRESS_SANITIZER)
 #define MAYBE_CancelResumedDownload DISABLED_CancelResumedDownload
 #else
 #define MAYBE_CancelResumedDownload CancelResumedDownload
@@ -3993,7 +3994,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
 //
 // Alt-click doesn't make sense on Android, and download a HTML file results
 // in an intent, so just skip.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DownloadContentTest,
                        DownloadAttributeSameOriginRedirectAltClick) {
   net::EmbeddedTestServer origin_one;
@@ -4059,7 +4060,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   base::FilePath file_name = downloads[0]->GetTargetFilePath().BaseName();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows file extension depends on system registry.
   EXPECT_TRUE(file_name.value() == FILE_PATH_LITERAL("download.htm") ||
               file_name.value() == FILE_PATH_LITERAL("download.html"));
@@ -4070,7 +4071,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   ASSERT_TRUE(origin_one.ShutdownAndWaitUntilComplete());
   ASSERT_TRUE(origin_two.ShutdownAndWaitUntilComplete());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that the suggested filename for data: URLs works.
 IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeDataUrl) {
@@ -4917,7 +4918,7 @@ class MhtmlDownloadTest : public DownloadContentTest {
 // download for mhtml.
 IN_PROC_BROWSER_TEST_F(MhtmlDownloadTest,
                        AllowListForNonHTTPNotTriggerDownload) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // "content://" is an protocol on Android.
   GURL content_url("content://non_download.mhtml");
   NavigateToCommittedURLAndExpectNoDownload(shell(), content_url);
@@ -4943,7 +4944,7 @@ IN_PROC_BROWSER_TEST_F(MhtmlDownloadTest,
       download::DownloadItem::COMPLETE);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
 // Flaky https://crbug.com/852073
 #define MAYBE_ForceDownloadMessageRfc822Page \
   DISABLED_ForceDownloadMessageRfc822Page

@@ -85,9 +85,9 @@ const int32_t kMaxFileOrdinalNumber = 9999;
 // Maximum length for file path. Since Windows have MAX_PATH limitation for
 // file path, we need to make sure length of file path of every saved file
 // is less than MAX_PATH
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const uint32_t kMaxFilePathLength = MAX_PATH - 1;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const uint32_t kMaxFilePathLength = PATH_MAX - 1;
 #endif
 
@@ -393,9 +393,9 @@ void SavePackage::OnWebBundleGenerated(
 // '/path/to/save_dir' + '/' + NAME_MAX.
 uint32_t SavePackage::GetMaxPathLengthForDirectory(
     const base::FilePath& base_dir) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return kMaxFilePathLength;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return std::min(
       kMaxFilePathLength,
       static_cast<uint32_t>(base_dir.value().length()) + NAME_MAX + 1);
