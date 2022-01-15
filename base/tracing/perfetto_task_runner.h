@@ -13,12 +13,12 @@
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/base/task_runner.h"
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 // Needed for base::FileDescriptorWatcher::Controller and for implementing
 // AddFileDescriptorWatch & RemoveFileDescriptorWatch.
 #include <map>
 #include "base/files/file_descriptor_watcher_posix.h"
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 
 namespace base {
 namespace tracing {
@@ -61,7 +61,7 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
   void OnDeferredTasksDrainTimer();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   // FDControllerAndCallback keeps track of the state of FD watching:
   // * |controller| has value: FD watching is added. |callback| is nullopt.
   // * |controller| is nullptr: FD watching is pending for add. |callback| has
@@ -77,7 +77,7 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
     ~FDControllerAndCallback();
   };
   std::map<int, FDControllerAndCallback> fd_controllers_;
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 };
 
 }  // namespace tracing

@@ -18,6 +18,7 @@
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/tracing/tracing_tls.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace tracing {
@@ -28,9 +29,9 @@ PerfettoTaskRunner::PerfettoTaskRunner(
 
 PerfettoTaskRunner::~PerfettoTaskRunner() {
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   fd_controllers_.clear();
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 }
 
 void PerfettoTaskRunner::PostTask(std::function<void()> task) {
@@ -70,7 +71,7 @@ bool PerfettoTaskRunner::RunsTasksOnCurrentThread() const {
 void PerfettoTaskRunner::AddFileDescriptorWatch(
     perfetto::base::PlatformHandle fd,
     std::function<void()> callback) {
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK(!base::Contains(fd_controllers_, fd));
   // Set up the |fd| in the map to signal intent to add a watch. We need to
@@ -97,22 +98,22 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
           },
           base::Unretained(this), fd, std::move(callback)));
   task_runner_->PostTask(FROM_HERE, fd_controllers_[fd].callback.callback());
-#else   // defined(OS_POSIX) && !defined(OS_NACL)
+#else   // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   NOTREACHED();
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 }
 
 void PerfettoTaskRunner::RemoveFileDescriptorWatch(
     perfetto::base::PlatformHandle fd) {
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK(base::Contains(fd_controllers_, fd));
   // This also cancels the base::FileDescriptorWatcher::WatchReadable() task if
   // it's pending.
   fd_controllers_.erase(fd);
-#else   // defined(OS_POSIX) && !defined(OS_NACL)
+#else   // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   NOTREACHED();
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 }
 
 void PerfettoTaskRunner::ResetTaskRunnerForTesting(
@@ -141,7 +142,7 @@ PerfettoTaskRunner::GetOrCreateTaskRunner() {
   return task_runner_;
 }
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 PerfettoTaskRunner::FDControllerAndCallback::FDControllerAndCallback() =
     default;
 
