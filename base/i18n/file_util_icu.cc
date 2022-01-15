@@ -102,11 +102,11 @@ IllegalCharacters::IllegalCharacters() {
 UChar32 GetNextCodePoint(const FilePath::StringType* const file_name,
                          int& cursor) {
   UChar32 code_point;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows uses UTF-16 encoding for filenames.
   U16_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
            code_point);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Mac and Chrome OS use UTF-8 encoding for filenames.
   // Linux doesn't actually define file system encoding. Try to parse as
   // UTF-8.
@@ -206,11 +206,11 @@ bool LocaleAwareCompareFilenames(const FilePath& a, const FilePath& b) {
   // Make it case-sensitive.
   collator->setStrength(icu::Collator::TERTIARY);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return CompareString16WithCollator(*collator, AsStringPiece16(a.value()),
                                      AsStringPiece16(b.value())) == UCOL_LESS;
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On linux, the file system encoding is not defined. We assume
   // SysNativeMBToWide takes care of it.
   return CompareString16WithCollator(

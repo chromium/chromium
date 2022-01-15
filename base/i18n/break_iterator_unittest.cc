@@ -141,7 +141,7 @@ TEST(BreakIteratorTest, BreakWordThai) {
 // dictionary to detect word boundaries in Thai, Chinese, Japanese, Burmese,
 // and Khmer. Due to the size of such a table, the part for Chinese and
 // Japanese is not shipped on mobile.
-#if !(defined(OS_IOS) || defined(OS_ANDROID))
+#if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST(BreakIteratorTest, BreakWordChinese) {
   // Terms in Traditional Chinese, without spaces in between.
@@ -234,7 +234,7 @@ TEST(BreakIteratorTest, BreakWordChineseEnglish) {
   EXPECT_FALSE(iter.IsWord());
 }
 
-#endif  // !(defined(OS_IOS) || defined(OS_ANDROID))
+#endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST(BreakIteratorTest, BreakSpaceEmpty) {
   std::u16string empty;

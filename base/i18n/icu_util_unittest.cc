@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 
 namespace base {
@@ -18,7 +18,7 @@ class IcuUtilTest : public testing::Test {
   void SetUp() override { ResetGlobalsForTesting(); }
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 TEST_F(IcuUtilTest, InitializeIcuSucceeds) {
   bool success = InitializeICU();
@@ -73,10 +73,10 @@ TEST_F(IcuUtilTest, CannotInitializeExtraIcuFromFdAfterIcu) {
   ASSERT_FALSE(success);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace i18n
 }  // namespace base
 
 #endif  // ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)

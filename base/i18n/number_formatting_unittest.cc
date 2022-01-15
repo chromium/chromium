@@ -53,7 +53,7 @@ TEST(NumberFormattingTest, FormatDouble) {
     const char* expected_german;
   } cases[] = {
     {0.0, 0, "0", "0"},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Bionic can't printf negative zero correctly.
     {-0.0, 4, "-0.0000", "-0,0000"},
 #endif
