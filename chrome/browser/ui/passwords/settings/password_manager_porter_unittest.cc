@@ -42,7 +42,7 @@ using ::testing::UnorderedPointwise;
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kNullFileName[] = FILE_PATH_LITERAL("/nul");
 #else
 const base::FilePath::CharType kNullFileName[] = FILE_PATH_LITERAL("/dev/null");
@@ -233,7 +233,7 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
 
 // Password importing and exporting using a |SelectFileDialog| is not yet
 // supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordManagerPorterTest, PasswordImport) {
   EXPECT_CALL(*password_manager_porter(), ImportPasswordsFromPath(_));

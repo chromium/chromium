@@ -112,7 +112,7 @@ class PasswordManagerPresenter
       const std::vector<std::string>& sort_keys,
       password_manager::PasswordManagerClient* client);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Requests to reveal the plain text password corresponding to |sort_key|. If
   // |sort_key| is a valid key into |password_map_|, runs |callback| with the
   // corresponding value, or nullopt otherwise.

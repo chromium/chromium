@@ -59,7 +59,7 @@ constexpr char kPassword[] = "pass";
 constexpr char kPassword2[] = "pass2";
 constexpr char kUsername[] = "user";
 constexpr char kUsername2[] = "user2";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kHistogramName[] = "PasswordManager.AccessPasswordInSettings";
 constexpr char16_t kPassword16[] = u"pass";
 #endif
@@ -321,7 +321,7 @@ TEST_F(PasswordManagerPresenterTest, BlocklistDoesNotPreventExporting) {
   EXPECT_EQ(kSameOrigin, passwords_for_export[0]->url);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPassword) {
   base::HistogramTester histogram_tester;
   password_manager::PasswordForm form =

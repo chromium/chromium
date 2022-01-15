@@ -128,25 +128,25 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
       password_selected_(false),
       state_(kOfferGeneration),
       key_press_handler_manager_(new KeyPressRegistrator(frame)) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   // There may not always be a ZoomController, e.g. in tests.
   if (zoom_controller)
     zoom_controller->AddObserver(this);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   help_text_ = l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
 }
 
 PasswordGenerationPopupControllerImpl::
     ~PasswordGenerationPopupControllerImpl() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents());
   if (zoom_controller)
     zoom_controller->RemoveObserver(this);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::WeakPtr<PasswordGenerationPopupControllerImpl>
@@ -283,12 +283,12 @@ void PasswordGenerationPopupControllerImpl::DidFinishNavigation(
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void PasswordGenerationPopupControllerImpl::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   HideImpl();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PasswordGenerationPopupControllerImpl::Hide(PopupHidingReason) {
   HideImpl();

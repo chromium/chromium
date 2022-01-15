@@ -50,7 +50,7 @@
 #include "components/undo/undo_operation.h"
 #include "content/public/browser/browser_thread.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #endif
 
@@ -107,7 +107,7 @@ FormVector GetEntryList(const std::map<std::string, FormVector>& map) {
   return result;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 password_manager::metrics_util::AccessPasswordInSettingsEvent
 ConvertPlaintextReason(password_manager::PlaintextReason reason) {
   switch (reason) {
@@ -390,7 +390,7 @@ void PasswordManagerPresenter::OnMovePasswordToAccountCompleted(
   move_to_account_helpers_.erase(done_helper_it);
 }
 
-#if !defined(OS_ANDROID)  // This is never called on Android.
+#if !BUILDFLAG(IS_ANDROID)  // This is never called on Android.
 void PasswordManagerPresenter::RequestPlaintextPassword(
     const std::string& sort_key,
     password_manager::PlaintextReason reason,
