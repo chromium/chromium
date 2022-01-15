@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
-import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
-import {Facing, PerfEvent, ViewName} from '../../type.js';
+import {Facing, ViewName} from '../../type.js';
 import * as util from '../../util.js';
 
 /**
@@ -40,10 +39,15 @@ export class Options {
    */
   constructor(
       private readonly infoUpdater: DeviceInfoUpdater,
-      private readonly doSwitchDevice: () => Promise<boolean>,
+      private readonly doSwitchDevice: () => Promise<void>| null,
   ) {
     dom.get('#switch-device', HTMLButtonElement)
-        .addEventListener('click', () => this.switchDevice());
+        .addEventListener('click', () => {
+          const switching = this.doSwitchDevice();
+          if (switching !== null) {
+            animate.play(dom.get('#switch-device', HTMLElement));
+          }
+        });
     dom.get('#open-settings', HTMLButtonElement)
         .addEventListener('click', () => nav.open(ViewName.SETTINGS));
 
@@ -68,43 +72,11 @@ export class Options {
   }
 
   /**
-   * Device id of the camera device currently used or selected.
-   */
-  get currentDeviceId(): string|null {
-    return this.videoDeviceId;
-  }
-
-  /**
-   * Switches to the next available camera device.
-   */
-  private async switchDevice() {
-    if (!state.get(state.State.STREAMING) || state.get(state.State.TAKING)) {
-      return;
-    }
-    state.set(PerfEvent.CAMERA_SWITCHING, true);
-    const devices = this.infoUpdater.getDevicesInfo();
-    animate.play(dom.get('#switch-device', HTMLElement));
-    let index =
-        devices.findIndex((entry) => entry.deviceId === this.videoDeviceId);
-    if (index === -1) {
-      index = 0;
-    }
-    if (devices.length > 0) {
-      index = (index + 1) % devices.length;
-      this.videoDeviceId = devices[index].deviceId;
-    }
-    const isSuccess = await this.doSwitchDevice();
-    state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !isSuccess});
-  }
-
-  /**
    * Updates the options' values for the current constraints and stream.
    * @param stream Current Stream in use.
    */
-  updateValues(stream: MediaStream, facing: Facing): void {
-    const track = stream.getVideoTracks()[0];
-    const trackSettings = track.getSettings && track.getSettings();
-    this.videoDeviceId = trackSettings && trackSettings.deviceId || null;
+  updateValues(stream: MediaStream, deviceId: string, facing: Facing): void {
+    this.videoDeviceId = deviceId;
     this.updateMirroring(facing);
     this.audioTrack = stream.getAudioTracks()[0];
     this.updateAudioByMic();
@@ -143,43 +115,5 @@ export class Options {
     if (this.audioTrack) {
       this.audioTrack.enabled = this.toggleMic.checked;
     }
-  }
-
-  /**
-   * Gets the video device ids sorted by preference.
-   * @param facing Preferred facing to use
-   */
-  videoDeviceIds(facing: Facing): string[] {
-    let devices: Array<Camera3DeviceInfo|MediaDeviceInfo>;
-    /**
-     * Object mapping from device id to facing. Set to null for fake cameras.
-     */
-    let facings: Record<string, Facing>|null = null;
-
-    const camera3Info = this.infoUpdater.getCamera3DevicesInfo();
-    if (camera3Info) {
-      devices = camera3Info;
-      facings = {};
-      for (const {deviceId, facing} of camera3Info) {
-        facings[deviceId] = facing;
-      }
-    } else {
-      devices = this.infoUpdater.getDevicesInfo();
-    }
-
-    const preferredFacing =
-        facing === Facing.NOT_SET ? util.getDefaultFacing() : facing;
-    // Put the selected video device id first.
-    const sorted = devices.map((device) => device.deviceId).sort((a, b) => {
-      if (a === b) {
-        return 0;
-      }
-      if (this.videoDeviceId ? a === this.videoDeviceId :
-                               (facings && facings[a] === preferredFacing)) {
-        return -1;
-      }
-      return 1;
-    });
-    return sorted;
   }
 }

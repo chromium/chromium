@@ -82,6 +82,7 @@ export class Preview {
    */
   private lastScreenOnTime = -Infinity;
   private facing = Facing.NOT_SET;
+  private deviceId: string|null;
   private vidPid: string|null = null;
   private isSupportPTZInternal = false;
 
@@ -124,6 +125,10 @@ export class Preview {
 
   getFacing(): Facing {
     return this.facing;
+  }
+
+  getDeviceId(): string {
+    return this.deviceId;
   }
 
   /**
@@ -317,6 +322,7 @@ export class Preview {
         }
       }, 100);
       await this.updateFacing();
+      this.deviceId = this.getVideoTrack().getSettings().deviceId;
       this.updateShowMetadata();
       await this.updatePTZ();
 

@@ -6,7 +6,9 @@ import * as animate from '../animation.js';
 import {
   assert,
   assertInstanceof,
+  assertString,
 } from '../assert.js';
+import {Camera3DeviceInfo} from '../device/camera3_device_info.js';
 import {
   PhotoConstraintsPreferrer,
   VideoConstraintsPreferrer,
@@ -134,6 +136,11 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   private outputVideoRotation = 0;
 
   /**
+   * The preferred device id for camera reconfiguration.
+   */
+  private deviceId: string|null = null;
+
+  /**
    * Device id of video device of active preview stream. Sets to null when
    * preview become inactive.
    */
@@ -199,7 +206,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
     this.scanOptions =
         new ScanOptions((point) => this.preview.setPointOfInterest(point));
 
-    this.options = new Options(infoUpdater, () => this.start());
+    this.options = new Options(infoUpdater, () => this.switchCamera());
 
     this.modes = new Modes(
         this.defaultMode, photoPreferrer, videoPreferrer, () => this.start(),
@@ -988,17 +995,80 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
     return false;
   }
 
+  /**
+   * Switches to the next available camera device.
+   */
+  private switchCamera(): Promise<void>|null {
+    if (state.get(PerfEvent.CAMERA_SWITCHING) ||
+        state.get(state.State.CAMERA_CONFIGURING) ||
+        !state.get(state.State.STREAMING) || state.get(state.State.TAKING)) {
+      return null;
+    }
+    state.set(PerfEvent.CAMERA_SWITCHING, true);
+    const devices = this.infoUpdater.getDevicesInfo();
+    let index = devices.findIndex((entry) => entry.deviceId === this.deviceId);
+    if (index === -1) {
+      index = 0;
+    }
+    if (devices.length > 0) {
+      index = (index + 1) % devices.length;
+      this.deviceId = devices[index].deviceId;
+    }
+    return (async () => {
+      const isSuccess = await this.start();
+      state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !isSuccess});
+    })();
+  }
+
   protected async getModeCandidates(deviceId: string|null): Promise<Mode[]> {
     const supportedModes = await this.modes.getSupportedModes(deviceId);
     return this.modes.getModeCandidates().filter(
         (m) => supportedModes.includes(m));
   }
 
+  /**
+   * Gets the video device ids sorted by preference.
+   */
+  private getDeviceIdCandidates(): string[] {
+    let devices: Array<Camera3DeviceInfo|MediaDeviceInfo>;
+    /**
+     * Object mapping from device id to facing. Set to null for fake cameras.
+     */
+    let facings: Record<string, Facing>|null = null;
+
+    const camera3Info = this.infoUpdater.getCamera3DevicesInfo();
+    if (camera3Info) {
+      devices = camera3Info;
+      facings = {};
+      for (const {deviceId, facing} of camera3Info) {
+        facings[deviceId] = facing;
+      }
+    } else {
+      devices = this.infoUpdater.getDevicesInfo();
+    }
+
+    const preferredFacing = this.facingMode === Facing.NOT_SET ?
+        util.getDefaultFacing() :
+        this.facingMode;
+    // Put the selected video device id first.
+    const sorted = devices.map((device) => device.deviceId).sort((a, b) => {
+      if (a === b) {
+        return 0;
+      }
+      if (this.deviceId ? a === this.deviceId :
+                          (facings && facings[a] === preferredFacing)) {
+        return -1;
+      }
+      return 1;
+    });
+    return sorted;
+  }
+
   private async *
       getConfigurationCandidates(): AsyncIterable<ConfigureCandidate> {
     const deviceOperator = await DeviceOperator.getInstance();
 
-    for (const deviceId of this.options.videoDeviceIds(this.facingMode)) {
+    for (const deviceId of this.getDeviceIdCandidates()) {
       for (const mode of await this.getModeCandidates(deviceId)) {
         let resolCandidates;
         let photoRs;
@@ -1087,15 +1157,13 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   /**
    * Updates |this.activeDeviceId|.
    */
-  private updateActiveCamera() {
+  private updateActiveCamera(newDeviceId: string) {
     // Make the different active camera announced by screen reader.
-    const currentId = this.options.currentDeviceId;
-    assert(currentId !== null);
-    if (currentId === this.activeDeviceId) {
+    if (newDeviceId === this.activeDeviceId) {
       return;
     }
-    this.activeDeviceId = currentId;
-    const info = this.infoUpdater.getDeviceInfo(currentId);
+    this.activeDeviceId = newDeviceId;
+    const info = this.infoUpdater.getDeviceInfo(newDeviceId);
     if (info !== null) {
       toast.speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
     }
@@ -1128,9 +1196,11 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
               const factory = this.modes.getModeFactory(c.mode);
               const stream = await this.preview.open(c.constraints);
               this.facingMode = this.preview.getFacing();
+              const currentDeviceId = assertString(this.preview.getDeviceId());
 
               await this.checkEnablePTZ(c);
-              this.options.updateValues(stream, this.facingMode);
+              this.options.updateValues(
+                  stream, currentDeviceId, this.facingMode);
               factory.setPreviewStream(stream);
               factory.setFacing(this.facingMode);
               await this.modes.updateModeSelectionUI(c.deviceId);
@@ -1142,7 +1212,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
                 l();
               }
               nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
-              this.updateActiveCamera();
+              this.updateActiveCamera(currentDeviceId);
 
               return true;
             } catch (e) {
