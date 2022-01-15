@@ -47,6 +47,8 @@ message RTLookupRequest {
   //     cache.
   // Version 2:
   //   * Client supports referrer chains.
+  // Version 3:
+  //   * Client support the |report_type| and |frame_type| fields.
   optional int32 version = 6 [default = 0];
 
   // The operating system of the client.
@@ -67,6 +69,25 @@ message RTLookupRequest {
   // chronological order, i.e. current URL comes first in this list, and landing
   // referrer comes last.
   repeated ReferrerChainEntry referrer_chain = 8;
+
+  // Type of report sent.
+  enum ReportType {
+    REPORT_TYPE_UNSPECIFIED = 0;
+    FULL_REPORT = 1;
+    SAMPLED_REPORT = 2;
+  }
+  // Whether the ping sent to Safe Browsing is a normal (full request) ping or a
+  // sample ping for URLs on the allow-list.
+  optional ReportType report_type = 9;
+
+  // Type of URL frame.
+  enum FrameType {
+    FRAME_TYPE_UNSPECIFIED = 0;
+    MAIN_FRAME = 1;
+    SUB_FRAME = 2;
+  }
+  // Whether the URL sent to Safe Browsing is mainframe URL or subframe URL.
+  optional FrameType frame_type = 10;
 }
 
 message RTLookupResponse {

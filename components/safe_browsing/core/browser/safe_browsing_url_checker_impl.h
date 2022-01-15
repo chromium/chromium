@@ -208,6 +208,17 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // Perform the hash based check for the url.
   void PerformHashBasedCheck(const GURL& url);
 
+  // Checks the eligibility of sending a sampled ping first;
+  // Send a sampled report if one should be sent, otherwise, exit.
+  static void MaybeSendSampleRequest(
+      base::WeakPtr<SafeBrowsingUrlCheckerImpl> weak_checker_on_io,
+      const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
+      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
+      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+
   // This function has to be static because it is called in UI thread.
   // This function starts a real time url check if |url_lookup_service_on_ui| is
   // available and is not in backoff mode. Otherwise, hop back to IO thread and

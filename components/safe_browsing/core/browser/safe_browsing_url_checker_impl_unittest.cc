@@ -222,6 +222,13 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
                                   std::move(response)));
   }
 
+  void SendSampledRequest(
+      const GURL& gurl,
+      const GURL& last_committed_url,
+      bool is_mainframe,
+      RTLookupRequestCallback request_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
+
   void SetThreatTypeForUrl(const GURL& gurl, SBThreatType threat_type) {
     urls_threat_type_[gurl.spec()] = threat_type;
   }
@@ -234,6 +241,7 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanPerformFullURLLookup() const override { return true; }
   bool CanCheckSubresourceURL() const override { return false; }
   bool CanCheckSafeBrowsingDb() const override { return true; }
+  bool CanSendRTSampleRequest() const override { return true; }
 
  private:
   // RealTimeUrlLookupServiceBase:

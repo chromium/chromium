@@ -54,6 +54,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanPerformFullURLLookup() const override;
   bool CanCheckSubresourceURL() const override;
   bool CanCheckSafeBrowsingDb() const override;
+  bool CanSendRTSampleRequest() const override;
 
  private:
   // RealTimeUrlLookupServiceBase:

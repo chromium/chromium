@@ -1834,6 +1834,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.SampledRequestSent" units="Boolean"
+    expires_after="2022-07-06">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the type of the real time URL check requests. It could be a sampled
+    report request that only happens 1% of the time when URLs match the Protego
+    allowlist, or a full report request otherwise when an real time URL request
+    is sent.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.ThreatInfoSize" units="verdicts"
     expires_after="2022-06-19">
   <owner>xinghuilu@chromium.org</owner>

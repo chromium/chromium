@@ -150,4 +150,9 @@ double ChromeEnterpriseRealTimeUrlLookupService::
   return 0;
 }
 
+bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
+  // Do not send sampled pings for enterprise users.
+  return false;
+}
+
 }  // namespace safe_browsing

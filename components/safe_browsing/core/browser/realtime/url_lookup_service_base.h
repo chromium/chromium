@@ -92,6 +92,15 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
+  // Similar to the function StartLookup above,
+  // but to send Protego sampled request specifically.
+  virtual void SendSampledRequest(
+      const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
+      RTLookupRequestCallback request_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+
   // Helper function to return a weak pointer.
   base::WeakPtr<RealTimeUrlLookupServiceBase> GetWeakPtr();
 
@@ -106,6 +115,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Returns whether safe browsing database can be checked when real time URL
   // check is enabled.
   virtual bool CanCheckSafeBrowsingDb() const = 0;
+
+  // Checks if a sample ping can be sent to Safe Browsing.
+  virtual bool CanSendRTSampleRequest() const = 0;
 
   // KeyedService:
   // Called before the actual deletion of the object.
@@ -126,7 +138,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       absl::optional<std::string> access_token_string,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      bool is_sampled_report);
 
  private:
   using PendingRTLookupRequests =
@@ -237,7 +250,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   std::unique_ptr<RTLookupRequest> FillRequestProto(
       const GURL& url,
       const GURL& last_committed_url,
-      bool is_mainframe);
+      bool is_mainframe,
+      bool is_sampled_report);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

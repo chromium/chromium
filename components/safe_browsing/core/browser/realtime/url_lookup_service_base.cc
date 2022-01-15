@@ -7,6 +7,7 @@
 #include "base/base64url.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -15,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -41,7 +43,7 @@ const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 const size_t kURLLookupTimeoutDurationInSeconds = 3;
 
 // Represents the value stored in the |version| field of |RTLookupRequest|.
-const int kRTLookupRequestVersion = 2;
+const int kRTLookupRequestVersion = 3;
 
 // UMA helper functions.
 void RecordBooleanWithAndWithoutSuffix(const std::string& metric,
@@ -318,6 +320,22 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
   }
 }
 
+void RealTimeUrlLookupServiceBase::SendSampledRequest(
+    const GURL& url,
+    const GURL& last_committed_url,
+    bool is_mainframe,
+    RTLookupRequestCallback request_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(url.is_valid());
+
+  SendRequest(url, last_committed_url, is_mainframe,
+              /* access_token_string */ absl::nullopt,
+              std::move(request_callback),
+              /* response_callback */ base::NullCallback(),
+              std::move(callback_task_runner), /* is_sampled_report */ true);
+}
+
 void RealTimeUrlLookupServiceBase::StartLookup(
     const GURL& url,
     const GURL& last_committed_url,
@@ -348,7 +366,7 @@ void RealTimeUrlLookupServiceBase::StartLookup(
     SendRequest(url, last_committed_url, is_mainframe,
                 /* access_token_string */ absl::nullopt,
                 std::move(request_callback), std::move(response_callback),
-                std::move(callback_task_runner));
+                std::move(callback_task_runner), /* is_sampled_report */ false);
   }
 }
 
@@ -359,16 +377,20 @@ void RealTimeUrlLookupServiceBase::SendRequest(
     absl::optional<std::string> access_token_string,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    bool is_sampled_report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<RTLookupRequest> request =
-      FillRequestProto(url, last_committed_url, is_mainframe);
+  std::unique_ptr<RTLookupRequest> request = FillRequestProto(
+      url, last_committed_url, is_mainframe, is_sampled_report);
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
       request->population().user_population());
   RecordCount100WithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.ReferrerChainLength", GetMetricSuffix(),
       request->referrer_chain().size());
+  // Track sampled and full report
+  base::UmaHistogramBoolean("SafeBrowsing.RT.SampledRequestSent",
+                            is_sampled_report);
 
   std::string req_data;
   request->SerializeToString(&req_data);
@@ -482,11 +504,14 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
         "SafeBrowsing.RT.Response.VerdictType." + enhanced_protection_suffix,
         response->threat_info(0).verdict_type());
   }
-
-  response_callback_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(it->second), is_rt_lookup_successful,
-                     /* is_cached_response */ false, std::move(response)));
+  // response_callback (it->second) could be null when
+  // it is a sampled report.
+  if (!it->second.is_null()) {
+    response_callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(it->second), is_rt_lookup_successful,
+                       /* is_cached_response */ false, std::move(response)));
+  }
 
   delete it->first;
   pending_requests_.erase(it);
@@ -506,12 +531,17 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
 std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     const GURL& url,
     const GURL& last_committed_url,
-    bool is_mainframe) {
+    bool is_mainframe,
+    bool is_sampled_report) {
   auto request = std::make_unique<RTLookupRequest>();
   request->set_url(SanitizeURL(url).spec());
   request->set_lookup_type(RTLookupRequest::NAVIGATION);
   request->set_version(kRTLookupRequestVersion);
   request->set_os_type(GetRTLookupRequestOSType());
+  request->set_report_type(is_sampled_report ? RTLookupRequest::SAMPLED_REPORT
+                                             : RTLookupRequest::FULL_REPORT);
+  request->set_frame_type(is_mainframe ? RTLookupRequest::MAIN_FRAME
+                                       : RTLookupRequest::SUB_FRAME);
   absl::optional<std::string> dm_token_string = GetDMTokenString();
   if (dm_token_string.has_value()) {
     request->set_dm_token(dm_token_string.value());
