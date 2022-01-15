@@ -7177,6 +7177,14 @@ domain Page
       # The pictograph font-family.
       optional string pictograph
 
+  # Font families collection for a script.
+  experimental type ScriptFontFamilies extends object
+    properties
+      # Name of the script which these font families are defined for.
+      string script
+      # Generic font families collection for the script.
+      FontFamilies fontFamilies
+
   # Default font sizes.
   experimental type FontSizes extends object
     properties
@@ -7637,6 +7645,8 @@ domain Page
     parameters
       # Specifies font families to set. If a font family is not specified, it won't be changed.
       FontFamilies fontFamilies
+      # Specifies font families to set for individual scripts.
+      optional array of ScriptFontFamilies forScripts
 
   # Set default font sizes.
   experimental command setFontSizes
