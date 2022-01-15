@@ -108,7 +108,7 @@ bool FCMInvalidationService::IsReadyToStart() {
   bool valid_account_info_available =
       identity_provider_->IsActiveAccountWithRefreshToken();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // IsReadyToStart checks if account is available (active account logged in
   // and token is available). As currently observed, FCMInvalidationService
   // isn't always notified on Android when token is available.

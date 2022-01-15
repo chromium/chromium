@@ -28,7 +28,7 @@
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <winternl.h>
 #include "base/win/win_util.h"
@@ -80,7 +80,7 @@ enum StartupTemperature {
 
 StartupTemperature g_startup_temperature = UNDETERMINED_STARTUP_TEMPERATURE;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // These values are taken from the Startup.BrowserMessageLoopStartHardFaultCount
 // histogram. The latest revision landed on <5 and >3500 for a good split
@@ -203,7 +203,7 @@ absl::optional<uint32_t> GetHardFaultCountForCurrentProcess() {
 
   return absl::nullopt;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Helper function for splitting out an UMA histogram based on startup
 // temperature. |histogram_function| is the histogram type, and corresponds to
@@ -298,7 +298,7 @@ void UmaHistogramAndTraceWithTemperatureAndMaxPressure(
 // current chrome.exe process since it was started. This is a nop on other
 // platforms.
 void RecordHardFaultHistogram() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK_EQ(UNDETERMINED_STARTUP_TEMPERATURE, g_startup_temperature);
 
   const absl::optional<uint32_t> hard_fault_count =
@@ -329,7 +329,7 @@ void RecordHardFaultHistogram() {
   // Record the startup 'temperature'.
   base::UmaHistogramEnumeration("Startup.Temperature", g_startup_temperature,
                                 STARTUP_TEMPERATURE_COUNT);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // Converts a base::Time value to a base::TimeTicks value. The conversion isn't
@@ -347,7 +347,7 @@ base::TimeTicks StartupTimeToTimeTicks(base::Time time) {
 
 // Enabling this logic on OS X causes a significant performance regression.
 // https://crbug.com/601270
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   static bool statics_initialized = false;
 
   base::ThreadPriority previous_priority = base::ThreadPriority::NORMAL;
@@ -361,7 +361,7 @@ base::TimeTicks StartupTimeToTimeTicks(base::Time time) {
   static const base::Time time_base = base::Time::Now();
   static const base::TimeTicks trace_ticks_base = base::TimeTicks::Now();
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   if (!statics_initialized) {
     base::PlatformThread::SetCurrentThreadPriority(previous_priority);
   }

@@ -660,7 +660,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, DisableDataUsageRecording) {
   DisableDataUsageReporting();
   base::RunLoop().RunUntilIdle();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Data usage on disk must be deleted.
   auto expected_data_usage1 =
       std::make_unique<std::vector<data_reduction_proxy::DataUsageBucket>>(
@@ -917,7 +917,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, ClearDataSavingStatistics) {
 }
 
 // Aggregate metrics recording was disabled on Android x86 in crbug.com/865373.
-#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
 #define MAYBE_WeeklyAggregateDataUse DISABLED_WeeklyAggregateDataUse
 #else
 #define MAYBE_WeeklyAggregateDataUse WeeklyAggregateDataUse
@@ -972,7 +972,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, MAYBE_WeeklyAggregateDataUse) {
 }
 
 // Aggregate metrics recording was disabled on Android x86 in crbug.com/865373.
-#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
 #define MAYBE_AggregateDataUseForwardWeeks DISABLED_AggregateDataUseForwardWeeks
 #else
 #define MAYBE_AggregateDataUseForwardWeeks AggregateDataUseForwardWeeks

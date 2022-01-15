@@ -25,7 +25,7 @@ namespace minidump_uploader {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ProcessedMinidumpCounts {
@@ -36,7 +36,7 @@ enum class ProcessedMinidumpCounts {
   kUtility = 4,
   kMaxValue = kUtility
 };
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool MimeifyReportWithKeyValuePairs(
     const crashpad::CrashReportDatabase::UploadReport& report,
@@ -77,7 +77,7 @@ bool MimeifyReportWithKeyValuePairs(
         crashes_key_value_arr->push_back(kv.first);
         crashes_key_value_arr->push_back(kv.second);
       }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       if (kv.first == kPtypeKey) {
         const crashpad::ExceptionSnapshot* exception =
             minidump_process_snapshot.Exception();
@@ -106,7 +106,7 @@ bool MimeifyReportWithKeyValuePairs(
         }
         // TODO(wnwen): Add histogram for number of null exceptions.
       }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
     }
   }
 

@@ -19,7 +19,7 @@
 #include "components/ukm/unsent_log_store_metrics_impl.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/ukm/ios/ukm_reporting_ios_util.h"
 #endif
 
@@ -113,7 +113,7 @@ void UkmReportingService::LogResponseOrErrorCode(int response_code,
 }
 
 void UkmReportingService::LogSuccessLogSize(size_t log_size) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   IncrementUkmLogSizeOnSuccessCounter();
 #endif
   UMA_HISTOGRAM_COUNTS_10000("UKM.LogSize.OnSuccess", log_size / 1024);

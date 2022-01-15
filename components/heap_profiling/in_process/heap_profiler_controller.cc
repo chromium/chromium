@@ -27,7 +27,7 @@ namespace {
 
 // Platform-specific parameter defaults.
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 // Average 1M bytes per sample.
 constexpr int kDefaultSamplingRate = 1000000;
 

@@ -44,6 +44,6 @@ void CRASH_EXPORT ZombieDisable();
 @end
 
 #endif  // __OBJC__
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // COMPONENTS_CRASH_CORE_COMMON_OBJC_ZOMBIE_H_

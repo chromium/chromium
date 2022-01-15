@@ -352,9 +352,9 @@ bool SessionFileReader::FillBuffer() {
 }
 
 base::FilePath::StringType TimestampToString(const base::Time time) {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::NumberToString(time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return base::NumberToWString(
       time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 #endif

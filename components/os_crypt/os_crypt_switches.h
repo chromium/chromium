@@ -19,7 +19,7 @@ namespace switches {
 // from causing timeouts.
 COMPONENT_EXPORT(OS_CRYPT) extern const char kUseMockKeychain[];
 
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace switches
 }  // namespace os_crypt

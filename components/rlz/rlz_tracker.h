@@ -69,7 +69,7 @@ class RLZTracker {
 
   // For the point parameter of RecordProductEvent.
   static rlz_lib::AccessPoint ChromeOmnibox();
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   static rlz_lib::AccessPoint ChromeHomePage();
   static rlz_lib::AccessPoint ChromeAppList();
 #endif
@@ -102,7 +102,7 @@ class RLZTracker {
   // Enables zero delay for InitRlzDelayed. For testing only.
   static void EnableZeroDelayForTesting();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Records that the app list search has been used.
   static void RecordAppListSearch();
 #endif

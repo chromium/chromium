@@ -719,7 +719,7 @@ bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
     return true;
   }
   if (match_type == LookalikeUrlMatchType::kTargetEmbedding) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // TODO(crbug.com/1104384): Only enable target embedding on iOS once we can
     //    check engaged sites. Otherwise, false positives are too high.
     return false;

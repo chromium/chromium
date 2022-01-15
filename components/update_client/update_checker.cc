@@ -147,7 +147,7 @@ UpdateCheckerImpl::ReadUpdaterStateAttributes() const {
   return UpdaterState::GetState(false);
 #else
   return nullptr;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void UpdateCheckerImpl::CheckForUpdatesHelper(

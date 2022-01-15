@@ -12,12 +12,12 @@
 #include "build/build_config.h"
 #include "net/base/mac/url_conversions.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/handoff/pref_names_ios.h"
 #include "components/pref_registry/pref_registry_syncable.h"  // nogncheck
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -42,7 +42,7 @@
 
 @synthesize userActivity = _userActivity;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterBooleanPref(
       prefs::kIosHandoffToOtherDevices, true,
@@ -53,9 +53,9 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     _origin = handoff::ORIGIN_MAC;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
     _origin = handoff::ORIGIN_IOS;
 #else
     NOTREACHED();
@@ -113,7 +113,7 @@
 
 @end
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 @implementation HandoffManager (TestingOnly)
 
 - (NSURL*)userActivityWebpageURL {

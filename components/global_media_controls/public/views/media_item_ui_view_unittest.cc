@@ -132,11 +132,11 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
     GetFocusManager()->SetFocusedView(item_ui_->GetDismissButtonForTesting());
 
 // On Mac OS, we need to use the space bar to press a button.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ui::KeyboardCode button_press_keycode = ui::VKEY_SPACE;
 #else
     ui::KeyboardCode button_press_keycode = ui::VKEY_RETURN;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     ui::test::EventGenerator generator(GetRootWindow(widget_.get()));
     generator.PressKey(button_press_keycode, 0);

@@ -72,7 +72,7 @@ class MediaDrmStorageImpl final
       base::Time start,
       base::Time end);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Clear media licenses and related data if:
   // 1. Creation time falls in [delete_begin, delete_end], and
   // 2. |filter| returns true for the origin. |filter| is passed in to allow

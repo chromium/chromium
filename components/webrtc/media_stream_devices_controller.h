@@ -65,13 +65,13 @@ class MediaStreamDevicesController {
       bool did_prompt_for_video,
       const std::vector<ContentSetting>& responses);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called when the Android OS-level prompt is answered.
   static void AndroidOSPromptAnswered(
       std::unique_ptr<MediaStreamDevicesController> controller,
       std::vector<ContentSetting> responses,
       bool android_prompt_granted);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns true if audio/video should be requested through the
   // PermissionManager. We won't try to request permission if the request is

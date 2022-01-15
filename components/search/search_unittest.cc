@@ -9,12 +9,12 @@
 
 namespace search {
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 TEST(SearchTest, InstantExtendedAPIEnabled) {
   EXPECT_TRUE(IsInstantExtendedAPIEnabled());
 }
 
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search

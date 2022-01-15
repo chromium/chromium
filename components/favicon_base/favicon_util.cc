@@ -24,9 +24,9 @@
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace favicon_base {
 namespace {
@@ -161,9 +161,9 @@ std::vector<float> GetFaviconScales() {
 }
 
 void SetFaviconColorSpace(gfx::Image* image) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   image->SetSourceColorSpace(base::mac::GetSystemColorSpace());
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 gfx::Image SelectFaviconFramesFromPNGs(

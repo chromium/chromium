@@ -32,7 +32,7 @@ void SecurePaymentConfirmationNoCreds::ShowDialog(
     ResponseCallback response_callback) {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   DCHECK(!view_);
 
   view_ = SecurePaymentConfirmationNoCredsView::Create();

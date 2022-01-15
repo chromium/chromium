@@ -126,7 +126,7 @@ TEST_F(SharedProtoDatabaseTest, CreateClient_SucceedsWithCreate) {
 }
 
 // TODO(912117): Fix flaky test!
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SharedProtoDatabaseTest, DISABLED_CreateClient_FailsWithoutCreate) {
 #else
 TEST_F(SharedProtoDatabaseTest, CreateClient_FailsWithoutCreate) {

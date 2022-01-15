@@ -8,9 +8,9 @@
 #include "build/build_config.h"
 
 namespace browser_ui {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kChromeUINativeScheme[];
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace browser_ui
 

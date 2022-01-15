@@ -21,7 +21,7 @@
 #include "components/browser_watcher/extended_crash_reporting_metrics.h"
 #include "components/browser_watcher/features.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // https://devblogs.microsoft.com/oldnewthing/20041025-00/?p=37483.
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 #endif

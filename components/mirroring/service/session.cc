@@ -169,14 +169,14 @@ bool IsHardwareH264EncodingSupported(
 // TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
 // broken.
 // TODO(crbug.com/1015482): Look into HW encoder initialization issues on Win.
-#if !defined(OS_APPLE) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
   for (const auto& vea_profile : profiles) {
     if (vea_profile.profile >= media::H264PROFILE_MIN &&
         vea_profile.profile <= media::H264PROFILE_MAX) {
       return true;
     }
   }
-#endif  // !defined(OS_APPLE) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
   return false;
 }
 

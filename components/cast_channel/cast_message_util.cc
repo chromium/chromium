@@ -162,13 +162,13 @@ CastMessage CreateKeepAliveMessage(base::StringPiece keep_alive_type) {
 // request. The value is platform-dependent and is taken from the Platform enum
 // defined in third_party/metrics_proto/cast_logs.proto.
 int GetVirtualConnectPlatformValue() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return 3;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return 4;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return 5;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return 6;
 #else
   return 0;

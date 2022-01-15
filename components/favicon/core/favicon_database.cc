@@ -29,7 +29,7 @@
 #include "sql/transaction.h"
 #include "third_party/sqlite/sqlite3.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/backup_util.h"
 #endif
 
@@ -1080,7 +1080,7 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
     // TODO(shess): Failing Begin() implies that something serious is
     // wrong with the database.  Raze() may be in order.
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Exclude the favicons file from backups.
   base::mac::SetBackupExclusion(db_name);
 #endif

@@ -57,7 +57,7 @@ namespace network_time {
 
 // Network time queries are enabled on all desktop platforms except ChromeOS,
 // which uses tlsdated to set the system time.
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_IOS)
 const base::Feature kNetworkTimeServiceQuerying{
     "NetworkTimeServiceQuerying", base::FEATURE_DISABLED_BY_DEFAULT};
 #else

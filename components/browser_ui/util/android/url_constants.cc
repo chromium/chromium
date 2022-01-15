@@ -4,8 +4,10 @@
 
 #include "components/browser_ui/util/android/url_constants.h"
 
+#include "build/build_config.h"
+
 namespace browser_ui {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kChromeUINativeScheme[] = "chrome-native";
 #endif
 

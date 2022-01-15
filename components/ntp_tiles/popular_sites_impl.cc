@@ -39,13 +39,13 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "base/json/json_reader.h"
 #include "components/grit/components_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/ntp_tiles/country_code_ios.h"
 #endif
 
@@ -200,7 +200,7 @@ std::map<SectionType, PopularSites::SitesVector> ParseSites(
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
-    (defined(OS_ANDROID) || defined(OS_IOS))
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 void SetDefaultResourceForSite(size_t index,
                                int resource_id,
                                base::Value* sites) {
@@ -214,7 +214,7 @@ void SetDefaultResourceForSite(size_t index,
 
 // Creates the list of popular sites based on a snapshot available for mobile.
 base::Value DefaultPopularSites() {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return base::Value(base::Value::Type::LIST);
 #else
   if (!base::FeatureList::IsEnabled(kPopularSitesBakedInContentFeature))
@@ -237,7 +237,7 @@ base::Value DefaultPopularSites() {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return std::move(sites.value());
-#endif  // OS_ANDROID || OS_IOS
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
@@ -367,7 +367,7 @@ std::string PopularSitesImpl::GetCountryToFetch() {
   if (country_code.empty() && variations_)
     country_code = variations_->GetStoredPermanentCountry();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (country_code.empty())
     country_code = GetDeviceCountryCode();
 #endif

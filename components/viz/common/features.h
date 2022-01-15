@@ -41,7 +41,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaOutputDeviceBufferQueue;
 VIZ_COMMON_EXPORT extern const base::Feature kWebRtcLogCapturePipeline;
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT extern const base::Feature kUseSetPresentDuration;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
 VIZ_COMMON_EXPORT extern const base::Feature kUsePlatformDelegatedInk;
 #if BUILDFLAG(IS_ANDROID)
@@ -83,7 +83,7 @@ VIZ_COMMON_EXPORT bool ShouldUseRealBuffersForPageFlipTest();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT absl::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();

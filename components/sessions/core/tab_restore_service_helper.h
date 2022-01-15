@@ -63,8 +63,8 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   };
 
   enum {
-    // Max number of entries we'll keep around.
-#if defined(OS_ANDROID)
+  // Max number of entries we'll keep around.
+#if BUILDFLAG(IS_ANDROID)
     // Android keeps at most 5 recent tabs.
     kMaxEntries = 5,
 #else

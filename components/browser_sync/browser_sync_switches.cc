@@ -4,6 +4,8 @@
 
 #include "components/browser_sync/browser_sync_switches.h"
 
+#include "build/build_config.h"
+
 namespace switches {
 
 // Disables syncing one or more sync data types that are on by default.
@@ -21,10 +23,10 @@ const char kEnableLocalSyncBackend[] = "enable-local-sync-backend";
 // flag is present.
 const char kLocalSyncBackendDir[] = "local-sync-backend-dir";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kSyncUseSessionsUnregisterDelay{
     "SyncUseSessionsUnregisterDelay", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables providing the list of FCM registration tokens in the commit request.
 const base::Feature kSyncUseFCMRegistrationTokensList{

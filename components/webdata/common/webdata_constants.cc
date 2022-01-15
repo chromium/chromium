@@ -4,10 +4,12 @@
 
 #include "components/webdata/common/webdata_constants.h"
 
+#include "build/build_config.h"
+
 const base::FilePath::CharType kWebDataFilename[] =
     FILE_PATH_LITERAL("Web Data");
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const base::FilePath::CharType kAccountWebDataFilename[] =
     FILE_PATH_LITERAL("Account Web Data");
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

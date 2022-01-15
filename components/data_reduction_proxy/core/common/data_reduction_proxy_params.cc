@@ -22,7 +22,7 @@
 #include "net/http/http_status_code.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #endif
 
@@ -36,7 +36,7 @@ bool IsIncludedInFieldTrial(const std::string& name) {
 }
 
 bool CanShowAndroidLowMemoryDevicePromo() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::SysInfo::IsLowEndDevice() &&
          base::FeatureList::IsEnabled(
              data_reduction_proxy::features::

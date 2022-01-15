@@ -290,7 +290,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_TRUE(updater->FindKey("ismachine")->is_bool());
   EXPECT_TRUE(updater->FindKey("updatepolicy")->is_int());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Sanity check the arguments of the callback after parsing.
   EXPECT_EQ(ErrorCategory::kNone, error_category_);

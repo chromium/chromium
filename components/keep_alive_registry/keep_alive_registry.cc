@@ -9,7 +9,7 @@
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/browser_watcher/activity_data_names.h"
 #include "components/browser_watcher/extended_crash_reporting.h"
 #endif
@@ -173,7 +173,7 @@ void KeepAliveRegistry::Unregister(KeepAliveOrigin origin,
 void KeepAliveRegistry::OnKeepAliveStateChanged(bool new_keeping_alive) {
   DVLOG(1) << "Notifying KeepAliveStateObservers: KeepingAlive changed to: "
            << new_keeping_alive;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   browser_watcher::ExtendedCrashReporting::SetDataBool(
       browser_watcher::kActivityKeepAlive, new_keeping_alive);
 #endif
@@ -184,7 +184,7 @@ void KeepAliveRegistry::OnKeepAliveStateChanged(bool new_keeping_alive) {
 void KeepAliveRegistry::OnRestartAllowedChanged(bool new_restart_allowed) {
   DVLOG(1) << "Notifying KeepAliveStateObservers: Restart changed to: "
            << new_restart_allowed;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   browser_watcher::ExtendedCrashReporting::SetDataBool(
       browser_watcher::kActivityRestartAllowed, new_restart_allowed);
 #endif

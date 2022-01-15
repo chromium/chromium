@@ -12,10 +12,10 @@
 
 namespace assist_ranker {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kContextualSearchRankerQuery;
 const PredictorConfig GetContextualSearchPredictorConfig();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace assist_ranker
 

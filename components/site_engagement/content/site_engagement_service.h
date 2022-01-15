@@ -48,7 +48,7 @@ enum class EngagementType;
 class SiteEngagementObserver;
 class SiteEngagementScore;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class SiteEngagementServiceAndroid;
 #endif
 
@@ -220,7 +220,7 @@ class SiteEngagementService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AppBannerSettingsHelperTest, SiteEngagementTrigger);
   FRIEND_TEST_ALL_PREFIXES(HostedAppPWAOnlyTest, EngagementHistogram);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Shim class to expose the service to Java.
   friend class SiteEngagementServiceAndroid;
   SiteEngagementServiceAndroid* GetAndroidService() const;
@@ -311,7 +311,7 @@ class SiteEngagementService : public KeyedService,
   // The clock used to vend times.
   raw_ptr<base::Clock> clock_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SiteEngagementServiceAndroid> android_service_;
 #endif
 

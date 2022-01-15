@@ -139,7 +139,7 @@ std::u16string FindTabHelper::GetInitialSearchText() {
   return delegate_ ? delegate_->GetSearchPrepopulateText() : std::u16string();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FindTabHelper::ActivateNearestFindResult(float x, float y) {
   if (!find_op_aborted_ && !find_text_.empty()) {
     GetWebContents().ActivateNearestFindResult(x, y);

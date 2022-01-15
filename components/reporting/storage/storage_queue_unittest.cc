@@ -65,7 +65,7 @@ const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 
 // Forbidden file/folder names
 const base::FilePath::StringType kInvalidFilePrefix = FILE_PATH_LITERAL("..");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::StringPieceType kInvalidDirectoryPath =
     FILE_PATH_LITERAL("o:\\some\\inaccessible\\dir");
 #else

@@ -169,7 +169,7 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImageWebP) {
   manifest->icons[0].type = u"image/webp";
   manifest->icons[0].src = GURL("http://example.com/");
 // TODO(https://crbug.com/466958): Add WebP support for Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(IsManifestValid(*manifest));
   EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
 #else
@@ -182,7 +182,7 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImageWebP) {
   manifest->icons[0].type.clear();
   manifest->icons[0].src = GURL("http://example.com/icon.wEBp");
 // TODO(https://crbug.com/466958): Add WebP support for Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(IsManifestValid(*manifest));
   EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
 #else

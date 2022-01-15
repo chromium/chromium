@@ -145,7 +145,7 @@ TEST_F(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
 }
 
 // Sampling profiler is not capable of unwinding stack on Android under tests.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
   constexpr int kSnapshotsToCollect = 3;
 

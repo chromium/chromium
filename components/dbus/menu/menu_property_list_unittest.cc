@@ -22,7 +22,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -325,7 +325,7 @@ TEST(MenuPropertyListTest, ComputePropertiesIcon) {
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
   // The Wayland implementation requires the keyboard layout to be set.
   // The ScopedKeyboardLayout does not unset the already existing layout engine,

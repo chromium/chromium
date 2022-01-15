@@ -42,10 +42,10 @@ void QuarantineImpl::QuarantineFile(
   scoped_refptr<base::TaskRunner> task_runner =
       base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-#else   // OS_MAC
+#else   // BUILDFLAG(IS_MAC)
   scoped_refptr<base::TaskRunner> task_runner =
       base::ThreadTaskRunnerHandle::Get();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(

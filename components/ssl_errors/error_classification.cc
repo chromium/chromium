@@ -25,7 +25,7 @@
 #include "net/cert/x509_certificate.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #endif

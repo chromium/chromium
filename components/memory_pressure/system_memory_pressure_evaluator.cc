@@ -8,18 +8,18 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "components/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
 #endif
 
 namespace memory_pressure {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr base::Feature kUseWinOSMemoryPressureSignals{
     "UseWinOSMemoryPressureSignals", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
@@ -28,14 +28,14 @@ constexpr base::Feature kUseWinOSMemoryPressureSignals{
 std::unique_ptr<SystemMemoryPressureEvaluator>
 SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
     MultiSourceMemoryPressureMonitor* monitor) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<
       memory_pressure::SystemMemoryPressureEvaluatorFuchsia>(
       monitor->CreateVoter());
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return std::make_unique<memory_pressure::mac::SystemMemoryPressureEvaluator>(
       monitor->CreateVoter());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   auto evaluator =
       std::make_unique<memory_pressure::win::SystemMemoryPressureEvaluator>(
           monitor->CreateVoter());

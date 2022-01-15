@@ -103,7 +103,7 @@ void InitializeCrashpadWithDllEmbeddedHandler(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Returns the CrashpadClient for this process. This will lazily create it if
 // it does not already exist. This is called as part of InitializeCrashpad.
@@ -230,7 +230,7 @@ bool DumpWithoutCrashingForClient(CrashReporterClient* client);
 // If a CrashReporterClient has enabled sanitization, this function specifies
 // regions of memory which are allowed to be collected by Crashpad.
 void AllowMemoryRange(void* begin, size_t size);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Install a handler that gets a chance to handle faults before Crashpad. This
@@ -262,7 +262,7 @@ DWORD WINAPI DumpProcessForHungInputThread(void* param);
 // true.
 // Returns `true` on success.
 bool StartHandlerForClient(int fd, bool write_minidump_to_database);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // The platform-specific portion of InitializeCrashpad(). On Windows, if
 // |user_data_dir| is non-empty, the user data directory will be passed to the

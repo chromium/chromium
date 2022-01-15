@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_tick_clock.h"
+#include "build/build_config.h"
 #include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_helper.h"
@@ -29,6 +30,7 @@
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
+#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -54,8 +56,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
-
-#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
 namespace page_load_metrics {
 
@@ -624,7 +624,7 @@ void AdsPageLoadMetricsObserver::OnFrameIntersectionUpdate(
 // TODO(https://crbug.com/1142669): Evaluate imposing width requirements
 // for ad density violations.
 void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const int kMaxMobileAdDensityByHeight = 30;
   if (page_ad_density_tracker_.MaxPageAdDensityByHeight() >
       kMaxMobileAdDensityByHeight) {

@@ -131,9 +131,9 @@ class StabilityReportExtractorThreadTrackerTest : public testing::Test {
     ASSERT_EQ(1, process_state.threads_size());
     const ThreadState& thread_state = process_state.threads(0);
     EXPECT_EQ(base::PlatformThread::GetName(), thread_state.thread_name());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(base::PlatformThread::CurrentId(), thread_state.thread_id());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     EXPECT_EQ(base::PlatformThread::CurrentHandle().platform_handle(),
               thread_state.thread_id());
 #endif

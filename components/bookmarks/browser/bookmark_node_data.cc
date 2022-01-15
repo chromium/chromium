@@ -287,7 +287,7 @@ bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
   return true;
 }
 
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 std::vector<const BookmarkNode*> BookmarkNodeData::GetNodes(
     BookmarkModel* model,

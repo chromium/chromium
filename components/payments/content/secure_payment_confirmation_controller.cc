@@ -34,7 +34,7 @@ SecurePaymentConfirmationController::~SecurePaymentConfirmationController() =
 void SecurePaymentConfirmationController::ShowDialog() {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (!request_ || !request_->spec())
     return;

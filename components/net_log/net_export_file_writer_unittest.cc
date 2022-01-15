@@ -178,7 +178,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 
   // Check file permissions. These tests are only done on POSIX for simplicity,
   // since base has better support for the POSIX permission model.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   int actual_permissions = 0;
   if (!base::GetPosixFilePermissions(log_path, &actual_permissions)) {
     return ::testing::AssertionFailure()
@@ -192,7 +192,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
   // 640 rather than 644.
   int expected_permissions = base::FILE_PERMISSION_READ_BY_USER |
                              base::FILE_PERMISSION_WRITE_BY_USER
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
                              | base::FILE_PERMISSION_READ_BY_GROUP |
                              base::FILE_PERMISSION_READ_BY_OTHERS
 #endif
@@ -204,7 +204,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
            << base::StringPrintf("%o", actual_permissions) << " vs "
            << base::StringPrintf("%o", expected_permissions);
   }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   // Parse log file contents into a dictionary
   std::string log_string;

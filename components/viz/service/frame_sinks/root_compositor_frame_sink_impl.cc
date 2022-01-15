@@ -120,7 +120,7 @@ RootCompositorFrameSinkImpl::Create(
                   base::ThreadTaskRunnerHandle::Get().get()),
               restart_id);
     }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   BeginFrameSource* begin_frame_source = synthetic_begin_frame_source.get();

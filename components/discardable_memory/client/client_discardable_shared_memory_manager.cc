@@ -41,13 +41,13 @@ size_t GetDefaultAllocationSize() {
   const size_t kDefaultAllocationSize = 4 * kOneMegabyteInBytes;
   const size_t kDefaultLowEndDeviceAllocationSize = kOneMegabyteInBytes;
 
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
   // On Windows 32 bit, use a smaller chunk, as address space fragmentation may
   // make a 4MiB allocation impossible to fulfill in the browser process.
   // See crbug.com/983348 for details.
   ALLOW_UNUSED_LOCAL(kDefaultAllocationSize);
   return kDefaultLowEndDeviceAllocationSize;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // Low end Fuchsia devices may be very constrained, so use smaller allocations
   // to save memory. See https://fxbug.dev/55760.
   return base::SysInfo::IsLowEndDevice() ? kDefaultLowEndDeviceAllocationSize

@@ -94,7 +94,7 @@ void RecordSavingsClearedMetric(DataReductionProxySavingsClearedReason reason) {
 
 // TODO(rajendrant): Enable aggregate metrics recording in x86 Android.
 // http://crbug.com/865373
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
+#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_X86)
 const double kSecondsPerWeek =
     base::Time::kMicrosecondsPerWeek / base::Time::kMicrosecondsPerSecond;
 
@@ -756,7 +756,7 @@ void DataReductionProxyCompressionStats::DeleteHistoricalDataUsage() {
 void DataReductionProxyCompressionStats::GetHistoricalDataUsageImpl(
     HistoricalDataUsageCallback get_data_usage_callback,
     const base::Time& now) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (current_data_usage_load_status_ != LOADED) {
     // If current data usage has not yet loaded, we return an empty array. The
     // extension can retry after a slight delay.
@@ -795,7 +795,7 @@ void DataReductionProxyCompressionStats::OnDataUsageReportingPrefChanged() {
     }
   } else {
 // Don't delete the historical data on Android, but clear the map.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (current_data_usage_load_status_ == LOADED)
       PersistDataUsage();
 
@@ -813,7 +813,7 @@ void DataReductionProxyCompressionStats::InitializeWeeklyAggregateDataUse(
     const base::Time& now) {
   // TODO(rajendrant): Enable aggregate metrics recording in x86 Android.
   // http://crbug.com/865373
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
+#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_X86)
   MaybeInitWeeklyAggregateDataUsePrefs(now, pref_service_);
   // Record the histograms that will show up in the user feedback.
   RecordDictionaryToHistogram(
@@ -853,7 +853,7 @@ void DataReductionProxyCompressionStats::RecordWeeklyAggregateDataUse(
     int32_t service_hash_code) {
   // TODO(rajendrant): Enable aggregate metrics recording in x86 Android.
   // http://crbug.com/865373
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
+#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_X86)
   // Update the prefs if this is a new week. This can happen when chrome is open
   // for weeks without being closed.
   MaybeInitWeeklyAggregateDataUsePrefs(now, pref_service_);

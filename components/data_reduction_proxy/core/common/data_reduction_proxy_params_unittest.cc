@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #endif
 
@@ -93,7 +93,7 @@ TEST_F(DataReductionProxyParamsTest, LowMemoryPromoFeature) {
           features::kDataReductionProxyLowMemoryDevicePromo);
     }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(test.expected_in_field_trial && base::SysInfo::IsLowEndDevice(),
               params::IsIncludedInPromoFieldTrial());
     EXPECT_EQ(test.expected_in_field_trial && base::SysInfo::IsLowEndDevice(),

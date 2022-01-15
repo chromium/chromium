@@ -85,7 +85,7 @@ bool SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled() {
 
 // static
 bool SiteIsolationPolicy::IsEnterprisePolicyApplicable() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // https://crbug.com/844118: Limiting policy to devices with > 1GB RAM.
   // Using 1077 rather than 1024 because 1) it helps ensure that devices with
   // exactly 1GB of RAM won't get included because of inaccuracies or off-by-one
@@ -114,7 +114,7 @@ bool SiteIsolationPolicy::ShouldDisableSiteIsolationDueToMemoryThreshold(
   //   it doesn't, use a default that's slightly higher than 1GB (see
   //   https://crbug.com/844118).
   int default_memory_threshold_mb;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
     default_memory_threshold_mb = 3200;
   } else {
@@ -140,7 +140,7 @@ bool SiteIsolationPolicy::ShouldDisableSiteIsolationDueToMemoryThreshold(
     return base::SysInfo::AmountOfPhysicalMemoryMB() <= memory_threshold_mb;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
       default_memory_threshold_mb) {
     return true;

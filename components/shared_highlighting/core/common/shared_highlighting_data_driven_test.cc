@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -81,9 +81,9 @@ SharedHighlightingDataDrivenTest::GetTestFiles() {
   }
   std::sort(files.begin(), files.end());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ClearAmIBundledCache();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   return files;
 }

@@ -27,7 +27,7 @@
 #include "build/build_config.h"
 #include "components/visitedlink/common/visitedlink_common.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 

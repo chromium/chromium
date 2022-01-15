@@ -20,7 +20,7 @@
 #include "components/data_use_measurement/core/data_use_user_data.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -67,7 +67,7 @@ class DataUseMeasurement
 
   ~DataUseMeasurement() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This function should just be used for testing purposes. A change in
   // application state can be simulated by calling this function.
   void OnApplicationStateChangeForTesting(
@@ -141,7 +141,7 @@ class DataUseMeasurement
                                       DataUseUserData::AppState app_state,
                                       bool is_connection_cellular);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called whenever the application transitions from foreground to background
   // and vice versa.
   void OnApplicationStateChange(
@@ -159,7 +159,7 @@ class DataUseMeasurement
   void OnConnectionChanged(
       network::mojom::ConnectionType connection_type) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Application listener store the last known state of the application in this
   // field.
   base::android::ApplicationState app_state_ =

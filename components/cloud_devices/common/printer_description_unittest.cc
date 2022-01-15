@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -507,7 +508,7 @@ const char kSeveralInnerCapabilitiesVendorCapabilityCdd[] = R"(
       }
     })";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kPinOnlyCdd[] = R"(
     {
       "version": "1.0",
@@ -517,7 +518,7 @@ const char kPinOnlyCdd[] = R"(
         }
       }
     })";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kCjt[] = R"(
     {
@@ -1103,7 +1104,7 @@ TEST(PrinterDescriptionTest, CddSetVendorCapability) {
             NormalizeJson(description.ToString()));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(PrinterDescriptionTest, CddGetPin) {
   {
     CloudDeviceDescription description;
@@ -1129,7 +1130,7 @@ TEST(PrinterDescriptionTest, CddSetPin) {
   pin_capability.SaveTo(&description);
   EXPECT_EQ(NormalizeJson(kPinOnlyCdd), NormalizeJson(description.ToString()));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(PrinterDescriptionTest, CddGetAll) {
   CloudDeviceDescription description;

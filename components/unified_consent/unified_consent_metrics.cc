@@ -50,7 +50,7 @@ void RecordSyncDataTypeSample(SyncDataType data_type) {
 // Returns true if a sample was recorded.
 bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings,
                                   PrefService* pref_service) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!sync_settings->IsSyncRequested()) {
     RecordSyncDataTypeSample(SyncDataType::kSync);
     return true;  // Don't record states of data types if sync is disabled.
@@ -72,7 +72,7 @@ bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings,
                           syncer::UserSelectableType::kPasswords);
   sync_types.emplace_back(SyncDataType::kAutofill,
                           syncer::UserSelectableType::kAutofill);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   sync_types.emplace_back(SyncDataType::kApps,
                           syncer::UserSelectableType::kApps);
   sync_types.emplace_back(SyncDataType::kExtensions,

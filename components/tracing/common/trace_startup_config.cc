@@ -21,7 +21,7 @@
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/early_trace_event_binding.h"
 #endif
 
@@ -35,7 +35,7 @@ const size_t kTraceConfigFileSizeLimit = 64 * 1024;
 // Trace config file path:
 // - Android: /data/local/chrome-trace-config.json
 // - Others: specified by --trace-config-file flag.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kAndroidTraceConfigFile[] =
     FILE_PATH_LITERAL("/data/local/chrome-trace-config.json");
 #endif
@@ -50,7 +50,7 @@ const char kResultDirectoryParam[] = "result_directory";
 
 // static
 const char TraceStartupConfig::kDefaultStartupCategories[] =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     "startup,browser,toplevel,toplevel.flow,ipc,EarlyJava,cc,Java,navigation,"
     "loading,gpu,ui,disabled-by-default-cpu_profiler,download_service,"
     "disabled-by-default-histogram_samples,"
@@ -135,7 +135,7 @@ base::FilePath TraceStartupConfig::GetResultFile() const {
 }
 
 void TraceStartupConfig::SetBackgroundStartupTracingEnabled(bool enabled) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::SetBackgroundStartupTracingFlag(enabled);
 #endif
 }
@@ -214,7 +214,7 @@ bool TraceStartupConfig::EnableFromCommandLine() {
 }
 
 bool TraceStartupConfig::EnableFromATrace() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto atrace_config =
       base::trace_event::TraceLog::GetInstance()->TakeATraceStartupConfig();
   if (!atrace_config)
@@ -226,13 +226,13 @@ bool TraceStartupConfig::EnableFromATrace() {
   // command line flags to control startup tracing instead of ATrace.
   session_owner_ = SessionOwner::kSystemTracing;
   return true;
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   return false;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool TraceStartupConfig::EnableFromConfigFile() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::FilePath trace_config_file(kAndroidTraceConfigFile);
 #else
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -268,7 +268,7 @@ bool TraceStartupConfig::EnableFromConfigFile() {
 
 bool TraceStartupConfig::EnableFromBackgroundTracing() {
   bool enabled = enable_background_tracing_for_testing_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Tests can enable this value.
   enabled |= base::android::GetBackgroundStartupTracingFlag();
 #else

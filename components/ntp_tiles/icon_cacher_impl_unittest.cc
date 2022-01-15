@@ -169,7 +169,7 @@ class IconCacherTestPopularSites : public IconCacherTestBase {
       ui::ResourceBundle::CleanupSharedInstance();
     }
     base::FilePath pak_path;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_path);
 #else
     base::PathService::Get(base::DIR_ASSETS, &pak_path);

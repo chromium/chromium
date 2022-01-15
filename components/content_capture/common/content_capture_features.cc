@@ -11,7 +11,7 @@
 namespace content_capture {
 namespace features {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kContentCapture{"ContentCapture",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 

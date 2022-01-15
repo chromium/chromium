@@ -31,7 +31,7 @@
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/prefs_export.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -40,7 +40,7 @@ class PrefNotifierImpl;
 class PrefObserver;
 class PrefRegistry;
 class PrefStore;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class PrefServiceAndroid;
 #endif
 
@@ -380,7 +380,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   void AddPrefObserverAllPrefs(PrefObserver* obs);
   void RemovePrefObserverAllPrefs(PrefObserver* obs);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
 
@@ -476,7 +476,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // of registered preferences are.
   mutable PreferenceMap prefs_map_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this PrefService on
   // android.
   std::unique_ptr<PrefServiceAndroid> pref_service_android_;

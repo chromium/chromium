@@ -634,7 +634,7 @@ bool TestDriver::ValidateBrowserAllocations(base::Value* dump_json) {
   bool result = false;
 
   bool should_validate_dumps = true;
-#if defined(OS_ANDROID) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
   // TODO(ajwong): This step fails on Nexus 5X devices running kit-kat. It works
   // on Nexus 5X devices running oreo. The problem is that all allocations have
   // the same [an effectively empty] backtrace and get glommed together. More

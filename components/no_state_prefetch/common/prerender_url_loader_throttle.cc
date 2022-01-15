@@ -91,7 +91,7 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (request->is_favicon) {
     // Delay icon fetching until the contents are getting swapped in
     // to conserve network usage in mobile devices.
@@ -111,7 +111,7 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     original_request_priority_ = request->priority;
     request->priority = net::IDLE;
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   detached_timer_.Start(
       FROM_HERE, base::Milliseconds(content::kDefaultDetachableCancelDelayMs),

@@ -31,7 +31,7 @@ const base::Feature kSendTabToSelfManageDevicesLink{
 #endif
 };
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const base::Feature kSendTabToSelfV2{"SendTabToSelfV2",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

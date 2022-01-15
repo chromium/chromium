@@ -2174,7 +2174,7 @@ void GenerateMinidumpOnDemandForAndroid(int dump_fd) {
 void SuppressDumpGeneration() {
   g_dumps_suppressed = G_DUMPS_SUPPRESSED_MAGIC;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsCrashReporterEnabled() {
   return g_is_crash_reporter_enabled;

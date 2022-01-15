@@ -84,7 +84,8 @@ class CrashAnalyzerTest : public testing::Test {
 #else
     auto memory = std::make_unique<crashpad::ProcessMemoryNative>();
     ASSERT_TRUE(memory->Initialize(crashpad::test::GetSelfProcess()));
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     process_snapshot_.AddModule(std::move(module));
     process_snapshot_.SetException(std::move(exception));

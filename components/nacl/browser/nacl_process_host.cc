@@ -189,7 +189,7 @@ class NaClSandboxedProcessLauncherDelegate
     // sandbox.
     return false;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   content::ZygoteHandle GetZygote() override {

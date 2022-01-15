@@ -695,7 +695,7 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkServerError) {
   histograms.ExpectTotalCount(kFetchValidHistogram, 0);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // http://crbug.com/658619
 #define MAYBE_UpdateFromNetworkNetworkError     \
     DISABLED_UpdateFromNetworkNetworkError

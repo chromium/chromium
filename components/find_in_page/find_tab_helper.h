@@ -107,7 +107,7 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
 
   bool should_find_match() const { return should_find_match_; }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Selects and zooms to the find result nearest to the point (x,y)
   // defined in find-in-page coordinates.
   void ActivateNearestFindResult(float x, float y);

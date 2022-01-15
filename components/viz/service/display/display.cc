@@ -1438,7 +1438,7 @@ void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
     // On Android we want to return early because the |client_| callback hits
     // a platform API in the browser process.
     return;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   client_->SetPreferredFrameInterval(interval);

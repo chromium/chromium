@@ -502,7 +502,7 @@ bool CrashHandlerHostLinux::IsShuttingDown() const {
 
 }  // namespace breakpad
 
-#else  // !OS_ANDROID
+#else  // !BUILDFLAG(IS_ANDROID)
 
 namespace crashpad {
 
@@ -659,4 +659,4 @@ void CrashHandlerHost::WillDestroyCurrentMessageLoop() {
 
 }  // namespace crashpad
 
-#endif  // !OS_ANDROID
+#endif  // !BUILDFLAG(IS_ANDROID)

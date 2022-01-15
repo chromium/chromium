@@ -21,7 +21,7 @@ typedef enum {
   BOOL_RESULT = 1,               // WDResult<bool>
   KEYWORDS_RESULT,               // WDResult<WDKeywordsResult>
   INT64_RESULT,                  // WDResult<int64_t>
-#if defined(OS_WIN)              //
+#if BUILDFLAG(IS_WIN)            //
   PASSWORD_IE7_RESULT,           // WDResult<IE7PasswordInfo>
 #endif                           //
   WEB_APP_IMAGES,                // WDResult<WDAppImagesResult>
@@ -42,7 +42,7 @@ typedef enum {
   AUTOFILL_OFFER_DATA,           // WDResult<std::vector<std::unique_ptr<
                                  //     AutofillOfferData>>>
   AUTOFILL_UPI_RESULT,           // WDResult<std::string>
-#if !defined(OS_IOS)             //
+#if !BUILDFLAG(IS_IOS)           //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>
   PAYMENT_METHOD_MANIFEST,       // WDResult<std::vector<std::string>>

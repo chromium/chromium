@@ -254,7 +254,7 @@ void RenderViewContextMenuBase::UpdateMenuItem(int command_id,
   menu_model_.SetEnabledAt(index, enabled);
   menu_model_.SetVisibleAt(index, !hidden);
   if (toolkit_delegate_) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     toolkit_delegate_->UpdateMenuItem(command_id, enabled, hidden, label);
 #else
     toolkit_delegate_->RebuildMenu();

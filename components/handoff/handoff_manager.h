@@ -13,7 +13,7 @@
 
 @class NSUserActivity;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -23,7 +23,7 @@ class PrefRegistrySyncable;
 // hand off the current active URL to other devices.
 @interface HandoffManager : NSObject
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Registers preferences related to Handoff.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 #endif
@@ -42,7 +42,7 @@ class PrefRegistrySyncable;
 
 @end
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 @interface HandoffManager (TestingOnly)
 - (NSURL*)userActivityWebpageURL;
 - (NSString*)userActivityTitle;

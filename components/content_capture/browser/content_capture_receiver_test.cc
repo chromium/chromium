@@ -178,7 +178,7 @@ TEST_P(ContentCaptureReceiverTest, MultipleConsumers) {
 
 // TODO(https://crbug.com/1010179): Fix flakes on win10_chromium_x64_rel_ng and
 // re-enable this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DidCaptureContentWithUpdate DISABLED_DidCaptureContentWithUpdate
 #else
 #define MAYBE_DidCaptureContentWithUpdate DidCaptureContentWithUpdate
@@ -206,7 +206,7 @@ TEST_P(ContentCaptureReceiverTest, MAYBE_DidCaptureContentWithUpdate) {
 
 // TODO(https://crbug.com/1011204): Fix flakes on win10_chromium_x64_rel_ng and
 // re-enable this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DidUpdateContent DISABLED_DidUpdateContent
 #else
 #define MAYBE_DidUpdateContent DidUpdateContent
@@ -366,7 +366,7 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
 
 // TODO(https://crbug.com/1010416): Fix flakes on win10_chromium_x64_rel_ng and
 // re-enable this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ChildFrameCaptureContentFirst \
   DISABLED_ChildFrameCaptureContentFirst
 #else
@@ -566,7 +566,7 @@ class ContentCaptureReceiverMultipleFrameTest
 
 // TODO(https://crbug.com/1010417): Fix flakes on win10_chromium_x64_rel_ng and
 // re-enable this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ReceiverCreatedForExistingFrame \
   DISABLED_ReceiverCreatedForExistingFrame
 #else

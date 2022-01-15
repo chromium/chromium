@@ -287,7 +287,7 @@ TEST_F(MediaNotificationViewModernImplTest, ButtonsSanityCheck) {
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kExitPictureInPicture));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ButtonsFocusCheck DISABLED_ButtonsFocusCheck
 #else
 #define MAYBE_ButtonsFocusCheck ButtonsFocusCheck

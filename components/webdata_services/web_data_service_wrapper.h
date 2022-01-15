@@ -18,7 +18,7 @@ class KeywordWebDataService;
 class TokenWebData;
 class WebDatabaseService;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 namespace payments {
 class PaymentManifestWebDataService;
 }  // namespace payments
@@ -82,7 +82,7 @@ class WebDataServiceWrapper : public KeyedService {
   GetAccountAutofillWebData();
   virtual scoped_refptr<KeywordWebDataService> GetKeywordWebData();
   virtual scoped_refptr<TokenWebData> GetTokenWebData();
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   virtual scoped_refptr<payments::PaymentManifestWebDataService>
   GetPaymentManifestWebData();
 #endif
@@ -100,7 +100,7 @@ class WebDataServiceWrapper : public KeyedService {
   scoped_refptr<KeywordWebDataService> keyword_web_data_;
   scoped_refptr<TokenWebData> token_web_data_;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   scoped_refptr<payments::PaymentManifestWebDataService>
       payment_manifest_web_data_;
 #endif

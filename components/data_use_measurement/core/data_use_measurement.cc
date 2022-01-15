@@ -20,7 +20,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/traffic_stats.h"
 #endif
 
@@ -28,7 +28,7 @@ namespace data_use_measurement {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsInForeground(base::android::ApplicationState state) {
   switch (state) {
     case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
@@ -65,7 +65,7 @@ DataUseMeasurement::DataUseMeasurement(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_connection_tracker_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int64_t bytes = 0;
   // Query Android traffic stats.
   if (net::android::traffic_stats::GetCurrentUidRxBytes(&bytes))
@@ -82,7 +82,7 @@ DataUseMeasurement::DataUseMeasurement(
       base::BindOnce(&DataUseMeasurement::OnConnectionChanged,
                      weak_ptr_factory_.GetWeakPtr()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   app_state_ = base::android::ApplicationStatusListener::GetState();
 
   app_listener_ = base::android::ApplicationStatusListener::New(
@@ -93,7 +93,7 @@ DataUseMeasurement::DataUseMeasurement(
 
 DataUseMeasurement::~DataUseMeasurement() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (app_listener_)
     app_listener_.reset();
 #endif
@@ -118,7 +118,7 @@ void DataUseMeasurement::RecordDownstreamUserTrafficSizeMetric(
       /*is_user_traffic=*/true, bytes);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void DataUseMeasurement::OnApplicationStateChangeForTesting(
     base::android::ApplicationState application_state) {
   OnApplicationStateChange(application_state);
@@ -126,7 +126,7 @@ void DataUseMeasurement::OnApplicationStateChangeForTesting(
 #endif
 
 DataUseUserData::AppState DataUseMeasurement::CurrentAppState() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return IsInForeground(app_state_) ? DataUseUserData::FOREGROUND
                                     : DataUseUserData::BACKGROUND;
 #else
@@ -163,7 +163,7 @@ std::string DataUseMeasurement::GetHistogramName(
       is_connection_cellular ? "Cellular" : "NotCellular");
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void DataUseMeasurement::OnApplicationStateChange(
     base::android::ApplicationState application_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -176,7 +176,7 @@ void DataUseMeasurement::OnApplicationStateChange(
 #endif
 
 void DataUseMeasurement::MaybeRecordNetworkBytesOS(bool force_record_metrics) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Minimum number of bytes that should be reported by the network delegate
   // before Android's TrafficStats API is queried (if Chrome is not in
   // background). This reduces the overhead of repeatedly calling the API.

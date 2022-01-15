@@ -10,9 +10,9 @@
 #include "build/build_config.h"
 #include "components/zucchini/main_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/process_startup_helper.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -30,10 +30,10 @@ void InitLogging() {
 void InitErrorHandling(const base::CommandLine& command_line) {
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(command_line);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace

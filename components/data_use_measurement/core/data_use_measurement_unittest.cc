@@ -18,7 +18,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -79,7 +79,7 @@ TEST(DataUseMeasurementTest, UserNotUserTest) {
       prefs::kDataUsedServicesBackground);
 
   DataUseMeasurementTest data_use_measurement_test(&test_prefs);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   data_use_measurement_test.data_use_measurement()
       ->OnApplicationStateChangeForTesting(
           base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
@@ -87,7 +87,7 @@ TEST(DataUseMeasurementTest, UserNotUserTest) {
   data_use_measurement_test.TestForAUserRequest("Foreground.");
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // This test function tests recording of data use information in UMA histogram
 // when packet is originated from user or services when the app is in the
 // background and OS is Android.

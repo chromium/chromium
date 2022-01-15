@@ -37,7 +37,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/origin.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -693,7 +693,7 @@ void GetSuggestionsSummaryList(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_SUMMARY));
   }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (IsSuggested(suggestions, SUGGEST_DNS_CONFIG) &&
       IsSuggested(suggestions, SUGGEST_FIREWALL_CONFIG) &&
       IsSuggested(suggestions, SUGGEST_PROXY_CONFIG)) {
@@ -722,7 +722,7 @@ void GetSuggestionsSummaryList(
     DCHECK(!(suggestions & SUGGEST_DNS_CONFIG));
     DCHECK(!(suggestions & SUGGEST_SECURE_DNS_CONFIG));
   }
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (IsSuggested(suggestions, SUGGEST_SECURE_DNS_CONFIG)) {
     suggestions_summary_list.push_back(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_SECURE_DNS_SUMMARY));
@@ -730,7 +730,7 @@ void GetSuggestionsSummaryList(
 #endif
 
   if (IsSuggested(suggestions, SUGGEST_OFFLINE_CHECKS)) {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     suggestions_summary_list.push_back(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_TURN_OFF_AIRPLANE_SUMMARY));
     suggestions_summary_list.push_back(SingleEntryDictionary(
@@ -747,7 +747,7 @@ void GetSuggestionsSummaryList(
 
 // If the current platform has a directly accesible network diagnostics tool and
 // the URL is valid add a suggestion.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (IsOnlySuggestion(suggestions, SUGGEST_DIAGNOSE_TOOL)) {
     int diagose_message_id =
         error_code == error_page::DNS_PROBE_FINISHED_NXDOMAIN
@@ -764,7 +764,7 @@ void GetSuggestionsSummaryList(
   }
 #else
   DCHECK(!IsSuggested(suggestions, SUGGEST_DIAGNOSE_TOOL));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Add list prefix header.
   error_strings->SetStringPath(
@@ -804,7 +804,7 @@ void AddSuggestionsDetails(int error_code,
           IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY, false);
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   if (suggestions & SUGGEST_SECURE_DNS_CONFIG) {
     AddSuggestionDetailDictionaryToList(
         suggestions_details, IDS_ERRORPAGES_SUGGESTION_SECURE_DNS_CONFIG_HEADER,
@@ -812,7 +812,7 @@ void AddSuggestionsDetails(int error_code,
   }
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (suggestions & SUGGEST_DNS_CONFIG) {
     AddSuggestionDetailDictionaryToList(suggestions_details,
           IDS_ERRORPAGES_SUGGESTION_DNS_CONFIG_HEADER,
@@ -834,7 +834,7 @@ void AddSuggestionsDetails(int error_code,
   }
 
   // TODO(https://crbug.com/1254714): Provide meaningful strings for Fuchsia.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   if (suggestions & SUGGEST_PROXY_CONFIG) {
     AddSuggestionDetailDictionaryToList(
         suggestions_details, IDS_ERRORPAGES_SUGGESTION_PROXY_CONFIG_HEADER, 0,
@@ -850,7 +850,7 @@ void AddSuggestionsDetails(int error_code,
         "proxyTitle",
         l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
   }
-#endif  //  !defined(OS_FUCHSIA)
+#endif  //  !BUILDFLAG(IS_FUCHSIA)
 #endif
 
   if (suggestions & SUGGEST_CONTACT_ADMINISTRATOR &&
@@ -1089,7 +1089,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
   AddSuggestionsDetails(error_code, &result.strings, options.suggestions,
                         suggestions_details);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!is_post && !result.reload_button_shown && !is_incognito &&
       failed_url.is_valid() && failed_url.SchemeIsHTTPOrHTTPS() &&
       IsOfflineError(error_domain, error_code)) {
@@ -1136,7 +1136,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
           base::Value(l10n_util::GetStringUTF16(IDS_HIDE_CONTENT)));
     }
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   result.strings.SetPath("suggestionsSummaryList",
                          base::Value(std::move(suggestions_summary_list)));

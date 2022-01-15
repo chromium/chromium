@@ -6,6 +6,6 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/cdm/common/cdm_messages_android.h"
 #endif

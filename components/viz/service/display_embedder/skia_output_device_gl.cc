@@ -126,7 +126,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
         gl::DirectCompositionRootSurfaceBufferCount();
     capabilities_.supports_delegated_ink = gl_surface_->SupportsDelegatedInk();
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   if (feature_info->workarounds()
           .disable_post_sub_buffers_for_onscreen_surfaces) {
     capabilities_.supports_post_sub_buffer = false;
@@ -442,7 +442,7 @@ void SkiaOutputDeviceGL::ScheduleOverlays(
     if (!gl_surface_->ScheduleDCLayer(std::move(params)))
       DLOG(ERROR) << "ScheduleDCLayer failed";
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void SkiaOutputDeviceGL::EnsureBackbuffer() {

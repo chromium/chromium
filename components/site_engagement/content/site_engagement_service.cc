@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -38,7 +39,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/site_engagement/content/android/site_engagement_service_android.h"
 #endif
 
@@ -379,7 +380,7 @@ void SiteEngagementService::AddPointsForTesting(const GURL& url,
   AddPoints(url, points);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 SiteEngagementServiceAndroid* SiteEngagementService::GetAndroidService() const {
   return android_service_.get();
 }

@@ -223,7 +223,7 @@ TEST_F(DeviceEventLogTest, TestTimeFormat) {
   EXPECT_EQ(base::StringPrintf("[%s] event0\n", extected_time_str.c_str()),
             GetLogString(OLDEST_FIRST, "time", kDefaultLevel, 1));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   char sign = hour_delta > 0 ? '+' : '-';
   std::string expected_time =
       base::StringPrintf("2020-01-01T%02d:34:56.000000%c%02d:00",

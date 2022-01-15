@@ -643,7 +643,7 @@ TEST_P(MAYBE_BidirectionalStreamTest, ReadFailsBeforeRequestStarted) {
 }
 
 // TODO(https://crbug.com/880474): This test is flaky on fuchsia_x64 builder.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread \
   DISABLED_StreamFailBeforeReadIsExecutedOnNetworkThread
 #else
@@ -725,7 +725,7 @@ TEST_P(MAYBE_BidirectionalStreamTest, StreamFailAfterStreamReadyCallback) {
 }
 
 // TODO(crbug.com/1246489): Flaky on Win64.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread \
   DISABLED_StreamFailBeforeWriteIsExecutedOnNetworkThread
 #else

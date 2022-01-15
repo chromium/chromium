@@ -124,7 +124,7 @@ class InterceptNavigationThrottleTest
 
 // TODO(https://crbug.com/1009359): Fix flakes on win10_chromium_x64_rel_ng and
 // re-enable this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RequestCompletesIfNavigationNotIgnored \
   DISABLED_RequestCompletesIfNavigationNotIgnored
 #else
@@ -146,7 +146,7 @@ TEST_P(InterceptNavigationThrottleTest,
 
 // TODO(https://crbug.com/1010187): Fix flakes on win10_chromium_x64_rel_ng and
 // re-enable this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RequestCancelledIfNavigationIgnored \
   DISABLED_RequestCancelledIfNavigationIgnored
 #else

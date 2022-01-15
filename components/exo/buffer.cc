@@ -644,7 +644,7 @@ void Buffer::MaybeRunPerCommitRelease(
   if (release_fence.is_null()) {
     std::move(buffer_release_callback).Run();
   } else {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     auto controller = base::FileDescriptorWatcher::WatchReadable(
         release_fence.owned_fd.get(),
         base::BindRepeating(&Buffer::FenceSignalled, AsWeakPtr(), commit_id));

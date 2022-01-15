@@ -13,9 +13,9 @@
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class PrefRegistrySimple;
 
@@ -28,12 +28,12 @@ struct SegmentSelectionResult;
 class SegmentationPlatformService : public KeyedService,
                                     public base::SupportsUserData {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type SegmentationPlatformService for the given
   // SegmentationPlatformService.
   static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
       SegmentationPlatformService* segmentation_platform_service);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SegmentationPlatformService() = default;
   ~SegmentationPlatformService() override = default;

@@ -127,7 +127,7 @@ const base::Feature kWebRtcLogCapturePipeline{
 // vsync.
 const base::Feature kUseSetPresentDuration{"UseSetPresentDuration",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Enables platform supported delegated ink trails instead of Skia backed
 // delegated ink trails.
@@ -277,7 +277,7 @@ bool ShouldWebRtcLogCapturePipeline() {
 bool ShouldUseSetPresentDuration() {
   return base::FeatureList::IsEnabled(kUseSetPresentDuration);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 absl::optional<int> ShouldDrawPredictedInkPoints() {
   if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))

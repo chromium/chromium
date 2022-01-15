@@ -36,7 +36,7 @@ base::File::Error LockTable::LockFile(FileImpl* file) {
     // Locking failed for some reason.
     return lock_err;
   }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   locked_files_.insert(file->path());
   return base::File::FILE_OK;
@@ -52,7 +52,7 @@ base::File::Error LockTable::UnlockFile(FileImpl* file) {
       NOTREACHED();
       return lock_err;
     }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
     locked_files_.erase(it);
   }

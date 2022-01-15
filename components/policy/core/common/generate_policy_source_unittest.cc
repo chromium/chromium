@@ -130,7 +130,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
       EXPECT_EQ(base::Value::Type::STRING, it.schema().type());
   }
   EXPECT_TRUE(*next == nullptr);
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   subschema = schema.GetProperty(key::kExtensionSettings);

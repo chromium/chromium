@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permissions_client.h"
@@ -21,7 +22,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
 #include "ui/android/window_android.h"
 #endif
@@ -184,7 +185,7 @@ void MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded(
     bool did_prompt_for_audio,
     bool did_prompt_for_video,
     const std::vector<ContentSetting>& responses) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // If either audio or video was previously allowed and Chrome no longer has
   // the necessary permissions, show a infobar to attempt to address this
   // mismatch.
@@ -245,7 +246,7 @@ void MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded(
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // static
 void MediaStreamDevicesController::AndroidOSPromptAnswered(
     std::unique_ptr<MediaStreamDevicesController> controller,
@@ -263,7 +264,7 @@ void MediaStreamDevicesController::AndroidOSPromptAnswered(
 
   controller->PromptAnsweredGroupedRequest(responses);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool MediaStreamDevicesController::ShouldRequestAudio() const {
   return audio_setting_ == CONTENT_SETTING_ASK;
@@ -443,7 +444,7 @@ ContentSetting MediaStreamDevicesController::GetContentSetting(
 
 bool MediaStreamDevicesController::IsUserAcceptAllowed(
     ContentSettingsType content_type) const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ui::WindowAndroid* window_android =
       web_contents_->GetNativeView()->GetWindowAndroid();
   if (!window_android)

@@ -116,7 +116,7 @@ std::string TimeWithMillieconds(const base::Time& time) {
                             exploded.millisecond);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 std::string UnixTime(const base::Time& time) {
   base::Time::Exploded utc_exploded, exploded;
   time.UTCExplode(&utc_exploded);
@@ -151,7 +151,7 @@ std::string LogEntryToString(const DeviceEventLogImpl::LogEntry& log_entry,
   std::string line;
   if (show_time == ShowTime::kTimeWithMs)
     line += "[" + TimeWithMillieconds(log_entry.time) + "] ";
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   if (show_time == ShowTime::kUnix)
     line += UnixTime(log_entry.time) + " ";
 #endif
@@ -160,7 +160,7 @@ std::string LogEntryToString(const DeviceEventLogImpl::LogEntry& log_entry,
   if (show_level) {
     const char* kLevelDesc[] = {"ERROR", "USER", "EVENT", "DEBUG"};
     line += std::string(kLevelDesc[log_entry.log_level]);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     if (show_time == ShowTime::kUnix) {
       // Format the level consistently with /var/log/messages.
       line += base::StringPrintf(" chrome[%d]", base::GetCurrentProcId());
@@ -252,7 +252,7 @@ void GetFormat(const std::string& format_string,
     if (tok == "time") {
       *show_time = ShowTime::kTimeWithMs;
     } else if (tok == "unixtime") {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       *show_time = ShowTime::kUnix;
 #else
       *show_time = ShowTime::kTimeWithMs;

@@ -439,7 +439,7 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersWithDefaultTrials) {
 }
 
 base::CommandLine::StringType CreateSwitch(const std::string& value) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::ASCIIToWide(value);
 #else
   return value;
@@ -602,7 +602,7 @@ TEST_F(FlagsStateTest, CheckValues) {
   // Confirm that there is no '=' in the command line for simple switches.
   std::string switch1_with_equals =
       std::string("--") + std::string(kSwitch1) + std::string("=");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(std::wstring::npos, command_line.GetCommandLineString().find(
                                     base::ASCIIToWide(switch1_with_equals)));
 #else
@@ -613,7 +613,7 @@ TEST_F(FlagsStateTest, CheckValues) {
   // And confirm there is a '=' for switches with values.
   std::string switch2_with_equals =
       std::string("--") + std::string(kSwitch2) + std::string("=");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_NE(std::wstring::npos, command_line.GetCommandLineString().find(
                                     base::ASCIIToWide(switch2_with_equals)));
 #else

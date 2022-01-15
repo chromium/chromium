@@ -47,7 +47,7 @@ void BackgroundFetchDelegateBase::GetIconDisplaySize(
   // icon at all, which is returned for all non-Android platforms as the
   // icons can't be displayed on the UI yet.
   gfx::Size display_size;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   display_size = gfx::Size(192, 192);
 #endif
   std::move(callback).Run(display_size);

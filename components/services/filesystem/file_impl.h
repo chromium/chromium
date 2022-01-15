@@ -46,7 +46,7 @@ class FileImpl : public mojom::File {
   // the internal mojom::File handle. Not supported on Fuchsia.
   base::File::Error RawLockFile();
   base::File::Error RawUnlockFile();
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   const base::FilePath& path() const { return path_; }
 

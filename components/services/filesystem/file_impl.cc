@@ -73,7 +73,7 @@ base::File::Error FileImpl::RawLockFile() {
 base::File::Error FileImpl::RawUnlockFile() {
   return file_.Unlock();
 }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 void FileImpl::Close(CloseCallback callback) {
   if (!file_.IsValid()) {

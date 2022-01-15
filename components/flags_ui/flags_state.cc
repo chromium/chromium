@@ -454,7 +454,7 @@ void FlagsState::RemoveFlagsSwitches(
 
     // The below is either a std::string or a std::u16string based on platform.
     const auto& existing_value = (*switch_list)[switch_name];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     const std::string existing_value_utf8 = base::WideToUTF8(existing_value);
 #else
     const std::string& existing_value_utf8 = existing_value;
@@ -476,7 +476,7 @@ void FlagsState::RemoveFlagsSwitches(
       switch_list->erase(switch_name);
     } else {
       std::string switch_value = base::JoinString(remaining_features, ",");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       (*switch_list)[switch_name] = base::UTF8ToWide(switch_value);
 #else
       (*switch_list)[switch_name] = switch_value;
@@ -645,20 +645,20 @@ void FlagsState::GetFlagFeatureEntries(
 
 // static
 unsigned short FlagsState::GetCurrentPlatform() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return kOsIos;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return kOsMac;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return kOsWin;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return kOsCrOS;
-#elif (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    defined(OS_OPENBSD)
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    BUILDFLAG(IS_OPENBSD)
   return kOsLinux;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return kOsAndroid;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return kOsFuchsia;
 #else
 #error Unknown platform

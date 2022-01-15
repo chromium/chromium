@@ -26,7 +26,7 @@
 #include "build/build_config.h"
 #include "components/wifi/wifi_service.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -71,7 +71,7 @@ class WiFiTest {
     VLOG(0) << "Network List Changed: " << network_guid_list.size();
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Without this there will be a mem leak on osx.
   base::mac::ScopedNSAutoreleasePool scoped_pool_;
 #endif
@@ -122,14 +122,14 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
       parsed_command_line.GetSwitchValueASCII("security");
 
   if (parsed_command_line.GetArgs().size() == 1) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     network_guid = base::WideToASCII(parsed_command_line.GetArgs()[0]);
 #else
     network_guid = parsed_command_line.GetArgs()[0];
 #endif
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (parsed_command_line.HasSwitch("debug"))
     MessageBoxA(nullptr, __FUNCTION__, "Debug Me!", MB_OK);
 #endif

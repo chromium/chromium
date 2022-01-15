@@ -11,8 +11,8 @@
 
 namespace cookie_config {
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // Use the operating system's mechanisms to encrypt cookies before writing
@@ -28,7 +28,7 @@ class CookieOSCryptoDelegate : public net::CookieCryptoDelegate {
 };
 
 bool CookieOSCryptoDelegate::ShouldEncrypt() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Cookie encryption is not necessary on iOS, due to OS-protected storage.
   // However, due to https://codereview.chromium.org/135183021/, cookies were
   // accidentally encrypted. In order to allow these cookies to still be used,a
@@ -64,12 +64,12 @@ base::LazyInstance<CookieOSCryptoDelegate>::DestructorAtExit
 net::CookieCryptoDelegate* GetCookieCryptoDelegate() {
   return g_cookie_crypto_delegate.Pointer();
 }
-#else   // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 net::CookieCryptoDelegate* GetCookieCryptoDelegate() {
   return NULL;
 }
-#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace cookie_config

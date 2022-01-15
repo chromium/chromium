@@ -536,7 +536,7 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
 
   web_contents->SetUserAgentOverride(spoofed_ua, override_in_new_tabs);
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting() {

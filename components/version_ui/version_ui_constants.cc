@@ -4,13 +4,14 @@
 
 #include "components/version_ui/version_ui_constants.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace version_ui {
 
 // Resource paths.
 const char kAboutVersionCSS[] = "about_version.css";
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 const char kAboutVersionMobileCSS[] = "about_version_mobile.css";
 #endif
 const char kVersionJS[] = "about_version.js";
@@ -35,21 +36,21 @@ const char kCL[] = "cl";
 const char kCommandLine[] = "command_line";
 const char kCommandLineName[] = "command_line_name";
 const char kCompany[] = "company";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kUpdateCohortName[] = "update_cohort_name";
 #endif
 const char kCopyright[] = "copyright";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kCustomizationId[] = "customization_id";
 #endif
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 const char kExecutablePath[] = "executable_path";
 const char kExecutablePathName[] = "executable_path_name";
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kFirmwareVersion[] = "firmware_version";
 #endif
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 const char kJSEngine[] = "js_engine";
 const char kJSVersion[] = "js_version";
 #endif
@@ -59,7 +60,7 @@ const char kOfficial[] = "official";
 const char kOSName[] = "os_name";
 const char kOSType[] = "os_type";
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kOSVersion[] = "os_version";
 const char kGmsName[] = "gms_name";
 const char kGmsVersion[] = "gms_version";
@@ -67,11 +68,11 @@ const char kGmsVersion[] = "gms_version";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPlatform[] = "platform";
 #endif
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 const char kProfilePath[] = "profile_path";
 const char kProfilePathName[] = "profile_path_name";
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kOsVersionHeaderText1[] = "os-version-text1";
 const char kOsVersionHeaderText2[] = "os-version-text2";
 const char kOsVersionHeaderLink[] = "os-version-link";

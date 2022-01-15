@@ -240,14 +240,14 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_URL) {
   base::Time now = base::Time::Now();
   std::string title = "foo";
   std::string url_text = "http://example.com/";
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The linux and chromeos clipboard treats the presence of text on the
   // clipboard as the url format being available.
   test_clipboard_->WriteText(url_text.data(), url_text.length());
 #else
   test_clipboard_->WriteBookmark(title.data(), title.length(), url_text.data(),
                                  url_text.length());
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 
   HasDataCallbackWaiter waiter(&recent_content);
