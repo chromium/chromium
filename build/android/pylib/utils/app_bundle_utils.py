@@ -26,12 +26,15 @@ _SYSTEM_MODES = ('system_compressed', 'system')
 _ALL_ABIS = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
 
 
+def _BundleMinSdkVersion(bundle_path):
+  manifest_data = bundletool.RunBundleTool(
+      ['dump', 'manifest', '--bundle', bundle_path])
+  return int(re.search(r'minSdkVersion.*?(\d+)', manifest_data).group(1))
+
+
 def _CreateDeviceSpec(bundle_path, sdk_version, locales):
   if not sdk_version:
-    manifest_data = bundletool.RunBundleTool(
-        ['dump', 'manifest', '--bundle', bundle_path])
-    sdk_version = int(
-        re.search(r'minSdkVersion.*?(\d+)', manifest_data).group(1))
+    sdk_version = _BundleMinSdkVersion(bundle_path)
 
   # Setting sdkVersion=minSdkVersion prevents multiple per-minSdkVersion .apk
   # files from being created within the .apks file.
@@ -43,16 +46,17 @@ def _CreateDeviceSpec(bundle_path, sdk_version, locales):
   }
 
 
-def _CreateSystemBundle(src_bundle, dst_bundle):
-  # Modifies the BundleConfig.pb of the given .aab to remove the "classes*.dex"
-  # entry from the "uncompressedGlob" list (or rather, replace it with X's).
+def _FixBundleDexCompressionGlob(src_bundle, dst_bundle):
+  # Modifies the BundleConfig.pb of the given .aab to add "classes*.dex" to the
+  # "uncompressedGlob" list.
   with zipfile.ZipFile(src_bundle) as src, \
       zipfile.ZipFile(dst_bundle, 'w') as dst:
     for info in src.infolist():
       data = src.read(info)
       if info.filename == 'BundleConfig.pb':
-        entry = b'classes*.dex'
-        data = data.replace(entry, b'X' * len(entry))
+        # A classesX.dex entry is added by create_app_bundle.py so that we can
+        # modify it here in order to have it take effect. b/176198991
+        data = data.replace(b'classesX.dex', b'classes*.dex')
       dst.writestr(info, data)
 
 
@@ -124,9 +128,11 @@ def GenerateBundleApks(bundle_path,
           '--overwrite',
       ]
       input_bundle_path = bundle_path
-      if mode in _SYSTEM_MODES:
+      # Work around bundletool not respecting uncompressDexFiles setting.
+      # b/176198991
+      if mode not in _SYSTEM_MODES and _BundleMinSdkVersion(bundle_path) >= 27:
         input_bundle_path = os.path.join(tmp_dir, 'system.aab')
-        _CreateSystemBundle(bundle_path, input_bundle_path)
+        _FixBundleDexCompressionGlob(bundle_path, input_bundle_path)
 
       cmd_args += ['--bundle=%s' % input_bundle_path]
 
