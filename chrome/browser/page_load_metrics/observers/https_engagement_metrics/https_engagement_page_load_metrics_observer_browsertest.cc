@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
 #include "chrome/browser/ui/browser.h"
@@ -473,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
 
 
 // Flaky on linux-chromeos-rel. crbug/1215539
-#if defined(NDEBUG) && defined(OS_CHROMEOS)
+#if defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AlwaysInBackground DISABLED_AlwaysInBackground
 #else
 #define MAYBE_AlwaysInBackground AlwaysInBackground

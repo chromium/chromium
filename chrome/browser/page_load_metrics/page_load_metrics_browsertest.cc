@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoPaintForEmptyDocument) {
 }
 
 // TODO(crbug.com/986642): Flaky on Win and Linux.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NoPaintForEmptyDocumentInChildFrame \
   DISABLED_NoPaintForEmptyDocumentInChildFrame
 #else
@@ -1173,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, AbortReload) {
 }
 
 // TODO(crbug.com/675061): Flaky on Win7 dbg.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AbortClose DISABLED_AbortClose
 #else
 #define MAYBE_AbortClose AbortClose
@@ -1263,7 +1263,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 }
 
 // TODO(crbug.com/1009885): Flaky on Linux MSan builds.
-#if defined(MEMORY_SANITIZER) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_FirstMeaningfulPaintRecorded DISABLED_FirstMeaningfulPaintRecorded
 #else
 #define MAYBE_FirstMeaningfulPaintRecorded FirstMeaningfulPaintRecorded
@@ -2242,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ExpectFirstPaintMetricsTotalCount(1);
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_InitialForegroundTabChanged DISABLED_InitialForegroundTabChanged
 #else
 #define MAYBE_InitialForegroundTabChanged InitialForegroundTabChanged
@@ -2342,7 +2342,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
 }
 
 // TODO(crbug.com/1242284): Flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_RestoreForeignSession DISABLED_RestoreForeignSession
 #else
 #define MAYBE_RestoreForeignSession RestoreForeignSession

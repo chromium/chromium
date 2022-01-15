@@ -38,7 +38,7 @@ class AbortsPageLoadMetricsObserverTest
 };
 
 // Disabled due to flakiness: https://crbug.com/1092598
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NewNavigationBeforeCommit DISABLED_NewNavigationBeforeCommit
 #else
 #define MAYBE_NewNavigationBeforeCommit NewNavigationBeforeCommit
@@ -52,7 +52,7 @@ TEST_F(AbortsPageLoadMetricsObserverTest, MAYBE_NewNavigationBeforeCommit) {
 }
 
 // Disabled due to flakiness: https://crbug.com/1092598
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReloadBeforeCommit DISABLED_ReloadBeforeCommit
 #else
 #define MAYBE_ReloadBeforeCommit ReloadBeforeCommit
@@ -87,7 +87,7 @@ TEST_F(AbortsPageLoadMetricsObserverTest, BackgroundBeforeCommit) {
 }
 
 // Disabled due to flakiness: https://crbug.com/1092598
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NewProvisionalNavigationBeforeCommit \
   DISABLED_NewProvisionalNavigationBeforeCommit
 #else

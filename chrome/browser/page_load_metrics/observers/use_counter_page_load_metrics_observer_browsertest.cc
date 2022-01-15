@@ -47,7 +47,7 @@ class UseCounterPageLoadMetricsObserverBrowserTest
 
 }  // namespace
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1224355
 #define MAYBE_RecordFeatures DISABLED_RecordFeatures
 #else

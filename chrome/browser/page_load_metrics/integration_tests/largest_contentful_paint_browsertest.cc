@@ -70,7 +70,7 @@ void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
 }  // namespace
 
 // Flaky on Linux: https://crbug.com/1223602.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_LargestContentfulPaint DISABLED_LargestContentfulPaint
 #else
 #define MAYBE_LargestContentfulPaint LargestContentfulPaint

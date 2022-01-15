@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
 }
 
 // TODO(http://crbug.com/1025737) Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HistoryPlumbing DISABLED_HistoryPlumbing
 #else
 #define MAYBE_HistoryPlumbing HistoryPlumbing

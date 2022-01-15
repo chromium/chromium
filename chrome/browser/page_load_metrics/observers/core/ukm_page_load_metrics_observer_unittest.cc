@@ -2299,7 +2299,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
 }
 
 // Android does not have NTP Custom Links.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
   GURL url(kTestUrl1);
 
@@ -2329,7 +2329,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kIsNTPCustomLinkName, 1);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
   // TODO(tommycli): Should we move this test to either HistoryClustersService

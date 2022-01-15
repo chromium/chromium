@@ -11,7 +11,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -122,7 +122,7 @@ void MultiTabLoadingPageLoadMetricsObserver::OnLoadEventStart(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
     content::NavigationHandle* navigation_handle) {
@@ -141,7 +141,7 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
   return num_loading;
 }
 
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
 
 int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
     content::NavigationHandle* navigation_handle) {
@@ -161,4 +161,4 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
   return num_loading;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
