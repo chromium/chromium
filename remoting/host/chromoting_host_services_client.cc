@@ -24,21 +24,29 @@ namespace remoting {
 
 namespace {
 
-#if BUILDFLAG(IS_LINUX)
-constexpr char kChromeRemoteDesktopSessionEnvVar[] =
-    "CHROME_REMOTE_DESKTOP_SESSION";
-#endif
-
 bool g_initialized = false;
 
 }  // namespace
 
+#if BUILDFLAG(IS_LINUX)
+
+// static
+constexpr char
+    ChromotingHostServicesClient::kChromeRemoteDesktopSessionEnvVar[];
+
+#endif
+
 ChromotingHostServicesClient::ChromotingHostServicesClient()
-    : environment_(base::Environment::Create()),
-      server_name_(GetChromotingHostServicesServerName()) {
+    : ChromotingHostServicesClient(base::Environment::Create(),
+                                   GetChromotingHostServicesServerName()) {
   DCHECK(g_initialized)
       << "ChromotingHostServicesClient::Initialize() has not been called.";
 }
+
+ChromotingHostServicesClient::ChromotingHostServicesClient(
+    std::unique_ptr<base::Environment> environment,
+    const mojo::NamedPlatformChannel::ServerName& server_name)
+    : environment_(std::move(environment)), server_name_(server_name) {}
 
 ChromotingHostServicesClient::~ChromotingHostServicesClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -115,7 +123,9 @@ bool ChromotingHostServicesClient::EnsureSessionServicesBinding() {
   }
   remote_->BindSessionServices(
       session_services_remote_.BindNewPipeAndPassReceiver());
-  session_services_remote_.reset_on_disconnect();
+  session_services_remote_.set_disconnect_handler(
+      base::BindOnce(&ChromotingHostServicesClient::OnSessionDisconnected,
+                     base::Unretained(this)));
   return true;
 }
 
@@ -124,6 +134,16 @@ void ChromotingHostServicesClient::OnDisconnected() {
 
   remote_.reset();
   connection_.reset();
+}
+
+void ChromotingHostServicesClient::OnSessionDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  session_services_remote_.reset();
+
+  if (on_session_disconnected_callback_for_testing_) {
+    std::move(on_session_disconnected_callback_for_testing_).Run();
+  }
 }
 
 }  // namespace remoting

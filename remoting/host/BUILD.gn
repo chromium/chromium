@@ -689,6 +689,11 @@ source_set("unit_tests") {
     "zombie_host_detector_unittest.cc",
   ]
 
+  # MojoIpcServer currently only works on Linux and Windows.
+  if (is_linux || is_win) {
+    sources += [ "chromoting_host_services_client_unittest.cc" ]
+  }
+
   if (use_ozone || is_chromeos_ash) {
     sources -= [ "input_monitor/local_input_monitor_unittest.cc" ]
   }
@@ -696,6 +701,7 @@ source_set("unit_tests") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
+    ":chromoting_host_services_client",
     ":client_session_control",
     ":common",
     ":resources",
@@ -709,6 +715,8 @@ source_set("unit_tests") {
     "//remoting/host/input_monitor:input_monitor",
     "//remoting/host/it2me:common",
     "//remoting/host/it2me:constants",
+    "//remoting/host/mojo_ipc",
+    "//remoting/host/mojo_ipc:test_support",
     "//remoting/host/mojo_ipc:unit_tests",
     "//remoting/host/mojom",
     "//remoting/host/native_messaging",

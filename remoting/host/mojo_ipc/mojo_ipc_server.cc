@@ -57,8 +57,7 @@ mojo::PlatformChannelServerEndpoint CreateServerEndpointOnIoSequence(
 
 MojoIpcServerBase::MojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name)
-    : server_name_(server_name),
-      endpoint_connector_(MojoServerEndpointConnector::Create(this)) {
+    : server_name_(server_name) {
   io_sequence_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 }
@@ -73,6 +72,7 @@ void MojoIpcServerBase::StartServer() {
   if (server_started_) {
     return;
   }
+  endpoint_connector_ = MojoServerEndpointConnector::Create(this);
   server_started_ = true;
   SendInvitation();
 }
@@ -84,6 +84,7 @@ void MojoIpcServerBase::StopServer() {
     return;
   }
   server_started_ = false;
+  endpoint_connector_.reset();
   UntrackAllMessagePipes();
   active_connections_.clear();
 }
