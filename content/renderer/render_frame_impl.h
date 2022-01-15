@@ -479,7 +479,7 @@ class CONTENT_EXPORT RenderFrameImpl
       const cc::LayerTreeSettings& settings) override;
   std::unique_ptr<blink::WebContentSettingsClient>
   CreateWorkerContentSettingsClient() override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<media::SpeechRecognitionClient> CreateSpeechRecognitionClient(
       media::SpeechRecognitionClient::OnReadyCallback callback) override;
 #endif

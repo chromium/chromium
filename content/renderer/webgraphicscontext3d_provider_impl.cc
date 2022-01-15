@@ -116,7 +116,7 @@ WebGraphicsContext3DProviderImpl::GetWebglPreferences() const {
     }
 
     // Set default context limits for WebGL.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     prefs.max_active_webgl_contexts = 8u;
 #else
     prefs.max_active_webgl_contexts = 16u;

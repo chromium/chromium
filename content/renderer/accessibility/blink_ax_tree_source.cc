@@ -219,7 +219,7 @@ void BlinkAXTreeSource::SetAccessibilityMode(ui::AXMode new_mode) {
 
 bool BlinkAXTreeSource::ShouldLoadInlineTextBoxes(
     const blink::WebAXObject& obj) const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If inline text boxes are enabled globally, no need to explicitly load them.
   if (accessibility_mode_.has_mode(ui::AXMode::kInlineTextBoxes))
     return false;

@@ -176,7 +176,7 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
       return PP_ERROR_NOTSUPPORTED;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return PP_ERROR_NOTSUPPORTED;
 #else
   if (!TryFallbackToSoftwareDecoder())
@@ -507,7 +507,7 @@ const uint8_t* PepperVideoDecoderHost::DecodeIdToAddress(uint32_t decode_id) {
 }
 
 bool PepperVideoDecoderHost::TryFallbackToSoftwareDecoder() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   DCHECK(!software_fallback_used_ && software_fallback_allowed_);

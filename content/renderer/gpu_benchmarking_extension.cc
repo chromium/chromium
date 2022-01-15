@@ -73,7 +73,7 @@
 #include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-primitive.h"
 
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // XpsObjectModel.h indirectly includes <wincrypt.h> which is
 // incompatible with Chromium's OpenSSL. By including wincrypt_shim.h
 // first, problems are avoided.
@@ -508,7 +508,7 @@ static void PrintDocument(blink::WebLocalFrame* frame, SkDocument* doc) {
     cc::PaintCanvasAutoRestore auto_restore(&canvas, true);
     canvas.translate(kMarginLeft, kMarginTop);
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     float page_shrink = frame->GetPrintPageShrink(i);
     DCHECK_GT(page_shrink, 0);
     canvas.scale(page_shrink, page_shrink);
@@ -553,7 +553,7 @@ void OnSwapCompletedHelper(CallbackAndContext* callback_and_context,
 // feature; no need for it in release builds.
 // Also note:  You must execute Chrome with `--no-sandbox` and
 // `--enable-gpu-benchmarking` for this to work.
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 static sk_sp<SkDocument> MakeXPSDocument(SkWStream* s) {
   // I am not sure why this hasn't been initialized yet.
   (void)CoInitializeEx(nullptr,
@@ -697,7 +697,7 @@ void GpuBenchmarking::PrintPagesToSkPictures(v8::Isolate* isolate,
 
 void GpuBenchmarking::PrintPagesToXPS(v8::Isolate* isolate,
                                       const std::string& filename) {
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
   PrintDocumentTofile(isolate, filename, &MakeXPSDocument, render_frame_.get());
 #else
   std::string msg("PrintPagesToXPS is unsupported.");

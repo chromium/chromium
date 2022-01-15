@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <mlang.h>
 #include <objidl.h>
@@ -44,14 +44,14 @@
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "v8/include/v8-initialization.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/common/android/cpu_affinity_setter.h"
 #endif
 
@@ -146,12 +146,12 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfNotFeature(features::kWebAssemblyCodeProtection,
                         "--no-wasm-write-protect-code-memory");
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   SetV8FlagIfFeature(features::kWebAssemblyCodeProtectionPku,
                      "--wasm-memory-protection-keys");
   SetV8FlagIfNotFeature(features::kWebAssemblyCodeProtectionPku,
                         "--no-wasm-memory-protection-keys");
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 
   SetV8FlagIfFeature(features::kWebAssemblyLazyCompilation,
@@ -172,7 +172,7 @@ RenderProcessImpl::RenderProcessImpl()
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kBigLittleScheduling,
           features::kBigLittleSchedulingRenderMainBigParam, false)) {
@@ -227,7 +227,7 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfFeature(features::kWebAssemblyDynamicTiering,
                      "--wasm-dynamic-tiering");
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
     if (command_line->HasSwitch(switches::kEnableCrashpad) ||
         command_line->HasSwitch(switches::kEnableCrashReporter) ||
@@ -252,14 +252,14 @@ RenderProcessImpl::RenderProcessImpl()
     }
   }
 #endif
-#if defined(OS_WIN) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
     // On Windows we use the default trap handler provided by V8.
     bool use_v8_trap_handler = true;
     v8::V8::EnableWebAssemblyTrapHandler(use_v8_trap_handler);
   }
 #endif
-#if defined(OS_MAC) && (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
+#if BUILDFLAG(IS_MAC) && (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
     // On macOS, Crashpad uses exception ports to handle signals in a different
     // process. As we cannot just pass a callback to this other process, we ask
@@ -267,7 +267,7 @@ RenderProcessImpl::RenderProcessImpl()
     bool use_v8_signal_handler = true;
     v8::V8::EnableWebAssemblyTrapHandler(use_v8_signal_handler);
   }
-#endif  // defined(OS_MAC) && defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 }
 
 RenderProcessImpl::~RenderProcessImpl() {

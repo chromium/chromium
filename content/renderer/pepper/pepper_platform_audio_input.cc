@@ -82,7 +82,7 @@ void PepperPlatformAudioInput::OnStreamCreated(
     base::SyncSocket::ScopedHandle socket_handle,
     bool initially_muted) {
   DCHECK(shared_memory_region.IsValid());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(socket_handle.IsValid());
 #else
   DCHECK(socket_handle.is_valid());

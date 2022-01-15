@@ -33,7 +33,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -513,7 +513,7 @@ WebMouseWheelEvent* BuildMouseWheelEvent(const InputEventData& event) {
   return mouse_wheel_event;
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define VK_RETURN 0x0D
 
 #define VK_PRIOR 0x21
@@ -723,7 +723,7 @@ std::vector<std::unique_ptr<WebInputEvent>> CreateSimulatedWebInputEvents(
     case PP_INPUTEVENT_TYPE_KEYDOWN:
     case PP_INPUTEVENT_TYPE_KEYUP: {
 // Windows key down events should always be "raw" to avoid an ASSERT.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       WebKeyboardEvent* web_keyboard_event =
           static_cast<WebKeyboardEvent*>(original_event.get());
       if (web_keyboard_event->GetType() == WebInputEvent::Type::kKeyDown)

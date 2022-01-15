@@ -241,7 +241,7 @@
 #include "content/renderer/pepper/plugin_module.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <cpu-features.h>
 
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
@@ -950,7 +950,7 @@ void ApplyFilePathAlias(blink::WebURLRequest* request) {
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring path = base::UTF16ToWide(request->Url().GetString().Utf16());
   const std::wstring file_prefix =
       base::ASCIIToWide(url::kFileScheme) +
@@ -967,7 +967,7 @@ void ApplyFilePathAlias(blink::WebURLRequest* request) {
 
   base::ReplaceFirstSubstringAfterOffset(&path, 0, alias_mapping[0],
                                          alias_mapping[1]);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   request->SetUrl(blink::WebURL(GURL(base::WideToUTF8(path))));
 #else
   request->SetUrl(blink::WebURL(GURL(path)));
@@ -1041,7 +1041,7 @@ void FillMiscNavigationParams(
   navigation_params->is_cross_site_cross_browsing_context_group =
       commit_params.is_cross_site_cross_browsing_context_group;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Only android webview uses this.
   navigation_params->grant_load_local_resources =
       commit_params.can_load_local_resources;
@@ -1963,7 +1963,7 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
 
   // Everything below subclasses RenderFrameObserver and is automatically
   // deleted when the RenderFrame gets deleted.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   new GinJavaBridgeDispatcher(this);
 #endif
 }
@@ -2268,11 +2268,11 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
       // frame when a commit (and ownership transfer) is imminent.
       // TODO(dcheng): This is the case of https://crbug.com/838348.
       DCHECK(is_main_frame_);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       // This check is not enabled on Android, since it seems like it's much
       // easier to trigger data races there.
       CHECK(!in_frame_tree_);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
       break;
   }
 
@@ -2730,7 +2730,7 @@ void RenderFrameImpl::CommitNavigation(
   // - The actual data: URL will be saved in the document's DocumentState to
   // later be returned as the `url` in DidCommitProvisionalLoadParams.
   bool should_handle_data_url_as_string = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   should_handle_data_url_as_string |=
       is_main_frame_ && !commit_params->data_url_as_string.empty();
 #endif
@@ -3179,7 +3179,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // should keep the base URL as document URL.
     bool use_base_url_for_data_url =
         !common_params->base_url_for_data_url.is_empty();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     use_base_url_for_data_url |= !commit_params->data_url_as_string.empty();
 #endif
 
@@ -3360,7 +3360,7 @@ RenderFrameImpl::CreateWorkerContentSettingsClient() {
       this);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<media::SpeechRecognitionClient>
 RenderFrameImpl::CreateSpeechRecognitionClient(
     media::SpeechRecognitionClient::OnReadyCallback callback) {
@@ -4288,7 +4288,7 @@ void RenderFrameImpl::WillSendRequest(blink::WebURLRequest& request,
   // a navigation concept. We pass ui::PAGE_TRANSITION_LINK as default one.
   WillSendRequestInternal(request, /*for_main_frame=*/false,
                           ui::PAGE_TRANSITION_LINK, for_redirect);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (auto& observer : observers_) {
     observer.WillSendRequest(request);
   }
@@ -5889,7 +5889,7 @@ void RenderFrameImpl::DecodeDataURL(
     GURL* base_url) {
   // A loadData request with a specified base URL.
   GURL data_url = common_params.url;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!commit_params.data_url_as_string.empty()) {
 #if DCHECK_IS_ON()
     {

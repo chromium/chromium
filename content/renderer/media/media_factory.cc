@@ -66,7 +66,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/common/features.h"
 #include "content/renderer/media/android/flinging_renderer_client_factory.h"
 #include "content/renderer/media/android/media_player_renderer_client_factory.h"
@@ -80,7 +80,7 @@
 #include "content/renderer/media/cast_renderer_client_factory.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "media/fuchsia/cdm/client/fuchsia_cdm_util.h"
 #elif BUILDFLAG(ENABLE_MOJO_CDM)
 #include "media/mojo/clients/mojo_cdm_factory.h"  // nogncheck
@@ -88,7 +88,7 @@
 #include "media/cdm/default_cdm_factory.h"
 #endif
 
-#if defined(OS_FUCHSIA) && BUILDFLAG(ENABLE_MOJO_CDM)
+#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_MOJO_CDM)
 #error "MojoCdm should be disabled for Fuchsia."
 #endif
 
@@ -251,7 +251,7 @@ std::unique_ptr<media::DefaultRendererFactory> CreateDefaultRendererFactory(
     media::DecoderFactory* decoder_factory,
     content::RenderThreadImpl* render_thread,
     content::RenderFrameImpl* render_frame) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto default_factory = std::make_unique<media::DefaultRendererFactory>(
       media_log, decoder_factory,
       base::BindRepeating(&content::RenderThreadImpl::GetGpuFactories,
@@ -274,7 +274,7 @@ enum class MediaPlayerType {
 // Helper function returning whether SurfaceLayer should be enabled.
 blink::WebMediaPlayer::SurfaceLayerMode GetSurfaceLayerMode(
     MediaPlayerType type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!::features::UseSurfaceLayerForVideo())
     return blink::WebMediaPlayer::SurfaceLayerMode::kNever;
 #endif
@@ -426,10 +426,10 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   const blink::web_pref::WebPreferences webkit_preferences =
       render_frame_->GetBlinkPreferences();
   bool embedded_media_experience_enabled = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   embedded_media_experience_enabled =
       webkit_preferences.embedded_media_experience_enabled;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // When memory pressure based garbage collection is enabled for MSE, the
   // |enable_instant_source_buffer_gc| flag controls whether the GC is done
@@ -573,7 +573,7 @@ MediaFactory::CreateRendererFactorySelector(
                                      std::move(factory));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DCHECK(interface_broker_);
 
   // MediaPlayerRendererClientFactory setup. It is used for HLS playback.
@@ -608,7 +608,7 @@ MediaFactory::CreateRendererFactorySelector(
                           base::Unretained(flinging_factory.get()));
   factory_selector->AddConditionalFactory(
       RendererType::kFlinging, std::move(flinging_factory), is_flinging_cb);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
   if (!is_base_renderer_factory_set &&
@@ -866,7 +866,7 @@ media::CdmFactory* MediaFactory::GetCdmFactory() {
   if (cdm_factory_)
     return cdm_factory_.get();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   DCHECK(interface_broker_);
   cdm_factory_ = media::CreateFuchsiaCdmFactory(interface_broker_);
 #elif BUILDFLAG(ENABLE_MOJO_CDM)

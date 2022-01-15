@@ -116,14 +116,14 @@
 #include "ui/gfx/range/range.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -405,7 +405,7 @@ class RenderViewImplTest : public RenderViewTest {
                    int key_code,
                    MockKeyboard::Modifiers modifiers,
                    std::u16string* output) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Retrieve the Unicode character for the given tuple (keyboard-layout,
     // key-code, and modifiers).
     // Exit when a keyboard-layout driver cannot assign a Unicode character to
@@ -717,7 +717,7 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   EXPECT_EQ(0, memcmp(raw_data, flat_data.get(), length));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 class UpdateTitleLocalFrameHost : public LocalFrameHostInterceptor {
  public:
@@ -745,7 +745,7 @@ class RenderViewImplUpdateTitleTest : public RenderViewImplTest {
   }
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Failing on Android: http://crbug.com/1080328
 #define MAYBE_OnNavigationLoadDataWithBaseURL \
   DISABLED_OnNavigationLoadDataWithBaseURL
@@ -2082,7 +2082,7 @@ class RenderViewImplContextMenuTest : public RenderViewImplTest {
   }
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(RenderViewImplContextMenuTest, ContextMenu) {
   LoadHTML("<div>Page A</div>");
 
@@ -2209,7 +2209,7 @@ TEST_F(RenderViewImplTest, TestBackForward) {
   EXPECT_EQ(1, was_page_b);
 }
 
-#if defined(OS_MAC) || defined(USE_AURA)
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
 TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
   LoadHTML("<textarea id=\"test\" cols=\"100\"></textarea>");
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
@@ -2401,7 +2401,7 @@ TEST_F(RenderViewImplTest, OnDeleteSurroundingText) {
   EXPECT_EQ(0, info.selection_end);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Failing on Android M: http://crbug.com/873580
 #define MAYBE_OnDeleteSurroundingTextInCodePoints \
   DISABLED_OnDeleteSurroundingTextInCodePoints
@@ -2518,7 +2518,7 @@ class RenderViewImplTextInputMessageOrder : public RenderViewImplTest {
 };
 
 // Failing on Windows; see https://crbug.com/1134571.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_MessageOrderInDidChangeSelection \
   DISABLED_MessageOrderInDidChangeSelection
 #else
@@ -3143,11 +3143,11 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   }
 }
 
-#if defined(OS_MAC) || defined(USE_AURA)
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
 TEST_F(RenderViewImplEnableZoomForDSFTest,
        DISABLED_GetCompositionCharacterBoundsTest) {  // http://crbug.com/582016
   SetDeviceScaleFactor(1.f);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // http://crbug.com/508747
   if (base::win::GetVersion() >= base::win::Version::WIN10)
     return;
@@ -3188,7 +3188,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // No extensions/autoresize on Android.
 namespace {
 

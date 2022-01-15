@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 //
 // Disable the test for the Android asan build.
 // See http://crbug.com/667837 for detail.
-#if !(defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
+#if !(BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        DiscardableMemoryAddressSpace) {
   const size_t kLargeSize = 4 * 1024 * 1024;   // 4MiB.

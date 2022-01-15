@@ -59,7 +59,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_cftyperef.h"
 #endif
 

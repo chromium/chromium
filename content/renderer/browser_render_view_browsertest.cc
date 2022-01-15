@@ -141,12 +141,12 @@ class RenderViewBrowserTest : public ContentBrowserTest {
 };
 
 // https://crbug.com/788788
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ConfirmCacheInformationPlumbed \
   DISABLED_ConfirmCacheInformationPlumbed
 #else
 #define MAYBE_ConfirmCacheInformationPlumbed ConfirmCacheInformationPlumbed
-#endif  // defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_F(RenderViewBrowserTest,
                        MAYBE_ConfirmCacheInformationPlumbed) {
   ASSERT_TRUE(embedded_test_server()->Start());

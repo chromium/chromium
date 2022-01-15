@@ -449,7 +449,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
     if (capabilities.image_ycbcr_p010 && bit_depth == 10)
       return media::GpuVideoAcceleratorFactories::OutputFormat::P010;
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // If high bit depth rendering is enabled, bail here, otherwise try and use
     // XR30 storage, and if not and we support RG textures, use those, albeit at
     // a reduced bit depth of 8 bits per component.
@@ -459,7 +459,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
       return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
 #endif
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // TODO(mcasas): enable Win https://crbug.com/803451.
     // TODO(mcasas): remove the |bit_depth| check when libyuv supports more than
     // just x010ToAR30 conversions, https://crbug.com/libyuv/751.

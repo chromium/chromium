@@ -106,17 +106,17 @@
 #include "ui/gl/buildflags.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/child/child_process_sandbox_support_impl_mac.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/child_process_sandbox_support_impl_linux.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -177,7 +177,7 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
       main_thread_scheduler_(main_thread_scheduler) {
   // RenderThread may not exist in some tests.
   if (RenderThreadImpl::current()) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     mojo::PendingRemote<font_service::mojom::FontService> font_service;
     RenderThreadImpl::current()->BindHostReceiver(
         font_service.InitWithNewPipeAndPassReceiver());
@@ -187,9 +187,9 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #endif
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   if (sandboxEnabled()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
 #else
     sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader_);
@@ -261,7 +261,7 @@ RendererBlinkPlatformImpl::WrapSharedURLLoaderFactory(
       /*terminate_sync_load_event=*/nullptr);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void RendererBlinkPlatformImpl::SetDisplayThreadPriority(
     base::PlatformThreadId thread_id) {
   if (RenderThreadImpl* render_thread = RenderThreadImpl::current()) {
@@ -276,7 +276,7 @@ blink::BlameContext* RendererBlinkPlatformImpl::GetTopLevelBlameContext() {
 }
 
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   return sandbox_support_.get();
 #else
   // These platforms do not require sandbox support.
@@ -478,7 +478,7 @@ bool RendererBlinkPlatformImpl::IsGpuCompositingDisabled() const {
   return !thread || thread->IsGpuCompositingDisabled();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool RendererBlinkPlatformImpl::
     IsSynchronousCompositingEnabledForAndroidWebView() {
   return GetContentClient()->UsingSynchronousCompositing();
@@ -690,7 +690,7 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
 
 bool RendererBlinkPlatformImpl::IsWebRtcHWH264DecodingEnabled(
     webrtc::VideoCodecType video_codec_type) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Do not use hardware decoding for H.264 on Win7, due to high latency.
   // See https://crbug.com/webrtc/5717.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -700,7 +700,7 @@ bool RendererBlinkPlatformImpl::IsWebRtcHWH264DecodingEnabled(
     DVLOG(1) << "H.264 HW decoding is not supported on Win7";
     return false;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   return true;
 }
 

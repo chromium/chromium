@@ -67,11 +67,11 @@ bool HasDocType(const WebDocument& doc) {
 }
 
 // https://crbug.com/788788
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_DomSerializerTests DISABLED_DomSerializerTests
 #else
 #define MAYBE_DomSerializerTests DomSerializerTests
-#endif  // defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 class MAYBE_DomSerializerTests : public ContentBrowserTest,
                                  public WebFrameSerializerClient {
  public:
@@ -79,7 +79,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kSingleProcess);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Don't want to try to create a GPU process.
     command_line->AppendSwitch(switches::kDisableGpu);
 #endif

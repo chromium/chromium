@@ -132,7 +132,7 @@
 #include "printing/metafile_skia.h"          // nogncheck
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #endif
 
@@ -321,7 +321,7 @@ std::unique_ptr<const char* []> StringVectorToArgArray(
 // all keys sent to them. This can prevent keystrokes from working for things
 // like screen brightness and volume control.
 bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (event.GetType() != WebInputEvent::Type::kKeyDown &&
       event.GetType() != WebInputEvent::Type::kKeyUp)
     return false;
@@ -341,7 +341,7 @@ bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
   }
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PrintPDFOutput(PP_Resource print_output,

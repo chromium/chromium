@@ -181,7 +181,7 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     bool is_overlay_candidate = use_image_chromium_;
     // TODO(reveman): Get texture target from browser process.
     uint32_t target = GL_TEXTURE_2D;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (use_image_chromium_)
       target = GL_TEXTURE_RECTANGLE_ARB;
 #endif

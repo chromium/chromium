@@ -48,11 +48,11 @@
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/library_loader/library_loader_hooks.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <Carbon/Carbon.h>
 #include <signal.h>
 #include <unistd.h>
@@ -60,7 +60,7 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/message_loop/message_pump_mac.h"
 #include "third_party/blink/public/web/web_view.h"
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)
@@ -91,12 +91,12 @@ void HandleRendererErrorTestParameters(const base::CommandLine& command_line) {
 }
 
 std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // As long as scrollbars on Mac are painted with Cocoa, the message pump
   // needs to be backed by a Foundation-level loop to process NSTimers. See
   // http://crbug.com/306348#c24 for details.
   return base::MessagePump::Create(base::MessagePumpType::NS_RUNLOOP);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // Allow FIDL APIs on renderer main thread.
   return base::MessagePump::Create(base::MessagePumpType::IO);
 #else
@@ -136,9 +136,9 @@ int RendererMain(MainFunctionParams parameters) {
 
   const base::CommandLine& command_line = *parameters.command_line;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // As the Zygote process starts up earlier than the browser process, it gets
@@ -213,7 +213,7 @@ int RendererMain(MainFunctionParams parameters) {
     bool need_sandbox =
         !command_line.HasSwitch(sandbox::policy::switches::kNoSandbox);
 
-#if !defined(OS_WIN) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
     // Sandbox is enabled before RenderProcess initialization on all platforms,
     // except Windows and Mac.
     // TODO(markus): Check if it is OK to remove ifdefs for Windows and Mac.
@@ -246,7 +246,7 @@ int RendererMain(MainFunctionParams parameters) {
     }
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
     // Startup tracing is usually enabled earlier, but if we forked from a
     // zygote, we can only enable it after mojo IPC support is brought up
     // initialized by RenderThreadImpl, because the mojo broker has to create
@@ -256,7 +256,7 @@ int RendererMain(MainFunctionParams parameters) {
       TRACE_EVENT_INSTANT1("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD,
                            "zygote_child", true);
     }
-#endif  // OS_POSIX && !OS_ANDROID && !OS_MAC
+#endif
 
     if (need_sandbox)
       should_run_loop = platform.EnableSandbox();
@@ -271,7 +271,7 @@ int RendererMain(MainFunctionParams parameters) {
     base::HighResolutionTimerManager hi_res_timer_manager;
 
     if (should_run_loop) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (pool)
         pool->Recycle();
 #endif

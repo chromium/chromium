@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
@@ -108,7 +109,7 @@ void MediaInterfaceFactory::CreateCastRenderer(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MediaInterfaceFactory::CreateMediaPlayerRenderer(
     mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
         client_extension_remote,
@@ -149,9 +150,9 @@ void MediaInterfaceFactory::CreateFlingingRenderer(
   GetMediaInterfaceFactory()->CreateFlingingRenderer(
       presentation_id, std::move(client_extension), std::move(receiver));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void MediaInterfaceFactory::CreateMediaFoundationRenderer(
     mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
@@ -172,7 +173,7 @@ void MediaInterfaceFactory::CreateMediaFoundationRenderer(
       std::move(media_log_remote), std::move(receiver),
       std::move(renderer_extension_receiver));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void MediaInterfaceFactory::CreateCdm(const media::CdmConfig& cdm_config,
                                       CreateCdmCallback callback) {

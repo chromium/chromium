@@ -103,11 +103,11 @@ class RenderThreadObserver;
 class RendererBlinkPlatformImpl;
 class VariationsRenderThreadObserver;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class StreamTextureFactory;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
 #endif
 
@@ -258,12 +258,12 @@ class CONTENT_EXPORT RenderThreadImpl
     return url_loader_throttle_provider_.get();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   scoped_refptr<StreamTextureFactory> GetStreamTexureFactory();
   bool EnableStreamTextureCopy();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> GetDCOMPTextureFactory();
 #endif
 
@@ -547,11 +547,11 @@ class CONTENT_EXPORT RenderThreadImpl
   // Pool of workers used for raster operations (e.g., tile rasterization).
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   scoped_refptr<StreamTextureFactory> stream_texture_factory_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;
 #endif
 

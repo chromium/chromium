@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "cc/trees/ukm_manager.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_client.h"
@@ -160,7 +161,7 @@ void RenderViewImpl::Initialize(
 
   GetContentClient()->renderer()->WebViewCreated(webview_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(sgurun): crbug.com/325351 Needed only for android webview's deprecated
   // HandleNavigation codepath.
   was_created_by_renderer_ = was_created_by_renderer;
