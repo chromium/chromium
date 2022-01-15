@@ -28,7 +28,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/test/base/launchservices_utils_mac.h"
 #endif
 
@@ -65,7 +65,7 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
   RegisterProtocolHandlerBrowserTest() { }
 
   void SetUpOnMainThread() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ASSERT_TRUE(test::RegisterAppWithLaunchServices());
 #endif
   }
@@ -79,11 +79,11 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     params.page_url =
         web_contents->GetController().GetLastCommittedEntry()->GetURL();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     TestRenderViewContextMenu* menu = new TestRenderViewContextMenu(
         *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
         params);
@@ -256,7 +256,7 @@ using RegisterProtocolHandlerExtensionBrowserTest =
     extensions::ExtensionBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(test::RegisterAppWithLaunchServices());
 #endif
   permissions::PermissionRequestManager::FromWebContents(
