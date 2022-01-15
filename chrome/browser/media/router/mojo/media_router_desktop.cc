@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/cast_channel/cast_socket_service.h"
+#include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/media_source.h"
 #include "components/openscreen_platform/network_context.h"
@@ -139,6 +141,10 @@ void MediaRouterDesktop::GetMediaSinkServiceStatus(
 }
 
 void MediaRouterDesktop::InitializeMediaRouteProviders() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableMediaRouteProvidersForTestSwitch))
+    return;
+
   if (!openscreen_platform::HasNetworkContextGetter()) {
     openscreen_platform::SetNetworkContextGetter(base::BindRepeating([] {
       DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

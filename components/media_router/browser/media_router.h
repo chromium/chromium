@@ -50,6 +50,11 @@ class MediaSinksObserver;
 class PresentationConnectionStateObserver;
 class RouteRequestResult;
 
+// Commandline flag to disable the default media route providers for tests that
+// are sensitive to the presence of sinks e.g. on the local network.
+constexpr char kDisableMediaRouteProvidersForTestSwitch[] =
+    "disable-media-route-providers-for-test";
+
 // Type of callback used in |CreateRoute()| and |JoinRoute()|.  Callback is
 // invoked when the route request either succeeded or failed.  |connection| is
 // set depending on whether the MRP chooses to setup the PresentationConnections

@@ -124,6 +124,8 @@ void MediaRouterIntegrationBrowserTest::SetUpCommandLine(
       switches::kAutoplayPolicy,
       // Needed to allow a video to autoplay from a browser test.
       switches::autoplay::kNoUserGestureRequiredPolicy);
+  // Disable built-in media route providers.
+  command_line->AppendSwitch(kDisableMediaRouteProvidersForTestSwitch);
 }
 
 void MediaRouterIntegrationBrowserTest::SetUp() {
