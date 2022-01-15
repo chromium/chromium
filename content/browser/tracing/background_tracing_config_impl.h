@@ -89,7 +89,7 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   FRIEND_TEST_ALL_PREFIXES(BackgroundTracingConfigTest,
                            ValidPreemptiveConfigToString);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   constexpr static int kMaxBufferSizeKb = 4 * 1024;
   // ~1MB compressed size.
   constexpr static int kUploadLimitKb = 5 * 1024;

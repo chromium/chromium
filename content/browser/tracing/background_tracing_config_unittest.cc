@@ -744,7 +744,7 @@ TEST_F(BackgroundTracingConfigTest, BufferLimitConfig) {
   EXPECT_EQ(config->rules().size(), 1u);
 
   notifier.set_type(net::NetworkChangeNotifier::CONNECTION_2G);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int64_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   size_t expected_trace_buffer_size =
       (ram_mb > 0 && ram_mb <= 1024) ? 800u : 300u;

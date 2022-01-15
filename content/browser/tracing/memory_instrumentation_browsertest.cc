@@ -21,7 +21,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 // TODO: Remove this definition by targeting version 22+ NDK at build time.
 // This was copied from <malloc.h> in Bionic master.
@@ -83,7 +83,7 @@ uint64_t GetPrivateFootprintKb() {
 // TODO(hjd): Move this once we have a resource_coordinator folder in browser.
 IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
                        MAYBE_PrivateFootprintComputation) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The allocator in Android N and above will defer madvising large allocations
   // until the purge interval, which is set at 1 second. If we are on N or
   // above, check whether we can use mallopt(M_PURGE) to trigger an immediate
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
 
   buffer.reset();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (mallopt)
     mallopt(M_PURGE, 0);
 #endif

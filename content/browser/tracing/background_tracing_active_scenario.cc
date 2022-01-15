@@ -72,7 +72,7 @@ class BackgroundTracingActiveScenario::TracingSession {
                  bool use_local_output)
       : parent_scenario_(parent_scenario),
         use_local_output_(use_local_output) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/941318): Re-enable startup tracing for Android once all
     // Perfetto-related deadlocks are resolved and we also handle concurrent
     // system tracing for startup tracing.

@@ -64,13 +64,13 @@
 #include "content/browser/tracing/cast_tracing_agent.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <sys/time.h>
 #include "base/debug/elf_reader.h"
 #include "content/browser/android/tracing_controller_android.h"
@@ -78,7 +78,7 @@
 
 // Symbol with virtual address of the start of ELF header of the current binary.
 extern char __ehdr_start;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -131,7 +131,7 @@ std::string GetClockString() {
   return std::string();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
   // 2**32 * 1000000 + 2**64 / 1000 < 2**63
@@ -215,7 +215,7 @@ void TracingControllerImpl::AddAgents() {
   tracing::TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
       base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket,
                           base::Unretained(this)));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   tracing::PerfettoTracedProcess::Get()->AddDataSource(
       tracing::JavaHeapProfiler::GetInstance());
 #endif
@@ -258,7 +258,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
   metadata_dict.SetStringKey("user-agent",
                              GetContentClient()->browser()->GetUserAgent());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The library name is used for symbolizing heap profiles. This cannot be
   // obtained from process maps since library can be mapped from apk directly.
   // This is not added as part of memory-infra os dumps since it is special case
@@ -269,7 +269,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
     metadata_dict.SetStringKey("chrome-library-name", *soname);
   metadata_dict.SetStringKey("clock-offset-since-epoch",
                              GetClockOffsetSinceEpoch());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   metadata_dict.SetIntKey("chrome-bitness", 8 * sizeof(uintptr_t));
 
 #if DCHECK_IS_ON()
@@ -286,7 +286,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   metadata_dict.SetStringKey("os-version",
                              base::SysInfo::OperatingSystemVersion());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X64_ARCHITECTURE) {
     if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
@@ -319,7 +319,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
       content::GpuDataManagerImpl::GetInstance()->GetGPUInfo();
   const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   metadata_dict.SetIntKey("gpu-venid", active_gpu.vendor_id);
   metadata_dict.SetIntKey("gpu-devid", active_gpu.device_id);
 #endif
@@ -328,9 +328,9 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
   metadata_dict.SetStringKey("gpu-psver", gpu_info.pixel_shader_version);
   metadata_dict.SetStringKey("gpu-vsver", gpu_info.vertex_shader_version);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   metadata_dict.SetStringKey("gpu-glver", gpu_info.gl_version);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   metadata_dict.SetStringKey("gpu-gl-vendor", gpu_info.gl_vendor);
   metadata_dict.SetStringKey("gpu-gl-renderer", gpu_info.gl_renderer);
 #endif
@@ -342,7 +342,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
 
   base::CommandLine::StringType command_line =
       base::CommandLine::ForCurrentProcess()->GetCommandLineString();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   metadata_dict.SetStringKey("command_line", base::WideToUTF16(command_line));
 #else
   metadata_dict.SetStringKey("command_line", command_line);
@@ -452,7 +452,7 @@ bool TracingControllerImpl::StopTracing(
     return false;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::trace_event::TraceLog::GetInstance()->AddClockSyncMetadataEvent();
 #endif
 
