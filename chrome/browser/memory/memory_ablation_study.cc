@@ -40,7 +40,7 @@ constexpr int kUncompressibleRegionSize = 4096;
 
 // Theres some variance on exact ram values so we use values slightly under 2GB
 // and 4GB.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr int kMinimumRamMB = 1700;
 #else
 constexpr int kMinimumRamMB = 3700;
