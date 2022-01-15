@@ -279,9 +279,9 @@ class MEDIA_EXPORT TypedStatus {
     data_->causes.push_back(*cause.data_);
   }
 
-  inline bool operator==(T code) const { return code == this->code(); }
+  inline bool operator==(Codes code) const { return code == this->code(); }
 
-  inline bool operator!=(T code) const { return code != this->code(); }
+  inline bool operator!=(Codes code) const { return code != this->code(); }
 
   inline bool operator==(const TypedStatus<T>& other) const {
     return other.code() == code();
