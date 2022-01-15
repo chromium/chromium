@@ -7,7 +7,7 @@ import {reportError} from '../error.js';
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
-import * as toast from '../toast.js';
+import {speak} from '../spoken_msg.js';
 import {ErrorLevel, ErrorType, Facing, VideoConfig} from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
@@ -208,11 +208,11 @@ export class StreamManager {
 
     let isRealDeviceChange = false;
     for (const added of this.getDifference(realDevices, this.realDevices)) {
-      toast.speak(I18nString.STATUS_MSG_CAMERA_PLUGGED, added.v1Info.label);
+      speak(I18nString.STATUS_MSG_CAMERA_PLUGGED, added.v1Info.label);
       isRealDeviceChange = true;
     }
     for (const removed of this.getDifference(this.realDevices, realDevices)) {
-      toast.speak(I18nString.STATUS_MSG_CAMERA_UNPLUGGED, removed.v1Info.label);
+      speak(I18nString.STATUS_MSG_CAMERA_UNPLUGGED, removed.v1Info.label);
       isRealDeviceChange = true;
     }
     if (isRealDeviceChange) {

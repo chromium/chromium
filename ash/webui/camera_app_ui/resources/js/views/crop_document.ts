@@ -6,7 +6,7 @@ import {assert, assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {Box, Line, Point, Size, Vector, vectorFromPoints} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
-import {speak} from '../toast.js';
+import {speak} from '../spoken_msg.js';
 import {Rotation, ViewName} from '../type.js';
 import * as util from '../util.js';
 

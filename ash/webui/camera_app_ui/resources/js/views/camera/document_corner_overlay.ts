@@ -19,7 +19,7 @@ import {
   closeEndpoint,
   MojoEndpoint,
 } from '../../mojo/util.js';
-import * as toast from '../../toast.js';
+import {speak} from '../../spoken_msg.js';
 import * as util from '../../util.js';
 
 /**
@@ -308,7 +308,7 @@ export class DocumentCornerOverlay {
     if (this.isIndicatorsShown()) {
       this.updateCorners(corners);
     } else {
-      toast.speak(I18nString.MSG_DOCUMENT_DETECTED);
+      speak(I18nString.MSG_DOCUMENT_DETECTED);
       this.showIndicators();
       this.settleCorners(corners);
     }

@@ -1094,6 +1094,10 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   }
 }
 
+#spoken_msg {
+  opacity: 0;
+}
+
 #tooltip {
   background: rgba(241, 243, 244, 0.8);
   border-radius: 2px;
@@ -1127,19 +1131,8 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   z-index: 100;
 }
 
-#toast.animate.spoken {
-  animation: toast-spoken 3000ms ease-out;
-}
-
-#toast.animate:not(.spoken) {
+#toast.animate {
   animation: toast-shown 3000ms ease-out;
-}
-
-@keyframes toast-spoken {
-  0%,
-  100% {
-    opacity: 0;
-  }
 }
 
 @keyframes toast-shown {

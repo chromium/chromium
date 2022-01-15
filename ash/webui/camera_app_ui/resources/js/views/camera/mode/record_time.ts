@@ -5,7 +5,7 @@
 import * as dom from '../../../dom.js';
 import {I18nString} from '../../../i18n_string.js';
 import * as loadTimeData from '../../../models/load_time_data.js';
-import {speak} from '../../../toast.js';
+import {speak} from '../../../spoken_msg.js';
 
 /**
  * Maximal recording time in milliseconds and the function executed to notify

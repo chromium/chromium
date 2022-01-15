@@ -33,6 +33,7 @@ import * as nav from '../nav.js';
 import * as newFeatureToast from '../new_feature_toast.js';
 import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
+import {speak} from '../spoken_msg.js';
 import * as state from '../state.js';
 import * as toast from '../toast.js';
 import {
@@ -1165,7 +1166,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
     this.activeDeviceId = newDeviceId;
     const info = this.infoUpdater.getDeviceInfo(newDeviceId);
     if (info !== null) {
-      toast.speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
+      speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
     }
   }
 
