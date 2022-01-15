@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, EndToEndCommunication) {
 }
 
 // Disabled due to flakiness: crbug.com/860385.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NativeMojoAvailable DISABLED_NativeMojoAvailable
 #else
 #define MAYBE_NativeMojoAvailable NativeMojoAvailable
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, MAYBE_NativeMojoAvailable) {
 }
 
 // Disabled due to flakiness: crbug.com/860385.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ChromeSendAvailable DISABLED_ChromeSendAvailable
 #else
 #define MAYBE_ChromeSendAvailable ChromeSendAvailable

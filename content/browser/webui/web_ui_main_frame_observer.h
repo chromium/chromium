@@ -45,7 +45,7 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
 
 // TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
 // thunking issues. Fix & re-enable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On official Google builds, capture and report JavaScript error messages on
   // WebUI surfaces back to Google. This allows us to fix JavaScript errors and
   // exceptions.
@@ -56,18 +56,18 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
       int32_t line_no,
       const std::u16string& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) override;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 
  private:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void MaybeEnableWebUIJavaScriptErrorReporting(
       NavigationHandle* navigation_handle);
 
   // Do we report JavaScript errors ?
   bool error_reporting_enabled_ = false;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   raw_ptr<WebUIImpl> web_ui_;
 };

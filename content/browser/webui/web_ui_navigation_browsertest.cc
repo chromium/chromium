@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
             ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The following tests rely on full site isolation behavior, which is not
 // present on Android.
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
