@@ -970,7 +970,7 @@ deps = {
   },
 
   'src/third_party/breakpad/breakpad':
-    Var('chromium_git') + '/breakpad/breakpad.git' + '@' + '862dc68dbca99f5302a21c2b30dc0383a72ffa42',
+    Var('chromium_git') + '/breakpad/breakpad.git' + '@' + '92a20b650400d110bf14378195e1346c7b0635de',
 
   'src/third_party/byte_buddy': {
       'packages': [
