@@ -30,9 +30,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/badging/badge_manager_delegate_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "chrome/browser/badging/badge_manager_delegate_win.h"
 #endif
 
@@ -71,9 +71,9 @@ BadgeManager::BadgeManager(Profile* profile,
       sync_bridge_(sync_bridge) {
   // The delegate is also set for Chrome OS but is set from the constructor of
   // web_apps_chromeos.cc.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetDelegate(std::make_unique<BadgeManagerDelegateMac>(profile, this));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   SetDelegate(std::make_unique<BadgeManagerDelegateWin>(profile, this));
 #endif
 }
