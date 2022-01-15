@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -43,28 +43,54 @@ PAYLOAD_LENGTH_SIZE = 4
 PAYLOAD_OFFSET = PAYLOAD_LENGTH_OFFSET + PAYLOAD_LENGTH_SIZE
 
 # This script supports Version 2 and Version 3 tokens.
-VERSION2 = "\x02"
-VERSION3 = "\x03"
+VERSION2 = b'\x02'
+VERSION3 = b'\x03'
 
 # Only empty string and "subset" are supported in alternative usage restriction.
 USAGE_RESTRICTION = ["", "subset"]
 
 # Chrome public key, used by default to validate signatures
 #  - Copied from chrome/common/origin_trials/chrome_origin_trial_policy.cc
-CHROME_PUBLIC_KEY = [
-    0x7c, 0xc4, 0xb8, 0x9a, 0x93, 0xba, 0x6e, 0xe2, 0xd0, 0xfd, 0x03,
-    0x1d, 0xfb, 0x32, 0x66, 0xc7, 0x3b, 0x72, 0xfd, 0x54, 0x3a, 0x07,
-    0x51, 0x14, 0x66, 0xaa, 0x02, 0x53, 0x4e, 0x33, 0xa1, 0x15,
-]
+CHROME_PUBLIC_KEY = bytes([
+    0x7c,
+    0xc4,
+    0xb8,
+    0x9a,
+    0x93,
+    0xba,
+    0x6e,
+    0xe2,
+    0xd0,
+    0xfd,
+    0x03,
+    0x1d,
+    0xfb,
+    0x32,
+    0x66,
+    0xc7,
+    0x3b,
+    0x72,
+    0xfd,
+    0x54,
+    0x3a,
+    0x07,
+    0x51,
+    0x14,
+    0x66,
+    0xaa,
+    0x02,
+    0x53,
+    0x4e,
+    0x33,
+    0xa1,
+    0x15,
+])
 
 # Default key file, relative to script_dir.
 DEFAULT_KEY_FILE = 'eftest.key'
 
 
 class OverrideKeyFileAction(argparse.Action):
-  def __init__(self, option_strings, dest, **kwargs):
-    super(OverrideKeyFileAction, self).__init__(option_strings, dest, **kwargs)
-
   def __call__(self, parser, namespace, values, option_string=None):
     setattr(namespace, "use_chrome_key", None)
     setattr(namespace, self.dest, values)
@@ -101,7 +127,7 @@ def main():
     private_key_file = args.key_file
   else:
     if (args.use_chrome_key):
-      public_key = "".join(chr(x) for x in CHROME_PUBLIC_KEY)
+      public_key = CHROME_PUBLIC_KEY
     else:
       # Use the test key, relative to this script.
       private_key_file = os.path.join(script_dir, DEFAULT_KEY_FILE)
@@ -145,7 +171,7 @@ def main():
   version_number = 0
   for x in version:
     version_number <<= 8
-    version_number += ord(x)
+    version_number += x
   if (version not in (VERSION2, VERSION3)):
     print("Token has wrong version: %d" % version_number)
     sys.exit(1)
@@ -237,8 +263,9 @@ def main():
     print(" Usage Restriction: %s" % usage_restriction)
   print(" Feature: %s" % trial_name)
   print(" Expiry: %d (%s UTC)" % (expiry, datetime.utcfromtimestamp(expiry)))
-  print(" Signature: %s" % ", ".join('0x%02x' % ord(x) for x in signature))
-  print(" Signature (Base64): %s" % base64.b64encode(signature))
+  print(" Signature: %s" % ", ".join('0x%02x' % x for x in signature))
+  b64_signature = base64.b64encode(signature).decode("ascii")
+  print(" Signature (Base64): %s" % b64_signature)
   print()
 
 if __name__ == "__main__":

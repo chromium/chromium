@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -30,12 +30,7 @@ import time
 from datetime import datetime
 
 from six import raise_from
-
-try:
-  from urllib.parse import urlparse
-except ImportError:
-  # ToDo: Remove Exception case upon full migration to Python 3
-  from urlparse import urlparse
+from urllib.parse import urlparse
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(script_dir, 'third_party', 'ed25519'))
@@ -45,8 +40,8 @@ import ed25519
 # no longer than 63 ASCII characters)
 DNS_LABEL_REGEX = re.compile(r"^(?!-)[a-z\d-]{1,63}(?<!-)$", re.IGNORECASE)
 
-# This script generates Version 2 and 3 tokens.
-VERSION = {"2": (2, "\x02"), "3": (3, "\x03")}
+# Only Version 2 and Version 3 are currently supported.
+VERSIONS = {"2": (2, b'\x02'), "3": (3, b'\x03')}
 
 # Only empty string and "subset" are currently supoprted in alternative usage
 # resetriction.
@@ -60,12 +55,10 @@ def VersionFromArg(arg):
   """Determines whether a string represents a valid version.
   Only Version 2 and Version 3 are currently supported.
 
-  Returns a tuple (version number, version byte) if version is valid.
+  Returns a tuple of the int and bytes representation of version.
   Returns None if version is not valid.
   """
-  if not arg or len(arg) > 1:
-    return None
-  return VERSION.get(arg, None)
+  return VERSIONS.get(arg, None)
 
 
 def HostnameFromArg(arg):
@@ -136,12 +129,14 @@ def GenerateTokenData(version, origin, is_subdomain, is_third_party,
 def GenerateDataToSign(version, data):
   return version + struct.pack(">I",len(data)) + data
 
+
 def Sign(private_key, data):
   return ed25519.signature(data, private_key[:32], private_key[32:])
 
+
 def FormatToken(version, signature, data):
-  return base64.b64encode(version + signature +
-                          struct.pack(">I",len(data)) + data)
+  return base64.b64encode(version + signature + struct.pack(">I", len(data)) +
+                          data).decode("ascii")
 
 
 def ParseArgs():
@@ -217,8 +212,10 @@ def GenerateTokenAndSignature():
   args = ParseArgs()
   expiry = ExpiryFromArgs(args)
 
-  key_file = open(os.path.expanduser(args.key_file), mode="rb")
-  private_key = key_file.read(64)
+  version_int, version_bytes = args.version
+
+  with open(os.path.expanduser(args.key_file), mode="rb") as key_file:
+    private_key = key_file.read(64)
 
   # Validate that the key file read was a proper Ed25519 key -- running the
   # publickey method on the first half of the key should return the second
@@ -228,16 +225,16 @@ def GenerateTokenAndSignature():
     print("Unable to use the specified private key file.")
     sys.exit(1)
 
-  if (not args.version):
+  if (not version_int):
     print("Invalid token version. Only version 2 and 3 are supported.")
     sys.exit(1)
 
-  if (args.is_third_party is not None and args.version[0] != 3):
+  if (args.is_third_party is not None and version_int != 3):
     print("Only version 3 token supports is_third_party flag.")
     sys.exit(1)
 
   if (args.usage_restriction is not None):
-    if (args.version[0] != 3):
+    if (version_int != 3):
       print("Only version 3 token supports alternative usage restriction.")
       sys.exit(1)
     if (args.usage_restriction not in USAGE_RESTRICTION):
@@ -245,12 +242,10 @@ def GenerateTokenAndSignature():
           "Only empty string and \"subset\" are supported in alternative usage "
           "restriction.")
       sys.exit(1)
-
-  token_data = GenerateTokenData(args.version[0], args.origin,
-                                 args.is_subdomain, args.is_third_party,
-                                 args.usage_restriction, args.trial_name,
-                                 expiry)
-  data_to_sign = GenerateDataToSign(args.version[1], token_data)
+  token_data = GenerateTokenData(version_int, args.origin, args.is_subdomain,
+                                 args.is_third_party, args.usage_restriction,
+                                 args.trial_name, expiry)
+  data_to_sign = GenerateDataToSign(version_bytes, token_data)
   signature = Sign(private_key, data_to_sign)
 
   # Verify that that the signature is correct before printing it.
@@ -261,34 +256,35 @@ def GenerateTokenAndSignature():
     print("(The original error was: %s)" % exc)
     sys.exit(1)
 
-  token_data = GenerateTokenData(args.version[0], args.origin,
-                                 args.is_subdomain, args.is_third_party,
-                                 args.usage_restriction, args.trial_name,
-                                 expiry)
-  data_to_sign = GenerateDataToSign(args.version[1], token_data)
+  token_data = GenerateTokenData(version_int, args.origin, args.is_subdomain,
+                                 args.is_third_party, args.usage_restriction,
+                                 args.trial_name, expiry)
+  data_to_sign = GenerateDataToSign(version_bytes, token_data)
   signature = Sign(private_key, data_to_sign)
   return args, token_data, signature, expiry
 
 
 def main():
   args, token_data, signature, expiry = GenerateTokenAndSignature()
+  version_int, version_bytes = args.version
 
   # Output the token details
   print("Token details:")
-  print(" Version: %s" % args.version[0])
+  print(" Version: %s" % version_int)
   print(" Origin: %s" % args.origin)
   print(" Is Subdomain: %s" % args.is_subdomain)
-  if args.version[0] == 3:
+  if version_int == 3:
     print(" Is Third Party: %s" % args.is_third_party)
     print(" Usage Restriction: %s" % args.usage_restriction)
   print(" Feature: %s" % args.trial_name)
   print(" Expiry: %d (%s UTC)" % (expiry, datetime.utcfromtimestamp(expiry)))
-  print(" Signature: %s" % ", ".join('0x%02x' % ord(x) for x in signature))
-  print(" Signature (Base64): %s" % base64.b64encode(signature))
+  print(" Signature: %s" % ", ".join('0x%02x' % x for x in signature))
+  b64_signature = base64.b64encode(signature).decode("ascii")
+  print(" Signature (Base64): %s" % b64_signature)
   print()
 
   # Output the properly-formatted token.
-  print(FormatToken(args.version[1], signature, token_data))
+  print(FormatToken(version_bytes, signature, token_data))
 
 
 if __name__ == "__main__":

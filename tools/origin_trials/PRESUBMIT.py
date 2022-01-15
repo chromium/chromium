@@ -2,21 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-USE_PYTHON3 = False
+USE_PYTHON3 = True
 
 
 def _CommonChecks(input_api, output_api):
   results = []
 
   # Run Pylint over the files in the directory.
-  # TODO(crbug.com/1262279): Enable these warnings after migrating to Python3.
-  disabled_warnings = ('super-with-arguments', )
-  pylint_checks = input_api.canned_checks.GetPylint(
-      input_api, output_api, disabled_warnings=disabled_warnings, version='2.7')
+  pylint_checks = input_api.canned_checks.GetPylint(input_api,
+                                                    output_api,
+                                                    version='2.7')
   results.extend(input_api.RunTests(pylint_checks))
 
   # Run the generate_token unittests.
-  #TODO(https://crbug.com/1274995): Run the tests on Python3.
   results.extend(
       input_api.canned_checks.RunUnitTestsInDirectory(
           input_api,
