@@ -22,7 +22,7 @@
 #include "third_party/crashpad/crashpad/client/prune_crash_reports.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/wrapped_window_proc.h"
 
@@ -35,7 +35,7 @@ int __cdecl HandleWinProcException(EXCEPTION_POINTERS* exception_pointers) {
 
 }  // namespace
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 
@@ -80,12 +80,12 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   if (!InitializeDatabaseOnly(updater_scope))
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Catch exceptions thrown from a window procedure.
   base::win::WinProcExceptionFilter exception_filter =
       base::win::SetWinProcExceptionFilter(&HandleWinProcException);
   LOG_IF(DFATAL, exception_filter) << "Exception filter already present";
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   std::vector<crashpad::CrashReportDatabase::Report> reports_completed;
   const crashpad::CrashReportDatabase::OperationStatus status_completed =

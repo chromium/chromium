@@ -15,7 +15,7 @@ namespace updater {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // This binary array is an actual policy response from DM server for
 // Mac client. The response has the following Omaha policy values:
@@ -98,7 +98,7 @@ const uint8_t kOmahaPolicyResponseData[] = {
     0x2d, 0x6f, 0x6d, 0x61, 0x68, 0x61, 0x58, 0x01,
 };
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -108,9 +108,9 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
 
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
-#endif  // OS_LINUX
+#endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   int last_check_period_minutes = 0;
@@ -184,9 +184,9 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
 
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
-#endif  // OS_LINUX
+#endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   int last_check_period_minutes = 0;
@@ -259,7 +259,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
       policy_manager->GetTargetVersionPrefix(app_guid, &target_version_prefix));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   enterprise_management::PolicyFetchResponse response;
@@ -322,6 +322,6 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   EXPECT_EQ(target_version_prefix, "82.0.");
 }
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace updater

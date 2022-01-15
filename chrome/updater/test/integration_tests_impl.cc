@@ -56,17 +56,17 @@ namespace updater {
 namespace test {
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_dmg.crx";
 constexpr char kDoNothingCRXRun[] = "updater_qualification_app_dmg.dmg";
 constexpr char kDoNothingCRXHash[] =
     "c9eeadf63732f3259e2ad1cead6298f90a3ef4b601b1ba1cbb0f37b6112a632c";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app.exe";
 constexpr char kDoNothingCRXHash[] =
     "0705f7eedb0427810db76dfc072c8cbc302fbeb9b2c56fa0de3752ed8d6f9164";
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 constexpr char kDoNothingCRXName[] = "updater_qualification_app.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app";
 constexpr char kDoNothingCRXHash[] = "";

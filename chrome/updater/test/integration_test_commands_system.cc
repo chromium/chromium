@@ -30,9 +30,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 namespace test {
@@ -150,7 +150,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     updater::test::WaitForUpdaterExit(updater_scope_);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void ExpectInterfacesRegistered() const override {
     RunCommand("expect_interfaces_registered");
   }
@@ -181,10 +181,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void TearDownTestService() const override {
     updater::test::RunTestServiceCommand("teardown");
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // The updater_tests executable is owned by non-root.
     return base::PathService::CheckedGet(base::FILE_EXE);
 #else
@@ -232,7 +232,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     EXPECT_TRUE(base::PathExists(path));
     path = MakeAbsoluteFilePath(path);
     path = path.Append(FILE_PATH_LITERAL("updater_integration_tests_helper"));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     path = path.AddExtension(L"exe");
 #endif
     EXPECT_TRUE(base::PathExists(path));

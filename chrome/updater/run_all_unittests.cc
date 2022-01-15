@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <memory>
 
 #include "base/win/scoped_com_initializer.h"
@@ -45,10 +45,10 @@ void FixExecutionPriorities() {
 
 }  // namespace
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 int main(int argc, char** argv) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::cerr << "Process priority: " << base::Process::Current().GetPriority()
             << std::endl;
   std::cerr << updater::GetUACState() << std::endl;

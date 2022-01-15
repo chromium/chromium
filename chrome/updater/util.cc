@@ -28,7 +28,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #import "chrome/updater/mac/mac_util.h"
 #endif
 
@@ -97,7 +97,7 @@ std::string EscapeQueryParamValue(base::StringPiece text, bool use_plus) {
 
 absl::optional<base::FilePath> GetBaseDirectory(UpdaterScope scope) {
   absl::optional<base::FilePath> app_data_dir;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath path;
   if (!base::PathService::Get(scope == UpdaterScope::kSystem
                                   ? base::DIR_PROGRAM_FILES
@@ -107,7 +107,7 @@ absl::optional<base::FilePath> GetBaseDirectory(UpdaterScope scope) {
     return absl::nullopt;
   }
   app_data_dir = path;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   app_data_dir = GetApplicationSupportDirectory(scope);
   if (!app_data_dir) {
     LOG(ERROR) << "Can't retrieve app data directory.";
@@ -175,7 +175,7 @@ absl::optional<tagging::TagArgs> GetTagArgs() {
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   command_line.PrependWrapper("/usr/bin/sudo");
 #endif
   return command_line;
@@ -219,7 +219,7 @@ GURL AppendQueryParameter(const GURL& url,
   return url.ReplaceComponents(replacements);
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 
 // TODO(crbug.com/1276188) - implement the functions below.
 absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
@@ -237,9 +237,9 @@ bool PathOwnedByUser(const base::FilePath& path) {
   return false;
 }
 
-#endif  // OS_LINUX
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 std::wstring GetTaskNamePrefix(UpdaterScope scope) {
   std::wstring task_name = GetTaskDisplayName(scope);
@@ -254,6 +254,6 @@ std::wstring GetTaskDisplayName(UpdaterScope scope) {
                        kUpdaterVersionUtf16});
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace updater

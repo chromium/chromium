@@ -70,10 +70,10 @@ absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
 // /Library/Google/GoogleUpdater
 absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // For example: ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app
 absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // For user installations:
 // ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/
@@ -136,7 +136,7 @@ GURL AppendQueryParameter(const GURL& url,
                           const std::string& name,
                           const std::string& value);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Uses the builtin unzip utility within macOS /usr/bin/unzip to unzip instead
 // of using the configurator's UnzipperFactory. The UnzipperFactory utilizes the
 // //third_party/zlib/google, which has a bug that does not preserve the
@@ -151,9 +151,9 @@ absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
 // permissions as the given permissions mask.
 bool ConfirmFilePermissions(const base::FilePath& root_path,
                             int kPermissionsMask);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Returns the versioned task name prefix in the following format:
 // "{ProductName}Task{System/User}{UpdaterVersion}".
@@ -165,7 +165,7 @@ std::wstring GetTaskNamePrefix(UpdaterScope scope);
 // For instance: "ChromiumUpdater Task System 92.0.0.1".
 std::wstring GetTaskDisplayName(UpdaterScope scope);
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace updater
 

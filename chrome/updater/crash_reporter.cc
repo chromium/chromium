@@ -48,7 +48,7 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
 
   // The first element in the command line arguments is the program name,
   // which must be skipped.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
   std::transform(++command_line.argv().begin(), command_line.argv().end(),
                  std::back_inserter(args),
@@ -120,7 +120,7 @@ int CrashReporterMain() {
   auto argv_as_utf8 = std::make_unique<char*[]>(argv.size() + 1);
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     storage.push_back(base::WideToUTF8(argv[i]));
 #else
     storage.push_back(argv[i]);

@@ -36,7 +36,7 @@
 
 namespace updater {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 namespace {
 
 class SplashScreenImpl : public SplashScreen {
@@ -73,7 +73,7 @@ scoped_refptr<App> MakeAppInstall() {
         return base::MakeRefCounted<AppInstallControllerImpl>();
       }));
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
                        AppInstallController::Maker app_install_controller_maker)
@@ -155,12 +155,12 @@ void AppInstall::WakeCandidate() {
       update_service_internal, base::WrapRefCounted(this)));
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/1276114) - implement.
 void AppInstall::WakeCandidateDone() {
   NOTIMPLEMENTED();
 }
-#endif  // OS_LINUX
+#endif  // BUILDFLAG(IS_LINUX)
 
 void AppInstall::RegisterUpdater() {
   RegistrationRequest request;

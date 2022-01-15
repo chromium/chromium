@@ -27,11 +27,11 @@
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/updater/win/net/network.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/mac/net/network.h"
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 #include "chrome/updater/linux/net/network.h"
 #endif
 

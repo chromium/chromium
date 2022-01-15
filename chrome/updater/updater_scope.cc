@@ -10,7 +10,7 @@
 #include "chrome/updater/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/updater/tag.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/win_util.h"
@@ -26,7 +26,7 @@ bool IsSystemProcess() {
 }  // namespace
 
 UpdaterScope GetUpdaterScope() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (IsSystemProcess()) {
     return UpdaterScope::kSystem;
   }

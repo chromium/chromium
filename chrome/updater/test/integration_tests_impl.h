@@ -140,7 +140,7 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id);
 
 void WaitForUpdaterExit(UpdaterScope scope);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
 void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                                     const std::string& app_id,
@@ -157,7 +157,7 @@ void InvokeTestServiceFunction(
     const base::flat_map<std::string, base::Value>& arguments);
 
 void RunUninstallCmdLine(UpdaterScope scope);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Returns the number of files in the directory, not including directories,
 // links, or dot dot.

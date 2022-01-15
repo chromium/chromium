@@ -32,7 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -207,7 +207,7 @@ void AppTestHelper::FirstTaskRun() {
      WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
     {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
     {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {"expect_interfaces_registered",
      WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
     {"expect_legacy_update3web_succeeds",
@@ -219,7 +219,7 @@ void AppTestHelper::FirstTaskRun() {
     {"expect_legacy_process_launcher_succeeds",
      WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
     {"run_uninstall_cmd_line", WithSystemScope(Wrap(&RunUninstallCmdLine))},
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
     {"expect_version_active",
      WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionActive)))},
     {"expect_version_not_active",
@@ -313,7 +313,7 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);

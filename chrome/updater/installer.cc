@@ -225,7 +225,7 @@ absl::optional<base::FilePath> Installer::GetCurrentInstallDir() const {
   return path->AppendASCII(pv_.GetString());
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 Installer::Result Installer::RunApplicationInstaller(
     const base::FilePath& /*app_installer*/,
     const std::string& /*arguments*/,
@@ -233,6 +233,6 @@ Installer::Result Installer::RunApplicationInstaller(
   NOTIMPLEMENTED();
   return Installer::Result(-1);
 }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace updater

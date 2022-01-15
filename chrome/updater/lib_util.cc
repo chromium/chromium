@@ -11,7 +11,7 @@
 
 namespace updater {
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 
 std::string UnescapeURLComponent(base::StringPiece escaped_text) {
   return base::UnescapeURLComponent(
@@ -21,6 +21,6 @@ std::string UnescapeURLComponent(base::StringPiece escaped_text) {
           base::UnescapeRule::PATH_SEPARATORS);
 }
 
-#endif  // OS_LINUX
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace updater

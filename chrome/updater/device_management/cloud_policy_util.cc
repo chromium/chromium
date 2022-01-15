@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Windows.h>  // For GetComputerNameW()
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
@@ -22,13 +22,13 @@
 #include <wincred.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #import <SystemConfiguration/SCDynamicStoreCopySpecific.h>
 #include <stddef.h>
 #include <sys/sysctl.h>
@@ -36,7 +36,7 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include <limits.h>  // For HOST_NAME_MAX
 #endif
 
@@ -47,14 +47,14 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -63,7 +63,7 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "base/system/sys_info.h"
 #endif
 
@@ -111,12 +111,12 @@ std::string GetPolicyVerificationKey() {
 std::string GetMachineName() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   char hostname[HOST_NAME_MAX];
   if (gethostname(hostname, HOST_NAME_MAX) == 0)  // Success.
     return hostname;
   return std::string();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // Do not use NSHost currentHost, as it's very slow. http://crbug.com/138570
   SCDynamicStoreContext context = {0, NULL, NULL, NULL};
   base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
@@ -144,7 +144,7 @@ std::string GetMachineName() {
     return std::string(modelBuffer, 0, length);
   }
   return std::string();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
   DWORD size = base::size(computer_name);
   if (::GetComputerNameW(computer_name, &size)) {
@@ -161,9 +161,9 @@ std::string GetMachineName() {
 }
 
 std::string GetOSVersion() {
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   return base::SysInfo::OperatingSystemVersion();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   base::win::OSInfo::VersionNumber version_number =
       base::win::OSInfo::GetInstance()->version_number();
   return base::StringPrintf("%d.%d.%d.%d", version_number.major,
@@ -185,7 +185,7 @@ GetBrowserDeviceIdentifier() {
       device_identifier =
           std::make_unique<enterprise_management::BrowserDeviceIdentifier>();
   device_identifier->set_computer_name(GetMachineName());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   device_identifier->set_serial_number(base::WideToUTF8(
       base::win::WmiComputerSystemInfo::Get().serial_number()));
 #else

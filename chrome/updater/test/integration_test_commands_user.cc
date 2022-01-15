@@ -139,7 +139,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::WaitForUpdaterExit(updater_scope_);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void ExpectInterfacesRegistered() const override {
     updater::test::ExpectInterfacesRegistered(updater_scope_);
   }
@@ -162,10 +162,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void SetUpTestService() const override {}
 
   void TearDownTestService() const override {}
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // /Library is owned by root.
     return base::FilePath(FILE_PATH_LITERAL("/Library"));
 #else

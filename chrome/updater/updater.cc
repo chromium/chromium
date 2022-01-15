@@ -31,14 +31,14 @@
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/process_startup_helper.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/win/win_util.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/app/server/mac/server.h"
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 #include "chrome/updater/app/server/linux/server.h"
 #endif
 
@@ -123,7 +123,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // Make the process more resilient to memory allocation issues.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::RegisterInvalidParamHandler();
 
   VLOG(1) << GetUACState();
@@ -138,7 +138,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   }
 
   if (command_line->HasSwitch(kServerSwitch)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // By design, Windows uses a leaky singleton server for its RPC server.
     return AppServerSingletonInstance()->Run();
 #else
@@ -149,10 +149,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   if (command_line->HasSwitch(kUpdateSwitch))
     return MakeAppUpdate()->Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(kComServiceSwitch))
     return ServiceMain::RunComService(command_line);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   if (command_line->HasSwitch(kInstallSwitch) ||
       command_line->HasSwitch(kTagSwitch)) {

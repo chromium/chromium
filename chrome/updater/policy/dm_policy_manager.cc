@@ -58,7 +58,7 @@ DMPolicyManager::DMPolicyManager(
 DMPolicyManager::~DMPolicyManager() = default;
 
 bool DMPolicyManager::IsManaged() const {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::IsMachineExternallyManaged();
 #else
   // crbug.com/1276162 - implement.
@@ -144,7 +144,7 @@ const ::wireless_android_enterprise_devicemanagement::ApplicationSettings*
 DMPolicyManager::GetAppSettings(const std::string& app_id) const {
   const auto& repeated_app_settings = omaha_settings_.application_settings();
   for (const auto& app_settings_proto : repeated_app_settings) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // BundleIdentifier is preferred over AppGuid as product ID on Mac.
     // If not found, fall back to AppGuid below.
     if (app_settings_proto.has_bundle_identifier() &&
@@ -152,7 +152,7 @@ DMPolicyManager::GetAppSettings(const std::string& app_id) const {
                                          app_id)) {
       return &app_settings_proto;
     }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     if (app_settings_proto.has_app_guid() &&
         base::EqualsCaseInsensitiveASCII(app_settings_proto.app_guid(),
                                          app_id)) {

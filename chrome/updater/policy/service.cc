@@ -14,9 +14,9 @@
 #include "build/build_config.h"
 
 #include "chrome/updater/policy/dm_policy_manager.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/updater/policy/win/group_policy_manager.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
 
@@ -210,14 +210,14 @@ bool PolicyService::QueryAppPolicy(
 
 scoped_refptr<PolicyService> PolicyService::Create() {
   PolicyManagerVector managers;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   managers.push_back(std::make_unique<GroupPolicyManager>());
 #endif
   std::unique_ptr<PolicyManagerInterface> dm_policy_manager =
       CreateDMPolicyManager();
   if (dm_policy_manager)
     managers.push_back(std::move(dm_policy_manager));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   managers.push_back(CreateManagedPreferencePolicyManager());
 #endif
   managers.push_back(GetPolicyManager());  // For default values.

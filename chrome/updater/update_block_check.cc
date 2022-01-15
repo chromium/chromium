@@ -12,7 +12,7 @@
 
 namespace updater {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 // Linux and macOS don't have mechanisms to detect if a connection is metered.
 void ShouldBlockUpdateForMeteredNetwork(

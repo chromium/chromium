@@ -61,7 +61,7 @@ class IntegrationTestCommands
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;
   virtual void WaitForUpdaterExit() const = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual void ExpectInterfacesRegistered() const = 0;
   virtual void ExpectLegacyUpdate3WebSucceeds(
       const std::string& app_id,
@@ -71,7 +71,7 @@ class IntegrationTestCommands
   virtual void RunUninstallCmdLine() const = 0;
   virtual void SetUpTestService() const = 0;
   virtual void TearDownTestService() const = 0;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   virtual void StressUpdateService() const = 0;
   virtual void CallServiceUpdate(const std::string& app_id,
                                  UpdateService::PolicySameVersionUpdate

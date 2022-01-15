@@ -15,6 +15,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
@@ -69,13 +70,13 @@ bool DeleteObsoletePolicies(const base::FilePath& cache_root,
 
 }  // namespace
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // crbug.com/1276162 - implement.
 DMStorage::DMStorage(const base::FilePath& policy_cache_root)
     : policy_cache_root_(policy_cache_root) {
   NOTIMPLEMENTED();
 }
-#endif  // OS_LINUX
+#endif  // BUILDFLAG(IS_LINUX)
 
 DMStorage::DMStorage(const base::FilePath& policy_cache_root,
                      std::unique_ptr<TokenServiceInterface> token_service)
