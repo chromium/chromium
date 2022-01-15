@@ -68,7 +68,7 @@ bool ContextMenuContentTypeWebView::SupportsGroup(int group) {
 
         // TODO(lazyboy): Enable this for mac too when http://crbug.com/380405
         // is fixed.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         // Add dev tools for unpacked extensions.
         return !embedder_extension ||
                extensions::Manifest::IsUnpackedLocation(
