@@ -65,6 +65,8 @@ constexpr char kExampleUrl2[] = "https://www.example2.com";
 
 constexpr char kLacrosWindowId[] = "123";
 
+constexpr uint32_t kBrowserSessionId = 56;
+
 }  // namespace
 
 class FullRestoreReadHandlerTestApi {
@@ -278,7 +280,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     SaveAppLaunchInfo(file_path, std::move(app_launch_info));
   }
 
-  std::unique_ptr<views::Widget> CreateLacrosWindow(
+  std::unique_ptr<views::Widget> CreateLacrosWidget(
       const std::string& lacros_window_id) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
 
@@ -295,6 +297,17 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
     widget->Show();
     return widget;
+  }
+
+  std::unique_ptr<aura::Window> CreateLacrosWindow(
+      const std::string& lacros_window_id) {
+    auto window = std::make_unique<aura::Window>(
+        nullptr, aura::client::WINDOW_TYPE_NORMAL);
+    window->SetProperty(aura::client::kAppType,
+                        static_cast<int>(ash::AppType::LACROS));
+    window->SetProperty(app_restore::kLacrosWindowId,
+                        std::string(kLacrosWindowId));
+    return window;
   }
 
   void SaveWindowInfo(aura::Window* window, int32_t activation_index) {
@@ -922,7 +935,101 @@ TEST_F(FullRestoreReadAndSaveTest, ReadChromeAppRestoreData) {
   EXPECT_EQ(base::FilePath(kFilePath2), data->file_paths.value()[1]);
 }
 
-// Verify the Lacros Chrome app window is saved currently when the window is
+// Verify the Lacros browser window is saved correctly when the window is
+// created first, then OnLacrosWindowAdded is called.
+TEST_F(FullRestoreReadAndSaveTest, LacrosBrowserWindowSavingCreateWindowFirst) {
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
+  FullRestoreSaveHandlerTestApi test_api(save_handler);
+
+  save_handler->SetPrimaryProfilePath(GetPath());
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  const LacrosSaveHandler* lacros_save_handler = test_api.GetLacrosSaveHander();
+  ASSERT_TRUE(lacros_save_handler);
+
+  // Create a browser window first, then OnLacrosWindowAdded is called later.
+  auto widget = CreateLacrosWidget(kLacrosWindowId);
+  auto* window = widget->GetNativeWindow();
+  SaveWindowInfo(window, kActivationIndex1);
+  app_restore::OnLacrosWindowAdded(window, kBrowserSessionId,
+                                   /*restored_browser_session_id=*/0);
+
+  // Verify the browser window is saved.
+  EXPECT_EQ(extension_misc::kLacrosAppId,
+            save_handler->GetAppId(widget->GetNativeWindow()));
+  auto window_info = save_handler->GetWindowInfo(
+      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+  EXPECT_EQ(kActivationIndex1, window_info->activation_index.value());
+
+  // Modify the window info.
+  SaveWindowInfo(window, kActivationIndex2);
+  window_info = save_handler->GetWindowInfo(
+      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+  EXPECT_EQ(kActivationIndex2, window_info->activation_index.value());
+
+  widget.reset();
+  ASSERT_FALSE(save_handler->GetWindowInfo(
+      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId));
+
+  timer->FireNow();
+  // Wait for the restore data to be written to the full restore file.
+  task_environment().RunUntilIdle();
+
+  ReadFromFile(GetPath());
+
+  // Verify there is not restore data.
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+  EXPECT_TRUE(restore_data->app_id_to_launch_list().empty());
+}
+
+// Verify the Lacros Chrome app window is saved correctly when
+// OnLacrosWindowAdded is called first, then the window is init later.
+TEST_F(FullRestoreReadAndSaveTest,
+       LacrosBrowserWindowSavingOnLacrosWindowAddedCalledFirst) {
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
+  FullRestoreSaveHandlerTestApi test_api(save_handler);
+
+  save_handler->SetPrimaryProfilePath(GetPath());
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+  const LacrosSaveHandler* lacros_save_handler = test_api.GetLacrosSaveHander();
+  ASSERT_TRUE(lacros_save_handler);
+
+  // OnLacrosWindowAdded is called first, then init the browser window later.
+  auto window = CreateLacrosWindow(kLacrosWindowId);
+  app_restore::OnLacrosWindowAdded(window.get(), kBrowserSessionId,
+                                   /*restored_browser_session_id=*/0);
+  window->Init(ui::LAYER_NOT_DRAWN);
+
+  SaveWindowInfo(window.get(), kActivationIndex1);
+
+  // Verify the browser window is saved.
+  EXPECT_EQ(extension_misc::kLacrosAppId, save_handler->GetAppId(window.get()));
+  auto window_info = save_handler->GetWindowInfo(
+      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+  EXPECT_EQ(kActivationIndex1, window_info->activation_index.value());
+
+  // Modify the window info.
+  SaveWindowInfo(window.get(), kActivationIndex2);
+  window_info = save_handler->GetWindowInfo(
+      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+  EXPECT_EQ(kActivationIndex2, window_info->activation_index.value());
+
+  window.reset();
+
+  // Wait for `save_handler` to fresh the full restore file.
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  ReadFromFile(GetPath());
+
+  // Verify there is not restore data.
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+  EXPECT_TRUE(restore_data->app_id_to_launch_list().empty());
+}
+
+// Verify the Lacros Chrome app window is saved correctly when the window is
 // created first, then OnAppWindowAdded is called.
 TEST_F(FullRestoreReadAndSaveTest,
        LacrosChromeAppWindowSavingCreateWindowFirst) {
@@ -943,7 +1050,7 @@ TEST_F(FullRestoreReadAndSaveTest,
 
   // Create a Chrome app window first, then the crosapi OnAppWindowAdded is
   // called later.
-  auto widget = CreateLacrosWindow(kLacrosWindowId);
+  auto widget = CreateLacrosWidget(kLacrosWindowId);
   auto* window = widget->GetNativeWindow();
   EXPECT_FALSE(test_api.GetLacrosWindowCandidates().empty());
   SaveWindowInfo(window, kActivationIndex1);
@@ -968,6 +1075,7 @@ TEST_F(FullRestoreReadAndSaveTest,
   EXPECT_TRUE(test_api.GetLacrosWindowCandidates().empty());
   EXPECT_TRUE(test_api.GetLacrosWindowIdToAppIdMap().empty());
 
+  // Wait for `save_handler` to fresh the full restore file.
   timer->FireNow();
   task_environment().RunUntilIdle();
 
@@ -979,7 +1087,7 @@ TEST_F(FullRestoreReadAndSaveTest,
   EXPECT_TRUE(restore_data->app_id_to_launch_list().empty());
 }
 
-// Verify the Lacros Chrome app window is saved currently when OnAppWindowAdded
+// Verify the Lacros Chrome app window is saved correctly when OnAppWindowAdded
 // is called first, then the window is created later.
 TEST_F(FullRestoreReadAndSaveTest,
        LacrosChromeAppWindowSavingOnAppWindowCalledFirst) {
@@ -1007,7 +1115,7 @@ TEST_F(FullRestoreReadAndSaveTest,
   // window later.
   OnLacrosChromeAppWindowAdded(kAppId, kLacrosWindowId);
   EXPECT_FALSE(test_api.GetLacrosWindowIdToAppIdMap().empty());
-  auto widget = CreateLacrosWindow(kLacrosWindowId);
+  auto widget = CreateLacrosWidget(kLacrosWindowId);
   auto* window = widget->GetNativeWindow();
   EXPECT_FALSE(test_api.GetLacrosWindowCandidates().empty());
   SaveWindowInfo(window, kActivationIndex1);
