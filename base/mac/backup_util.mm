@@ -21,9 +21,9 @@ bool GetBackupExclusion(const FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return CSBackupIsItemExcluded(FilePathToCFURL(file_path), nullptr);
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   NSURL* file_url = FilePathToNSURL(file_path);
   DCHECK([[NSFileManager defaultManager] fileExistsAtPath:file_url.path]);
 
@@ -45,7 +45,7 @@ bool SetBackupExclusion(const FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // When excludeByPath is true the application must be running with root
   // privileges (admin for 10.6 and earlier) but the URL does not have to
   // already exist. When excludeByPath is false the URL must already exist but
@@ -59,7 +59,7 @@ bool SetBackupExclusion(const FilePath& file_path) {
       << "Failed to set backup exclusion for file '"
       << file_path.value().c_str() << "'";
   return os_err == noErr;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   NSURL* file_url = FilePathToNSURL(file_path);
   DCHECK([[NSFileManager defaultManager] fileExistsAtPath:file_url.path]);
 

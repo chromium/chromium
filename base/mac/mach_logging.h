@@ -97,7 +97,7 @@ class BASE_EXPORT MachLogMessage : public logging::LogMessage {
               DCHECK_IS_ON() && !(condition))   \
       << "Check failed: " #condition << ". "
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 namespace logging {
 
@@ -165,6 +165,6 @@ class BASE_EXPORT BootstrapLogMessage : public logging::LogMessage {
               DCHECK_IS_ON() && !(condition))             \
       << "Check failed: " #condition << ". "
 
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 
 #endif  // BASE_MAC_MACH_LOGGING_H_

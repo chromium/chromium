@@ -12,11 +12,11 @@
 #include "base/check.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #import <UIKit/UIKit.h>
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #import <AppKit/AppKit.h>
 #endif
 
@@ -134,7 +134,7 @@ CF_TO_NS_MUTABLE_CAST_IMPL(String)
 CF_TO_NS_CAST_IMPL(CFURL, NSURL)
 
 // AppKit / UIKit
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 CF_TO_NS_CAST_IMPL(CTFont, UIFont)
 #else
 // The NSFont/CTFont toll-free bridging is broken before 10.15.
