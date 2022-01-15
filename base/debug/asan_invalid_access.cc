@@ -12,7 +12,7 @@
 #include "base/debug/alias.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -21,7 +21,7 @@ namespace debug {
 
 namespace {
 
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 // Corrupt a memory block and make sure that the corruption gets detected either
 // when we free it or when another crash happens (if |induce_crash| is set to
 // true).
@@ -46,7 +46,7 @@ NOINLINE void CorruptMemoryBlock(bool induce_crash) {
     CHECK(false);
   delete[] array;
 }
-#endif  // OS_WIN && ADDRESS_SANITIZER
+#endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 
 }  // namespace
 
@@ -89,7 +89,7 @@ void AsanHeapUseAfterFree() {
   base::debug::Alias(&dummy);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void AsanCorruptHeapBlock() {
   CorruptMemoryBlock(false);
 }
@@ -97,7 +97,7 @@ void AsanCorruptHeapBlock() {
 void AsanCorruptHeap() {
   CorruptMemoryBlock(true);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // ADDRESS_SANITIZER
 
 }  // namespace debug

@@ -29,7 +29,7 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -104,12 +104,12 @@ Time WallTimeFromTickTime(int64_t ticks_start, int64_t ticks, Time time_start) {
 
 union ThreadRef {
   int64_t as_id;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the handle itself is often a pseudo-handle with a common
   // value meaning "this thread" and so the thread-id is used. The former
   // can be converted to a thread-id with a system call.
   PlatformThreadId as_tid;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On Posix and Fuchsia, the handle is always a unique identifier so no
   // conversion needs to be done. However, its value is officially opaque so
   // there is no one correct way to convert it to a numerical identifier.
@@ -155,9 +155,9 @@ const ActivityData kNullActivityData = {};
 ActivityData ActivityData::ForThread(const PlatformThreadHandle& handle) {
   ThreadRef thread_ref;
   thread_ref.as_id = 0;  // Zero the union in case other is smaller.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   thread_ref.as_tid = ::GetThreadId(handle.platform_handle());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   thread_ref.as_handle = handle.platform_handle();
 #endif
   return ForThread(thread_ref.as_id);
@@ -257,7 +257,7 @@ void Activity::FillFrom(Activity* activity,
   activity->activity_type = type;
   activity->data = data;
 
-#if (!defined(OS_NACL) && DCHECK_IS_ON()) || defined(ADDRESS_SANITIZER)
+#if (!BUILDFLAG(IS_NACL) && DCHECK_IS_ON()) || defined(ADDRESS_SANITIZER)
   // Create a stacktrace from the current location and get the addresses for
   // improved debuggability.
   StackTrace stack_trace;
@@ -741,9 +741,9 @@ ThreadActivityTracker::ThreadActivityTracker(void* base, size_t size)
     DCHECK_EQ(0U, stack_[0].call_stack[0]);
     DCHECK_EQ(0U, stack_[0].data.task.sequence_id);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     header_->thread_ref.as_tid = PlatformThread::CurrentId();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     header_->thread_ref.as_handle =
         PlatformThread::CurrentHandle().platform_handle();
 #endif
@@ -1274,7 +1274,7 @@ void GlobalActivityTracker::CreateWithAllocator(
   global_tracker->CreateTrackerForCurrentThread();
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 // static
 bool GlobalActivityTracker::CreateWithFile(const FilePath& file_path,
                                            size_t size,
@@ -1299,7 +1299,7 @@ bool GlobalActivityTracker::CreateWithFile(const FilePath& file_path,
                       stack_depth, 0);
   return true;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // static
 bool GlobalActivityTracker::CreateWithLocalMemory(size_t size,
@@ -1433,7 +1433,7 @@ void GlobalActivityTracker::RecordProcessLaunch(
     known_processes_.erase(pid);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   known_processes_.insert(std::make_pair(pid, WideToUTF8(cmd)));
 #else
   known_processes_.insert(std::make_pair(pid, cmd));
@@ -1779,7 +1779,7 @@ ScopedThreadJoinActivity::ScopedThreadJoinActivity(
           ActivityData::ForThread(*thread),
           /*lock_allowed=*/true) {}
 
-#if !defined(OS_NACL) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
 ScopedProcessWaitActivity::ScopedProcessWaitActivity(
     const void* program_counter,
     const base::Process* process)

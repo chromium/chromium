@@ -11,23 +11,24 @@
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <pthread.h>
 
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
 #endif
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__GLIBC__)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
 extern "C" void* __libc_stack_end;
 #endif
 
@@ -167,7 +168,7 @@ void* LinkStackFrames(void* fpp, void* parent_fp) {
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 uintptr_t GetStackEnd() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Bionic reads proc/maps on every call to pthread_getattr_np() when called
   // from the main thread. So we need to cache end of stack in that case to get
   // acceptable performance.
@@ -196,13 +197,13 @@ uintptr_t GetStackEnd() {
     main_stack_end = stack_end;
   }
   return stack_end;  // 0 in case of error
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   // No easy way to get end of the stack for non-main threads,
   // see crbug.com/617730.
   return reinterpret_cast<uintptr_t>(pthread_get_stackaddr_np(pthread_self()));
 #else
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__GLIBC__)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
   if (GetCurrentProcId() == PlatformThread::CurrentId()) {
     // For the main thread we have a shortcut.
     return reinterpret_cast<uintptr_t>(__libc_stack_end);
@@ -239,15 +240,15 @@ bool StackTrace::WillSymbolizeToStreamForTesting() {
   // See https://crbug.com/706728
   return false;
 #elif defined(OFFICIAL_BUILD) && \
-    ((defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA))
+    ((BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) || BUILDFLAG(IS_FUCHSIA))
   // On some platforms stack traces require an extra data table that bloats our
   // binaries, so they're turned off for official builds.
   return false;
-#elif defined(OFFICIAL_BUILD) && defined(OS_APPLE)
+#elif defined(OFFICIAL_BUILD) && BUILDFLAG(IS_APPLE)
   // Official Mac OS X builds contain enough information to unwind the stack,
   // but not enough to symbolize the output.
   return false;
-#elif defined(OS_FUCHSIA) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
   // Under Fuchsia and Android, StackTrace emits executable build-Ids and
   // address offsets which are symbolized on the test host system, rather than
   // being symbolized in-process.

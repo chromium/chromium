@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+
 #if !defined(USE_SYMBOLIZE)
 #include <cxxabi.h>
 #endif
@@ -31,11 +33,11 @@
 #include <execinfo.h>
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <AvailabilityMacros.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/debug/proc_maps_linux.h"
 #endif
 
@@ -70,7 +72,7 @@ namespace {
 
 volatile sig_atomic_t in_signal_handler = 0;
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 bool (*try_handle_signal)(int, siginfo_t*, void*) = nullptr;
 #endif
 
@@ -254,7 +256,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   // NOTE: This code MUST be async-signal safe.
   // NO malloc or stdio is allowed here.
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Give a registered callback a chance to recover from this signal
   //
   // V8 uses guard regions to guarantee memory safety in WebAssembly. This means
@@ -282,7 +284,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
 // or DCHECK() failure. While it may not be fully safe to run the stack symbol
 // printing code, in practice it's better to provide meaningful stack traces -
 // and the risk is low given we're likely crashing already.
-#if !defined(OS_APPLE) || !DCHECK_IS_ON()
+#if !BUILDFLAG(IS_APPLE) || !DCHECK_IS_ON()
   // Record the fact that we are in the signal handler now, so that the rest
   // of StackTrace can behave in an async-signal-safe manner.
   in_signal_handler = 1;
@@ -368,7 +370,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
 
   debug::StackTrace().Print();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if ARCH_CPU_X86_FAMILY
   ucontext_t* context = reinterpret_cast<ucontext_t*>(void_context);
   const struct {
@@ -439,15 +441,15 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   }
   PrintToStderr("\n");
 #endif  // ARCH_CPU_X86_FAMILY
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   PrintToStderr("[end of stack trace]\n");
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (::signal(signal, SIG_DFL) == SIG_ERR) {
     _exit(EXIT_FAILURE);
   }
-#elif !defined(OS_LINUX)
+#elif !BUILDFLAG(IS_LINUX)
   // For all operating systems but Linux we do not reraise the signal that
   // brought us here but terminate the process immediately.
   // Otherwise various tests break on different operating systems, see
@@ -455,7 +457,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   PrintToStderr(
       "Calling _exit(EXIT_FAILURE). Core file will not be generated.\n");
   _exit(EXIT_FAILURE);
-#endif  // !defined(OS_LINUX)
+#endif  // !BUILDFLAG(IS_LINUX)
 
   // After leaving this handler control flow returns to the point where the
   // signal was raised, raising the current signal once again but executing the
@@ -828,14 +830,14 @@ bool EnableInProcessStackDumping() {
   success &= (sigaction(SIGBUS, &action, nullptr) == 0);
   success &= (sigaction(SIGSEGV, &action, nullptr) == 0);
 // On Linux, SIGSYS is reserved by the kernel for seccomp-bpf sandboxing.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   success &= (sigaction(SIGSYS, &action, nullptr) == 0);
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
   return success;
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 bool SetStackDumpFirstChanceCallback(bool (*handler)(int, siginfo_t*, void*)) {
   DCHECK(try_handle_signal == nullptr || handler == nullptr);
   try_handle_signal = handler;

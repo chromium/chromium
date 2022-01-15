@@ -213,7 +213,7 @@ __attribute__((no_sanitize("address", "hwaddress"))) void CheckProcMapsRegions(
     if (i.path == "[stack]") {
 // On Android the test is run on a background thread, since [stack] is for
 // the main thread, we cannot test this.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       EXPECT_GE(address, i.start);
       EXPECT_LT(address, i.end);
 #endif

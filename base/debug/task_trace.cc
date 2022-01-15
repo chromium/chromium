@@ -7,14 +7,14 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #include <iostream>
 #include <sstream>
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/no_destructor.h"
 #endif
 
@@ -24,7 +24,7 @@
 namespace base {
 namespace debug {
 namespace {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android sends stdout and stderr to /dev/null; logging should be done through
 // the __android_log_write() function. Here we create an override of
 // std::stringbuf that writes to the Android log.
@@ -46,7 +46,7 @@ std::ostream& DefaultOutputStream() {
 std::ostream& DefaultOutputStream() {
   return std::cerr;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 TaskTrace::TaskTrace() {
