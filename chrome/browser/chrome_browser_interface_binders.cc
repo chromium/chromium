@@ -555,7 +555,7 @@ void PopulateChromeFrameBinders(
   // We should not request this mojo interface's binding for the subframes in
   // the renderer.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
-      !render_frame_host->GetParent()) {
+      !render_frame_host->GetParentOrOuterDocument()) {
     map->Add<cart::mojom::CommerceHintObserver>(
         base::BindRepeating(&BindCommerceHintObserver));
   }
