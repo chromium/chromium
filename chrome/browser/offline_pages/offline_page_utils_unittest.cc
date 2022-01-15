@@ -47,7 +47,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/download/android/mock_download_controller.h"
 #include "components/gcm_driver/instance_id/instance_id_android.h"
@@ -183,7 +183,7 @@ class OfflinePageUtilsTest
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome::android::MockDownloadController download_controller_;
   // OfflinePageTabHelper instantiates PrefetchService which in turn requests a
   // fresh GCM token automatically. This causes the request to be done
@@ -220,13 +220,13 @@ void OfflinePageUtilsTest::SetUp() {
   CreateRequests();
 
 // This is needed in order to skip the logic to request storage permission.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DownloadControllerBase::SetDownloadControllerBase(&download_controller_);
 #endif
 }
 
 void OfflinePageUtilsTest::TearDown() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DownloadControllerBase::SetDownloadControllerBase(nullptr);
 #endif
 }
@@ -382,7 +382,7 @@ TEST_F(OfflinePageUtilsTest, ScheduleDownload) {
   EXPECT_EQ(1, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage4Url));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(OfflinePageUtilsTest, ScheduleDownloadWithFailedFileAcecssRequest) {
   DownloadControllerBase::Get()->SetApproveFileAccessRequestForTesting(false);
   OfflinePageUtils::ScheduleDownload(
@@ -412,12 +412,12 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeBetween) {
 }
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeNoPageInModel) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/1002762): Fix this test to run in < action_timeout()
   // on the Android bots.
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   clock()->Advance(base::Hours(3));
 
@@ -480,7 +480,7 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeEdgeCase) {
 }
 
 // Timeout on Android.  http://crbug.com/981972
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestExtractOfflineHeaderValueFromNavigationEntry \
   DISABLED_TestExtractOfflineHeaderValueFromNavigationEntry
 #else

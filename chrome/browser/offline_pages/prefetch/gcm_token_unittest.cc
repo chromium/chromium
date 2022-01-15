@@ -18,10 +18,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/instance_id_android.h"
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using instance_id::InstanceID;
 
@@ -57,10 +57,10 @@ class PrefetchInstanceIDProxyTest : public testing::Test {
 
   raw_ptr<gcm::FakeGCMProfileService> gcm_profile_service_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   instance_id::InstanceIDAndroid::ScopedBlockOnAsyncTasksForTesting
       block_async_;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   std::string token_;
   InstanceID::Result result_ = InstanceID::UNKNOWN_ERROR;

@@ -283,7 +283,7 @@ TEST_F(OfflinePageTabHelperTest, UntrustedOfflinePageForFileUrl) {
             tab_helper()->offline_header().reason);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(OfflinePageTabHelperTest,
        UntrustedOfflinePageForContentUrlWithMultipartRelatedType) {
   CreateNavigationSimulator(GURL("content://foo"));
