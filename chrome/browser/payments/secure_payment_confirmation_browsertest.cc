@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
 
 // Creation tests do not work on Android because there is not a way to
 // override authenticator creation.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class SecurePaymentConfirmationCreationTest
     : public SecurePaymentConfirmationTest,
       public content::WebContentsObserver {
@@ -965,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace payments
