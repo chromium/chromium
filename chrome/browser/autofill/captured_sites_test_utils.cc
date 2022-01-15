@@ -332,7 +332,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
 }
 
 std::string FilePathToUTF8(const base::FilePath::StringType& str) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(str);
 #else
   return str;
@@ -565,7 +565,7 @@ bool WebPageReplayServerWrapper::Stop() {
   if (web_page_replay_server_.IsValid()) {
     bool did_terminate = false;
     if (!start_as_replay_) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       // For Replay sessions, we can terminate the WPR process immediately as
       // we don't Record sessions, we want to try and send a SIGINT to close and
       // write the WPR archive file gracefully. If that fails, we will Terminate
@@ -628,17 +628,17 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
                                                   .AppendASCII("bin");
   options.current_directory = web_page_replay_binary_dir;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath wpr_executable_binary =
       base::FilePath(FILE_PATH_LITERAL("win"))
           .AppendASCII("AMD64")
           .AppendASCII("wpr.exe");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::FilePath wpr_executable_binary =
       base::FilePath(FILE_PATH_LITERAL("mac"))
           .AppendASCII("x86_64")
           .AppendASCII("wpr");
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath wpr_executable_binary =
       base::FilePath(FILE_PATH_LITERAL("linux"))
           .AppendASCII("x86_64")

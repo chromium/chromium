@@ -41,7 +41,7 @@
 #include "testing/data_driven_testing/data_driven_test.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -91,9 +91,9 @@ std::vector<base::FilePath> GetTestFiles() {
   }
   std::sort(files.begin(), files.end());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ClearAmIBundledCache();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   return files;
 }

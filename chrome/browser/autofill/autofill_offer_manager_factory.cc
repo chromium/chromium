@@ -9,7 +9,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +34,7 @@ AutofillOfferManagerFactory::AutofillOfferManagerFactory()
           "AutofillOfferManager",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(PersonalDataManagerFactory::GetInstance());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DependsOn(CouponServiceFactory::GetInstance());
 #endif
 }
@@ -43,7 +43,7 @@ AutofillOfferManagerFactory::~AutofillOfferManagerFactory() = default;
 
 KeyedService* AutofillOfferManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   CouponService* service =
       CouponServiceFactory::GetForProfile(Profile::FromBrowserContext(context));
   return new AutofillOfferManager(

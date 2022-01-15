@@ -2162,7 +2162,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
 
 // Test that Autofill does not fill in Company Name if disabled
 // TODO(crbug.com/1279102): Flaky on Win and Mac.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_NoAutofillSugggestionForCompanyName \
   DISABLED_NoAutofillSugggestionForCompanyName
 #else
@@ -2766,7 +2766,7 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
 };
 
 // Flaky on ChromeOS http://crbug.com/1175735
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SimpleCrossSiteFill DISABLED_SimpleCrossSiteFill
 #else
 #define MAYBE_SimpleCrossSiteFill SimpleCrossSiteFill
@@ -2859,7 +2859,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
 }
 
 // Flaky on ChromeOS http://crbug.com/1175735
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DeletingFrameUnderSuggestion DISABLED_DeletingFrameUnderSuggestion
 #else
 #define MAYBE_DeletingFrameUnderSuggestion DeletingFrameUnderSuggestion
