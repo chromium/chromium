@@ -19,14 +19,14 @@
 #include "ui/gfx/color_utils.h"
 #include "url/gurl.h"
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 #define SUPPORT_PEDALS_VECTOR_ICONS
 namespace gfx {
 struct VectorIcon;
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -158,7 +158,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // Returns an ID used to identify some actions. Not defined for all Actions.
   virtual int32_t GetID() const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;
 #endif
 

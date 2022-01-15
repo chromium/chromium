@@ -29,7 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -185,7 +185,7 @@ bool OmniboxView::IsEditingOrEmpty() const {
 ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color,
                                     IconFetchedCallback on_icon_fetched) const {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // This is used on desktop only.
   NOTREACHED();
   return ui::ImageModel();
@@ -233,7 +233,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked);
 
   return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 void OmniboxView::SetUserText(const std::u16string& text) {

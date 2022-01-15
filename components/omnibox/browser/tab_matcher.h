@@ -12,7 +12,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_weak_ref.h"
 #endif
 
@@ -25,7 +25,7 @@ class TabMatcher {
     // Whether a tab with matching URL exists.
     bool has_matching_tab{};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Weak pointer to an Android Tab for the supplied GURL.
     JavaObjectWeakGlobalRef android_tab{};
 #endif

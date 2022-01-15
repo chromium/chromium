@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
@@ -21,7 +22,7 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/omnibox/browser/jni_headers/OmniboxPedal_jni.h"
@@ -240,7 +241,7 @@ OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
     : OmniboxAction(strings, url),
       id_(id),
       verbatim_synonym_group_(false, true, 0) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CreateOrUpdateJavaObject();
 #endif
 }
@@ -258,14 +259,14 @@ void OmniboxPedal::SetLabelStrings(const base::Value& ui_strings) {
       ->GetAsString(&strings_.accessibility_hint);
   ui_strings.FindKey("spoken_suggestion_description_suffix")
       ->GetAsString(&strings_.accessibility_suffix);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CreateOrUpdateJavaObject();
 #endif
 }
 
 void OmniboxPedal::SetNavigationUrl(const GURL& url) {
   url_ = url;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CreateOrUpdateJavaObject();
 #endif
 }
@@ -335,7 +336,7 @@ int32_t OmniboxPedal::GetID() const {
   return static_cast<int32_t>(id());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaGlobalRef<jobject> OmniboxPedal::GetJavaObject()
     const {
   return j_omnibox_action_;

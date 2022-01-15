@@ -40,7 +40,7 @@ void AutocompleteClassifier::Shutdown() {
 // static
 int AutocompleteClassifier::DefaultOmniboxProviders() {
   return
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Custom search engines cannot be used on mobile.
       AutocompleteProvider::TYPE_KEYWORD |
 #else
@@ -48,7 +48,7 @@ int AutocompleteClassifier::DefaultOmniboxProviders() {
       AutocompleteProvider::TYPE_MOST_VISITED_SITES |
       AutocompleteProvider::TYPE_VERBATIM_MATCH |
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       AutocompleteProvider::TYPE_VOICE_SUGGEST |
 #endif
       AutocompleteProvider::TYPE_ZERO_SUGGEST |

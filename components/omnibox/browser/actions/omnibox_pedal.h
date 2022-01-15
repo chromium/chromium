@@ -232,7 +232,7 @@ class OmniboxPedal : public OmniboxAction {
   size_t EstimateMemoryUsage() const override;
   int32_t GetID() const override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override;
   void CreateOrUpdateJavaObject();
 #endif
@@ -255,7 +255,7 @@ class OmniboxPedal : public OmniboxAction {
 
   std::vector<SynonymGroup> synonym_groups_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
 #endif
 };

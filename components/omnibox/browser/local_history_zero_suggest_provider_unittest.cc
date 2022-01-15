@@ -83,7 +83,7 @@ class LocalHistoryZeroSuggestProviderTest
     provider_ = base::WrapRefCounted(
         LocalHistoryZeroSuggestProvider::Create(client_.get(), this));
 
-#if defined(OS_IOS)  // Only needed for iOS.
+#if BUILDFLAG(IS_IOS)  // Only needed for iOS.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitAndEnableFeature(
         omnibox::kLocalHistoryZeroSuggest);
@@ -298,7 +298,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, FeatureFlags) {
   // on Desktop and Android NTP.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   StartProviderAndWaitUntilDone();
-#if !defined(OS_IOS)  // Enabled by default on Desktop and Android NTP.
+#if !BUILDFLAG(IS_IOS)  // Enabled by default on Desktop and Android NTP.
   ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 #else
   ExpectMatches({});

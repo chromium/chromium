@@ -64,7 +64,7 @@ class OnDeviceHeadModelTest : public testing::Test {
   void SetUp() override {
     base::FilePath file_path = GetTestModelPath();
     ASSERT_TRUE(base::PathExists(file_path));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     model_filename_ = base::WideToUTF8(file_path.value());
 #else
     model_filename_ = file_path.value();

@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -69,13 +70,13 @@ struct MatchGURLHash {
 
 // static
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
-#if (defined(OS_ANDROID))
+#if BUILDFLAG(IS_ANDROID)
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 15;
-#elif defined(OS_IOS)  // !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
-#else                  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#else
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 8;
 #endif
@@ -113,9 +114,9 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 
 // static
 size_t AutocompleteResult::GetDynamicMaxMatches() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   constexpr const int kDynamicMaxMatchesLimit = 15;
-#else  // !defined(OS_ANDROID)
+#else
   constexpr const int kDynamicMaxMatchesLimit = 10;
 #endif
   if (!base::FeatureList::IsEnabled(omnibox::kDynamicMaxAutocomplete))
@@ -232,7 +233,7 @@ void AutocompleteResult::SortAndCull(
   CompareWithDemoteByType<AutocompleteMatch> comparing_object(
       input.current_page_classification());
 
-#if !(defined(OS_ANDROID) || defined(OS_IOS))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   // Because tail suggestions are a "last resort", we cull the tail suggestions
   // if there any non-default non-tail suggestions.
   MaybeCullTailSuggestions(&matches_, comparing_object);
@@ -287,7 +288,7 @@ void AutocompleteResult::SortAndCull(
   matches_.resize(num_matches);
 
   // Group search suggestions above URL suggestions.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (matches_.size() > 2 &&
       !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
 #else
@@ -516,7 +517,7 @@ void AutocompleteResult::ConvertOpenTabMatches(
         continue;
 
       match.has_tab_match = tab_info->second.has_matching_tab;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       match.UpdateMatchingJavaTab(tab_info->second.android_tab);
 #endif
     }
@@ -706,14 +707,14 @@ void AutocompleteResult::Reset() {
   matches_.clear();
   headers_map_.clear();
   hidden_group_ids_.clear();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
 #endif
 }
 
 void AutocompleteResult::Swap(AutocompleteResult* other) {
   matches_.swap(other->matches_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
   other->java_result_.Reset();
 #endif
@@ -724,7 +725,7 @@ void AutocompleteResult::CopyFrom(const AutocompleteResult& other) {
     return;
 
   matches_ = other.matches_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
 #endif
 }

@@ -17,7 +17,7 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -51,7 +51,7 @@ class AutocompleteResult {
   AutocompleteResult(const AutocompleteResult&) = delete;
   AutocompleteResult& operator=(const AutocompleteResult&) = delete;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a corresponding Java object, creating it if necessary.
   // NOTE: Android specific methods are defined in autocomplete_match_android.cc
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
@@ -266,7 +266,7 @@ class AutocompleteResult {
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // iterator::difference_type is not defined in the STL that we compile with on
   // Android.
   typedef int matches_difference_type;
@@ -342,7 +342,7 @@ class AutocompleteResult {
   // The server supplied list of group IDs that should be hidden-by-default.
   std::set<int> hidden_group_ids_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.
   // This object should be ignored when AutocompleteResult is copied or moved.
   // This object should never be accessed directly. To acquire a reference to

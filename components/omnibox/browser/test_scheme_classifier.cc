@@ -20,12 +20,12 @@ metrics::OmniboxInputType TestSchemeClassifier::GetInputTypeForScheme(
     const std::string& scheme) const {
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // On iOS, treat the file: scheme like a query because it is not supported
   // for navigations.
   if (scheme == url::kFileScheme)
     return metrics::OmniboxInputType::QUERY;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // This doesn't check the preference but check some chrome-ish schemes.
   const char* kKnownURLSchemes[] = {

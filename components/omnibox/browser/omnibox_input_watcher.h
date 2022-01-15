@@ -10,9 +10,9 @@
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "content/public/browser/browser_context.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 // This KeyedService is meant to observe omnibox input and provide
 // notifications.
@@ -26,10 +26,10 @@ class OmniboxInputWatcher : public KeyedService {
     virtual void OnOmniboxInputEntered() {}
   };
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   static OmniboxInputWatcher* GetForBrowserContext(
       content::BrowserContext* browser_context);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   OmniboxInputWatcher();
   ~OmniboxInputWatcher() override;

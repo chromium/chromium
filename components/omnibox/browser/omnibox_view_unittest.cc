@@ -26,7 +26,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
@@ -162,7 +162,7 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
   }
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests GetIcon returns the default search icon when the match is a search
 // query.
 TEST_F(OmniboxViewTest, GetIcon_Default) {
@@ -208,7 +208,7 @@ TEST_F(OmniboxViewTest, GetIcon_Favicon) {
 
   EXPECT_EQ(client()->GetPageUrlForLastFaviconRequest(), kUrl);
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests GetStateChanges correctly determines if text was deleted.
 TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {

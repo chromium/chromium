@@ -26,12 +26,12 @@
 #include "url/url_canon_ip.h"
 #include "url/url_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"  // nogncheck
-#endif                                                   // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -258,7 +258,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   if (!canonicalized_url->is_valid())
     return metrics::OmniboxInputType::QUERY;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   const bool is_lacros_or_lacros_is_primary =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       true;
@@ -277,19 +277,19 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // making them accessible again.
     return metrics::OmniboxInputType::URL;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::LowerCaseEqualsASCII(parsed_scheme_utf8, url::kFileScheme)) {
     // A user might or might not type a scheme when entering a file URL.  In
     // either case, |parsed_scheme_utf8| will tell us that this is a file URL,
     // but |parts->scheme| might be empty, e.g. if the user typed "C:\foo".
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // On iOS, which cannot display file:/// URLs, treat this case like a query.
     return metrics::OmniboxInputType::QUERY;
 #else
     return metrics::OmniboxInputType::URL;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
   }
 
   // Treat javascript: scheme queries followed by things that are unlikely to

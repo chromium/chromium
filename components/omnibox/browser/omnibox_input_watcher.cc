@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "omnibox_input_watcher.h"
+#include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace {
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 class OmniboxInputWatcherFactory : public BrowserContextKeyedServiceFactory {
  public:
   static OmniboxInputWatcher* GetForBrowserContext(
@@ -42,20 +43,20 @@ class OmniboxInputWatcherFactory : public BrowserContextKeyedServiceFactory {
     return context;
   }
 };
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
 OmniboxInputWatcher::OmniboxInputWatcher() = default;
 OmniboxInputWatcher::~OmniboxInputWatcher() = default;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // static
 OmniboxInputWatcher* OmniboxInputWatcher::GetForBrowserContext(
     content::BrowserContext* browser_context) {
   return OmniboxInputWatcherFactory::GetForBrowserContext(browser_context);
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 void OmniboxInputWatcher::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

@@ -290,7 +290,7 @@ TEST_P(ZeroSuggestProviderTest, TypeOfResultToRun) {
                               TestSchemeClassifier());
   ExpectPlatformSpecificDefaultZeroSuggestBehavior(
       ntp_input,
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       /*remote_no_url_allowed=*/false);
 #else
       /*remote_no_url_allowed=*/true);
@@ -308,7 +308,7 @@ TEST_P(ZeroSuggestProviderTest, TypeOfResultToRun) {
       .WillRepeatedly(testing::Return(false));
   ExpectPlatformSpecificDefaultZeroSuggestBehavior(
       other_input,
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       /*remote_no_url_allowed=*/false);
 #else
       /*remote_no_url_allowed=*/true);
@@ -355,9 +355,9 @@ TEST_P(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
   on_clobber_input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
 
   const ZeroSuggestProvider::ResultType kDefaultContextualWebResultType =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       ZeroSuggestProvider::ResultType::REMOTE_SEND_URL;
-#else  // !OS_ANDROID
+#else
       ZeroSuggestProvider::ResultType::NONE;
 #endif
 

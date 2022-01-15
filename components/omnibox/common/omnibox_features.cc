@@ -9,28 +9,28 @@
 namespace omnibox {
 
 constexpr auto enabled_by_default_desktop_only =
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
 constexpr auto enabled_by_default_android_only =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
 constexpr auto enabled_by_default_desktop_android =
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
 constexpr auto enabled_by_default_desktop_ios =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
@@ -38,7 +38,7 @@ constexpr auto enabled_by_default_desktop_ios =
 
 // Comment out this macro since it is currently not being used in this file.
 // const auto enabled_by_default_android_ios =
-// #if defined(OS_ANDROID) || defined(OS_IOS)
+// #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 //     base::FEATURE_ENABLED_BY_DEFAULT;
 // #else
 //     base::FEATURE_DISABLED_BY_DEFAULT;

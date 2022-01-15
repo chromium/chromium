@@ -227,9 +227,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, FriendlyAccessibleLabel);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AccessiblePopup);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsUIATest, AccessibleOmnibox);
-#endif  // OS_WIN
+#endif
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, SetSelectedLine);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            SetSelectedLineWithNoDefaultMatches);

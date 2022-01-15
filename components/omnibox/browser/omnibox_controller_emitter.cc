@@ -6,15 +6,15 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace {
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 class OmniboxControllerEmitterFactory
     : public BrowserContextKeyedServiceFactory {
  public:
@@ -46,20 +46,20 @@ class OmniboxControllerEmitterFactory
     return context;
   }
 };
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
 OmniboxControllerEmitter::OmniboxControllerEmitter() {}
 OmniboxControllerEmitter::~OmniboxControllerEmitter() {}
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // static
 OmniboxControllerEmitter* OmniboxControllerEmitter::GetForBrowserContext(
     content::BrowserContext* browser_context) {
   return OmniboxControllerEmitterFactory::GetForBrowserContext(browser_context);
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 void OmniboxControllerEmitter::AddObserver(
     AutocompleteController::Observer* observer) {

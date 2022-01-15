@@ -23,11 +23,11 @@ std::string GetModelFilenameFromDirectory(const base::FilePath& model_dir) {
   std::string model_filename;
 
   if (!model_file_path.empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     model_filename = base::WideToUTF8(model_file_path.value());
 #else
     model_filename = model_file_path.value();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   return model_filename;

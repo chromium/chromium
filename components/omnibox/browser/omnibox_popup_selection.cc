@@ -168,7 +168,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     all_states.push_back(NORMAL);
     all_states.push_back(KEYWORD_MODE);
     all_states.push_back(FOCUSED_BUTTON_TAB_SWITCH);
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     all_states.push_back(FOCUSED_BUTTON_ACTION);
 #endif
     all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);

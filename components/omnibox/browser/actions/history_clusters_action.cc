@@ -66,7 +66,7 @@ void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
     PrefService* prefs,
     AutocompleteResult& result) {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Compile out this method for Mobile, which doesn't omnibox actions yet.
   // This is to prevent binary size increase for no reason.
   return;

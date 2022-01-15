@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "omnibox_suggestions_watcher.h"
+#include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace {
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 class OmniboxSuggestionsWatcherFactory
     : public BrowserContextKeyedServiceFactory {
  public:
@@ -43,21 +44,21 @@ class OmniboxSuggestionsWatcherFactory
     return context;
   }
 };
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
 OmniboxSuggestionsWatcher::OmniboxSuggestionsWatcher() = default;
 OmniboxSuggestionsWatcher::~OmniboxSuggestionsWatcher() = default;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // static
 OmniboxSuggestionsWatcher* OmniboxSuggestionsWatcher::GetForBrowserContext(
     content::BrowserContext* browser_context) {
   return OmniboxSuggestionsWatcherFactory::GetForBrowserContext(
       browser_context);
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 void OmniboxSuggestionsWatcher::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

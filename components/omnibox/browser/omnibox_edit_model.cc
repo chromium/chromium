@@ -63,7 +63,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -289,7 +289,7 @@ bool OmniboxEditModel::ResetDisplayTexts() {
   LocationBarModel* location_bar_model = controller()->GetLocationBarModel();
   url_for_editing_ = location_bar_model->GetFormattedFullURL();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS is unusual in that it uses a separate LocationView to show the
   // LocationBarModel's display-only URL. The actual OmniboxViewIOS widget is
   // hidden in the defocused state, and always contains the URL for editing.
@@ -1233,7 +1233,7 @@ void OmniboxEditModel::OnKillFocus() {
   last_omnibox_focus_ = base::TimeTicks();
   paste_state_ = NONE;
   control_key_state_ = UP;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   view_->HideImeIfNeeded();
 #endif
 }
@@ -1714,7 +1714,7 @@ bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
 }
 
 // Android and iOS have their own platform-specific icon logic.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
                                           SkColor vector_icon_color) {
   gfx::Image extension_icon = client()->GetIconIfExtensionMatch(match);
@@ -1749,7 +1749,7 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
 
   return client()->GetSizedIcon(vector_icon_type, vector_icon_color);
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool OmniboxEditModel::PopupIsOpen() const {
   return popup_view_ && popup_view_->IsOpen();

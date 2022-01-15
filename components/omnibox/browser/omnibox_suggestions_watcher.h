@@ -10,9 +10,9 @@
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "content/public/browser/browser_context.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace extensions {
 namespace api {
@@ -38,10 +38,10 @@ class OmniboxSuggestionsWatcher : public KeyedService {
     virtual void OnOmniboxDefaultSuggestionChanged() {}
   };
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   static OmniboxSuggestionsWatcher* GetForBrowserContext(
       content::BrowserContext* browser_context);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   OmniboxSuggestionsWatcher();
   ~OmniboxSuggestionsWatcher() override;

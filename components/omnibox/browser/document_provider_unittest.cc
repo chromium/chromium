@@ -745,7 +745,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBadResponse) {
 
 // This test is affected by an iOS 10 simulator bug: https://crbug.com/782033
 // and may get wrong timezone on Win7: https://crbug.com/856119
-#if !defined(OS_IOS) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_WIN)
 TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   base::Time::Exploded local_exploded = {0};
   local_exploded.year = 2018;
@@ -773,7 +773,7 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
                 base::TimeToISO8601(modified_last_year), local_now),
             u"8/27/17");
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_WIN)
 
 TEST_F(DocumentProviderTest, GetURLForDeduping) {
   // Checks that |url_string| is a URL for opening |expected_id|. An empty ID

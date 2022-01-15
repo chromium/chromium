@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -103,7 +104,7 @@ int32_t OmniboxAction::GetID() const {
   return 0;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaGlobalRef<jobject> OmniboxAction::GetJavaObject()
     const {
   return base::android::ScopedJavaGlobalRef<jobject>();

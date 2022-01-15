@@ -9,9 +9,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "content/public/browser/browser_context.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 // This KeyedService is meant to observe multiple AutocompleteController
 // instances and forward the notifications to its own observers.
@@ -20,10 +20,10 @@
 class OmniboxControllerEmitter : public KeyedService,
                                  public AutocompleteController::Observer {
  public:
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   static OmniboxControllerEmitter* GetForBrowserContext(
       content::BrowserContext* browser_context);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   OmniboxControllerEmitter();
   ~OmniboxControllerEmitter() override;

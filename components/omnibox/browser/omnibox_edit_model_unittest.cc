@@ -277,7 +277,7 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
 }
 
 // iOS doesn't use elisions in the Omnibox textfield.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
   location_bar_model()->set_url_for_display(u"example.com");
@@ -302,7 +302,7 @@ TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   EXPECT_FALSE(model()->user_input_in_progress());
   EXPECT_TRUE(view()->IsSelectAll());
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
@@ -363,7 +363,7 @@ TEST_F(OmniboxEditModelTest, CurrentMatch) {
     model()->Revert();
 
     // iOS doesn't do elision in the textfield view.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     EXPECT_EQ(u"http://www.example.com/", view()->GetText());
 #else
     EXPECT_EQ(u"example.com", view()->GetText());
@@ -384,7 +384,7 @@ TEST_F(OmniboxEditModelTest, CurrentMatch) {
     model()->Revert();
 
     // iOS doesn't do elision in the textfield view.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     EXPECT_EQ(u"https://www.google.com/", view()->GetText());
 #else
     EXPECT_EQ(u"google.com", view()->GetText());
@@ -408,7 +408,7 @@ TEST_F(OmniboxEditModelTest, DisplayText) {
 
   EXPECT_TRUE(model()->CurrentTextIsURL());
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS OmniboxEditModel always provides the full URL as the OmniboxView
   // permanent display text. Unelision should return false.
   EXPECT_EQ(u"https://www.example.com/", model()->GetPermanentDisplayText());
