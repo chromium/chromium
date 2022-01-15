@@ -20,14 +20,14 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/chrome_unwinder_android.h"
 #include "base/profiler/native_unwinder_android.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows doesn't provide an alloca function like Linux does.
 // Fortunately, it provides _alloca, which functions identically.
 #include <malloc.h>
@@ -94,7 +94,7 @@ void OtherLibraryCallback(void* arg) {
   [[maybe_unused]] volatile int i = 0;
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 std::unique_ptr<NativeUnwinderAndroid> CreateNativeUnwinderAndroidForTesting(
     uintptr_t exclude_module_with_base_address) {
   class NativeUnwinderAndroidForTesting : public NativeUnwinderAndroid {
@@ -153,7 +153,7 @@ std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
   return std::make_unique<ChromeUnwinderAndroidForTesting>(
       std::move(cfi_file), std::move(cfi_table), chrome_module_base_address);
 }
-#endif  // #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#endif  // #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 
 }  // namespace
 
@@ -393,13 +393,13 @@ NativeLibrary LoadOtherLibrary() {
   // macros in a function returning non-null.
   const auto load = [](NativeLibrary* library) {
     FilePath other_library_path;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/1262430): Find a solution that works across platforms.
     ASSERT_TRUE(PathService::Get(DIR_ASSETS, &other_library_path));
 #else
     // The module is next to the test module rather than with test data.
     ASSERT_TRUE(PathService::Get(DIR_MODULE, &other_library_path));
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
     other_library_path = other_library_path.AppendASCII(
         GetLoadableModuleName("base_profiler_test_support_library"));
     NativeLibraryLoadError load_error;
@@ -423,7 +423,7 @@ uintptr_t GetAddressInOtherLibrary(NativeLibrary library) {
 
 StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
     ModuleCache* module_cache) {
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
   std::vector<std::unique_ptr<Unwinder>> unwinders;
   unwinders.push_back(CreateNativeUnwinderAndroidForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));

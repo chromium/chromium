@@ -180,7 +180,7 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackDelegateInvoked) {
 // Limit to 32-bit Android, which is the platform we care about for this
 // functionality. The test is broken on too many other varied platforms to try
 // to selectively disable.
-#if !(defined(OS_ANDROID) && defined(ARCH_CPU_32_BITS))
+#if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS))
 #define MAYBE_CopyStackFromOtherThread DISABLED_CopyStackFromOtherThread
 #else
 #define MAYBE_CopyStackFromOtherThread CopyStackFromOtherThread

@@ -289,7 +289,7 @@ base::circular_deque<std::unique_ptr<Unwinder>> MakeUnwinderCircularDeque(
 }  // namespace
 
 // TODO(crbug.com/1001923): Fails on Linux MSan.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CopyStack DISABLED_MAYBE_CopyStack
 #else
 #define MAYBE_CopyStack CopyStack

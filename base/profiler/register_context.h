@@ -13,11 +13,11 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <mach/machine/thread_status.h>
-#elif defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/ucontext.h>
 #endif
 
@@ -35,7 +35,7 @@ uintptr_t& AsUintPtr(T* value) {
   return *reinterpret_cast<uintptr_t*>(value);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 using RegisterContext = ::CONTEXT;
 
@@ -69,7 +69,7 @@ inline uintptr_t& RegisterContextInstructionPointer(::CONTEXT* context) {
 #endif
 }
 
-#elif defined(OS_MAC) || defined(OS_IOS)  // #if defined(OS_WIN)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 
 #if defined(ARCH_CPU_X86_64)
 using RegisterContext = x86_thread_state64_t;
@@ -129,8 +129,7 @@ inline uintptr_t& RegisterContextInstructionPointer(RegisterContext* context) {
 
 #endif
 
-#elif defined(OS_ANDROID) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)  // #if defined(OS_WIN)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 using RegisterContext = mcontext_t;
 
@@ -192,7 +191,7 @@ inline uintptr_t& RegisterContextInstructionPointer(mcontext_t* context) {
   return AsUintPtr(&context->gregs[REG_RIP]);
 }
 
-#else  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
+#else  // defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 
 // Placeholders for other POSIX platforms that just return the first
 // three register slots in the context.
@@ -208,9 +207,9 @@ inline uintptr_t& RegisterContextInstructionPointer(mcontext_t* context) {
   return *(reinterpret_cast<uintptr_t*>(context) + 2);
 }
 
-#endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
+#endif  // defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 
-#else  // #if defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 
 // Placeholders for other platforms.
 struct RegisterContext {
@@ -231,7 +230,7 @@ inline uintptr_t& RegisterContextInstructionPointer(RegisterContext* context) {
   return context->instruction_pointer;
 }
 
-#endif  // #if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base
 

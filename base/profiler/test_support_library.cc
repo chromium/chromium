@@ -7,9 +7,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define BASE_PROFILER_TEST_SUPPORT_LIBRARY_EXPORT __declspec(dllexport)
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 #define BASE_PROFILER_TEST_SUPPORT_LIBRARY_EXPORT __attribute__((visibility("default")))
 #endif
 
