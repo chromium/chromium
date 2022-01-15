@@ -4,12 +4,14 @@
 
 #include "base/time/time.h"
 
-#if defined(OS_LINUX)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_LINUX)
 // time.h is a widely included header and its size impacts build time.
 // Try not to raise this limit unless necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #pragma clang max_tokens_here 390000
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 #include <atomic>
 #include <cmath>
@@ -185,7 +187,7 @@ double Time::ToDoubleT() const {
                    : std::numeric_limits<double>::infinity();
 }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // static
 Time Time::FromTimeSpec(const timespec& ts) {
   return FromDoubleT(ts.tv_sec +

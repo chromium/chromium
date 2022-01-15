@@ -61,7 +61,7 @@ BASE_EXPORT Time TimeNowFromSystemTimeIgnoringOverride();
 BASE_EXPORT TimeTicks TimeTicksNowIgnoringOverride();
 BASE_EXPORT ThreadTicks ThreadTicksNowIgnoringOverride();
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Equivalent to TimeTicksNowIgnoringOverride(), but is allowed to fail and
 // return absl::nullopt. This may safely be used in a signal handler.
 BASE_EXPORT absl::optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride();

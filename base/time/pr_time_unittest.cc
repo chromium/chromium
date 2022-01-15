@@ -77,10 +77,10 @@ TEST_F(PRTimeTest, ParseTimeTest1) {
 
   struct tm local_time = {};
   char time_buf[64] = {};
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   localtime_s(&local_time, &current_time);
   asctime_s(time_buf, base::size(time_buf), &local_time);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   localtime_r(&current_time, &local_time);
   asctime_r(&local_time, time_buf);
 #endif

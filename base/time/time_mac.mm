@@ -24,14 +24,14 @@
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <time.h>
 #include "base/ios/ios_util.h"
 #endif
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Returns a pointer to the initialized Mach timebase info struct.
 mach_timebase_info_data_t* MachTimebaseInfo() {
   static mach_timebase_info_data_t timebase_info = []() {
@@ -85,12 +85,12 @@ int64_t MachTimeToMicroseconds(uint64_t mach_time) {
   // 9223372036854775807 / (1e6 * 60 * 60 * 24 * 365.2425) = 292,277).
   return base::checked_cast<int64_t>(microseconds);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Returns monotonically growing number of ticks in microseconds since some
 // unspecified starting point.
 int64_t ComputeCurrentTicks() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS 10 supports clock_gettime(CLOCK_MONOTONIC, ...), which is
   // around 15 times faster than sysctl() call. Use it if possible;
   // otherwise, fall back to sysctl().
@@ -119,11 +119,11 @@ int64_t ComputeCurrentTicks() {
   // with less precision (such as TickCount) just call through to
   // mach_absolute_time.
   return MachTimeToMicroseconds(mach_absolute_time());
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 int64_t ComputeThreadTicks() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   NOTREACHED();
   return 0;
 #else
@@ -150,7 +150,7 @@ int64_t ComputeThreadTicks() {
   absolute_micros += (thread_info_data.user_time.microseconds +
                       thread_info_data.system_time.microseconds);
   return absolute_micros.ValueOrDie();
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
@@ -210,12 +210,12 @@ NSDate* Time::ToNSDate() const {
 
 // TimeDelta ------------------------------------------------------------------
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // static
 TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
   return Microseconds(MachTimeToMicroseconds(mach_time));
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // TimeTicks ------------------------------------------------------------------
 
@@ -235,7 +235,7 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
   return true;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // static
 TimeTicks TimeTicks::FromMachAbsoluteTime(uint64_t mach_absolute_time) {
   return TimeTicks(MachTimeToMicroseconds(mach_absolute_time));
@@ -251,15 +251,15 @@ mach_timebase_info_data_t TimeTicks::SetMachTimebaseInfoForTesting(
   return orig_timebase;
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 TimeTicks::Clock TimeTicks::GetClock() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return Clock::IOS_CF_ABSOLUTE_TIME_MINUS_KERN_BOOTTIME;
 #else
   return Clock::MAC_MACH_ABSOLUTE_TIME;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 // ThreadTicks ----------------------------------------------------------------
