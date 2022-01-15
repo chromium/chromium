@@ -30,8 +30,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/command_line.h"
 #include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
 #endif
@@ -164,8 +164,8 @@ class NewTabPageTest : public InProcessBrowserTest,
   // verification is skipped.
   bool VerifyUi(const std::string& screenshot_prefix,
                 const std::string& screenshot_name) {
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             "browser-ui-tests-verify-pixels")) {
       return true;
@@ -193,7 +193,7 @@ class NewTabPageTest : public InProcessBrowserTest,
 };
 
 // TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
 #else
 #define MAYBE_LandingPagePixelTest LandingPagePixelTest
