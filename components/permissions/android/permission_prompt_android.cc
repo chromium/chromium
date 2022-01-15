@@ -94,6 +94,11 @@ bool PermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
   return delegate_->ShouldCurrentRequestUseQuietUI();
 }
 
+absl::optional<PermissionUiSelector::QuietUiReason>
+PermissionPromptAndroid::ReasonForUsingQuietUi() const {
+  return delegate_->ReasonForUsingQuietUi();
+}
+
 size_t PermissionPromptAndroid::PermissionCount() const {
   return delegate_->Requests().size();
 }

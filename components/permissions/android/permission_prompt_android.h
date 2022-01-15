@@ -53,6 +53,8 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   void Accept();
   void Deny();
   bool ShouldCurrentRequestUseQuietUI();
+  absl::optional<PermissionUiSelector::QuietUiReason> ReasonForUsingQuietUi()
+      const;
 
   // We show one permission at a time except for grouped mic+camera, for which
   // we still have a single icon and message text.

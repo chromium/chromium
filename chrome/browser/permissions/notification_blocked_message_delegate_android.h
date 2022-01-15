@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/permissions/notification_blocked_dialog_controller_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
@@ -25,7 +26,8 @@ class PermissionPromptAndroid;
 // A message ui that displays a notification permission request, which is an
 // alternative ui to the mini infobar.
 class NotificationBlockedMessageDelegate
-    : public permissions::PermissionsClient::PermissionMessageDelegate {
+    : public NotificationBlockedDialogController::Delegate,
+      public permissions::PermissionsClient::PermissionMessageDelegate {
  public:
   // Delegate to mock out the |PermissionPromptAndroid| for testing.
   class Delegate {
@@ -39,6 +41,8 @@ class NotificationBlockedMessageDelegate
     virtual void Closing();
     virtual bool IsPromptDestroyed();
     virtual bool ShouldUseQuietUI();
+    virtual absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+    ReasonForUsingQuietUi();
 
    private:
     base::WeakPtr<permissions::PermissionPromptAndroid> permission_prompt_;
@@ -48,11 +52,15 @@ class NotificationBlockedMessageDelegate
                                      std::unique_ptr<Delegate> delegate);
   ~NotificationBlockedMessageDelegate() override;
 
+ protected:
+  // NotificationBlockedDialogController::Delegate:
+  void OnContinueBlocking() override;
+  void OnAllowForThisSite() override;
+  void OnLearnMoreClicked() override;
+  void OnDialogDismissed() override;
+
  private:
   friend class NotificationBlockedMessageDelegateAndroidTest;
-
-  explicit NotificationBlockedMessageDelegate(
-      content::WebContents* web_contents);
 
   void HandlePrimaryActionClick();
   void HandleDismissCallback(messages::DismissReason reason);
@@ -61,6 +69,7 @@ class NotificationBlockedMessageDelegate
   void DismissInternal();
 
   std::unique_ptr<messages::MessageWrapper> message_;
+  std::unique_ptr<NotificationBlockedDialogController> dialog_controller_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<Delegate> delegate_;
 };

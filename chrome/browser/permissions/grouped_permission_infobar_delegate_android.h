@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -82,6 +83,8 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::WeakPtr<permissions::PermissionPromptAndroid> permission_prompt_;
   raw_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   bool details_expanded_;
+
+  QuietPermissionPromptModelAndroid prompt_model_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_

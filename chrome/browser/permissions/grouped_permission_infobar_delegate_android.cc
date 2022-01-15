@@ -15,7 +15,6 @@
 #include "components/permissions/android/permission_prompt_android.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,11 +24,10 @@
 
 namespace {
 
-using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-
-// The URL for when the user clicks the "Learn more" link.
-constexpr char kNotificationsHelpUrl[] =
-    "https://support.google.com/chrome/answer/3220216";
+using PrimaryButtonBehavior =
+    QuietPermissionPromptModelAndroid::PrimaryButtonBehavior;
+using SecondaryButtonBehavior =
+    QuietPermissionPromptModelAndroid::SecondaryButtonBehavior;
 
 }  // namespace
 
@@ -80,52 +78,13 @@ std::u16string GroupedPermissionInfoBarDelegate::GetCompactLinkText() const {
 // TODO(crbug.com/1082737): Many methods of this class switches on the quiet UI
 // reason. Refactor this into separate subclasses instead.
 std::u16string GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
-  auto* manager = permissions::PermissionRequestManager::FromWebContents(
-      permission_prompt_->web_contents());
-
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
-    return std::u16string();
-  switch (*quiet_ui_reason) {
-    case QuietUiReason::kEnabledInPrefs:
-      return l10n_util::GetStringUTF16(
-          IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE);
-    case QuietUiReason::kTriggeredByCrowdDeny:
-      return l10n_util::GetStringUTF16(
-          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION);
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
-      return l10n_util::GetStringUTF16(
-          IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_ABUSIVE_MESSAGE);
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
-      return l10n_util::GetStringUTF16(
-          IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE);
-  }
-
-  NOTREACHED();
-  return std::u16string();
+  return prompt_model_.description;
 }
 
 bool GroupedPermissionInfoBarDelegate::ShouldSecondaryButtonOpenSettings()
     const {
-  auto* manager = permissions::PermissionRequestManager::FromWebContents(
-      permission_prompt_->web_contents());
-
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
-    return false;
-  switch (*quiet_ui_reason) {
-    case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
-    case QuietUiReason::kTriggeredByCrowdDeny:
-      return true;
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
-      return false;
-  }
-
-  NOTREACHED();
-  return false;
+  return prompt_model_.secondary_button_behavior ==
+         SecondaryButtonBehavior::kShowSettings;
 }
 
 int GroupedPermissionInfoBarDelegate::GetIconId() const {
@@ -133,29 +92,12 @@ int GroupedPermissionInfoBarDelegate::GetIconId() const {
 }
 
 std::u16string GroupedPermissionInfoBarDelegate::GetLinkText() const {
-  auto* manager = permissions::PermissionRequestManager::FromWebContents(
-      permission_prompt_->web_contents());
-
   // This will be used as the text of the link in the expanded state.
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
-    return std::u16string();
-  switch (*quiet_ui_reason) {
-    case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
-    case QuietUiReason::kTriggeredByCrowdDeny:
-      return std::u16string();
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
-      return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
-  }
-
-  NOTREACHED();
-  return std::u16string();
+  return prompt_model_.learn_more_text;
 }
 
 GURL GroupedPermissionInfoBarDelegate::GetLinkURL() const {
-  return GURL(kNotificationsHelpUrl);
+  return GetNotificationBlockedLearnMoreUrl();
 }
 
 bool GroupedPermissionInfoBarDelegate::LinkClicked(
@@ -178,27 +120,18 @@ void GroupedPermissionInfoBarDelegate::InfoBarDismissed() {
 }
 
 std::u16string GroupedPermissionInfoBarDelegate::GetMessageText() const {
-  return l10n_util::GetStringUTF16(
-      IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE);
+  return prompt_model_.title;
 }
 
 bool GroupedPermissionInfoBarDelegate::Accept() {
   if (!permission_prompt_)
     return true;
 
-  auto* manager = permissions::PermissionRequestManager::FromWebContents(
-      permission_prompt_->web_contents());
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
-    return true;
-  switch (*quiet_ui_reason) {
-    case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
-    case QuietUiReason::kTriggeredByCrowdDeny:
+  switch (prompt_model_.primary_button_behavior) {
+    case PrimaryButtonBehavior::kAllowForThisSite:
       permission_prompt_->Accept();
       break;
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
+    case PrimaryButtonBehavior::kContinueBlocking:
       permission_prompt_->Deny();
       break;
   }
@@ -208,20 +141,11 @@ bool GroupedPermissionInfoBarDelegate::Accept() {
 bool GroupedPermissionInfoBarDelegate::Cancel() {
   if (!permission_prompt_)
     return true;
-
-  auto* manager = permissions::PermissionRequestManager::FromWebContents(
-      permission_prompt_->web_contents());
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
-    return true;
-  switch (*quiet_ui_reason) {
-    case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
-    case QuietUiReason::kTriggeredByCrowdDeny:
+  switch (prompt_model_.secondary_button_behavior) {
+    case SecondaryButtonBehavior::kShowSettings:
       // The infobar needs to be kept open after the "Manage" button is clicked.
       return false;
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
+    case SecondaryButtonBehavior::kAllowForThisSite:
       permission_prompt_->Accept();
       return true;
   }
@@ -243,6 +167,13 @@ GroupedPermissionInfoBarDelegate::GroupedPermissionInfoBarDelegate(
   // be hardcoded for that type.
   DCHECK_EQ(permission_prompt_->GetContentSettingType(0u),
             ContentSettingsType::NOTIFICATIONS);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      permission_prompt_->web_contents());
+
+  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
+  DCHECK(quiet_ui_reason);
+  prompt_model_ = GetQuietNotificationPermissionPromptModel(*quiet_ui_reason);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -256,30 +187,8 @@ int GroupedPermissionInfoBarDelegate::GetButtons() const {
 
 std::u16string GroupedPermissionInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  auto* manager = permissions::PermissionRequestManager::FromWebContents(
-      permission_prompt_->web_contents());
-
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
-    return std::u16string();
-  switch (*quiet_ui_reason) {
-    case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
-    case QuietUiReason::kTriggeredByCrowdDeny:
-      return l10n_util::GetStringUTF16(
-          (button == BUTTON_OK)
-              ? IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON
-              : IDS_NOTIFICATION_BUTTON_MANAGE);
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
-      return l10n_util::GetStringUTF16(
-          (button == BUTTON_OK)
-              ? IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CONTINUE_BLOCKING_BUTTON
-              : IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_COMPACT_ALLOW_BUTTON);
-  }
-
-  NOTREACHED();
-  return std::u16string();
+  return (button == BUTTON_OK) ? prompt_model_.primary_button_label
+                               : prompt_model_.secondary_button_label;
 }
 
 bool GroupedPermissionInfoBarDelegate::EqualsDelegate(

@@ -8,6 +8,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
+#include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/permissions/android/permission_prompt_android.h"
@@ -41,8 +42,6 @@ NotificationBlockedMessageDelegate::NotificationBlockedMessageDelegate(
       IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF));
   message_->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  message_->SetSecondaryButtonMenuText(
-      l10n_util::GetStringUTF16(IDS_NOTIFICATION_BUTTON_MANAGE));
 
   message_->SetSecondaryActionCallback(
       base::BindOnce(&NotificationBlockedMessageDelegate::HandleManageClick,
@@ -56,6 +55,33 @@ NotificationBlockedMessageDelegate::~NotificationBlockedMessageDelegate() {
   DismissInternal();
 }
 
+void NotificationBlockedMessageDelegate::OnContinueBlocking() {
+  dialog_controller_.reset();
+  delegate_->Deny();
+}
+
+void NotificationBlockedMessageDelegate::OnAllowForThisSite() {
+  dialog_controller_.reset();
+  delegate_->Accept();
+}
+
+void NotificationBlockedMessageDelegate::OnLearnMoreClicked() {
+  web_contents_->OpenURL(content::OpenURLParams(
+      GetNotificationBlockedLearnMoreUrl(), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      false));
+}
+
+void NotificationBlockedMessageDelegate::OnDialogDismissed() {
+  if (!dialog_controller_) {
+    // Dismissed by clicking on dialog buttons.
+    return;
+  }
+  dialog_controller_.reset();
+  // call Closing destroys the current object.
+  delegate_->Closing();
+}
+
 void NotificationBlockedMessageDelegate::HandlePrimaryActionClick() {
   if (!delegate_ || delegate_->IsPromptDestroyed())
     return;
@@ -65,7 +91,13 @@ void NotificationBlockedMessageDelegate::HandlePrimaryActionClick() {
 }
 
 void NotificationBlockedMessageDelegate::HandleManageClick() {
-  // TODO(crbug.com/1230927): Implement the flow of showing dialogs
+  DCHECK(!dialog_controller_);
+  dialog_controller_ = std::make_unique<NotificationBlockedDialogController>(
+      this, web_contents_);
+  message_->SetSecondaryActionCallback(
+      base::BindOnce(&NotificationBlockedMessageDelegate::HandleManageClick,
+                     base::Unretained(this)));
+  dialog_controller_->ShowDialog(*delegate_->ReasonForUsingQuietUi());
 }
 
 void NotificationBlockedMessageDelegate::HandleDismissCallback(
@@ -74,6 +106,8 @@ void NotificationBlockedMessageDelegate::HandleDismissCallback(
   // be reset when the dialog is dismissed.
   if (reason != messages::DismissReason::SECONDARY_ACTION && delegate_ &&
       !delegate_->IsPromptDestroyed()) {
+    dialog_controller_.reset();
+    // call Closing destroys the current object.
     delegate_->Closing();
   }
   delegate_.reset();
@@ -87,7 +121,11 @@ void NotificationBlockedMessageDelegate::DismissInternal() {
   }
 }
 
-void NotificationBlockedMessageDelegate::Delegate::Accept() {}
+void NotificationBlockedMessageDelegate::Delegate::Accept() {
+  if (!permission_prompt_)
+    return;
+  permission_prompt_->Accept();
+}
 
 void NotificationBlockedMessageDelegate::Delegate::Deny() {
   if (!permission_prompt_)
@@ -108,6 +146,11 @@ bool NotificationBlockedMessageDelegate::Delegate::IsPromptDestroyed() {
 
 bool NotificationBlockedMessageDelegate::Delegate::ShouldUseQuietUI() {
   return permission_prompt_->ShouldCurrentRequestUseQuietUI();
+}
+
+absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+NotificationBlockedMessageDelegate::Delegate::ReasonForUsingQuietUi() {
+  return permission_prompt_->ReasonForUsingQuietUi();
 }
 
 NotificationBlockedMessageDelegate::Delegate::~Delegate() {

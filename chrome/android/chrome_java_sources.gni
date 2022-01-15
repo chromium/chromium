@@ -975,6 +975,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/payments/ui/SectionInformation.java",
   "java/src/org/chromium/chrome/browser/payments/ui/SectionUiUtils.java",
   "java/src/org/chromium/chrome/browser/payments/ui/ShoppingCart.java",
+  "java/src/org/chromium/chrome/browser/permissions/NotificationBlockedDialog.java",
   "java/src/org/chromium/chrome/browser/permissions/PermissionSettingsBridge.java",
   "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
   "java/src/org/chromium/chrome/browser/photo_picker/DecoderServiceImpl.java",
