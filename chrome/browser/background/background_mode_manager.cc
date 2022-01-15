@@ -79,7 +79,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/app_icon.h"
 #endif
 
@@ -371,7 +371,7 @@ BackgroundModeManager::~BackgroundModeManager() {
 
 // static
 void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(prefs::kUserRemovedLoginItem, false);
   registry->RegisterBooleanPref(prefs::kChromeCreatedLoginItem, false);
   registry->RegisterBooleanPref(prefs::kMigratedLoginItemPref, false);
@@ -875,7 +875,7 @@ void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
 // Gets the image for the status tray icon, at the correct size for the current
 // platform and display settings.
 gfx::ImageSkia GetStatusTrayIcon() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, use GetSmallAppIconSize to get the correct image size. The
   // user's "text size" setting in Windows determines how large the system tray
   // icon should be.
@@ -892,10 +892,10 @@ gfx::ImageSkia GetStatusTrayIcon() {
     return gfx::ImageSkia();
 
   return family->CreateExact(size).AsImageSkia();
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_PRODUCT_LOGO_128);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_STATUS_TRAY_ICON);
 #else
@@ -910,7 +910,7 @@ void BackgroundModeManager::CreateStatusTrayIcon() {
 
   // Since there are multiple profiles which share the status tray, we now
   // use the browser process to keep track of it.
-#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!status_tray_)
     status_tray_ = g_browser_process->status_tray();
