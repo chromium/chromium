@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/parsing_buildflags.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -124,6 +125,21 @@ void BindInProcessService(
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_PARSER)
+
+void ParsingComplete(DataDecoder::ValueParseCallback callback,
+                     base::JSONReader::ValueWithError value_with_error) {
+  if (!value_with_error.value) {
+    std::move(callback).Run(
+        DataDecoder::ValueOrError::Error(value_with_error.error_message));
+  } else {
+    std::move(callback).Run(
+        DataDecoder::ValueOrError::Value(std::move(*value_with_error.value)));
+  }
+}
+
+#endif
+
 }  // namespace
 
 DataDecoder::DataDecoder() : idle_timeout_(kServiceProcessIdleTimeoutDefault) {}
@@ -158,9 +174,21 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 
 void DataDecoder::ParseJson(const std::string& json,
                             ValueParseCallback callback) {
-#if BUILDFLAG(IS_ANDROID)
-  // For Android, we use the in-process sanitizer and then parse with a simple
-  // JSONReader.
+#if BUILDFLAG(BUILD_RUST_JSON_PARSER)
+  // Parses JSON directly in the calling process using the memory-safe
+  // Rust parser.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](const std::string& json) {
+            return base::JSONReader::ReadAndReturnValueWithError(
+                json, base::JSON_PARSE_RFC);
+          },
+          json),
+      base::BindOnce(&ParsingComplete, std::move(callback)));
+#elif BUILDFLAG(IS_ANDROID)
+  // For Android, if the full Rust parser is not available, we use the
+  // in-process sanitizer and then parse in-process.
   JsonSanitizer::Sanitize(
       json, base::BindOnce(
                 [](ValueParseCallback callback, JsonSanitizer::Result result) {
@@ -172,17 +200,12 @@ void DataDecoder::ParseJson(const std::string& json,
                   base::JSONReader::ValueWithError value_with_error =
                       base::JSONReader::ReadAndReturnValueWithError(
                           *result.value, base::JSON_PARSE_RFC);
-                  if (!value_with_error.value) {
-                    std::move(callback).Run(
-                        ValueOrError::Error(value_with_error.error_message));
-                    return;
-                  }
-
-                  std::move(callback).Run(
-                      ValueOrError::Value(std::move(*value_with_error.value)));
+                  ParsingComplete(std::move(callback),
+                                  std::move(value_with_error));
                 },
                 std::move(callback)));
 #else
+  // Parse JSON out-of-process.
   auto request =
       base::MakeRefCounted<ValueParseRequest<mojom::JsonParser, base::Value>>(
           std::move(callback));

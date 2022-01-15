@@ -9,7 +9,7 @@ use std::fmt;
 
 /// Struct to check we're not recursing too deeply.
 #[derive(Clone)]
-struct RecursionDepthCheck(u8);
+struct RecursionDepthCheck(usize);
 
 impl RecursionDepthCheck {
     /// Recurse a level and return an error if we've recursed too far.
@@ -64,7 +64,7 @@ impl<'elem, 'container> ValueVisitor<'elem, 'container> {
     /// `base::Value`, then this visitor can be passed to serde deserialization
     /// libraries to populate it with a tree of contents.
     /// Any existing `base::Value` in the slot will be replaced.
-    pub fn new(slot: &'elem mut ValueSlotRef<'container>, mut max_depth: u8) -> Self {
+    pub fn new(slot: &'elem mut ValueSlotRef<'container>, mut max_depth: usize) -> Self {
         max_depth += 1; // we will increment this counter when deserializing
         // the initial `base::Value`. To match C++ behavior, we should
         // only start counting for subsequent layers, hence decrement

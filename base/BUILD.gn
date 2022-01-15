@@ -98,6 +98,14 @@ if (is_fuchsia) {
   import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 }
 
+# TODO(crbug.com/1280708): Switch to enable_rust after we have NaCl support.
+build_rust_json_parser = toolchain_has_rust
+
+buildflag_header("parsing_buildflags") {
+  header = "parsing_buildflags.h"
+  flags = [ "BUILD_RUST_JSON_PARSER=$build_rust_json_parser" ]
+}
+
 config("memory_tagging") {
   if (current_cpu == "arm64" && is_clang &&
       (is_linux || is_chromeos || is_android || is_fuchsia)) {
@@ -1403,22 +1411,31 @@ mixed_component("base") {
   # module, to avoid increasing Chrome's executable size.
   assert_no_deps = [ ":native_unwinder_android" ]
 
-  # TODO(crbug.com/1280708): Switch to enable_rust after we have NaCl support.
-  if (toolchain_has_rust) {
+  if (build_rust_json_parser) {
     rs_crate_root = "lib.rs"
     rs_deps = [
       "//third_party/rust/serde/v1:lib",
+      "//third_party/rust/serde_jsonrc/v0_1:lib",
     ]
     rs_sources = [
+      "json/json_parser.rs",
+      "json/mod.rs",
       "lib.rs",
       "rs_glue/mod.rs",
       "values.rs",
       "values_deserialization.rs",
     ]
-    rs_cxx_bindings = [ "rs_glue/mod.rs" ]
+    rs_cxx_bindings = [
+      "rs_glue/mod.rs",
+      "json/json_parser.rs",
+    ]
     sources += [
       "rs_glue/values_glue.cc",
       "rs_glue/values_glue.h",
+    ]
+    sources -= [
+      "json/json_parser.cc",
+      "json/json_parser.h",
     ]
   }
 
@@ -1432,6 +1449,7 @@ mixed_component("base") {
     ":feature_list_buildflags",
     ":logging_buildflags",
     ":orderfile_buildflags",
+    ":parsing_buildflags",
     ":profiler_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
@@ -3334,6 +3352,10 @@ test("base_unittests") {
     "version_unittest.cc",
     "vlog_unittest.cc",
   ]
+
+  if (build_rust_json_parser) {
+    sources -= [ "json/json_parser_unittest.cc" ]
+  }
 
   defines = []
 

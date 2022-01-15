@@ -605,7 +605,12 @@ TEST(JSONReaderTest, UTF8Input) {
       "\"\xF4\x8F\xBF\xBF\"",  // U+10FFFF
   };
   for (auto* noncharacter : noncharacters) {
-    EXPECT_TRUE(JSONReader::Read(noncharacter));
+    root = JSONReader::Read(noncharacter);
+    ASSERT_TRUE(root);
+    ASSERT_TRUE(root->is_string());
+    std::string value;
+    EXPECT_TRUE(root->GetAsString(&value));
+    EXPECT_EQ(std::string(noncharacter + 1, strlen(noncharacter) - 2), value);
   }
 }
 
