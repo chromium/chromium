@@ -772,7 +772,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   const gfx::Size decoder_natural_size =
       aspect_ratio_.GetNaturalSize(decoder_visible_rect);
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator =
       base::BindRepeating(&AllocateCustomFrameProxy, weak_this_);
   std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
@@ -809,7 +809,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       {.fourcc = *format_fourcc,
        .size = decoder_pic_size,
        .modifier = dummy_frame->layout().modifier()}};
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   auto status_or_layout = client_->PickDecoderOutputFormat(
       candidates, decoder_visible_rect, decoder_natural_size,

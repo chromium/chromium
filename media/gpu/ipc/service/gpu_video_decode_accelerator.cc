@@ -421,7 +421,7 @@ bool GpuVideoDecodeAccelerator::Initialize(
         client) {
   DCHECK(!video_decode_accelerator_);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Ensure we will be able to get a GL context at all before initializing
   // non-Windows VDAs.
   if (!gl_client_.make_context_current.Run())

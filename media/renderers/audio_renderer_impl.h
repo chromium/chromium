@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_renderer.h"
@@ -385,7 +386,7 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // End variables which must be accessed under |lock_|. ----------------------
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<SpeechRecognitionClient> speech_recognition_client_;
   TranscribeAudioCallback transcribe_audio_callback_;
 #endif

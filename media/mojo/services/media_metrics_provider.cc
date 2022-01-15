@@ -20,11 +20,11 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && defined(OS_ANDROID))
+#if BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && BUILDFLAG(IS_ANDROID))
 #include "media/mojo/services/playback_events_recorder.h"
 #endif
 
@@ -126,7 +126,7 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   }
 
   // Using default RendererImpl. Put more detailed info into the UMA name.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (player_info.video_pipeline_info.decoder_type ==
       VideoDecoderType::kDecrypting) {
     return uma_name + "DVD";
@@ -330,7 +330,7 @@ void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(
 
 void MediaMetricsProvider::AcquirePlaybackEventsRecorder(
     mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver) {
-#if defined(OS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && defined(OS_ANDROID))
+#if BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && BUILDFLAG(IS_ANDROID))
   PlaybackEventsRecorder::Create(std::move(receiver));
 #endif
 }

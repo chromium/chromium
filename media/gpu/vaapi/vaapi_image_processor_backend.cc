@@ -27,7 +27,7 @@
 
 namespace media {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 bool IsSupported(const ImageProcessorBackend::PortConfig& config) {
   if (!config.fourcc.ToVAFourCC())
@@ -69,7 +69,7 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   DCHECK_EQ(output_mode, OutputMode::IMPORT)
       << "Only OutputMode::IMPORT supported";
   // VaapiImageProcessorBackend supports ChromeOS only.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
   if (!IsSupported(input_config) || !IsSupported(output_config))

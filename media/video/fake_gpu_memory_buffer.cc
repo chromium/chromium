@@ -9,7 +9,7 @@
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -47,7 +47,7 @@ class FakeGpuMemoryBufferImpl : public gpu::GpuMemoryBufferImpl {
 
 }  // namespace
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 base::ScopedFD GetDummyFD() {
   base::ScopedFD fd(open("/dev/zero", O_RDWR));
   DCHECK(fd.is_valid());
@@ -77,7 +77,7 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
   static base::AtomicSequenceNumber buffer_id_generator;
   handle_.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (size_t i = 0; i < VideoFrame::NumPlanes(video_pixel_format_); i++) {
     const gfx::Size plane_size_in_bytes =
         VideoFrame::PlaneSize(video_pixel_format_, i, size_);
@@ -86,7 +86,7 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
         GetDummyFD());
   }
   handle_.native_pixmap_handle.modifier = modifier;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 FakeGpuMemoryBuffer::~FakeGpuMemoryBuffer() = default;
@@ -134,7 +134,7 @@ gfx::GpuMemoryBufferHandle FakeGpuMemoryBuffer::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   handle.id = handle_.id;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   handle.native_pixmap_handle =
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle);
 #endif

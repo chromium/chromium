@@ -40,7 +40,7 @@ bool MojoAudioDecoder::IsPlatformDecoder() const {
 
 bool MojoAudioDecoder::SupportsDecryption() const {
   // Currently only the android backends support decryption
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;

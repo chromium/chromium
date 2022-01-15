@@ -7,16 +7,17 @@
 #include <memory>
 
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/services/gpu_mojo_media_client.h"
 #include "media/mojo/services/media_service.h"
 #include "media/mojo/services/test_mojo_media_client.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/mojo/services/android_mojo_media_client.h"  // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "media/mojo/services/media_foundation_mojo_media_client.h"
 #endif
 
@@ -24,7 +25,7 @@ namespace media {
 
 std::unique_ptr<MediaService> CreateMediaService(
     mojo::PendingReceiver<mojom::MediaService> receiver) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<MediaService>(
       std::make_unique<AndroidMojoMediaClient>(), std::move(receiver));
 #else

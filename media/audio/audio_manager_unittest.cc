@@ -40,12 +40,12 @@
 #include "media/audio/alsa/audio_manager_alsa.h"
 #endif  // defined(USE_ALSA)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/audio/mac/audio_manager_mac.h"
 #include "media/base/mac/audio_latency_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "media/audio/win/audio_manager_win.h"
 #endif
@@ -60,7 +60,8 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/cras/audio_manager_chromeos.h"
-#elif defined(USE_CRAS) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#elif defined(USE_CRAS) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "media/audio/cras/audio_manager_cras.h"
 #endif
 
@@ -448,7 +449,7 @@ class AudioManagerTest : public ::testing::Test {
 #endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool InputDevicesAvailable() {
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
     // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
     // let any of them be opened or listed.
     return false;
@@ -748,7 +749,7 @@ TEST_F(AudioManagerTest, EnumerateOutputDevices) {
 // Run additional tests for Windows since enumeration can be done using
 // two different APIs. MMDevice is default for Vista and higher and Wave
 // is default for XP and lower.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Override default enumeration API and force usage of Windows MMDevice.
 // This test will only run on Windows Vista and higher.
@@ -767,7 +768,7 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesWinMMDevice) {
   device_info_accessor_->GetAudioOutputDeviceDescriptions(&device_descriptions);
   CheckDeviceDescriptions(device_descriptions);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(USE_PULSEAUDIO)
 // On Linux, there are two implementations available and both can
@@ -830,17 +831,17 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesAlsa) {
 #endif  // defined(USE_ALSA)
 
 TEST_F(AudioManagerTest, GetDefaultOutputStreamParameters) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
 
   AudioParameters params;
   GetDefaultOutputStreamParameters(&params);
   EXPECT_TRUE(params.IsValid());
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 TEST_F(AudioManagerTest, GetAssociatedOutputDeviceID) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable() && OutputDevicesAvailable());
 
   AudioDeviceDescriptions device_descriptions;
@@ -859,7 +860,7 @@ TEST_F(AudioManagerTest, GetAssociatedOutputDeviceID) {
   }
 
   EXPECT_TRUE(found_an_associated_device);
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 #endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -989,7 +990,7 @@ TEST_F(AudioManagerTest, CheckMakeOutputStreamWithPreferredParameters) {
   stream->Close();
 }
 
-#if defined(OS_MAC) || defined(USE_CRAS)
+#if BUILDFLAG(IS_MAC) || defined(USE_CRAS)
 class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
  public:
   TestAudioSourceCallback(int expected_frames_per_buffer,
@@ -1023,7 +1024,7 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
 TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   CreateAudioManagerForTesting<AudioManagerMac>();
 #elif defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   CreateAudioManagerForTesting<AudioManagerChromeOS>();
@@ -1036,7 +1037,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ASSERT_LT(default_params.frames_per_buffer(),
             media::limits::kMaxAudioBufferSize);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On OSX the preferred output buffer size is higher than the minimum
   // but users may request the minimum size explicitly.
   ASSERT_GT(default_params.frames_per_buffer(),

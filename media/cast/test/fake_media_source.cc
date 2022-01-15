@@ -28,9 +28,9 @@
 // TODO(miu): Figure out why _mkdir() and _rmdir() are missing when compiling
 // third_party/ffmpeg/libavformat/os_support.h (lines 182, 183).
 // http://crbug.com/572986
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <direct.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"

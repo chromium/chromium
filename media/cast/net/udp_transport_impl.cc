@@ -28,7 +28,7 @@ namespace cast {
 namespace {
 
 const char kOptionDscp[] = "DSCP";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kOptionDisableNonBlockingIO[] = "disable_non_blocking_io";
 #endif
 const char kOptionSendBufferMinSize[] = "send_buffer_min_size";
@@ -142,7 +142,7 @@ void UdpTransportImpl::SetDscp(net::DiffServCodePoint dscp) {
   next_dscp_value_ = dscp;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void UdpTransportImpl::UseNonBlockingIO() {
   DCHECK(io_thread_proxy_->RunsTasksInCurrentSequence());
   if (!udp_socket_)
@@ -336,7 +336,7 @@ void UdpTransportImpl::SetUdpOptions(const base::DictionaryValue& options) {
     // priority over other traffic.
     SetDscp(net::DSCP_AF41);
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!options.HasKey(kOptionDisableNonBlockingIO)) {
     UseNonBlockingIO();
   }

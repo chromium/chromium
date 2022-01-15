@@ -23,7 +23,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_output_dispatcher.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 

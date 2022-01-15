@@ -23,7 +23,7 @@
 #include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"  // nogncheck
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 
 // TODO(dalecurtis): This include is not allowed by media/base since
@@ -184,7 +184,7 @@ bool IsVp9ProfileSupported(VideoCodecProfile profile) {
     case VP9PROFILE_PROFILE0:
     case VP9PROFILE_PROFILE1:
       return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case VP9PROFILE_PROFILE2:
       return vpx_supports_hbd ||
              MediaCodecUtil::IsVp9Profile2DecoderAvailable();
@@ -247,7 +247,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
     case AudioCodec::kAAC:
       if (type.profile != AudioCodecProfile::kXHE_AAC)
         return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return base::android::BuildInfo::GetInstance()->sdk_int() >=
              base::android::SDK_VERSION_P;
 #else
@@ -326,7 +326,7 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
       return IsColorSpaceSupported(type.color_space);
 #else
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       if (base::android::BuildInfo::GetInstance()->sdk_int() >=
               base::android::SDK_VERSION_Q &&
           IsColorSpaceSupported(type.color_space)) {

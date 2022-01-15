@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -181,7 +181,7 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9Profiles) {
 // See third_party/libvpx/BUILD.gn.
 #if defined(ARCH_CPU_X86_FAMILY) ||                                 \
     (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)) || \
-    (defined(ARCH_CPU_ARM64) && (defined(OS_MAC) || defined(OS_WIN)))
+    (defined(ARCH_CPU_ARM64) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)))
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE2, kUnspecifiedLevel, kColorSpace}));
 #endif
@@ -243,7 +243,7 @@ TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
 
 TEST(SupportedTypesTest, XHE_AACSupportedOnAndroidOnly) {
   // TODO(dalecurtis): Update this test if we ever have support elsewhere.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const bool is_supported =
       kPropCodecsEnabled &&
       base::android::BuildInfo::GetInstance()->sdk_int() >=

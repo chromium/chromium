@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/clients/mojo_cdm.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -12,11 +14,11 @@
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/mock_filters.h"
 #include "media/cdm/default_cdm_factory.h"
-#include "media/mojo/clients/mojo_cdm.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/services/mojo_cdm_service.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
@@ -80,7 +82,7 @@ class MojoCdmTest : public ::testing::Test {
     EXPECT_CALL(*remote_cdm_, GetCdmContext())
         .WillRepeatedly(Return(&cdm_context_));
     EXPECT_CALL(cdm_context_, GetDecryptor()).WillRepeatedly(ReturnNull());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_CALL(cdm_context_, RequiresMediaFoundationRenderer())
         .WillRepeatedly(ReturnPointee(&requires_media_foundation_renderer_));
 #endif
@@ -377,7 +379,7 @@ class MojoCdmTest : public ::testing::Test {
   std::unique_ptr<mojo::Receiver<mojom::ContentDecryptionModule>> cdm_receiver_;
   scoped_refptr<ContentDecryptionModule> mojo_cdm_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool requires_media_foundation_renderer_ = false;
 #endif
 };
@@ -621,7 +623,7 @@ TEST_F(MojoCdmTest, NoDecryptor) {
   EXPECT_FALSE(decryptor);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(MojoCdmTest, RequiresMediaFoundationRenderer) {
   requires_media_foundation_renderer_ = true;
   Initialize(SUCCESS);

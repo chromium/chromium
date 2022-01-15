@@ -13,9 +13,9 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/ipc/service/vda_video_decoder.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
@@ -55,7 +55,7 @@ GetPlatformSupportedVideoDecoderConfigs(
   VideoDecoderType decoder_implementation =
       GetPlatformDecoderImplementationType(gpu_workarounds, gpu_preferences,
                                            gpu_info);
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   base::UmaHistogramEnumeration("Media.VaapiLinux.Supported",
                                 decoder_implementation);
 #endif
@@ -73,7 +73,7 @@ VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (gpu_preferences.enable_chromeos_direct_video_decoder)
     return VideoDecoderType::kVaapi;
   return VideoDecoderType::kVda;
@@ -115,17 +115,17 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
   return nullptr;
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class CdmFactory {};
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS)
   return nullptr;
-#endif  // else defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace media

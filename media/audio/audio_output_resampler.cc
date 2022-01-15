@@ -114,7 +114,7 @@ static void RecordStats(const AudioParameters& output_params) {
 
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Converts low latency based |output_params| into high latency appropriate
 // output parameters in error situations.
 AudioParameters GetFallbackOutputParams(
@@ -297,7 +297,7 @@ bool AudioOutputResampler::OpenStream() {
 
   // Only Windows has a high latency output driver that is not the same as the
   // low latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DLOG(ERROR) << "Unable to open audio device in low latency mode.  Falling "
               << "back to high latency audio output.";
 

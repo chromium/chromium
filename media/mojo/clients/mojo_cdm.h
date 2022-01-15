@@ -82,9 +82,9 @@ class MojoCdm final : public ContentDecryptionModule,
   std::unique_ptr<CallbackRegistration> RegisterEventCB(EventCB event_cb) final;
   Decryptor* GetDecryptor() final;
   absl::optional<base::UnguessableToken> GetCdmId() const final;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool RequiresMediaFoundationRenderer() final;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   ~MojoCdm() final;
@@ -143,9 +143,9 @@ class MojoCdm final : public ContentDecryptionModule,
   scoped_refptr<base::SingleThreadTaskRunner> decryptor_task_runner_
       GUARDED_BY(lock_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool requires_media_foundation_renderer_ GUARDED_BY(lock_) = false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;

@@ -159,7 +159,7 @@ bool FrameResources::Initialize() {
   auto* context = pool_->GetContext();
 
   constexpr gfx::BufferUsage kBufferUsage =
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       gfx::BufferUsage::SCANOUT_VEA_CPU_READ
 #else
       gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
@@ -179,7 +179,7 @@ bool FrameResources::Initialize() {
   constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
                                                     gfx::BufferPlane::UV};
   constexpr uint32_t kSharedImageUsage =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
 #endif
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
@@ -191,7 +191,7 @@ bool FrameResources::Initialize() {
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
         mailbox_holders_[plane].mailbox, mailbox_holders_[plane].sync_token);
     // TODO(https://crbug.com/1191956): This should be parameterized.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     mailbox_holders_[plane].texture_target = GL_TEXTURE_RECTANGLE_ARB;
 #else
     mailbox_holders_[plane].texture_target = GL_TEXTURE_2D;

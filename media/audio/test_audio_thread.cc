@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 
 namespace media {
 
@@ -14,7 +15,7 @@ TestAudioThread::TestAudioThread() : TestAudioThread(false) {}
 TestAudioThread::TestAudioThread(bool use_real_thread) {
   if (use_real_thread) {
     thread_ = std::make_unique<base::Thread>("AudioThread");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     thread_->init_com_with_mta(true);
 #endif
     CHECK(thread_->Start());

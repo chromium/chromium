@@ -215,7 +215,7 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
   // On OS X, allow the hardware encoder. Don't require it, it does not support
   // all configurations (some of which are used for testing).
   base::ScopedCFTypeRef<CFDictionaryRef> encoder_spec;
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   encoder_spec = video_toolbox::DictionaryWithKeyValue(
       kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder,
       kCFBooleanTrue);

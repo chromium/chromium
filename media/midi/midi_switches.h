@@ -14,7 +14,7 @@
 namespace midi {
 namespace features {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 MIDI_EXPORT extern const base::Feature kMidiManagerWinrt;
 #endif
 

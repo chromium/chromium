@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "media/cdm/cdm_type.h"
 #include "media/media_buildflags.h"
 
@@ -44,13 +45,13 @@ base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path) {
       base::FilePath::FromUTF8Unsafe(cdm_base_path));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 base::FilePath GetCdmStorePath(const base::FilePath& cdm_store_path_root,
                                const base::UnguessableToken& cdm_origin_id,
                                const std::string& key_system) {
   return cdm_store_path_root.AppendASCII(cdm_origin_id.ToString())
       .AppendASCII(key_system);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace media

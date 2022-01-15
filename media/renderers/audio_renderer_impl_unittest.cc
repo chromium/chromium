@@ -1752,7 +1752,7 @@ TEST_F(AudioRendererImplTest, DecodeAudioReadyPreemptsFlush) {
   renderer_->decoded_audio_ready_for_testing();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(AudioRendererImplTest,
        TranscribeAudioCallback_SpeechRecognitionDisabled) {
   EXPECT_CALL(*this, SetOnReadyCallback(_));

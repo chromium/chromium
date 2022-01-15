@@ -24,7 +24,7 @@
 #include "media/filters/fake_video_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 
@@ -204,7 +204,7 @@ class VideoDecoderStreamTest
     // parameterized tests which need to pass in all combinations.
     std::vector<std::unique_ptr<VideoDecoder>> decoders;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Note this is _not_ inserted into |decoders_| below, so we don't need to
     // adjust the indices used below to compensate.
     decoders.push_back(std::make_unique<DecryptingVideoDecoder>(

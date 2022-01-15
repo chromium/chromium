@@ -5,12 +5,13 @@
 #include "media/mojo/services/interface_factory_impl.h"
 
 #include <memory>
+
 #include "base/bind.h"
 #include "base/guid.h"
-
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/services/mojo_decryptor_service.h"
 #include "media/mojo/services/mojo_media_client.h"
@@ -28,7 +29,7 @@
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
-    defined(OS_WIN)
+    BUILDFLAG(IS_WIN)
 #include "base/callback_helpers.h"
 #include "media/base/renderer.h"
 #include "media/mojo/services/mojo_renderer_service.h"
@@ -140,7 +141,7 @@ void InterfaceFactoryImpl::CreateCastRenderer(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void InterfaceFactoryImpl::CreateMediaPlayerRenderer(
     mojo::PendingRemote<mojom::MediaPlayerRendererClientExtension>
         client_extension_ptr,
@@ -157,9 +158,9 @@ void InterfaceFactoryImpl::CreateFlingingRenderer(
     mojo::PendingReceiver<mojom::Renderer> receiver) {
   NOTREACHED();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
     mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
@@ -283,7 +284,7 @@ void InterfaceFactoryImpl::OnReceiverDisconnect() {
 }
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
-    defined(OS_WIN)
+    BUILDFLAG(IS_WIN)
 void InterfaceFactoryImpl::AddRenderer(
     std::unique_ptr<media::Renderer> renderer,
     mojo::PendingReceiver<mojom::Renderer> receiver) {

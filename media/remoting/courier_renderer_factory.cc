@@ -42,7 +42,7 @@ std::unique_ptr<Renderer> CourierRendererFactory::CreateRenderer(
 }
 
 bool CourierRendererFactory::IsRemotingActive() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;  // Media Remoting is not supported on Android for now.
 #else
   return controller_ && controller_->remote_rendering_started();

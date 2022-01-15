@@ -687,7 +687,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
 
 // These tests only work on non-linux vaapi systems, since on linux, there is no
 // support for different modifiers.
-#if BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
+#if BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX)
 
 // Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
 // as expected when the pool returns linear buffers. It should allocate an image
@@ -768,7 +768,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatUnsupportedModifier) {
   DetachDecoderSequenceChecker();
 }
 
-#endif  // BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
+#endif  // BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX)
 
 // Verifies that ReleaseAllFrames is called on the frame pool when we receive
 // the kDecoderStateLost event through the waiting callback. This can occur

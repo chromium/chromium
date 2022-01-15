@@ -16,9 +16,9 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "ui/gfx/buffer_format_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace media {
 
@@ -32,7 +32,7 @@ VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     int count)
     : buffer_type_(buffer_type),
       count_(count),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       buffer_tracker_factory_(
           std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>())
 #else
@@ -74,7 +74,7 @@ VideoCaptureBufferPoolImpl::CreateSharedMemoryViaRawFileDescriptorStruct(
     int buffer_id) {
 // This requires platforms where base::SharedMemoryHandle is backed by a
 // file descriptor.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::AutoLock lock(lock_);
 
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
@@ -280,7 +280,7 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
   const int new_buffer_id = next_buffer_id_++;
 
   VideoCaptureBufferType buffer_type = buffer_type_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If the MediaFoundationD3D11VideoCapture path fails, a shared memory buffer
   // is sent instead.
   if (buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&

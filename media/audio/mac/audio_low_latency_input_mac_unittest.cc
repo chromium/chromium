@@ -125,7 +125,7 @@ class MacAudioInputTest : public testing::Test {
   ~MacAudioInputTest() override { audio_manager_->Shutdown(); }
 
   bool InputDevicesAvailable() {
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
     // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
     // let any of them be opened or listed.
     return false;

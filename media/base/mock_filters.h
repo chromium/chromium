@@ -656,7 +656,7 @@ class MockCdmContext : public CdmContext {
                std::unique_ptr<CallbackRegistration>(EventCB event_cb));
   MOCK_METHOD0(GetDecryptor, Decryptor*());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   MOCK_METHOD0(RequiresMediaFoundationRenderer, bool());
   MOCK_METHOD1(GetMediaFoundationCdmProxy,
                bool(GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb));

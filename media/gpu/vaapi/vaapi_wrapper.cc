@@ -560,7 +560,7 @@ VADisplayState::VADisplayState()
 bool VADisplayState::Initialize() {
   base::AutoLock auto_lock(va_lock_);
 
-#if defined(USE_OZONE) && defined(OS_LINUX)
+#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
   // Linux. See comment in OzonePlatform::PlatformProperties::supports_vaapi
   // for more details. This will also require revisiting everything that's
@@ -2922,7 +2922,7 @@ void VaapiWrapper::PreSandboxInitialization() {
   static bool result = InitializeStubs(paths);
   if (!result) {
     static const char kErrorMsg[] = "Failed to initialize VAAPI libs";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // When Chrome runs on Linux with target_os="chromeos", do not log error
     // message without VAAPI libraries.
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS()) << kErrorMsg;

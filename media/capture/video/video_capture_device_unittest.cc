@@ -31,7 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <mfcaptureengine.h>
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"  // For fine-grained suppression.
@@ -39,11 +39,11 @@
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "media/capture/video/android/video_capture_device_android.h"
@@ -61,7 +61,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Mac will always give you the size you ask for and this case will fail.
 #define MAYBE_UsingRealWebcam_AllocateBadSize \
   DISABLED_UsingRealWebcam_AllocateBadSize
@@ -82,7 +82,7 @@
 
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
-#elif defined(OS_WIN) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 // Windows test bots don't have camera.
 // On Fuchsia the tests run under emulator that doesn't support camera.
 #define MAYBE_UsingRealWebcam_AllocateBadSize \
@@ -95,7 +95,7 @@
   DISABLED_UsingRealWebcam_CaptureWithSize
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   DISABLED_UsingRealWebcam_CheckPhotoCallbackRelease
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #define MAYBE_UsingRealWebcam_AllocateBadSize UsingRealWebcam_AllocateBadSize
 // This format is not returned by VideoCaptureDeviceFactoryAndroid's
 // GetSupportedFormats
@@ -114,7 +114,7 @@
 #define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // UsingRealWebcam_AllocateBadSize will hang when a real camera is attached and
 // if more than one test is trying to use the camera (even across processes). Do
 // NOT renable this test without fixing the many bugs associated with it:
@@ -161,12 +161,12 @@ void DumpError(media::VideoCaptureError,
 
 enum VideoCaptureImplementationTweak {
   NONE,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   WIN_MEDIA_FOUNDATION
 #endif
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class MockMFPhotoCallback final : public IMFCaptureEngineOnSampleCallback {
  public:
   ~MockMFPhotoCallback() {}
@@ -234,11 +234,11 @@ class MockImageCaptureClient
 };
 
 base::test::SingleThreadTaskEnvironment::MainThreadType kMainThreadType =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Video capture code on MacOSX must run on a CFRunLoop enabled thread
     // for interaction with AVFoundation.
     base::test::SingleThreadTaskEnvironment::MainThreadType::UI;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
     // FIDL APIs on Fuchsia requires IO thread.
     base::test::SingleThreadTaskEnvironment::MainThreadType::IO;
 #else
@@ -251,7 +251,7 @@ class VideoCaptureDeviceTest
     : public testing::TestWithParam<
           std::tuple<gfx::Size, VideoCaptureImplementationTweak>> {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<IMFCaptureEngineOnSampleCallback> CreateMockPhotoCallback(
       MockMFPhotoCallback* mock_photo_callback,
       VideoCaptureDevice::TakePhotoCallback callback,
@@ -296,11 +296,11 @@ class VideoCaptureDeviceTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PowerManagerClient::InitializeFake();
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     static_cast<VideoCaptureDeviceFactoryAndroid*>(
         video_capture_device_factory_.get())
         ->ConfigureForTesting();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     static_cast<VideoCaptureDeviceFactoryWin*>(
         video_capture_device_factory_.get())
         ->set_use_media_foundation_for_testing(UseWinMediaFoundation());
@@ -313,7 +313,7 @@ class VideoCaptureDeviceTest
 #endif
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool UseWinMediaFoundation() {
     return std::get<1>(GetParam()) == WIN_MEDIA_FOUNDATION &&
            VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation();
@@ -380,7 +380,7 @@ class VideoCaptureDeviceTest
       DLOG(WARNING) << "No camera found";
       return absl::nullopt;
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     for (const auto& device : devices_info_) {
       // Android deprecated/legacy devices capture on a single thread, which is
       // occupied by the tests, so nothing gets actually delivered.
@@ -434,7 +434,7 @@ class VideoCaptureDeviceTest
   }
 
   void RunTestCase(base::OnceClosure test_case) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // In order to make the test case run on the actual message loop that has
     // been created for this thread, we need to run it inside a RunLoop. This is
     // required, because on MacOS the capture code must run on a CFRunLoop
@@ -454,7 +454,7 @@ class VideoCaptureDeviceTest
 #endif
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedCOMInitializer initialize_com_;
 #endif
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -471,7 +471,7 @@ class VideoCaptureDeviceTest
 };
 
 // Cause hangs on Windows Debug. http://crbug.com/417824
-#if (defined(OS_WIN) && !defined(NDEBUG))
+#if (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
 #define MAYBE_UsingRealWebcam_OpenInvalidDevice \
   DISABLED_UsingRealWebcam_OpenInvalidDevice
 #else
@@ -489,18 +489,18 @@ void VideoCaptureDeviceTest::RunOpenInvalidDeviceTestCase() {
   VideoCaptureDeviceDescriptor invalid_descriptor;
   invalid_descriptor.device_id = "jibberish";
   invalid_descriptor.set_display_name("jibberish");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   invalid_descriptor.capture_api =
       VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation()
           ? VideoCaptureApi::WIN_MEDIA_FOUNDATION
           : VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   invalid_descriptor.capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
 #endif
   VideoCaptureErrorOrDevice device_status =
       video_capture_device_factory_->CreateDevice(invalid_descriptor);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(device_status.ok());
 #else
   ASSERT_TRUE(device_status.ok());
@@ -567,7 +567,7 @@ void VideoCaptureDeviceTest::RunCaptureWithSizeTestCase() {
 const gfx::Size kCaptureSizes[] = {gfx::Size(640, 480), gfx::Size(1280, 720)};
 const VideoCaptureImplementationTweak kCaptureImplementationTweaks[] = {
     NONE,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     WIN_MEDIA_FOUNDATION
 #endif
 };
@@ -679,7 +679,7 @@ void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
   auto device_info = GetFirstDeviceSupportingPixelFormat(PIXEL_FORMAT_MJPEG);
   ASSERT_TRUE(device_info);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10) {
     VLOG(1) << "Skipped on Win10: http://crbug.com/570604, current: "
@@ -824,7 +824,7 @@ void VideoCaptureDeviceTest::RunGetPhotoStateTestCase() {
   device->StopAndDeAllocate();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Verifies that the photo callback is correctly released by MediaFoundation
 WRAPPED_TEST_P(VideoCaptureDeviceTest,
                MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease) {

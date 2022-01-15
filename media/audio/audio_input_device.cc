@@ -227,7 +227,7 @@ void AudioInputDevice::OnStreamCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "AudioInputDevice::OnStreamCreated");
   DCHECK(shared_memory_region.IsValid());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(socket_handle.IsValid());
 #else
   DCHECK(socket_handle.is_valid());
@@ -259,7 +259,7 @@ void AudioInputDevice::OnStreamCreated(
 // here. See comments in AliveChecker and PowerObserverHelper for details and
 // todos.
   if (detect_dead_stream_ == DeadStreamDetection::kEnabled) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     const bool stop_at_first_alive_notification = true;
     const bool pause_check_during_suspend = false;
 #else

@@ -66,7 +66,7 @@ class InterfaceFactoryImpl final
       const base::UnguessableToken& overlay_plane_id,
       mojo::PendingReceiver<mojom::Renderer> receiver) final;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void CreateMediaPlayerRenderer(
       mojo::PendingRemote<mojom::MediaPlayerRendererClientExtension>
           client_extension_remote,
@@ -78,14 +78,14 @@ class InterfaceFactoryImpl final
       mojo::PendingRemote<mojom::FlingingRendererClientExtension>
           client_extension,
       mojo::PendingReceiver<mojom::Renderer> receiver) final;
-#endif  // defined(OS_ANDROID)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   void CreateMediaFoundationRenderer(
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::Renderer> receiver,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver) final;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   void CreateCdm(const CdmConfig& cdm_config, CreateCdmCallback callback) final;
 
@@ -101,7 +101,7 @@ class InterfaceFactoryImpl final
   void OnReceiverDisconnect();
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
-    defined(OS_WIN)
+    BUILDFLAG(IS_WIN)
   // Creates MojoRendererService for `renderer`, bind it to `receiver` and add
   // them to `renderer_receivers_`.
   void AddRenderer(std::unique_ptr<media::Renderer> renderer,
@@ -134,7 +134,7 @@ class InterfaceFactoryImpl final
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_ENCODER)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
-    defined(OS_WIN)
+    BUILDFLAG(IS_WIN)
   // TODO(xhwang): Use MojoMediaLog for Renderer.
   NullMediaLog media_log_;
   mojo::UniqueReceiverSet<mojom::Renderer> renderer_receivers_;

@@ -21,7 +21,7 @@
 #include "media/base/video_color_space.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 
 // TODO(dalecurtis): This include is not allowed by media/base since
@@ -139,7 +139,7 @@ static MimeUtil::ParsedCodecResult MakeDefaultParsedCodecResult() {
 }
 
 MimeUtil::MimeUtil() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   platform_info_.has_platform_dv_decoder =
       MediaCodecUtil::IsDolbyVisionDecoderAvailable();
@@ -154,7 +154,7 @@ MimeUtil::MimeUtil() {
 #endif
   platform_info_.has_platform_opus_decoder =
       MediaCodecUtil::IsOpusDecoderAvailable();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   InitializeMimeTypeMaps();
 }
@@ -380,7 +380,7 @@ void MimeUtil::AddSupportedMediaFormats() {
   CodecSet mp2t_codecs{H264, MPEG2_AAC, MPEG4_AAC, MP3};
   AddContainerWithCodecs("video/mp2t", mp2t_codecs);
 #endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kCanPlayHls)) {
     // HTTP Live Streaming (HLS).
     CodecSet hls_codecs{H264,
@@ -398,7 +398,7 @@ void MimeUtil::AddSupportedMediaFormats() {
     // https://crbug.com/675552 for details and examples.
     AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
@@ -912,7 +912,7 @@ SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(chcunningham): Delete this. Android platform support should be
   // handled by (android specific) media::IsSupportedVideoType() above.
   if (!IsCodecSupportedOnAndroid(codec, mime_type_lower_case, is_encrypted,

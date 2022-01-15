@@ -199,7 +199,7 @@ std::unique_ptr<FFmpegDemuxerStream> FFmpegDemuxerStream::Create(
   std::unique_ptr<AudioDecoderConfig> audio_config;
   std::unique_ptr<VideoDecoderConfig> video_config;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(kDeprecateLowUsageCodecs)) {
     const auto codec_id = stream->codecpar->codec_id;
     if (codec_id == AV_CODEC_ID_AMR_NB || codec_id == AV_CODEC_ID_AMR_WB ||
@@ -1239,7 +1239,7 @@ void FFmpegDemuxer::OnOpenContextDone(bool result) {
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (glue_->detected_hls()) {
     MEDIA_LOG(INFO, media_log_)
         << GetDisplayName() << ": detected HLS manifest";

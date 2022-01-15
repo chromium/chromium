@@ -30,7 +30,7 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
 // On windows, currently only d3d11 supports decoding VP9 kSVC stream, we
 // shouldn't combine the switch kD3D11Vp9kSVCHWDecoding to kVp9kSVCHWDecoding
 // due to we want keep returning false to MediaCapability.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
     DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
     return false;

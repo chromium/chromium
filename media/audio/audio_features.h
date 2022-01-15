@@ -16,7 +16,7 @@ MEDIA_EXPORT extern const base::Feature kPlatformAudioEncoder;
 MEDIA_EXPORT extern const base::Feature kAudioServiceOutOfProcessKillAtHang;
 MEDIA_EXPORT extern const base::Feature kDumpOnAudioServiceHang;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT extern const base::Feature kUseAAudioDriver;
 #endif
 
@@ -29,7 +29,7 @@ MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecAgc;
 MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAec;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT extern const base::Feature kAllowIAudioClient3;
 #endif
 

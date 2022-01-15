@@ -37,7 +37,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   // effect on what effects are enabled, but for legacy reasons, it forces APM
   // to be created and used.
   bool force_apm_creation =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       false;
 #else
       true;
@@ -60,7 +60,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   bool NeedWebrtcAudioProcessing() const {
     // TODO(https://crbug.com/1269364): Legacy iOS-specific behavior;
     // reconsider.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     if (stereo_mirroring)
       return true;
 #else
@@ -69,7 +69,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
     }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (force_apm_creation)
       return true;
 #endif

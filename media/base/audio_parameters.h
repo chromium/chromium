@@ -29,7 +29,7 @@ namespace media {
 // instead of in Audio{Input,Output}Buffer to be able to calculate size like so.
 // Use a macro for the alignment value that's the same as
 // AudioBus::kChannelAlignment, since MSVC doesn't accept the latter to be used.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #pragma warning(push)
 #pragma warning(disable : 4324)  // Disable warning for added padding.
 #endif
@@ -56,7 +56,7 @@ struct MEDIA_SHMEM_EXPORT ALIGNAS(PARAMETERS_ALIGNMENT)
   uint32_t bitstream_frames;
 };
 #undef PARAMETERS_ALIGNMENT
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #pragma warning(pop)
 #endif
 

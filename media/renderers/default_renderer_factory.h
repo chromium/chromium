@@ -14,7 +14,7 @@
 #include "media/base/media_export.h"
 #include "media/base/renderer_factory.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/base/speech_recognition_client.h"
 #endif
 
@@ -40,7 +40,7 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
   using GetGpuFactoriesCB =
       base::RepeatingCallback<GpuVideoAcceleratorFactories*()>;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DefaultRendererFactory(MediaLog* media_log,
                          DecoderFactory* decoder_factory,
                          const GetGpuFactoriesCB& get_gpu_factories_cb);
@@ -83,7 +83,7 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
   // Creates factories for supporting video accelerators. May be null.
   GetGpuFactoriesCB get_gpu_factories_cb_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SpeechRecognitionClient> speech_recognition_client_;
 #endif
 };

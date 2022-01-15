@@ -53,7 +53,7 @@ MATCHER_P(MatchesResult, success, "") {
   return arg->success == success;
 }
 
-#if BUILDFLAG(ENABLE_MOJO_CDM) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)
 const char kClearKeyKeySystem[] = "org.w3.clearkey";
 const char kInvalidKeySystem[] = "invalid.key.system";
 #endif
@@ -208,7 +208,7 @@ class MediaServiceTest : public testing::Test {
 //   base::RunLoop::Run() and QuitLoop().
 
 // TODO(crbug.com/829233): Enable these tests on Android.
-#if BUILDFLAG(ENABLE_MOJO_CDM) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)
 TEST_F(MediaServiceTest, InitializeCdm_Success) {
   InitializeCdm(kClearKeyKeySystem, true);
 }
@@ -216,7 +216,7 @@ TEST_F(MediaServiceTest, InitializeCdm_Success) {
 TEST_F(MediaServiceTest, InitializeCdm_InvalidKeySystem) {
   InitializeCdm(kInvalidKeySystem, false);
 }
-#endif  // BUILDFLAG(ENABLE_MOJO_CDM) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
 TEST_F(MediaServiceTest, InitializeRenderer) {
@@ -237,13 +237,13 @@ TEST_F(MediaServiceTest, InterfaceFactoryPreventsIdling) {
   run_loop.Run();
 }
 
-#if (BUILDFLAG(ENABLE_MOJO_CDM) && !defined(OS_ANDROID)) || \
+#if (BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)) || \
     BUILDFLAG(ENABLE_MOJO_RENDERER)
 // MediaService stays alive as long as there are InterfaceFactory impls, which
 // are then deferred destroyed until no media components (e.g. CDM or Renderer)
 // are hosted.
 TEST_F(MediaServiceTest, Idling) {
-#if BUILDFLAG(ENABLE_MOJO_CDM) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)
   InitializeCdm(kClearKeyKeySystem, true);
 #endif
 
@@ -266,7 +266,7 @@ TEST_F(MediaServiceTest, Idling) {
 }
 
 TEST_F(MediaServiceTest, MoreIdling) {
-#if BUILDFLAG(ENABLE_MOJO_CDM) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)
   InitializeCdm(kClearKeyKeySystem, true);
 #endif
 
@@ -294,7 +294,7 @@ TEST_F(MediaServiceTest, MoreIdling) {
   renderer_.reset();
   run_loop.Run();
 }
-#endif  // (BUILDFLAG(ENABLE_MOJO_CDM) && !defined(OS_ANDROID)) ||
+#endif  // (BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)) ||
         //  BUILDFLAG(ENABLE_MOJO_RENDERER)
 
 }  // namespace media

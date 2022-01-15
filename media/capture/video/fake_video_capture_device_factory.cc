@@ -213,15 +213,15 @@ void FakeVideoCaptureDeviceFactory::GetDevicesInfo(
   int entry_index = 0;
   for (const auto& entry : devices_config_) {
     VideoCaptureApi api =
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
         VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
         VideoCaptureApi::MACOSX_AVFOUNDATION;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
         VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
         VideoCaptureApi::ANDROID_API2_LEGACY;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
         VideoCaptureApi::FUCHSIA_CAMERA3;
 #else
 #error Unsupported platform

@@ -84,7 +84,7 @@ class UdpTransportImpl final : public PacketTransport, public UdpTransport {
   // |send_buffer_size_|. Calling |SetUdpOptions()| will automatically call it.
   void SetSendBufferSize(int32_t send_buffer_size);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Switch to use non-blocking IO. Must be called before StartReceiving().
   void UseNonBlockingIO();
 #endif

@@ -37,20 +37,20 @@ MEDIA_EXPORT extern const char kDisableBackgroundMediaSuspend[];
 
 MEDIA_EXPORT extern const char kReportVp9AsAnUnsupportedMimeType[];
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FREEBSD) || \
-    defined(OS_SOLARIS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FREEBSD) || \
+    BUILDFLAG(IS_SOLARIS)
 MEDIA_EXPORT extern const char kAlsaInputDevice[];
 MEDIA_EXPORT extern const char kAlsaOutputDevice[];
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
 MEDIA_EXPORT extern const char kForceWaveAudio[];
 MEDIA_EXPORT extern const char kTrySupportedChannelLayouts[];
 MEDIA_EXPORT extern const char kWaveOutBuffers[];
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
 MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
 MEDIA_EXPORT extern const char kDisableAudioInput[];
@@ -91,12 +91,12 @@ MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 MEDIA_EXPORT extern const char kEnableClearHevcForTesting[];
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT extern const char kLacrosEnablePlatformEncryptedHevc[];
 MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[];
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace autoplay {
 
@@ -186,10 +186,10 @@ MEDIA_EXPORT extern const base::Feature kUseDecoderStreamForWebRTC;
 MEDIA_EXPORT extern const base::Feature kUseFakeDeviceForMediaStream;
 MEDIA_EXPORT extern const base::Feature kUseMediaHistoryStore;
 MEDIA_EXPORT extern const base::Feature kUseR16Texture;
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT extern const base::Feature kVaapiVideoDecodeLinux;
 MEDIA_EXPORT extern const base::Feature kVaapiVideoEncodeLinux;
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT extern const base::Feature kVaapiAV1Decoder;
 MEDIA_EXPORT extern const base::Feature kVaapiLowPowerEncoderGen9x;
 MEDIA_EXPORT extern const base::Feature kVaapiEnforceVideoMinMaxResolution;
@@ -208,7 +208,7 @@ MEDIA_EXPORT extern const base::Feature kResolutionBasedDecoderPriority;
 MEDIA_EXPORT extern const base::Feature kForceHardwareVideoDecoders;
 MEDIA_EXPORT extern const base::Feature kForceHardwareAudioDecoders;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT extern const base::Feature kAllowNonSecureOverlays;
 MEDIA_EXPORT extern const base::Feature kMediaControlsExpandGesture;
 MEDIA_EXPORT extern const base::Feature kMediaDrmPersistentLicense;
@@ -221,21 +221,21 @@ MEDIA_EXPORT extern const base::Feature kRequestSystemAudioFocus;
 MEDIA_EXPORT extern const base::Feature kUseAudioLatencyFromHAL;
 MEDIA_EXPORT extern const base::Feature kUsePooledSharedImageVideoProvider;
 MEDIA_EXPORT extern const base::Feature kUseRealColorSpaceForAndroidVideo;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT extern const base::Feature kUseChromeOSDirectVideoDecoder;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kUseAlternateVideoDecoderImplementation;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 MEDIA_EXPORT extern const base::Feature kMultiPlaneVideoToolboxSharedImages;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT extern const base::Feature kDelayCopyNV12Textures;
 MEDIA_EXPORT extern const base::Feature kDirectShowGetPhotoState;
 MEDIA_EXPORT extern const base::Feature kIncludeIRCamerasInDeviceEnumeration;
@@ -246,9 +246,9 @@ MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationClearPlayback;
 MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
 MEDIA_EXPORT extern const base::Feature kD3D11Vp9kSVCHWDecoding;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kDeprecateLowUsageCodecs;
 #endif
 

@@ -12,7 +12,7 @@ namespace media {
 
 // The sample rate used by (WebRTC) audio processing algorithms.
 static constexpr int kAudioProcessingSampleRateHz =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     webrtc::AudioProcessing::kSampleRate16kHz;
 #else
     webrtc::AudioProcessing::kSampleRate48kHz;

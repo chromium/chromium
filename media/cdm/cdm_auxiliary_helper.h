@@ -71,10 +71,10 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                          ChallengePlatformCB callback) override;
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) override;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace media

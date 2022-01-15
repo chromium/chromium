@@ -73,7 +73,7 @@ TEST_F(CdmServiceBrokerTest, GetService) {
   mojo::Remote<mojom::CdmService> service_remote_;
 
   base::FilePath cdm_path(FILE_PATH_LITERAL("dummy path"));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Token provider will not be used since the path is a dummy path.
   remote_->GetService(cdm_path, mojo::NullRemote(),
                       service_remote_.BindNewPipeAndPassReceiver());

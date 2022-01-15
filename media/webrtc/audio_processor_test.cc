@@ -178,7 +178,7 @@ class AudioProcessorTest : public ::testing::Test {
     EXPECT_FALSE(config.voice_detection.enabled);
     EXPECT_FALSE(config.gain_controller1.analog_gain_controller
                      .clipping_predictor.enabled);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
     EXPECT_EQ(config.gain_controller1.mode,
               config.gain_controller1.kFixedDigital);
@@ -200,7 +200,7 @@ class AudioProcessorTestMultichannel
       public ::testing::WithParamInterface<bool> {};
 
 // Test crashing with ASAN on Android. crbug.com/468762
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_WithAudioProcessing DISABLED_WithAudioProcessing
 #else
 #define MAYBE_WithAudioProcessing WithAudioProcessing
@@ -236,7 +236,7 @@ TEST_F(AudioProcessorTest, TurnOffDefaultConstraints) {
 }
 
 // Test crashing with ASAN on Android. crbug.com/468762
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_TestAllSampleRates DISABLED_TestAllSampleRates
 #else
 #define MAYBE_TestAllSampleRates TestAllSampleRates
@@ -444,7 +444,7 @@ TEST_P(AudioProcessorTestMultichannel, TestStereoAudio) {
 }
 
 // Disabled on android clang builds due to crbug.com/470499
-#if defined(__clang__) && defined(OS_ANDROID)
+#if defined(__clang__) && BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestWithKeyboardMicChannel DISABLED_TestWithKeyboardMicChannel
 #else
 #define MAYBE_TestWithKeyboardMicChannel TestWithKeyboardMicChannel

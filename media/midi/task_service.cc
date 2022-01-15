@@ -146,9 +146,9 @@ scoped_refptr<base::SingleThreadTaskRunner> TaskService::GetTaskRunner(
     threads_[thread] = std::make_unique<base::Thread>(
         base::StringPrintf("MidiService_TaskService_Thread(%zu)", runner_id));
     base::Thread::Options options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     threads_[thread]->init_com_with_mta(true);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     options.message_pump_type = base::MessagePumpType::UI;
 #endif
     threads_[thread]->StartWithOptions(std::move(options));

@@ -22,7 +22,7 @@
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
 #include "media/capture/video/linux/video_capture_device_linux.h"
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 #include <sys/videoio.h>
 #else
 #include <linux/videodev2.h>

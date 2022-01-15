@@ -68,7 +68,7 @@ AudioRendererImpl::AudioRendererImpl(
       received_end_of_stream_(false),
       rendered_end_of_stream_(false),
       is_suspending_(false),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       is_passthrough_(false) {
 #else
       is_passthrough_(false),
@@ -387,7 +387,7 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
       base::BindOnce(&AudioRendererImpl::OnDeviceInfoReceived,
                      weak_factory_.GetWeakPtr(), demuxer_stream_, cdm_context));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (speech_recognition_client_) {
     speech_recognition_client_->SetOnReadyCallback(BindToCurrentLoop(
         base::BindOnce(&AudioRendererImpl::EnableSpeechRecognition,
@@ -518,7 +518,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     int stream_channel_count = stream->audio_decoder_config().channels();
 
     bool try_supported_channel_layouts = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     try_supported_channel_layouts =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kTrySupportedChannelLayouts);
@@ -975,7 +975,7 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
     if (first_packet_timestamp_ == kNoTimestamp)
       first_packet_timestamp_ = buffer->timestamp();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Do not transcribe muted streams initiated by autoplay if the stream was
     // never unmuted.
     if (transcribe_audio_callback_ &&
@@ -1392,7 +1392,7 @@ void AudioRendererImpl::ConfigureChannelMask() {
 }
 
 void AudioRendererImpl::EnableSpeechRecognition() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(task_runner_->BelongsToCurrentThread());
   transcribe_audio_callback_ = base::BindRepeating(
       &AudioRendererImpl::TranscribeAudio, weak_factory_.GetWeakPtr());
@@ -1401,7 +1401,7 @@ void AudioRendererImpl::EnableSpeechRecognition() {
 
 void AudioRendererImpl::TranscribeAudio(
     scoped_refptr<media::AudioBuffer> buffer) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (speech_recognition_client_)
     speech_recognition_client_->AddAudio(std::move(buffer));

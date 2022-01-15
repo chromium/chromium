@@ -12,19 +12,19 @@
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/file_video_capture_device_factory.h"
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "media/capture/video/win/video_capture_device_factory_win.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "media/capture/video/android/video_capture_device_factory_android.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "media/capture/video/fuchsia/video_capture_device_factory_fuchsia.h"
 #endif
 
@@ -55,19 +55,19 @@ CreateFakeVideoCaptureDeviceFactory() {
 std::unique_ptr<VideoCaptureDeviceFactory>
 CreatePlatformSpecificVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::SysInfo::IsRunningOnChromeOS())
     return std::make_unique<VideoCaptureDeviceFactoryChromeOS>(ui_task_runner);
   return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return std::make_unique<VideoCaptureDeviceFactoryWin>();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return std::make_unique<VideoCaptureDeviceFactoryMac>();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<VideoCaptureDeviceFactoryAndroid>();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<VideoCaptureDeviceFactoryFuchsia>();
 #else
   NOTIMPLEMENTED();

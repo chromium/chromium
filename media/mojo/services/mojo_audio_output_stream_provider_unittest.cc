@@ -133,7 +133,7 @@ TEST(MojoAudioOutputStreamProviderTest,
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   provider_remote->Acquire(params, std::move(client));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::RunLoop().RunUntilIdle();
   // Creating bitstream streams is allowed on Android.
   EXPECT_FALSE(got_bad_message);

@@ -24,11 +24,11 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/constants.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "third_party/opus/src/include/opus.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <AudioToolbox/AudioToolbox.h>
 #endif
 
@@ -231,7 +231,7 @@ class AudioEncoder::ImplBase
   int samples_dropped_from_buffer_;
 };
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
  public:
   OpusImpl(const scoped_refptr<CastEnvironment>& cast_environment,
@@ -331,7 +331,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
 };
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
   // AAC-LC has two access unit sizes (960 and 1024). The Apple encoder only
   // supports the latter.
@@ -705,7 +705,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
   // The number of access units emitted so far by the encoder.
   uint64_t num_access_units_;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
  public:
@@ -767,18 +767,18 @@ AudioEncoder::AudioEncoder(
   // as all calls to InsertAudio() are by the same thread.
   insert_thread_checker_.DetachFromThread();
   switch (codec) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     case CODEC_AUDIO_OPUS:
       impl_ = new OpusImpl(cast_environment, num_channels, sampling_rate,
                            bitrate, std::move(frame_encoded_callback));
       break;
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     case CODEC_AUDIO_AAC:
       impl_ = new AppleAacImpl(cast_environment, num_channels, sampling_rate,
                                bitrate, std::move(frame_encoded_callback));
       break;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     case CODEC_AUDIO_PCM16:
       impl_ = new Pcm16Impl(cast_environment, num_channels, sampling_rate,
                             std::move(frame_encoded_callback));

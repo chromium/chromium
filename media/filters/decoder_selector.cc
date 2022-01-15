@@ -56,7 +56,7 @@ DecoderPriority NormalDecoderPriority(const ConfigT& config,
 
 DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
                                                const VideoDecoder& decoder) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;

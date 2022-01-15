@@ -17,7 +17,7 @@
 // "cdm_platform_specific_path" in cdm_paths.gni.
 // TODO(crbug.com/971433). Move the CDMs out of the install directory on
 // ChromeOS.
-#if (defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
      BUILDFLAG(IS_CHROMEOS_LACROS))
 #define CDM_USE_PLATFORM_SPECIFIC_PATH
 #endif
@@ -33,13 +33,13 @@ const char kPlatformSpecific[] = "_platform_specific";
 
 // Name of the component platform.
 const char kComponentPlatform[] =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     "mac";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     "win";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
     "cros";
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
     "linux";
 #else
     "unsupported_platform";

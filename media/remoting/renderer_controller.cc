@@ -9,9 +9,10 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/remoting/metrics.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #endif
 
@@ -314,7 +315,7 @@ void RendererController::OnDataSourceInitialized(
 }
 
 void RendererController::OnHlsManifestDetected() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   is_hls_ = true;
   UpdateRemotePlaybackAvailabilityMonitoringState();
 #else
@@ -327,7 +328,7 @@ void RendererController::UpdateRemotePlaybackAvailabilityMonitoringState() {
 // thus the source is supported when the URL is either http or https, video and
 // audio codecs are supported by the remote playback device; HLS is playable by
 // Chrome on Android (which is not detected by the pipeline metadata atm).
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const bool is_media_supported = is_hls_ || IsRemotePlaybackSupported();
 #else
   const bool is_media_supported = IsAudioOrVideoSupported();
@@ -639,7 +640,7 @@ void RendererController::SendMessageToSink(std::vector<uint8_t> message) {
   remoter_->SendMessageToSink(message);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 bool RendererController::IsAudioRemotePlaybackSupported() const {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -695,7 +696,7 @@ bool RendererController::IsRemotePlaybackSupported() const {
           (!has_audio() || IsAudioRemotePlaybackSupported()));
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace remoting
 }  // namespace media

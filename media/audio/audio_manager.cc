@@ -21,7 +21,7 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/base/media_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -43,7 +43,7 @@ class AudioManagerHelper {
 
   AudioLogFactory* fake_log_factory() { return &fake_log_factory_; }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This should be called before creating an AudioManager in tests to ensure
   // that the creating thread is COM initialized.
   void InitializeCOMForTesting() {
@@ -57,7 +57,7 @@ class AudioManagerHelper {
 
   FakeAudioLogFactory fake_log_factory_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_for_testing_;
 #endif
 
@@ -120,7 +120,7 @@ std::unique_ptr<AudioManager> AudioManager::Create(
 // static
 std::unique_ptr<AudioManager> AudioManager::CreateForTesting(
     std::unique_ptr<AudioThread> audio_thread) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   GetHelper()->InitializeCOMForTesting();
 #endif
   return Create(std::move(audio_thread), GetHelper()->fake_log_factory());

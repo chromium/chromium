@@ -19,13 +19,13 @@
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_video_encode_accelerator.h"
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/gpu/android/android_video_encode_accelerator.h"
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/gpu/mac/vt_video_encode_accelerator_mac.h"
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #endif
 #if BUILDFLAG(USE_VAAPI)
@@ -52,21 +52,21 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA() {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA() {
   return base::WrapUnique<VideoEncodeAccelerator>(
       new AndroidVideoEncodeAccelerator());
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 std::unique_ptr<VideoEncodeAccelerator> CreateVTVEA() {
   return base::WrapUnique<VideoEncodeAccelerator>(
       new VTVideoEncodeAccelerator());
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Creates a MediaFoundationVEA for Win 7 or later. If |compatible_with_win7| is
 // true, VEA is limited to a subset of features that is compatible with Win 7.
 std::unique_ptr<VideoEncodeAccelerator> CreateMediaFoundationVEA(
@@ -92,7 +92,7 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
     return vea_factory_functions;
 
 #if BUILDFLAG(USE_VAAPI)
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(kVaapiVideoEncodeLinux))
     vea_factory_functions.push_back(base::BindRepeating(&CreateVaapiVEA));
 #else
@@ -102,13 +102,13 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 #if BUILDFLAG(USE_V4L2_CODEC)
   vea_factory_functions.push_back(base::BindRepeating(&CreateV4L2VEA));
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   vea_factory_functions.push_back(base::BindRepeating(&CreateAndroidVEA));
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   vea_factory_functions.push_back(base::BindRepeating(&CreateVTVEA));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   vea_factory_functions.push_back(base::BindRepeating(
       &CreateMediaFoundationVEA,
       gpu_preferences.enable_media_foundation_vea_on_windows7));

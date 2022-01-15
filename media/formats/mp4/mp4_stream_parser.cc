@@ -417,9 +417,9 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           // Android. This is for backward compatibility until we have a better
           // solution. See crbug.com/1245123 for details.
           aac_extra_data = aac.codec_specific_data();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
           extra_data = aac.codec_specific_data();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = AudioCodec::kAC3;

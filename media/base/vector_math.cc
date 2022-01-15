@@ -12,13 +12,13 @@
 #include "build/build_config.h"
 
 // NaCl does not allow intrinsics.
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_NACL)
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
 #include <xmmintrin.h>
 // Don't use custom SSE versions where the auto-vectorized C version performs
 // better, which is anywhere clang is used.
 // TODO(pcc): Linux currently uses ThinLTO which has broken auto-vectorization
 // in clang, so use our intrinsic version for now. http://crbug.com/738085
-#if !defined(__clang__) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if !defined(__clang__) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define FMAC_FUNC FMAC_SSE
 #define FMUL_FUNC FMUL_SSE
 #else
@@ -82,7 +82,7 @@ std::pair<float, float> EWMAAndMaxPower_C(
   return result;
 }
 
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_NACL)
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
 void FMUL_SSE(const float src[], float scale, int len, float dest[]) {
   const int rem = len % 4;
   const int last_index = len - rem;

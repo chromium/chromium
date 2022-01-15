@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/bind_to_current_loop.h"
@@ -646,7 +647,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
   }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Linux should always use a custom allocator (to allocate buffers using
   // libva) and a PlatformVideoFramePool.
   CHECK(allocator.has_value());
@@ -667,7 +668,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 #error "Unsupported platform"
 #endif
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // viable_candidate should always be set unless using L1 protected content,
   // which isn't an option on linux or lacros.
   CHECK(viable_candidate);

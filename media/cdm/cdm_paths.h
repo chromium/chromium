@@ -40,7 +40,7 @@ base::FilePath GetPlatformSpecificDirectory(
     const base::FilePath& cdm_base_path);
 base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns the "CDM store path" to be passed to `MediaFoundationCdm`. The
 // `cdm_store_path_root` is typically the path to the Chrome user's profile,
 // e.g.
@@ -48,7 +48,7 @@ base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path);
 base::FilePath GetCdmStorePath(const base::FilePath& cdm_store_path_root,
                                const base::UnguessableToken& cdm_origin_id,
                                const std::string& key_system);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace media
 

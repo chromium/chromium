@@ -49,7 +49,7 @@ class MEDIA_EXPORT MediaLog {
 // Maximum limit for the total number of logs kept per renderer. At the time of
 // writing, 512 events of the kind: { "property": value } together consume ~88kb
 // of memory on linux.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static constexpr size_t kLogLimit = 128;
 #else
   static constexpr size_t kLogLimit = 512;

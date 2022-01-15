@@ -47,7 +47,7 @@ constexpr char kVertexShader[] =
     "}\n";
 
 // Fragment shader used to render thumbnails.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 constexpr char kFragmentShader[] =
     "#extension GL_OES_EGL_image_external : enable\n"
     "precision mediump float;\n"

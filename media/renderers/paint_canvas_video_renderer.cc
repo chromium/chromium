@@ -1501,7 +1501,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     bool flip_y) {
   if (!raster_context_provider)
     return false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1181993): These formats don't work with the passthrough
   // command decoder on Android for some reason.
   const auto format_enum = static_cast<GLenum>(internal_format);

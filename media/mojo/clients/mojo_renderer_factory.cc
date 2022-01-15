@@ -44,7 +44,7 @@ std::unique_ptr<Renderer> MojoRendererFactory::CreateRenderer(
       std::move(renderer_remote));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<MojoRenderer>
 MojoRendererFactory::CreateMediaFoundationRenderer(
     mojo::PendingRemote<mojom::MediaLog> media_log_remote,
@@ -63,7 +63,7 @@ MojoRendererFactory::CreateMediaFoundationRenderer(
       media_task_runner, /*video_overlay_factory=*/nullptr, video_renderer_sink,
       std::move(renderer_remote));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
 std::unique_ptr<MojoRenderer> MojoRendererFactory::CreateCastRenderer(
@@ -84,7 +84,7 @@ std::unique_ptr<MojoRenderer> MojoRendererFactory::CreateCastRenderer(
 }
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<MojoRenderer> MojoRendererFactory::CreateFlingingRenderer(
     const std::string& presentation_id,
     mojo::PendingRemote<mojom::FlingingRendererClientExtension>
@@ -122,6 +122,6 @@ std::unique_ptr<MojoRenderer> MojoRendererFactory::CreateMediaPlayerRenderer(
                                         video_renderer_sink,
                                         std::move(renderer_remote));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace media

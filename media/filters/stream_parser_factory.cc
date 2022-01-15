@@ -28,7 +28,7 @@
 #include "media/formats/webm/webm_stream_parser.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #endif
 

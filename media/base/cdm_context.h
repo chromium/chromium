@@ -13,7 +13,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace chromeos {
 class ChromeOsCdmContext;
 }
@@ -25,11 +25,11 @@ class CallbackRegistration;
 class Decryptor;
 class MediaCryptoContext;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 class FuchsiaCdmContext;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class MediaFoundationCdmProxy;
 #endif
 
@@ -95,7 +95,7 @@ class MEDIA_EXPORT CdmContext {
 
   static std::string CdmIdToString(const base::UnguessableToken* cdm_id);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns whether the CDM requires Media Foundation-based media Renderer.
   // This is separate from GetMediaFoundationCdmProxy() since it needs to be
   // a sync call called in the render process to setup the media pipeline.
@@ -114,18 +114,18 @@ class MEDIA_EXPORT CdmContext {
       GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a MediaCryptoContext that can be used by MediaCodec based decoders.
   virtual MediaCryptoContext* GetMediaCryptoContext();
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Returns FuchsiaCdmContext interface when the context is backed by Fuchsia
   // CDM. Otherwise returns nullptr.
   virtual FuchsiaCdmContext* GetFuchsiaCdmContext();
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns a ChromeOsCdmContext interface when the context is backed by the
   // ChromeOS CdmFactoryDaemon. Otherwise return nullptr.
   virtual chromeos::ChromeOsCdmContext* GetChromeOsCdmContext();

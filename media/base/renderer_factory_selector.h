@@ -91,7 +91,7 @@ class MEDIA_EXPORT RendererFactorySelector {
   // NOTE: SetBaseRendererType() must be called before calling this method.
   RendererFactory* GetCurrentFactory();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Starts a request to receive a RemotePlayStateChangeCB, to be fulfilled
   // later by passing a request via SetRemotePlayStateChangeCB().
   // NOTE: There should be no pending request (this new one would overwrite it).

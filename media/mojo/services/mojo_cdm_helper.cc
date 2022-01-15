@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/containers/cxx20_erase.h"
+#include "build/build_config.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/mojo/services/mojo_cdm_allocator.h"
@@ -50,7 +51,7 @@ url::Origin MojoCdmHelper::GetCdmOrigin() {
   return cdm_origin;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void MojoCdmHelper::GetMediaFoundationCdmData(
     GetMediaFoundationCdmDataCB callback) {
   ConnectToCdmDocumentService();
@@ -62,7 +63,7 @@ void MojoCdmHelper::SetCdmClientToken(
   ConnectToCdmDocumentService();
   cdm_document_service_->SetCdmClientToken(client_token);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 cdm::Buffer* MojoCdmHelper::CreateCdmBuffer(size_t capacity) {
   return GetAllocator()->CreateCdmBuffer(capacity);
