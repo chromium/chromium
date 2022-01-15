@@ -28,7 +28,7 @@
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "components/version_info/version_info.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/install_util.h"
 #endif
 
@@ -89,13 +89,13 @@ class InstallTypeTest : public DiagnosticsTest {
   InstallTypeTest& operator=(const InstallTypeTest&) = delete;
 
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     user_level_ = InstallUtil::IsPerUserInstall();
     const char* type = user_level_ ? "User Level" : "System Level";
     std::string install_type(type);
 #else
     std::string install_type("System Level");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     RecordSuccess(install_type);
     g_install_type = this;
     return true;
