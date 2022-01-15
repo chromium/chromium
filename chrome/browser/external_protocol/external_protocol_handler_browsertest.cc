@@ -20,7 +20,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -143,14 +143,14 @@ class TabAddedRemovedObserver : public TabStripModelObserver {
 };
 
 // Flaky on Mac: https://crbug.com/1143762:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_AutoCloseTabOnNonWebProtocolNavigation DISABLED_AutoCloseTabOnNonWebProtocolNavigation
 #else
 #define MAYBE_AutoCloseTabOnNonWebProtocolNavigation AutoCloseTabOnNonWebProtocolNavigation
 #endif
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
                        MAYBE_AutoCloseTabOnNonWebProtocolNavigation) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Win 7 the protocol is registered to be handled by Chrome and thus never
   // reaches the ExternalProtocolHandler so we skip the test. For
   // more info see installer/util/shell_util.cc:GetShellIntegrationEntries
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
 }
 
 // Flaky on Mac: https://crbug.com/1143762:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ProtocolLaunchEmitsConsoleLog \
   DISABLED_ProtocolLaunchEmitsConsoleLog
 #else
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
                        MAYBE_ProtocolLaunchEmitsConsoleLog) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Win 7 the protocol is registered to be handled by Chrome and thus never
   // reaches the ExternalProtocolHandler so we skip the test. For
   // more info see installer/util/shell_util.cc:GetShellIntegrationEntries
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
                        ProtocolFailureEmitsConsoleLog) {
 // Only on Mac and Windows is there a way for Chromium to know whether a
 // protocol handler is registered ahead of time.
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   content::WebContentsConsoleObserver observer(web_content());
   observer.SetPattern("Failed to launch 'does.not.exist:failure'*");
   ASSERT_TRUE(
