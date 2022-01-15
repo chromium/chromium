@@ -249,7 +249,7 @@ class ThirdPartyTest : public testing::Test {
 // configurations.
 //------------------------------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Base DISABLED_Base
 #else
 #define MAYBE_Base Base
@@ -481,7 +481,7 @@ TEST_F(ThirdPartyTest, SHA1SanityCheck) {
 }
 
 // Flaky: crbug.com/868233
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PathCaseSensitive DISABLED_PathCaseSensitive
 #else
 #define MAYBE_PathCaseSensitive PathCaseSensitive
