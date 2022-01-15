@@ -63,7 +63,7 @@ class LiveCaptionSpeechRecognitionHost
   // Mac and ChromeOS move the fullscreened window into a new workspace. When
   // the WebContents associated with this RenderFrameHost goes fullscreen,
   // ensure that the Live Caption bubble moves to the new workspace.
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   void MediaEffectivelyFullscreenChanged(bool is_fullscreen) override;
 #endif
 

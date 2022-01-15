@@ -15,7 +15,7 @@
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/base/network_change_notifier.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #endif
@@ -36,7 +36,7 @@ class PrefRegistrySyncable;
 // command-line switch.
 class AccessibilityLabelsService
     : public KeyedService
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android, implement NetworkChangeObserver for "only on wifi" option,
     // and an AXModeObserver for detecting when a screen reader is enabled.
     ,
@@ -74,7 +74,7 @@ class AccessibilityLabelsService
       mojo::PendingReceiver<image_annotation::mojom::ImageAnnotationService>)>;
   void OverrideImageAnnotatorBinderForTesting(ImageAnnotatorBinder binder);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // net::NetworkChangeNotifier::NetworkChangeObserver
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
