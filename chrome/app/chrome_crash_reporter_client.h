@@ -5,9 +5,10 @@
 #ifndef CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_
 #define CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 #include <memory>
 
@@ -31,12 +32,12 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif
 
   // crash_reporter::CrashReporterClient implementation.
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
   void SetCrashReporterClientIdFromGUID(
       const std::string& client_guid) override;
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   void GetProductNameAndVersion(const char** product_name,
                                 const char** version) override;
   void GetProductNameAndVersion(std::string* product_name,
@@ -47,7 +48,7 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool GetCrashMetricsLocation(base::FilePath* metrics_dir) override;
 #endif
 
@@ -55,15 +56,15 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool GetCollectStatsConsent() override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool ReportingIsEnforcedByPolicy(bool* breakpad_enabled) override;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int GetAndroidMinidumpDescriptor() override;
 #endif
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool ShouldMonitorCrashHandlerExpensively() override;
 #endif
 
@@ -76,6 +77,6 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
   ~ChromeCrashReporterClient() override;
 };
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_

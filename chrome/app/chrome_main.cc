@@ -21,16 +21,16 @@
 #include "headless/public/headless_shell.h"
 #include "ui/gfx/switches.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/app/notification_metrics.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "base/base_switches.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/allocator/buildflags.h"
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/allocator_shim.h"
@@ -56,7 +56,7 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  int64_t exe_entry_point_ticks,
                                  base::PrefetchResultCode prefetch_result_code);
 }
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 extern "C" {
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
@@ -67,20 +67,20 @@ ChromeMain(int argc, const char** argv);
 #error Unknown platform.
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 DLLEXPORT int __cdecl ChromeMain(
     HINSTANCE instance,
     sandbox::SandboxInterfaceInfo* sandbox_info,
     int64_t exe_entry_point_ticks,
     base::PrefetchResultCode prefetch_result_code) {
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #else
 #error Unknown platform.
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Call this early on in order to configure heap workarounds. This must be
   // called from chrome.dll. This may be a NOP on some platforms.
@@ -96,7 +96,7 @@ int ChromeMain(int argc, const char** argv) {
       base::TimeTicks::FromInternalValue(exe_entry_point_ticks));
   content::ContentMainParams params(&chrome_main_delegate);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The process should crash when going through abnormal termination, but we
   // must be sure to reset this setting when ChromeMain returns normally.
   auto crash_on_detach_resetter = base::ScopedClosureRunner(
@@ -119,12 +119,12 @@ int ChromeMain(int argc, const char** argv) {
   params.argc = argc;
   params.argv = argv;
   base::CommandLine::Init(params.argc, params.argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   base::CommandLine::Init(0, nullptr);
   base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   ALLOW_UNUSED_LOCAL(command_line);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kRaiseTimerFrequency)) {
     // Raise the timer interrupt frequency and leave it raised.
@@ -132,7 +132,7 @@ int ChromeMain(int argc, const char** argv) {
   }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetUpBundleOverrides();
 #endif
 
@@ -146,26 +146,26 @@ int ChromeMain(int argc, const char** argv) {
   if (headless::IsChromeNativeHeadless()) {
     headless::SetUpCommandLine(command_line);
   } else {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
     if (command_line->HasSwitch(switches::kHeadless)) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
 #endif
       return headless::HeadlessShellMain(std::move(params));
     }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
-        // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
   }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // TODO(https://crbug.com/1176772): Remove when Chrome Linux is fully migrated
   // to Crashpad.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ::switches::kEnableCrashpad);
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Gracefully exit if the system tried to launch the macOS notification helper
   // app when a user clicked on a notification.
   if (IsAlertsHelperLaunchedViaNotificationAction()) {

@@ -78,7 +78,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <malloc.h>
 
 #include <algorithm>
@@ -96,7 +96,7 @@
 #include "ui/base/resource/resource_bundle_win.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
@@ -106,14 +106,14 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <locale.h>
 #include <signal.h>
 
 #include "chrome/app/chrome_crash_reporter_client.h"
 #endif
 
-#if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #include "components/nacl/common/nacl_paths.h"
 #include "components/nacl/zygote/nacl_fork_delegate_linux.h"
 #endif
@@ -136,7 +136,7 @@
 #include "ui/lottie/resource.h"  // nogncheck
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_exception_reporter.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
@@ -145,24 +145,24 @@
 #include "components/crash/android/pure_java_exception_handler.h"
 #include "components/power_scheduler/power_scheduler.h"
 #include "net/android/network_change_notifier_factory_android.h"
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
 // Diagnostics is only available on non-android platforms.
 #include "chrome/browser/diagnostics/diagnostics_controller.h"
 #include "chrome/browser/diagnostics/diagnostics_writer.h"
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 #include "components/crash/core/app/breakpad_linux.h"
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #include "v8/include/v8.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/environment.h"
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_ANDROID) || \
-    defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "components/crash/core/app/crashpad.h"
 #endif
@@ -210,7 +210,7 @@ const size_t ChromeMainDelegate::kNonWildcardDomainNonPortSchemesSize =
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Early versions of Chrome incorrectly registered a chromehtml: URL handler,
 // which gives us nothing but trouble. Avoid launching chrome this way since
 // some apps fail to properly escape arguments.
@@ -263,9 +263,9 @@ void SetUpExtendedCrashReporting(bool is_browser_process) {
       base::WideToUTF16(channel_name), base::WideToUTF16(special_build));
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void AdjustLinuxOOMScore(const std::string& process_type) {
   int score = -1;
 
@@ -298,19 +298,19 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
   if (score > -1)
     base::AdjustOOMScore(base::GetCurrentProcId(), score);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Returns true if this subprocess type needs the ResourceBundle initialized
 // and resources loaded.
 bool SubprocessNeedsResourceBundle(const std::string& process_type) {
   return
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // The zygote process opens the resources for the renderers.
       process_type == switches::kZygoteProcess ||
 #endif
-#if defined(OS_MAC)
-      // Mac needs them too for scrollbar related images and for sandbox
-      // profiles.
+#if BUILDFLAG(IS_MAC)
+  // Mac needs them too for scrollbar related images and for sandbox
+  // profiles.
 #if BUILDFLAG(ENABLE_NACL)
       process_type == switches::kNaClLoaderProcess ||
 #endif
@@ -321,11 +321,11 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
       process_type == switches::kUtilityProcess;
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Check for --version and --product-version; return true if we encountered
 // one of these switches and should exit now.
 bool HandleVersionSwitches(const base::CommandLine& command_line) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (command_line.HasSwitch(switches::kProductVersion)) {
     printf("%s\n", version_info::GetVersionNumber().c_str());
     return true;
@@ -344,7 +344,7 @@ bool HandleVersionSwitches(const base::CommandLine& command_line) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Show the man page if --help or -h is on the command line.
 void HandleHelpSwitches(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kHelp) ||
@@ -354,9 +354,9 @@ void HandleHelpSwitches(const base::CommandLine& command_line) {
     PLOG(FATAL) << "execlp failed";
   }
 }
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 void SIGTERMProfilingShutdown(int signal) {
   content::Profiling::Stop();
   struct sigaction sigact;
@@ -373,9 +373,9 @@ void SetUpProfilingShutdownHandler() {
   sigemptyset(&sigact.sa_mask);
   CHECK_EQ(sigaction(SIGTERM, &sigact, NULL), 0);
 }
-#endif  // !defined(OS_MAC) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 struct MainFunction {
   const char* name;
@@ -384,7 +384,7 @@ struct MainFunction {
 
 // Initializes the user data dir. Must be called before InitializeLocalState().
 void InitializeUserDataDir(base::CommandLine* command_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Reach out to chrome_elf for the truth on the user data directory.
   // Note that in tests, this links to chrome_elf_test_stubs.
   wchar_t user_data_dir_buf[MAX_PATH], invalid_user_data_dir_buf[MAX_PATH];
@@ -402,13 +402,13 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
     CHECK(base::PathService::OverrideAndCreateIfNeeded(
         chrome::DIR_USER_DATA, user_data_dir, false, true));
   }
-#else  // OS_WIN
+#else  // BUILDFLAG(IS_WIN)
   base::FilePath user_data_dir =
       command_line->GetSwitchValuePath(switches::kUserDataDir);
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Linux, Chrome does not support running multiple copies under different
   // DISPLAYs, so the profile directory can be specified in the environment to
   // support the virtual desktop use-case.
@@ -420,10 +420,10 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
       user_data_dir = base::FilePath::FromUTF8Unsafe(user_data_dir_string);
     }
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC)
   policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   const bool specified_directory_was_invalid =
       !user_data_dir.empty() &&
@@ -457,10 +457,10 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
   // child or service processes will attempt to use the invalid directory.
   if (specified_directory_was_invalid)
     command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void InitLogging(const std::string& process_type) {
   logging::OldFileDeletionState file_state =
       logging::APPEND_TO_OLD_LOG_FILE;
@@ -476,10 +476,10 @@ void InitLogging(const std::string& process_type) {
 void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
   const base::TimeTicks now = base::TimeTicks::Now();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(!application_start_time.is_null());
   startup_metric_utils::RecordApplicationStartTime(application_start_time);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // On Android the main entry point time is the time when the Java code starts.
   // This happens before the shared library containing this code is even loaded.
   // The Java startup code has recorded that time, but the C++ code can't fetch
@@ -491,8 +491,8 @@ void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
   startup_metric_utils::RecordApplicationStartTime(now);
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   // Record the startup process creation time on supported platforms. On Android
   // this is recorded in ChromeMainDelegateAndroid.
   startup_metric_utils::RecordStartupProcessCreationTime(
@@ -519,7 +519,7 @@ ChromeMainDelegate::~ChromeMainDelegate() {
 }
 
 void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Initialize the cleaner of left-behind tmp files now that the main thread
   // has its SequencedTaskRunner; see https://crbug.com/1075917.
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
@@ -606,7 +606,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   chromeos::LacrosInitializeFeatureListDependentDBus();
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome_content_browser_client_->startup_data()->CreateProfilePrefService();
   net::NetworkChangeNotifier::SetFactory(
       new net::NetworkChangeNotifierFactoryAndroid());
@@ -615,7 +615,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   if (base::FeatureList::IsEnabled(
           features::kWriteBasicSystemProfileToPersistentHistogramsFile)) {
     bool record = true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     record =
         base::FeatureList::IsEnabled(chrome::android::kUmaBackgroundSessions);
 #endif
@@ -623,15 +623,15 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
       chrome_content_browser_client_->startup_data()->RecordCoreSystemProfile();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   UmaSessionStats::OnStartup();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   chrome::CacheChannelInfo();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   chrome::InitializeProtobuf();
 #endif
 }
@@ -652,7 +652,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   // it if not already overridden by command line, field trial etc.
   net::HttpCache::SplitCacheFeatureEnableByDefault();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For child processes, this requires allowlisting of the sched_setaffinity()
   // syscall in the sandbox (baseline_policy_android.cc). When this call is
   // removed, the sandbox allowlist should be updated too.
@@ -670,7 +670,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
                         channel == version_info::Channel::DEV);
   // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
   // not always enabled on Linux/ChromeOS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool enable_gwp_asan = crash_reporter::IsCrashpadEnabled();
 #else
   bool enable_gwp_asan = true;
@@ -706,7 +706,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
 #endif
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SetUpExtendedCrashReporting(is_browser_process);
   base::sequence_manager::internal::ThreadControllerPowerMonitor::
       InitializeOnMainThread();
@@ -718,7 +718,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ChromeMainDelegate::ShouldHandleConsoleControlEvents() {
   // Handle console control events so that orderly shutdown can be performed by
   // ChromeContentBrowserClient's override of SessionEnding.
@@ -757,7 +757,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Browser should not be sandboxed.
   const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
   if (is_browser && IsSandboxedProcess()) {
@@ -766,7 +766,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Give the browser process a longer treadmill, since crashes
   // there have more impact.
   const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
@@ -779,30 +779,30 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   tracing_sampler_profiler_ =
       tracing::TracingSamplerProfiler::CreateOnMainThread();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   v8_crashpad_support::SetUp();
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (!crash_reporter::IsCrashpadEnabled()) {
     breakpad::SetFirstChanceExceptionHandler(v8::TryHandleWebAssemblyTrapPosix);
   }
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   if (HandleVersionSwitches(command_line)) {
     *exit_code = 0;
     return true;  // Got a --version switch; exit with a success error code.
   }
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // This will directly exit if the user asked for help.
   HandleHelpSwitches(command_line);
 #endif
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Must do this before any other usage of command line!
   if (HasDeprecatedArguments(command_line.GetCommandLineString())) {
     *exit_code = 1;
@@ -818,7 +818,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   base::win::DisableHandleVerifier();
 #endif
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   chrome::RegisterPathProvider();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -827,7 +827,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
-#if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   nacl::RegisterPathProvider();
 #endif
 
@@ -839,7 +839,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 // references anymore. Not sure if that means this can be enabled on Android or
 // not though.  As there is no easily accessible command line on Android, I'm
 // not sure this is a big deal.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If we are in diagnostics mode this is the end of the line: after the
   // diagnostics are run the process will invariably exit.
   if (command_line.HasSwitch(switches::kDiagnostics)) {
@@ -940,7 +940,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   return false;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void ChromeMainDelegate::InitMacCrashReporter(
     const base::CommandLine& command_line,
     const std::string& process_type) {
@@ -997,7 +997,7 @@ void ChromeMainDelegate::SetUpInstallerPreferences(
   if (default_browser_setting)
     shell_integration::SetAsDefaultBrowser();
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 void ChromeMainDelegate::PreSandboxStartup() {
   const base::CommandLine& command_line =
@@ -1007,20 +1007,20 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
   crash_reporter::InitializeCrashKeys();
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   ChromeCrashReporterClient::Create();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   InitMacCrashReporter(command_line, process_type);
   SetUpInstallerPreferences(command_line);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   child_process_logging::Init();
 #endif
 #if defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   // Create an instance of the CPU class to parse /proc/cpuinfo and cache
   // cpu_brand info.
   base::CPU cpu_info;
@@ -1042,13 +1042,13 @@ void ChromeMainDelegate::PreSandboxStartup() {
                                           alt_preinstalled_components_dir,
                                           chrome::DIR_USER_DATA);
 
-#if !defined(OS_ANDROID) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
   // Android does InitLogging when library is loaded. Skip here.
   // For windows we call InitLogging when the sandbox is initialized.
   InitLogging(process_type);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(zturner): Throbber icons and cursors are still stored in chrome.dll,
   // this can be killed once those are merged into resources.pak. See
   // GlassBrowserFrameView::InitThrobberIcons(), https://crbug.com/368327 and
@@ -1089,7 +1089,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     ui::ResourceBundle::SetParseLottieAsStillImage(
         &lottie::ParseLottieAsStillImage);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // The renderer sandbox prevents us from accessing our .pak files directly.
     // Therefore file descriptors to the .pak files that we need are passed in
     // at process creation time.
@@ -1141,10 +1141,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
         locale;
   }
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Zygote needs to call InitCrashReporter() in RunZygote().
   if (process_type != switches::kZygoteProcess) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
     if (process_type.empty()) {
       base::android::InitJavaExceptionReporter();
@@ -1152,7 +1152,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     } else {
       base::android::InitJavaExceptionReporterForChildProcess();
     }
-#else  // !defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
     if (crash_reporter::IsCrashpadEnabled()) {
       crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
       crash_reporter::SetFirstChanceExceptionHandler(
@@ -1160,15 +1160,15 @@ void ChromeMainDelegate::PreSandboxStartup() {
     } else {
       breakpad::InitCrashReporter(process_type);
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
-#endif  // defined(OS_POSIX) && !defined(OS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CHECK_EQ(base::android::GetLibraryProcessType(),
            process_type.empty() ? base::android::PROCESS_BROWSER
                                 : base::android::PROCESS_CHILD);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // After all the platform Breakpads have been initialized, store the command
   // line for crash reporting.
@@ -1182,10 +1182,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
 void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
   // Note: If you are adding a new process type below, be sure to adjust the
   // AdjustLinuxOOMScore function too.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   AdjustLinuxOOMScore(process_type);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   InitLogging(process_type);
   SuppressWindowsErrorDialogs();
 #endif
@@ -1207,17 +1207,17 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
 absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();  // Android provides a subclass and shares no code here.
 #else
   static const MainFunction kMainFunctions[] = {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {switches::kRelauncherProcess, mac_relauncher::internal::RelauncherMain},
 #endif
 
     // This entry is not needed on Linux, where the NaCl loader
     // process is launched via nacl_helper instead.
-#if BUILDFLAG(ENABLE_NACL) && !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     {switches::kNaClLoaderProcess, NaClMain},
 #else
     {"<invalid>", nullptr},  // To avoid constant array of size 0
@@ -1229,7 +1229,7 @@ absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     if (process_type == kMainFunctions[i].name)
       return kMainFunctions[i].function(std::move(main_function_params));
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return std::move(main_function_params);
 }
@@ -1237,15 +1237,15 @@ absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
 void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {
   if (SubprocessNeedsResourceBundle(process_type))
     ui::ResourceBundle::CleanupSharedInstance();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   logging::CleanupChromeLogging();
 #else
   // Android doesn't use InitChromeLogging, so we close the log file manually.
   logging::CloseLogFile();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void ChromeMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1282,7 +1282,7 @@ void ChromeMainDelegate::ZygoteForked() {
   crash_keys::SetCrashKeysFromCommandLine(*command_line);
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 content::ContentClient* ChromeMainDelegate::CreateContentClient() {
   return &chrome_content_client_;
@@ -1310,7 +1310,7 @@ ChromeMainDelegate::CreateContentUtilityClient() {
 }
 
 void ChromeMainDelegate::PreBrowserMain() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Tell Cocoa to finish its initialization, which we want to do manually
   // instead of calling NSApplicationMain(). The primary reason is that NSAM()
   // never returns, which would leave all the objects currently on the stack
