@@ -194,8 +194,8 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicy) {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
-  ListPrefUpdateDeprecated update(profile.GetPrefs(),
-                                  prefs::kDownloadExtensionsToOpenByPolicy);
+  ListPrefUpdate update(profile.GetPrefs(),
+                        prefs::kDownloadExtensionsToOpenByPolicy);
   update->Append("txt");
   DownloadPrefs prefs(&profile);
 
@@ -212,8 +212,8 @@ TEST(DownloadPrefsTest, IsAutoOpenByPolicy) {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
-  ListPrefUpdateDeprecated update(profile.GetPrefs(),
-                                  prefs::kDownloadExtensionsToOpenByPolicy);
+  ListPrefUpdate update(profile.GetPrefs(),
+                        prefs::kDownloadExtensionsToOpenByPolicy);
   update->Append("exe");
   DownloadPrefs prefs(&profile);
   EXPECT_TRUE(prefs.EnableAutoOpenByUserBasedOnExtension(kFilePathType1));
@@ -231,8 +231,8 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyDangerousType) {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
-  ListPrefUpdateDeprecated update(profile.GetPrefs(),
-                                  prefs::kDownloadExtensionsToOpenByPolicy);
+  ListPrefUpdate update(profile.GetPrefs(),
+                        prefs::kDownloadExtensionsToOpenByPolicy);
   update->Append("swf");
   DownloadPrefs prefs(&profile);
 
@@ -258,16 +258,16 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyDynamicUpdates) {
 
   // Update the policy preference.
   {
-    ListPrefUpdateDeprecated update(profile.GetPrefs(),
-                                    prefs::kDownloadExtensionsToOpenByPolicy);
+    ListPrefUpdate update(profile.GetPrefs(),
+                          prefs::kDownloadExtensionsToOpenByPolicy);
     update->Append("swf");
   }
   EXPECT_TRUE(prefs.IsAutoOpenEnabled(kURL, kDangerousFilePath));
 
   // Remove the policy and ensure the file stops auto-opening.
   {
-    ListPrefUpdateDeprecated update(profile.GetPrefs(),
-                                    prefs::kDownloadExtensionsToOpenByPolicy);
+    ListPrefUpdate update(profile.GetPrefs(),
+                          prefs::kDownloadExtensionsToOpenByPolicy);
     update->ClearList();
   }
   EXPECT_FALSE(prefs.IsAutoOpenEnabled(kURL, kDangerousFilePath));
@@ -280,11 +280,11 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLs) {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
-  ListPrefUpdateDeprecated update_type(
-      profile.GetPrefs(), prefs::kDownloadExtensionsToOpenByPolicy);
+  ListPrefUpdate update_type(profile.GetPrefs(),
+                             prefs::kDownloadExtensionsToOpenByPolicy);
   update_type->Append("txt");
-  ListPrefUpdateDeprecated update_url(
-      profile.GetPrefs(), prefs::kDownloadAllowedURLsForOpenByPolicy);
+  ListPrefUpdate update_url(profile.GetPrefs(),
+                            prefs::kDownloadAllowedURLsForOpenByPolicy);
   update_url->Append("basic.com");
   DownloadPrefs prefs(&profile);
 
@@ -300,8 +300,8 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLsDynamicUpdates) {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
-  ListPrefUpdateDeprecated update_type(
-      profile.GetPrefs(), prefs::kDownloadExtensionsToOpenByPolicy);
+  ListPrefUpdate update_type(profile.GetPrefs(),
+                             prefs::kDownloadExtensionsToOpenByPolicy);
   update_type->Append("txt");
   DownloadPrefs prefs(&profile);
 
@@ -311,8 +311,8 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLsDynamicUpdates) {
 
   // Update the policy preference to only allow |kAllowedURL|.
   {
-    ListPrefUpdateDeprecated update_url(
-        profile.GetPrefs(), prefs::kDownloadAllowedURLsForOpenByPolicy);
+    ListPrefUpdate update_url(profile.GetPrefs(),
+                              prefs::kDownloadAllowedURLsForOpenByPolicy);
     update_url->Append("basic.com");
   }
 
@@ -321,8 +321,8 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLsDynamicUpdates) {
 
   // Remove the policy and ensure both auto-open again.
   {
-    ListPrefUpdateDeprecated update_url(
-        profile.GetPrefs(), prefs::kDownloadAllowedURLsForOpenByPolicy);
+    ListPrefUpdate update_url(profile.GetPrefs(),
+                              prefs::kDownloadAllowedURLsForOpenByPolicy);
     update_url->ClearList();
   }
   EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kAllowedURL, kFilePath));
@@ -341,8 +341,8 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
-  ListPrefUpdateDeprecated update_type(
-      profile.GetPrefs(), prefs::kDownloadExtensionsToOpenByPolicy);
+  ListPrefUpdate update_type(profile.GetPrefs(),
+                             prefs::kDownloadExtensionsToOpenByPolicy);
   update_type->Append("txt");
   DownloadPrefs prefs(&profile);
 
@@ -354,8 +354,8 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
 
   // Update the policy preference to only allow |kAllowedURL|.
   {
-    ListPrefUpdateDeprecated update_url(
-        profile.GetPrefs(), prefs::kDownloadAllowedURLsForOpenByPolicy);
+    ListPrefUpdate update_url(profile.GetPrefs(),
+                              prefs::kDownloadAllowedURLsForOpenByPolicy);
     update_url->Append("basic.com");
   }
 
