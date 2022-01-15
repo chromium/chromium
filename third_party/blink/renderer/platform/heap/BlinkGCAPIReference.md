@@ -7,7 +7,7 @@ This document explores the design, API and usage of the GC.
 
 ## Overview
 
-The general design of Oilpan is explained in the [Oilpan README](v8/include/cppgc/README.md).
+The general design of Oilpan is explained in the [Oilpan README](https://chromium.googlesource.com/v8/v8/+/main/include/cppgc/README.md).
 This section focuses on the Blink specific extensions to that design.
 
 ## Threading model
