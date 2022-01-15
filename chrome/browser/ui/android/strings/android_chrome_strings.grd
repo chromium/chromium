@@ -2777,6 +2777,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_FOOTER_SUPERVISED_USER" desc="The text is displayed in a footer on the very first screen of Chrome. The link 'Terms of Service' opens the Google Terms of Service. The link 'Privacy Policy' opens the Google Privacy Policy. Preferably, ensure consistency with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy). Separate the first and the second sentence through a line break.">
         By continuing, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph> and <ph name="BEGIN_PRIVACY_LINK">&lt;PRIVACY_LINK&gt;</ph>Privacy\u00A0Policy<ph name="END_PRIVACY_LINK">&lt;/PRIVACY_LINK&gt;</ph>.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK">&lt;UMA_LINK&gt;</ph>Manage<ph name="END_UMA_LINK">&lt;/UMA_LINK&gt;</ph>
       </message>
+      <message name="IDS_SIGNIN_FRE_FOOTER_TOS" desc="The text is displayed in a footer on the very first screen of Chrome. The link ‘Terms of Service’ opens the Google Terms of Service.">
+        By continuing, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>.
+      </message>
+      <message name="IDS_SIGNIN_FRE_FOOTER_TOS_WITH_SUPERVISED_USER" desc="The text is displayed in a footer on the very first screen of Chrome. The link 'Terms of Service' opens the Google Terms of Service. The link 'Privacy Policy' opens the Google Privacy Policy.">
+        By continuing, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph> and <ph name="BEGIN_PRIVACY_LINK">&lt;PRIVACY_LINK&gt;</ph>Privacy\u00A0Policy<ph name="END_PRIVACY_LINK">&lt;/PRIVACY_LINK&gt;</ph>.
+      </message>
+      <message name="IDS_SIGNIN_FRE_FOOTER_METRICS_REPORTING" desc="The text is displayed in a footer on the very first screen of Chrome. Preferably, ensure consistency with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy).">
+        To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK">&lt;UMA_LINK&gt;</ph>Manage<ph name="END_UMA_LINK">&lt;/UMA_LINK&gt;</ph>
+      </message>
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_TITLE" desc="Title of the dialog where users can change their Chrome metric sharing settings, like usage data. This appears when they open the Chrome app for the first time on their phone.">
         Make Chrome better
       </message>

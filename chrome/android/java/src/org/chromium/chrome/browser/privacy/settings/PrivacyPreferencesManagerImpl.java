@@ -127,6 +127,10 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
     }
 
+    public static void setInstanceForTesting(PrivacyPreferencesManagerImpl instance) {
+        sInstance = instance;
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isMetricsReportingEnabled();

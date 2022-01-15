@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -112,6 +113,8 @@ public class SigninFirstRunFragmentRenderTest {
     private IdentityManager mIdentityManagerMock;
     @Mock
     private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock
+    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
 
     private CustomSigninFirstRunFragment mFragment;
 
@@ -295,6 +298,67 @@ public class SigninFirstRunFragmentRenderTest {
 
         mRenderTestRule.render(
                 mFragment.getView(), "signin_first_run_fragment_signin_not_supported");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    public void testFragmentWhenMetricsReportingIsDisabledByPolicy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
+
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
+
+        launchActivityWithFragment(orientation);
+
+        mRenderTestRule.render(mFragment.getView(),
+                "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    public void testFragmentWhenMetricsReportingIsDisabledByPolicyWithAccount(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
+
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
+
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+        });
+        mRenderTestRule.render(mFragment.getView(),
+                "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy_with_account");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    public void testFragmentWhenMetricsReportingIsDisabledByPolicyWithChildAccount(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
+
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
+
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+        });
+        mRenderTestRule.render(mFragment.getView(),
+                "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy_with_child_account");
     }
 
     private void launchActivityWithFragment(int orientation) {

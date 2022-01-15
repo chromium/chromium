@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunFragment;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
@@ -95,7 +96,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mAllowCrashUpload = true;
+        mAllowCrashUpload = false;
         mFragmentView = new FrameLayout(getActivity());
         mFragmentView.addView(inflateFragmentView(inflater, getResources().getConfiguration()));
 
@@ -200,6 +201,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
             mSigninFirstRunCoordinator.onNativeAndPolicyLoaded(
                     getPageDelegate().getPolicyLoadListener().get());
+            mAllowCrashUpload = !mSigninFirstRunCoordinator.isMetricsReportingDisabledByPolicy();
         }
     }
 
@@ -212,8 +214,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                         ? R.layout.signin_first_run_landscape_view
                         : R.layout.signin_first_run_portrait_view,
                 null, false);
-        mSigninFirstRunCoordinator =
-                new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
+        mSigninFirstRunCoordinator = new SigninFirstRunCoordinator(requireContext(), view,
+                mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance());
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
         return view;
     }

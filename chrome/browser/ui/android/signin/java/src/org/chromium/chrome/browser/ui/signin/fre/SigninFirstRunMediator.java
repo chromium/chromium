@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -44,21 +45,24 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private final ModalDialogManager mModalDialogManager;
     private final AccountManagerFacade mAccountManagerFacade;
     private final Delegate mDelegate;
+    private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private AccountPickerDialogCoordinator mDialogCoordinator;
     private @Nullable String mSelectedAccountName;
     private @Nullable String mDefaultAccountName;
 
-    SigninFirstRunMediator(
-            Context context, ModalDialogManager modalDialogManager, Delegate delegate) {
+    SigninFirstRunMediator(Context context, ModalDialogManager modalDialogManager,
+            Delegate delegate, PrivacyPreferencesManager privacyPreferencesManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDelegate = delegate;
+        mPrivacyPreferencesManager = privacyPreferencesManager;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mModel = SigninFirstRunProperties.createModel(this::onSelectedAccountClicked,
                 this::onContinueAsClicked, this::onDismissClicked,
-                ExternalAuthUtils.getInstance().canUseGooglePlayServices(), getFooterString(false));
+                ExternalAuthUtils.getInstance().canUseGooglePlayServices(),
+                getFooterString(/*hasChildAccount=*/false, /*isMetricsReportingDisabled=*/false));
 
         mProfileDataCache.addObserver(this);
 
@@ -85,6 +89,19 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                             .getSigninManager(Profile.getLastUsedRegularProfile())
                             .isSigninDisabledByPolicy();
         mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
+
+        if (mPrivacyPreferencesManager.isMetricsReportingDisabledByPolicy()) {
+            // If metrics reporting is disabled by policy then there is at least one policy.
+            // Therefore, policies have loaded and frePolicy is not null.
+            assert hasPolicies;
+
+            final FrePolicy frePolicy = mModel.get(SigninFirstRunProperties.FRE_POLICY);
+            frePolicy.metricsReportingDisabledByPolicy = true;
+        }
+
+        final boolean isChild = mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+        mModel.set(SigninFirstRunProperties.FOOTER_STRING,
+                getFooterString(isChild, isMetricsReportingDisabledByPolicy()));
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -108,6 +125,12 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     @Override
     public void addAccount() {
         mDelegate.addAccount();
+    }
+
+    protected boolean isMetricsReportingDisabledByPolicy() {
+        @Nullable
+        FrePolicy frePolicy = mModel.get(SigninFirstRunProperties.FRE_POLICY);
+        return frePolicy != null && frePolicy.metricsReportingDisabledByPolicy;
     }
 
     /**
@@ -217,33 +240,58 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
         final boolean isChild = ChildAccountStatus.isChild(status);
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
-        mModel.set(SigninFirstRunProperties.FOOTER_STRING, getFooterString(isChild));
+        mModel.set(SigninFirstRunProperties.FOOTER_STRING,
+                getFooterString(isChild, isMetricsReportingDisabledByPolicy()));
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
     }
 
-    private SpannableString getFooterString(boolean hasChildAccount) {
+    /**
+     * Builds footer string dynamically.
+     * First line has a TOS link. A privacy notice will also be shown for child accounts.
+     * Second line appears only if MetricsReporting is not disabled by policy.
+     */
+    private SpannableString getFooterString(
+            boolean hasChildAccount, boolean isMetricsReportingDisabled) {
+        String footerString = mContext.getString(hasChildAccount
+                        ? R.string.signin_fre_footer_tos_with_supervised_user
+                        : R.string.signin_fre_footer_tos);
+
+        if (!isMetricsReportingDisabled) {
+            footerString += "\n" + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
+        }
+
+        // TOS is always shown. Privacy notice and MetricsReporting depend on conditionals.
+        int spansLength = 1 + (hasChildAccount ? 1 : 0) + (!isMetricsReportingDisabled ? 1 : 0);
+        int spansAppended = 0;
+        SpanApplier.SpanInfo[] spans = new SpanApplier.SpanInfo[spansLength];
+
+        // Terms of Service SpanInfo.
         final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
                 new NoUnderlineClickableSpan(mContext.getResources(),
                         view -> mDelegate.showInfoPage(R.string.google_terms_of_service_url));
-        final SpanApplier.SpanInfo tosSpanInfo =
+        spans[spansAppended++] =
                 new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan);
-        final NoUnderlineClickableSpan clickableUMADialogSpan = new NoUnderlineClickableSpan(
-                mContext.getResources(), view -> mDelegate.openUmaDialog());
-        final SpanApplier.SpanInfo umaSpanInfo =
-                new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan);
+
+        // Privacy notice Link SpanInfo.
         if (hasChildAccount) {
             final NoUnderlineClickableSpan clickablePrivacyPolicySpan =
                     new NoUnderlineClickableSpan(mContext.getResources(),
                             view -> mDelegate.showInfoPage(R.string.google_privacy_policy_url));
-            final SpanApplier.SpanInfo privacySpanInfo = new SpanApplier.SpanInfo(
+
+            spans[spansAppended++] = new SpanApplier.SpanInfo(
                     "<PRIVACY_LINK>", "</PRIVACY_LINK>", clickablePrivacyPolicySpan);
-            return SpanApplier.applySpans(
-                    mContext.getString(R.string.signin_fre_footer_supervised_user), tosSpanInfo,
-                    umaSpanInfo, privacySpanInfo);
-        } else {
-            return SpanApplier.applySpans(
-                    mContext.getString(R.string.signin_fre_footer), tosSpanInfo, umaSpanInfo);
         }
+
+        // Metrics and Crash Reporting SpanInfo.
+        if (!isMetricsReportingDisabled) {
+            final NoUnderlineClickableSpan clickableUMADialogSpan = new NoUnderlineClickableSpan(
+                    mContext.getResources(), view -> mDelegate.openUmaDialog());
+            spans[spansAppended++] =
+                    new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan);
+        }
+
+        // Apply spans to footer string.
+        return SpanApplier.applySpans(footerString, spans);
     }
 }

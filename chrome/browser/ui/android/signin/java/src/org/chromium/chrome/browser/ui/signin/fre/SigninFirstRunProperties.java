@@ -20,7 +20,7 @@ class SigninFirstRunProperties {
      * When forced sign-in will be supported, we could use an enum field in this class
      * instead of the boolean property.
      */
-    static class FrePolicy {}
+    static class FrePolicy { public boolean metricsReportingDisabledByPolicy; }
 
     static final ReadableObjectPropertyKey<OnClickListener> ON_SELECTED_ACCOUNT_CLICKED =
             new ReadableObjectPropertyKey<>("on_selected_account_clicked");
