@@ -32,7 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
@@ -42,7 +42,7 @@ using testing::NiceMock;
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TestFeedApi : public feed::StubFeedApi {
  public:
   MOCK_METHOD1(WasUrlRecentlyNavigatedFromFeed, bool(const GURL&));
@@ -61,7 +61,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     feed::FeedServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindLambdaForTesting([&](content::BrowserContext* context) {
@@ -138,7 +138,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   base::CancelableTaskTracker tracker_;
   raw_ptr<history::HistoryService> history_service_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TestFeedApi test_feed_api_;
 #endif
 };
@@ -358,7 +358,7 @@ TEST_F(HistoryTabHelperTest,
   EXPECT_FALSE(args.opener.has_value());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 TEST_F(HistoryTabHelperTest, NonFeedNavigationsDoContributeToMostVisited) {
   GURL new_url("http://newurl.com");

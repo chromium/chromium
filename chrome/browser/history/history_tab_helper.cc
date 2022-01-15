@@ -22,7 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_api.h"
@@ -36,11 +36,11 @@ namespace {
 
 using content::NavigationEntry;
 using content::WebContents;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 using chrome::android::BackgroundTabManager;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsNavigationFromFeed(content::WebContents& web_contents, const GURL& url) {
   feed::FeedService* feed_service =
       feed::FeedServiceFactory::GetForBrowserContext(
@@ -56,7 +56,7 @@ bool IsNavigationFromFeed(content::WebContents& web_contents, const GURL& url) {
 bool ShouldConsiderForNtpMostVisited(
     content::WebContents& web_contents,
     content::NavigationHandle* navigation_handle) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Clicks on content suggestions on the NTP should not contribute to the
   // Most Visited tiles in the NTP.
   DCHECK(!navigation_handle->GetRedirectChain().empty());
@@ -390,7 +390,7 @@ bool HistoryTabHelper::IsEligibleTab(
   if (force_eligible_tab_for_testing_)
     return true;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto* background_tab_manager = BackgroundTabManager::GetInstance();
   if (background_tab_manager->IsBackgroundTab(web_contents())) {
     // No history insertion is done for now since this is a tab that speculates
