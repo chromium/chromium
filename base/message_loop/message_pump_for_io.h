@@ -10,34 +10,34 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/message_loop/message_pump_win.h"
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 #include "base/message_loop/message_pump_io_ios.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_kqueue.h"
-#elif defined(OS_NACL)
+#elif BUILDFLAG(IS_NACL)
 #include "base/message_loop/message_pump_default.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "base/message_loop/message_pump_fuchsia.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "base/message_loop/message_pump_libevent.h"
 #endif
 
 namespace base {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows defines it as-is.
 using MessagePumpForIO = MessagePumpForIO;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 using MessagePumpForIO = MessagePumpIOSForIO;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 using MessagePumpForIO = MessagePumpKqueue;
-#elif defined(OS_NACL)
+#elif BUILDFLAG(IS_NACL)
 using MessagePumpForIO = MessagePumpDefault;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 using MessagePumpForIO = MessagePumpFuchsia;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 using MessagePumpForIO = MessagePumpLibevent;
 #else
 #error Platform does not define MessagePumpForIO

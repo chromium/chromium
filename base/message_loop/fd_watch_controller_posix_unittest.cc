@@ -22,7 +22,7 @@
 
 namespace base {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 
 namespace {
 
@@ -561,6 +561,6 @@ TEST_F(FdWatchControllerPosixTest, TimerThenIoEvent) {
 
 }  // namespace
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

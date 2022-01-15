@@ -21,9 +21,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #import <AppKit/AppKit.h>
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace base {
 
@@ -54,14 +54,14 @@ void NoOp(void* info) {
 constexpr CFTimeInterval kCFTimeIntervalMax =
     std::numeric_limits<CFTimeInterval>::max();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Set to true if MessagePumpMac::Create() is called before NSApp is
 // initialized.  Only accessed from the main thread.
 bool g_not_using_cr_app = false;
 
 // The MessagePump controlling [NSApp run].
 MessagePumpNSApplication* g_app_pump;
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -229,11 +229,11 @@ void MessagePumpCFRunLoopBase::SetTimerSlack(TimerSlack timer_slack) {
   timer_slack_ = timer_slack;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void MessagePumpCFRunLoopBase::Attach(Delegate* delegate) {}
 
 void MessagePumpCFRunLoopBase::Detach() {}
-#endif  // OS_IOS
+#endif  // BUILDFLAG(IS_IOS)
 
 // Must be called on the run loop thread.
 MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
@@ -664,7 +664,7 @@ bool MessagePumpNSRunLoop::DoQuit() {
   return true;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 MessagePumpUIApplication::MessagePumpUIApplication()
     : MessagePumpCFRunLoopBase(kCommonModeMask), run_loop_(NULL) {}
 
@@ -865,12 +865,12 @@ bool MessagePumpMac::IsHandlingSendEvent() {
   NSObject<CrAppProtocol>* app = static_cast<NSObject<CrAppProtocol>*>(NSApp);
   return [app isHandlingSendEvent];
 }
-#endif  // !defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 // static
 std::unique_ptr<MessagePump> MessagePumpMac::Create() {
   if ([NSThread isMainThread]) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     return std::make_unique<MessagePumpUIApplication>();
 #else
     if ([NSApp conformsToProtocol:@protocol(CrAppProtocol)])

@@ -40,7 +40,7 @@
 #include "build/build_config.h"
 
 #if defined(__OBJC__)
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #import <Foundation/Foundation.h>
 #else
 #import <AppKit/AppKit.h>
@@ -53,7 +53,7 @@
 // necessary.
 - (BOOL)isHandlingSendEvent;
 @end
-#endif  // !defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 #endif  // defined(__OBJC__)
 
 namespace base {
@@ -96,14 +96,14 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Some iOS message pumps do not support calling |Run()| to spin the main
   // message loop directly.  Instead, call |Attach()| to set up a delegate, then
   // |Detach()| before destroying the message pump.  These methods do nothing if
   // the message pump supports calling |Run()| and |Quit()|.
   virtual void Attach(Delegate* delegate);
   virtual void Detach();
-#endif  // OS_IOS
+#endif  // BUILDFLAG(IS_IOS)
 
   // Exposed for testing.
   LudicrousSlackSetting GetLudicrousSlackStateForTesting() const {
@@ -322,7 +322,7 @@ class BASE_EXPORT MessagePumpNSRunLoop : public MessagePumpCFRunLoopBase {
   CFRunLoopSourceRef quit_source_;
 };
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // This is a fake message pump.  It attaches sources to the main thread's
 // CFRunLoop, so PostTask() will work, but it is unable to drive the loop
 // directly, so calling Run() or Quit() are errors.
@@ -408,7 +408,7 @@ class MessagePumpCrApplication : public MessagePumpNSApplication {
   // -sendEvent.  Requires NSApp implementing CrAppProtocol.
   AutoreleasePoolType* CreateAutoreleasePool() override;
 };
-#endif  // !defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 class BASE_EXPORT MessagePumpMac {
  public:
@@ -426,7 +426,7 @@ class BASE_EXPORT MessagePumpMac {
   // default NSApplication.
   static std::unique_ptr<MessagePump> Create();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // If a pump is created before the required CrAppProtocol is
   // created, the wrong MessagePump subclass could be used.
   // UsingCrApp() returns false if the message pump was created before
@@ -437,7 +437,7 @@ class BASE_EXPORT MessagePumpMac {
   // Wrapper to query -[NSApp isHandlingSendEvent] from C++ code.
   // Requires NSApp to implement CrAppProtocol.
   static bool IsHandlingSendEvent();
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 };
 
 // Tasks posted to the message loop are posted under this mode, as well

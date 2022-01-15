@@ -4,10 +4,12 @@
 
 #include "base/message_loop/timer_slack.h"
 
-#if defined(OS_MAC)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_kqueue.h"
 #include "base/message_loop/message_pump_mac.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -16,7 +18,7 @@
 namespace base {
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class TestMessagePumpKqueue : public MessagePumpKqueue {
  public:
   size_t set_wakeup_timer_event_calls() {
@@ -44,13 +46,13 @@ void TestMessagePumpKqueue::SetWakeupTimerEvent(
   ++set_wakeup_timer_event_calls_;
   last_timer_event_ = *timer_event;
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST(TimerSlackTest, LudicrousTimerSlackDefaultsOff) {
   EXPECT_FALSE(IsLudicrousTimerSlackEnabled());
   EXPECT_EQ(base::Milliseconds(1500), GetLudicrousTimerSlack());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   MessagePumpCFRunLoop message_pump_cf_run_loop;
   EXPECT_EQ(
       MessagePumpCFRunLoop::LudicrousSlackSetting::kLudicrousSlackUninitialized,
@@ -69,7 +71,7 @@ TEST(TimerSlackTest, LudicrousTimerSlackDefaultsOff) {
   EXPECT_FALSE(message_pump_kqueue.last_timer_event().fflags & NOTE_LEEWAY);
   EXPECT_FALSE(message_pump_kqueue
                    .GetIsLudicrousTimerSlackEnabledAndNotSuspendedForTesting());
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 TEST(TimerSlackTest, LudicrousTimerSlackObservesFeature) {
@@ -80,7 +82,7 @@ TEST(TimerSlackTest, LudicrousTimerSlackObservesFeature) {
   EXPECT_TRUE(IsLudicrousTimerSlackEnabled());
   EXPECT_EQ(base::Milliseconds(1500), GetLudicrousTimerSlack());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   MessagePumpCFRunLoop message_pump_cf_run_loop;
   EXPECT_EQ(
       MessagePumpCFRunLoop::LudicrousSlackSetting::kLudicrousSlackUninitialized,
@@ -102,10 +104,10 @@ TEST(TimerSlackTest, LudicrousTimerSlackObservesFeature) {
   TestMessagePumpKqueue message_pump_kqueue;
   EXPECT_TRUE(message_pump_kqueue
                   .GetIsLudicrousTimerSlackEnabledAndNotSuspendedForTesting());
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST(TimerSlackTest, LudicrousTimerSlackResetsTimerOnSuspendResume) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -171,7 +173,7 @@ TEST(TimerSlackTest, LudicrousTimerSlackDoesntDoubleCancelOnSuspendToggle) {
   message_pump_kqueue.MaybeUpdateWakeupTimerForTesting(base::TimeTicks::Max());
   EXPECT_EQ(2u, message_pump_kqueue.set_wakeup_timer_event_calls());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST(TimerSlackTest, LudicrousTimerSlackSlackObservesFeatureParam) {
   base::test::ScopedFeatureList scoped_feature_list;

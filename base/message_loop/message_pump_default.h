@@ -27,7 +27,7 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
   void Quit() override;
   void ScheduleWork() override;
   void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   void SetTimerSlack(TimerSlack timer_slack) override;
 #endif
 
