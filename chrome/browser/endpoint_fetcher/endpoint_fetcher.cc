@@ -19,7 +19,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
@@ -28,7 +28,7 @@
 #include "chrome/browser/endpoint_fetcher/jni_headers/EndpointResponse_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 const char kContentTypeKey[] = "Content-Type";
@@ -304,7 +304,7 @@ std::string EndpointFetcher::GetUrlForTesting() {
   return url_.spec();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 static void OnEndpointFetcherComplete(
     const base::android::JavaRef<jobject>& jcaller,
@@ -409,4 +409,4 @@ static void JNI_EndpointFetcher_NativeFetchWithNoAuth(
       nullptr);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
