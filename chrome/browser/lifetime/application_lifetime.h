@@ -33,7 +33,7 @@ void AttemptRestart();
 // entire OS, instead of just relaunching the browser.
 void AttemptRelaunch();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Starts an administrator-initiated relaunch process. On platforms other than
 // Chrome OS, this relaunches the browser and restores the user's session. On
 // Chrome OS, this restarts the entire OS. This differs from AttemptRelaunch in
@@ -64,7 +64,7 @@ void ExitIgnoreUnloadHandlers();
 bool IsAttemptingShutdown();
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Closes all browsers and if successful, quits.
 void CloseAllBrowsersAndQuit();
 
@@ -95,7 +95,7 @@ void OnClosingAllBrowsers(bool closing);
 // closing, and false if and when that process is cancelled.
 base::CallbackListSubscription AddClosingAllBrowsersCallback(
     base::RepeatingCallback<void(bool)> closing_all_browsers_callback);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace chrome
 

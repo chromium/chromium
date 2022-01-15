@@ -14,7 +14,7 @@ class PrefRegistrySimple;
 
 namespace browser_shutdown {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // The type of restart to perform during shutdown; see ShutdownPostThreadsStop.
 enum class RestartMode {
@@ -40,7 +40,7 @@ enum class RestartMode {
   kRestartThisSession,
 };
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -78,7 +78,7 @@ bool ShouldIgnoreUnloadHandlers();
 // Get the current shutdown type.
 ShutdownType GetShutdownType();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Performs the shutdown tasks that need to be done before
 // BrowserProcess and the various threads go away.
 //

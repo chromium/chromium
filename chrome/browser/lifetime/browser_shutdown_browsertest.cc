@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
 }
 
 // Flakes on Mac11.0: https://crbug.com/1259913
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TwoBrowsersClosingShutdownHistograms \
   DISABLED_TwoBrowsersClosingShutdownHistograms
 #else
