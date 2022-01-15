@@ -665,7 +665,7 @@ class BackgroundSyncManagerTest
 
   void SetRelyOnAndroidNetworkDetectionAndRestartManager(
       bool rely_on_android_network_detection) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     BackgroundSyncParameters* parameters =
         GetController()->background_sync_parameters();
     parameters->rely_on_android_network_detection =
@@ -1968,7 +1968,7 @@ TEST_F(BackgroundSyncManagerTest, RelyOnAndroidNetworkDetection) {
   EXPECT_TRUE(Register(sync_options_1_));
   SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0, sync_events_called_);
   EXPECT_TRUE(GetRegistration(sync_options_1_));
 #else

@@ -190,7 +190,7 @@ TEST_F(BackgroundSyncSchedulerTest, ScheduleBothTypesOfSync) {
   run_loop_2.Run();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(BackgroundSyncSchedulerTest, BrowserWakeupScheduled) {
   ScheduleDelayedProcessing(GURL(kUrl_1),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,

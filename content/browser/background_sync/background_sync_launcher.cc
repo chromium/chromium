@@ -17,7 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
 #endif
 
@@ -47,7 +47,7 @@ base::TimeDelta BackgroundSyncLauncher::GetSoonestWakeupDelta(
 }
 
 // static
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BackgroundSyncLauncher::FireBackgroundSyncEvents(
     BrowserContext* browser_context,
     blink::mojom::BackgroundSyncType sync_type,
