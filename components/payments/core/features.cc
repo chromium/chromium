@@ -13,7 +13,7 @@ namespace features {
 const base::Feature kWebPaymentsExperimentalFeatures{
     "WebPaymentsExperimentalFeatures", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 const base::Feature kWebPaymentsNativeApps{"WebPaymentsNativeApps",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
@@ -39,11 +39,11 @@ const base::Feature kWebPaymentsRedactShippingAddress{
 
 const base::Feature kAppStoreBilling {
   "AppStoreBilling",
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // OS_ANDROID || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 };
 
 const base::Feature kAppStoreBillingDebug{"AppStoreBillingDebug",

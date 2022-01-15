@@ -32,7 +32,7 @@ SecurePaymentConfirmationController::~SecurePaymentConfirmationController() =
     default;
 
 void SecurePaymentConfirmationController::ShowDialog() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #endif  // OS_ANDROID
 
