@@ -3006,7 +3006,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       Not: Kullanabileceğiniz değişkenlerin listesine bakın ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
 <translation id="4531706050939927436">Android uygulamaları, Google Play kullanılarak Google Yönetici Konsolu'ndan zorunlu şekilde yüklenebilir. Söz konusu uygulamalar bu politikayı kullanmaz.</translation>
 <translation id="4534500438517478692">Android kısıtlama adı:</translation>
-<translation id="4537906430022369840">Kullanıcı aracısı kısaltma özelliği devre dışı bırakılmış ve alan denemeleri ya da kaynak denemeleri ile etkinleştirilmemiş.</translation>
 <translation id="4541530620466526913">Cihaz-yerel hesaplar</translation>
 <translation id="4543502256674577024">Cihaz güncelleme ayarları</translation>
 <translation id="454585952814397564">Ses işlemi için normal öncelik kullan</translation>
@@ -6369,7 +6368,6 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 <translation id="8455529558077979314">Gizlilik ekranı ayarları</translation>
 <translation id="8455551509936646199">Cihazın haftanın hangi gününde yeniden başlatılması gerektiği (cihazın yerel saat dilimine göre). Yalnızca "sıklık", "HAFTALIK" olarak ayarlandığında kullanılır.</translation>
 <translation id="8461914792118322307">Proxy</translation>
-<translation id="8463569949213141467">Devre dışı bırakılacak kamera, tarayıcı ayarları, OS ayarları, tarama, web mağazası, tuval ve keşfedin özelliklerini yapılandır</translation>
 <translation id="8465065632133292531">POST kullanan anlık URL parametreleri</translation>
 <translation id="8470317291588703478">YouTube Kısıtlı Modu'nu zorlama</translation>
 <translation id="847472800012384958">Hiçbir sitenin pop-up göstermesine izin verme</translation>

@@ -207,7 +207,6 @@
 <translation id="1195558154361252544">Sjálfkrafa er lokað á tilkynningar fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
 <translation id="1197088940767939838">Appelsínugulur</translation>
 <translation id="1197935538609051549">Slökkva</translation>
-<translation id="1197979282329025000">Villa kom upp við að sækja prentaraeiginleika prentarans <ph name="PRINTER_NAME" />. Prentarinn er hugsanlega ekki skráður hjá <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">Hreinsa allt</translation>
 <translation id="1199814941632954229">Verið er að úthluta vottorðum fyrir þessa vottorðsprófíla</translation>
 <translation id="120069043972472860">Ekki hægt að horfa</translation>
@@ -1211,7 +1210,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2199719347983604670">Gögn úr Chrome samstillingu</translation>
 <translation id="2200094388063410062">Tölvupóstur</translation>
 <translation id="2200356397587687044">Chrome þarf að fá heimild til að halda áfram</translation>
-<translation id="2202898655984161076">Vandamál kom upp við að birta prentara. Sumir prentaranna þinna eru ef til vill ekki skráðir á fullnægjandi hátt hjá <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Heitið má innihalda bókstafi, tölur og sérstafi</translation>
 <translation id="220321590587754225">Tenging mistókst. Reyndu aftur.</translation>
 <translation id="2204034823255629767">Lesa og breyta því sem þú skrifar</translation>
@@ -2207,7 +2205,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að sérsniðnum niðurstöðum <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">Búa til flýtileið?</translation>
 <translation id="321834671654278338">Linux-fjarlægingarforrit</translation>
-<translation id="3220586366024592812">Tengiferli <ph name="CLOUD_PRINT_NAME" /> hrundi. Endurræsa?</translation>
 <translation id="3220943972464248773">Staðfestu að þetta sért þú til að samstilla aðgangsorðin þín</translation>
 <translation id="3222066309010235055">Forteikna: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Tengjast <ph name="USB_VM_NAME" /></translation>
@@ -2761,7 +2758,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="3790417903123637354">Eitthvað fór úrskeiðis. Reyndu aftur síðar</translation>
 <translation id="379082410132524484">Kortið þitt er útrunnið</translation>
-<translation id="3792890930871100565">Aftengja prentara</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome fann engan skaðlegan hugbúnað í tölvunni þinni • Athugað fyrir 1 degi}one{Chrome fann engan skaðlegan hugbúnað í tölvunni þinni • Athugað fyrir {NUM_DAYS} degi}other{Chrome fann engan skaðlegan hugbúnað í tölvunni þinni • Athugað fyrir {NUM_DAYS} dögum}}</translation>
 <translation id="379500251094592809">Til að hægt sé að nota nærdeilingu þurfa bæði tækin að vera ólæst, nálægt hvort öðru og með kveikt á Bluetooth. Ef þú deilir með Chromebook sem er ekki í tengiliðunum þínum skaltu tryggja að kveikt sé á „Nærsýnileiki“ í henni (opnaðu stöðusvæðið með því að velja tíma og kveiktu síðan á „Nærsýnileiki“) <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Slökkt</translation>
@@ -3874,7 +3870,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4972129977812092092">Breyta prentara</translation>
 <translation id="4972164225939028131">Rangt aðgangsorð</translation>
 <translation id="4972737347717125191">Vefsvæði geta beðið um leyfi til að nota sýndarveruleikatæki og -gögn</translation>
-<translation id="4973307593867026061">Bæta við prenturum</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Slökkva á hljóði svæðis}one{Slökkva á hljóði svæða}other{Slökkva á hljóði svæða}}</translation>
 <translation id="4977942889532008999">Staðfesta aðgang</translation>
 <translation id="4980805016576257426">Þessi viðbót inniheldur spilliforrit.</translation>
@@ -3927,13 +3922,11 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5036662165765606524">Leyfa engum vefsvæðum að sækja margar skrár í einu sjálfkrafa</translation>
 <translation id="5037676449506322593">Velja allt</translation>
 <translation id="5038022729081036555">Þú getur notað það í <ph name="TIME_LIMIT" /> á morgun.</translation>
-<translation id="5038863510258510803">Gerir virkt...</translation>
 <translation id="5039696241953571917">Þú getur skoðað og haft umsjón með vistuðum aðgangsorðum á Google reikningnum þínum</translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5040823038948176460">Fleiri efnisstillingar</translation>
 <translation id="5043440033854483429">Heitið má innihalda bókstafi, tölustafi og bandstrik (-) og verður að vera 1 til 15 stafir á lengd.</translation>
 <translation id="5043913660911154449">Eða tilgreindu PPD prentarans <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">Ekki sýna þetta skref aftur</translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
 <translation id="504561833207953641">Opnast í núverandi vafralotu.</translation>
 <translation id="5047421709274785093">Ekki leyfa vefsvæðum að nota hreyfi- og birtuskynjara</translation>
@@ -6860,7 +6853,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8063535366119089408">Skoða skrá</translation>
 <translation id="8064279191081105977">Hópur <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Tengingargluggi</translation>
-<translation id="8069615408251337349">Google skýjaprentun</translation>
 <translation id="8070662218171013510">Snertisvörun</translation>
 <translation id="8071432093239591881">Prenta sem mynd</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Forritagögn geta verið hvaða gögn sem er sem forrit hefur vistað (í samræmi við stillingar þróunaraðila), þar á meðal gögn svo sem tengiliðir, skilaboð og myndir.<ph name="END_PARAGRAPH1" />
@@ -7743,7 +7735,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9003647077635673607">Leyfa á öllum vefsvæðum</translation>
 <translation id="9003677638446136377">Prófa aftur</translation>
 <translation id="9004754973617721124">Hreinsa vefsvæðisgögn og heimildir fyrir <ph name="SITE_NAME" />, allar undirsíður og uppsett forrit?</translation>
-<translation id="9004952710076978168">Tilkynning barst um óþekktan prentara.</translation>
 <translation id="9008201768610948239">Hunsa</translation>
 <translation id="9008201858626224558">Bakkhnappur upplýsingasíðu <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Hleður inn (<ph name="PROGRESS_PERCENT" />%)...</translation>
@@ -7794,7 +7785,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9045430190527754450">Sendir veffang síðunnar sem þú reynir að opna til Google</translation>
 <translation id="9048745018038487540">Velja allar leturgerðir</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>
-<translation id="9052208328806230490">Þú hefur skráð prentarana þína hjá <ph name="CLOUD_PRINT_NAME" /> með því að nota reikninginn <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Halda áfram að útiloka</translation>
 <translation id="9053563360605707198">Prenta á báðum hliðum</translation>
 <translation id="9053893665344928494">Muna hvað ég valdi</translation>

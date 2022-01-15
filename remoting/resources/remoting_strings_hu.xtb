@@ -26,7 +26,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="225614027745146050">Üdvözöljük</translation>
 <translation id="2320166752086256636">Billentyűzet elrejtése</translation>
 <translation id="2329392777730037872">Nem sikerült megnyitni a következő URL-t az ügyfélnél: <ph name="URL" />.</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Minden jog fenntartva.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2366718077645204424">A gazdagép nem érhető el. Ez valószínűleg az Ön által használt hálózat konfigurációja miatt van.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Legutóbb észlelve az interneten: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -76,7 +75,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="4405930547258349619">Alapkönyvtár</translation>
 <translation id="443560535555262820">Kisegítő lehetőségek beállításainak megnyitása</translation>
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
-<translation id="4512952200932940229">Copyright 2021 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="4513946894732546136">Visszajelzés</translation>
 <translation id="4563926062592110512">Kliens leválasztva: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973">A(z) <ph name="URL_FORWARDER_NAME" /> nincs helyesen konfigurálva. Válasszon másik alapértelmezett böngészőt, majd engedélyezze újra az URL-ek továbbítását.</translation>

@@ -206,7 +206,6 @@
 <translation id="1195558154361252544">Notifications are automatically blocked for all sites except ones that you allow</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1197935538609051549">Deactivate</translation>
-<translation id="1197979282329025000">An error occurred while retrieving printer capabilities for printer <ph name="PRINTER_NAME" />. This printer could not be registered with <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">Clear all</translation>
 <translation id="1199814941632954229">Certificates are being provisioned for these certificate profiles</translation>
 <translation id="120069043972472860">Unwatchable</translation>
@@ -242,6 +241,7 @@
 <translation id="1235458158152011030">Known networks</translation>
 <translation id="123578888592755962">Disk full</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{text}other{# texts}}</translation>
+<translation id="1236009322878349843">Edit phone</translation>
 <translation id="1239594683407221485">Explore the device’s content in the Files app.</translation>
 <translation id="1241066500170667906">Select experiment state for <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">More languages</translation>
@@ -1210,7 +1210,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2199719347983604670">Data from Chrome sync</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200356397587687044">Chrome needs permission to continue</translation>
-<translation id="2202898655984161076">There was a problem while listing printers. Some of your printers may not have registered successfully with <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Name can use letters, numbers and special characters</translation>
 <translation id="220321590587754225">Couldn't connect. Try again.</translation>
 <translation id="2204034823255629767">Read and change anything that you type</translation>
@@ -1958,6 +1957,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2939908794993783865">Additional inactive sites</translation>
 <translation id="2939938020978911855">Show available Bluetooth devices</translation>
 <translation id="2941112035454246133">Low</translation>
+<translation id="2941696810925320401">Sites usually open and place windows to show additional documents or full-screen content on your screens</translation>
 <translation id="2942279350258725020">Android messages</translation>
 <translation id="2942560570858569904">Waiting...</translation>
 <translation id="2942581856830209953">Customise this page</translation>
@@ -2110,6 +2110,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentially harmful extension is off. You can also remove it.}other{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}}</translation>
 <translation id="3101126716313987672">Dim light</translation>
 <translation id="3101709781009526431">Date and time</translation>
+<translation id="3103451787721578293">Please enter a reason for uploading this data:</translation>
 <translation id="3103941660000130485">Error upgrading Linux</translation>
 <translation id="3105796011181310544">Change back to Google?</translation>
 <translation id="310671807099593501">Site is using Bluetooth</translation>
@@ -2207,7 +2208,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results.</translation>
 <translation id="3217843140356091325">Create shortcut?</translation>
 <translation id="321834671654278338">Linux uninstaller</translation>
-<translation id="3220586366024592812">The <ph name="CLOUD_PRINT_NAME" /> connector process has crashed. Restart?</translation>
 <translation id="3220943972464248773">To sync your passwords, verify that it's you</translation>
 <translation id="3222066309010235055">Prerender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Connect to <ph name="USB_VM_NAME" /></translation>
@@ -2636,6 +2636,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3670113805793654926">Devices from any vendor</translation>
 <translation id="3670229581627177274">Turn on Bluetooth</translation>
 <translation id="3672681487849735243">A factory error has been detected</translation>
+<translation id="3673097791729989571">Sign-in hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="367645871420407123">leave empty if you want to set the root password to the default test image value</translation>
 <translation id="3677106374019847299">Enter custom provider</translation>
 <translation id="3677911431265050325">Request mobile site</translation>
@@ -2761,7 +2762,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="3790417903123637354">Something went wrong. Try again later</translation>
 <translation id="379082410132524484">Your card has expired</translation>
-<translation id="3792890930871100565">Disconnect printers</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome didn't find harmful software on your computer • Checked 1 day ago}other{Chrome didn't find harmful software on your computer • Checked {NUM_DAYS} days ago}}</translation>
 <translation id="379500251094592809">To use Nearby Share, make sure that both devices are unlocked, close together and have Bluetooth turned on. If you’re sharing with a Chromebook that is not in your contacts, make sure that it has Nearby visibility turned on (open the status area by selecting the time, then turn on Nearby visibility) <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Off</translation>
@@ -3419,6 +3419,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
 <translation id="4482990632723642375">Recently closed tab</translation>
+<translation id="4484922932728109422">Don't allow sites to use info about your screens to open and place windows</translation>
 <translation id="4487489714832036847">Chromebooks use apps instead of traditional software. Get apps for productivity, entertainment and more.</translation>
 <translation id="4488257340342212116">Allowed to use your camera</translation>
 <translation id="4488502501195719518">Clear all data?</translation>
@@ -3502,6 +3503,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4565917129334815774">Store system logs</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="456717285308019641">Page language to translate</translation>
+<translation id="4567512141633030272">Wrong sign-in option?</translation>
 <translation id="4567533462991917415">You can always add more people after setup. Each person can personalise their account and keep data private.</translation>
 <translation id="4567772783389002344">Add word</translation>
 <translation id="4568025708905928793">A security key is being requested</translation>
@@ -3747,6 +3749,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4841741146571978176">A required virtual machine does not exist. Please try setting up <ph name="VM_TYPE" /> to continue</translation>
 <translation id="4842976633412754305">This page is trying to load scripts from unauthenticated sources.</translation>
 <translation id="4844333629810439236">Other keyboards</translation>
+<translation id="4844633725025837809">For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager</translation>
 <translation id="4846680374085650406">You are following the administrator's recommendation for this setting.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selected, press Enter to select <ph name="TOPIC_SOURCE" /> albums</translation>
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
@@ -3874,7 +3877,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4972129977812092092">Edit printer</translation>
 <translation id="4972164225939028131">Wrong password</translation>
 <translation id="4972737347717125191">Sites can ask to use virtual reality devices and data</translation>
-<translation id="4973307593867026061">Add printers</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Mute site}other{Mute sites}}</translation>
 <translation id="4977942889532008999">Confirm Access</translation>
 <translation id="4980805016576257426">This extension contains malware.</translation>
@@ -3888,6 +3890,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="499165176004408815">Use high-contrast mode</translation>
 <translation id="4992458225095111526">Confirm Powerwash</translation>
 <translation id="4992473555164495036">Your administrator has limited the available input methods.</translation>
+<translation id="4992984395680162305">These devices were linked by scanning a QR code.</translation>
 <translation id="4994474651455208930">Allow sites to ask to become default handlers for protocols</translation>
 <translation id="4994754230098574403">Setting up</translation>
 <translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Before enrolling you need to clear the TPM so that <ph name="DEVICE_OS" /> can take ownership of the device.<ph name="END_PARAGRAPH1" />
@@ -3927,13 +3930,11 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5036662165765606524">Do not allow any site to download multiple files automatically</translation>
 <translation id="5037676449506322593">Select all</translation>
 <translation id="5038022729081036555">You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
-<translation id="5038863510258510803">Enabling...</translation>
 <translation id="5039696241953571917">View and manage saved passwords in your Google Account</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040823038948176460">Additional content settings</translation>
 <translation id="5043440033854483429">Name can use letters, numbers and hyphens (-), and must be between 1 and 15 characters inclusive.</translation>
 <translation id="5043913660911154449">Or specify your printer PPD <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">Don’t show this step again</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="504561833207953641">Opening in existing browser session.</translation>
 <translation id="5047421709274785093">Block sites from using motion and light sensors</translation>
@@ -4008,6 +4009,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125751979347152379">Invalid URL.</translation>
 <translation id="5126611267288187364">View changes</translation>
+<translation id="5127242257756472928">Not allowed to use info about your screens to open and place windows</translation>
 <translation id="5127620150973591153">Secure connection ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Sync is off</translation>
 <translation id="5127881134400491887">Manage network connections</translation>
@@ -4120,6 +4122,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5243522832766285132">Please try again in a few moments</translation>
 <translation id="5244474230056479698">Syncing to <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Get started with a school account</translation>
+<translation id="5246036036039717045">These devices can be used as security keys because you're signed into Chrome on them.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> has crashed. Click this balloon to restart the app.</translation>
 <translation id="5247051749037287028">Display name (optional)</translation>
 <translation id="5249624017678798539">The browser crashed before the download completed.</translation>
@@ -4608,6 +4611,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5757375109985023827">Select a tab to preview</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
 <translation id="5759728514498647443">Documents that you send to print via <ph name="APP_NAME" /> can be read by <ph name="APP_NAME" />.</translation>
+<translation id="5762787084360227629">Enter Google Account info</translation>
 <translation id="5763751966069581670">No USB devices found</translation>
 <translation id="5764483294734785780">Sa&amp;ve audio as...</translation>
 <translation id="57646104491463491">Date modified</translation>
@@ -5753,6 +5757,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Device</translation>
+<translation id="6966370001499648704">Control which phones you use as security keys</translation>
 <translation id="6967430741871315905">Unable to check whether the device is allowed</translation>
 <translation id="696780070563539690">Sites can't use your cookies to see your browsing activity across different sites, for example, to personalise ads</translation>
 <translation id="6968288415730398122">Enter your password to configure screen lock</translation>
@@ -5927,6 +5932,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7135729336746831607">Turn on Bluetooth?</translation>
 <translation id="7136694880210472378">Make default</translation>
 <translation id="7136993520339022828">There's an error. Please try again by choosing other images.</translation>
+<translation id="7137472406312798422">Sites can ask to use info about your screens to open and place windows</translation>
 <translation id="7138515695467025690">Off – will turn on automatically at sunset</translation>
 <translation id="7138678301420049075">Other</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> is using your microphone</translation>
@@ -6814,6 +6820,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8028803902702117856">Downloading <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Size</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Permission requested, press ⌘ + Option + Up arrow to respond</translation>
+<translation id="8029539783236818164">Allowed to use info about your screens to open and place windows</translation>
 <translation id="8030169304546394654">Disconnected</translation>
 <translation id="8030852056903932865">Approve</translation>
 <translation id="8032244173881942855">Unable to cast tab.</translation>
@@ -6826,6 +6833,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8038399858950372766">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; keyboard named <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8042142357103597104">Text opacity</translation>
+<translation id="8042331986490021244">Your passwords are encrypted on your device before they‘re saved to Google Password Manager</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> not responding.</translation>
 <translation id="8044899503464538266">Slow</translation>
 <translation id="8045253504249021590">Sync has been stopped via the Google Dashboard.</translation>
@@ -6861,7 +6869,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8063535366119089408">View file</translation>
 <translation id="8064279191081105977">Group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Connection dialogue</translation>
-<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8070662218171013510">Haptic feedback</translation>
 <translation id="8071432093239591881">Print as image</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos.<ph name="END_PARAGRAPH1" />
@@ -7584,6 +7591,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
+<translation id="8838778928843281408">Manage phones</translation>
 <translation id="883911313571074303">Annotate image</translation>
 <translation id="8841843049738266382">Read and change the allowlist users</translation>
 <translation id="8842594465773264717">Delete this fingerprint</translation>
@@ -7743,7 +7751,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9003647077635673607">Allow on all websites</translation>
 <translation id="9003677638446136377">Check again</translation>
 <translation id="9004754973617721124">Clear site data and permissions for <ph name="SITE_NAME" />, all sites under it, and its installed app?</translation>
-<translation id="9004952710076978168">Received a notification for an unknown printer.</translation>
 <translation id="9008201768610948239">Ignore</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> details page back button</translation>
 <translation id="9009369504041480176">Uploading (<ph name="PROGRESS_PERCENT" />%)...</translation>
@@ -7794,7 +7801,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9045430190527754450">Sends the web address of the page that you're trying to reach to Google</translation>
 <translation id="9048745018038487540">Select all fonts</translation>
 <translation id="9050666287014529139">Passphrase</translation>
-<translation id="9052208328806230490">You have registered your printers with <ph name="CLOUD_PRINT_NAME" />, using the account <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Continue blocking</translation>
 <translation id="9053563360605707198">Print on both sides</translation>
 <translation id="9053893665344928494">Remember my choice</translation>

@@ -526,6 +526,7 @@
 <translation id="2609632851001447353">Παραλλαγές</translation>
 <translation id="2610561535971892504">Κλικ για αντιγραφή</translation>
 <translation id="2618023639789766142">C10 (Φάκελος)</translation>
+<translation id="2623663032199728144">Μπορεί να αιτηθεί τη χρήση πληροφοριών σχετικά με τις οθόνες σας</translation>
 <translation id="2625385379895617796">Το ρολόι σας πάει μπροστά</translation>
 <translation id="262745152991669301">Μπορεί να ζητά να συνδεθεί σε συσκευές USB.</translation>
 <translation id="2629325967560697240">Για να λάβετε το υψηλότερο επίπεδο ασφάλειας του Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ενεργοποιήστε τη βελτιωμένη προστασία<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -645,6 +646,7 @@
 <translation id="3037605927509011580">Όπα! Κάτι πήγε στραβά!</translation>
 <translation id="3041612393474885105">Πληροφορίες πιστοποιητικού</translation>
 <translation id="3044034790304486808">Συνέχιση της έρευνάς σας</translation>
+<translation id="305162504811187366">Ιστορικό της Απομακρυσμένης επιφάνειας εργασίας Chrome, συμπεριλαμβανομένων χρονικών σημάνσεων, κεντρικών υπολογιστών και αναγνωριστικών περιόδου λειτουργίας εφαρμογών πελατών</translation>
 <translation id="3060227939791841287">C9 (Φάκελος)</translation>
 <translation id="3061707000357573562">Υπηρεσία ενημέρωσης κώδικα</translation>
 <translation id="306573536155379004">Το παιχνίδι ξεκίνησε.</translation>
@@ -1879,7 +1881,6 @@
 <translation id="706295145388601875">Προσθήκη και διαχείριση διευθύνσεων από τις ρυθμίσεις του Chrome</translation>
 <translation id="7064851114919012435">Στοιχεία επικοινωνίας</translation>
 <translation id="7068733155164172741">Εισαγάγετε τον <ph name="OTP_LENGTH" />-ψήφιο κωδικό</translation>
-<translation id="7070090581017165256">Σχετικά με αυτόν τον ιστότοπο</translation>
 <translation id="70705239631109039">Η σύνδεσή σας δεν είναι πλήρως ασφαλής</translation>
 <translation id="7075452647191940183">Το αίτημα είναι πολύ μεγάλο</translation>
 <translation id="7079718277001814089">Ο ιστότοπος περιέχει κακόβουλο πρόγραμμα</translation>
@@ -2127,7 +2128,6 @@
 <translation id="7813600968533626083">Κατάργηση πρότασης φόρμας από το Chrome;</translation>
 <translation id="781440967107097262">Κοινοποίηση προχείρου;</translation>
 <translation id="7815407501681723534">Βρέθηκαν <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> για τον όρο αναζήτησης "<ph name="SEARCH_STRING" />"</translation>
-<translation id="782125616001965242">Εμφάνιση πληροφοριών σχετικά με αυτόν τον ιστότοπο</translation>
 <translation id="782886543891417279">Το Wi-Fi που χρησιμοποιείτε (<ph name="WIFI_NAME" />) ενδέχεται να σας ζητήσει να επισκεφτείτε τη σελίδα σύνδεσής του.</translation>
 <translation id="7836231406687464395">Postfix (Φάκελος)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2366,6 +2366,7 @@
 <translation id="8663226718884576429">Σύνοψη παραγγελίας, <ph name="TOTAL_LABEL" />, Περισσότερες λεπτομέρειες</translation>
 <translation id="8666678546361132282">Αγγλικά
 </translation>
+<translation id="8669306706049782872">Να χρησιμοποιεί πληροφορίες για τις οθόνες σας για άνοιγμα και τοποθέτηση παραθύρων</translation>
 <translation id="867224526087042813">Υπογραφή</translation>
 <translation id="8676424191133491403">Χωρίς καθυστέρηση</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, απάντηση, <ph name="ANSWER" /></translation>

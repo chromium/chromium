@@ -239,7 +239,7 @@
 <translation id="255671100581129685">Google Асистент не е налице по време на публична сесия.</translation>
 <translation id="256712445991462162">лупата в прикрепен режим</translation>
 <translation id="2570734079541893434">Управление на настройките</translation>
-<translation id="2573588302192866788">Установяването на връзка с(ъс) <ph name="NAME" /> не бе успешно</translation>
+<translation id="2573588302192866788">Неуспешно свързване с(ъс) <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Централизираният вход е деактивиран</translation>
 <translation id="2582112259361606227">Рестартирайте, за да актуализирате</translation>
 <translation id="2595239820337756193">5 km in miles</translation>
@@ -409,7 +409,6 @@
 <translation id="3640092422335864171">Запазване на <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Просрочена актуализация</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – управляван потребител</translation>
-<translation id="3665889125180354336">Записване от микрофона</translation>
 <translation id="3680908746918359504">Изчистване на всички маркери</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ще бъдат споделяни между телефона и устройството ви <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Уебсайтове</translation>

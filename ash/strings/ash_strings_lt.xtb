@@ -409,7 +409,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3640092422335864171">Išsaugoti „<ph name="NAME" />“</translation>
 <translation id="3649505501900178324">Vėluojama atnaujinti</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> tvarkomas naudotojas</translation>
-<translation id="3665889125180354336">Įrašyti mikrofoną</translation>
 <translation id="3680908746918359504">Išvalyti visus žymeklius</translation>
 <translation id="36813544980941320">„Wi-Fi“ tinklai bus bendrinami telefone ir „<ph name="DEVICE_NAME" />“ įrenginyje</translation>
 <translation id="3694122362646626770">Svetainės</translation>
@@ -971,6 +970,7 @@ Naujas įdiegimas</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7526573455193969409">Tinklas gali būti stebimas</translation>
 <translation id="7536035074519304529">IP adresas: <ph name="ADDRESS" /></translation>
+<translation id="7544300628205093162">Klaviatūra foninis apšvietimas įjungtas</translation>
 <translation id="7548434653388805669">Laikas eiti miegoti</translation>
 <translation id="7551643184018910560">Prisegti prie lentynos</translation>
 <translation id="7561982940498449837">Uždaryti meniu</translation>
@@ -1055,6 +1055,7 @@ Naujas įdiegimas</translation>
 <translation id="8036504271468642248">Ankstesnis sakinys</translation>
 <translation id="8042893070933512245">Atidaryti pritaikomumo nustatymų meniu</translation>
 <translation id="8042925093898452104">Uždaryti išsamią informaciją</translation>
+<translation id="8044457332620420407">Klaviatūra foninis apšvietimas išjungtas</translation>
 <translation id="8048123526339889627">„Bluetooth“ nustatymai</translation>
 <translation id="8051716679295756675">Šablonas pavadinimu „<ph name="DESK_TEMPLATE_NAME" />“ jau yra</translation>
 <translation id="8052898407431791827">Nukopijuota į iškarpinę</translation>

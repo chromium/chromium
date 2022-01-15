@@ -2920,7 +2920,6 @@
       注: 使用できる変数の一覧については、https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables をご覧ください。</translation>
 <translation id="4531706050939927436">Android アプリを強制的にインストールするには、Google 管理コンソールで Google Play からのインストールを指定します。Android アプリでこのポリシーは使用されません。</translation>
 <translation id="4534500438517478692">Android の制限名:</translation>
-<translation id="4537906430022369840">ユーザー エージェントの削減を無効にして、フィールド トライアルやオリジン トライアルによる有効化を許可しない。</translation>
 <translation id="4541530620466526913">デバイスのローカル アカウント</translation>
 <translation id="4543502256674577024">デバイスの更新設定</translation>
 <translation id="454585952814397564">音声処理で通常の優先度を使用する</translation>
@@ -6134,7 +6133,6 @@
 <translation id="8455529558077979314">プライバシー スクリーン設定</translation>
 <translation id="8455551509936646199">再起動する曜日（デバイスのローカル タイムゾーン）です。frequency が「WEEKLY」に指定されている場合にのみ使用されます。</translation>
 <translation id="8461914792118322307">プロキシ</translation>
-<translation id="8463569949213141467">カメラ、ブラウザ設定、OS 設定、スキャン、ウェブストア、キャンバス、使い方・ヒントの機能を無効に設定する</translation>
 <translation id="8465065632133292531">POST を使用するインスタント検索 URL のパラメータ</translation>
 <translation id="8470317291588703478">YouTube の制限付きモードを強制的に適用しない</translation>
 <translation id="847472800012384958">すべてのサイトに対してポップアップ表示を許可しない</translation>

@@ -209,7 +209,6 @@
 <translation id="1195558154361252544">Сповіщення автоматично заблоковано для всіх сайтів, крім тих, які ви дозволили</translation>
 <translation id="1197088940767939838">Оранжевий</translation>
 <translation id="1197935538609051549">Вимкнути</translation>
-<translation id="1197979282329025000">Під час отримання характеристик принтера для принтера <ph name="PRINTER_NAME" /> сталася помилка. Цей принтер неможливо зареєструвати в <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">Очистити все</translation>
 <translation id="1199814941632954229">Надаються сертифікати для цих сертифікованих профілів</translation>
 <translation id="120069043972472860">Неможливо дивитися</translation>
@@ -1213,7 +1212,6 @@
 <translation id="2199719347983604670">Дані Синхронізації Chrome</translation>
 <translation id="2200094388063410062">Електронна пошта</translation>
 <translation id="2200356397587687044">Chrome потрібен дозвіл, щоб продовжити</translation>
-<translation id="2202898655984161076">Виникала проблема зі складенням списку принтерів. Можливо, деякі з ваших принтерів не зареєстровано в <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Назва може складатися з літер, цифр і спеціальних символів</translation>
 <translation id="220321590587754225">Не вдалося підключитися. Повторіть спробу.</translation>
 <translation id="2204034823255629767">Читати й змінювати весь введений вами текст</translation>
@@ -2210,7 +2208,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Примітка<ph name="END_BOLD" />: хтось зі схожим голосом або записом голосу також може отримати доступ до персональних результатів користувача <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">Створити комбінацію клавіш?</translation>
 <translation id="321834671654278338">Файл видалення Linux</translation>
-<translation id="3220586366024592812">Відбулося аварійне завершення процесу для функції підключення  <ph name="CLOUD_PRINT_NAME" />. Перезапустити?</translation>
 <translation id="3220943972464248773">Щоб синхронізувати паролі, підтвердьте свою особу</translation>
 <translation id="3222066309010235055">Візуалізатор: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Підключитися до машини <ph name="USB_VM_NAME" /></translation>
@@ -2764,7 +2761,6 @@
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3790417903123637354">Сталася помилка. Спробуйте пізніше</translation>
 <translation id="379082410132524484">Ваша картка недійсна</translation>
-<translation id="3792890930871100565">Від’єднати принтери</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено 1 день тому}one{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_DAYS} день тому}few{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_DAYS} дні тому}many{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_DAYS} днів тому}other{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_DAYS} дня тому}}</translation>
 <translation id="379500251094592809">Щоб скористатися функцією "Передавання поблизу", переконайтеся, що обидва пристрої розблоковані, розташовані поруч і на них увімкнено Bluetooth. Якщо ви хочете надіслати файли на комп'ютер Chromebook, якого немає у ваших контактах, відкрийте на ньому панель стану, натиснувши час, і ввімкніть "Видимість поблизу". <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Вимкнено</translation>
@@ -3877,7 +3873,6 @@
 <translation id="4972129977812092092">Змінити принтер</translation>
 <translation id="4972164225939028131">Неправильний пароль</translation>
 <translation id="4972737347717125191">Сайти можуть запитувати дозвіл на використання пристроїв і даних віртуальної реальності</translation>
-<translation id="4973307593867026061">Додати принтери</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Вимкнути звук на сайті}one{Вимкнути звук на сайтах}few{Вимкнути звук на сайтах}many{Вимкнути звук на сайтах}other{Вимкнути звук на сайтах}}</translation>
 <translation id="4977942889532008999">Підтвердити доступ</translation>
 <translation id="4980805016576257426">Це розширення містить зловмисне програмне забезпечення.</translation>
@@ -3930,13 +3925,11 @@
 <translation id="5036662165765606524">Заборонити всім сайтам автоматично завантажувати декілька файлів</translation>
 <translation id="5037676449506322593">Вибрати всі</translation>
 <translation id="5038022729081036555">Завтра ти зможеш користуватися ним <ph name="TIME_LIMIT" />.</translation>
-<translation id="5038863510258510803">Увімкнення...</translation>
 <translation id="5039696241953571917">Переглядайте збережені паролі й керуйте ними в обліковому записі Google</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5040823038948176460">Додаткові налаштування контенту</translation>
 <translation id="5043440033854483429">Назва може складатися з літер, цифр і дефісів (-), але не більше ніж 15 (мінімум – 1 символ).</translation>
 <translation id="5043913660911154449">Або виберіть файл PPD принтера <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">Не показувати цей крок знову</translation>
 <translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="504561833207953641">Відкривається в наявному сеансі веб-переглядача.</translation>
 <translation id="5047421709274785093">Заборонити сайтам доступ до датчиків руху й світла</translation>
@@ -6864,7 +6857,6 @@
 <translation id="8063535366119089408">Переглянути файл</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Діалогове вікно з’єднання</translation>
-<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8070662218171013510">Вібровідгук</translation>
 <translation id="8071432093239591881">Друкувати як зображення</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Дані додатків – це будь-яка інформація, яку вони зберігають (залежно від налаштувань розробника), зокрема контакти, повідомлення та фотографії.<ph name="END_PARAGRAPH1" />
@@ -7749,7 +7741,6 @@
 <translation id="9003647077635673607">Дозволити на всіх веб-сайтах</translation>
 <translation id="9003677638446136377">Перевірити ще раз</translation>
 <translation id="9004754973617721124">Очистити дані та дозволи для сайту <ph name="SITE_NAME" />, усіх сайтів його групи та встановленого додатка?</translation>
-<translation id="9004952710076978168">Отримано сповіщення для невідомого принтера.</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9008201858626224558">Кнопка "Назад" на сторінці "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="9009369504041480176">Завантаження (<ph name="PROGRESS_PERCENT" />%)...</translation>
@@ -7800,7 +7791,6 @@
 <translation id="9045430190527754450">Надсилає в Google веб-адресу сторінки, яку ви намагаєтеся відкрити</translation>
 <translation id="9048745018038487540">Вибрати всі шрифти</translation>
 <translation id="9050666287014529139">Парольна фраза</translation>
-<translation id="9052208328806230490">Ви зареєстрували свої принтери в <ph name="CLOUD_PRINT_NAME" />, використавши обліковий запис <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Продовжити блокування</translation>
 <translation id="9053563360605707198">Друкувати на обох сторонах</translation>
 <translation id="9053893665344928494">Запам’ятати мій вибір</translation>

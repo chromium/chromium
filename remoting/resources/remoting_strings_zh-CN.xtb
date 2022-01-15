@@ -26,7 +26,6 @@
 <translation id="225614027745146050">欢迎</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
 <translation id="2329392777730037872">未能在客户端上打开 <ph name="URL" />。</translation>
-<translation id="2333212046079545895">版权所有 2021 Google LLC。保留所有权利。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2366718077645204424">无法连接到主机，这可能是由您所使用网络的配置导致的。</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />上次在线时间：<ph name="RELATIVE_TIMESTAMP" />。</translation>
@@ -76,7 +75,6 @@
 <translation id="4405930547258349619">核心数据库</translation>
 <translation id="443560535555262820">打开“无障碍”偏好设置</translation>
 <translation id="4450893287417543264">不再显示</translation>
-<translation id="4512952200932940229">版权所有 2021 The Chromium Authors。保留所有权利。</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4563926062592110512">与下列客户端的连接已中断：<ph name="CLIENT_USERNAME" />。</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />未正确配置。请选择其他默认网络浏览器，然后重新启用网址转发功能。</translation>

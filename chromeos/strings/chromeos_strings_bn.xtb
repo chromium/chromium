@@ -306,7 +306,7 @@
 <translation id="5294769550414936029">ভার্সন <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">উইন্ডোকে ডেস্কে সরিয়ে নিয়ে যান</translation>
 <translation id="5304899856529773394">EVDO</translation>
-<translation id="5308380583665731573">সংযুক্ত করুন</translation>
+<translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5315873049536339193">পরিচয়</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5318334351163689047">TCP-এর অনুরোধ করা যায়নি</translation>
@@ -379,6 +379,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
 <translation id="6325525973963619867">ব্যর্থ</translation>
+<translation id="6340526405444716530">নিজের পছন্দ অনুযায়ী বেছে নেওয়া</translation>
 <translation id="636850387210749493">এন্টারপ্রাইজ নথিভুক্তিকরণ</translation>
 <translation id="6379086450106841622">টাচস্ক্রিন</translation>
 <translation id="6388847657025262518">স্ক্যানারের ডকুমেন্ট ফিডার কাজ করছে না। ফিডার চেক করে আবার চেষ্টা করুন।</translation>

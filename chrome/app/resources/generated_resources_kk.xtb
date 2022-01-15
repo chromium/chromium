@@ -204,7 +204,6 @@
 <translation id="1195558154361252544">Сіз рұқсат еткеннен басқа сайттар үшін хабарландырулар автоматты түрде бөгелді.</translation>
 <translation id="1197088940767939838">Қызғылт сары</translation>
 <translation id="1197935538609051549">Өшіріп қою</translation>
-<translation id="1197979282329025000"><ph name="PRINTER_NAME" /> принтеріне арналған принтер қабілеттерін алу кезінде қате орын алды. Бұл принтерді <ph name="CLOUD_PRINT_NAME" /> арқылы тіркеу мүмкін емес.</translation>
 <translation id="119944043368869598">Барлығын өшіру</translation>
 <translation id="1199814941632954229">Осы сертификат профильдеріне сертификаттар берілуде</translation>
 <translation id="120069043972472860">Көрінбейді</translation>
@@ -1195,7 +1194,6 @@
 <translation id="2199719347983604670">Chrome Sync деректері</translation>
 <translation id="2200094388063410062">Электрондық пошта</translation>
 <translation id="2200356397587687044">Жалғастыру үшін Chrome браузеріне рұқсат қажет</translation>
-<translation id="2202898655984161076">Принтерлерді көрсету кезінде қате орын алды. Кейбір принтерлеріңіз <ph name="CLOUD_PRINT_NAME" /> арқылы сәтті тіркелмеген болуы мүмкін.</translation>
 <translation id="2203088913459920044">Атауда әріптерді, сандарды және арнайы таңбаларды пайдалануға болады.</translation>
 <translation id="220321590587754225">Жалғанбады. Қайталап көріңіз.</translation>
 <translation id="2204034823255629767">Барлық тергендеріңізді оқу және өзгерту</translation>
@@ -2188,7 +2186,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Ескертпе:<ph name="END_BOLD" /> кез келген адам ұқсас дауыс немесе жазба арқылы баланың (<ph name="SUPERVISED_USER_NAME" />) жеке нәтижелерін пайдалануы мүмкін.</translation>
 <translation id="3217843140356091325">Таңбаша жасалсын ба?</translation>
 <translation id="321834671654278338">Linux қолданбасын жою бағдарламасы</translation>
-<translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> қосқышының процесі жаңылысты. Қайта іске қосасыз ба?</translation>
 <translation id="3220943972464248773">Құпия сөздеріңізді синхрондау үшін жеке басыңызды растаңыз.</translation>
 <translation id="3222066309010235055">Алдын ала кескіндеу: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> желісіне қосылу</translation>
@@ -2742,7 +2739,6 @@
 <translation id="3789841737615482174">Орнату</translation>
 <translation id="3790417903123637354">Бірдеңе дұрыс болмады. Кейінірек қайталап көріңіз</translation>
 <translation id="379082410132524484">Картаңыздың мерзімі біткен</translation>
-<translation id="3792890930871100565">Принтерлерді ажырату</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome браузері компьютеріңізден ешқандай зиянды бағдарламалық құрал таппады. • 1 күн бұрын тексерілді.}other{Chrome браузері компьютеріңізден ешқандай зиянды бағдарламалық құрал таппады. • {NUM_DAYS} күн бұрын тексерілді.}}</translation>
 <translation id="379500251094592809">Nearby Share функциясын пайдалану үшін екі құрылғының да құлпы ашық, бір-біріне жақын және Bluetooth функциялары қосулы екеніне көз жеткізіңіз. Егер контактілеріңізде жоқ Chromebook құрылғысымен бөлісетін болсаңыз, Nearby көрсетілуі қосулы екеніне көз жеткізіңіз (ол үшін уақытты таңдау арқылы күй аумағын ашып, Nearby көрсетілуі функциясын қосыңыз). <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Өшірулі</translation>
@@ -3854,7 +3850,6 @@
 <translation id="4972129977812092092">Принтер ақпаратын өзгерту</translation>
 <translation id="4972164225939028131">Құпия сөз дұрыс емес</translation>
 <translation id="4972737347717125191">Сайттар виртуалды шындық құрылғыларын және деректерді пайдалануға рұқсат сұрай алады.</translation>
-<translation id="4973307593867026061">Принтерлерді қосу</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Сайттың дыбысын өшіру}other{Сайттардың дыбысын өшіру}}</translation>
 <translation id="4977942889532008999">Кіру рұқсатын растау</translation>
 <translation id="4980805016576257426">Бұл кеңейтімде зиянды бағдарлама бар.</translation>
@@ -3907,13 +3902,11 @@
 <translation id="5036662165765606524">Ешбір сайтқа бірнеше файлды автоматты түрде жүктеуге рұқсат бермеу</translation>
 <translation id="5037676449506322593">Барлығын таңдау</translation>
 <translation id="5038022729081036555">Оны ертең <ph name="TIME_LIMIT" /> бойы пайдалана аласыз.</translation>
-<translation id="5038863510258510803">Қосылуда…</translation>
 <translation id="5039696241953571917">Google аккаунтыңызда сақталған құпия сөздерді көру және басқару</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5040823038948176460">Қосымша мазмұн параметрлері</translation>
 <translation id="5043440033854483429">Атау әріптерден, сандардан және сызықшадан (-) тұруы мүмкін және ұзындығы 1-15 таңба аралығында болуы тиіс.</translation>
 <translation id="5043913660911154449">Немесе принтер үшін PPD файлын көрсетіңіз <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">Бұл қадам қайта көрсетілмесін</translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
 <translation id="504561833207953641">Бұрыннан бар браузер сеансында ашылуда.</translation>
 <translation id="5047421709274785093">Сайттардың қозғалыс және жарық датчиктерін пайдалануына тыйым салу</translation>
@@ -6839,7 +6832,6 @@
 <translation id="8063535366119089408">Файлды қарау</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> тобы – <ph name="GROUP_CONTENTS" /> –<ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Қосылу диалогтік терезесі</translation>
-<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8070662218171013510">Сенсорлық жауап</translation>
 <translation id="8071432093239591881">Кескін ретінде басып шығару</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Қолданба деректеріне контактілер, хабарлар және фотосуреттер сияқты қолданба сақтаған (әзірлеуші параметрлеріне байланысты) кез келген дерек жатуы мүмкін.<ph name="END_PARAGRAPH1" />
@@ -7721,7 +7713,6 @@
 <translation id="9003647077635673607">Барлық веб-сайттарда рұқсат беру</translation>
 <translation id="9003677638446136377">Қайтадан тексеру</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" />, оның астындағы барлық сайт және оның орнатылған қолданбалары үшін сайт деректері мен рұқсаттары өшірілсін бе?</translation>
-<translation id="9004952710076978168">Белгісіз принтерге арналған хабарландыру алынды.</translation>
 <translation id="9008201768610948239">Елемеу</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> мәліметтер бетіндегі артқа түймесі</translation>
 <translation id="9009369504041480176">Жүктелуде (<ph name="PROGRESS_PERCENT" />%)…</translation>
@@ -7772,7 +7763,6 @@
 <translation id="9045430190527754450">Ашқалы жатқан беттің веб-мекенжайын Google компаниясына жібереді</translation>
 <translation id="9048745018038487540">Барлық қаріпті таңдау</translation>
 <translation id="9050666287014529139">Құпия фраза</translation>
-<translation id="9052208328806230490">Принтерлеріңізді <ph name="CLOUD_PRINT_NAME" /> жүйесінде <ph name="EMAIL" /> аккаунтының көмегімен тіркедіңіз</translation>
 <translation id="9052404922357793350">Тыйым салуды жалғастыру</translation>
 <translation id="9053563360605707198">Екі бетіне басып шығару</translation>
 <translation id="9053893665344928494">Таңдауымды есте сақтау</translation>

@@ -2978,7 +2978,6 @@
       注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
 <translation id="4531706050939927436">您可以通过 Google Play 从 Google 管理控制台中强制安装 Android 应用。这些应用不会使用此政策。</translation>
 <translation id="4534500438517478692">Android 限制名称：</translation>
-<translation id="4537906430022369840">“用户代理字符串缩短”功能已停用，且未通过现场试验或源试用启用。</translation>
 <translation id="4541530620466526913">设备本地帐号</translation>
 <translation id="4543502256674577024">设备更新设置</translation>
 <translation id="454585952814397564">对音频进程使用普通优先级</translation>
@@ -6319,7 +6318,6 @@
 <translation id="8455529558077979314">隐私保护屏设置</translation>
 <translation id="8455551509936646199">应在每周的哪一天（以设备的本地时区表示）重新启动设备。仅在“频率”设为“WEEKLY”时使用。</translation>
 <translation id="8461914792118322307">代理</translation>
-<translation id="8463569949213141467">配置要停用的摄像头、浏览器设置、操作系统设置、扫描功能、网上应用店、画布和探索功能</translation>
 <translation id="8465065632133292531">在使用 POST 的即搜即得网址中所需的参数</translation>
 <translation id="8470317291588703478">不强制使用 YouTube 受限模式</translation>
 <translation id="847472800012384958">不允许任何网站显示弹出式窗口</translation>

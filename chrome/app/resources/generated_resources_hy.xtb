@@ -205,7 +205,6 @@
 <translation id="1195558154361252544">Բացի ձեր նշած կայքերից՝ մնացած բոլոր կայքերի համար ծանուցումներն ավտոմատ արգելափակվում են:</translation>
 <translation id="1197088940767939838">Նարնջագույն</translation>
 <translation id="1197935538609051549">Ապակտիվացնել</translation>
-<translation id="1197979282329025000"><ph name="PRINTER_NAME" /> տպիչի համար հնարավորությունները առբերելիս սխալ առաջացավ: Այս տպիչը չի կարող գրանցվել <ph name="CLOUD_PRINT_NAME" />-ում:</translation>
 <translation id="119944043368869598">Մաքրել բոլորը</translation>
 <translation id="1199814941632954229">Տրամադրվում են հավաստագրեր հավաստագրման այս պրոֆիլների համար</translation>
 <translation id="120069043972472860">Անդիտելի</translation>
@@ -1200,7 +1199,6 @@
 <translation id="2199719347983604670">Տվյալներ Chrome Sync-ից</translation>
 <translation id="2200094388063410062">Էլփոստ</translation>
 <translation id="2200356397587687044">Շարունակելու համար Chrome-ին անհրաժեշտ է թույլտվություն</translation>
-<translation id="2202898655984161076">Տպիչների ցանկը կազմելիս խնդիր առաջացավ: Հնարավոր է, ձեր տպիչներից մի քանիսը բարեհաջող չեն գրանցվել <ph name="CLOUD_PRINT_NAME" />-ում:</translation>
 <translation id="2203088913459920044">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և հատուկ նշաններ</translation>
 <translation id="220321590587754225">Չհաջողվեց միանալ։ Նորից փորձեք։</translation>
 <translation id="2204034823255629767">Կարդալ և փոխել այն ամենն, ինչ դուք մուտքագրում եք</translation>
@@ -2193,7 +2191,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Նկատի ունեցեք<ph name="END_BOLD" />, որ <ph name="SUPERVISED_USER_NAME" />-ի ձայնին նման ձայն կամ նրա ձայնի ձայնագրությունն ունեցող օգտատերերը հնարավոր է՝ նույնպես կարողանան օգտվել նրա անհատականացված արդյունքներից։</translation>
 <translation id="3217843140356091325">Ստեղծե՞լ դյուրանցում</translation>
 <translation id="321834671654278338">Լինուքսի ապատեղադրիչ</translation>
-<translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" />-ի կապակցման գործընթացը խափանվեց: Վերագործարկե՞լ:</translation>
 <translation id="3220943972464248773">Ձեր գաղտնաբառերը համաժամացնելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="3222066309010235055">Նախնական մշակում՝ <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Միացնել վիրտուալ մեքենային (<ph name="USB_VM_NAME" />)</translation>
@@ -2747,7 +2744,6 @@
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3790417903123637354">Սխալ առաջացավ: Փորձեք ավելի ուշ։</translation>
 <translation id="379082410132524484">Քարտի գործողության ժամկետը սպառվել է</translation>
-<translation id="3792890930871100565">Ապակապակցել տպիչները</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome-ը ձեր համակարգչում վնասաբեր ծրագրեր չի հայտնաբերել • Ստուգվել է 1 օր առաջ}one{Chrome-ը ձեր համակարգչում վնասաբեր ծրագրեր չի հայտնաբերել • Ստուգվել է {NUM_DAYS} օր առաջ}other{Chrome-ը ձեր համակարգչում վնասաբեր ծրագրեր չի հայտնաբերել • Ստուգվել է {NUM_DAYS} օր առաջ}}</translation>
 <translation id="379500251094592809">Եթե ուզում եք օգտվել «Փոխանակում մոտակա սարքերի հետ» գործառույթից, համոզվեք, որ երկու սարքերն ապակողպված են, միմյանց մոտ են, և սարքերում միացված է Bluetooth-ը։ Եթե դուք կիսվում եք ֆայլերով Chromebook սարքի հետ, որը ձեր կոնտակտներում ներառված չէ, համոզվեք, որ այնտեղ միացված է «Մոտակա սարքերի հասանելիություն» գործառույթը (բացեք վիճակի տարածքը՝ սեղմելով ժամացույցի վրա, ապա միացրեք «Մոտակա սարքերի հասանելիություն» գործառույթը)։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Անջատված է</translation>
@@ -3860,7 +3856,6 @@
 <translation id="4972129977812092092">Փոփոխել տպիչի տվյալները</translation>
 <translation id="4972164225939028131">Գաղտնաբառը սխալ է</translation>
 <translation id="4972737347717125191">Կայքերը կարող են վիրտուալ իրականության ձեր սարքերն ու տվյալները օգտագործելու թույլտվություն հայցել</translation>
-<translation id="4973307593867026061">Ավելացնել տպիչներ</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Անջատել կայքի ձայնը}one{Անջատել կայքի ձայնը}other{Անջատել կայքերի ձայնը}}</translation>
 <translation id="4977942889532008999">Մուտքի հաստատում</translation>
 <translation id="4980805016576257426">Այս ընդլայնումը վնասաբեր ծրագիր է պարունակում:</translation>
@@ -3913,13 +3908,11 @@
 <translation id="5036662165765606524">Թույլ չտալ ոչ մի կայքի ավտոմատ ներբեռնել բազմակի ֆայլեր</translation>
 <translation id="5037676449506322593">Select All</translation>
 <translation id="5038022729081036555">Դուք կարող եք օգտագործել այն վաղը՝ <ph name="TIME_LIMIT" />։</translation>
-<translation id="5038863510258510803">Միացում…</translation>
 <translation id="5039696241953571917">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր Google հաշվում</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5040823038948176460">Բովանդակության լրացուցիչ կարգավորումներ</translation>
 <translation id="5043440033854483429">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և գծիկներ (-), և այն պետք է պարունակի 1-ից 15 նիշ (ներառյալ)։</translation>
 <translation id="5043913660911154449">Կամ նշեք ձեր տպիչի PPD ֆայլը <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">Այլևս ցույց չտալ այս քայլը</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="504561833207953641">Բացվում է դիտարկիչի ընթացիկ աշխատաշրջանում։</translation>
 <translation id="5047421709274785093">Արգելել կայքերին օգտագործել շարժման և լուսավորության սենսորները</translation>
@@ -6846,7 +6839,6 @@
 <translation id="8063535366119089408">Դիտել ֆայլը</translation>
 <translation id="8064279191081105977">Խումբ <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Միացման պատուհան</translation>
-<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8070662218171013510">Զգայական արձագանք</translation>
 <translation id="8071432093239591881">Տպել որպես պատկեր</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Հավելվածների տվյալները բոլոր այն տվյալներն են, որոնք հավելվածը պահել է (մշակողի կարգավորումների հիման վրա): Դրանց թվում կարող են լինել նաև կոնտակտներ, հաղորդագրություններ և լուսանկարներ:<ph name="END_PARAGRAPH1" />
@@ -7729,7 +7721,6 @@
 <translation id="9003647077635673607">Թույլ տալ բոլոր վեբկայքերում</translation>
 <translation id="9003677638446136377">Ստուգել նորից</translation>
 <translation id="9004754973617721124">Մաքրե՞լ <ph name="SITE_NAME" /> կայքի, դրա ենթադաս բոլոր կայքերի, ինչպես նաև դրա համար տեղադրված հավելվածի կայքի տվյալներն ու թույլտվությունները</translation>
-<translation id="9004952710076978168">Անհայտ տպիչից ծանուցում է ստացվել:</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9008201858626224558">«<ph name="SUBPAGE_TITLE" />» մանրամասների էջ տանող «Հետ» կոճակ</translation>
 <translation id="9009369504041480176">Վերբեռնում (<ph name="PROGRESS_PERCENT" />%)…</translation>
@@ -7780,7 +7771,6 @@
 <translation id="9045430190527754450">Google-ին է ուղարկում է այն էջի վեբ հասցեն, որը փորձում եք բացել</translation>
 <translation id="9048745018038487540">Նշել բոլոր տառատեսակները</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>
-<translation id="9052208328806230490">Ձեր տպիչները գրանցված են <ph name="CLOUD_PRINT_NAME" />-ում <ph name="EMAIL" /> հաշվի միջոցով</translation>
 <translation id="9052404922357793350">Շարունակել արգելափակումը</translation>
 <translation id="9053563360605707198">Տպել երկու կողմին</translation>
 <translation id="9053893665344928494">Հիշել իմ ընտրությունը</translation>

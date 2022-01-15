@@ -1380,7 +1380,7 @@
 <translation id="5300589172476337783">കാണിക്കുക</translation>
 <translation id="5306593769196050043">രണ്ട് ഷീറ്റുകളും</translation>
 <translation id="5307166000025436103">ശരി</translation>
-<translation id="5308380583665731573">കണക്‌റ്റുചെയ്യുക</translation>
+<translation id="5308380583665731573">കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="5308689395849655368">ക്രാഷ് റിപ്പോർട്ട് ചെയ്യൽ പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="5314967030527622926">ബുക്ക്‌ലെറ്റ് മേക്കർ</translation>
 <translation id="5316812925700871227">എതിർ ഘടികാരദിശയിൽ തിരിക്കുക</translation>
@@ -1873,7 +1873,6 @@
 <translation id="706295145388601875">Chrome ക്രമീകരണത്തിൽ വിലാസങ്ങൾ ചേർക്കുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="7064851114919012435">കോണ്‍ടാക്റ്റ് വിവരം</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" />-അക്ക കോഡ് നൽകുക</translation>
-<translation id="7070090581017165256">ഈ സൈറ്റിനെ കുറിച്ച്</translation>
 <translation id="70705239631109039">നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
 <translation id="7075452647191940183">അഭ്യർത്ഥന വളരെ വലുതാണ്</translation>
 <translation id="7079718277001814089">ഈ സൈറ്റിൽ മാൽവെയർ അടങ്ങിയിരിക്കുന്നു</translation>
@@ -2119,7 +2118,6 @@
 <translation id="7813600968533626083">Chrome-ൽ നിന്നുള്ള നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="781440967107097262">ക്ലിപ്പ്ബോർഡ് പങ്കിടണോ?</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' എന്നതിന്റെ <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> കണ്ടു</translation>
-<translation id="782125616001965242">ഈ സൈറ്റിനെ കുറിച്ചുള്ള വിവരങ്ങൾ കാണിക്കുക</translation>
 <translation id="782886543891417279">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi (<ph name="WIFI_NAME" />) അതിന്റെ ലോഗിൻ പേജ് സന്ദർശിക്കാൻ ആവശ്യപ്പെടാം.</translation>
 <translation id="7836231406687464395">പോസ്‌റ്റ്ഫിക്‌സ് (എൻവലപ്പ്)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2302,7 +2300,7 @@
 കൂടുതൽ വിശദാംശങ്ങൾ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
-<translation id="8428213095426709021">ക്രമീകരണങ്ങള്‍</translation>
+<translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
 <translation id="8433057134996913067">ഇത് നിങ്ങളെ മിക്ക വെബ്‌സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ട് ചെയ്യിക്കും.</translation>
 <translation id="8437238597147034694">&amp;നീക്കുന്നത് പഴയപടിയാക്കുക</translation>

@@ -206,7 +206,6 @@
 <translation id="1195558154361252544">ការជូនដំណឹង​ត្រូវបានទប់ស្កាត់​ដោយស្វ័យប្រវត្តិ​សម្រាប់គេហទំព័រ​ទាំងអស់ លើកលែងតែ​គេហទំព័រ​ដែលអ្នក​អនុញ្ញាត​ប៉ុណ្ណោះ</translation>
 <translation id="1197088940767939838">ទឹក​ក្រូច</translation>
 <translation id="1197935538609051549">បិទ​ដំណើរការ</translation>
-<translation id="1197979282329025000">កំហុសឆ្គងមួយបានកើតឡើង ខណៈពេលកំពុងទាញយកសមត្ថភាពម៉ាស៊ីនបោះពុម្ពសម្រាប់ម៉ាស៊ីនបោះពុម្ពវិញ <ph name="PRINTER_NAME" />។ ម៉ាស៊ីនបោះពុម្ពនេះមិនអាចចុះឈ្មោះជាមួយ <ph name="CLOUD_PRINT_NAME" /> ទេ។</translation>
 <translation id="119944043368869598">ជម្រះទាំងអស់</translation>
 <translation id="1199814941632954229">កំពុងផ្ដល់​វិញ្ញាបនបត្រ​សម្រាប់​កម្រងព័ត៌មាន​វិញ្ញាបនបត្រ​ទាំងនេះ</translation>
 <translation id="120069043972472860">មិនអាចមើលបាន</translation>
@@ -1211,7 +1210,6 @@
 <translation id="2199719347983604670">ទិន្នន័យពី Chrome សមកាលកម្ម</translation>
 <translation id="2200094388063410062">អ៊ីមែល</translation>
 <translation id="2200356397587687044">Chrome ត្រូវ​ការ​ការ​អនុញ្ញាត​ដើម្បី​បន្ត</translation>
-<translation id="2202898655984161076">មានបញ្ហាកើតឡើងនៅក្នុងបញ្ជីម៉ាស៊ីនបោះពុម្ពក្នុងបញ្ជី។ ម៉ាស៊ីនបោះពុម្ពរបស់អ្នកមួយចំនួនប្រហែលមិនអាចចុះឈ្មោះដោយជោគជ័យជាមួយ <ph name="CLOUD_PRINT_NAME" /> ទេ។</translation>
 <translation id="2203088913459920044">ឈ្មោះ​អាចប្រើអក្សរ លេខ និង​តួអក្សរ​ពិសេស</translation>
 <translation id="220321590587754225">មិន​អាច​ភ្ជាប់បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="2204034823255629767">អាន និងប្តូរអ្វីដែលអ្នកវាយបញ្ចូល</translation>
@@ -2210,7 +2208,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ចំណាំ៖<ph name="END_BOLD" /> សំឡេងថត ឬ​សំឡេង​ដែលស្រដៀង​ប្រហែលជា​អាចចូលប្រើ​លទ្ធផល​ផ្ទាល់ខ្លួនរបស់ <ph name="SUPERVISED_USER_NAME" /> បាន។</translation>
 <translation id="3217843140356091325">បង្កើត​ផ្លូវកាត់​ដែរទេ?</translation>
 <translation id="321834671654278338">កម្មវិធីលុប Linux</translation>
-<translation id="3220586366024592812">ដំណើរការឧបករណ៍ភ្ជាប់ <ph name="CLOUD_PRINT_NAME" /> បានគាំង។ ចាប់ផ្តើមឡើងវិញ?</translation>
 <translation id="3220943972464248773">ដើម្បី​ធ្វើសមកាលកម្ម​ពាក្យសម្ងាត់​របស់អ្នក សូមផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
 <translation id="3222066309010235055">មុនបម្លែង៖ <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">ភ្ជាប់ជាមួយ <ph name="USB_VM_NAME" /></translation>
@@ -2765,7 +2762,6 @@
 <translation id="3789841737615482174">តំឡើង</translation>
 <translation id="3790417903123637354">មានអ្វីមួយខុសប្រក្រតី។ ព្យាយាមម្តង​ទៀតនៅពេល​ក្រោយ</translation>
 <translation id="379082410132524484">បណ្ណ​របស់អ្នក​ផុតកំណត់​ហើយ</translation>
-<translation id="3792890930871100565">ផ្តាច់ម៉ាស៊ីនបោះពុម្ព</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome រកមិនឃើញ​កម្មវិធី​បង្កគ្រោះថ្នាក់​នៅលើ​កុំព្យូទ័រ​របស់អ្នក​ទេ • បានពិនិត្យមើល 1 ថ្ងៃមុន}other{Chrome រកមិនឃើញ​កម្មវិធី​បង្កគ្រោះថ្នាក់​នៅលើ​កុំព្យូទ័រ​របស់អ្នក​ទេ • បានពិនិត្យមើល {NUM_DAYS} ថ្ងៃមុន}}</translation>
 <translation id="379500251094592809">ដើម្បីប្រើ​ការចែករំលែកនៅជិត សូមប្រាកដថា ឧបករណ៍​ទាំងពីរ​មិនជាប់សោ នៅជិតគ្នា និងបានបើក​ប៊្លូធូស។ ប្រសិនបើអ្នក​កំពុងចែករំលែក​ជាមួយ Chromebook ដែលមិនមាននៅក្នុងទំនាក់​ទំនង​របស់អ្នកទេ សូមប្រាកដថា វាបានបើក​លទ្ធភាពមើលឃើញ​នៅជិត (បើកតំបន់ស្ថានភាពដោយជ្រើសរើសពេលវេលា រួចជ្រើសរើស​លទ្ធភាពមើលឃើញ​នៅជិត) សូម<ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">បិទ</translation>
@@ -3881,7 +3877,6 @@
 <translation id="4972129977812092092">កែសម្រួលម៉ាស៊ីនបោះពុម្ព</translation>
 <translation id="4972164225939028131">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="4972737347717125191">គេហទំព័រអាចស្នើសុំប្រើទិន្នន័យ និងឧបករណ៍ VR</translation>
-<translation id="4973307593867026061">បន្ថែមម៉ាស៊ីនបោះពុម្ព</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{បិទសំឡេង​គេហទំព័រ}other{បិទសំឡេង​គេហទំព័រ}}</translation>
 <translation id="4977942889532008999">អះអាងការចូលប្រើ</translation>
 <translation id="4980805016576257426">ផ្នែកបន្ថែមនេះមានផ្ទុកមេរោគ</translation>
@@ -3935,13 +3930,11 @@
 <translation id="5036662165765606524">កុំអនុញ្ញាតឲ្យគេហទំព័រណាមួួយទាញយកឯកសារច្រើនដោយស្វ័យប្រវត្តិ</translation>
 <translation id="5037676449506322593">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5038022729081036555">អ្នកអាចប្រើ​កម្មវិធីនេះ​​រយៈពេល <ph name="TIME_LIMIT" /> នៅថ្ងៃស្អែក។</translation>
-<translation id="5038863510258510803">កំពុងបើកដំណើរការ...</translation>
 <translation id="5039696241953571917">មើល និង​គ្រប់គ្រង​ពាក្យសម្ងាត់​ដែលបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
 <translation id="5040823038948176460">ការកំណត់​ខ្លឹមសារ​បន្ថែម</translation>
 <translation id="5043440033854483429">ឈ្មោះអាចប្រើអក្សរ លេខ និងសហសញ្ញា (-) ហើយត្រូវតែមានតួអក្សររួមបញ្ចូលគ្នាទាំងអស់ចន្លោះពី 1 ទៅ 15 តួ។</translation>
 <translation id="5043913660911154449">ឬបញ្ជាក់ PPD ម៉ាស៊ីន​បោះពុម្ព​របស់អ្នក <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">កុំបង្ហាញ​ជំហាននេះ​ម្ដងទៀត</translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="504561833207953641">កំពុង​បើក​នៅក្នុង​រយៈពេលចូលប្រើកម្មវិធីរុករកដែលមានស្រាប់។</translation>
 <translation id="5047421709274785093">ទប់ស្កាត់​ទំព័រ​មិនឱ្យប្រើ​ឧបករណ៍​ចាប់សញ្ញាពន្លឺ​ និងចលនា</translation>
@@ -6876,7 +6869,6 @@
 <translation id="8063535366119089408">មើល​ឯកសារ</translation>
 <translation id="8064279191081105977">ក្រុម <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">ប្រអប់តភ្ជាប់</translation>
-<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8070662218171013510">ប្រតិកម្មប៉ះ</translation>
 <translation id="8071432093239591881">បោះពុម្ព​ជា​រូបភាព</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ទិន្នន័យ​កម្មវិធី​អាចជា​ទិន្នន័យ​ទាំងឡាយ​ដែលកម្មវិធី​បាន​រក្សាទុក (ផ្អែកលើ​ការកំណត់​របស់​អ្នកអភិវឌ្ឍន៍) រួមទាំង​ទិន្នន័យ​ដូចជា ទំនាក់ទំនង សារ និង​រូបថត​ជាដើម។<ph name="END_PARAGRAPH1" />
@@ -7759,7 +7751,6 @@
 <translation id="9003647077635673607">អនុញ្ញាតនៅលើគេហទំព័រទាំងអស់</translation>
 <translation id="9003677638446136377">ពិនិត្យម្តងទៀត</translation>
 <translation id="9004754973617721124">សម្អាតទិន្នន័យគេហទំព័រ និងការអនុញ្ញាតសម្រាប់ <ph name="SITE_NAME" /> និងគេហទំព័រទាំងអស់ដែលស្ថិតនៅក្រោមវា និងកម្មវិធីដែលបានដំឡើងរបស់វាឬ?</translation>
-<translation id="9004952710076978168">បានទទួលការជូនដំណឹងពីម៉ាស៊ីនបោះពុម្ពដែលមិនស្គាល់។</translation>
 <translation id="9008201768610948239">មិនអើពើ</translation>
 <translation id="9008201858626224558">ប៊ូតុងថយក្រោយ​នៅលើ​ទំព័រព័ត៌មានលម្អិត <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">កំពុងទាញឡើង (<ph name="PROGRESS_PERCENT" />%)...</translation>
@@ -7810,7 +7801,6 @@
 <translation id="9045430190527754450">ផ្ញើ​អាសយដ្ឋាន​ទំព័រនៃ​ទំព័រ​ដែល​កំពុង​ព្យាយាម​ចូល ទៅកាន់ Google</translation>
 <translation id="9048745018038487540">ជ្រើសរើសពុម្ព​អក្សរ​ទាំងអស់</translation>
 <translation id="9050666287014529139">ឃ្លាសម្ងាត់</translation>
-<translation id="9052208328806230490">អ្នកបានចុះឈ្មោះម៉ាស៊ីនបោះពុម្ពរបស់អ្នកជាមួយ <ph name="CLOUD_PRINT_NAME" /> ដោយប្រើគណនី <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">បន្ត​ទប់ស្កាត់</translation>
 <translation id="9053563360605707198">បោះពុម្ព​ទាំង​សងខាង</translation>
 <translation id="9053893665344928494">ចងចាំជម្រើសរបស់ខ្ញុំ</translation>

@@ -476,6 +476,7 @@
 <translation id="2465655957518002998">選擇速遞方式</translation>
 <translation id="2465688316154986572">釘書釘</translation>
 <translation id="2465914000209955735">管理您在 Chrome 中下載嘅檔案</translation>
+<translation id="2466004615675155314">顯示來自網絡的資料</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />執行網絡診斷<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 至 N 的順序</translation>
 <translation id="2470767536994572628">在您編輯註解時，此文件將會返回單頁檢視模式及轉回原本的方向</translation>
@@ -522,6 +523,7 @@
 <translation id="2609632851001447353">變化</translation>
 <translation id="2610561535971892504">點擊複製</translation>
 <translation id="2618023639789766142">C10 (信封)</translation>
+<translation id="2623663032199728144">可以要求使用畫面中的資訊</translation>
 <translation id="2625385379895617796">您時鐘的時間過快</translation>
 <translation id="262745152991669301">可要求連接 USB 裝置</translation>
 <translation id="2629325967560697240">如要獲得 Chrome 最高程度的安全防護，請<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />啟用強化保護功能<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -682,6 +684,7 @@
 <translation id="3197136577151645743">可要求偵測您使用裝置的時間</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理同步邊啲資料</translation>
 <translation id="320323717674993345">取消付款</translation>
+<translation id="3203366800380907218">來自網絡</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3209034400446768650">網頁可能會收取費用</translation>
 <translation id="3212581601480735796">您在 <ph name="HOSTNAME" /> 上進行的活動正受監控</translation>
@@ -1866,7 +1869,6 @@
 <translation id="706295145388601875">在 Chrome 設定中新增並管理地址</translation>
 <translation id="7064851114919012435">聯絡人資訊</translation>
 <translation id="7068733155164172741">請輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
-<translation id="7070090581017165256">關於此網站</translation>
 <translation id="70705239631109039">您的連線並非完全安全</translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7079718277001814089">此網站含有惡意軟件</translation>
@@ -2114,7 +2116,6 @@
 <translation id="7813600968533626083">要從 Chrome 中移除表格建議嗎？</translation>
 <translation id="781440967107097262">要分享剪貼簿嗎？</translation>
 <translation id="7815407501681723534">找到 <ph name="NUMBER_OF_RESULTS" /> 個與「<ph name="SEARCH_STRING" />」相符的<ph name="SEARCH_RESULTS" /></translation>
-<translation id="782125616001965242">顯示關於此網站的資料</translation>
 <translation id="782886543891417279">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往其登入頁面。</translation>
 <translation id="7836231406687464395">Postfix (信封)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
@@ -2350,6 +2351,7 @@
 <translation id="865032292777205197">動作感應器</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
 <translation id="8666678546361132282">英文</translation>
+<translation id="8669306706049782872">使用畫面中的資訊開啟及放置視窗</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8676424191133491403">不延遲</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>

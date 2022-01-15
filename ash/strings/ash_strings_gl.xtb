@@ -409,7 +409,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3640092422335864171">Garda o dispositivo (<ph name="NAME" />)</translation>
 <translation id="3649505501900178324">Actualización pendente</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Usuario xestionado</translation>
-<translation id="3665889125180354336">Gravar sons do micrófono</translation>
 <translation id="3680908746918359504">Borrar todos os marcadores</translation>
 <translation id="36813544980941320">O teu teléfono e o dispositivo (<ph name="DEVICE_NAME" />) compartirán as redes wifi</translation>
 <translation id="3694122362646626770">Sitios web</translation>
@@ -972,6 +971,7 @@ Nova instalación</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
+<translation id="7544300628205093162">A luz traseira do teclado está acendida</translation>
 <translation id="7548434653388805669">É hora de deitarse</translation>
 <translation id="7551643184018910560">Fixar no estante</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
@@ -1056,6 +1056,7 @@ Nova instalación</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
 <translation id="8042925093898452104">Pechar información detallada</translation>
+<translation id="8044457332620420407">A luz traseira do teclado está apagada</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Xa existe un modelo chamado <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiouse no portapapeis</translation>

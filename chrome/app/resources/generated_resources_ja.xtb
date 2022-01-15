@@ -204,7 +204,6 @@
 <translation id="1195558154361252544">許可したサイトを除くすべてのサイトで通知を自動的にブロックします</translation>
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1197935538609051549">無効にする</translation>
-<translation id="1197979282329025000"><ph name="PRINTER_NAME" /> プリンタのプリンタ機能の取得中にエラーが発生しました。このプリンタを <ph name="CLOUD_PRINT_NAME" /> に登録できませんでした。</translation>
 <translation id="119944043368869598">すべて削除</translation>
 <translation id="1199814941632954229">次の証明書プロフィールに対する証明書を準備しています</translation>
 <translation id="120069043972472860">視聴不能</translation>
@@ -1197,7 +1196,6 @@
 <translation id="2199719347983604670">Chrome 同期のデータ</translation>
 <translation id="2200094388063410062">メール</translation>
 <translation id="2200356397587687044">続行するには Chrome に権限が必要です</translation>
-<translation id="2202898655984161076">プリンタのリスト作成中に問題が発生しました。一部のプリンタが <ph name="CLOUD_PRINT_NAME" /> に正常に登録されていない可能性があります。</translation>
 <translation id="2203088913459920044">名前には文字、数字、特殊文字を使用できます</translation>
 <translation id="220321590587754225">接続できませんでした。もう一度お試しください。</translation>
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
@@ -2189,7 +2187,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。</translation>
 <translation id="3217843140356091325">ショートカットを作成しますか？</translation>
 <translation id="321834671654278338">Linux アンインストーラ</translation>
-<translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> コネクタのプロセスで問題が発生しました。再起動しますか？</translation>
 <translation id="3220943972464248773">パスワードを同期するには、本人確認を行ってください</translation>
 <translation id="3222066309010235055">事前レンダリング: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> に接続</translation>
@@ -2743,7 +2740,6 @@
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3790417903123637354">エラーが発生しました。しばらくしてからもう一度お試しください</translation>
 <translation id="379082410132524484">カードの有効期限が切れています</translation>
-<translation id="3792890930871100565">プリンタを切断</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{お使いのパソコンに有害なソフトウェアは見つかりませんでした • 前回の確認: 1 日前}other{お使いのパソコンに有害なソフトウェアは見つかりませんでした • 前回の確認: {NUM_DAYS} 日前}}</translation>
 <translation id="379500251094592809">ニアバイシェアを使用するには、両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。連絡先に登録されていない Chromebook とファイルを共有する場合は、その Chromebook で周辺ユーザーによる検出がオンになっていることも確認してください（時刻を選択してステータス領域を開き、周辺ユーザーによる検出をオンにします）。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">オフ</translation>
@@ -3850,7 +3846,6 @@
 <translation id="4972129977812092092">プリンタの編集</translation>
 <translation id="4972164225939028131">パスワードが違います</translation>
 <translation id="4972737347717125191">サイトがバーチャル リアリティ デバイスとデータの使用を要求できるようにする</translation>
-<translation id="4973307593867026061">プリンタを追加</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{サイトをミュート}other{サイトをミュート}}</translation>
 <translation id="4977942889532008999">アクセスの確認</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
@@ -3901,13 +3896,11 @@
 <translation id="5036662165765606524">複数ファイルの自動ダウンロードをどのサイトにも許可しない</translation>
 <translation id="5037676449506322593">すべてを選択</translation>
 <translation id="5038022729081036555">明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
-<translation id="5038863510258510803">有効にしています...</translation>
 <translation id="5039696241953571917">Google アカウントでの保存パスワードの表示と管理</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5040823038948176460">その他のコンテンツの設定</translation>
 <translation id="5043440033854483429">名前には文字、数字、ハイフン（-）を使用できます。1～15 文字の間で指定してください。</translation>
 <translation id="5043913660911154449">または、プリンタの PPD を指定してください（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
-<translation id="5044527779574548527">今後この手順を表示しない</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="504561833207953641">既存のブラウザ セッションで開いています。</translation>
 <translation id="5047421709274785093">サイトによるモーション センサーと光センサーの使用をブロックする</translation>
@@ -6823,7 +6816,6 @@
 <translation id="8063535366119089408">ファイルを表示</translation>
 <translation id="8064279191081105977">グループ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">接続ダイアログ</translation>
-<translation id="8069615408251337349">Google クラウド プリント</translation>
 <translation id="8070662218171013510">触覚フィードバック</translation>
 <translation id="8071432093239591881">画像として印刷する</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づき）アプリで保存されたあらゆるデータを指します。これには連絡先、メッセージ、写真などのデータも含まれます。<ph name="END_PARAGRAPH1" />
@@ -7705,7 +7697,6 @@
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
 <translation id="9003677638446136377">もう一度確認</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限、およびそのサイトのインストール済みのアプリを削除しますか？</translation>
-<translation id="9004952710076978168">不明なプリンタのメッセージを受け取りました。</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> の詳細ページの戻るボタン</translation>
 <translation id="9009369504041480176">アップロード中（<ph name="PROGRESS_PERCENT" /> %）...</translation>
@@ -7756,7 +7747,6 @@
 <translation id="9045430190527754450">アクセスしようとしているページのウェブアドレスを Google に送信します</translation>
 <translation id="9048745018038487540">フォントをすべて選択</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>
-<translation id="9052208328806230490"><ph name="CLOUD_PRINT_NAME" /> に、アカウント <ph name="EMAIL" /> を使ってプリンタを登録しました</translation>
 <translation id="9052404922357793350">引き続きブロックする</translation>
 <translation id="9053563360605707198">両面に印刷する</translation>
 <translation id="9053893665344928494">選択内容を保存</translation>

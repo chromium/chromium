@@ -206,7 +206,6 @@
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
 <translation id="1197088940767939838">오렌지색</translation>
 <translation id="1197935538609051549">비활성화</translation>
-<translation id="1197979282329025000"><ph name="PRINTER_NAME" /> 프린터의 인쇄 가능 매수를 검색하는 중에 오류가 발생했습니다. 이 프린터를 <ph name="CLOUD_PRINT_NAME" />(으)로 등록할 수 없습니다.</translation>
 <translation id="119944043368869598">모두 삭제</translation>
 <translation id="1199814941632954229">다음 인증서 프로필의 인증서가 프로비저닝되는 중입니다</translation>
 <translation id="120069043972472860">시청이 불가능할 정도</translation>
@@ -1210,7 +1209,6 @@
 <translation id="2199719347983604670">Chrome 동기화 데이터</translation>
 <translation id="2200094388063410062">이메일</translation>
 <translation id="2200356397587687044">계속하려면 Chrome에 권한이 필요함</translation>
-<translation id="2202898655984161076">프린터를 나열하는 데 문제가 발생했습니다. <ph name="CLOUD_PRINT_NAME" />에 성공적으로 등록되지 못한 프린터가 있을 수 있습니다.</translation>
 <translation id="2203088913459920044">이름에는 문자, 숫자, 특수문자를 사용할 수 있습니다</translation>
 <translation id="220321590587754225">연결할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
@@ -2207,7 +2205,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 <ph name="SUPERVISED_USER_NAME" />님의 개인 검색결과에 액세스할 수도 있습니다.</translation>
 <translation id="3217843140356091325">바로가기를 만드시겠습니까?</translation>
 <translation id="321834671654278338">Linux 제거 프로그램</translation>
-<translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> 커넥터 프로세스가 중단되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="3220943972464248773">비밀번호를 동기화하려면 본인 여부를 인증하세요.</translation>
 <translation id="3222066309010235055">사전 렌더링: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" />에 연결</translation>
@@ -2761,7 +2758,6 @@
 <translation id="3789841737615482174">설치</translation>
 <translation id="3790417903123637354">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
-<translation id="3792890930871100565">프린터 연결 해제</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • 1일 전 확인}other{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • {NUM_DAYS}일 전 확인}}</translation>
 <translation id="379500251094592809">Nearby Share를 사용하려면 두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 켜져 있어야 합니다. 연락처에 없는 Chromebook과 공유하려면 Nearby 전체 공개가 사용 설정되어 있는지 확인하세요. 시간을 선택하여 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">사용 안함</translation>
@@ -3871,7 +3867,6 @@
 <translation id="4972129977812092092">프린터 수정</translation>
 <translation id="4972164225939028131">잘못된 비밀번호</translation>
 <translation id="4972737347717125191">사이트에서 가상 현실 기기 및 데이터의 사용을 요청할 수 있음</translation>
-<translation id="4973307593867026061">프린터 추가</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{사이트 숨기기}other{사이트 숨기기}}</translation>
 <translation id="4977942889532008999">액세스 확인</translation>
 <translation id="4980805016576257426">확장 프로그램에 멀웨어가 포함되어 있습니다.</translation>
@@ -3924,13 +3919,11 @@
 <translation id="5036662165765606524">사이트에서 여러 파일을 자동으로 다운로드하도록 허용하지 않음</translation>
 <translation id="5037676449506322593">모두 선택</translation>
 <translation id="5038022729081036555">내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
-<translation id="5038863510258510803">사용 설정 중...</translation>
 <translation id="5039696241953571917">Google 계정에 저장된 비밀번호 보기 및 관리</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040823038948176460">추가 콘텐츠 설정</translation>
 <translation id="5043440033854483429">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있으며 1~15자여야 합니다.</translation>
 <translation id="5043913660911154449">또는 프린터 PPD 지정 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">이 단계를 다시 표시하지 않음</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
 <translation id="5047421709274785093">사이트에서 모션 및 조도 센서 사용 차단</translation>
@@ -6858,7 +6851,6 @@
 <translation id="8063535366119089408">파일 보기</translation>
 <translation id="8064279191081105977">그룹 <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">연결 대화상자</translation>
-<translation id="8069615408251337349">Google 클라우드 프린트</translation>
 <translation id="8070662218171013510">햅틱 반응</translation>
 <translation id="8071432093239591881">이미지로 인쇄</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />앱 데이터에는 연락처, 메시지, 사진 등 앱에서 개발자 설정에 따라 저장한 모든 데이터가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
@@ -7740,7 +7732,6 @@
 <translation id="9003647077635673607">모든 웹사이트에서 허용</translation>
 <translation id="9003677638446136377">다시 확인</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> 및 모든 하위 사이트, 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
-<translation id="9004952710076978168">알 수 없는 프린터에 대한 알림을 받았습니다.</translation>
 <translation id="9008201768610948239">무시</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> 세부정보 페이지의 뒤로 버튼</translation>
 <translation id="9009369504041480176">업로드 중(<ph name="PROGRESS_PERCENT" />%)...</translation>
@@ -7791,7 +7782,6 @@
 <translation id="9045430190527754450">사용자가 접속하려는 페이지의 웹 주소를 Google에 전송</translation>
 <translation id="9048745018038487540">모든 글꼴 선택</translation>
 <translation id="9050666287014529139">암호</translation>
-<translation id="9052208328806230490"><ph name="EMAIL" /> 계정을 사용하여 프린터를 <ph name="CLOUD_PRINT_NAME" />에 등록했습니다.</translation>
 <translation id="9052404922357793350">차단 계속</translation>
 <translation id="9053563360605707198">양면에 인쇄</translation>
 <translation id="9053893665344928494">내 선택 기억하기</translation>

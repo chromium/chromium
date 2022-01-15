@@ -409,7 +409,6 @@
 <translation id="3640092422335864171"><ph name="NAME" /> ছেভ কৰক</translation>
 <translation id="3649505501900178324">আপডে'ট বাকী আছে</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />এ পৰিচালনা কৰা ব্যৱহাৰকাৰী</translation>
-<translation id="3665889125180354336">মাইক্ৰ'ফ'ন ৰেকৰ্ড কৰক</translation>
 <translation id="3680908746918359504">আটাইবোৰ মাৰ্কাৰ মচক</translation>
 <translation id="36813544980941320">আপোনাৰ ফ'ন আৰু <ph name="DEVICE_NAME" />ৰ মাজত ৱাই-ফাই নেটৱৰ্কটো শ্বেয়াৰ কৰা হ'ব</translation>
 <translation id="3694122362646626770">ৱেবছাইট</translation>
@@ -971,6 +970,7 @@
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="7526573455193969409">নেটৱৰ্ক নিৰীক্ষণ কৰা হ’ব পাৰে</translation>
 <translation id="7536035074519304529">আইপি ঠিকনা: <ph name="ADDRESS" /></translation>
+<translation id="7544300628205093162">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰ অন হৈ আছে</translation>
 <translation id="7548434653388805669">শুবৰ সময় হ’ল</translation>
 <translation id="7551643184018910560">শ্বেল্‌ফত পিন কৰক</translation>
 <translation id="7561982940498449837">মেনু বন্ধ কৰক</translation>
@@ -1055,6 +1055,7 @@
 <translation id="8036504271468642248">পূৰ্বৱৰ্তী বাক্য</translation>
 <translation id="8042893070933512245">সাধ্য সুবিধাৰ ছেটিংসমূহৰ মেনু খোলক</translation>
 <translation id="8042925093898452104">সবিশেষ তথ্য বন্ধ কৰক</translation>
+<translation id="8044457332620420407">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰ অফ হৈ আছে</translation>
 <translation id="8048123526339889627">ব্লুটুথৰ ছেটিংসমূহ</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামৰ টেমপ্লে’টটো ইতিমধ্যে আছে</translation>
 <translation id="8052898407431791827">প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰখা হ’ল</translation>

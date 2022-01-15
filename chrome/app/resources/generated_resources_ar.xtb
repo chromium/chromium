@@ -208,7 +208,6 @@
 <translation id="1195558154361252544">يتم حظر الإشعارات تلقائيًا لجميع المواقع الإلكترونية باستثناء المواقع التي تسمح بها.</translation>
 <translation id="1197088940767939838">برتقالي</translation>
 <translation id="1197935538609051549">إيقاف</translation>
-<translation id="1197979282329025000">حدث خطأ أثناء استرداد إمكانيات الطابعة للطابعة <ph name="PRINTER_NAME" />. تعذر تسجيل هذه الطابعة في <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">محو الكل</translation>
 <translation id="1199814941632954229">يتم تزويد الشهادات لنماذج الشهادات هذه</translation>
 <translation id="120069043972472860">غير قابل للمشاهدة</translation>
@@ -244,6 +243,7 @@
 <translation id="1235458158152011030">الشبكات المعروفة</translation>
 <translation id="123578888592755962">القرص ممتلئ</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{نص واحد}zero{# نص}two{نصّان}few{# نصوص}many{# نصًّا}other{# نص}}</translation>
+<translation id="1236009322878349843">تعديل بيانات الهاتف</translation>
 <translation id="1239594683407221485">يمكنك استكشاف محتوى الجهاز في تطبيق الملفات.</translation>
 <translation id="1241066500170667906">اختَر حالة ميزة "<ph name="EXPERIMENT_NAME" />" التجريبية.</translation>
 <translation id="124116460088058876">مزيد من اللغات</translation>
@@ -1202,7 +1202,6 @@
 <translation id="2199719347983604670">‏البيانات من مزامنة Chrome</translation>
 <translation id="2200094388063410062">البريد الإلكتروني</translation>
 <translation id="2200356397587687044">‏يحتاج Chrome إلى إذن للمتابعة</translation>
-<translation id="2202898655984161076">حدثت مشكلة أثناء إدراج الطابعات. ربما لا يتم تسجيل بعض الطابعات بنجاح في <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">يمكن أن يحتوي الاسم على أحرف وأرقام ورموز خاصة.</translation>
 <translation id="220321590587754225">تعذّر الربط. يُرجى إعادة المحاولة.</translation>
 <translation id="2204034823255629767">قراءة وتغيير أي شيء تكتبه</translation>
@@ -1948,6 +1947,7 @@
 <translation id="2939908794993783865">المزيد من المواقع الإلكترونية غير النشطة</translation>
 <translation id="2939938020978911855">عرض أجهزة بلوتوث المُتاحة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
+<translation id="2941696810925320401">عادةً ما تفتح المواقع الإلكترونية النوافذ وتضعها على شاشاتك لعرض مستندات إضافية أو محتوى ملء الشاشة.</translation>
 <translation id="2942279350258725020">‏رسائل Android</translation>
 <translation id="2942560570858569904">جارٍ الانتظار...</translation>
 <translation id="2942581856830209953">تخصيص هذه الصفحة</translation>
@@ -2100,6 +2100,7 @@
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{تم إيقاف إضافة واحدة يُحتمل أن تكون ضارة، ويمكنك أيضًا إزالتها.}zero{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}two{تم إيقاف إضافتَين ({NUM_EXTENSIONS}) يُحتمل أن تكونا ضارتَين. ويمكنك أيضًا إزالتهما.}few{تم إيقاف {NUM_EXTENSIONS} إضافات يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}many{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}other{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}}</translation>
 <translation id="3101126716313987672">إضاءة خافتة</translation>
 <translation id="3101709781009526431">التاريخ والوقت</translation>
+<translation id="3103451787721578293">يُرجى تحديد سبب لتحميل هذه البيانات:</translation>
 <translation id="3103941660000130485">‏حدث خطأ أثناء ترقية نظام تشغيل Linux</translation>
 <translation id="3105796011181310544">‏هل تريد التغيير مرة أخرى إلى Google؟</translation>
 <translation id="310671807099593501">يستخدم الموقع الإلكتروني البلوتوث.</translation>
@@ -2197,7 +2198,6 @@
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" /> يمكن الوصول إلى نتائج <ph name="SUPERVISED_USER_NAME" /> الشخصية باستخدام صوت مشابه لصوت طفلك أو تسجيل لصوته.</translation>
 <translation id="3217843140356091325">هل تريد إنشاء اختصار؟</translation>
 <translation id="321834671654278338">‏أداة إزالة نظام التشغيل Linux</translation>
-<translation id="3220586366024592812">تعطلت عملية موصل <ph name="CLOUD_PRINT_NAME" /> . هل تريد إعادة التشغيل؟</translation>
 <translation id="3220943972464248773">لاستئناف مزامنة كلمات المرور، يجب إثبات هويّتك.</translation>
 <translation id="3222066309010235055">Prerender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">ربط بنظام التشغيل <ph name="USB_VM_NAME" /></translation>
@@ -2627,6 +2627,7 @@
 <translation id="3670113805793654926">أجهزة من أي مورّد</translation>
 <translation id="3670229581627177274">تفعيل البلوتوث</translation>
 <translation id="3672681487849735243">تم اكتشاف خطأ من المصنع</translation>
+<translation id="3673097791729989571">يستضيف النطاق <ph name="SAML_DOMAIN" /> عملية تسجيل الدخول.</translation>
 <translation id="367645871420407123">اتركه فارغًا إذا كنت ترغب في تعيين كلمة مرور الجذر إلى قيمة صورة الاختبار التلقائية</translation>
 <translation id="3677106374019847299">إدخال مزوّد مخصّص</translation>
 <translation id="3677911431265050325">طلب موقع إلكتروني متوافق مع الأجهزة الجوَالة</translation>
@@ -2752,7 +2753,6 @@
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3790417903123637354">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="379082410132524484">انتهت صلاحية بطاقتك</translation>
-<translation id="3792890930871100565">فصل الطابعات</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{‏لم يعثر متصفِّح Chrome على برامج ضارّة في جهاز الكمبيوتر • تم إجراء عملية التحقُّق قبل يوم واحد.}zero{‏لم يعثر متصفِّح Chrome على برامج ضارّة في جهاز الكمبيوتر • تم إجراء عملية التحقُّق قبل {NUM_DAYS} يوم.}two{‏لم يعثر متصفِّح Chrome على برامج ضارّة في جهاز الكمبيوتر • تم إجراء عملية التحقُّق قبل يومَين ({NUM_DAYS}).}few{‏لم يعثر متصفِّح Chrome على برامج ضارّة في جهاز الكمبيوتر • تم إجراء عملية التحقُّق قبل {NUM_DAYS} أيام.}many{‏لم يعثر متصفِّح Chrome على برامج ضارّة في جهاز الكمبيوتر • تم إجراء عملية التحقُّق قبل {NUM_DAYS} يومًا.}other{‏لم يعثر متصفِّح Chrome على برامج ضارّة في جهاز الكمبيوتر • تم إجراء عملية التحقُّق قبل {NUM_DAYS} يوم.}}</translation>
 <translation id="379500251094592809">‏لاستخدام ميزة "المشاركة عن قرب"، يُرجى التأكُّد من فتح قفل كلا الجهازَين وتقريبهما من بعضهما وتفعيل البلوتوث فيهما. وإذا كنت تشارك الملفات مع جهاز Chromebook غير مدرَج في جهات اتصالك، يُرجى التأكُّد من تفعيل وضع الظهور لجميع الأجهزة القريبة لميزة "المشاركة عن قرب" (يُرجى فتح منطقة الحالة من خلال اختيار الوقت، ثم تفعيل وضع الظهور لجميع الأجهزة القريبة لميزة "المشاركة عن قرب"). <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">غير مفعَّل</translation>
@@ -3407,6 +3407,7 @@
 <translation id="4481467543947557978">مشغّل الخدمات</translation>
 <translation id="4481530544597605423">الأجهزة التي تم إلغاء إقرانها</translation>
 <translation id="4482990632723642375">آخر علامة تبويب تم إغلاقها</translation>
+<translation id="4484922932728109422">عدم السماح للمواقع الإلكترونية باستخدام المعلومات المتعلقة بشاشاتك لفتح النوافذ ووضعها عليها</translation>
 <translation id="4487489714832036847">‏تستخدم أجهزة Chromebook تطبيقات بدلاً من برامج تقليدية. يمكنك الحصول على تطبيقات لزيادة الإنتاجية والترفيه والمزيد.</translation>
 <translation id="4488257340342212116">المواقع الإلكترونية التي يُسمح لها باستخدام الكاميرا</translation>
 <translation id="4488502501195719518">هل تريد محو جميع البيانات؟</translation>
@@ -3489,6 +3490,7 @@
 <translation id="4565917129334815774">تخزين سجلّات النظام</translation>
 <translation id="4566417217121906555">كتم صوت الميكروفون</translation>
 <translation id="456717285308019641">لغة الصفحة المُراد ترجمتها</translation>
+<translation id="4567512141633030272">هل هذا خيار خاطئ لتسجيل الدخول؟</translation>
 <translation id="4567533462991917415">يمكنك دائمًا إضافة المزيد من الأشخاص بعد إتمام الإعداد. ويمكن لكل شخص تخصيص حسابه والحفاظ على خصوصية بياناته.</translation>
 <translation id="4567772783389002344">إضافة كلمة</translation>
 <translation id="4568025708905928793">يتم طلب مفتاح أمان</translation>
@@ -3734,6 +3736,7 @@
 <translation id="4841741146571978176">‏لم يتم العثور على الجهاز الافتراضي (VM) المطلوب. يُرجى محاولة إعداد <ph name="VM_TYPE" /> للمتابعة.</translation>
 <translation id="4842976633412754305">تحاول هذه الصفحة تحميل نصوص برمجية من مصادر غير مصادقة.</translation>
 <translation id="4844333629810439236">لوحات مفاتيح أخرى</translation>
+<translation id="4844633725025837809">‏لتوفير مزيد من الأمان، يمكنك تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="4846680374085650406">أنت تتبع توصية المشرف لهذا الإعداد.</translation>
 <translation id="4847902821209177679">‏تم اختيار <ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />، يُرجى الضغط على Enter لاختيار ألبومات <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="4848191975108266266">‏ميزة "OK Google" في "مساعد Google"</translation>
@@ -3861,7 +3864,6 @@
 <translation id="4972129977812092092">تعديل الطابعة</translation>
 <translation id="4972164225939028131">كلمة مرور غير صحيحة</translation>
 <translation id="4972737347717125191">السماح للمواقع الإلكترونية بطلب استخدام أجهزة الواقع الافتراضي وبياناتها</translation>
-<translation id="4973307593867026061">إضافة الطابعات</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{كتم صوت موقع إلكتروني واحد}zero{كتم صوت المواقع الإلكترونية}two{كتم صوت موقعيِّ الويب}few{كتم صوت المواقع الإلكترونية}many{كتم صوت المواقع الإلكترونية}other{كتم صوت المواقع الإلكترونية}}</translation>
 <translation id="4977942889532008999">تأكيد الدخول</translation>
 <translation id="4980805016576257426">تحتوي هذه الإضافة على برامج ضارة.</translation>
@@ -3875,6 +3877,7 @@
 <translation id="499165176004408815">استخدام وضع التباين العالي</translation>
 <translation id="4992458225095111526">‏تأكيد Powerwash</translation>
 <translation id="4992473555164495036">لقد قيّد المشرف طرق الإدخال المتاحة.</translation>
+<translation id="4992984395680162305">تم ربط هذه الأجهزة من خلال المسح الضوئي لرمز الاستجابة السريعة.</translation>
 <translation id="4994474651455208930">السماح للمواقع الإلكترونية بأن تطلب أن تصبح معالجات تلقائية للبروتوكولات</translation>
 <translation id="4994754230098574403">الإعداد</translation>
 <translation id="4995131849631312693">‏<ph name="BEGIN_PARAGRAPH1" />قبل التسجيل، عليك محو وحدة النظام الأساسي الموثوق به (TPM) لكي يتسنى لنظام التشغيل <ph name="DEVICE_OS" /> الحصول على ملكية الجهاز.<ph name="END_PARAGRAPH1" />
@@ -3914,13 +3917,11 @@
 <translation id="5036662165765606524">عدم السماح لأي موقع بتنزيل عدة ملفات تلقائيًا</translation>
 <translation id="5037676449506322593">اختيار الكل</translation>
 <translation id="5038022729081036555">يمكنك استخدامه لمدة <ph name="TIME_LIMIT" /> غدًا.</translation>
-<translation id="5038863510258510803">جارٍ التفعيل...</translation>
 <translation id="5039696241953571917">‏يمكنك الاطّلاع على كلمات المرور المحفوظة وإدارتها في حسابك على Google.</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5040823038948176460">إعدادات المحتوى الإضافية</translation>
 <translation id="5043440033854483429">يمكن أن يحتوي الاسم على الأحرف والأرقام والواصلات (-)، ويجب أن يتراوح عدد أحرف الاسم بين 1 و15 حرفًا كحدّ أقصى.</translation>
 <translation id="5043913660911154449">‏أو حدِّد ملف PPD للطابعة <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="5044527779574548527">عدم إظهار هذه الخطوة مجددًا</translation>
 <translation id="5045550434625856497">كلمة مرور غير صحيحة</translation>
 <translation id="504561833207953641">جارٍ الفتح في جلسة المتصفِّح الحالي.</translation>
 <translation id="5047421709274785093">منع المواقع الإلكترونية من استخدام أجهزة استشعار الإضاءة والحركة</translation>
@@ -3995,6 +3996,7 @@
 <translation id="5123433949759960244">كرة السلة</translation>
 <translation id="5125751979347152379">‏عنوان URL غير صالح.</translation>
 <translation id="5126611267288187364">عرض التغييرات</translation>
+<translation id="5127242257756472928">المواقع الإلكترونية غير المسموح لها باستخدام المعلومات المتعلقة بشاشاتك لفتح النوافذ ووضعها عليها</translation>
 <translation id="5127620150973591153">رمز إتمام الاتصال الآمن: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">المزامنة متوقفة.</translation>
 <translation id="5127881134400491887">إدارة اتصالات الشبكة</translation>
@@ -4107,6 +4109,7 @@
 <translation id="5243522832766285132">يُرجى إعادة المحاولة بعد بضع لحظات</translation>
 <translation id="5244474230056479698">المزامنة مع <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">بدء استخدام حساب مدرسة</translation>
+<translation id="5246036036039717045">‏يمكن استخدام هذه الأجهزة كمفاتيح أمان لأنك سجلت الدخول إلى Chrome عليها.</translation>
 <translation id="5246282308050205996">لقد تعطل <ph name="APP_NAME" />. انقر على هذا البالون لإعادة تشغيل التطبيق.</translation>
 <translation id="5247051749037287028">الاسم المعروض (اختياري)</translation>
 <translation id="5249624017678798539">تعطل المتصفح قبل انتهاء التنزيل.</translation>
@@ -4595,6 +4598,7 @@
 <translation id="5757375109985023827">اختَر علامة تبويب لمعاينتها.</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
 <translation id="5759728514498647443">يمكن قراءة المستندات التي ترسلها إلى الطباعة عبر <ph name="APP_NAME" /> بواسطة <ph name="APP_NAME" />.</translation>
+<translation id="5762787084360227629">‏إدخال معلومات حساب Google</translation>
 <translation id="5763751966069581670">‏لم يتم العثور على أي أجهزة USB</translation>
 <translation id="5764483294734785780">حف&amp;ظ ملف الصوت باسم...</translation>
 <translation id="57646104491463491">تاريخ التعديل</translation>
@@ -5740,6 +5744,7 @@
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6965648386495488594">المنفذ</translation>
 <translation id="6965978654500191972">جهاز</translation>
+<translation id="6966370001499648704">التحكّم في الهواتف التي تستخدمها كمفاتيح أمان</translation>
 <translation id="6967430741871315905">تعذّر التحقّق مما إذا كان الجهاز مسموحًا له بتنفيذ هذا الإجراء.</translation>
 <translation id="696780070563539690">لن يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح على المواقع الإلكترونية المختلفة، وذلك لتقديم إعلانات مخصَّصة لك مثلاً.</translation>
 <translation id="6968288415730398122">أدخل كلمة المرور لإعداد قفل الشاشة</translation>
@@ -5915,6 +5920,7 @@
 <translation id="7136694880210472378">الضبط كمحرك البحث التلقائي
 </translation>
 <translation id="7136993520339022828">حدث خطأ. يُرجى إعادة المحاولة عن طريق اختيار صور أخرى.</translation>
+<translation id="7137472406312798422">السماح للمواقع الإلكترونية بأن تطلب استخدام المعلومات المتعلقة بشاشاتك لفتح النوافذ ووضعها عليها</translation>
 <translation id="7138515695467025690">غير مفعّل / سيتم التفعيل تلقائيًا عند غروب الشمس</translation>
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7139627972753429585">يستخدم تطبيق <ph name="APP_NAME" /> الميكروفون.</translation>
@@ -6802,6 +6808,7 @@
 <translation id="8028803902702117856">جارٍ تنزيل <ph name="SIZE" />، <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">الحجم</translation>
 <translation id="8029492516535178472">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على ⌘ + Option + السهم المتجه للأعلى للاستجابة للطلب</translation>
+<translation id="8029539783236818164">المواقع الإلكترونية المسموح لها باستخدام المعلومات المتعلقة بشاشاتك لفتح النوافذ ووضعها عليها</translation>
 <translation id="8030169304546394654">غير متصل</translation>
 <translation id="8030852056903932865">أوافق</translation>
 <translation id="8032244173881942855">يتعذّر إرسال علامة التبويب.</translation>
@@ -6814,6 +6821,7 @@
 <translation id="8038399858950372766">الجهاز <ph name="DEVICE_INDEX" /> من إجمالي <ph name="DEVICE_COUNT" />، لوحة مفاتيح تُسمَّى <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8042142357103597104">درجة تعتيم النص</translation>
+<translation id="8042331986490021244">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> لا يستجيب.</translation>
 <translation id="8044899503464538266">بطيء</translation>
 <translation id="8045253504249021590">‏تم إيقاف المزامنة عبر لوحة تحكم Google.</translation>
@@ -6849,7 +6857,6 @@
 <translation id="8063535366119089408">قراءة الملف</translation>
 <translation id="8064279191081105977">مجموعة <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">مربع حوار الاتصال</translation>
-<translation id="8069615408251337349">‏الطباعة السحابية من Google</translation>
 <translation id="8070662218171013510">الاستجابة عند اللمس</translation>
 <translation id="8071432093239591881">الطباعة كصورة</translation>
 <translation id="8073499153683482226">‏<ph name="BEGIN_PARAGRAPH1" />قد تكون بيانات التطبيق أي بيانات حفِظها التطبيق (استنادًا إلى إعدادات مطوِّر البرامج)، بما في ذلك البيانات مثل جهات الاتصال والرسائل والصور.<ph name="END_PARAGRAPH1" />
@@ -7577,6 +7584,7 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">معتم</translation>
 <translation id="8838770651474809439">هامبورجر</translation>
+<translation id="8838778928843281408">إدارة أجهزة الهاتف</translation>
 <translation id="883911313571074303">إضافة تعليق توضيحي على الصورة</translation>
 <translation id="8841843049738266382">قراءة قائمة المستخدمين المسموح بهم وتغييرها</translation>
 <translation id="8842594465773264717">حذف بصمة الإصبع هذه</translation>
@@ -7736,7 +7744,6 @@
 <translation id="9003647077635673607">السماح على جميع المواقع الإلكترونية</translation>
 <translation id="9003677638446136377">التحقق مرة أخرى</translation>
 <translation id="9004754973617721124">هل تريد محو البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />، وأيّ مواقع إلكترونية ضمن النطاق، وتطبيقه المثبَّت؟</translation>
-<translation id="9004952710076978168">تلقيت إشعارًا خاصًا بطابعة غير معروفة.</translation>
 <translation id="9008201768610948239">تجاهل</translation>
 <translation id="9008201858626224558">زر الرجوع إلى صفحة تفاصيل <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">جارٍ تحميل (<ph name="PROGRESS_PERCENT" />%)...</translation>
@@ -7787,7 +7794,6 @@
 <translation id="9045430190527754450">‏يتم إرسال عنوان ويب الصفحة التي تحاول الوصول إليها إلى Google.</translation>
 <translation id="9048745018038487540">اختيار كل الخطوط</translation>
 <translation id="9050666287014529139">عبارة المرور</translation>
-<translation id="9052208328806230490">لقد سجّلت طابعاتك في <ph name="CLOUD_PRINT_NAME" /> باستخدام الحساب <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">متابعة الحظر</translation>
 <translation id="9053563360605707198">الطباعة على كلا الجانبين</translation>
 <translation id="9053893665344928494">تذكَّر اختياري</translation>

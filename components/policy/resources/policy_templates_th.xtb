@@ -2982,7 +2982,6 @@
       หมายเหตุ: ดูรายการตัวแปรที่คุณใช้ได้ (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables)</translation>
 <translation id="4531706050939927436">สามารถบังคับการติดตั้งแอป Android ได้จากคอนโซล Google Admin ผ่าน Google Play แอปดังกล่าวไม่ได้ใช้นโยบายนี้</translation>
 <translation id="4534500438517478692">ชื่อการจำกัด Android:</translation>
-<translation id="4537906430022369840">การลด User Agent ปิดใช้อยู่ และไม่ได้เปิดใช้ผ่านช่วงทดลองใช้งานภาคสนามหรือช่วงทดลองใช้จากต้นทาง</translation>
 <translation id="4541530620466526913">บัญชีภายในอุปกรณ์</translation>
 <translation id="4543502256674577024">การตั้งค่าการอัปเดตอุปกรณ์</translation>
 <translation id="454585952814397564">ใช้ลำดับความสำคัญปกติกับกระบวนการของเสียง</translation>
@@ -6318,7 +6317,6 @@
 <translation id="8455529558077979314">การตั้งค่าหน้าจอส่วนตัว</translation>
 <translation id="8455551509936646199">วันในสัปดาห์ที่ควรมีการรีบูต โดยตีความในเขตเวลาท้องถิ่นของอุปกรณ์ ใช้เมื่อ "frequency" เท่ากับ "WEEKLY" เท่านั้น</translation>
 <translation id="8461914792118322307">พร็อกซี</translation>
-<translation id="8463569949213141467">กำหนดค่ากล้อง การตั้งค่าเบราว์เซอร์ การตั้งค่าระบบปฏิบัติการ ฟีเจอร์การสแกน ฟีเจอร์ในเว็บสโตร์ ฟีเจอร์ใน Canvas และฟีเจอร์การสำรวจที่จะปิดใช้</translation>
 <translation id="8465065632133292531">พารามิเตอร์สำหรับ URL ค้นหาทันใจที่ใช้ POST</translation>
 <translation id="8470317291588703478">ไม่บังคับใช้โหมดที่จำกัดของ YouTube</translation>
 <translation id="847472800012384958">ไม่อนุญาตให้ไซต์ใดๆ แสดงป๊อปอัป</translation>

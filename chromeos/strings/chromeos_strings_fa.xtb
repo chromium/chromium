@@ -307,7 +307,7 @@
 <translation id="5294769550414936029">نسخه <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">انتقال پنجره به میزکار</translation>
 <translation id="5304899856529773394">EVDO</translation>
-<translation id="5308380583665731573">اتصال</translation>
+<translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5315873049536339193">هویت</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318334351163689047">‏خطاهای درخواست TCP</translation>
@@ -380,6 +380,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
+<translation id="6340526405444716530">شخصی‌سازی</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="6379086450106841622">صفحه لمسی</translation>
 <translation id="6388847657025262518">تغذیه‌کننده سند اسکنر گیر کرده است. تغذیه‌کننده را بررسی کنید و دوباره امتحان کنید.</translation>
