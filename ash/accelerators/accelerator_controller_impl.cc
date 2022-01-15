@@ -91,6 +91,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -389,13 +390,21 @@ void HandleToggleAssignToAllDesks() {
   if (!active_window)
     return;
 
+  // Only children of the desk container should have their assigned to all
+  // desks state toggled to avoid interfering with special windows like
+  // always-on-top windows, floated windows, etc.
   if (desks_util::IsActiveDeskContainer(active_window->parent())) {
-    // Only children of the desk container should have their assigned to all
-    // desks state toggled to avoid interfering with special windows like
-    // always-on-top windows, floated windows, etc.
+    const bool is_already_visible_on_all_desks =
+        desks_util::IsWindowVisibleOnAllWorkspaces(active_window);
+    if (!is_already_visible_on_all_desks) {
+      UMA_HISTOGRAM_ENUMERATION(
+          chromeos::kDesksAssignToAllDesksSourceHistogramName,
+          chromeos::DesksAssignToAllDesksSource::kKeyboardShortcut);
+    }
+
     active_window->SetProperty(
         aura::client::kWindowWorkspaceKey,
-        desks_util::IsWindowVisibleOnAllWorkspaces(active_window)
+        is_already_visible_on_all_desks
             ? aura::client::kWindowWorkspaceUnassignedWorkspace
             : aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   }

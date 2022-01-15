@@ -21105,6 +21105,11 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Desk template is too large"/>
 </enum>
 
+<enum name="DesksAssignToAllDesksSource">
+  <int value="0" label="Move to desk menu"/>
+  <int value="1" label="Keyboard shortcut"/>
+</enum>
+
 <enum name="DesksCreationRemovalSource">
   <int value="0" label="Button pressed"/>
   <int value="1" label="Keyboard shortcut"/>
@@ -21130,6 +21135,7 @@ Called by update_debug_scenarios.py.-->
   <int value="6" label="User switch in a multi-profile session"/>
   <int value="7" label="User switch through the persistent desks bar"/>
   <int value="8" label="User switch by launching a template"/>
+  <int value="9" label="User switch via indexed keyboard shorctus"/>
 </enum>
 
 <enum name="DesktopCaptureCounters">

@@ -85,6 +85,9 @@
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
+#include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -3954,6 +3957,101 @@ TEST_F(DesksAcceleratorsTest, HitAcceleratorWhenAlreadyAtEdge) {
   // no crash.
   SendAccelerator(ui::VKEY_OEM_4, flags);
   SendAccelerator(ui::VKEY_OEM_4, flags);
+}
+
+// Tests that the assign to all desks shortcut works as expected and that its
+// metrics are recorded properly.
+TEST_F(DesksAcceleratorsTest, AssignToAllDesksShortcut) {
+  base::HistogramTester histogram_tester;
+
+  // Create two new desks.
+  NewDesk();
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(3u, controller->desks().size());
+
+  // Create a window and assign it to all desks via
+  // chromeos::MoveToDesksMenuDelegate. This simulates assigning it to all desks
+  // via the context menu. This should record to the "Assign to desk menu"
+  // bucket.
+  auto window_1 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* widget_1 = views::Widget::GetWidgetForNativeWindow(window_1.get());
+  auto menu_delegate =
+      std::make_unique<chromeos::MoveToDesksMenuDelegate>(widget_1);
+  menu_delegate->ExecuteCommand(
+      chromeos::MoveToDesksMenuModel::CommandId::TOGGLE_ASSIGN_TO_ALL_DESKS,
+      /*event_flags=*/0);
+  histogram_tester.ExpectBucketCount(
+      chromeos::kDesksAssignToAllDesksSourceHistogramName,
+      chromeos::DesksAssignToAllDesksSource::kMoveToDeskMenu, 1);
+  EXPECT_TRUE(widget_1->IsVisibleOnAllWorkspaces());
+
+  // Create another window and assign it to all desks via the keyboard shortcut.
+  // This should record to the "Assign to all desks keyboard shortcut menu"
+  // bucket.
+  auto window_2 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  ASSERT_EQ(window_2.get(), window_util::GetActiveWindow());
+  SendAccelerator(ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  histogram_tester.ExpectBucketCount(
+      chromeos::kDesksAssignToAllDesksSourceHistogramName,
+      chromeos::DesksAssignToAllDesksSource::kKeyboardShortcut, 1);
+  EXPECT_TRUE(views::Widget::GetWidgetForNativeWindow(window_2.get())
+                  ->IsVisibleOnAllWorkspaces());
+}
+
+// Tests that the indexed-desk activation keyboard shortcut works properly.
+TEST_F(DesksAcceleratorsTest, IndexedDeskActivationShortcut) {
+  const int flags = ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN;
+  constexpr char kDesksSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
+  base::HistogramTester histogram_tester;
+
+  // Create three new desks.
+  NewDesk();
+  NewDesk();
+  NewDesk();
+  auto* controller = DesksController::Get();
+  auto& desks = controller->desks();
+  ASSERT_EQ(4u, desks.size());
+
+  // Switch to the third desk via the keyboard shortcut.
+  ASSERT_TRUE(desks[0]->is_active());
+  {
+    DeskSwitchAnimationWaiter waiter;
+    SendAccelerator(ui::VKEY_3, flags);
+    waiter.Wait();
+  }
+  EXPECT_TRUE(desks[2]->is_active());
+  histogram_tester.ExpectBucketCount(
+      kDesksSwitchHistogramName, DesksSwitchSource::kIndexedDeskSwitchShortcut,
+      1);
+
+  // Try to switch to the non-existent fifth desk via the keyboard shortcut.
+  SendAccelerator(ui::VKEY_5, flags);
+  EXPECT_TRUE(desks[2]->is_active());
+  histogram_tester.ExpectBucketCount(
+      kDesksSwitchHistogramName, DesksSwitchSource::kIndexedDeskSwitchShortcut,
+      1);
+
+  // Switch to the second desk via the keyboard shortcut.
+  {
+    DeskSwitchAnimationWaiter waiter;
+    SendAccelerator(ui::VKEY_2, flags);
+    waiter.Wait();
+  }
+  EXPECT_TRUE(desks[1]->is_active());
+  histogram_tester.ExpectBucketCount(
+      kDesksSwitchHistogramName, DesksSwitchSource::kIndexedDeskSwitchShortcut,
+      2);
+
+  // Open overview and switch to the active desk. This should close overview.
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  SendAccelerator(ui::VKEY_2, flags);
+  EXPECT_TRUE(desks[1]->is_active());
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  histogram_tester.ExpectBucketCount(
+      kDesksSwitchHistogramName, DesksSwitchSource::kIndexedDeskSwitchShortcut,
+      2);
 }
 
 class PerDeskShelfTest : public AshTestBase,

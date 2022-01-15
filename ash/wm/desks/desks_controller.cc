@@ -707,8 +707,12 @@ bool DesksController::MoveWindowFromActiveDeskTo(
           IDS_ASH_VIRTUAL_DESKS_ALERT_WINDOW_MOVED_FROM_ACTIVE_DESK,
           window->GetTitle(), active_desk_->name(), target_desk->name()));
 
-  if (source != DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks)
+  if (source != DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks) {
+    // A visible on all desks window is moved from the active desk to the next
+    // active desk during desk switch so we log its usage (when a user pins a
+    // window to all desks) in other locations.
     UMA_HISTOGRAM_ENUMERATION(kMoveWindowFromActiveDeskHistogramName, source);
+  }
   ReportNumberOfWindowsPerDeskHistogram();
 
   // A window moving out of the active desk cannot be active.
@@ -728,9 +732,6 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
     return;
   wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
   NotifyAllDesksForContentChanged();
-  UMA_HISTOGRAM_ENUMERATION(
-      kMoveWindowFromActiveDeskHistogramName,
-      DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks);
   Shell::Get()
       ->accessibility_controller()
       ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(

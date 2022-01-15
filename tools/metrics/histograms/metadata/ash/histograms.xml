@@ -1037,6 +1037,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.AssignToAllDesksSource"
+    enum="DesksAssignToAllDesksSource" expires_after="2023-01-10">
+  <owner>zxdan@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a window is assigned to all desks. E.g. `Move to Desks menu`
+    which can be accessed from a window's context menu or keyboard shortcuts.
+    This is not emitted when a window is unassigned from all desks. As of M99,
+    this should be used as the source of truth for the usage of the assign to
+    all desks feature.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.BentoBarEnabled" enum="Boolean"
     expires_after="2022-05-19">
   <owner>minch@chromium.org</owner>
@@ -1146,7 +1159,9 @@ chromium-metrics-reviews@google.com.
     is emitted when a user assigns a window to all desks through its context
     menu. Prior to this, the &quot;Assign to desk menu&quot; bucket was emitted
     when a user switched desks and their All Desks windows were moved from the
-    old active desk to the new active desk.
+    old active desk to the new active desk. As of M99, the &quot;Assign to desk
+    menu&quot; no longer tracks the assign to all desks source. The replacement
+    is &quot;Ash.Desks.AssignToAllDesksSource&quot;.
   </summary>
 </histogram>
 
