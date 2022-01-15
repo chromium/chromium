@@ -48,7 +48,7 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 
   static bool av_disabled_at_command_line =
-      base::FeatureList::IsEnabled(kAVFoundationOverlays);
+      !base::FeatureList::IsEnabled(kAVFoundationOverlays);
 
   bool allow_av_sample_buffer_display_layer =
       !av_disabled_at_command_line &&
