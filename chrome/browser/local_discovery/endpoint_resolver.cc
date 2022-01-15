@@ -23,7 +23,7 @@ EndpointResolver::~EndpointResolver() {}
 
 void EndpointResolver::Start(const net::HostPortPair& address,
                              ResultCallback callback) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   net::IPAddress ip_address;
   if (!ip_address.AssignFromIPLiteral(address.host())) {
     NOTREACHED() << address.ToString();
@@ -34,7 +34,7 @@ void EndpointResolver::Start(const net::HostPortPair& address,
 
   // OSX already has IP there.
   std::move(callback).Run(net::IPEndPoint(ip_address, address.port()));
-#else   // OS_MAC
+#else   // BUILDFLAG(IS_MAC)
   net::AddressFamily address_family = net::ADDRESS_FAMILY_UNSPECIFIED;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kPrivetIPv6Only)) {
@@ -47,7 +47,7 @@ void EndpointResolver::Start(const net::HostPortPair& address,
                      base::Unretained(this), address.port(),
                      std::move(callback)));
   domain_resolver_->Start();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void EndpointResolver::DomainResolveComplete(

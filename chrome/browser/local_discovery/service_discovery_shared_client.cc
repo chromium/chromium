@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "net/net_buildflags.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/local_discovery/service_discovery_client_mac_factory.h"
 #endif
 
@@ -44,19 +44,19 @@ ServiceDiscoverySharedClient::~ServiceDiscoverySharedClient() {
 scoped_refptr<ServiceDiscoverySharedClient>
     ServiceDiscoverySharedClient::GetInstance() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(ENABLE_MDNS) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_MDNS) || BUILDFLAG(IS_MAC)
   if (g_service_discovery_client)
     return g_service_discovery_client;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return ServiceDiscoveryClientMacFactory::CreateInstance();
 #else
   return base::MakeRefCounted<ServiceDiscoveryClientMdns>();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 #else
   NOTIMPLEMENTED();
   return nullptr;
-#endif  // BUILDFLAG(ENABLE_MDNS) || defined(OS_MAC)
+#endif  // BUILDFLAG(ENABLE_MDNS) || BUILDFLAG(IS_MAC)
 }
 
 }  // namespace local_discovery
