@@ -5,7 +5,6 @@
 #ifndef REMOTING_SIGNALING_FAKE_SIGNAL_STRATEGY_H_
 #define REMOTING_SIGNALING_FAKE_SIGNAL_STRATEGY_H_
 
-#include <list>
 #include <queue>
 #include <string>
 

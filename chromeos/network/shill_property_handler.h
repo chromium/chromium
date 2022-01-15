@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_NETWORK_SHILL_PROPERTY_HANDLER_H_
 #define CHROMEOS_NETWORK_SHILL_PROPERTY_HANDLER_H_
 
-#include <list>
 #include <map>
 #include <set>
 #include <string>

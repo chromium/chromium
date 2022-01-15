@@ -6,7 +6,6 @@
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_IMPL_H_
 
 #include <deque>
-#include <list>
 #include <map>
 #include <memory>
 #include <set>

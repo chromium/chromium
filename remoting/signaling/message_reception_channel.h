@@ -5,7 +5,6 @@
 #ifndef REMOTING_SIGNALING_MESSAGE_RECEPTION_CHANNEL_H_
 #define REMOTING_SIGNALING_MESSAGE_RECEPTION_CHANNEL_H_
 
-#include <list>
 #include <memory>
 
 #include "base/callback_forward.h"

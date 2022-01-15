@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WIFI_WIFI_SERVICE_H_
 #define COMPONENTS_WIFI_WIFI_SERVICE_H_
 
-#include <list>
 #include <memory>
 #include <set>
 #include <string>

@@ -5,8 +5,6 @@
 #ifndef REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_
 #define REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_
 
-#include <list>
-
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

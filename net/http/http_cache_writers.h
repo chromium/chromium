@@ -5,7 +5,6 @@
 #ifndef NET_HTTP_HTTP_CACHE_WRITERS_H_
 #define NET_HTTP_HTTP_CACHE_WRITERS_H_
 
-#include <list>
 #include <map>
 #include <memory>
 

@@ -5,7 +5,6 @@
 #ifndef MEDIA_FILTERS_DECODER_STREAM_H_
 #define MEDIA_FILTERS_DECODER_STREAM_H_
 
-#include <list>
 #include <memory>
 #include <vector>
 

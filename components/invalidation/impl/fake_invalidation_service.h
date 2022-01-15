@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FAKE_INVALIDATION_SERVICE_H_
 #define COMPONENTS_INVALIDATION_IMPL_FAKE_INVALIDATION_SERVICE_H_
 
-#include <list>
 #include <memory>
 #include <utility>
 

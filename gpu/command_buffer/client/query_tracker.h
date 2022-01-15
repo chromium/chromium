@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include <bitset>
-#include <list>
 #include <memory>
 #include <unordered_map>
 

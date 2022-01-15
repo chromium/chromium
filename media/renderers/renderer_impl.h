@@ -5,7 +5,6 @@
 #ifndef MEDIA_RENDERERS_RENDERER_IMPL_H_
 #define MEDIA_RENDERERS_RENDERER_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <vector>
 

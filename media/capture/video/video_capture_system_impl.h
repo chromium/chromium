@@ -5,6 +5,13 @@
 #ifndef MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_SYSTEM_IMPL_H_
 #define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_SYSTEM_IMPL_H_
 
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "media/capture/video/video_capture_system.h"
 
 namespace media {

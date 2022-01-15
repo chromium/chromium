@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_DOWNLOAD_SERVICE_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_DOWNLOAD_SERVICE_H_
 
-#include <list>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"

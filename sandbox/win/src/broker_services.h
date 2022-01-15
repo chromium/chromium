@@ -5,7 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_BROKER_SERVICES_H_
 #define SANDBOX_WIN_SRC_BROKER_SERVICES_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <set>

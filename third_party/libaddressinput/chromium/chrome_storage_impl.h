@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_LIBADDRESSINPUT_CHROMIUM_CHROME_STORAGE_IMPL_H_
 #define THIRD_PARTY_LIBADDRESSINPUT_CHROMIUM_CHROME_STORAGE_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>

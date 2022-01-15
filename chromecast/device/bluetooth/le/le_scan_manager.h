@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_DEVICE_BLUETOOTH_LE_LE_SCAN_MANAGER_H_
 #define CHROMECAST_DEVICE_BLUETOOTH_LE_LE_SCAN_MANAGER_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <vector>

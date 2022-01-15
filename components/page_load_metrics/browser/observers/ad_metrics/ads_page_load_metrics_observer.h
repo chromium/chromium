@@ -6,7 +6,6 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include <bitset>
-#include <list>
 #include <map>
 #include <memory>
 

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <string>

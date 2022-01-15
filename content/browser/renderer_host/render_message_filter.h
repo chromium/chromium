@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

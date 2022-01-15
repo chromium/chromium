@@ -5,7 +5,6 @@
 #ifndef HEADLESS_PUBLIC_HEADLESS_WEB_CONTENTS_H_
 #define HEADLESS_PUBLIC_HEADLESS_WEB_CONTENTS_H_
 
-#include <list>
 #include <string>
 #include <utility>
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_
 
-#include <list>
 #include <memory>
 #include <string>
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <string>

@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_PLUGIN_REGISTRY_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_PLUGIN_REGISTRY_H_
 
-#include <list>
 #include <map>
 
 #include "base/memory/ref_counted.h"

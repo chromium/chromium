@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_INPUT_EVENT_PREDICTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_INPUT_EVENT_PREDICTION_H_
 
-#include <list>
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"

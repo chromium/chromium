@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <list>
 #include <memory>
 #include <set>
 #include <string>

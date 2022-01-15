@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <string>
 
 #include "base/memory/raw_ptr.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_GPU_DATA_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_GPU_DATA_MANAGER_H_
 
-#include <list>
 #include <string>
 
 #include "base/callback_forward.h"

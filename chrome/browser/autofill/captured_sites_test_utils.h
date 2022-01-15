@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AUTOFILL_CAPTURED_SITES_TEST_UTILS_H_
 
 #include <fstream>
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>

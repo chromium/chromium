@@ -5,7 +5,6 @@
 #ifndef UI_BASE_INTERACTION_INTERACTION_SEQUENCE_H_
 #define UI_BASE_INTERACTION_INTERACTION_SEQUENCE_H_
 
-#include <list>
 #include <map>
 
 #include "base/callback_forward.h"

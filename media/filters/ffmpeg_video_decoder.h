@@ -5,7 +5,6 @@
 #ifndef MEDIA_FILTERS_FFMPEG_VIDEO_DECODER_H_
 #define MEDIA_FILTERS_FFMPEG_VIDEO_DECODER_H_
 
-#include <list>
 #include <memory>
 
 #include "base/callback.h"

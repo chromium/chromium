@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_IMPL_H_
 #define SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>

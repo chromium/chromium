@@ -5,7 +5,6 @@
 #ifndef NET_HTTP_HTTP_AUTH_FILTER_H_
 #define NET_HTTP_HTTP_AUTH_FILTER_H_
 
-#include <list>
 #include <string>
 
 #include "net/base/net_export.h"

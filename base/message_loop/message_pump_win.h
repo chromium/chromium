@@ -8,7 +8,6 @@
 #include <windows.h>
 
 #include <atomic>
-#include <list>
 #include <memory>
 
 #include "base/base_export.h"

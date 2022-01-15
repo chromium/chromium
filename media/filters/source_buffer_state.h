@@ -5,8 +5,6 @@
 #ifndef MEDIA_FILTERS_SOURCE_BUFFER_STATE_H_
 #define MEDIA_FILTERS_SOURCE_BUFFER_STATE_H_
 
-#include <list>
-
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"

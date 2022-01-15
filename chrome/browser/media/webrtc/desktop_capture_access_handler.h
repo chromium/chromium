@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_ACCESS_HANDLER_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <utility>

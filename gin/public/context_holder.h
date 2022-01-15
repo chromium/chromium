@@ -5,7 +5,6 @@
 #ifndef GIN_PUBLIC_CONTEXT_HOLDER_H_
 #define GIN_PUBLIC_CONTEXT_HOLDER_H_
 
-#include <list>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

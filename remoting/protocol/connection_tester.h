@@ -5,7 +5,6 @@
 #ifndef REMOTING_PROTOCOL_CONNECTION_TESTER_H_
 #define REMOTING_PROTOCOL_CONNECTION_TESTER_H_
 
-#include <list>
 #include <memory>
 #include <vector>
 
