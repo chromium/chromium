@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -56,12 +56,12 @@ SodaClient::SodaClient(base::FilePath library_path)
   base::UmaHistogramEnumeration("Accessibility.LiveCaption.LoadSodaResult",
                                 load_soda_result_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (load_soda_result_ == LoadSodaResultValue::kBinaryInvalid) {
     base::UmaHistogramSparse("Accessibility.LiveCaption.LoadSodaErrorCode",
                              lib_.GetError()->code);
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 NO_SANITIZE("cfi-icall")
@@ -72,7 +72,7 @@ SodaClient::~SodaClient() {
   if (IsInitialized())
     delete_soda_func_(soda_async_handle_);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Intentionally do not unload the libsoda.so library after the SodaClient
   // is destroyed to prevent global destructor functions from running on an
   // unloaded library. This only applies to older versions of MacOS since
@@ -80,7 +80,7 @@ SodaClient::~SodaClient() {
   // __cxa_atexit implementation.
   if (base::mac::IsAtMostOS10_14())
     std::ignore = lib_.release();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 NO_SANITIZE("cfi-icall")

@@ -26,16 +26,16 @@
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/threading/thread_restrictions.h"
 #include "chrome/common/printing/printer_capabilities_mac.h"
 #endif
 
-#if defined(OS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
 #include "printing/backend/cups_connection_pool.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/containers/queue.h"
 #include "printing/emf_win.h"
 #include "printing/metafile.h"
@@ -57,7 +57,7 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   // CUPS is thread safe, so a task runner can be allocated for each job.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(kTraits);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // For Windows, we want a single threaded task runner shared for all print
   // jobs in the process because Windows printer drivers are oftentimes not
   // thread-safe.  This protects against multiple print jobs to the same device
@@ -74,7 +74,7 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   return task_runner;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
   switch (data_type) {
     case mojom::MetafileDataType::kPDF:
@@ -101,7 +101,7 @@ class DocumentContainer {
 
   // Helper functions that runs on a task runner.
   mojom::ResultCode StartPrintingReadyDocument();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::ResultCode DoRenderPrintedPage(
       uint32_t page_index,
       mojom::MetafileDataType page_data_type,
@@ -141,12 +141,12 @@ mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
   // TODO(crbug.com/1245679)  Replumb `mojom::PrintTargetType` into
   // `PrintingContext::UpdatePrinterSettings()`.
   PrintingContext::PrinterSettings printer_settings {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     .external_preview =
         target_type_ == mojom::PrintTargetType::kExternalPreview,
 #endif
     .show_system_dialog = target_type_ == mojom::PrintTargetType::kSystemDialog,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     .page_count = 0,
 #endif
   };
@@ -168,7 +168,7 @@ mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
   return mojom::ResultCode::kSuccess;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
     uint32_t page_index,
     mojom::MetafileDataType page_data_type,
@@ -214,7 +214,7 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
   return document_->RenderPrintedPage(*document_->GetPage(page_index),
                                       context_.get());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -412,7 +412,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
       print_backend_->GetPrinterDriverInfo(printer_name));
 
   PrinterSemanticCapsAndDefaults::Papers user_defined_papers;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   {
     // Blocking is needed here for when macOS reads paper sizes from file.
     //
@@ -483,7 +483,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
       print_backend_->GetPrinterDriverInfo(printer_name));
 
-#if defined(OS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
   // Try to fill in advanced settings based upon basic info options.
   PrinterBasicInfo basic_info;
   if (print_backend_->GetPrinterBasicInfo(printer_name, &basic_info) ==
@@ -494,7 +494,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
 
     job_settings[kSettingAdvancedSettings] = std::move(advanced_settings);
   }
-#endif  // defined(OS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
 
   // Use a one-time `PrintingContext` to do the update to print settings.
   // Intentionally do not cache this context here since the process model does
@@ -527,7 +527,7 @@ void PrintBackendServiceImpl::StartPrinting(
     return;
   }
 
-#if defined(OS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
   CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
   if (connection_pool) {
     // If a pool exists then this document can only proceed with printing if
@@ -565,7 +565,7 @@ void PrintBackendServiceImpl::StartPrinting(
           base::Unretained(this), std::ref(document_helper)));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintBackendServiceImpl::RenderPrintedPage(
     int32_t document_cookie,
     uint32_t page_index,
@@ -601,7 +601,7 @@ void PrintBackendServiceImpl::RenderPrintedPage(
                            base::Unretained(this), std::ref(*document_helper),
                            std::move(callback)));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
     DocumentHelper& document_helper,
@@ -615,7 +615,7 @@ void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
   RemoveDocumentHelper(document_helper);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintBackendServiceImpl::OnDidRenderPrintedPage(
     PrintBackendServiceImpl::DocumentHelper& document_helper,
     mojom::PrintBackendService::RenderPrintedPageCallback callback,
@@ -627,7 +627,7 @@ void PrintBackendServiceImpl::OnDidRenderPrintedPage(
   // Remove this document due to the rendering failure.
   RemoveDocumentHelper(document_helper);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 PrintBackendServiceImpl::DocumentHelper*
 PrintBackendServiceImpl::GetDocumentHelper(int document_cookie) {

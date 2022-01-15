@@ -136,7 +136,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       mojom::PrintTargetType target_type,
       const PrintSettings& settings,
       mojom::PrintBackendService::StartPrintingCallback callback) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RenderPrintedPage(
       int32_t document_cookie,
       uint32_t page_index,
@@ -146,12 +146,12 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       const gfx::Rect& page_content_rect,
       float shrink_factor,
       mojom::PrintBackendService::RenderPrintedPageCallback callback) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Callbacks from worker functions.
   void OnDidStartPrintingReadyDocument(DocumentHelper& document_helper,
                                        mojom::ResultCode result);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnDidRenderPrintedPage(
       DocumentHelper& document_helper,
       mojom::PrintBackendService::RenderPrintedPageCallback callback,

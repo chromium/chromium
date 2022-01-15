@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <mach/mach_time.h>
 #include <sys/sysctl.h>
 #include <sys/time.h>
@@ -18,11 +18,11 @@
 #include <time.h>
 
 #include "base/cxx17_backports.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include <time.h>
 #else
 #include "base/system/sys_info.h"
-#endif  // defined(OS_MAC) || defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
 
 namespace location {
 namespace nearby {
@@ -30,7 +30,7 @@ namespace nearby {
 void SystemClock::Init() {}
 
 absl::Time SystemClock::ElapsedRealtime() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac 10.12 supports mach_continuous_time, which is around 15 times faster
   // than sysctl() call. Use it if possible; otherwise, fall back to sysctl().
   if (__builtin_available(macOS 10.12, *)) {
@@ -52,7 +52,7 @@ absl::Time SystemClock::ElapsedRealtime() {
       (base::Time::FromTimeT(boottime.tv_sec) +
        base::Microseconds(boottime.tv_usec));
   return absl::FromUnixMicros(time_difference.InMicroseconds());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   // SystemClock::ElapsedRealtime() must provide monotonically increasing time,
   // but is not expected to be convertible to wall clock time. Unfortunately,
   // the POSIX implementation of base::SysInfo::Uptime(), i.e. TimeTicks::Now(),
@@ -64,7 +64,7 @@ absl::Time SystemClock::ElapsedRealtime() {
   return absl::TimeFromTimespec(ts);
 #else
   return absl::FromUnixMicros(base::SysInfo::Uptime().InMicroseconds());
-#endif  // defined(OS_MAC) || defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
 }
 
 Exception SystemClock::Sleep(absl::Duration duration) {

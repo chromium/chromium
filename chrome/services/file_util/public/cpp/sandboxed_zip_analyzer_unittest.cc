@@ -24,13 +24,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 namespace {
 
 const char kAppInZipHistogramName[] =
     "SBClientDownload.ZipFileContainsAppDirectory";
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 class SandboxedZipAnalyzerTest : public ::testing::Test {
  protected:
@@ -96,7 +96,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     run_loop.Run();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void ExpectPEHeaders(
       const BinaryData& data,
       const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary) {
@@ -114,7 +114,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void ExpectMachOHeaders(
       const BinaryData& data,
       const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary) {
@@ -146,22 +146,22 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     EXPECT_FALSE(binary.digests().has_md5());
     ASSERT_TRUE(binary.has_length());
     EXPECT_EQ(data.length, binary.length());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // ExtractImageFeatures for Windows, which only works on PE
     // files.
     if (binary.file_basename().find(".exe") != std::string::npos) {
       ExpectPEHeaders(data, binary);
       return;
     }
-#endif  // OS_WIN
-#if defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
     // ExtractImageFeatures for Mac, which only works on MachO
     // files.
     if (binary.file_basename().find("executablefat") != std::string::npos) {
       ExpectMachOHeaders(data, binary);
       return;
     }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     // No signature/image headers should be extracted on the wrong platform
     // (e.g. analyzing .exe on Mac).
     ASSERT_FALSE(binary.has_signature());
@@ -175,12 +175,12 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   static const BinaryData kSignedExe;
   static const BinaryData kJSEFile;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static const uint8_t kUnsignedMachODigest[];
   static const uint8_t kSignedMachODigest[];
   static const BinaryData kUnsignedMachO;
   static const BinaryData kSignedMachO;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   base::FilePath dir_test_data_;
   content::BrowserTaskEnvironment task_environment_;
@@ -224,7 +224,7 @@ const SandboxedZipAnalyzerTest::BinaryData SandboxedZipAnalyzerTest::kJSEFile =
         false,  // is_signed
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const uint8_t SandboxedZipAnalyzerTest::kUnsignedMachODigest[] = {
     0xe4, 0x62, 0xff, 0x75, 0x2f, 0xf9, 0xd8, 0x4e, 0x34, 0xd8, 0x43,
     0xe5, 0xd4, 0x6e, 0x20, 0x12, 0xad, 0xcb, 0xd4, 0x85, 0x40, 0xa8,
@@ -249,7 +249,7 @@ const SandboxedZipAnalyzerTest::BinaryData
         34176,
         true,  // !is_signed
 };
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(SandboxedZipAnalyzerTest, NoBinaries) {
   safe_browsing::ArchiveAnalyzerResults results;
@@ -371,7 +371,7 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedJSEFile) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(kAppInZipHistogramName, 0);
@@ -404,4 +404,4 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   EXPECT_TRUE(found_unsigned);
   EXPECT_TRUE(found_signed);
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)

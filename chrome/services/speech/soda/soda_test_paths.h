@@ -10,7 +10,7 @@
 
 namespace soda {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 constexpr base::FilePath::CharType kSodaResourcePath[] =
     FILE_PATH_LITERAL("third_party/soda-mac64/resources");
@@ -18,7 +18,7 @@ constexpr base::FilePath::CharType kSodaResourcePath[] =
 constexpr base::FilePath::CharType kSodaTestBinaryRelativePath[] =
     FILE_PATH_LITERAL("libsoda_for_testing.so");
 
-#elif defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
+#elif BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
 
 constexpr base::FilePath::CharType kSodaResourcePath[] =
     FILE_PATH_LITERAL("third_party/soda-win64/resources");
@@ -26,7 +26,7 @@ constexpr base::FilePath::CharType kSodaResourcePath[] =
 constexpr base::FilePath::CharType kSodaTestBinaryRelativePath[] =
     FILE_PATH_LITERAL("SODA_for_testing.dll");
 
-#elif defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#elif BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 
 constexpr base::FilePath::CharType kSodaResourcePath[] =
     FILE_PATH_LITERAL("third_party/soda-win32/resources");
@@ -34,7 +34,7 @@ constexpr base::FilePath::CharType kSodaResourcePath[] =
 constexpr base::FilePath::CharType kSodaTestBinaryRelativePath[] =
     FILE_PATH_LITERAL("SODA_for_testing.dll");
 
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 
 constexpr base::FilePath::CharType kSodaResourcePath[] =
     FILE_PATH_LITERAL("third_party/soda/resources");

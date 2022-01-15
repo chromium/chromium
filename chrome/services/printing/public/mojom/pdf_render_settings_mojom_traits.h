@@ -21,7 +21,7 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
     switch (mode) {
       case PrintMode::NORMAL:
         return MojomMode::NORMAL;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       case PrintMode::TEXTONLY:
         return MojomMode::TEXTONLY;
       case PrintMode::POSTSCRIPT_LEVEL2:
@@ -46,7 +46,7 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
       case MojomMode::NORMAL:
         *output = PrintMode::NORMAL;
         return true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       case MojomMode::TEXTONLY:
         *output = PrintMode::TEXTONLY;
         return true;
