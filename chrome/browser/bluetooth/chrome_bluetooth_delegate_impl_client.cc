@@ -15,7 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/device_dialog/chrome_bluetooth_chooser_android_delegate.h"
 #include "chrome/browser/ui/android/device_dialog/chrome_bluetooth_scanning_prompt_android_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -25,7 +25,7 @@
 #include "components/permissions/bluetooth_chooser_desktop.h"
 #include "components/permissions/bluetooth_scanning_prompt_desktop.h"
 #include "components/strings/grit/components_strings.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 ChromeBluetoothDelegateImplClient::ChromeBluetoothDelegateImplClient() =
     default;
@@ -44,7 +44,7 @@ std::unique_ptr<content::BluetoothChooser>
 ChromeBluetoothDelegateImplClient::RunBluetoothChooser(
     content::RenderFrameHost* frame,
     const content::BluetoothChooser::EventHandler& event_handler) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (vr::VrTabHelper::IsUiSuppressedInVr(
           content::WebContents::FromRenderFrameHost(frame),
           vr::UiSuppressedElement::kBluetoothChooser)) {
@@ -67,7 +67,7 @@ std::unique_ptr<content::BluetoothScanningPrompt>
 ChromeBluetoothDelegateImplClient::ShowBluetoothScanningPrompt(
     content::RenderFrameHost* frame,
     const content::BluetoothScanningPrompt::EventHandler& event_handler) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<permissions::BluetoothScanningPromptAndroid>(
       frame, event_handler,
       std::make_unique<ChromeBluetoothScanningPromptAndroidDelegate>());
