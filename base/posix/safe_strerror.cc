@@ -12,7 +12,7 @@
 
 namespace base {
 
-#if defined(__GLIBC__) || defined(OS_NACL)
+#if defined(__GLIBC__) || BUILDFLAG(IS_NACL)
 #define USE_HISTORICAL_STRERROR_R 1
 // Post-L versions of bionic define the GNU-specific strerror_r if _GNU_SOURCE
 // is defined, but the symbol is renamed to __gnu_strerror_r which only exists
