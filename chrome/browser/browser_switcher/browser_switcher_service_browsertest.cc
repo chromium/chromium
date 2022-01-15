@@ -33,7 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_win.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -82,7 +82,7 @@ const char kParsingModeSensitiveSitelistXml[] = R"(
   </site-list>
 )";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kYetAnotherSitelistXml[] = R"(
   <rules version="1">
     <docMode>
@@ -139,7 +139,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     fake_appdata_dir_ =
         browser()->profile()->GetPath().AppendASCII("FakeAppData");
     ASSERT_TRUE(DirectoryExists(fake_appdata_dir_) ||
@@ -197,7 +197,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
     return provider_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BrowserSwitcherServiceWin* GetServiceWin() {
     return static_cast<BrowserSwitcherServiceWin*>(GetService());
   }
@@ -234,7 +234,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath fake_appdata_dir_;
 #endif
 };
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
   EXPECT_FALSE(ShouldSwitch(service, GURL("http://yahoo.com/")));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, IeemSitelistInvalidUrl) {
   SetUseIeSitelist(true);
   BrowserSwitcherServiceWin::SetIeemSitelistUrlForTesting(kAnInvalidUrl);
@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
 
   base::FilePath expected_chrome_path;
   base::FilePath::CharType chrome_path[MAX_PATH];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ::GetModuleFileName(nullptr, chrome_path, ARRAYSIZE(chrome_path));
   expected_chrome_path = base::FilePath(chrome_path);
 #endif

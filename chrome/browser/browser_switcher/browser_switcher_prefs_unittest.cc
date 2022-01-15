@@ -94,7 +94,7 @@ TEST_F(BrowserSwitcherPrefsTest, ListensForPrefChanges) {
                                   std::make_unique<base::Value>("notepad.exe"));
   prefs_backend()->SetManagedPref(prefs::kAlternativeBrowserParameters,
                                   StringArrayToValue({"a", "b", "c"}));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   prefs_backend()->SetManagedPref(prefs::kChromePath,
                                   std::make_unique<base::Value>("cmd.exe"));
   prefs_backend()->SetManagedPref(prefs::kChromeParameters,
@@ -114,7 +114,7 @@ TEST_F(BrowserSwitcherPrefsTest, ListensForPrefChanges) {
   EXPECT_EQ("b", prefs()->GetAlternativeBrowserParameters()[1]);
   EXPECT_EQ("c", prefs()->GetAlternativeBrowserParameters()[2]);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("cmd.exe", prefs()->GetChromePath().MaybeAsASCII());
 
   EXPECT_EQ(3u, prefs()->GetChromeParameters().size());

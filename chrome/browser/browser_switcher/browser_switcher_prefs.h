@@ -179,7 +179,7 @@ class BrowserSwitcherPrefs : public KeyedService,
   RawRuleSet GetCachedExternalGreylist() const;
   void SetCachedExternalGreylist(const RawRuleSet& greylist);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Retrieves or stores the locally cached IEEM sitelist from the PrefStore.
   RawRuleSet GetCachedIeemSitelist() const;
   void SetCachedIeemSitelist(const RawRuleSet& sitelist);
@@ -193,7 +193,7 @@ class BrowserSwitcherPrefs : public KeyedService,
   // not managed, returns an invalid URL.
   GURL GetExternalGreylistUrl() const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns true if Chrome should download and apply the XML sitelist from
   // IEEM's SiteList policy. If the pref is not managed, returns false.
   bool UseIeSitelist() const;
@@ -230,7 +230,7 @@ class BrowserSwitcherPrefs : public KeyedService,
   void ParsingModeChanged();
   void UrlListChanged();
   void GreylistChanged();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void ChromePathChanged();
   void ChromeParametersChanged();
 #endif
@@ -254,7 +254,7 @@ class BrowserSwitcherPrefs : public KeyedService,
   std::string alt_browser_path_;
   std::vector<std::string> alt_browser_params_;
   ParsingMode parsing_mode_ = ParsingMode::kDefault;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath chrome_path_;
   std::vector<std::string> chrome_params_;
 #endif
@@ -289,7 +289,7 @@ extern const char kCachedExternalSitelistGreylist[];
 extern const char kExternalGreylistUrl[];
 extern const char kCachedExternalGreylist[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kUseIeSitelist[];
 extern const char kCachedIeSitelist[];
 extern const char kCachedIeSitelistGreylist[];

@@ -121,7 +121,7 @@ TEST_P(BrowserSwitcherSitelistTest, CanonicalizeRule) {
     CheckCanonicalizedRule("*://example.com/", "Example.Com/");
     CheckCanonicalizedRule("!*://example.com/abc", "!Example.Com/Abc");
     CheckCanonicalizedRule("*://example.com/", "/Example.Com");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     CheckCanonicalizedRule("*://example.com/", "//Example.Com");
     CheckCanonicalizedRule("!*://example.com/", "!//Example.Com");
 #else
@@ -178,7 +178,7 @@ TEST_P(BrowserSwitcherSitelistTest, CanonicalizeRulesLikeMicrosoft) {
                          "://example.com");
   CheckCanonicalizedRule("",  // *://bar.com/
                          "mailto:foo@bar.com");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CheckCanonicalizedRule("file:///c:/src/",  // *://c/src
                          "C:/src/");
   CheckCanonicalizedRule("file:///c:/src",  // *://c/src
