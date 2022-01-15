@@ -413,7 +413,7 @@ bool IsPathTooLong(storage::FilesystemProxy* filesystem,
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
 // In limited testing, ChromeOS returns 143, other OSes 255.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     limit = 143;
 #else
     limit = 255;
@@ -3595,7 +3595,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           // modification times. The timestamp is not checked during reading
           // on Android either. https://crbug.com/1045488
           absl::optional<base::Time> last_modified;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
           last_modified = entry.last_modified().is_null()
                               ? absl::nullopt
                               : absl::make_optional(entry.last_modified());

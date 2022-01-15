@@ -500,7 +500,7 @@ static void CopyLevelDBToProfile(
   ASSERT_TRUE(base::CopyDirectory(test_blob_data_dir, data_path, kRecursive));
   // For some reason touching files on Android fails with EPERM.
   // https://crbug.com/1045488
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // The modification time of the saved blobs is used for File objects, so these
   // need to manually be set (they are clobbered both by the above copy
   // operation and by git).
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion3Schema, MigrationTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "v3_migration_test.html");
   // For some reason setting empty file modification time on Android fails with
   // EPERM. https://crbug.com/1045488
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SimpleTest(GURL(kTestUrl.spec() + "#ignoreTimes"));
 #else
   SimpleTest(kTestUrl);
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
   // For some reason Android's futimes fails (EPERM) in this test. Do not assert
   // file times on Android, but do so on other platforms. crbug.com/467247
   // TODO(cmumford): Figure out why this is the case and fix if possible.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SimpleTest(GURL(kTestUrl.spec() + "#ignoreTimes"));
 #else
   SimpleTest(kTestUrl);
@@ -797,7 +797,7 @@ std::unique_ptr<net::test_server::HttpResponse> ServePath(
   return std::move(http_response);
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void CorruptIndexedDBDatabase(const blink::StorageKey& storage_key,
                               const base::FilePath& idb_data_path) {
   int num_files = 0;
@@ -985,7 +985,7 @@ std::unique_ptr<net::test_server::HttpResponse> StaticFileRequestHandler(
 
 // See TODO in CorruptDBRequestHandler.  Windows does not support nested
 // message loops on the IO thread, so run this test on other platforms.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, OperationOnCorruptedOpenDatabase) {
   ASSERT_TRUE(embedded_test_server()->Started() ||
               embedded_test_server()->InitializeAndListen());
@@ -1014,7 +1014,7 @@ INSTANTIATE_TEST_SUITE_P(IndexedDBBrowserTestInstantiation,
                                            "iterate",
                                            "failTransactionCommit",
                                            "clearObjectStore"));
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 // TODO: http://crbug.com/510520, flaky on all platforms
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,

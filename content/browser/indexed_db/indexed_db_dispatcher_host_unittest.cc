@@ -360,7 +360,7 @@ TEST_F(IndexedDBDispatcherHostTest, CloseAfterUpgrade) {
 }
 
 // TODO(crbug.com/1282613): Test is flaky on Mac in debug.
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 #define MAYBE_OpenNewConnectionWhileUpgrading \
   DISABLED_OpenNewConnectionWhileUpgrading
 #else

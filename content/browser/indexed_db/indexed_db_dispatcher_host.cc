@@ -486,7 +486,7 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
         base::Time last_modified;
         // Android doesn't seem to consistently be able to set file modification
         // times. https://crbug.com/1045488
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         last_modified = blob_info.last_modified();
 #endif
         BindFileReader(blob_info.indexed_db_file_path(), last_modified,

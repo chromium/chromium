@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -77,7 +77,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
   // Check if the test can run on the current system. If the test can run,
   // navigates to the test page and returns true. Otherwise, returns false.
   bool CheckShouldRunTestAndNavigate() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Don't run the test if we couldn't override BrowserClient. It happens only
     // on Android Kitkat or older systems.
     if (!original_client_)
@@ -89,7 +89,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
         base::android::SDK_VERSION_KITKAT) {
       return false;
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(NavigateToURL(shell(), GetTestURL("a.com")));
     return true;
   }
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
 }
 
 // SharedWorkers are not enabled on Android. https://crbug.com/154571
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Verify that content::FeatureObserver is *not* notified when a shared worker
 // opens/closes an IndexedDB connection.
 IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   // Wait a short timeout to make sure that the observer is not notified.
   RunLoopWithTimeout();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that content::FeatureObserver is *not* notified when a service worker
 // opens/closes an IndexedDB connection.
