@@ -6284,16 +6284,23 @@ void RenderFrameHostImpl::ShowContextMenu(
   // Validate the URLs in |params|.  If the renderer can't request the URLs
   // directly, don't show them in the context menu.
   ContextMenuParams validated_params(params);
+  // Freshly constructed ContextMenuParams have empty `page_url` and `frame_url`
+  // - populate them based on trustworthy, browser-side data.
   validated_params.page_url = GetMainFrame()->GetLastCommittedURL();
-  // Only populate |frame_url| if `this` is actually a subframe.
-  validated_params.frame_url = GetParent() ? GetLastCommittedURL() : GURL();
+  if (GetParent())  // Only populate |frame_url| for subframes.
+    validated_params.frame_url = GetLastCommittedURL();
 
   // We don't validate |unfiltered_link_url| so that this field can be used
-  // when users want to copy the original link URL.  We also don't filter the
-  // URLs based on trustworthy data (e.g. `page_url` and `frame_url`).
+  // when users want to copy the original link URL.
   RenderProcessHost* process = GetProcess();
   process->FilterURL(true, &validated_params.link_url);
   process->FilterURL(true, &validated_params.src_url);
+  // In theory `page_url` and `frame_url` come from a trustworthy data source
+  // (from the browser process) and therefore don't need to be validated via
+  // FilterURL below.  In practice, some scenarios depend on clearing of the
+  // `page_url` - see https://crbug.com/1285312.
+  process->FilterURL(false, &validated_params.page_url);
+  process->FilterURL(true, &validated_params.frame_url);
 
   // It is necessary to transform the coordinates to account for nested
   // RenderWidgetHosts, such as with out-of-process iframes.
