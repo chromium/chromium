@@ -380,7 +380,7 @@
   {
     "name": "autofill-auto-trigger-manual-fallback-for-cards",
     "owners": ["siashah", "siyua"],
-    "expiry_milestone": 98
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-center-aligned-suggestions",
@@ -395,7 +395,7 @@
   {
     "name": "autofill-enable-merchant-bound-virtual-cards",
     "owners": [ "siashah", "siyua" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-enable-offer-notification-cross-tab-tracking",
@@ -420,7 +420,7 @@
   {
     "name": "autofill-enable-sticky-manual-fallback-for-cards",
     "owners": [ "siashah","siyua" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-enable-toolbar-status-chip",
@@ -490,7 +490,7 @@
   {
     "name":"autofill-suggest-virtual-cards-on-incomplete-form",
     "owners": ["siashah", "siyua"],
-    "expiry_milestone":98
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-type-specific-popup-width",
