@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/ozone/buildflags.h"
-#endif  // OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -80,7 +80,7 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
 #if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
 #define OZONE_PLATFORM_WAYLAND
 #endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#endif  // OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(https://crbug.com/1271673): Crashes on Lacros.
 // TODO(https://crbug.com/1271680): Fails on the linux-wayland-rel bot.

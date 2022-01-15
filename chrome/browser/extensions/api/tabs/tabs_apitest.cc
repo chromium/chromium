@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, FocusWindowDoesNotUnmaximize) {
   ASSERT_TRUE(RunExtensionTest("window_update/focus")) << message_;
   ASSERT_TRUE(::IsZoomed(window));
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 // Maximizing/fullscreen popup window doesn't work on aura's managed mode.

@@ -112,7 +112,7 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
 #if BUILDFLAG(IS_WIN)
     // Handle of the native window corresponding to the extension.
     intptr_t window_handle_;
-#endif // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   };
 
   scoped_refptr<Core> core_;
@@ -134,8 +134,9 @@ NativeProcessLauncherImpl::Core::Core(bool allow_user_level_hosts,
 #if BUILDFLAG(IS_WIN)
       ,
       window_handle_(window_handle)
-#endif // OS_WIN
-{}
+#endif  // BUILDFLAG(IS_WIN)
+{
+}
 
 NativeProcessLauncherImpl::Core::~Core() {
   DCHECK(detached_);

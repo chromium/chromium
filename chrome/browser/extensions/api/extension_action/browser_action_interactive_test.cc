@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   EXPECT_EQ(FALSE, ::IsWindow(browser_hwnd));
   EXPECT_EQ(FALSE, ::IsWindow(popup_hwnd));
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 class MainFrameSizeWaiter : public content::WebContentsObserver {
  public:

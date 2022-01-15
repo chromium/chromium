@@ -714,20 +714,20 @@ static void VerifyMenuForSeparatorsTest(const MenuModel& menu) {
   ExpectLabelAndType("radio2", MenuModel::TYPE_RADIO, menu, index++);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(MenuModel::TYPE_SEPARATOR, menu.GetTypeAt(index++));
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   ExpectLabelAndType("normal1", MenuModel::TYPE_COMMAND, menu, index++);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(MenuModel::TYPE_SEPARATOR, menu.GetTypeAt(index++));
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   ExpectLabelAndType("normal2", MenuModel::TYPE_COMMAND, menu, index++);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(MenuModel::TYPE_SEPARATOR, menu.GetTypeAt(index++));
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   ExpectLabelAndType("radio3", MenuModel::TYPE_RADIO, menu, index++);
   ExpectLabelAndType("radio4", MenuModel::TYPE_RADIO, menu, index++);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(MenuModel::TYPE_SEPARATOR, menu.GetTypeAt(index++));
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   ExpectLabelAndType("normal3", MenuModel::TYPE_COMMAND, menu, index++);
 }
 
