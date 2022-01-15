@@ -18,7 +18,7 @@ namespace base {
 // Return a C++ string given printf-like input.
 [[nodiscard]] BASE_EXPORT std::string StringPrintf(const char* format, ...)
     PRINTF_FORMAT(1, 2);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Note: Unfortunately compile time checking of the format string for UTF-16
 // strings is not supported by any compiler, thus these functions should be used
 // carefully and sparingly. Also applies to SStringPrintf and StringAppendV
@@ -38,7 +38,7 @@ namespace base {
 BASE_EXPORT const std::string& SStringPrintf(std::string* dst,
                                              const char* format,
                                              ...) PRINTF_FORMAT(2, 3);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BASE_EXPORT const std::wstring& SStringPrintf(std::wstring* dst,
                                               const wchar_t* format,
                                               ...) WPRINTF_FORMAT(2, 3);
@@ -50,7 +50,7 @@ BASE_EXPORT const std::u16string& SStringPrintf(std::u16string* dst,
 // Append result to a supplied string.
 BASE_EXPORT void StringAppendF(std::string* dst, const char* format, ...)
     PRINTF_FORMAT(2, 3);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BASE_EXPORT void StringAppendF(std::wstring* dst, const wchar_t* format, ...)
     WPRINTF_FORMAT(2, 3);
 BASE_EXPORT void StringAppendF(std::u16string* dst, const char16_t* format, ...)
@@ -61,7 +61,7 @@ BASE_EXPORT void StringAppendF(std::u16string* dst, const char16_t* format, ...)
 // string.  All other routines are just convenience wrappers around it.
 BASE_EXPORT void StringAppendV(std::string* dst, const char* format, va_list ap)
     PRINTF_FORMAT(2, 0);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BASE_EXPORT void StringAppendV(std::wstring* dst,
                                const wchar_t* format,
                                va_list ap) WPRINTF_FORMAT(2, 0);

@@ -138,7 +138,7 @@ SplitStringPieceUsingSubstr(StringPiece16 input,
 
 }  // namespace base
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_split_win.h"
 #endif
 

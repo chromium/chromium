@@ -11,7 +11,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // For ssize_t
 #include <unistd.h>
 #endif

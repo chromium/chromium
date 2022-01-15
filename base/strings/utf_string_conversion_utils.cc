@@ -122,7 +122,7 @@ void PrepareForUTF8Output(const CHAR* src,
 }
 
 // Instantiate versions we know callers will need.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // wchar_t and char16_t are the same thing on Windows.
 template void PrepareForUTF8Output(const wchar_t*, size_t, std::string*);
 #endif
@@ -146,7 +146,7 @@ void PrepareForUTF16Or32Output(const char* src,
 }
 
 // Instantiate versions we know callers will need.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // std::wstring and std::u16string are the same thing on Windows.
 template void PrepareForUTF16Or32Output(const char*, size_t, std::wstring*);
 #endif

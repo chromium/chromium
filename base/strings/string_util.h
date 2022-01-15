@@ -505,9 +505,9 @@ BASE_EXPORT std::u16string ReplaceStringPlaceholders(
 
 }  // namespace base
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util_win.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/strings/string_util_posix.h"
 #else
 #error Define string operations appropriately for your platform

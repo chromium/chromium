@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Guard against conflict with Win32 API StrCat macro:
 // check StrCat wasn't and will not be redefined.
 #define StrCat StrCat
@@ -102,7 +102,7 @@ inline void StrAppend(std::u16string* dest,
 
 }  // namespace base
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/strcat_win.h"
 #endif
 

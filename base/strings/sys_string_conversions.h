@@ -17,7 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/mac/scoped_cftyperef.h"
@@ -25,7 +25,7 @@
 #ifdef __OBJC__
 @class NSString;
 #endif
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace base {
 
@@ -43,7 +43,7 @@ namespace base {
 
 // Windows-specific ------------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Converts between 8-bit and wide strings, using the given code page. The
 // code page identifier is one accepted by the Windows function
@@ -54,11 +54,11 @@ namespace base {
     const std::wstring& wide,
     uint32_t code_page);
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Mac-specific ----------------------------------------------------------------
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 // Converts between strings and CFStringRefs/NSStrings.
 
@@ -86,7 +86,7 @@ namespace base {
 
 #endif  // __OBJC__
 
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace base
 
