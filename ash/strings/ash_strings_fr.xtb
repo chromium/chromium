@@ -236,7 +236,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
 <translation id="256712445991462162">la loupe ancrée</translation>
 <translation id="2570734079541893434">Gérer les paramètres</translation>
-<translation id="2573588302192866788">Impossible de connecter <ph name="NAME" /></translation>
+<translation id="2573588302192866788">Impossible de connecter l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="2575685495496069081">La connexion multicompte a été désactivée</translation>
 <translation id="2582112259361606227">Redémarrer pour mettre à jour</translation>
 <translation id="2595239820337756193">5 km en miles</translation>
@@ -404,7 +404,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3630697955794050612">désactivé</translation>
 <translation id="3631369015426612114">Autoriser les notifications des éléments suivants</translation>
 <translation id="3638400994746983214">Activer/Désactiver l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Enregistrer "<ph name="NAME" />"</translation>
+<translation id="3640092422335864171">Enregistrer l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Mise à jour à effectuer</translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Enregistrer via le micro</translation>
@@ -422,7 +422,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3771549900096082774">Mode Contraste élevé</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
-<translation id="3779139509281456663">Connexion à <ph name="NAME" /></translation>
+<translation id="3779139509281456663">Connexion à l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="3796746699333205839">Une application utilise la caméra et le micro</translation>
@@ -487,7 +487,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4215497585250573029">Paramètres de VPN</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, appli installée, en pause</translation>
-<translation id="4223947355273782392">Enregistrez "<ph name="NAME" />" dans votre compte <ph name="EMAIL" /> pour une association plus rapide avec vos autres appareils</translation>
+<translation id="4223947355273782392">Enregistrez "<ph name="NAME" />" avec votre compte <ph name="EMAIL" /> pour une association plus rapide avec vos autres appareils</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
@@ -933,7 +933,7 @@ Nouvelle installation</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
 <translation id="7360036564632145207">Vous pouvez optimiser les performances en modifiant le paramètre "Protection de l'accès aux données pour les périphériques"</translation>
-<translation id="7366890467478514168">Connecter <ph name="NAME" /></translation>
+<translation id="7366890467478514168">Connecter l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7377169924702866686">La touche de verrouillage des majuscules est activée</translation>
 <translation id="7378203170292176219">Faire glisser pour sélectionner une zone à enregistrer</translation>
@@ -1210,7 +1210,7 @@ Nouvelle installation</translation>
 <translation id="9193626018745640770">Destinataire de la diffusion inconnu</translation>
 <translation id="9194617393863864469">Se connecter avec un autre compte utilisateur…</translation>
 <translation id="9198992156681343238">La résolution de <ph name="DISPLAY_NAME" /> est passée à <ph name="RESOLUTION" />. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="9201044636667689546">Connectez <ph name="NAME" /> à ce Chromebook</translation>
+<translation id="9201044636667689546">Connectez l'appareil <ph name="NAME" /> à ce Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>
 <translation id="9210037371811586452">Sortie du mode Bureau unifié</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
