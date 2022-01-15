@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
 }
 
 // Flaky on linux: crbug.com/1182296
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_RecordBackgroundFetchUkmEvent \
   DISABLED_RecordBackgroundFetchUkmEvent
 #else
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       -1);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky on Mac: https://crbug.com/1259680
 #define MAYBE_OfflineItemCollection_SingleFileMetadata \
   DISABLED_OfflineItemCollection_SingleFileMetadata
@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   // Get visuals associated with the newly added offline item.
   std::unique_ptr<OfflineItemVisuals> out_visuals;
   GetVisualsForOfflineItemSync(offline_item.id, &out_visuals);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(out_visuals->icon.IsEmpty());
   EXPECT_EQ(out_visuals->icon.Size().width(), 100);
   EXPECT_EQ(out_visuals->icon.Size().height(), 100);
@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 }
 
 // Flaky on Windows 7 (https://crbug.com/1039250)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched \
   DISABLED_FetchesRunToCompletionAndUpdateTitle_Fetched
 #else
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 }
 
 // Flaky on Windows 7 (https://crbug.com/1039250)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed \
   DISABLED_FetchesRunToCompletionAndUpdateTitle_Failed
 #else
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 }
 
 // Flaky on Windows 7 (https://crbug.com/1039250)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FetchFromServiceWorker DISABLED_FetchFromServiceWorker
 #else
 #define MAYBE_FetchFromServiceWorker FetchFromServiceWorker
