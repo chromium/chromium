@@ -42,7 +42,7 @@
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
@@ -119,7 +119,7 @@ class DedicatedWorkerHost final
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
 #endif
