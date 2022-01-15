@@ -85,7 +85,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -946,7 +946,7 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   std::vector<content::URLLoaderInterceptor::RequestParams>
       ongoing_mock_requests_;
   std::atomic<bool> behind_captive_portal_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain_;
 #endif
   raw_ptr<const BrowserList> browser_list_;
@@ -955,7 +955,7 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
 
 CaptivePortalBrowserTest::CaptivePortalBrowserTest()
     : behind_captive_portal_(true),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // Mark as not enterprise managed to prevent the secure DNS mode from
       // being downgraded to off.
       scoped_domain_(false),
@@ -2526,7 +2526,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 }
 
 // Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NavigateLoadingTabToTimeoutTwoSites \
         DISABLED_NavigateLoadingTabToTimeoutTwoSites
 #else
@@ -2874,7 +2874,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 }
 
 // Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SecureDnsCaptivePortal DISABLED_SecureDnsCaptivePortal
 #else
 #define MAYBE_SecureDnsCaptivePortal SecureDnsCaptivePortal
@@ -2915,7 +2915,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
 }
 
 // Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SecureDnsErrorTriggersCheck DISABLED_SecureDnsErrorTriggersCheck
 #else
 #define MAYBE_SecureDnsErrorTriggersCheck SecureDnsErrorTriggersCheck
@@ -2960,7 +2960,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 }
 
 // Fails on Windows only, mostly on Win7. http://crbug.com/170033
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SlowLoadSecureDnsErrorWithCaptivePortal \
   DISABLED_SlowLoadSecureDnsErrorWithCaptivePortal
 #else
@@ -2997,7 +2997,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 }
 
 // Fails on Windows only, more frequently on Win7. https://crbug.com/1225823
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SlowLoadSecureDnsErrorAfterLogin \
   DISABLED_SlowLoadSecureDnsErrorAfterLogin
 #else
