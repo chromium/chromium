@@ -24,10 +24,10 @@
 #include "ui/ozone/public/surface_factory_ozone.h"  // nogncheck
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ChromeContentGpuClient::ChromeContentGpuClient()
     : main_thread_profiler_(ThreadProfiler::CreateAndStartOnMainThread()) {
@@ -47,10 +47,10 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
           base::Unretained(protected_buffer_manager_.get())));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   content::ChildThread::Get()->BindHostReceiver(
       chromeos::ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
