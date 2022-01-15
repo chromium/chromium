@@ -53,7 +53,7 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
 
   void InitOmniboxPopup(views::Widget* parent_widget) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread during command buffer creation. We can revert this change
     // once http://crbug.com/125248 is fixed.
@@ -432,7 +432,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
       FireAXEventsForNewActiveDescendant(result_view_at(0));
     }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // It's not great for promos to overlap the omnibox if the user opens the
     // drop-down after showing the promo. This especially causes issues on Mac
     // due to z-order/rendering issues, see crbug.com/1225046 for examples.

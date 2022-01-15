@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   ASSERT_TRUE(theme_service->UsingSystemTheme());
 
   InstallAndLaunchBookmarkApp();
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // On Linux, the system theme is the GTK theme and should change the frame
   // color to the system color (not the app theme color); otherwise the title
   // and border would clash horribly with the GTK title bar.

@@ -32,7 +32,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
@@ -59,7 +59,7 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
   SetAnimateOnStateChange(true);
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   SetTriggerableEventFlags(GetTriggerableEventFlags() |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
 #endif
@@ -114,7 +114,7 @@ void NewTabButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ink_drop_container_->SetBoundsRect(GetLocalBounds());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NewTabButton::OnMouseReleased(const ui::MouseEvent& event) {
   if (!event.IsOnlyRightMouseButton()) {
     views::ImageButton::OnMouseReleased(event);

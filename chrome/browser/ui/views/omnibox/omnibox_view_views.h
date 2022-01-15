@@ -223,7 +223,7 @@ class OmniboxViewViews
   // steady-state elisions).  |gesture| is the user gesture causing unelision.
   bool UnapplySteadyStateElisions(UnelisionGesture gesture);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void AnnounceFriendlySuggestionText();
 #endif
 

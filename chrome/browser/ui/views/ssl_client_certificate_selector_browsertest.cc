@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, SelectSecond) {
 }
 
 // TODO(crbug.com/1249827): Test is flaky on Mac, Linux and Lacros.
-#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_Escape DISABLED_Escape
 #else
 #define MAYBE_Escape Escape
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
 }
 
 // TODO(crbug.com/1249705): Test is flaky on Mac, Linux and Lacros.
-#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SelectDefault DISABLED_SelectDefault
 #else
 #define MAYBE_SelectDefault SelectDefault

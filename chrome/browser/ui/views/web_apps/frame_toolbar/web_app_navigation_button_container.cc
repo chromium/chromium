@@ -26,7 +26,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/window/hit_test_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -34,7 +34,7 @@ namespace {
 
 constexpr int kPaddingBetweenNavigationButtons = 5;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr int kWebAppFrameLeftMargin = 2;
 #else
 constexpr int kWebAppFrameLeftMargin = 7;
@@ -48,7 +48,7 @@ class WebAppToolbarButton : public BaseClass {
   WebAppToolbarButton& operator=(const WebAppToolbarButton&) = delete;
   ~WebAppToolbarButton() override = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool ShouldUseWindowsIconsForMinimalUI() const {
     return base::win::GetVersion() >= base::win::Version::WIN10;
   }
@@ -107,7 +107,7 @@ WebAppToolbarBackButton::WebAppToolbarBackButton(PressedCallback callback,
           browser) {}
 
 const gfx::VectorIcon* WebAppToolbarBackButton::GetAlternativeIcon() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (ShouldUseWindowsIconsForMinimalUI()) {
     return ui::TouchUiController::Get()->touch_ui()
                ? &kBackArrowWindowsTouchIcon
@@ -134,7 +134,7 @@ class WebAppToolbarReloadButton : public WebAppToolbarButton<ReloadButton> {
 };
 
 const gfx::VectorIcon* WebAppToolbarReloadButton::GetAlternativeIcon() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (ShouldUseWindowsIconsForMinimalUI()) {
     const bool is_reload = visible_mode() == ReloadButton::Mode::kReload;
     if (ui::TouchUiController::Get()->touch_ui()) {

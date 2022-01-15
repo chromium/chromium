@@ -72,9 +72,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/credential_provider/common/gcp_strings.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -291,7 +291,7 @@ void InlineLoginUIBrowserTest::SetAllowedUsernamePattern(
   local_state->SetString(prefs::kGoogleServicesUsernamePattern, pattern);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // crbug.com/422868
 #define MAYBE_DifferentStorageId DISABLED_DifferentStorageId
 #else
@@ -719,8 +719,8 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
 }
 
 // https://crbug.com/1271819: Added Mac and Win due to excessive flakiness
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, Basic) {
 }
 
 // Flaky on MacOS - crbug.com/1021209
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_NoWebUIInIframe DISABLED_NoWebUIInIframe
 #else
 #define MAYBE_NoWebUIInIframe NoWebUIInIframe
@@ -931,7 +931,7 @@ class InlineLoginCorrectGaiaUrlBrowserTest : public InProcessBrowserTest {
   HtmlRequestTracker tracker_;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForSignin) {
   signin_metrics::AccessPoint access_point =

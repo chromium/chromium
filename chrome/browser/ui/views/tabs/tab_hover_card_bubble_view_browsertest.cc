@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 // Verify hover card is visible while hovering and not visible outside of the
 // tabstrip.
 // TODO(crbug.com/1050765): the test is flaky.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_WidgetVisibleOnHover DISABLED_WidgetVisibleOnHover
 #else
 #define MAYBE_WidgetVisibleOnHover WidgetVisibleOnHover
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 
 // Verify hover card is visible when tab is focused.
 // TODO(crbug.com/1050765): the test is flaky.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WidgetVisibleOnTabFocus DISABLED_WidgetVisibleOnTabFocus
 #else
 #define MAYBE_WidgetVisibleOnTabFocus WidgetVisibleOnTabFocus
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 // Verify hover card is visible when focus moves from the tab to tab close
 // button.
 // TODO(crbug.com/1050765): the test is flaky.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WidgetVisibleOnTabCloseButtonFocusAfterTabFocus \
   DISABLED_WidgetVisibleOnTabCloseButtonFocusAfterTabFocus
 #else
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 // Verify hover card is visible after navigating to the tab strip using keyboard
 // accelerators.
 // TODO(crbug.com/1050765): the test is flaky.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WidgetVisibleOnTabFocusFromKeyboardAccelerator \
   DISABLED_WidgetVisibleOnTabFocusFromKeyboardAccelerator
 #else
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 
 // Verify hover card is not visible after clicking on a tab.
 // TODO(crbug.com/1050765): the test is flaky.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_WidgetNotVisibleOnClick DISABLED_WidgetNotVisibleOnClick
 #else
 #define MAYBE_WidgetNotVisibleOnClick WidgetNotVisibleOnClick
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 // Verify title, domain, and anchor are correctly updated when moving hover
 // from one tab to another.
 // TODO(crbug.com/1050765): the test is flaky.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_WidgetDataUpdate DISABLED_WidgetDataUpdate
 #else
 #define MAYBE_WidgetDataUpdate WidgetDataUpdate
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 // Verify inactive window remains inactive when showing a hover card for a tab
 // in the inactive window.
 // TODO(crbug.com/1050765): the test is flaky.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InactiveWindowStaysInactiveOnHover \
   DISABLED_InactiveWindowStaysInactiveOnHover
 #else

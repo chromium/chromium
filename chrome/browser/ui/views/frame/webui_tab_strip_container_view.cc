@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -244,9 +245,9 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
 
     view_observations_.AddObservation(content_area_.get());
     view_observations_.AddObservation(omnibox_.get());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     view_observations_.AddObservation(top_container_.get());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     content_area_->GetWidget()->GetNativeView()->AddPreTargetHandler(this);
     pretarget_handler_added_ = true;
@@ -896,7 +897,7 @@ gfx::Size WebUITabStripContainerView::FlexRule(
 }
 
 void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (observed_view == top_container_) {
     if (old_top_container_width_ != top_container_->width()) {
       old_top_container_width_ = top_container_->width();
@@ -906,7 +907,7 @@ void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
     }
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (observed_view == tab_contents_container_) {
     // TODO(pbos): PreferredSizeChanged seems to cause infinite recursion with

@@ -29,7 +29,7 @@ using ::testing::Range;
 // enable it for those platforms at the moment. I hope one day our test harness
 // will be improved to support this so we can get coverage on other platforms.
 // See http://crbug.com/45115 for details.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/try_chrome_dialog_win/try_chrome_dialog.h"
 
 #include "ui/aura/window.h"
@@ -321,4 +321,4 @@ INSTANTIATE_TEST_SUITE_P(
         0,
         static_cast<int>(installer::ExperimentMetrics::kHoldbackGroup)));
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

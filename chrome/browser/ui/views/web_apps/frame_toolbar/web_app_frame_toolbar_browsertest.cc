@@ -61,7 +61,7 @@
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Keep in sync with browser_non_client_frame_view_mac.mm
 constexpr double kTitlePaddingWidthFraction = 0.1;
 #endif
@@ -171,8 +171,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   const int original_left_container_width = toolbar_left_container->width();
   EXPECT_GT(original_left_container_width, 0);
 
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-                        !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) ||                                   \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS))
   const int original_window_title_width = window_title->width();
   EXPECT_GT(original_window_title_width, 0);
 #endif
@@ -196,8 +197,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_TRUE(toolbar_left_container->GetVisible());
   EXPECT_EQ(toolbar_left_container->width(), original_left_container_width);
 
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-                        !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) ||                                   \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS))
   EXPECT_GT(window_title->width(), 0);
   EXPECT_LT(window_title->width(), original_window_title_width);
 #endif
@@ -222,8 +224,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_FALSE(toolbar_left_container->GetVisible());
 
   // The window title should be clipped to 0 width.
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-                        !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) ||                                   \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS))
   EXPECT_EQ(window_title->width(), 0);
 #endif
 
@@ -244,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Avoid dependence on Linux GTK+ Themes appearance setting.
 
   ToolbarButtonProvider* const toolbar_button_provider =
@@ -312,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
       window_title->CalculatePreferredSize().width() * 3 / 4;
   int narrow_frame_width =
       helper()->frame_view()->width() - original_title_gap + narrow_title_gap;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Increase frame width to allow for title padding.
   narrow_frame_width = base::checked_cast<int>(
       std::ceil(narrow_frame_width / (1 - 2 * kTitlePaddingWidthFraction)));
@@ -561,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_NE(0, bounds.x());
   EXPECT_EQ(0, bounds.y());
 #else
@@ -692,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   const int initial_width_value = initial_rect_list[2].GetInt();
   const int initial_height_value = initial_rect_list[3].GetInt();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Window controls are on the opposite side on Mac.
   EXPECT_NE(0, initial_x_value);
 #else
@@ -777,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(https://crbug.com/1277860): Flaky on Mac builders.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WindowControlsOverlayDraggableRegions \
   DISABLED_WindowControlsOverlayDraggableRegions
 #else

@@ -273,7 +273,7 @@ class LocationBarView : public LocationBar,
                            IMEInlineAutocompletePosition);
   using ContentSettingViews = std::vector<ContentSettingImageView*>;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Manage a subscription to GeolocationManager, which may
   // outlive this object.
   base::ScopedObservation<device::GeolocationManager,

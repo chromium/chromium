@@ -20,7 +20,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #endif
 
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
 
 // The feature |media_router::kGlobalMediaControlsCastStartStop| is supported
 // on MAC, Linux and Windows only.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 class GlobalMediaControlsDialogTest
     : public MediaRouterDialogControllerViewsTest {
  public:

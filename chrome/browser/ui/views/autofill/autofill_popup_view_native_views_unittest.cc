@@ -91,7 +91,7 @@ class AutofillPopupViewNativeViewsTest : public ChromeViewsTestBase {
   }
 
   void Paint() {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     Paint(widget_->GetRootView());
 #else
     // TODO(crbug.com/123): On Mac OS we need to trigger Paint() on the roots of

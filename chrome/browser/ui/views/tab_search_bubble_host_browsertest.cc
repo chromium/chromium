@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
 }
 
 // On macOS, most accelerators are handled by CommandDispatcher.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
                        KeyboardShortcutTriggersBubble) {
   ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());

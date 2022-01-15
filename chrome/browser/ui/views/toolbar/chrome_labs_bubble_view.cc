@@ -177,7 +177,7 @@ void ChromeLabsBubbleView::ShowRelaunchPrompt() {
 
   // Manually announce the relaunch footer message because VoiceOver doesn't
   // announces the message when the footer appears.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (restart_prompt_->GetVisible()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE));

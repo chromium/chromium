@@ -27,7 +27,7 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -237,7 +237,7 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
 
 const cc::ExactPixelComparator pixel_comparator(/*discard_alpha=*/false);
 
-#if defined(OS_MAC) && MAC_OS_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15
+#if BUILDFLAG(IS_MAC) && MAC_OS_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else
 #define MAYBE_FocusAppearance FocusAppearance
@@ -288,9 +288,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
 
   std::string screenshot_filename = "focus_highlight_appearance";
   std::string platform_suffix;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   platform_suffix = "_mac";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   platform_suffix = "_win";
 #endif
 

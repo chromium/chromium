@@ -14,9 +14,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -49,15 +49,15 @@ enum OmitOnPlatforms {
 };
 
 bool ShouldOmitOnPlatform(int omit_on) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (omit_on & kOmitOnWin7) {
     return base::win::OSInfo::GetInstance()->version() <=
            base::win::Version::WIN7;
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   if (omit_on & kOmitOnOSX_10_11)
     return base::mac::IsOS10_11();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   if (omit_on & kOmitOnFuchsia)
     return true;
 #endif

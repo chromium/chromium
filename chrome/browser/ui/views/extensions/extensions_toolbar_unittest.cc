@@ -108,7 +108,7 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
     // Ensure we don't downcast the ExtensionsToolbarButton.
     if (views::IsViewClass<ToolbarActionView>(child)) {
       ToolbarActionView* const action = static_cast<ToolbarActionView*>(child);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // TODO(crbug.com/1045212): Use IsActionVisibleOnToolbar() because it
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
@@ -136,7 +136,7 @@ std::vector<std::string> ExtensionsToolbarUnitTest::GetPinnedExtensionNames() {
 }
 
 void ExtensionsToolbarUnitTest::WaitForAnimation() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
   // of support in unit tests. Therefore this is a no-op.
 #else

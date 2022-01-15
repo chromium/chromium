@@ -182,7 +182,7 @@ LocationBarView::LocationBarView(Browser* browser,
     views::FocusRing::Get(this)->SetPathGenerator(
         std::make_unique<views::PillHighlightPathGenerator>());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     geolocation_permission_observation_.Observe(
         g_browser_process->platform_part()->geolocation_manager());
 #endif

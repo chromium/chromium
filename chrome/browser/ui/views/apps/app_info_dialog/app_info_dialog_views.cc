@@ -62,7 +62,7 @@ constexpr gfx::Size kDialogSize = gfx::Size(380, 490);
 }  // namespace
 
 bool CanPlatformShowAppInfoDialog() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return false;
 #else
   return true;

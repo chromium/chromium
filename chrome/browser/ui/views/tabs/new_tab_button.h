@@ -63,7 +63,7 @@ class NewTabButton : public views::ImageButton,
   class HighlightPathGenerator;
 
 // views::ImageButton:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnMouseReleased(const ui::MouseEvent& event) override;
 #endif
   void OnGestureEvent(ui::GestureEvent* event) override;

@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "ui/views/controls/button/label_button.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <shellapi.h>
 
@@ -26,7 +26,7 @@
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SkBitmap GetElevationIcon() {
   if (!base::win::UserAccountControlIsEnabled())
     return SkBitmap();
@@ -52,7 +52,7 @@ SkBitmap GetElevationIcon() {
 ElevationIconSetter::ElevationIconSetter(views::LabelButton* button,
                                          base::OnceClosure callback)
     : button_(button) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateCOMSTATaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
@@ -70,7 +70,7 @@ void ElevationIconSetter::SetButtonIcon(base::OnceClosure callback,
                                         const SkBitmap& icon) {
   if (!icon.isNull()) {
     float device_scale_factor = 1.0f;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Windows gives us back a correctly-scaled image for the current DPI, so
     // mark this image as having been scaled for the current DPI already.
     device_scale_factor = display::win::GetDPIScale();

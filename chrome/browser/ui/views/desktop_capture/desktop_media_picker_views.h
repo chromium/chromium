@@ -122,7 +122,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 // DesktopMediaPicker.
 class DesktopMediaPickerViews : public DesktopMediaPicker {
  public:
-#if defined(OS_WIN) || defined(USE_CRAS)
+#if BUILDFLAG(IS_WIN) || defined(USE_CRAS)
   static constexpr bool kScreenAudioShareSupportedOnPlatform = true;
 #else
   static constexpr bool kScreenAudioShareSupportedOnPlatform = false;

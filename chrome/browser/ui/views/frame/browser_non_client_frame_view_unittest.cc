@@ -32,7 +32,7 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
 
   // TestWithBrowserView override:
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Use opaque frame.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableDwmComposition);
@@ -56,7 +56,7 @@ class BrowserNonClientFrameViewPopupTest
 };
 
 // TODO(crbug.com/998369): Flaky on Linux TSAN and ASAN.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER))
 #define MAYBE_HitTestPopupTopChrome DISABLED_HitTestPopupTopChrome
 #else
@@ -82,8 +82,8 @@ class BrowserNonClientFrameViewTabbedTest
 };
 
 // TODO(crbug.com/1011339): Flaky on Linux TSAN.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-     BUILDFLAG(IS_CHROMEOS_LACROS)) &&                  \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+     BUILDFLAG(IS_CHROMEOS_LACROS)) &&                    \
     defined(THREAD_SANITIZER)
 #define MAYBE_HitTestTabstrip DISABLED_HitTestTabstrip
 #else

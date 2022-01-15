@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 }
 
 // crbug.com/989858
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest \
   DISABLED_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest
 #else

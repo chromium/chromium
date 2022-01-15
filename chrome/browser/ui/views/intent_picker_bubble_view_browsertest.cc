@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the picker bubble will appear automatically.
   EXPECT_FALSE(intent_picker_bubble());
   GetIntentPickerIcon()->ExecuteForTesting();
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   EXPECT_EQ(nullptr, intent_picker_bubble());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that clicking a link from an app browser to either within or outside
 // the scope of an installed app does not show the intent picker, even when an
 // outside of scope link is opened within the context of the PWA.

@@ -462,7 +462,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
     round_corner(gfx::RRectF::Corner::kLowerRight);
     round_corner(gfx::RRectF::Corner::kLowerLeft);
   } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Mac's window has rounded corners, but the corner radius might be
     // different on different versions. Status bubble will use its own round
     // corner on Mac when there is no download shelf beneath.
@@ -693,7 +693,7 @@ void StatusBubbleViews::InitPopup() {
     popup_ = std::make_unique<views::Widget>();
 
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread blocking issue during command buffer creation. We can
     // revert this change once http://crbug.com/125248 is fixed.
@@ -717,7 +717,7 @@ void StatusBubbleViews::InitPopup() {
     popup_->SetOpacity(0.f);
     view_ = popup_->SetContentsView(std::make_unique<StatusView>(this));
     expand_view_ = std::make_unique<StatusViewExpander>(this, view_);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Stack the popup above the base widget and below higher z-order windows.
     // This is unnecessary and even detrimental on Mac, see CreateBubbleWidget.
     popup_->StackAboveWidget(frame);

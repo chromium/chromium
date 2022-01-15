@@ -199,7 +199,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   void UpdateCaptionButtonPlaceholderContainerBackground();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sets caption button's accessible name as its tooltip when it's in a PWA
   // with window-controls-overlay display override and resets it otherwise. In
   // this mode, the web contents covers the frame view and so does it's legacy
@@ -224,7 +224,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // Background painter for the window frame.
   std::unique_ptr<views::FrameBackground> frame_background_;
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   std::unique_ptr<views::MenuRunner> menu_runner_;
 #endif
 

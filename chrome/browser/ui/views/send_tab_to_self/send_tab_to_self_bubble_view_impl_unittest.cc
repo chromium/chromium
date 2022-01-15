@@ -110,7 +110,7 @@ TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
 }
 
 // TODO(crbug.com/1285538): Flaky on Linux TSAN
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_ButtonPressed DISABLED_ButtonPressed
 #else
 #define MAYBE_ButtonPressed ButtonPressed

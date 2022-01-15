@@ -269,7 +269,7 @@ TEST_F(DeviceChooserContentViewTest, TurnBluetoothOffAndOn) {
   EXPECT_TRUE(re_scan_button()->GetEnabled());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(DeviceChooserContentViewTest, BluetoothPermissionDenied) {
   AddUnpairedDevice();
   controller()->SetBluetoothPermission(/*has_permission=*/false);

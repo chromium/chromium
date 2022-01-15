@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // Background tabs shouldn't open a bubble initially, but should when they
 // become visible.
 // Fails on Mac for one parameter. https://crbug.com/1285242
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_BubbleWaitsForVisible DISABLED_BubbleWaitsForVisible
 #else
 #define MAYBE_BubbleWaitsForVisible BubbleWaitsForVisible

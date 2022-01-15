@@ -83,7 +83,7 @@ SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
                              InitializeSigninWebDialogUI(false));
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 std::unique_ptr<views::WebView>
@@ -346,7 +346,7 @@ SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
       browser, ui::MODAL_TYPE_CHILD, false, true);
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 SigninViewControllerDelegate*

@@ -108,7 +108,7 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
 #endif
 
@@ -543,14 +543,14 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void OmniboxViewViews::OnInputMethodChanged() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Update the input type with the input method on Windows for CJK.
   SetTextInputType(GetPreferredTextInputType());
 #endif  // OS_WIN
 }
 
 ui::TextInputType OmniboxViewViews::GetPreferredTextInputType() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We'd like to set the text input type to TEXT_INPUT_TYPE_URL, because this
   // triggers URL-specific layout in software keyboards, e.g. adding top-level
   // "/" and ".com" keys for English.  However, this also causes IMEs to default
@@ -710,7 +710,7 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
   return true;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void OmniboxViewViews::AnnounceFriendlySuggestionText() {
   GetViewAccessibility().AnnounceText(friendly_suggestion_text_);
 }
@@ -838,7 +838,7 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
   if (notify_text_changed)
     NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, the only way to get VoiceOver to speak the friendly suggestion
   // text (for example, "how to open a pdf, search suggestion, 4 of 8") is
   // with an explicit announcement. Use PostTask to ensure that this
@@ -1241,7 +1241,7 @@ void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
                                 "both");
 // Expose keyboard shortcut where it makes sense.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Use cloverleaf symbol for command key.
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                                 base::WideToUTF8(L"\u2318L"));
@@ -1974,7 +1974,7 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
         index, IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
         send_tab_to_self_sub_menu_model_.get());
   }
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   menu_contents->SetIcon(index,
                          ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
 #endif

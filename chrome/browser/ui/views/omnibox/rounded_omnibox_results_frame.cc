@@ -24,7 +24,7 @@
 #include "ui/aura/window_targeter.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/native_widget_aura.h"
 #endif
 
@@ -201,7 +201,7 @@ RoundedOmniboxResultsFrame::~RoundedOmniboxResultsFrame() = default;
 void RoundedOmniboxResultsFrame::OnBeforeWidgetInit(
     views::Widget::InitParams* params,
     views::Widget* widget) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, use an Aura window instead of a native window, because the
   // native window does not support clicking through translucent shadows to the
   // underyling content. Linux and ChromeOS do not need this because they

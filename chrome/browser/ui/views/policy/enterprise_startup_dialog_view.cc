@@ -34,7 +34,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/task/current_thread.h"
 #include "chrome/browser/ui/views/policy/enterprise_startup_dialog_mac_util.h"
 #endif
@@ -127,7 +127,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
                      base::Unretained(this), false));
   SetBorder(views::CreateEmptyBorder(GetDialogInsets()));
   CreateDialogWidget(this, nullptr, nullptr)->Show();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&EnterpriseStartupDialogView::StartModalDialog,
                                 weak_factory_.GetWeakPtr()));
@@ -182,14 +182,14 @@ void EnterpriseStartupDialogView::RemoveWidgetObserver(
 }
 
 void EnterpriseStartupDialogView::StartModalDialog() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::CurrentThread::ScopedNestableTaskAllower allow_nested;
   StartModal(GetWidget()->GetNativeWindow());
 #endif
 }
 
 void EnterpriseStartupDialogView::RunDialogCallback(bool was_accepted) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On mac, we need to stop the modal message loop before returning the result
   // to the caller who controls its own run loop.
   StopModal();

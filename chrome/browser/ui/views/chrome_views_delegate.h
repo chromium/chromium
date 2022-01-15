@@ -44,14 +44,14 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
       views::Widget* widget) override;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HICON GetDefaultWindowIcon() const override;
   HICON GetSmallWindowIcon() const override;
   int GetAppbarAutohideEdges(HMONITOR monitor,
                              base::OnceClosure callback) override;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   gfx::ImageSkia* GetDefaultWindowIcon() const override;
   bool WindowManagerProvidesTitleBar(bool maximized) override;
 #endif
@@ -62,13 +62,13 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   void OnBeforeWidgetInit(
       views::Widget::InitParams* params,
       views::internal::NativeWidgetDelegate* delegate) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::ContextFactory* GetContextFactory() override;
 #endif
   std::string GetApplicationName() override;
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef std::map<HMONITOR, int> AppbarAutohideEdgeMap;
 
   // Callback on main thread with the edges. |returned_edges| is the value that
@@ -102,7 +102,7 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
       profile_keep_alives_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   AppbarAutohideEdgeMap appbar_autohide_edge_map_;
   // If true we're in the process of notifying a callback from
   // GetAutohideEdges().start a new query.

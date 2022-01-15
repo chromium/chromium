@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -34,7 +35,7 @@
 #include "ui/views/background.h"
 #include "ui/views/window/hit_test_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
 #endif
 
@@ -318,7 +319,7 @@ void BrowserNonClientFrameView::OnProfileWasRemoved(
 
 void BrowserNonClientFrameView::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   taskbar::UpdateTaskbarDecoration(browser_view()->browser()->profile(),
                                    frame_->GetNativeWindow());
 #endif
@@ -326,13 +327,13 @@ void BrowserNonClientFrameView::OnProfileAvatarChanged(
 
 void BrowserNonClientFrameView::OnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   taskbar::UpdateTaskbarDecoration(browser_view()->browser()->profile(),
                                    frame_->GetNativeWindow());
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int BrowserNonClientFrameView::GetSystemMenuY() const {
   if (!browser_view()->GetTabStripVisible())
     return GetTopInset(false);

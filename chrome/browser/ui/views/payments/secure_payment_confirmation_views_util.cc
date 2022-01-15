@@ -26,7 +26,7 @@ namespace payments {
 namespace {
 
 const gfx::VectorIcon& GetPlatformVectorIcon(bool dark_mode) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return dark_mode ? kSecurePaymentConfirmationFaceDarkIcon
                    : kSecurePaymentConfirmationFaceIcon;
 #else

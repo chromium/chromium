@@ -56,7 +56,7 @@ class EyeDropperView : public content::EyeDropper,
     class KeyboardHandler;
     std::unique_ptr<KeyboardHandler> keyboard_handler_;
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     id clickEventTap_;
     id notificationObserver_;
 #endif

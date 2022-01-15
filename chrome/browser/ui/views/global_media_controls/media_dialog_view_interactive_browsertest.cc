@@ -595,7 +595,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
-// This test was first disabled on defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// This test was first disabled on BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // for https://crbug.com/1222873.
 // Then got disabled on all platforms for https://crbug.com/1225531.
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 }
 
 // TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_ShowsMetadataAndControlsMediaInRTL \
   DISABLED_ShowsMetadataAndControlsMediaInRTL
 #else
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   ui_.WaitForItemCount(1);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1224071
 #define MAYBE_PictureInPicture DISABLED_PictureInPicture
 #else
@@ -865,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 }
 
 // Flaky on linux (https://crbug.com/1218003).
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PlayingSessionAlwaysDisplayFirst \
   DISABLED_PlayingSessionAlwaysDisplayFirst
 #else
@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 }
 
 // TODO(crbug.com/1225531, crbug.com/1222873, crbug.com/1271131): Flaky.
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_LiveCaption DISABLED_LiveCaption
 #else
 #define MAYBE_LiveCaption LiveCaption
@@ -965,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1222873
 // Flaky on all Mac bots: https://crbug.com/1274967
 #define MAYBE_LiveCaptionProgressUpdate DISABLED_LiveCaptionProgressUpdate
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 }
 
 // TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage
 #else
 #define MAYBE_LiveCaptionShowLanguage LiveCaptionShowLanguage
@@ -1094,7 +1094,7 @@ class MediaDialogViewWithBackForwardCacheBrowserTest
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
     std::map<std::string, std::string> params;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     params["process_binding_strength"] = "NORMAL";
 #endif
     enabled_features.emplace_back(features::kBackForwardCache, params);

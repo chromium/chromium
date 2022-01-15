@@ -95,7 +95,7 @@ void EditAddressProfileViewTest::CreateViewAndShow() {
   dialog_->ShowForWebContents(test_web_contents_.get());
 
   gfx::NativeView parent = gfx::kNullNativeView;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // We need a native view parent for the dialog to avoid a DCHECK
   // on Mac.
   parent_widget_ = CreateTestWidget();
@@ -105,7 +105,7 @@ void EditAddressProfileViewTest::CreateViewAndShow() {
       views::DialogDelegate::CreateDialogWidget(dialog_, GetContext(), parent);
   widget_->SetVisibilityChangedAnimationsEnabled(false);
   widget_->Show();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Necessary for Mac. On other platforms this happens in the focus
   // manager, but it's disabled for Mac due to crbug.com/650859.
   parent_widget_->Activate();

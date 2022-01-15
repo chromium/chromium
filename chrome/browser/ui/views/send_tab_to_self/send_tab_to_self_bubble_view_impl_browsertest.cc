@@ -75,7 +75,7 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
 };
 
 // crbug.com/1272360
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default

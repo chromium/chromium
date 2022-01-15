@@ -81,7 +81,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
@@ -94,12 +94,12 @@
 #include "ash/constants/ash_features.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <codecvt>
 #include "base/win/shortcut.h"
 #include "chrome/common/chrome_switches.h"
@@ -142,7 +142,7 @@ const base::flat_map<std::string, std::string>
                                          {"SiteAFoo", "site_a/foo"},
                                          {"SiteABar", "site_a/bar"}};
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class TestAppLauncherHandler : public AppLauncherHandler {
  public:
   TestAppLauncherHandler(extensions::ExtensionService* extension_service,
@@ -188,7 +188,7 @@ Browser* GetBrowserForAppId(const AppId& app_id) {
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
   base::FilePath shortcut_profile;
   std::wstring cmd_line_string;
@@ -452,15 +452,15 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   }
 // TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
 // papering over it here.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (shortcut_override_->desktop.IsValid())
     ASSERT_TRUE(shortcut_override_->desktop.Delete());
   if (shortcut_override_->application_menu.IsValid())
     ASSERT_TRUE(shortcut_override_->application_menu.Delete());
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   if (shortcut_override_->chrome_apps_folder.IsValid())
     ASSERT_TRUE(shortcut_override_->chrome_apps_folder.Delete());
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   if (shortcut_override_->desktop.IsValid())
     ASSERT_TRUE(shortcut_override_->desktop.Delete());
 #endif
@@ -469,7 +469,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 void WebAppIntegrationTestDriver::ChangeAppSettingsWindowMode(
     const std::string& site_mode,
     apps::mojom::WindowMode window_mode) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
@@ -542,7 +542,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(
   AfterStateChangeAction();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   BeforeStateChangeAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -764,7 +764,7 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
       << "No app installed for site: " << site_mode;
   auto app_id = app_state->id;
   // Will need to add feature flag based condition for web app settings page
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(app_id, blink::mojom::DisplayMode::kBrowser,
                                     true);
@@ -789,7 +789,7 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(
       << "No app installed for site: " << site_mode;
   auto app_id = app_state->id;
   // Will need to add feature flag based condition for web app settings page.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
@@ -1254,7 +1254,7 @@ void WebAppIntegrationTestDriver::BeforeStateChangeAction() {
 void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   DCHECK(executing_action_level_ > 0);
   --executing_action_level_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   for (auto* profile : delegate_->GetAllProfiles()) {
     std::vector<AppId> app_ids = provider()->registrar().GetAppIds();
     for (auto& app_id : app_ids) {
@@ -1564,13 +1564,13 @@ bool WebAppIntegrationTestDriver::IsShortcutCreated(Profile* profile,
   base::ScopedAllowBlockingForTesting allow_blocking;
   bool shortcut_exists = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   shortcut_exists =
       (IsShortcutFoundForProfile(profile, name,
                                  shortcut_override_->desktop.GetPath()) &&
        IsShortcutFoundForProfile(
            profile, name, shortcut_override_->application_menu.GetPath()));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   std::string shortcut_filename = name + ".app";
   base::FilePath app_shortcut_path =
       shortcut_override_->chrome_apps_folder.GetPath().Append(
@@ -1581,7 +1581,7 @@ bool WebAppIntegrationTestDriver::IsShortcutCreated(Profile* profile,
   shortcut_exists = (base::PathExists(app_shortcut_path) &&
                      app_installed_profiles.find(profile->GetPath()) !=
                          app_installed_profiles.end());
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =
       "chrome-" + id + "-" + profile->GetBaseName().value() + ".desktop";
   base::FilePath desktop_shortcut_path =

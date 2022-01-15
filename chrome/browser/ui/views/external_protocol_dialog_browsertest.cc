@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
   gfx::NativeWindow window = browser()->window()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   views::FocusManager* focus_manager = widget->GetFocusManager();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This dialog's default focused control is the Cancel button, but on Mac,
   // the cancel button cannot have initial keyboard focus. Advance focus once
   // on Mac to test whether keyboard focus advancement works there rather than

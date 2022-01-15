@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/overlay/overlay_window_views.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
-#include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -69,7 +71,7 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
     web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
     pip_window_controller_.set_web_contents(web_contents_);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     test_views_delegate()->set_context(GetContext());
 #endif
     test_views_delegate()->set_use_desktop_native_widgets(true);

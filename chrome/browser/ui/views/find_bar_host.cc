@@ -31,7 +31,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -239,7 +239,7 @@ void FindBarHost::UpdateUIForFindResult(
 
 void FindBarHost::AudibleAlert() {
   ++audible_alerts_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   MessageBeep(MB_OK);
 #endif
 }
@@ -272,7 +272,7 @@ void FindBarHost::RestoreSavedFocus() {
 }
 
 bool FindBarHost::HasGlobalFindPasteboard() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return true;
 #else
   return false;

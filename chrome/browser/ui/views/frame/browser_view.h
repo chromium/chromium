@@ -313,7 +313,7 @@ class BrowserView : public BrowserWindow,
   // page.
   bool GetTopControlsSlideBehaviorEnabled() const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns whether the browser can ever display a titlebar. Used in Windows
   // touch mode. Possibly expand to ChromeOS if we add a titlebar back there in
   // touch mode.
@@ -727,7 +727,7 @@ class BrowserView : public BrowserWindow,
   // Callback for the loading animation(s) associated with this view.
   void LoadingAnimationCallback();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Creates the JumpList.
   void CreateJumpList();
 #endif

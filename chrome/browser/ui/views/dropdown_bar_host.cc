@@ -56,7 +56,7 @@ void DropdownBarHost::Init(views::View* host_view,
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = browser_view_->GetWidget()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   params.activatable = views::Widget::InitParams::Activatable::kYes;
 #endif
   host_->Init(std::move(params));

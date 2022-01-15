@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 // These four tests which cover the mouse/touch fullscreen UI are covering
 // behavior that doesn't exist on Mac - Mac has its own native fullscreen exit
 // UI. See IsExitUiEnabled() in FullscreenControlHost.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // Disabled on Lacros due to flaky. crbug.com/1254453
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

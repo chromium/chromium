@@ -474,13 +474,13 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
                   .CustomConfigure(base::BindOnce(
                       [](PaymentRequestSheetController* controller,
                          views::BoxLayoutView* container) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                         controller->AddSecondaryButton(container);
                         controller->AddPrimaryButton(container);
 #else
                         controller->AddPrimaryButton(container);
                         controller->AddSecondaryButton(container);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
                       },
                       base::Unretained(this))))
           .Build();

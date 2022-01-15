@@ -49,7 +49,7 @@ void ChromeDevicePermissionsPrompt::ShowDialog() {
 
 namespace chrome {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
   return task_manager::TaskManagerView::Show(browser);
 }

@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
 
 // Make sure plain string is droppable. http://crbug.com/838794
 // crbug.com/1224945: Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_PlainString DISABLED_PlainString
 #else
 #define MAYBE_PlainString PlainString

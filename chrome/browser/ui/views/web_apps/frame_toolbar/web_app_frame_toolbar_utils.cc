@@ -22,7 +22,7 @@ void ConfigureWebAppToolbarButton(
 }
 
 int WebAppFrameRightMargin() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return kWebAppMenuMargin;
 #else
   return HorizontalPaddingBetweenPageActionsAndAppMenuButtons();

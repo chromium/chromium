@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
   Widget* widget = new views::Widget;
   Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
   params.bounds = {0, 0, 200, 200};
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   params.native_widget = CreateNativeWidget(
       NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA, &params, widget);
 #endif
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
 // TODO(davidbienvenu): If possible, get test working for linux and
 // mac. Only status_icon_win runs a menu with a null parent widget
 // currently.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   // This test is extremely flaky on WIN10_20H2, so disable.
   // TODO(crbug.com/1225346) Investigate why it's so flaky on that version of
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 1);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuEnd), 1);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace test
 }  // namespace views

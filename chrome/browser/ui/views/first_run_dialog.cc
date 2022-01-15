@@ -38,7 +38,7 @@
 
 namespace {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 void InitCrashReporterIfEnabled(bool enabled) {
   if (!crash_reporter::IsCrashpadEnabled() && enabled)
     breakpad::InitCrashReporter(std::string());
@@ -50,7 +50,7 @@ void InitCrashReporterIfEnabled(bool enabled) {
 namespace first_run {
 
 void ShowFirstRunDialog(Profile* profile) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kViewsFirstRunDialog))
     ShowFirstRunDialogViews(profile);
   else
@@ -120,7 +120,7 @@ void FirstRunDialog::Done() {
 bool FirstRunDialog::Accept() {
   GetWidget()->Hide();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ChangeMetricsReportingState(report_crashes_->GetChecked());
 #else
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -178,7 +178,7 @@ class ProfileMenuViewTestBase {
     ASSERT_TRUE(profile_menu_view());
     profile_menu_view()->set_close_on_deactivate(false);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     base::RunLoop().RunUntilIdle();
 #else
     // If possible wait until the menu is active.
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
 // another tab.
 // Flaky on Linux, at least. crbug.com/1116606
 // Flaky on Mac because of crbug.com/1273102.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_SignoutFromNTP DISABLED_SignoutFromNTP
 #else
 #define MAYBE_SignoutFromNTP SignoutFromNTP

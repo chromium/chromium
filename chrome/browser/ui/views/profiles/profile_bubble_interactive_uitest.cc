@@ -82,7 +82,7 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
   void Refocus(views::View* view) {
     EXPECT_FALSE(view->HasFocus());
     // Mac uses Cmd-Option-ArrowDown, other platforms use F6.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ui::KeyboardCode key = ui::VKEY_DOWN;
     bool alt = true;
     bool command = true;
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuInteractiveUiTest, OtherProfileFocus) {
   // Open the menu using the keyboard.
   bool control = false;
   bool command = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   command = true;
 #else
   control = true;

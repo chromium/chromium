@@ -770,7 +770,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 
   // Test input that's a valid URL.
   std::u16string expected_text =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       u"Pa&ste and Go to https://test.com";
 #else
       u"Pa&ste and go to https://test.com";
@@ -783,7 +783,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 
   // Test input that's URL-like. (crbug.com/980002).
   expected_text =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       u"Pa&ste and Go to test.com";
 #else
       u"Pa&ste and go to test.com";
@@ -795,7 +795,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 
   // Test input that's search-like.
   expected_text =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       u"Pa&ste and Search for \x201Cthis is a test sentence\x201D";
 #else
       u"Pa&ste and search for \x201Cthis is a test sentence\x201D";
@@ -995,7 +995,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
   // Windows clipboard only supports text URLs.
   // Mac clipboard not reporting URL format available for some reason.
   // crbug.com/751031
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
                                            clipboard_buffer,
                                            /* data_dst = */ nullptr));

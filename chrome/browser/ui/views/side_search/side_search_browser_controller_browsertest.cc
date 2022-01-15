@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 }
 
 // TODO(crbug.com/1269277): Fix flakiness on Linux and Lacros then reenable.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly \
   DISABLED_OpeningAndClosingTheSidePanelHandlesFocusCorrectly
 #else

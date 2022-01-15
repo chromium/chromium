@@ -335,7 +335,7 @@ gfx::Size FindBarView::CalculatePreferredSize() const {
 
 void FindBarView::FocusAndSelectAll() {
   find_text_->RequestFocus();
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   GetWidget()->GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
 #endif
   if (!find_text_->GetText().empty())

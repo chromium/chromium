@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
 
 // Ensures activating the new code link sets it to invalid for a set period of
 // time.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Triggering logic required for Windows OS runs: https://crbug.com/1254686
 #define MAYBE_LinkInvalidatesOnActivation DISABLED_LinkInvalidatesOnActivation
 #else

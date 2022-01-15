@@ -10,7 +10,7 @@
 class ToolbarButton;
 class ToolbarButtonProvider;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr int kWebAppMenuMargin = 7;
 #endif
 

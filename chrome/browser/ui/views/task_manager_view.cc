@@ -47,11 +47,11 @@
 #include "ui/gfx/image/image_skia.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/shell_integration_win.h"
 #include "ui/base/win/shell.h"
 #include "ui/views/win/hwnd_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace task_manager {
 
@@ -84,7 +84,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
   CreateDialogWidget(g_task_manager_view, context, nullptr);
   g_task_manager_view->InitAlwaysOnTopState();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Set the app id for the task manager to the app id of its parent browser. If
   // no parent is specified, the app id will default to that of the initial
   // process.
@@ -399,7 +399,7 @@ END_METADATA
 
 namespace chrome {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // These are used by the Mac versions of |ShowTaskManager| and |HideTaskManager|
 // if they decide to show the Views task manager instead of the Cocoa one.
 task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser) {

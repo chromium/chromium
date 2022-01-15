@@ -27,7 +27,7 @@ class ExtensionDialogUiTest : public extensions::ExtensionBrowserTest {
 
 }  // namespace
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Focusing or input is not completely working on Mac: http://crbug.com/824418
 #define MAYBE_TabFocusLoop DISABLED_TabFocusLoop
 #else

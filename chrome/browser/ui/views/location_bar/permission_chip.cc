@@ -122,7 +122,7 @@ void PermissionChip::AddedToWidget() {
   views::AccessiblePaneView::AddedToWidget();
 
   if (!should_start_open_) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
         IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT));
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);

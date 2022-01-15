@@ -131,7 +131,7 @@ ui::Layer* AccessibilityFocusHighlight::GetLayerForTesting() {
 }
 
 SkColor AccessibilityFocusHighlight::GetHighlightColor() {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Match behaviour with renderer_preferences_util::UpdateFromSystemSettings
   // setting prefs->focus_ring_color
   return default_color_;

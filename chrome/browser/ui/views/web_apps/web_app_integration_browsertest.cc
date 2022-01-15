@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, VerifyWindowModeChanged) {
   // Change to tabbed mode
   helper_.ChangeAppSettingsWindowMode("SiteA",
                                       apps::mojom::WindowMode::kTabbedWindow);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   helper_.CheckAppWindowMode("SiteA", apps::mojom::WindowMode::kWindow);
 #else
   // Verify change is propagated in W/M/L cases
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1279704): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown
 #else
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1279704): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated_Standalone \
   DISABLED_WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated_Standalone
 #else
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1279704): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_InstCrtShctWindowedSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA \
   DISABLED_WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_InstCrtShctWindowedSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA
 #else
@@ -1178,7 +1178,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1286616): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteC_InListWinSiteC_NavSiteC_InstIconNotShown_LaunchIconShown \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteC_InListWinSiteC_NavSiteC_InstIconNotShown_LaunchIconShown
 #else
@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1279704): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstPlcyWinNoShctSiteC_InListWinSiteC_LaunchFromListSiteC_WindowCreated \
   DISABLED_WebAppIntegration_InstPlcyWinNoShctSiteC_InListWinSiteC_LaunchFromListSiteC_WindowCreated
 #else
@@ -1341,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1286616): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteB_NavSiteB_LaunchIconShown \
   DISABLED_WebAppIntegration_InstOmniboxSiteB_NavSiteB_LaunchIconShown
 #else
@@ -1360,7 +1360,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1279704): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteB_LaunchFromListSiteB_Minimal \
   DISABLED_WebAppIntegration_InstOmniboxSiteB_LaunchFromListSiteB_Minimal
 #else
@@ -1423,7 +1423,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1286616): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteB_NavSiteB_LaunchIconShown \
   DISABLED_WebAppIntegration_InstMenuOptionSiteB_NavSiteB_LaunchIconShown
 #else
@@ -1595,7 +1595,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1279704): Flaky on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated
 #else

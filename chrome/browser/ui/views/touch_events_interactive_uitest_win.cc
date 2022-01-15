@@ -200,8 +200,8 @@ class TouchEventsViewTest : public ViewEventTestBase {
   raw_ptr<ui::GestureRecognizer> initial_gr_ = nullptr;
 };
 
-#if defined(OS_WIN)  // Fails on latest versions of Windows.
-                     // https://crbug.com/1108551.
+#if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
+                       // https://crbug.com/1108551.
 #define MAYBE_CheckWindowsNativeMessageForTouchEvents \
   DISABLED_CheckWindowsNativeMessageForTouchEvents
 #else
@@ -248,8 +248,8 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
   }
 };
 
-#if defined(OS_WIN)  // Fails on latest versions of Windows.
-                     // https://crbug.com/1108551.
+#if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
+                       // https://crbug.com/1108551.
 #define MAYBE_CheckWindowsRecursiveHandler DISABLED_CheckWindowsRecursiveHandler
 #else
 #define MAYBE_CheckWindowsRecursiveHandler CheckWindowsRecursiveHandler

@@ -2080,7 +2080,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
 }
 
 // Disabled on Linux due to crashes; https://crbug.com/1216300.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingOnCreditCardIconInStatusChipReshowsBubble \
     DISABLED_ClickingOnCreditCardIconInStatusChipReshowsBubble
 #else
@@ -2101,7 +2101,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   EXPECT_TRUE(GetSaveCardBubbleViews()->GetVisible());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/823543): Widget activation doesn't work on Mac.
 #define MAYBE_ActivateFirstInactiveBubbleForAccessibility \
   DISABLED_ActivateFirstInactiveBubbleForAccessibility

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -257,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 // tablet mode.
 // Fails on Linux Chromium OS.
 // TODO(crbug.com/1191327): reenable the test.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FrameLayoutToggleTabletMode DISABLED_FrameLayoutToggleTabletMode
 #else
 #define MAYBE_FrameLayoutToggleTabletMode FrameLayoutToggleTabletMode

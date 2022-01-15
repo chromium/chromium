@@ -152,7 +152,7 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
     // Ensure we don't downcast the ExtensionsToolbarButton.
     if (views::IsViewClass<ToolbarActionView>(child)) {
       ToolbarActionView* const action = static_cast<ToolbarActionView*>(child);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // TODO(crbug.com/1045212): Use IsActionVisibleOnToolbar() because it
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
@@ -430,7 +430,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserActionWithAccessibility) {
   // Verify behavior before pin, after pin, and after unpin.
   for (int i = 0; i < 3; i++) {
     EXPECT_EQ(i, user_action_tester.GetActionCount(kPinButtonUserAction));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/1045212): No Mac animations in unit tests cause errors.
 #else
     EXPECT_EQ(i, counter.GetCount(ax::mojom::Event::kAlert));

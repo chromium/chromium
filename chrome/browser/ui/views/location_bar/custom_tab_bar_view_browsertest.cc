@@ -34,7 +34,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/views/controls/button/image_button.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
@@ -259,13 +259,13 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 
 // Check the custom tab bar is not instantiated for a popup window.
 // Flaky on linux: crbug.com/1186608, crbug.com/1179071
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_IsNotCreatedInPopup DISABLED_IsNotCreatedInPopup
 #else
 #define MAYBE_IsNotCreatedInPopup IsNotCreatedInPopup
 #endif
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kOzonePlatform) &&
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
 }
 
 // Flaky on linux: crbug.com/1202694
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
   DISABLED_BackToAppButtonIsNotVisibleInOutOfScopePopups
 #else
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 
 // Right-click menu on CustomTabBar should have Copy URL option.
 // Disabled on Mac because Mac's native menu is synchronous.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                        RightClickMenuShowsCopyUrl) {
   const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                       &result);
   EXPECT_EQ(result, u"http://example.test/");
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Paths above the launch url should be out of scope and should be closable from
 // the CustomTabBar.

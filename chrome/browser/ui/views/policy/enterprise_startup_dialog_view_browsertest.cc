@@ -44,7 +44,7 @@ class EnterpriseStartupDialogViewBrowserTest : public DialogBrowserTest {
     }
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On mac, we need to wait until the dialog launched modally before closing
   // it.
   void DismissUi() override {

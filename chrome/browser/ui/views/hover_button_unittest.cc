@@ -162,7 +162,7 @@ TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
 }
 
 // No touch on desktop Mac.
-#if !defined(OS_MAC) || defined(USE_AURA)
+#if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 // Tests that tapping hover button does not crash if the tap handler removes the
 // button from views hierarchy.
@@ -186,6 +186,6 @@ TEST_F(HoverButtonTest, TapGestureThatDeletesTheButton) {
   widget()->Close();
 }
 
-#endif  // !defined(OS_MAC) || defined(USE_AURA)
+#endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 }  // namespace

@@ -1723,7 +1723,7 @@ END_METADATA
 // static
 AutofillPopupView* AutofillPopupView::Create(
     base::WeakPtr<AutofillPopupController> controller) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // It's possible for the container_view to not be in a window. In that case,
   // cancel the popup since we can't fully set it up.
   if (!platform_util::GetTopLevel(controller->container_view()))
@@ -1734,7 +1734,7 @@ AutofillPopupView* AutofillPopupView::Create(
       views::Widget::GetTopLevelWidgetForNativeView(
           controller->container_view());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // If the top level widget can't be found, cancel the popup since we can't
   // fully set it up. On Mac Cocoa browser, |observing_widget| is null
   // because the parent is not a views::Widget.

@@ -185,7 +185,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
  private:
   // views::NonClientFrameView:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   int GetSystemMenuY() const override;
 #endif
 

@@ -238,7 +238,7 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
   if (!bubble_view_ || bubble_view_->GetWidget() != widget)
     return;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (content_setting_image_model_->image_type() ==
           ContentSettingImageModel::ImageType::GEOLOCATION &&
       content_setting_image_model_->explanatory_string_id() ==
@@ -246,7 +246,7 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
     base::RecordAction(
         base::UserMetricsAction("ContentSettings.GeolocationDialog.Closed"));
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   DCHECK(observation_.IsObservingSource(widget));
   observation_.Reset();

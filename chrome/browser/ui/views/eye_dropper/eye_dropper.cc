@@ -7,11 +7,11 @@
 #include "build/build_config.h"
 #include "content/public/browser/eye_dropper.h"
 
-#if !defined(USE_AURA) && !defined(OS_MAC)
+#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 // Used for the platforms that don't support an eye dropper.
 std::unique_ptr<content::EyeDropper> ShowEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
   return nullptr;
 }
-#endif  // !defined(USE_AURA) && !defined(OS_MAC)
+#endif  // !defined(USE_AURA) && !BUILDFLAG(IS_MAC)

@@ -167,7 +167,7 @@ ChromeLabsItemView::ChromeLabsItemView(
   // TODO(elainechien): Remove MacOS specific code for experiment description
   // when VoiceOver bug is fixed.
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   GetViewAccessibility().OverrideDescription(lab.visible_description);
 #endif
 
@@ -179,7 +179,7 @@ ChromeLabsItemView::ChromeLabsItemView(
                   .CopyAddressTo(&lab_state_combobox_)
                   .SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
                       IDS_TOOLTIP_CHROMELABS_COMBOBOX, lab.visible_name))
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                   .SetAccessibleName(l10n_util::GetStringFUTF16(
                       IDS_ACCNAME_CHROMELABS_COMBOBOX_MAC, lab.visible_name,
                       lab.visible_description))

@@ -44,11 +44,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
 }
 
 // Test is flaky crbug.com/814313
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_OpenGoBackOpenPay DISABLED_OpenGoBackOpenPay
 #else
 #define MAYBE_OpenGoBackOpenPay OpenGoBackOpenPay
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 // Test that going in the CVC editor, backing out and opening it again to pay
 // does not crash.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,

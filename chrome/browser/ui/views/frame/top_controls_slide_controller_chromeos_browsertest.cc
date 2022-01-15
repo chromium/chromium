@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/strings/safe_sprintf.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -683,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
 }
 
 // Fails on Linux ChromiumOS MSan Tests (https://crbug.com/1194575).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestScrollingPageAndSwitchingToNTP \
   DISABLED_TestScrollingPageAndSwitchingToNTP
 #else
@@ -750,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 }
 
 // Fails on Linux Chromium OS Tests (https://crbug.com/1191327).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestClosingATab DISABLED_TestClosingATab
 #else
 #define MAYBE_TestClosingATab TestClosingATab
@@ -1412,7 +1413,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
 }
 
 // Flaky on ChromeOS Release bots. https://crbug.com/1033648
-#if defined(OS_CHROMEOS) && defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
 #define MAYBE_TestToggleChromeVox DISABLED_TestToggleChromeVox
 #else
 #define MAYBE_TestToggleChromeVox TestToggleChromeVox

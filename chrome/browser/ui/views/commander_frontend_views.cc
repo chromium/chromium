@@ -31,7 +31,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/native_widget_aura.h"
 #endif
 
@@ -173,7 +173,7 @@ void CommanderFrontendViews::Show(Browser* browser) {
   params.parent = parent->GetWidget()->GetNativeView();
 // On Windows, this defaults to DesktopNativeWidgetAura, which has incorrect
 // parenting behavior for this widget.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   params.native_widget = new views::NativeWidgetAura(widget_);
 #endif
   widget_->Init(std::move(params));

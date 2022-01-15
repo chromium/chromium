@@ -51,7 +51,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/atl.h"
 #endif
 

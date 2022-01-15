@@ -17,7 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/display/display_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 #endif
 
@@ -33,7 +33,7 @@ class EyeDropperBrowserTest : public UiBrowserTest,
 
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     content::RenderFrameHost* parent_frame =
         browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
     eye_dropper_ = ShowEyeDropper(parent_frame, /*listener=*/nullptr);
@@ -41,7 +41,7 @@ class EyeDropperBrowserTest : public UiBrowserTest,
   }
 
   bool VerifyUi() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (!eye_dropper_)
       return false;
 

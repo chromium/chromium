@@ -36,7 +36,7 @@ namespace {
 // Fetches the Omnibox drop-down widget, or returns null if the drop-down is
 // not visible.
 void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
   // by other secondary UI Widgets (such as the omnibox Widget, see
   // crbug.com/1226536).
@@ -57,7 +57,7 @@ void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
     return;
   widget->StackAboveWidget(
       static_cast<OmniboxPopupContentsView*>(popup_view)->GetWidget());
-#endif  // !defined(OS_LINUX)
+#endif  // !BUILDFLAG(IS_LINUX)
 }
 
 base::TimeDelta GetPreviewImageCaptureDelay(

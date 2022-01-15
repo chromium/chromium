@@ -85,7 +85,7 @@ LaunchAppUserChoiceDialogView::~LaunchAppUserChoiceDialogView() = default;
 void LaunchAppUserChoiceDialogView::Init() {
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetModalType(ui::MODAL_TYPE_NONE);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   SetTitle(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 #endif
   SetShowCloseButton(true);

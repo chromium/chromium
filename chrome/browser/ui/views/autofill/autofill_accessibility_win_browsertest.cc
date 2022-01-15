@@ -82,7 +82,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
 };
 
 // The test is flaky on Windows. See https://crbug.com/1221273
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AutofillPopupControllerFor DISABLED_AutofillPopupControllerFor
 #else
 #define MAYBE_AutofillPopupControllerFor AutofillPopupControllerFor

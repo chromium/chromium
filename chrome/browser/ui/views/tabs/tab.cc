@@ -421,7 +421,7 @@ bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   constexpr int kModifiedFlag =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       ui::EF_COMMAND_DOWN;
 #else
       ui::EF_CONTROL_DOWN;
@@ -460,7 +460,7 @@ bool Tab::OnKeyReleased(const ui::KeyEvent& event) {
 
 namespace {
 bool IsSelectionModifierDown(const ui::MouseEvent& event) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return event.IsCommandDown();
 #else
   return event.IsControlDown();
@@ -576,7 +576,7 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
   if (mouse_hovered_ || !GetWidget()->IsMouseEventsEnabled())
     return;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Move the hit test area for hovering up so that it is not overlapped by tab
   // hover cards when they are shown.
   // TODO(crbug.com/978134): Once Linux/CrOS widget transparency is solved,

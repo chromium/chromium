@@ -38,7 +38,7 @@ class IncognitoMenuView : public ProfileMenuViewBase {
   std::u16string GetAccessibleWindowTitle() const override;
 
   // Button actions.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnCreateShortcutButtonClicked();
 #endif
   void OnExitButtonClicked();

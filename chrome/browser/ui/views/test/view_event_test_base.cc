@@ -23,9 +23,9 @@
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
-#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
         // defined(USE_OZONE)
 #endif
 
@@ -99,7 +99,7 @@ ViewEventTestBase::ViewEventTestBase() {
   // insufficient for these tests, then either bolster/replace it or fix the
   // tests.
   DCHECK(!display::Screen::GetScreen());
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
   if (!display::Screen::GetScreen())
     display::Screen::SetScreenInstance(
         views::test::TestDesktopScreenOzone::GetInstance());
@@ -171,7 +171,7 @@ void ViewEventTestBase::StartMessageLoopAndRunTest() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 ViewEventTestBase::GetDragTaskRunner() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Drag events must be posted from a background thread, since starting a drag
   // triggers a nested message loop that filters messages other than mouse
   // events, so further tasks on the main message loop will be blocked.

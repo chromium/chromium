@@ -265,7 +265,7 @@ void LocationIconView::Update(bool suppress_animations) {
     } else {
       views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 #else
       SetFocusBehavior(FocusBehavior::ALWAYS);

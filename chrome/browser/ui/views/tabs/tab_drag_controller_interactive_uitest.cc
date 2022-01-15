@@ -110,14 +110,14 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameLacros
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameAuraLinux
 #else
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameAura
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -456,7 +456,7 @@ class DetachToBrowserTabDragControllerTest
         /*enabled_features=*/{},
         /*disabled_features=*/{
           features::kWebUITabStrip,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
               // Disable NativeWinOcclusion to avoid it interfering with test
               // for dragging over occluded browser window.
               features::kCalculateNativeWinOcclusion,
@@ -476,7 +476,7 @@ class DetachToBrowserTabDragControllerTest
     ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(
         std::numeric_limits<float>::max());
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Currently MacViews' browser windows are shown in the background and could
     // be obscured by other windows if there are any. This should be fixed in
     // order to be consistent with other platforms.
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // the tabs over two to the right will result in the tabs joining the same group
 // as the last tab.
 // Flaky on windows. http://crbug.com/1164561
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DragMultipleTabsRightIntoGroup \
   DISABLED_DragMultipleTabsRightIntoGroup
 #else
@@ -1396,7 +1396,7 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 }  // namespace
 
 // Flaky. https://crbug.com/1176998
-#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_LINUX)
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragToSeparateWindow DISABLED_DragToSeparateWindow
 #else
@@ -1452,7 +1452,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Create two browsers, with the second one occluded, and drag from first over
 // second. This should create a third browser, w/o bringing forward the second
@@ -1702,7 +1702,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 // This test doesn't make sense on Mac, since it has no concept of "maximized".
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Drags from browser to a separate window and releases mouse.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachToOwnWindowFromMaximizedWindow) {
@@ -1908,7 +1908,7 @@ void CloseTabsWhileDetachedStep2(const BrowserList* browser_list) {
 
 // Selects 2 tabs out of 4, drags them out and closes the new browser window
 // while dragging tabs.
-#if (defined(OS_WIN) || defined(OS_MAC))
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
 // TODO(crbug.com/1031801) Test is flaky on Windows and Mac.
 #define MAYBE_DeleteTabsWhileDetached DISABLED_DeleteTabsWhileDetached
 #else
@@ -2070,7 +2070,7 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 }  // namespace
 
 // Flaky. http://crbug.com/1128774 and http://crbug.com/1176998
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // These were flaking on all macs, so commented out ARCH_ above for
 // crbug.com/1160917 too.
@@ -2114,7 +2114,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragWindowIntoGroup DISABLED_DragWindowIntoGroup
 #else
@@ -2163,7 +2163,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             gfx::Range(0, 4));
 }
 
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // Flaky on Mac10.14 and Linux: https://crbug.com/1213345
 #define MAYBE_DragGroupHeaderToSeparateWindow \
@@ -2457,7 +2457,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // Test is flaky on Mac and Linux: https://crbug.com/1167249
 #define MAYBE_DragCollapsedGroupHeaderToSeparateWindow \
@@ -2518,8 +2518,8 @@ class DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
 // Disabling on macOS due to DCHECK crashes; see https://crbug.com/1183043.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (defined(OS_MAC) && DCHECK_IS_ON())
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    (BUILDFLAG(IS_MAC) && DCHECK_IS_ON())
 #define MAYBE_DraggingRightExpandsTabStripSize \
   DISABLED_DraggingRightExpandsTabStripSize
 #else
@@ -2576,7 +2576,7 @@ void DragAllToSeparateWindowAndCancelStep2(
 
 }  // namespace
 
-#if defined(OS_MAC) /* && defined(ARCH_CPU_ARM64) */
+#if BUILDFLAG(IS_MAC) /* && defined(ARCH_CPU_ARM64) */
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // These were flaking on all macs, so commented out ARCH_ above for
 // crbug.com/1160917 too.
@@ -2630,7 +2630,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
-#if defined(OS_MAC) /* && defined(ARCH_CPU_ARM64) */
+#if BUILDFLAG(IS_MAC) /* && defined(ARCH_CPU_ARM64) */
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // These were flaking on all macs, so commented out ARCH_ above for
 // crbug.com/1160917 too.
@@ -2757,7 +2757,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 // Flaky. https://crbug.com/1176998
-#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_LINUX)
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragSingleTabToSeparateWindow \
   DISABLED_DragSingleTabToSeparateWindow
@@ -2804,7 +2804,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 namespace {
 
 // Invoked from the nested run loop.
@@ -2909,7 +2909,7 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // TODO(mukai): enable this test on Windows and Linux.
 #define MAYBE_OffsetForDraggingTab DISABLED_OffsetForDraggingTab
 #else
@@ -3422,7 +3422,7 @@ void FastResizeDuringDraggingStep2(DetachToBrowserTabDragControllerTest* test,
   // CrOS cleanup is done.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Get this new created window for the drag. It should have fast resize set.
   Browser* new_browser = test->browser_list->get(2);
   EXPECT_TRUE(WebContentsIsFastResized(new_browser));

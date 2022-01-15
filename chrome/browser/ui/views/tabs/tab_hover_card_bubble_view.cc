@@ -65,7 +65,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -81,7 +81,7 @@ constexpr gfx::Insets kTitleMargins(kVerticalMargin, kHorizontalMargin);
 constexpr gfx::Insets kAlertMargins(kFootnoteVerticalMargin, kHorizontalMargin);
 
 bool CustomShadowsSupported() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ui::win::IsAeroGlassEnabled();
 #else
   return true;
@@ -760,7 +760,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // not become active. Setting this to false creates the need to explicitly
   // hide the hovercard on press, touch, and keyboard events.
   SetCanActivate(false);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   set_accept_events(false);
 #endif
 

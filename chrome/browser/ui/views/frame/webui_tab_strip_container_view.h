@@ -162,7 +162,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   views::View* tab_counter_ = nullptr;
   raw_ptr<views::View> new_tab_button_ = nullptr;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If the user interacts with Windows in a way that changes the width of the
   // window, close the top container. This is similar to the auto-close when the
   // user touches outside the tabstrip.
@@ -171,7 +171,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // more modern Windows drag-drop system, avoiding some of the weirdness around
   // starting drag-drop.
   int old_top_container_width_ = 0;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   absl::optional<float> current_drag_height_;
 

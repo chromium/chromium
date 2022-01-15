@@ -226,7 +226,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #endif
@@ -241,7 +241,7 @@
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view_commands_mac.h"
 #endif
@@ -253,7 +253,7 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
 #include "chrome/browser/win/jumplist.h"
@@ -355,7 +355,7 @@ void CheckFocusListForCycles(views::View* const start_view) {
 bool GetGestureCommand(ui::GestureEvent* event, int* command) {
   DCHECK(command);
   *command = 0;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (event->details().type() == ui::ET_GESTURE_SWIPE) {
     if (event->details().swipe_left()) {
       *command = IDC_BACK;
@@ -466,7 +466,7 @@ BEGIN_METADATA(ContentsSeparator, views::View)
 END_METADATA
 
 bool ShouldShowWindowIcon(const Browser* browser) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
   if (browser->is_trusted_source())
@@ -475,7 +475,7 @@ bool ShouldShowWindowIcon(const Browser* browser) {
   return browser->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void GetAnyTabAudioStates(const Browser* browser,
                           bool* any_tab_playing_audio,
                           bool* any_tab_playing_muted_audio) {
@@ -805,7 +805,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // bar widget.
   find_bar_host_view_ = AddChildView(std::make_unique<View>());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a custom JumpList and add it to an observer of TabRestoreService
   // so we can update the custom JumpList when a tab is added or removed.
   // JumpList is created asynchronously with a low priority to not delay the
@@ -972,7 +972,7 @@ bool BrowserView::GetRegularOrGuestSession() const {
 
 bool BrowserView::GetAccelerator(int cmd_id,
                                  ui::Accelerator* accelerator) const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, most accelerators are defined in MainMenu.xib and are user
   // configurable. Furthermore, their values and enabled state depends on the
   // key window. Views code relies on a static mapping that is not dependent on
@@ -1033,7 +1033,7 @@ float BrowserView::GetTopControlsSlideBehaviorShownRatio() const {
 // BrowserView, BrowserWindow implementation:
 
 void BrowserView::Show() {
-#if !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // The Browser associated with this browser window must become the active
   // browser at the time |Show()| is called. This is the natural behavior under
   // Windows and Chrome OS, but other platforms will not trigger
@@ -1135,10 +1135,10 @@ bool BrowserView::IsOnCurrentWorkspace() const {
   if (!native_win)
     return true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return chromeos::DesksHelper::Get(native_win)
       ->BelongsToActiveDesk(native_win);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10)
     return true;
   Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager;
@@ -1154,7 +1154,7 @@ bool BrowserView::IsOnCurrentWorkspace() const {
              virtual_desktop_manager) != false;
 #else
   return true;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserView::SetTopControlsShownRatio(content::WebContents* web_contents,
@@ -1286,7 +1286,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   bool change_tab_contents =
       contents_web_view_->web_contents() != new_contents;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Widget::IsActive is inconsistent between Mac and Aura, so don't check for
   // it on Mac. The check is also unnecessary for Mac, since restoring focus
   // won't activate the widget on that platform.
@@ -1616,7 +1616,7 @@ void BrowserView::FullscreenStateChanging() {
 }
 
 void BrowserView::FullscreenStateChanged() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!IsFullscreen() && restore_pre_fullscreen_bounds_callback_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(restore_pre_fullscreen_bounds_callback_));
@@ -1657,7 +1657,7 @@ void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
   // already. On Chrome OS, changing focus makes a view believe it has a focus
   // even if the widget doens't have a focus. Either cases, we need to ignore
   // this when the browser window isn't active.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (!IsActive())
     return;
 #endif
@@ -1751,7 +1751,7 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
   // CrOS cleanup is done.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   contents_web_view_->SetFastResize(is_dragging);
   if (!is_dragging) {
     // When tab dragging is ended, we need to make sure the web contents get
@@ -1808,7 +1808,7 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
                 IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_ENABLED_ALERT)
           : l10n_util::GetStringUTF16(
                 IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_DISABLED_ALERT);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (frame_) {
     frame_->native_browser_frame()->AnnounceTextInInProcessWindow(
         state_change_text);
@@ -2029,7 +2029,7 @@ bool BrowserView::IsTabStripEditable() const {
 }
 
 bool BrowserView::IsToolbarVisible() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This Mac-only preference disables display of the toolbar in fullscreen mode
   // so we need to take it into account when determining if the toolbar is
   // visible - especially as pertains to anchoring views.
@@ -2398,7 +2398,7 @@ bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
 // won't do anything. We'll need something like an overall clipboard command
 // manager to do that.
 void BrowserView::CutCopyPaste(int command_id) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ForwardCutCopyPasteToNSApp(command_id);
 #else
   // If a WebContents is focused, call its member method.
@@ -2438,7 +2438,7 @@ void BrowserView::CutCopyPaste(int command_id) {
   ui::Accelerator accelerator;
   GetAccelerator(command_id, &accelerator);
   GetFocusManager()->ProcessAccelerator(accelerator);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 std::unique_ptr<FindBar> BrowserView::CreateFindBar() {
@@ -2553,7 +2553,7 @@ bool BrowserView::CanActivate() const {
 std::u16string BrowserView::GetWindowTitle() const {
   std::u16string title =
       browser_->GetWindowTitleForCurrentTab(true /* include_app_name */);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool any_tab_playing_audio = false;
   bool any_tab_playing_muted_audio = false;
   GetAnyTabAudioStates(browser_.get(), &any_tab_playing_audio,
@@ -2780,7 +2780,7 @@ views::View* BrowserView::GetInitiallyFocusedView() {
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool BrowserView::GetSupportsTitle() const {
   return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR) ||
          WebUITabStripContainerView::SupportsTouchableTabStrip(browser());
@@ -2792,12 +2792,12 @@ bool BrowserView::GetSupportsIcon() const {
 #endif
 
 bool BrowserView::ShouldShowWindowTitle() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // title, crbug.com/119411. Child windows (i.e. popups) do show a title.
   if (browser_->is_trusted_source())
     return false;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // On Windows in touch mode we display a window title.
   if (WebUITabStripContainerView::UseTouchableTabStrip(browser()))
     return true;
@@ -2841,7 +2841,7 @@ ui::ImageModel BrowserView::GetWindowIcon() {
 
 bool BrowserView::ExecuteWindowsCommand(int command_id) {
   // This function handles WM_SYSCOMMAND, WM_APPCOMMAND, and WM_COMMAND.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (command_id == IDC_DEBUG_FRAME_TOGGLE)
     GetWidget()->DebugToggleFrameType();
 #endif
@@ -3497,7 +3497,7 @@ void BrowserView::LoadingAnimationCallback() {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void BrowserView::CreateJumpList() {
   // Ensure that this browser's Profile has a JumpList so that the JumpList is
   // kept up to date.
@@ -3662,7 +3662,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 
   // Toggle fullscreen mode; move the window between displays as needed.
   // TODO(crbug.com/1034783): Implement at lower layers to avoid transitions.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool entering_cross_screen_fullscreen = false;
 #endif  // OS_MAC
   bool swapping_screens_during_fullscreen = false;
@@ -3673,7 +3673,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         screen->GetDisplayNearestWindow(GetNativeWindow());
     if (screen && screen->GetDisplayWithDisplayId(display_id, &display) &&
         current_display.id() != display_id) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       entering_cross_screen_fullscreen = true;
 #endif  // OS_MAC
 
@@ -3723,7 +3723,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     }
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, the fullscreen state change must be requested with a delay after
   // moving the window to the target display; see http://crbug.com/1210548
   base::TimeDelta delay;
@@ -3803,7 +3803,7 @@ void BrowserView::LoadAccelerators() {
 }
 
 int BrowserView::GetCommandIDForAppCommandID(int app_command_id) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   switch (app_command_id) {
     // NOTE: The order here matches the APPCOMMAND declaration order in the
     // Windows headers.
@@ -4177,7 +4177,7 @@ ADD_READONLY_PROPERTY_METADATA(bool, SupportsTabStrip)
 ADD_READONLY_PROPERTY_METADATA(bool, IsNormalType)
 ADD_READONLY_PROPERTY_METADATA(bool, IsWebAppType)
 ADD_READONLY_PROPERTY_METADATA(bool, TopControlsSlideBehaviorEnabled)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 ADD_READONLY_PROPERTY_METADATA(bool, SupportsTitle)
 ADD_READONLY_PROPERTY_METADATA(bool, SupportsIcon)
 #endif

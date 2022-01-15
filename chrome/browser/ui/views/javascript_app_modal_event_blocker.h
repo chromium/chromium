@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/javascript_app_modal_event_blocker_mac.h"
 
 using JavascriptAppModalEventBlocker = JavascriptAppModalEventBlockerMac;

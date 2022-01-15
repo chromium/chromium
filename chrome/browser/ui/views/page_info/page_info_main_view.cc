@@ -82,7 +82,7 @@ PageInfoMainView::PageInfoMainView(
       ->SetProperty(views::kMarginsKey,
                     gfx::Insets(0, 0, hover_list_spacing, 0));
 
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   page_feature_info_view_ = AddChildView(std::make_unique<views::View>());
 #endif
 
@@ -359,7 +359,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 }
 
 void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // For now, this has only VR settings.
   if (!info.is_vr_presentation_in_headset)
     return;

@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewInIncognitoTest,
 }
 
 // TODO(tapted): https://crbug.com/905508 Fix and enable on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ClickOmnibox DISABLED_ClickOmnibox
 #else
 #define MAYBE_ClickOmnibox ClickOmnibox
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
 // it contains) changes when it receives focus, and matches the popup background
 // color.
 // Flaky on Linux and Windows. See https://crbug.com/1120701
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_PopupMatchesLocationBarBackground \
   DISABLED_PopupMatchesLocationBarBackground
 #else
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 }
 
 // Flaky on Mac: https://crbug.com/1140153.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EmitAccessibilityEvents DISABLED_EmitAccessibilityEvents
 #else
 #define MAYBE_EmitAccessibilityEvents EmitAccessibilityEvents
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 }
 
 // Flaky on Mac: https://crbug.com/1146627.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EmitAccessibilityEventsOnButtonFocusHint DISABLED_EmitAccessibilityEventsOnButtonFocusHint
 #else
 #define MAYBE_EmitAccessibilityEventsOnButtonFocusHint EmitAccessibilityEventsOnButtonFocusHint

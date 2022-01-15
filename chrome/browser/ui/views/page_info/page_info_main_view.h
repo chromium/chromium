@@ -145,7 +145,7 @@ class PageInfoMainView : public views::View,
   // The view that contains `SecurityInformationView` and a certificate button.
   raw_ptr<PageInfoSecurityContentView> security_content_view_ = nullptr;
 
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // The view that contains ui related to features on a page, like a presenting
   // VR page.
   raw_ptr<views::View> page_feature_info_view_ = nullptr;

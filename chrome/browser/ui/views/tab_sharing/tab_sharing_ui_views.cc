@@ -38,7 +38,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/native_widget_aura.h"
 #endif
 
@@ -105,7 +105,7 @@ void InitContentsBorderWidget(WebContents* contents) {
   // Let events go through to underlying view.
   params.accept_events = false;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   params.native_widget = new views::NativeWidgetAura(widget);
 #endif
 

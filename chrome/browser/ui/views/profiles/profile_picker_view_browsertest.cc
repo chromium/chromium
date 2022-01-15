@@ -1645,7 +1645,7 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
 };
 
 // Flaky on Windows: https://crbug.com/1247530.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_Signin DISABLED_PRE_Signin
 #define MAYBE_Signin DISABLED_Signin
 #else
@@ -1709,7 +1709,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
 }
 
 // Flaky on Windows: https://crbug.com/1247530.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_ExitDuringSignin DISABLED_PRE_ExitDuringSignin
 #define MAYBE_ExitDuringSignin DISABLED_ExitDuringSignin
 #else
