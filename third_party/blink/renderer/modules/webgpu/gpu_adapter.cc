@@ -95,6 +95,10 @@ GPUSupportedFeatures* GPUAdapter::features() const {
   return features_;
 }
 
+bool GPUAdapter::isFallbackAdapter() const {
+  return adapter_properties_.adapterType == WGPUAdapterType_CPU;
+}
+
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
                                          ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
