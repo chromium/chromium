@@ -56,7 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "device/fido/win/fake_webauthn_api.h"
@@ -93,12 +93,12 @@ constexpr char kNotAllowedErrorMessage[] =
     "allowed. See: "
     "https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kInvalidStateErrorMessage[] =
     "webauth: InvalidStateError: The user attempted to register an "
     "authenticator that contains one of the credentials already registered "
     "with the relying party.";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr char kResidentCredentialsErrorMessage[] =
     "webauth: NotSupportedError: Resident credentials or empty "
@@ -1423,7 +1423,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));

@@ -92,12 +92,12 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/url_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
 #endif
 
@@ -497,7 +497,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     chromeos::U2FClient::InitializeFake();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Disable the Windows WebAuthn API integration by default. Individual tests
     // can modify this.
     fake_win_webauthn_api_.set_available(false);
@@ -517,7 +517,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     chromeos::U2FClient::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     AuthenticatorEnvironmentImpl::GetInstance()
         ->ClearWinWebAuthnApiForTesting();
 #endif
@@ -530,7 +530,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     AuthenticatorEnvironmentImpl::GetInstance()
         ->ReplaceDefaultDiscoveryFactoryForTesting(
             std::move(virtual_device_factory));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     virtual_device_factory_->set_win_webauthn_api(&fake_win_webauthn_api_);
 #endif
   }
@@ -541,7 +541,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
   }
 
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
 #endif
 
@@ -1644,7 +1644,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -1667,7 +1667,7 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
     }
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
@@ -1784,7 +1784,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   bool IsFocused(WebContents* web_contents) override { return is_focused; }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       BrowserContext* browser_context) override {
     return touch_id_authenticator_config;
@@ -1818,7 +1818,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   // The return value of the focus check issued at the end of a request.
   bool is_focused = true;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Configuration data for the macOS platform authenticator.
   absl::optional<TouchIdAuthenticatorConfig> touch_id_authenticator_config;
 #endif
@@ -7359,7 +7359,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WithAppIDExtension) {
   EXPECT_TRUE(HasUV(result.response));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Requests with a credProtect extension that have |enforce_protection_policy|
 // set should be rejected if the Windows WebAuthn API doesn't support
 // credProtect.
@@ -7392,7 +7392,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
                                     : AuthenticatorStatus::NOT_ALLOWED_ERROR);
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
   NavigateAndCommit(GURL(kTestOrigin1));
@@ -7778,7 +7778,7 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
  public:
   void SetUp() override {
@@ -7817,7 +7817,7 @@ TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
     }
   }
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
  public:

@@ -12,11 +12,11 @@
 #include "content/public/common/content_client.h"
 #include "device/fido/features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #endif
 
@@ -26,7 +26,7 @@
 
 namespace content {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void IsUVPlatformAuthenticatorAvailable(
     BrowserContext* browser_context,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
@@ -43,7 +43,7 @@ void IsUVPlatformAuthenticatorAvailable(
                                                        std::move(callback));
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback callback) {
   device::WinWebAuthnApiAuthenticator::

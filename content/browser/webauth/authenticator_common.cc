@@ -62,7 +62,7 @@
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/credential_metadata.h"
 #endif
@@ -392,7 +392,7 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     // Note: even if this value were inserted it wouldn't take effect on Windows
     // versions with a native API because FidoRequestHandlerBase filters out
     // non-kCloudAssistedBluetoothLowEnergy transports in that case.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
     // must still configure a |UsbDeviceManager|.
     transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
@@ -426,18 +426,18 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
 
   auto discovery_factory = std::make_unique<device::FidoDiscoveryFactory>();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   discovery_factory->set_mac_touch_id_info(
       GetWebAuthenticationDelegate()->GetTouchIdAuthenticatorConfig(
           render_frame_host->GetBrowserContext()));
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
     discovery_factory->set_win_webauthn_api(
         AuthenticatorEnvironmentImpl::GetInstance()->win_webauthn_api());
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore the ChromeOS u2fd virtual U2F HID device for WebAuthn requests so
@@ -1162,10 +1162,10 @@ void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
         return available;
       }).Then(std::move(callback));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   IsUVPlatformAuthenticatorAvailable(GetBrowserContext(),
                                      std::move(uma_decorated_callback));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
