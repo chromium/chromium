@@ -233,11 +233,11 @@ class TtsControllerTest : public testing::Test {
     platform_impl_ = std::make_unique<MockTtsPlatformImpl>(controller_.get());
     browser_context_ = std::make_unique<TestBrowserContext>();
     controller()->SetTtsPlatform(platform_impl_.get());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TtsEngineDelegate isn't set for Android in ChromeContentBrowserClient
     // since it has no extensions.
     controller()->SetTtsEngineDelegate(&engine_delegate_);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     controller()->SetTtsControllerDelegateForTesting(&delegate_);
 #endif
@@ -1065,7 +1065,7 @@ TEST_F(TtsControllerTest, GetVoicesOnlineOffline) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(TtsControllerTest, SpeakWhenLoadingBuiltInEngine) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   platform_impl()->SetPlatformImplSupported(false);
@@ -1110,6 +1110,6 @@ TEST_F(TtsControllerTest, SpeakWhenLoadingBuiltInEngine) {
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_FALSE(controller()->IsSpeaking());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
