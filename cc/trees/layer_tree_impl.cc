@@ -511,7 +511,10 @@ gfx::PointF LayerTreeImpl::TotalMaxScrollOffset() const {
 OwnedLayerImplList LayerTreeImpl::DetachLayers() {
   render_surface_list_.clear();
   set_needs_update_draw_properties();
-  return std::move(layer_list_);
+  OwnedLayerImplList result = std::move(layer_list_);
+  // TODO(crbug.com/1229805): remove diagnostic CHECK
+  CHECK(!layer_list_.size());
+  return result;
 }
 
 OwnedLayerImplList LayerTreeImpl::DetachLayersKeepingRootLayerForTesting() {

@@ -88,6 +88,8 @@ void PushLayerList(OwnedLayerImplMap* old_layers,
   for (auto* layer : *host) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
+    // TODO(crbug.com/1229805): remove diagnostic CHECK
+    CHECK(layer_impl);
 
 #if DCHECK_IS_ON()
     // Every layer should have valid property tree indices
