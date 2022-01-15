@@ -21,11 +21,11 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "chrome/browser/performance_hints/android/jni_headers/PerformanceHintsObserver_jni.h"
 #include "url/android/gurl_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::URLPatternWithWildcards;
@@ -83,7 +83,7 @@ const char* ToString(HintLookupSource source) {
 }
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jint JNI_PerformanceHintsObserver_GetPerformanceClassForURL(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents,
@@ -99,7 +99,7 @@ static jboolean
 JNI_PerformanceHintsObserver_IsContextMenuPerformanceInfoEnabled(JNIEnv* env) {
   return features::IsContextMenuPerformanceInfoEnabled();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 PerformanceHintsObserver::PerformanceHintsObserver(
     content::WebContents* web_contents)
