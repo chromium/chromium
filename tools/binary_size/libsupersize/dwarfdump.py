@@ -62,9 +62,9 @@ class _SourceMapper:
     return self._unmatched_queries_count / self._total_queries_count
 
 
-def CreateAddressSourceMapper(elf_path):
+def CreateAddressSourceMapper(elf_path, tool_prefix):
   """Runs dwarfdump. Returns object for querying source path given address."""
-  return _SourceMapper(_Parse(elf_path))
+  return _SourceMapper(_Parse(elf_path, tool_prefix))
 
 
 def CreateAddressSourceMapperForTest(lines):
@@ -75,9 +75,9 @@ def ParseDumpOutputForTest(lines):
   return _ParseDumpOutput(lines)
 
 
-def _Parse(elf_path):
+def _Parse(elf_path, tool_prefix):
   cmd = [
-      path_util.GetDwarfdumpPath(),
+      path_util.GetDwarfdumpPath(tool_prefix),
       elf_path,
       '--debug-info',
       '--recurse-depth=0',

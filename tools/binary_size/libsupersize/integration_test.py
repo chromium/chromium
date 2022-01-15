@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import copy
 import glob
 import io
@@ -27,9 +28,12 @@ import test_util
 
 
 _SCRIPT_DIR = os.path.dirname(__file__)
-_TEST_DATA_DIR = test_util.TEST_DATA_DIR
-_TEST_SOURCE_DIR = test_util.TEST_SOURCE_DIR
-_TEST_OUTPUT_DIR = test_util.TEST_OUTPUT_DIR
+_TEST_DATA_DIR = os.path.join(_SCRIPT_DIR, 'testdata')
+_TEST_SDK_DIR = os.path.join(_TEST_DATA_DIR, 'mock_sdk')
+_TEST_SOURCE_DIR = os.path.join(_TEST_DATA_DIR, 'mock_source_directory')
+_TEST_OUTPUT_DIR = os.path.join(_TEST_SOURCE_DIR, 'out', 'Release')
+_TEST_TOOL_PREFIX = os.path.join(
+    os.path.abspath(_TEST_DATA_DIR), 'mock_toolchain', '')
 _TEST_APK_ROOT_DIR = os.path.join(_TEST_DATA_DIR, 'mock_apk')
 _TEST_MAP_PATH = os.path.join(_TEST_DATA_DIR, 'test.map')
 _TEST_PAK_INFO_PATH = os.path.join(
@@ -86,10 +90,25 @@ def _CompareWithGolden(name=None):
   return real_decorator
 
 
+@contextlib.contextmanager
+def _AddMocksToPath():
+  prev_path = os.environ['PATH']
+  os.environ['PATH'] = _TEST_TOOL_PREFIX[:-1] + os.path.pathsep + prev_path
+  os.environ['APK_ANALYZER'] = os.path.join(_TEST_SDK_DIR, 'tools', 'bin',
+                                            'apkanalyzer')
+  os.environ['AAPT2'] = os.path.join(_TEST_SDK_DIR, 'tools', 'bin', 'aapt2')
+  try:
+    yield
+  finally:
+    os.environ['PATH'] = prev_path
+    del os.environ['APK_ANALYZER']
+    del os.environ['AAPT2']
+
+
 def _RunApp(name, args, debug_measures=False):
   argv = [os.path.join(_SCRIPT_DIR, 'main.py'), name]
   argv.extend(args)
-  with test_util.AddMocksToPath():
+  with _AddMocksToPath():
     env = None
     if debug_measures:
       env = os.environ.copy()
@@ -203,7 +222,7 @@ class IntegrationTest(unittest.TestCase):
                 _TEST_APK_LOCALE_PAK_SUBPATH, _TEST_APK_PAK_SUBPATH
             ]
 
-        native_spec = archive.NativeSpec()
+        native_spec = archive.NativeSpec(tool_prefix=_TEST_TOOL_PREFIX)
 
         # TODO(crbug.com/1193507): Remove when we implement string literal
         #     tracking without map files.
@@ -261,7 +280,7 @@ class IntegrationTest(unittest.TestCase):
       raw_symbols_list = []
       build_config = {}
 
-      with test_util.AddMocksToPath():
+      with _AddMocksToPath():
         pak_id_map = pakfile.PakIdMap()
         for container_name, apk_spec, pak_spec, native_spec in iter_specs():
           metadata = archive.CreateMetadata(build_config=build_config,
@@ -303,6 +322,8 @@ class IntegrationTest(unittest.TestCase):
         archive_path,
         '--source-directory',
         _TEST_SOURCE_DIR,
+        '--tool-prefix',
+        _TEST_TOOL_PREFIX,
         '--json-config',
         _TEST_CONFIG_JSON,
     ]

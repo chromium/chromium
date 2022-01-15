@@ -43,6 +43,7 @@ class _DiffAction:
   @staticmethod
   def Run(args, on_config_error):
     args.output_directory = None
+    args.tool_prefix = None
     args.inputs = [args.before, args.after]
     args.query = '\n'.join([
         'd = Diff()',
