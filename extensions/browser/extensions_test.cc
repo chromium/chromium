@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/test/test_content_utility_client.h"
 
@@ -80,7 +81,9 @@ void ExtensionsTest::SetUp() {
       new user_prefs::PrefRegistrySyncable();
   // Prefs should be registered before the PrefService is created.
   ExtensionPrefs::RegisterProfilePrefs(pref_registry);
+  PermissionsManager::RegisterProfilePrefs(pref_registry);
   pref_service_ = factory.Create(pref_registry);
+  extensions_browser_client_->set_pref_service(pref_service_.get());
 
   std::unique_ptr<ExtensionPrefs> extension_prefs(ExtensionPrefs::Create(
       browser_context(), pref_service_.get(),

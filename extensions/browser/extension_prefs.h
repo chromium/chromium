@@ -280,6 +280,11 @@ class ExtensionPrefs : public KeyedService {
   GURL GetPrefAsGURL(const PrefMap& pref) const;
   const base::DictionaryValue* GetPrefAsDictionary(const PrefMap& pref) const;
 
+  // Returns a wrapper that allows to update an ExtensionPref with a
+  // PrefType::kDictionary.
+  std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> CreatePrefUpdate(
+      const PrefMap& pref);
+
   // Increments/decrements an ExtensionPref with a PrefType::kInteger.
   void IncrementPref(const PrefMap& pref);
   void DecrementPref(const PrefMap& pref);

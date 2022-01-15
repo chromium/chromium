@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/permissions_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
@@ -83,6 +84,7 @@ std::unique_ptr<PrefService> CreateUserPrefService(
   PrefRegistrySyncable* pref_registry = new PrefRegistrySyncable;
   ExtensionPrefs::RegisterProfilePrefs(pref_registry);
   AudioAPI::RegisterUserPrefs(pref_registry);
+  PermissionsManager::RegisterProfilePrefs(pref_registry);
 
   std::unique_ptr<PrefService> pref_service = factory.Create(pref_registry);
   user_prefs::UserPrefs::Set(browser_context, pref_service.get());

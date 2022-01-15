@@ -46,6 +46,9 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   void set_extension_system_factory(ExtensionSystemProvider* factory) {
     extension_system_factory_ = factory;
   }
+  void set_pref_service(PrefService* pref_service) {
+    pref_service_ = pref_service;
+  }
   void set_extension_cache(std::unique_ptr<ExtensionCache> extension_cache) {
     extension_cache_ = std::move(extension_cache);
   }
@@ -165,6 +168,9 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   // Not owned.
   raw_ptr<ExtensionSystemProvider> extension_system_factory_ = nullptr;
+
+  // Not owned.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 

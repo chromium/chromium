@@ -6,17 +6,59 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/pref_types.h"
+#include "extensions/common/extension.h"
 
 namespace extensions {
 
 namespace {
+
+// Entries of `kUserPermissions` dictionary.
+const char kRestrictedSites[] = "restricted_sites";
+const char kPermittedSites[] = "permitted_sites";
+
+// Sets `pref` in `extension_prefs` if it doesn't exist, and appends
+// `origin` to its list.
+void AddSiteToPrefs(ExtensionPrefs* extension_prefs,
+                    const char* pref,
+                    const url::Origin& origin) {
+  std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update =
+      extension_prefs->CreatePrefUpdate(kUserPermissions);
+  base::ListValue* list = nullptr;
+
+  bool pref_exists = (*update)->GetList(pref, &list);
+  if (pref_exists) {
+    list->Append(origin.Serialize());
+  } else {
+    auto sites = std::make_unique<base::Value>(base::Value::Type::LIST);
+    sites->Append(origin.Serialize());
+    (*update)->Set(pref, std::move(sites));
+  }
+}
+
+// Removes `origin` from `pref` in `extension_prefs`.
+void RemoveSiteFromPrefs(ExtensionPrefs* extension_prefs,
+                         const char* pref,
+                         const url::Origin& origin) {
+  std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update =
+      extension_prefs->CreatePrefUpdate(kUserPermissions);
+  base::ListValue* list;
+  (*update)->GetList(pref, &list);
+  list->EraseListValue(base::Value(origin.Serialize()));
+}
 
 class PermissionsManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -57,7 +99,7 @@ content::BrowserContext* PermissionsManagerFactory::GetBrowserContextToUse(
 
 KeyedService* PermissionsManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  return new PermissionsManager();
+  return new PermissionsManager(browser_context);
 }
 
 }  // namespace
@@ -70,7 +112,11 @@ PermissionsManager::UserPermissionsSettings::~UserPermissionsSettings() =
     default;
 
 // Implementation of PermissionsManager.
-PermissionsManager::PermissionsManager() = default;
+PermissionsManager::PermissionsManager(content::BrowserContext* browser_context)
+    : extension_prefs_(ExtensionPrefs::Get(browser_context)) {
+  // TODO(crbug.com/1268198): Populate `user_permissions_` from
+  // `kUserPermissions` pref.
+}
 
 PermissionsManager::~PermissionsManager() = default;
 
@@ -87,26 +133,48 @@ BrowserContextKeyedServiceFactory* PermissionsManager::GetFactory() {
   return g_factory.get();
 }
 
+// static
+void PermissionsManager::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterDictionaryPref(kUserPermissions.name);
+}
+
 void PermissionsManager::AddUserRestrictedSite(const url::Origin& origin) {
+  if (base::Contains(user_permissions_.restricted_sites, origin))
+    return;
+
   // Origin cannot be both restricted and permitted.
   RemoveUserPermittedSite(origin);
 
   user_permissions_.restricted_sites.insert(origin);
+  AddSiteToPrefs(extension_prefs_, kRestrictedSites, origin);
 }
 
 void PermissionsManager::RemoveUserRestrictedSite(const url::Origin& origin) {
+  if (!base::Contains(user_permissions_.restricted_sites, origin))
+    return;
+
   user_permissions_.restricted_sites.erase(origin);
+  RemoveSiteFromPrefs(extension_prefs_, kRestrictedSites, origin);
 }
 
 void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
+  if (base::Contains(user_permissions_.permitted_sites, origin))
+    return;
+
   // Origin cannot be both restricted and permitted.
   RemoveUserRestrictedSite(origin);
 
   user_permissions_.permitted_sites.insert(origin);
+  AddSiteToPrefs(extension_prefs_, kPermittedSites, origin);
 }
 
 void PermissionsManager::RemoveUserPermittedSite(const url::Origin& origin) {
+  if (!base::Contains(user_permissions_.permitted_sites, origin))
+    return;
+
   user_permissions_.permitted_sites.erase(origin);
+  RemoveSiteFromPrefs(extension_prefs_, kPermittedSites, origin);
 }
 
 const PermissionsManager::UserPermissionsSettings&

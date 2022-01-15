@@ -10,6 +10,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/json/values_util.h"
@@ -1894,6 +1895,13 @@ const base::DictionaryValue* ExtensionPrefs::GetPrefAsDictionary(
   DCHECK_EQ(PrefScope::kProfile, pref.scope);
   DCHECK_EQ(PrefType::kDictionary, pref.type);
   return &base::Value::AsDictionaryValue(*prefs_->GetDictionary(pref.name));
+}
+
+std::unique_ptr<prefs::ScopedDictionaryPrefUpdate>
+ExtensionPrefs::CreatePrefUpdate(const PrefMap& pref) {
+  DCHECK_EQ(PrefScope::kProfile, pref.scope);
+  DCHECK_EQ(PrefType::kDictionary, pref.type);
+  return std::make_unique<prefs::ScopedDictionaryPrefUpdate>(prefs_, pref.name);
 }
 
 void ExtensionPrefs::IncrementPref(const PrefMap& pref) {

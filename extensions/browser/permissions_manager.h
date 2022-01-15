@@ -16,7 +16,13 @@ namespace content {
 class BrowserContext;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 namespace extensions {
+
+class ExtensionPrefs;
 
 // Class for managing user-scoped extension permissions.
 // Includes blocking all extensions from running on a site and automatically
@@ -44,7 +50,7 @@ class PermissionsManager : public KeyedService {
     std::set<url::Origin> permitted_sites;
   };
 
-  PermissionsManager();
+  explicit PermissionsManager(content::BrowserContext* browser_context);
   ~PermissionsManager() override;
   PermissionsManager(const PermissionsManager&) = delete;
   const PermissionsManager& operator=(const PermissionsManager&) = delete;
@@ -54,6 +60,9 @@ class PermissionsManager : public KeyedService {
 
   // Retrieves the factory instance for the PermissionsManager.
   static BrowserContextKeyedServiceFactory* GetFactory();
+
+  // Registers the user preference that stores user permissions.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Adds `origin` to the list of sites the user has blocked all
   // extensions from running on. If `origin` is in permitted_sites, it will
@@ -77,6 +86,7 @@ class PermissionsManager : public KeyedService {
   const UserPermissionsSettings& GetUserPermissionsSettings();
 
  private:
+  ExtensionPrefs* const extension_prefs_;
   UserPermissionsSettings user_permissions_;
 };
 

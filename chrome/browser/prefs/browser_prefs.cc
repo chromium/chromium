@@ -178,6 +178,7 @@
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/permissions_manager.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
@@ -1271,6 +1272,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions::AudioAPI::RegisterUserPrefs(registry);
   extensions::ExtensionPrefs::RegisterProfilePrefs(registry);
   extensions::ExtensionsUI::RegisterProfilePrefs(registry);
+  extensions::PermissionsManager::RegisterProfilePrefs(registry);
   extensions::RuntimeAPI::RegisterPrefs(registry);
   // TODO(devlin): This would be more inline with the other calls here if it
   // were nested in either a class or separate namespace with a simple
