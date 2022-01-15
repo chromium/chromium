@@ -15,7 +15,7 @@ TEST_F(LargeIconServiceFactoryTest, LargeFaviconFromGoogleDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kLargeFaviconFromGoogle);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const int expected = 24;
 #else
   const int expected = 16;

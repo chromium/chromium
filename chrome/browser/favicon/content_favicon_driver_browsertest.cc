@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ChangeTouchIconViaJavascript) {
 
 // Test that favicon mappings are removed if the page initially lists a touch
 // icon and later uses Javascript to remove it.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, RemoveTouchIconViaJavascript) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, LoadIconFromWebManifest) {
       ui_test_utils::BROWSER_TEST_NONE);
   waiter.Wait();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(url_loader_interceptor.was_loaded(icon_url));
   ASSERT_EQ(network::mojom::RequestDestination::kImage,
             url_loader_interceptor.destination(icon_url));
@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       GetFaviconForPageURL(url, favicon_base::IconType::kFavicon).bitmap_data);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
                        LoadIconFromWebManifestDespitePushState) {
   ASSERT_TRUE(embedded_test_server()->Start());

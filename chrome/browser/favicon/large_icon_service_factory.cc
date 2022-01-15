@@ -23,7 +23,7 @@
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Seems like on Android `1 dip == 1 px`. The value of `kDipForServerRequests`
 // can be overridden by `features::kLargeFaviconFromGoogle`.
 const int kDipForServerRequests = 24;
