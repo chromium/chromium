@@ -226,6 +226,10 @@ void NotificationGroupingController::
   if (!parent_view || !new_single_notification)
     return;
 
+  message_center->FindNotificationById(group_parent_id)->ClearGroupParent();
+  new_single_notification->ClearGroupChild();
+  grouped_notification_list_->ClearGroupedNotification(group_parent_id);
+
   parent_view->RemoveGroupNotification(new_single_notification_id);
   parent_view->UpdateWithNotification(*new_single_notification);
 
@@ -233,11 +237,6 @@ void NotificationGroupingController::
       ->ConvertGroupedNotificationViewToNotificationView(
           /*grouped_notification_id=*/group_parent_id,
           /*new_single_notification_id=*/new_single_notification_id);
-
-  message_center->FindNotificationById(group_parent_id)->ClearGroupParent();
-  new_single_notification->ClearGroupChild();
-
-  grouped_notification_list_->ClearGroupedNotification(group_parent_id);
 
   message_center->RemoveNotification(group_parent_id, /*by_user=*/false);
 }
