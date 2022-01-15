@@ -57,7 +57,7 @@
 #include "chromeos/system/statistics_provider.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/google/google_update_win.h"
@@ -65,7 +65,7 @@
 #include "ui/base/win/hidden_window.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -103,7 +103,7 @@ constexpr char kOnboardingTime[] = "ONBOARDING_TIME";
 constexpr char kOsVersionTag[] = "OS VERSION";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kUsbKeyboardDetected[] = "usb_keyboard_detected";
 constexpr char kIsEnrolledToDomain[] = "enrolled_to_domain";
 constexpr char kInstallerBrandCode[] = "installer_brand_code";
@@ -113,9 +113,9 @@ constexpr char kUpdateHresult[] = "update_hresult";
 constexpr char kInstallResultCode[] = "install_result_code";
 constexpr char kInstallLocation[] = "install_location";
 #endif
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr char kCpuArch[] = "cpu_arch";
 #endif
 
@@ -260,7 +260,7 @@ std::string GetChromeVersionString() {
   return browser_version;
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns true if the path identified by |key| with the PathService is a parent
 // or ancestor of |child|.
 bool IsParentOf(int key, const base::FilePath& child) {
@@ -290,9 +290,9 @@ std::string DetermineInstallLocation() {
   }
   return "unknown";
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 std::string MacCpuArchAsString() {
   switch (base::mac::GetCPUType()) {
     case base::mac::CPUType::kIntel:
@@ -338,14 +338,14 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   PopulateExtensionInfoLogs(response.get());
   PopulatePowerApiLogs(response.get());
   PopulateDataReductionProxyLogs(response.get());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   PopulateUsbKeyboardDetected(response.get());
   PopulateEnrolledToDomain(response.get());
   PopulateInstallerBrandCode(response.get());
   PopulateLastUpdateState(response.get());
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   response->emplace(kCpuArch, MacCpuArchAsString());
 #endif
 
@@ -518,7 +518,7 @@ void ChromeInternalLogSource::PopulateOnboardingTime(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ChromeInternalLogSource::PopulateUsbKeyboardDetected(
     SystemLogsResponse* response) {
   std::string reason;
@@ -565,6 +565,6 @@ void ChromeInternalLogSource::PopulateLastUpdateState(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace system_logs
