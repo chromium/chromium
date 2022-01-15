@@ -32,9 +32,11 @@ suite('CodeInputElementTest', () => {
 
     assertEquals(c2cInput.getFocusedIndex(), 0);
 
+    c2cInput.getInput(0).value = 'a';
     c2cInput.getInput(0).dispatchEvent(new InputEvent('input'));
     assertEquals(c2cInput.getFocusedIndex(), 1);
 
+    c2cInput.getInput(1).value = 'b';
     c2cInput.getInput(1).dispatchEvent(new InputEvent('input'));
     assertEquals(c2cInput.getFocusedIndex(), 2);
 
@@ -47,5 +49,35 @@ suite('CodeInputElementTest', () => {
     assertEquals(c2cInput.getFocusedIndex(), 5);
     c2cInput.getInput(5).dispatchEvent(new InputEvent('input'));
     assertEquals(c2cInput.getFocusedIndex(), 5);
+  });
+
+  test(
+    'backspace on an empty input erases and focuses the previous input',
+    () => {
+      c2cInput.clearInput();
+      const input1 = c2cInput.getInput(1);
+      const input2 = c2cInput.getInput(2);
+      input1.value = 'a';
+      input2.focusInput();
+
+      assertEquals(input1.value, 'a');
+      input2.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Backspace'}));
+      assertEquals(c2cInput.getFocusedIndex(), 1);
+      assertEquals(input1.value, '');
+    }
+  );
+
+  test('backspace on filled input does not change focus', () => {
+    c2cInput.clearInput();
+    const input1 = c2cInput.getInput(1);
+    const input2 = c2cInput.getInput(2);
+    input1.value = 'a';
+    input2.value = 'b';
+    input2.focusInput();
+
+    assertEquals(input1.value, 'a');
+    input2.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Backspace'}));
+    assertEquals(c2cInput.getFocusedIndex(), 2);
+    assertEquals(input1.value, 'a');
   });
 });

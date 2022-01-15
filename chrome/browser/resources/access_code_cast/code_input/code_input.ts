@@ -44,6 +44,11 @@ export class CodeInputElement extends PolymerElement {
           const input = e.target as CrInputElement;
           this.handleInput(input.value, index);
         });
+        this.getInput(i).addEventListener('keydown', (k: KeyboardEvent) => {
+          if (k.key === 'Backspace') {
+            this.handleBackspace(index);
+          }
+        });
       }
     });
   }
@@ -122,10 +127,27 @@ export class CodeInputElement extends PolymerElement {
     }
   }
 
+  private focusPrev(index: number) {
+    if (index > 0) {
+      this.getInput(index - 1).focusInput();
+    }
+  }
+
   private handleInput(value: string, index: number) {
-    this.focusNext(index);
-    this.getInput(index).value = value.trim().toUpperCase()[0];
-    this.updateValue();
+    if (value.length) {
+      this.focusNext(index);
+      this.getInput(index).value = value.trim().toUpperCase()[0];
+      this.updateValue();
+    }
+  }
+
+  private handleBackspace(index: number) {
+    if (index > 0 && !this.getInput(index).value.length) {
+      this.getInput(index - 1).value = '';
+      this.focusPrev(index);
+    } else if (this.getInput(index).inputElement.selectionStart === 0) {
+      this.focusPrev(index);
+    }
   }
 
   private updateValue() {
