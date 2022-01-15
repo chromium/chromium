@@ -111,6 +111,6 @@ TEST_F(PolicyPathParserTests, WinVariables) {
                        FILE_PATH_LITERAL("${session_name}"));
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace policy
