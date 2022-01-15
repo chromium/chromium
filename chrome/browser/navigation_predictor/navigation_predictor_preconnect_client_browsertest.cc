@@ -377,7 +377,7 @@ class NavigationPredictorPreconnectClientBrowserTestWithSearch
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_PreconnectSearchWithFeature DISABLED_PreconnectSearchWithFeature
 #else
 #define MAYBE_PreconnectSearchWithFeature PreconnectSearchWithFeature

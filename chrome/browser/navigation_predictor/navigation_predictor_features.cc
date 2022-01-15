@@ -11,7 +11,7 @@ namespace features {
 // A holdback that prevents the preconnect to measure benefit of the feature.
 const base::Feature kNavigationPredictorPreconnectHoldback {
   "NavigationPredictorPreconnectHoldback",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT

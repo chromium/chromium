@@ -24,7 +24,7 @@
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const int kDefaultStartupDelayMs = 0;
 const bool kDefaultSkipInBackground = false;
 #else
