@@ -36,7 +36,7 @@
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/public/common/font_cache_win.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #endif
@@ -89,7 +89,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   bool Send(IPC::Message* msg) override;
 
   // ChildThread implementation:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void PreCacheFont(const LOGFONT& log_font) override;
   void ReleaseCachedFonts() override;
 #endif
@@ -190,13 +190,13 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   void EnsureConnected();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const mojo::Remote<mojom::FontCacheWin>& GetFontCacheWin();
 #endif
 
   base::Thread mojo_ipc_thread_{"Mojo IPC"};
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mutable mojo::Remote<mojom::FontCacheWin> font_cache_win_;
 #endif
 

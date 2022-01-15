@@ -39,11 +39,11 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/native_theme/native_theme_features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -63,7 +63,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
 #if defined(USE_AURA)
   WebRuntimeFeatures::EnableCompositedSelectionUpdate(true);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     WebRuntimeFeatures::EnableWebBluetooth(true);
     WebRuntimeFeatures::EnableWebBluetoothRemoteCharacteristicNewWriteValue(
@@ -72,7 +72,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
   }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool enable_canvas_2d_image_chromium =
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
@@ -85,7 +85,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
   WebRuntimeFeatures::EnableCanvas2dImageChromium(
       enable_canvas_2d_image_chromium);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool enable_web_gl_image_chromium =
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
@@ -98,12 +98,12 @@ void SetRuntimeFeatureDefaultsForPlatform(
 #endif
   WebRuntimeFeatures::EnableWebGLImageChromium(enable_web_gl_image_chromium);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (command_line.HasSwitch(switches::kDisableMediaSessionAPI))
     WebRuntimeFeatures::EnableMediaSession(false);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // APIs for Web Authentication are not available prior to N.
   WebRuntimeFeatures::EnableWebAuth(
       base::FeatureList::IsEnabled(features::kWebAuth) &&
@@ -114,12 +114,12 @@ void SetRuntimeFeatureDefaultsForPlatform(
       base::FeatureList::IsEnabled(features::kWebAuth));
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   WebRuntimeFeatures::EnablePictureInPictureAPI(
       base::FeatureList::IsEnabled(media::kPictureInPictureAPI));
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
     // Display Cutout is limited to Android P+.
@@ -127,7 +127,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
   }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   WebRuntimeFeatures::EnableMediaControlsExpandGesture(
       base::FeatureList::IsEnabled(media::kMediaControlsExpandGesture));
 #endif
@@ -206,7 +206,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kEnableAccessibilityExposeHTMLElement},
     {wf::EnableAccessibilityExposeIgnoredNodes,
      features::kEnableAccessibilityExposeIgnoredNodes},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {wf::EnableAccessibilityPageZoom, features::kAccessibilityPageZoom},
 #endif
     {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
@@ -242,7 +242,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableForcedColors, features::kForcedColors},
     {wf::EnableFractionalScrollOffsets, features::kFractionalScrollOffsets},
     {wf::EnableGenericSensorExtraClasses, features::kGenericSensorExtraClasses},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {wf::EnableGetDisplayMedia, features::kUserMediaScreenCapturing},
 #endif
     {wf::EnableIdleDetection, features::kIdleDetection, kSetOnlyIfOverridden},
@@ -308,7 +308,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebBluetoothWatchAdvertisements,
      features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
     {wf::EnableWebID, features::kFedCm},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {wf::EnableWebNfc, features::kWebNfc, kSetOnlyIfOverridden},
 #endif
     {wf::EnableWebOTP, features::kWebOTP, kSetOnlyIfOverridden},

@@ -30,7 +30,7 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/power_scheduler/power_scheduler.h"
 #endif
 
@@ -52,7 +52,7 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
   DCHECK(!g_lazy_child_process_tls.Pointer()->Get());
   g_lazy_child_process_tls.Pointer()->Set(this);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   const bool is_embedded_in_browser_process =
@@ -90,7 +90,7 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
   tracing::InitTracingPostThreadPoolStartAndFeatureList(
       /* enable_consumer */ false);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetupCpuTimeMetrics();
   // For child processes, this requires allowing of the sched_setaffinity()
   // syscall in the sandbox (baseline_policy_android.cc). When this call is
@@ -101,7 +101,7 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
   // We can't recover from failing to start the IO thread.
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   thread_options.priority = io_thread_priority;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(reveman): Remove this in favor of setting it explicitly for each type
   // of process.
   if (base::FeatureList::IsEnabled(

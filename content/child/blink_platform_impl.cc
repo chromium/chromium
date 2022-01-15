@@ -229,7 +229,7 @@ bool BlinkPlatformImpl::IsURLSavableForSavableResource(
 size_t BlinkPlatformImpl::MaxDecodedImageBytes() {
   const int kMB = 1024 * 1024;
   const int kMaxNumberOfBytesPerPixel = 4;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::SysInfo::IsLowEndDevice()) {
     // Limit image decoded size to 3M pixels on low end devices.
     // 4 is maximum number of bytes per pixel.
