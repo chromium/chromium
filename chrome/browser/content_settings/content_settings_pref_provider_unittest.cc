@@ -146,7 +146,7 @@ TEST_F(PrefProviderTest, Observer) {
 TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   static const char kFullscreenPrefPath[] =
       "profile.content_settings.exceptions.fullscreen";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.content_settings.exceptions.mouselock";
   const char kObsoletePluginsExceptionsPref[] =
@@ -173,7 +173,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   base::Value pref_data(base::Value::Type::DICTIONARY);
   pref_data.SetKey(kPattern, std::move(data_for_pattern));
   prefs->Set(kFullscreenPrefPath, pref_data);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   prefs->Set(kMouselockPrefPath, pref_data);
   prefs->Set(kObsoletePluginsExceptionsPref, pref_data);
   prefs->Set(kObsoletePluginsDataExceptionsPref, plugins_data_pref);
@@ -189,7 +189,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 
   // Check that fullscreen and mouselock have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsExceptionsPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataExceptionsPref));

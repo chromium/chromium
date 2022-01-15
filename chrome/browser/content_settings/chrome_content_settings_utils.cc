@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -29,7 +29,7 @@ void RecordPopupsAction(PopupsAction action) {
 }
 
 void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)
     return;

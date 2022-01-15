@@ -22,7 +22,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #endif
 
@@ -36,7 +36,7 @@ SoundContentSettingObserver::SoundContentSettingObserver(
       HostContentSettingsMapFactory::GetForProfile(profile);
   observation_.Observe(host_content_settings_map_.get());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Listen to changes of the block autoplay pref.
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
@@ -101,7 +101,7 @@ void SoundContentSettingObserver::OnContentSettingChanged(
   if (!content_type_set.Contains(ContentSettingsType::SOUND))
     return;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (primary_pattern.MatchesAllHosts() &&
       secondary_pattern.MatchesAllHosts()) {
     UpdateAutoplayPolicy();
@@ -116,7 +116,7 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
   bool mute = GetCurrentContentSetting() == CONTENT_SETTING_BLOCK;
 
 // TabMutedReason does not exist on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   web_contents()->SetAudioMuted(mute);
 #else
   // We don't want to overwrite TabMutedReason with no change.
@@ -139,7 +139,7 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
 
   chrome::SetTabAudioMuted(web_contents(), mute,
                            TabMutedReason::CONTENT_SETTING, std::string());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ContentSetting SoundContentSettingObserver::GetCurrentContentSetting() {
@@ -194,7 +194,7 @@ SoundContentSettingObserver::GetSiteMutedReason() {
   return MuteReason::kSiteException;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void SoundContentSettingObserver::UpdateAutoplayPolicy() {
   // Force a WebkitPreferences update to update the autoplay policy.
   web_contents()->OnWebPreferencesChanged();

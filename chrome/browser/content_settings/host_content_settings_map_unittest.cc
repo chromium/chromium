@@ -1346,7 +1346,7 @@ TEST_F(HostContentSettingsMapTest, AddContentSettingsObserver) {
 }
 
 // Guest profiles do not exist on Android, so don't run these tests there.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(HostContentSettingsMapTest, GuestProfile) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
@@ -1399,7 +1399,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
                   host, host, ContentSettingsType::COOKIES));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HostContentSettingsMapTest, InvalidPattern) {
   // This is a regression test for crbug.com/618529, which fixed a memory leak

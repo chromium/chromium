@@ -19,7 +19,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #endif
 
@@ -29,7 +29,7 @@ constexpr char kURL1[] = "http://google.com/";
 constexpr char kURL2[] = "http://youtube.com/";
 constexpr char kSiteMutedEvent[] = "Media.SiteMuted";
 constexpr char kSiteMutedReason[] = "MuteReason";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kChromeURL[] = "chrome://dino";
 constexpr char kExtensionId[] = "extensionid";
 #endif
@@ -97,7 +97,7 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
 // TabMutedReason does not exist on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetMuteStateForReason(bool state, TabMutedReason reason) {
     chrome::SetTabAudioMuted(web_contents(), state, reason, kExtensionId);
   }
@@ -157,7 +157,7 @@ TEST_F(SoundContentSettingObserverTest, AudioMutingUpdatesWithNavigation) {
 }
 
 // TabMutedReason does not exist on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SoundContentSettingObserverTest, DontMuteWhenUnmutedByExtension) {
   EXPECT_FALSE(web_contents()->IsAudioMuted());
 
@@ -222,7 +222,7 @@ TEST_F(SoundContentSettingObserverTest,
   NavigateAndCommit(GURL(kChromeURL));
   EXPECT_FALSE(web_contents()->IsAudioMuted());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(SoundContentSettingObserverTest,
        UnmutedAudioPlayingDoesNotRecordSiteMuted) {

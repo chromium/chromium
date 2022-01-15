@@ -63,7 +63,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookies) {
 // Verify that cookies can be allowed and set using exceptions for particular
 // website(s) when all others are blocked.
 // Flaky on Mac (crbug.com/1155077) and Linux (crbug.com/1242410).
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_AllowCookiesUsingExceptions DISABLED_AllowCookiesUsingExceptions
 #else
 #define MAYBE_AllowCookiesUsingExceptions AllowCookiesUsingExceptions

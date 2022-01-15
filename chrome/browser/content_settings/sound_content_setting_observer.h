@@ -68,7 +68,7 @@ class SoundContentSettingObserver
   // Determine the reason why audio was blocked on the page.
   MuteReason GetSiteMutedReason();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Update the autoplay policy on the attached |WebContents|.
   void UpdateAutoplayPolicy();
 
