@@ -83,13 +83,13 @@ class BASE_EXPORT PowerMonitor {
   static void SetCurrentThermalState(
       PowerThermalObserver::DeviceThermalState state);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
   // Only supported with a device power source (i.e. not in child processes in
   // Chrome) and on devices with Android >= Lollipop as well as a power supply
   // that supports this counter. Returns 0 if unsupported.
   static int GetRemainingBatteryCapacity();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Uninitializes the PowerMonitor. Should be called at the end of any unit
   // test that mocks out the PowerMonitor, to avoid affecting subsequent tests.

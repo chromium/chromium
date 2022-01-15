@@ -4,16 +4,18 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
+#include "build/build_config.h"
+
 namespace base {
 
 PowerMonitorDeviceSource::PowerMonitorDeviceSource() {
-#if defined(OS_APPLE) || defined(OS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   PlatformInit();
 #endif
 }
 
 PowerMonitorDeviceSource::~PowerMonitorDeviceSource() {
-#if defined(OS_APPLE) || defined(OS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   PlatformDestroy();
 #endif
 }
