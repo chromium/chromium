@@ -1567,7 +1567,9 @@ test("content_browsertests") {
     if (use_aura && !is_chromecast) {
       sources += [ "../browser/media/capture/aura_window_video_capture_device_browsertest.cc" ]
     }
+  }
 
+  if (is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
     deps += [ "//third_party/libyuv" ]
     data += [
       "//net/tools/testserver/",
