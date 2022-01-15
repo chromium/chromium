@@ -1,26 +1,33 @@
 <style include="diagnostics-shared">
   .error {
-    background-color: var(--google-red-50);
+    background-color:
+        rgba(var(--google-red-600-rgb), var(--cros-second-tone-opacity));
     color: var(--cros-text-color-alert);
   }
 
-  .queued, .stopped, .skipped {
-    background-color: var(--cros-button-label-color-primary);
+  .queued,
+  .skipped,
+  .stopped {
+    background-color:
+        rgba(var(--google-grey-600-rgb), var(--cros-second-tone-opacity));
     color: var(--cros-text-color-secondary);
   }
 
   .running {
-    background-color: var(--google-blue-50);
+    background-color:
+        rgba(var(--google-blue-600-rgb), var(--cros-second-tone-opacity));
     color: var(--cros-text-color-prominent);
   }
 
   .success {
-    background-color: var(--google-green-50);
+    background-color:
+        rgba(var(--google-green-600-rgb), var(--cros-second-tone-opacity));
     color: var(--cros-text-color-positive);
   }
 
   .warning {
-    background-color: #FEF7E0;
+    background-color:
+        rgba(var(--google-yellow-300-rgb), var(--cros-second-tone-opacity));
     color: var(--cros-text-color-warning);
   }
 
@@ -33,6 +40,38 @@
     padding: 2px 6px;
     text-transform: uppercase;
     white-space: nowrap;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .error {
+      background-color:
+          rgba(var(--google-red-300-rgb), var(--cros-second-tone-opacity));
+      color: var(--google-red-200);
+    }
+
+    .queued,
+    .skipped,
+    .stopped {
+      background-color:
+          rgba(var(--google-grey-300-rgb), var(--cros-second-tone-opacity));
+      color: var(--google-grey-200);
+    }
+
+    .running {
+      background-color:
+          rgba(var(--google-blue-300-rgb), var(--cros-second-tone-opacity));
+      color: var(--cros-text-color-prominent);
+    }
+
+    .success {
+      background-color:
+          rgba(var(--google-green-300-rgb), var(--cros-second-tone-opacity));
+      color: var(--google-green-200);
+    }
+
+    .warning {
+      color: var(--google-yellow-200);
+    }
   }
 </style>
 
