@@ -127,9 +127,9 @@ TEST_F(CaptureServiceReceiverTest, SendRequest) {
                           net::CompletionOnceCallback,
                           const net::NetworkTrafficAnnotationTag&) {
         EXPECT_EQ(buf_len, static_cast<int>(sizeof(HandshakePacket)));
-        const char* data = buf->data();
+        auto* data = reinterpret_cast<const uint8_t*>(buf->data());
         uint16_t size;
-        base::ReadBigEndian(reinterpret_cast<const uint8_t*>(data), &size);
+        base::ReadBigEndian(data, &size);
         EXPECT_EQ(size, sizeof(HandshakePacket) - sizeof(size));
         HandshakePacket packet;
         std::memcpy(&packet, data, sizeof(HandshakePacket));
