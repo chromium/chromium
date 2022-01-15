@@ -48,7 +48,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "base/command_line.h"

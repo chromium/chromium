@@ -65,7 +65,7 @@ const extensions::Extension* GetExtensionForWebContents(
   }
   return nullptr;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -113,7 +113,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
   }
   return absl::nullopt;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string GetAppIdForWebContents(content::WebContents* web_contents) {
   std::string app_id;

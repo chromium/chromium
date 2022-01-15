@@ -107,7 +107,7 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
   gfx::Rect bounds_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
  public:
