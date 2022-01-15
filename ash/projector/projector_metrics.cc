@@ -16,6 +16,9 @@ constexpr char kProjectorToolbarHistogramName[] = "Ash.Projector.Toolbar";
 constexpr char kProjectorMarkerColorHistogramName[] =
     "Ash.Projector.MarkerColor";
 
+constexpr char kProjectorCreationFlowHistogramName[] =
+    "Ash.Projector.CreationFlow";
+
 // Appends the proper suffix to |prefix| based on whether the user is in tablet
 // mode or not.
 std::string GetHistogramName(const std::string& prefix) {
@@ -34,6 +37,11 @@ void RecordToolbarMetrics(ProjectorToolbar button) {
 void RecordMarkerColorMetrics(ProjectorMarkerColor color) {
   base::UmaHistogramEnumeration(
       GetHistogramName(kProjectorMarkerColorHistogramName), color);
+}
+
+void RecordCreationFlowMetrics(ProjectorCreationFlow step) {
+  base::UmaHistogramEnumeration(
+      GetHistogramName(kProjectorCreationFlowHistogramName), step);
 }
 
 }  // namespace ash

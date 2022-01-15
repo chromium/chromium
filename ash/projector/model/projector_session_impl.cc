@@ -4,6 +4,8 @@
 
 #include "ash/projector/model/projector_session_impl.h"
 
+#include "ash/projector/projector_metrics.h"
+
 namespace ash {
 
 ProjectorSessionImpl::ProjectorSessionImpl() = default;
@@ -16,6 +18,8 @@ void ProjectorSessionImpl::Start(const std::string& storage_dir) {
   active_ = true;
   storage_dir_ = storage_dir;
   NotifySessionActiveStateChanged(active_);
+
+  RecordCreationFlowMetrics(ProjectorCreationFlow::kSessionStarted);
 }
 
 void ProjectorSessionImpl::Stop() {
@@ -24,6 +28,8 @@ void ProjectorSessionImpl::Stop() {
   active_ = false;
   screencast_container_path_.reset();
   NotifySessionActiveStateChanged(active_);
+
+  RecordCreationFlowMetrics(ProjectorCreationFlow::kSessionStopped);
 }
 
 void ProjectorSessionImpl::AddObserver(ProjectorSessionObserver* observer) {

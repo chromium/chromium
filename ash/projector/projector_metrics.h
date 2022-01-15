@@ -53,12 +53,31 @@ enum class ProjectorMarkerColor {
   kMaxValue = kBlue
 };
 
+// These enum values represent steps in the Projector creation flow and log to
+// UMA. Entries should not be renumbered and numeric values should never be
+// reused. Please keep in sync with "ProjectorCreationFlow" in
+// src/tools/metrics/histograms/enums.xml.
+enum class ProjectorCreationFlow {
+  kSessionStarted = 0,
+  kRecordingStarted = 1,
+  kRecordingAborted = 2,
+  kRecordingEnded = 3,
+  kSessionStopped = 4,
+  // Add future entries above this comment, in sync with
+  // "ProjectorCreationFlow" in src/tools/metrics/histograms/enums.xml.
+  // Update kMaxValue to the last value.
+  kMaxValue = kSessionStopped
+};
+
 // Records the buttons the user presses on the Projector toolbar.
 void RecordToolbarMetrics(ProjectorToolbar button);
 
 // Records the marker colors the user chooses to use. Only records if the user
 // switches from the default color.
 void RecordMarkerColorMetrics(ProjectorMarkerColor color);
+
+// Records the user's progress in the Projector creation flow.
+void RecordCreationFlowMetrics(ProjectorCreationFlow step);
 
 }  // namespace ash
 

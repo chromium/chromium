@@ -37,6 +37,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
@@ -4662,6 +4663,14 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
 // TODO(afakhry): Add more cursor overlay tests.
 
 // Test fixture to verify capture mode + projector integration.
+
+namespace {
+
+constexpr char kProjectorCreationFlowHistogramName[] =
+    "Ash.Projector.CreationFlow.ClamshellMode";
+
+}  // namespace
+
 class ProjectorCaptureModeIntegrationTests
     : public CaptureModeTest,
       public ::testing::WithParamInterface<CaptureModeSource> {
@@ -4784,6 +4793,7 @@ class ProjectorCaptureModeIntegrationTests
   base::test::ScopedFeatureList scoped_feature_list_;
   MockProjectorClient projector_client_;
   std::unique_ptr<aura::Window> window_;
+  base::HistogramTester histogram_tester_;
 };
 
 // static
@@ -4798,7 +4808,6 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
   // forces it enabled.
   EXPECT_FALSE(controller->enable_audio_recording());
 
-  base::HistogramTester histogram_tester;
   StartProjectorModeSession();
   EXPECT_TRUE(controller->IsActive());
   auto* session = controller->capture_mode_session();
@@ -4807,8 +4816,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
 
   constexpr char kEntryPointHistogram[] =
       "Ash.CaptureModeController.EntryPoint.ClamshellMode";
-  histogram_tester.ExpectBucketCount(kEntryPointHistogram,
-                                     CaptureModeEntryType::kProjector, 1);
+  histogram_tester_.ExpectBucketCount(kEntryPointHistogram,
+                                      CaptureModeEntryType::kProjector, 1);
 }
 
 // Tests that the settings view is simplified in projector mode.
@@ -4889,12 +4898,18 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
   EXPECT_TRUE(controller->IsActive());
+  histogram_tester_.ExpectUniqueSample(kProjectorCreationFlowHistogramName,
+                                       ProjectorCreationFlow::kSessionStarted,
+                                       /*count=*/1);
 
   // Hit Enter to begin recording. The recording session should be marked for
   // projector.
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_CALL(projector_client_, StartSpeechRecognition());
   WaitForRecordingToStart();
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kRecordingStarted,
+                                      /*count=*/1);
 
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -4903,6 +4918,15 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
 
   EXPECT_CALL(projector_client_, StopSpeechRecognition());
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kRecordingEnded,
+                                      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kSessionStopped,
+                                      /*count=*/1);
+  histogram_tester_.ExpectTotalCount(kProjectorCreationFlowHistogramName,
+                                     /*count=*/4);
 }
 
 TEST_F(ProjectorCaptureModeIntegrationTests,
@@ -4984,6 +5008,17 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
     // Prepare for next iteration by resetting things back to default.
     test_delegate->ResetAllowancesToDefault();
   }
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kSessionStarted,
+                                      /*count=*/3);
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kRecordingAborted,
+                                      /*count=*/3);
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kSessionStopped,
+                                      /*count=*/3);
+  histogram_tester_.ExpectTotalCount(kProjectorCreationFlowHistogramName,
+                                     /*count=*/9);
 }
 
 TEST_F(ProjectorCaptureModeIntegrationTests,
@@ -5019,6 +5054,18 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
     // Prepare for next iteration by resetting things back to default.
     test_delegate->ResetAllowancesToDefault();
   }
+
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kSessionStarted,
+                                      /*count=*/3);
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kRecordingAborted,
+                                      /*count=*/3);
+  histogram_tester_.ExpectBucketCount(kProjectorCreationFlowHistogramName,
+                                      ProjectorCreationFlow::kSessionStopped,
+                                      /*count=*/3);
+  histogram_tester_.ExpectTotalCount(kProjectorCreationFlowHistogramName,
+                                     /*count=*/9);
 }
 
 TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
@@ -5184,7 +5231,6 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorCaptureConfigurationMetrics) {
   const auto capture_source = GetParam();
-  base::HistogramTester histogram_tester;
   constexpr char kProjectorCaptureConfigurationHistogramBase[] =
       "Ash.CaptureModeController.Projector.CaptureConfiguration";
   ash::CaptureModeTestApi test_api;
@@ -5199,7 +5245,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
       EXPECT_FALSE(Shell::Get()->IsInTabletMode());
     }
 
-    histogram_tester.ExpectBucketCount(
+    histogram_tester_.ExpectBucketCount(
         GetCaptureModeHistogramName(
             kProjectorCaptureConfigurationHistogramBase),
         GetConfiguration(CaptureModeType::kVideo, capture_source), 0);
@@ -5209,7 +5255,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
     test_api.StopVideoRecording();
     EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
 
-    histogram_tester.ExpectBucketCount(
+    histogram_tester_.ExpectBucketCount(
         GetCaptureModeHistogramName(
             kProjectorCaptureConfigurationHistogramBase),
         GetConfiguration(CaptureModeType::kVideo, capture_source), 1);
@@ -5222,12 +5268,11 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 // entering from projector in both clamshell and tablet mode.
 TEST_F(ProjectorCaptureModeIntegrationTests,
        ProjectorCaptureRegionAdjustmentTest) {
-  base::HistogramTester histogram_tester;
   constexpr char kProjectorCaptureRegionAdjustmentHistogramBase[] =
       "Ash.CaptureModeController.Projector.CaptureRegionAdjusted";
   auto histogram_name = GetCaptureModeHistogramName(
       kProjectorCaptureRegionAdjustmentHistogramBase);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       GetCaptureModeHistogramName(
           kProjectorCaptureRegionAdjustmentHistogramBase),
       0, 0);
@@ -5278,7 +5323,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
     test_api.StopVideoRecording();
     EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
 
-    histogram_tester.ExpectBucketCount(
+    histogram_tester_.ExpectBucketCount(
         GetCaptureModeHistogramName(
             kProjectorCaptureRegionAdjustmentHistogramBase),
         4, 1);

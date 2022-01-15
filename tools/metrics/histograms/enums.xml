@@ -73290,6 +73290,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="User elected to send feedback."/>
 </enum>
 
+<enum name="ProjectorCreationFlow">
+  <int value="0" label="Started new screencast session"/>
+  <int value="1" label="Started recording new screencast"/>
+  <int value="2" label="Aborted session without starting to record"/>
+  <int value="3" label="Ended recording"/>
+  <int value="4" label="Stopped new screencast session"/>
+</enum>
+
 <enum name="ProjectorMarkerColor">
   <int value="0" label="Black"/>
   <int value="1" label="White"/>

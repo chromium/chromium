@@ -2684,8 +2684,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Projector.CreationFlow.{TabletOrClamshell}"
+    enum="ProjectorCreationFlow" expires_after="2022-12-01">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Tracks how the user progresses through the creation flow in
+    {TabletOrClamshell}, recorded each time the user starts or ends a screencast
+    recording.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.Projector.MarkerColor.{TabletOrClamshell}"
-    enum="ProjectorMarkerColor" expires_after="2022-05-19">
+    enum="ProjectorMarkerColor" expires_after="2022-12-01">
   <owner>tobyhuang@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>llin@chromium.org</owner>
@@ -2698,7 +2710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
-    enum="ProjectorToolbar" expires_after="2022-05-19">
+    enum="ProjectorToolbar" expires_after="2022-12-01">
   <owner>tobyhuang@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>llin@chromium.org</owner>

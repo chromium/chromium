@@ -12,6 +12,7 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/model/projector_session_impl.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/projector/test/mock_projector_metadata_controller.h"
 #include "ash/projector/test/mock_projector_ui_controller.h"
@@ -23,6 +24,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/dbus/audio/audio_node.h"
@@ -43,6 +45,9 @@ struct AudioNodeInfo {
   const char* const type;
   const char* const name;
 };
+
+constexpr char kProjectorCreationFlowHistogramName[] =
+    "Ash.Projector.CreationFlow.ClamshellMode";
 
 void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
   media::SpeechRecognitionResult result;
@@ -112,6 +117,7 @@ class ProjectorControllerTest : public AshTestBase {
   MockProjectorMetadataController* mock_metadata_controller_ = nullptr;
   ProjectorControllerImpl* controller_;
   MockProjectorClient mock_client_;
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -190,6 +196,9 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
 
   controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kRecordingStarted, /*count=*/1);
 }
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
@@ -214,8 +223,16 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   EXPECT_TRUE(base::Time::FromString("2 Jan 2021 20:02:10", &start_time));
   base::TimeDelta forward_by = start_time - base::Time::Now();
   task_environment()->AdvanceClock(forward_by);
+
   controller_->projector_session()->Start("projector_data");
+  histogram_tester_.ExpectUniqueSample(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kSessionStarted, /*count=*/1);
+
   controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
+  histogram_tester_.ExpectBucketCount(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kRecordingStarted, /*count=*/1);
 
   base::RunLoop runLoop;
   controller_->CreateScreencastContainerFolder(base::BindLambdaForTesting(
@@ -245,5 +262,14 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
       }));
 
   runLoop.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kRecordingEnded, /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kSessionStopped, /*count=*/1);
+  histogram_tester_.ExpectTotalCount(kProjectorCreationFlowHistogramName,
+                                     /*count=*/4);
 }
 }  // namespace ash

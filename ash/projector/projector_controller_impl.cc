@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/projector/projector_metadata_controller.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
@@ -258,6 +259,8 @@ void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
 
   StartSpeechRecognition();
   metadata_controller_->OnRecordingStarted();
+
+  RecordCreationFlowMetrics(ProjectorCreationFlow::kRecordingStarted);
 }
 
 void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
@@ -281,6 +284,8 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
   // At this point, the screencast might not synced to Drive yet. Open
   // Projector App which shows the Gallery view by default.
   client_->OpenProjectorApp();
+
+  RecordCreationFlowMetrics(ProjectorCreationFlow::kRecordingEnded);
 }
 
 void ProjectorControllerImpl::OnRecordingStartAborted() {
@@ -298,6 +303,8 @@ void ProjectorControllerImpl::OnRecordingStartAborted() {
   projector_session_->Stop();
 
   client_->OpenProjectorApp();
+
+  RecordCreationFlowMetrics(ProjectorCreationFlow::kRecordingAborted);
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {
