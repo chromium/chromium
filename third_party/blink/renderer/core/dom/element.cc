@@ -3718,13 +3718,8 @@ void Element::SetNeedsCompositingUpdate() {
     layout_object->SetNeedsPaintPropertyUpdate();
 
   // TODO(pdr): Do not depend on PaintLayer for compositing decisions.
-  if (layout_object->HasLayer()) {
+  if (layout_object->HasLayer())
     layout_object->Layer()->SetNeedsCompositingInputsUpdate();
-    // Changes to RequiresAcceleratedCompositing change if the PaintLayer is
-    // self-painting (see: LayoutEmbeddedContent::LayerTypeRequired).
-    if (layout_object->IsLayoutEmbeddedContent())
-      layout_object->Layer()->UpdateSelfPaintingLayer();
-  }
 }
 
 void Element::SetRegionCaptureCropId(

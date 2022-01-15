@@ -92,13 +92,9 @@ EmbeddedContentView* LayoutEmbeddedContent::GetEmbeddedContentView() const {
 
 PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
   NOT_DESTROYED();
-  if (AdditionalCompositingReasons())
-    return kNormalPaintLayer;
-
   PaintLayerType type = LayoutReplaced::LayerTypeRequired();
   if (type != kNoPaintLayer)
     return type;
-
   return kForcedPaintLayer;
 }
 
@@ -206,20 +202,6 @@ bool LayoutEmbeddedContent::NodeAtPoint(
 
   return NodeAtPointOverEmbeddedContentView(result, hit_test_location,
                                             accumulated_offset, action);
-}
-
-CompositingReasons LayoutEmbeddedContent::AdditionalCompositingReasons() const {
-  NOT_DESTROYED();
-  WebPluginContainerImpl* plugin_view = Plugin();
-  if (plugin_view && plugin_view->CcLayer())
-    return CompositingReason::kPlugin;
-  if (auto* element = GetFrameOwnerElement()) {
-    if (Frame* content_frame = element->ContentFrame()) {
-      if (content_frame->IsRemoteFrame())
-        return CompositingReason::kIFrame;
-    }
-  }
-  return CompositingReason::kNone;
 }
 
 void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,

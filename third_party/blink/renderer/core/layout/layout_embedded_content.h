@@ -89,12 +89,6 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   }
 
  private:
-  bool CanHaveAdditionalCompositingReasons() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-  CompositingReasons AdditionalCompositingReasons() const override;
-
   void WillBeDestroyed() final;
 
   bool NodeAtPointOverEmbeddedContentView(
