@@ -123,15 +123,12 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
       break;
     }
     case base::Value::Type::DICTIONARY: {
-      const base::DictionaryValue* dict =
-          static_cast<const base::DictionaryValue*>(value);
+      DCHECK(value->is_dict());
+      WriteParam(m, base::checked_cast<int>(value->DictSize()));
 
-      WriteParam(m, base::checked_cast<int>(dict->DictSize()));
-
-      for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
-           it.Advance()) {
-        WriteParam(m, it.key());
-        WriteValue(m, &it.value(), recursion + 1);
+      for (auto it : value->DictItems()) {
+        WriteParam(m, it.first);
+        WriteValue(m, &it.second, recursion + 1);
       }
       break;
     }
