@@ -15,6 +15,7 @@
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "media/base/video_decoder_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/openscreen/src/cast/streaming/constants.h"
@@ -175,6 +176,7 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
 }
 
 std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
+    cast_streaming::ReceiverSession::Client* client,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     cast_streaming::ReceiverSession::AVConstraints constraints) {
   cast_streaming::ReceiverSession::MessagePortProvider message_port_provider =
@@ -186,7 +188,7 @@ std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
   return cast_streaming::ReceiverSession::Create(
       std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
           std::move(constraints)),
-      std::move(message_port_provider));
+      std::move(message_port_provider), client);
 }
 
 }  // namespace
@@ -204,7 +206,7 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
     : StreamingReceiverSessionClient(
           std::move(task_runner),
           std::move(network_context_getter),
-          base::BindOnce(&CreateReceiverSession, std::move(message_port)),
+          base::BindOnce(&CreateReceiverSession, this, std::move(message_port)),
           handler,
           supports_audio,
           supports_video) {}
@@ -374,6 +376,15 @@ bool StreamingReceiverSessionClient::OnMessage(
   }
 
   return true;
+}
+
+void StreamingReceiverSessionClient::OnAudioConfigUpdated(
+    const ::media::AudioDecoderConfig& audio_config) {}
+
+void StreamingReceiverSessionClient::OnVideoConfigUpdated(
+    const ::media::VideoDecoderConfig& video_config) {
+  handler_->OnResolutionChanged(video_config.visible_rect(),
+                                video_config.video_transformation());
 }
 
 void StreamingReceiverSessionClient::OnPipeError() {

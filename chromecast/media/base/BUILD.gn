@@ -108,6 +108,7 @@ cast_source_set("video_plane_controller") {
   deps = [
     "//base",
     "//chromecast/media:libcast_media",
+    "//media",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]

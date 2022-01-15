@@ -50,11 +50,16 @@ void RuntimeApplicationDispatcher::AsyncMetricsRecord::StepGRPC(
 RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
     CastWebService* web_service,
     CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
-    cast_streaming::NetworkContextGetter network_context_getter)
+    cast_streaming::NetworkContextGetter network_context_getter,
+    media::VideoPlaneController* video_plane_controller)
     : GrpcServer(base::SequencedTaskRunnerHandle::Get()),
       web_service_(web_service),
       network_context_getter_(std::move(network_context_getter)),
-      metrics_recorder_(event_builder_factory) {}
+      metrics_recorder_(event_builder_factory),
+      video_plane_controller_(video_plane_controller) {
+  DCHECK(web_service_);
+  DCHECK(video_plane_controller_);
+}
 
 RuntimeApplicationDispatcher::~RuntimeApplicationDispatcher() {
   Stop();
@@ -118,7 +123,8 @@ void RuntimeApplicationDispatcher::LoadApplication(
   if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
     // Deliberately copy |network_context_getter_|.
     app_ = std::make_unique<StreamingRuntimeApplication>(
-        web_service_, task_runner_, network_context_getter_);
+        web_service_, task_runner_, network_context_getter_,
+        video_plane_controller_);
   } else {
     app_ = std::make_unique<WebRuntimeApplication>(web_service_, task_runner_);
   }

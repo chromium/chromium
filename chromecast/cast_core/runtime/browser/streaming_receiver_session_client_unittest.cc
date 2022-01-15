@@ -32,6 +32,7 @@ class MockReceiverSession : public cast_streaming::ReceiverSession {
   MOCK_METHOD1(SetCastStreamingReceiver,
                void(mojo::AssociatedRemote<
                     cast_streaming::mojom::CastStreamingReceiver>));
+  MOCK_METHOD1(SetClient, void(cast_streaming::ReceiverSession::Client*));
 };
 
 class MockStreamingReceiverSessionHandler
@@ -43,6 +44,8 @@ class MockStreamingReceiverSessionHandler
   MOCK_METHOD0(OnError, void());
   MOCK_METHOD1(StartAvSettingsQuery,
                void(std::unique_ptr<cast_api_bindings::MessagePort>));
+  MOCK_METHOD2(OnResolutionChanged,
+               void(const gfx::Rect&, const ::media::VideoTransformation&));
 };
 
 }  // namespace

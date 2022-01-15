@@ -19,8 +19,15 @@ const char kRuntimeServicePathSwitch[] = "runtime-service-path";
 
 CastRuntimeService::CastRuntimeService(
     CastWebService* web_service,
-    NetworkContextGetter network_context_getter)
-    : app_dispatcher_(web_service, this, std::move(network_context_getter)) {}
+    NetworkContextGetter network_context_getter,
+    media::VideoPlaneController* video_plane_controller)
+    : video_plane_controller_(video_plane_controller),
+      app_dispatcher_(web_service,
+                      this,
+                      std::move(network_context_getter),
+                      video_plane_controller_) {
+  DCHECK(video_plane_controller_);
+}
 
 CastRuntimeService::~CastRuntimeService() = default;
 

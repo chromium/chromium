@@ -16,6 +16,11 @@ namespace cast_api_bindings {
 class MessagePort;
 }
 
+namespace media {
+class AudioDecoderConfig;
+class VideoDecoderConfig;
+}  // namespace media
+
 namespace cast_streaming {
 
 // This interface handles a single Cast Streaming Receiver Session over a given
@@ -26,6 +31,18 @@ namespace cast_streaming {
 // requiring the import above.
 class ReceiverSession {
  public:
+  class Client {
+   public:
+    virtual ~Client() = default;
+
+    // Called when the associated config is set or updated by the remote sender
+    // device.
+    virtual void OnAudioConfigUpdated(
+        const media::AudioDecoderConfig& audio_config) = 0;
+    virtual void OnVideoConfigUpdated(
+        const media::VideoDecoderConfig& video_config) = 0;
+  };
+
   using MessagePortProvider =
       base::OnceCallback<std::unique_ptr<cast_api_bindings::MessagePort>()>;
   using AVConstraints = openscreen::cast::ReceiverSession::Preferences;
@@ -41,7 +58,8 @@ class ReceiverSession {
   // ReceiverSession::Preferences object from //media types.
   static std::unique_ptr<ReceiverSession> Create(
       std::unique_ptr<AVConstraints> av_constraints,
-      MessagePortProvider message_port_provider);
+      MessagePortProvider message_port_provider,
+      Client* client = nullptr);
 
   // Sets up the CastStreamingReceiver mojo remote. This will immediately call
   // CastStreamingReceiver::EnableReceiver(). Upon receiving the callback for

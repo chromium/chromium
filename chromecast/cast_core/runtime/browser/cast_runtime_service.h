@@ -30,6 +30,10 @@ namespace receiver {
 class MediaManager;
 }  // namespace receiver
 
+namespace media {
+class VideoPlaneController;
+}  // namespace media
+
 // This interface is to be used for building the Cast Runtime Service and act as
 // the border between shared Chromium code and the specifics of that
 // implementation.
@@ -42,7 +46,8 @@ class CastRuntimeService
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
 
   CastRuntimeService(CastWebService* web_service,
-                     NetworkContextGetter network_context_getter);
+                     NetworkContextGetter network_context_getter,
+                     media::VideoPlaneController* video_plane_controller);
   ~CastRuntimeService() override;
 
   // Returns WebCryptoServer.
@@ -67,7 +72,15 @@ class CastRuntimeService
   // CastRuntimeAudioChannelEndpointManager implementation:
   const std::string& GetAudioChannelEndpoint() override;
 
+  media::VideoPlaneController* video_plane_controller() {
+    return video_plane_controller_;
+  }
+
  private:
+  // Provides access to video plane controls API including geometry and screen
+  // resolution parameters.
+  media::VideoPlaneController* video_plane_controller_;
+
   RuntimeApplicationDispatcher app_dispatcher_;
 };
 

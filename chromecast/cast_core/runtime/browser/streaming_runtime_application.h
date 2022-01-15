@@ -16,6 +16,10 @@
 
 namespace chromecast {
 
+namespace media {
+class VideoPlaneController;
+}
+
 class MessagePortService;
 
 class StreamingRuntimeApplication final
@@ -27,7 +31,8 @@ class StreamingRuntimeApplication final
   StreamingRuntimeApplication(
       CastWebService* web_service,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      cast_streaming::NetworkContextGetter network_context_getter);
+      cast_streaming::NetworkContextGetter network_context_getter,
+      media::VideoPlaneController* video_plane_controller);
   ~StreamingRuntimeApplication() override;
 
  private:
@@ -43,6 +48,9 @@ class StreamingRuntimeApplication final
   void OnError() override;
   void StartAvSettingsQuery(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port) override;
+  void OnResolutionChanged(
+      const gfx::Rect& size,
+      const ::media::VideoTransformation& transformation) override;
 
   // CastWebContents::Observer overrides.
   void MainFrameReadyToCommitNavigation(
@@ -56,7 +64,9 @@ class StreamingRuntimeApplication final
 
   mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
       renderer_connection_;
-  mojo::Remote<media::mojom::Renderer> renderer_controls_;
+  mojo::Remote<::media::mojom::Renderer> renderer_controls_;
+
+  media::VideoPlaneController* video_plane_controller_;
 
   // Returns the network context used by |receiver_session_client_|.
   const cast_streaming::NetworkContextGetter network_context_getter_;

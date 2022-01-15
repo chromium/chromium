@@ -206,6 +206,7 @@ cast_source_set("runtime_application_dispatcher") {
     ":core_service_bindings",
     ":streaming_receiver_session_client",
     "//chromecast/cast_core/runtime/browser/url_rewrite",
+    "//chromecast/media/base:video_plane_controller",
     "//chromecast/metrics:cast_event_builder_simple",
     "//components/cast/message_port",
     "//components/cast_streaming/browser",

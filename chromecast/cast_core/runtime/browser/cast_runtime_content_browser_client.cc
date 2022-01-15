@@ -46,7 +46,7 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
       },
       this);
   auto cast_runtime_service = std::make_unique<CastRuntimeService>(
-      web_service, std::move(network_context_getter));
+      web_service, std::move(network_context_getter), video_plane_controller);
   cast_runtime_service_ = cast_runtime_service.get();
   return cast_runtime_service;
 }

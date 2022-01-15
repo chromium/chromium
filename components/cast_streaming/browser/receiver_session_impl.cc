@@ -15,16 +15,19 @@ namespace cast_streaming {
 // static
 std::unique_ptr<ReceiverSession> ReceiverSession::Create(
     std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-    ReceiverSession::MessagePortProvider message_port_provider) {
+    ReceiverSession::MessagePortProvider message_port_provider,
+    ReceiverSession::Client* client) {
   return std::make_unique<ReceiverSessionImpl>(
-      std::move(av_constraints), std::move(message_port_provider));
+      std::move(av_constraints), std::move(message_port_provider), client);
 }
 
 ReceiverSessionImpl::ReceiverSessionImpl(
     std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-    ReceiverSession::MessagePortProvider message_port_provider)
+    ReceiverSession::MessagePortProvider message_port_provider,
+    ReceiverSession::Client* client)
     : message_port_provider_(std::move(message_port_provider)),
-      av_constraints_(std::move(av_constraints)) {
+      av_constraints_(std::move(av_constraints)),
+      client_(client) {
   // TODO(crbug.com/1218495): Validate the provided codecs against build flags.
   DCHECK(av_constraints_);
   DCHECK(message_port_provider_);
@@ -83,6 +86,15 @@ void ReceiverSessionImpl::OnSessionInitialization(
 
   cast_streaming_receiver_->OnStreamsInitialized(
       std::move(mojo_audio_stream_info), std::move(mojo_video_stream_info));
+
+  if (client_) {
+    if (audio_stream_info) {
+      client_->OnAudioConfigUpdated(audio_stream_info->decoder_config);
+    }
+    if (video_stream_info) {
+      client_->OnVideoConfigUpdated(video_stream_info->decoder_config);
+    }
+  }
 }
 
 void ReceiverSessionImpl::OnAudioBufferReceived(
@@ -115,6 +127,15 @@ void ReceiverSessionImpl::OnSessionReinitialization(
   if (video_stream_info) {
     video_remote_->OnNewVideoConfig(video_stream_info->decoder_config,
                                     std::move(video_stream_info->data_pipe));
+  }
+
+  if (client_) {
+    if (audio_stream_info) {
+      client_->OnAudioConfigUpdated(audio_stream_info->decoder_config);
+    }
+    if (video_stream_info) {
+      client_->OnVideoConfigUpdated(video_stream_info->decoder_config);
+    }
   }
 }
 

@@ -23,6 +23,14 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
+namespace media {
+struct VideoTransformation;
+}  // namespace media
+
 namespace chromecast {
 
 // This class wraps all //components/cast_streaming functionality, only
@@ -31,7 +39,8 @@ namespace chromecast {
 // of important events. Methods in this class may not be called in parallel.
 class StreamingReceiverSessionClient
     : public CastWebContents::Observer,
-      public cast_api_bindings::MessagePort::Receiver {
+      public cast_api_bindings::MessagePort::Receiver,
+      public cast_streaming::ReceiverSession::Client {
  public:
   class Handler {
    public:
@@ -50,6 +59,11 @@ class StreamingReceiverSessionClient
     // Called when an AV settings query must be started for |message_port|.
     virtual void StartAvSettingsQuery(
         std::unique_ptr<cast_api_bindings::MessagePort> message_port) = 0;
+
+    // Called when the resolution as reported to the media pipeline changes.
+    virtual void OnResolutionChanged(
+        const gfx::Rect& size,
+        const ::media::VideoTransformation& transformation) = 0;
   };
 
   // Max time for which streaming may wait for AV Settings receipt before being
@@ -168,6 +182,12 @@ class StreamingReceiverSessionClient
                  std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
                      ports) override;
   void OnPipeError() override;
+
+  // cast_streaming::ReceiverSession::Client overrides.
+  void OnAudioConfigUpdated(
+      const ::media::AudioDecoderConfig& audio_config) override;
+  void OnVideoConfigUpdated(
+      const ::media::VideoDecoderConfig& video_config) override;
 
   // Handler for callbacks associated with this class. May be empty.
   Handler* const handler_;

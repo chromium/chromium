@@ -21,6 +21,10 @@
 
 namespace chromecast {
 
+namespace media {
+class VideoPlaneController;
+}  // namespace media
+
 class CastWebService;
 class RuntimeApplication;
 
@@ -31,7 +35,8 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
   RuntimeApplicationDispatcher(
       CastWebService* web_service,
       CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
-      cast_streaming::NetworkContextGetter network_context_getter);
+      cast_streaming::NetworkContextGetter network_context_getter,
+      media::VideoPlaneController* video_plane_controller);
   ~RuntimeApplicationDispatcher() override;
 
   // Starts and stops the runtime service, including the gRPC completion queue.
@@ -118,6 +123,8 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
       metrics_recorder_stub_;
   cast::runtime::RuntimeService::AsyncService grpc_runtime_service_;
   std::unique_ptr<CastRuntimeMetricsRecorderService> metrics_recorder_service_;
+
+  media::VideoPlaneController* video_plane_controller_;
 
   base::WeakPtrFactory<RuntimeApplicationDispatcher> weak_factory_{this};
 };

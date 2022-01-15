@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
+#include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
@@ -33,11 +34,15 @@ const char kStreamingPageUrlTemplate[] =
 StreamingRuntimeApplication::StreamingRuntimeApplication(
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    cast_streaming::NetworkContextGetter network_context_getter)
+    cast_streaming::NetworkContextGetter network_context_getter,
+    media::VideoPlaneController* video_plane_controller)
     : RuntimeApplicationBase(mojom::RendererType::MOJO_RENDERER,
                              web_service,
                              std::move(task_runner)),
-      network_context_getter_(std::move(network_context_getter)) {}
+      video_plane_controller_(video_plane_controller),
+      network_context_getter_(std::move(network_context_getter)) {
+  DCHECK(video_plane_controller_);
+}
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   StopApplication();
@@ -70,6 +75,12 @@ void StreamingRuntimeApplication::StartAvSettingsQuery(
   // the associated |receiver_session_client_|.
   message_port_service_->ConnectToPort(kMediaCapabilitiesBindingName,
                                        std::move(message_port));
+}
+
+void StreamingRuntimeApplication::OnResolutionChanged(
+    const gfx::Rect& size,
+    const ::media::VideoTransformation& transformation) {
+  video_plane_controller_->SetGeometryFromMediaType(size, transformation);
 }
 
 void StreamingRuntimeApplication::InitializeApplication(
