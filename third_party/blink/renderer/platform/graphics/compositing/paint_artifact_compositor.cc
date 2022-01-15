@@ -1320,12 +1320,12 @@ void PaintArtifactCompositor::SetScrollbarNeedsDisplay(
 }
 
 void LayerListBuilder::Add(scoped_refptr<cc::Layer> layer) {
-#if DCHECK_IS_ON()
   DCHECK(list_valid_);
-  DCHECK(!layer_ids_.Contains(layer->id()));
-  layer_ids_.insert(layer->id());
-#endif
-  list_.push_back(layer);
+  // Duplicated layers may happen when a foreign layer is fragmented.
+  // TODO(wangxianzhu): Change this to DCHECK when we ensure all foreign layers
+  // are monolithic (i.e. LayoutNGBlockFragmentation is fully launched).
+  if (layer_ids_.insert(layer->id()).is_new_entry)
+    list_.push_back(layer);
 }
 
 cc::LayerList LayerListBuilder::Finalize() {
