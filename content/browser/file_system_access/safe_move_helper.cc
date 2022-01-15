@@ -306,7 +306,7 @@ void SafeMoveHelper::DidFileDoQuarantine(
                            std::move(quarantine_remote)),
             quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED));
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&quarantine::SetInternetZoneIdentifierDirectly,

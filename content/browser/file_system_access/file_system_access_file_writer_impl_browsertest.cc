@@ -26,7 +26,7 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -282,11 +282,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 // TODO(https://crbug.com/992089): Files are only quarantined on windows in
 // browsertests unfortunately. Change this when more platforms are enabled.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FileAnnotated FileAnnotated
 #else
 #define MAYBE_FileAnnotated DISABLED_FileAnnotated
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        MAYBE_FileAnnotated) {
   base::FilePath test_file, swap_file, lib_file;
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   }
 }
 
-#if defined(OS_POSIX) || defined(OS_WIN)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        RespectOSPermissions) {
   base::FilePath test_file, swap_file;
@@ -318,15 +318,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   // Make the file read-only.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     int mode = 0444;
     EXPECT_TRUE(base::SetPosixFilePermissions(test_file, mode));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     DWORD attributes = ::GetFileAttributes(test_file.value().c_str());
     ASSERT_NE(attributes, INVALID_FILE_ATTRIBUTES);
     attributes |= FILE_ATTRIBUTE_READONLY;
     EXPECT_TRUE(::SetFileAttributes(test_file.value().c_str(), attributes));
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
   }
 
   auto result = EvalJs(
@@ -336,6 +336,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
               std::string::npos)
       << result.error;
 }
-#endif  // defined(OS_POSIX) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 }  // namespace content
