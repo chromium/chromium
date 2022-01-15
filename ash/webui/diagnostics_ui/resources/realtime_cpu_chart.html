@@ -1,12 +1,12 @@
 <style include="diagnostics-shared diagnostics-fonts">
   g.tick line {
-    stroke: var(--cros-button-label-color-primary);
+    stroke: var(--cros-separator-color);
     stroke-width: 1px;
     shape-rendering: crispEdges;
   }
 
   g.tick:first-of-type line {
-    stroke: var(--cros-color-secondary);
+    stroke: var(--cros-color-primary);
   }
 
   g.tick text {
@@ -39,11 +39,11 @@
   }
 
   .gradient-blue {
-    stop-color: var(--google-blue-300);
+    stop-color: var(--google-blue-50);
   }
 
   .gradient-yellow {
-    stop-color: var(--google-yellow-300);
+    stop-color: var(--google-yellow-50);
   }
 
   .gradient-opacity {
@@ -90,6 +90,16 @@
 
   #legend-bar.system {
     background-color: var(--cros-color-warning);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .gradient-blue {
+      stop-color: rgba(var(--google-blue-300-rgb), 0.2);
+    }
+
+    .gradient-yellow {
+      stop-color: rgba(var(--google-yellow-300-rgb), 0.2);
+    }
   }
 </style>
 <svg id="chart" width$="[[width_]]" height$="[[height_]]" aria-hidden="true">
