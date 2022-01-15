@@ -238,7 +238,7 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
       base::BindOnce(DeleteLiteVideosOptOutDatabaseOnDBThread,
                      profile_path.Append(kLiteVideoOptOutDBFilename)));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On mobile we write Data Reduction Proxy prefs directly to the pref service.
   // On desktop we store Data Reduction Proxy prefs in memory, writing to disk
   // every 60 minutes and on termination. Shutdown hooks must be added for
