@@ -20,9 +20,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace dom_distiller {
 
@@ -90,10 +90,10 @@ KeyedService* DomDistillerServiceFactory::BuildServiceInstanceFor(
       new DistilledPagePrefs(profile->GetPrefs()));
   std::unique_ptr<DistillerUIHandle> distiller_ui_handle;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   distiller_ui_handle =
       std::make_unique<dom_distiller::android::DistillerUIHandleAndroid>();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   DomDistillerContextKeyedService* service =
       new DomDistillerContextKeyedService(

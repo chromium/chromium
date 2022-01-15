@@ -169,7 +169,7 @@ void DistillCurrentPageAndView(content::WebContents* old_web_contents) {
   new_web_contents->GetController().CopyStateFrom(
       &old_web_contents->GetController(), /* needs_reload */ true);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Use the old_web_contents to log time on the distillable page before
   // navigating away from these contents.
   dom_distiller::UMAHelper::LogTimeOnDistillablePage(old_web_contents);

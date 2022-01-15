@@ -65,11 +65,11 @@ namespace {
 const char* kSimpleArticlePath = "/dom_distiller/simple_article.html";
 const char* kOriginalArticleTitle = "Test Page Title";
 const char* kExpectedArticleHeading = "Test Page Title";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char* kExpectedDocumentTitle = "Test Page Title";
 #else   // Desktop. This test is in chrome/ and is not run on iOS.
 const char* kExpectedDocumentTitle = "Test Page Title - Reader Mode";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 const char* kDistillablePageHistogram =
     "DomDistiller.Time.ActivelyViewingArticleBeforeDistilling";
 const char* kDistilledPageHistogram =
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, UMATimesAreLogged) {
 }
 
 // TODO(crbug.com/1272152): Flaky on linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_DistillAndViewCreatesNewWebContentsAndPreservesOld \
   DISABLED_DistillAndViewCreatesNewWebContentsAndPreservesOld
 #else
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1271740): Flaky on linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ToggleOriginalPage DISABLED_ToggleOriginalPage
 #else
 #define MAYBE_ToggleOriginalPage ToggleOriginalPage
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, SecurityStateIsNone) {
 }
 
 // TODO(crbug.com/1227141): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FaviconFromOriginalPage DISABLED_FaviconFromOriginalPage
 #else
 #define MAYBE_FaviconFromOriginalPage FaviconFromOriginalPage
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
   EXPECT_TRUE(gfx::test::AreImagesEqual(article_favicon, distilled_favicon));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class DistilledPageImageLoadWaiter {
  public:
   explicit DistilledPageImageLoadWaiter(content::WebContents* contents,
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTestInsecureContent,
       helper->GetVisibleSecurityState()->displayed_content_with_cert_errors);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace dom_distiller
