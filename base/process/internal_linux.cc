@@ -22,7 +22,7 @@
 #include "build/build_config.h"
 
 // Not defined on AIX by default.
-#if defined(OS_AIX)
+#if BUILDFLAG(IS_AIX)
 #define NAME_MAX 255
 #endif
 

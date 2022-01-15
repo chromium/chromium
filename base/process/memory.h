@@ -31,8 +31,8 @@ BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
 // TODO: this can be removed when Breakpad is no longer supported.
 BASE_EXPORT extern size_t g_oom_size;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_AIX)
 // The maximum allowed value for the OOM score.
 const int kMaxOomScore = 1000;
 
@@ -52,7 +52,7 @@ namespace internal {
 bool ReleaseAddressSpaceReservation();
 }  // namespace internal
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace win {
 
 // Custom Windows exception code chosen to indicate an out of memory error.

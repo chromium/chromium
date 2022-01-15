@@ -39,15 +39,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
 #include <sched.h>
 #include <sys/syscall.h>
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/resource.h>
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <dlfcn.h>
 #include <errno.h>
 #include <sched.h>
@@ -55,22 +55,22 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <mach/vm_param.h>
 #include <malloc/malloc.h>
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "third_party/lss/linux_syscall_support.h"
 #endif
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/fdio/fdio.h>
 #include <lib/fdio/limits.h>
 #include <zircon/process.h>
@@ -89,21 +89,21 @@ const char kSignalFileSlow[] = "SlowChildProcess.die";
 const char kSignalFileKill[] = "KilledChildProcess.die";
 const char kTestHelper[] = "test_child_process";
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 const char kSignalFileTerm[] = "TerminatedChildProcess.die";
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 const char kSignalFileClone[] = "ClonedTmpDir.die";
 const char kDataDirHasStaged[] = "DataDirHasStaged.die";
 const char kFooDirHasStaged[] = "FooDirHasStaged.die";
 const char kFooDirDoesNotHaveStaged[] = "FooDirDoesNotHaveStaged.die";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const int kExpectedStillRunningExitCode = 0x102;
 const int kExpectedKilledExitCode = 1;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const int kExpectedStillRunningExitCode = 0;
 #endif
 
@@ -155,7 +155,7 @@ class ProcessUtilTest : public MultiProcessTest {
     test_helper_path_ = test_helper_path_.AppendASCII(kTestHelper);
   }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Spawn a child process that counts how many file descriptors are open.
   int CountOpenFDsInChild();
 #endif
@@ -168,7 +168,7 @@ class ProcessUtilTest : public MultiProcessTest {
 };
 
 std::string ProcessUtilTest::GetSignalFilePath(const char* filename) {
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   FilePath tmp_dir;
   PathService::Get(DIR_TEMP, &tmp_dir);
   tmp_dir = tmp_dir.Append(filename);
@@ -231,7 +231,7 @@ TEST_F(ProcessUtilTest, DISABLED_GetTerminationStatusExit) {
   remove(signal_file.c_str());
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 MULTIPROCESS_TEST_MAIN(CheckDataDirHasStaged) {
   if (!PathExists(base::FilePath("/data/staged"))) {
@@ -491,11 +491,11 @@ TEST_F(ProcessUtilTest, FuchsiaProcessNameSuffix) {
                 "#test");
 }
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // On Android SpawnProcess() doesn't use LaunchProcess() and doesn't support
 // LaunchOptions::current_directory.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 static void CheckCwdIsExpected(FilePath expected) {
   FilePath actual;
   CHECK(GetCurrentDirectory(&actual));
@@ -586,9 +586,9 @@ TEST_F(ProcessUtilTest, CurrentDirectory) {
   EXPECT_TRUE(process.WaitForExit(&exit_code));
   EXPECT_EQ(kSuccess, exit_code);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(cpu): figure out how to test this in other platforms.
 TEST_F(ProcessUtilTest, GetProcId) {
   ProcessId id1 = GetProcId(GetCurrentProcess());
@@ -599,9 +599,9 @@ TEST_F(ProcessUtilTest, GetProcId) {
   EXPECT_NE(0ul, id2);
   EXPECT_NE(id1, id2);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if !defined(OS_APPLE) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 // This test is disabled on Mac, since it's flaky due to ReportCrash
 // taking a variable amount of time to parse and load the debug and
 // symbol data for this unit test's executable before firing the
@@ -617,7 +617,7 @@ const char kSignalFileCrash[] = "CrashingChildProcess.die";
 
 MULTIPROCESS_TEST_MAIN(CrashingChildProcess) {
   WaitToDie(ProcessUtilTest::GetSignalFilePath(kSignalFileCrash).c_str());
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Have to disable to signal handler for segv so we can get a crash
   // instead of an abnormal termination through the crash dump handler.
   ::signal(SIGSEGV, SIG_DFL);
@@ -630,7 +630,7 @@ MULTIPROCESS_TEST_MAIN(CrashingChildProcess) {
 
 // This test intentionally crashes, so we don't need to run it under
 // AddressSanitizer.
-#if defined(ADDRESS_SANITIZER) || defined(OS_FUCHSIA)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/753490): Access to the process termination reason is not
 // implemented in Fuchsia.
 #define MAYBE_GetTerminationStatusCrash DISABLED_GetTerminationStatusCrash
@@ -655,9 +655,9 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusCrash) {
       WaitForChildTermination(process.Handle(), &exit_code);
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_CRASHED, status);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(static_cast<int>(0xc0000005), exit_code);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   int signaled = WIFSIGNALED(exit_code);
   EXPECT_NE(0, signaled);
   int signal = WTERMSIG(exit_code);
@@ -668,33 +668,33 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusCrash) {
   debug::EnableInProcessStackDumping();
   remove(signal_file.c_str());
 }
-#endif  // !defined(OS_APPLE) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 
 MULTIPROCESS_TEST_MAIN(KilledChildProcess) {
   WaitToDie(ProcessUtilTest::GetSignalFilePath(kSignalFileKill).c_str());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Kill ourselves.
   HANDLE handle = ::OpenProcess(PROCESS_ALL_ACCESS, 0, ::GetCurrentProcessId());
   ::TerminateProcess(handle, kExpectedKilledExitCode);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   // Send a SIGKILL to this process, just like the OOM killer would.
   ::kill(getpid(), SIGKILL);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx_task_kill(zx_process_self());
 #endif
   return 1;
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 MULTIPROCESS_TEST_MAIN(TerminatedChildProcess) {
   WaitToDie(ProcessUtilTest::GetSignalFilePath(kSignalFileTerm).c_str());
   // Send a SIGTERM to this process.
   ::kill(getpid(), SIGTERM);
   return 1;
 }
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/753490): Access to the process termination reason is not
 // implemented in Fuchsia.
 #define MAYBE_GetTerminationStatusSigKill DISABLED_GetTerminationStatusSigKill
@@ -717,15 +717,15 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
   exit_code = 42;
   TerminationStatus status =
       WaitForChildTermination(process.Handle(), &exit_code);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM, status);
 #else
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_WAS_KILLED, status);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(kExpectedKilledExitCode, exit_code);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   int signaled = WIFSIGNALED(exit_code);
   EXPECT_NE(0, signaled);
   int signal = WTERMSIG(exit_code);
@@ -734,7 +734,7 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
   remove(signal_file.c_str());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // TODO(crbug.com/753490): Access to the process termination reason is not
 // implemented in Fuchsia. Unix signals are not implemented in Fuchsia so this
 // test might not be relevant anyway.
@@ -762,7 +762,7 @@ TEST_F(ProcessUtilTest, GetTerminationStatusSigTerm) {
   EXPECT_EQ(SIGTERM, signal);
   remove(signal_file.c_str());
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(ProcessUtilTest, EnsureTerminationUndying) {
   test::TaskEnvironment task_environment;
@@ -772,20 +772,20 @@ TEST_F(ProcessUtilTest, EnsureTerminationUndying) {
 
   EnsureProcessTerminated(child_process.Duplicate());
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   errno = 0;
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   // Allow a generous timeout, to cope with slow/loaded test bots.
   bool did_exit = child_process.WaitForExitWithTimeout(
       TestTimeouts::action_max_timeout(), nullptr);
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Both EnsureProcessTerminated() and WaitForExitWithTimeout() will call
   // waitpid(). One will succeed, and the other will fail with ECHILD. If our
   // wait failed then check for ECHILD, and assumed |did_exit| in that case.
   did_exit = did_exit || (errno == ECHILD);
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   EXPECT_TRUE(did_exit);
 }
@@ -817,7 +817,7 @@ MULTIPROCESS_TEST_MAIN(process_util_test_die_immediately) {
   return kSuccess;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(estade): if possible, port this test.
 TEST_F(ProcessUtilTest, LaunchAsUser) {
   UserTokenHandle token;
@@ -898,7 +898,7 @@ TEST_F(ProcessUtilTest, InheritSpecifiedHandles) {
   ASSERT_TRUE(LaunchProcess(cmd_line, options).IsValid());
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(ProcessUtilTest, GetAppOutput) {
   base::CommandLine command(test_helper_path_);
@@ -937,25 +937,25 @@ TEST_F(ProcessUtilTest, GetAppOutputWithExitCode) {
   command.AppendArg("-x");
   command.AppendArg(base::NumberToString(kExpectedExitCode));
   command.AppendArg(kEchoMessage2);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, anything that quits with a nonzero status code is handled as a
   // "crash", so just ignore GetAppOutputWithExitCode's return value.
   GetAppOutputWithExitCode(command, &output, &exit_code);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   EXPECT_TRUE(GetAppOutputWithExitCode(command, &output, &exit_code));
 #endif
   EXPECT_EQ(kEchoMessage2, output);
   EXPECT_EQ(kExpectedExitCode, exit_code);
 }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 
 // Returns the maximum number of files that a process can have open.
 // Returns 0 on error.
 int GetMaxFilesOpenInProcess() {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return FDIO_MAX_FD;
 #else
   struct rlimit rlim;
@@ -971,12 +971,12 @@ int GetMaxFilesOpenInProcess() {
   }
 
   return rlim.rlim_cur;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 const int kChildPipe = 20;  // FD # for write end of pipe in child process.
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 // <http://opensource.apple.com/source/xnu/xnu-2422.1.72/bsd/sys/guarded.h>
 #if !defined(_GUARDID_T)
@@ -1038,7 +1038,7 @@ bool CanGuardFd(int fd) {
 
   return true;
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace
 
@@ -1049,7 +1049,7 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
   int write_pipe = kChildPipe;
   int max_files = GetMaxFilesOpenInProcess();
   for (int i = STDERR_FILENO + 1; i < max_files; i++) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // Ignore guarded or invalid file descriptors.
     if (!CanGuardFd(i))
       continue;
@@ -1119,11 +1119,11 @@ TEST_F(ProcessUtilTest, MAYBE_FDRemapping) {
 
   // Open some dummy fds to make sure they don't propagate over to the
   // child process.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   base::ScopedFD dev_null(fdio_fd_create_null());
 #else
   base::ScopedFD dev_null(open("/dev/null", O_RDONLY));
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   DPCHECK(dev_null.get() > 0);
   int sockets[2];
@@ -1213,7 +1213,7 @@ TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
   EXPECT_EQ(0, exit_code);
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 const uint16_t kStartupHandleId = 43;
 MULTIPROCESS_TEST_MAIN(ProcessUtilsVerifyHandle) {
@@ -1270,17 +1270,17 @@ TEST_F(ProcessUtilTest, LaunchWithHandleTransfer) {
   EXPECT_EQ(0, exit_code);
 }
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // There's no such thing as a parent process id on Fuchsia.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(ProcessUtilTest, GetParentProcessId) {
   ProcessId ppid = GetParentProcessId(GetCurrentProcessHandle());
   EXPECT_EQ(ppid, static_cast<ProcessId>(getppid()));
 }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA) && !defined(OS_APPLE)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_APPLE)
 class WriteToPipeDelegate : public LaunchOptions::PreExecDelegate {
  public:
   explicit WriteToPipeDelegate(int fd) : fd_(fd) {}
@@ -1321,9 +1321,9 @@ TEST_F(ProcessUtilTest, PreExecHook) {
   EXPECT_TRUE(process.WaitForExit(&exit_code));
   EXPECT_EQ(0, exit_code);
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 
@@ -1336,7 +1336,7 @@ std::string TestLaunchProcess(const CommandLine& cmdline,
   options.environment = env_changes;
   options.clear_environment = clear_environment;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HANDLE read_handle, write_handle;
   PCHECK(CreatePipe(&read_handle, &write_handle, nullptr, 0));
   File read_pipe(read_handle);
@@ -1351,26 +1351,26 @@ std::string TestLaunchProcess(const CommandLine& cmdline,
   File read_pipe(fds[0]);
   File write_pipe(fds[1]);
   options.fds_to_remap.emplace_back(fds[1], STDOUT_FILENO);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   options.clone_flags = clone_flags;
 #else
   CHECK_EQ(0, clone_flags);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_TRUE(LaunchProcess(cmdline, options).IsValid());
   write_pipe.Close();
 
   char buf[512];
   int n = read_pipe.ReadAtCurrentPos(buf, sizeof(buf));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Closed pipes fail with ERROR_BROKEN_PIPE on Windows, rather than
   // successfully reporting EOF.
   if (n < 0 && GetLastError() == ERROR_BROKEN_PIPE) {
     n = 0;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   PCHECK(n >= 0);
 
   return std::string(buf, n);
@@ -1423,11 +1423,11 @@ TEST_F(ProcessUtilTest, LaunchProcess) {
   EXPECT_EQ("wibble", TestLaunchProcess(kPrintEnvCommand, env_changes,
                                         no_clear_environ, no_clone_flags));
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Test a non-trival value for clone_flags.
   EXPECT_EQ("wibble", TestLaunchProcess(kPrintEnvCommand, env_changes,
                                         no_clear_environ, CLONE_FS));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_EQ("wibble",
             TestLaunchProcess(kPrintEnvCommand, env_changes,
@@ -1437,7 +1437,7 @@ TEST_F(ProcessUtilTest, LaunchProcess) {
                                   true /* clear_environ */, no_clone_flags));
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 MULTIPROCESS_TEST_MAIN(CheckPidProcess) {
   const pid_t kInitPid = 1;
   const pid_t pid = syscall(__NR_getpid);
@@ -1498,6 +1498,6 @@ TEST_F(ProcessUtilTest, InvalidCurrentDirectory) {
   EXPECT_TRUE(process.WaitForExit(&exit_code));
   EXPECT_NE(kSuccess, exit_code);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

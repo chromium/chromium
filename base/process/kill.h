@@ -18,7 +18,7 @@ namespace base {
 
 class ProcessFilter;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace win {
 
 // See definition in sandbox/win/src/sandbox_types.h
@@ -41,7 +41,7 @@ const DWORD kProcessKilledExitCode = 1;
 
 }  // namespace win
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Return status values from GetTerminationStatus.  Don't use these as
 // exit code arguments to KillProcess*(), use platform/application
@@ -53,11 +53,11 @@ enum TerminationStatus {
   TERMINATION_STATUS_PROCESS_WAS_KILLED,   // e.g. SIGKILL or task manager kill
   TERMINATION_STATUS_PROCESS_CRASHED,      // e.g. Segmentation fault
   TERMINATION_STATUS_STILL_RUNNING,        // child hasn't exited yet
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Used for the case when oom-killer kills a process on ChromeOS.
   TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM,
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android processes are spawned from the system Zygote and we do not get
   // the termination status.  We can't know if the termination was a crash or an
   // oom kill for sure, but we can use status of the strong process bindings as
@@ -66,7 +66,7 @@ enum TerminationStatus {
 #endif
   TERMINATION_STATUS_LAUNCH_FAILED,        // child process never launched
   TERMINATION_STATUS_OOM,                  // Process died due to oom
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the OS terminated process due to code integrity failure.
   TERMINATION_STATUS_INTEGRITY_FAILURE,
 #endif
@@ -93,7 +93,7 @@ BASE_EXPORT bool KillProcesses(const FilePath::StringType& executable_name,
 BASE_EXPORT TerminationStatus GetTerminationStatus(ProcessHandle handle,
                                                    int* exit_code);
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Send a kill signal to the process and then wait for the process to exit
 // and get the termination status.
 //
@@ -112,12 +112,12 @@ BASE_EXPORT TerminationStatus GetTerminationStatus(ProcessHandle handle,
 BASE_EXPORT TerminationStatus GetKnownDeadTerminationStatus(
     ProcessHandle handle, int* exit_code);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Spawns a thread to wait asynchronously for the child |process| to exit
 // and then reaps it.
 BASE_EXPORT void EnsureProcessGetsReaped(Process process);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_POSIX)
 
 // Registers |process| to be asynchronously monitored for termination, forcibly
 // terminated if necessary, and reaped on exit. The caller should have signalled
@@ -129,7 +129,7 @@ BASE_EXPORT void EnsureProcessTerminated(Process process);
 
 // These are only sparingly used, and not needed on Fuchsia. They could be
 // implemented if necessary.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 // Wait for all the processes based on the named executable to exit.  If filter
 // is non-null, then only processes selected by the filter are waited on.
 // Returns after all processes have exited or wait_milliseconds have expired.
@@ -149,7 +149,7 @@ BASE_EXPORT bool CleanupProcesses(const FilePath::StringType& executable_name,
                                   base::TimeDelta wait,
                                   int exit_code,
                                   const ProcessFilter* filter);
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace base
 

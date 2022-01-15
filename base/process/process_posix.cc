@@ -23,7 +23,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <sys/event.h>
 #endif
 
@@ -95,7 +95,7 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
   return ret_pid > 0;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Using kqueue on Mac so that we can wait on non-child processes.
 // We can't use kqueues on child processes because we need to reap
 // our own children using wait.
@@ -183,7 +183,7 @@ bool WaitForSingleNonChildProcess(base::ProcessHandle handle,
 
   return true;
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
                                 int* exit_code,
@@ -200,13 +200,13 @@ bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
   const bool exited = (parent_pid < 0);
 
   if (!exited && parent_pid != our_pid) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac we can wait on non child processes.
     return WaitForSingleNonChildProcess(handle, timeout);
 #else
     // Currently on Linux we can't handle non child processes.
     NOTIMPLEMENTED();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   int status;

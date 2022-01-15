@@ -25,26 +25,26 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/fdio/spawn.h>
 #include <zircon/types.h>
 #endif
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/posix/file_descriptor_shuffle.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mach_port_rendezvous.h"
 #endif
 
 namespace base {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef std::vector<HANDLE> HandlesToInheritVector;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 struct PathToTransfer {
   base::FilePath path;
   zx_handle_t handle;
@@ -55,14 +55,14 @@ struct HandleToTransfer {
 };
 typedef std::vector<HandleToTransfer> HandlesToTransferVector;
 typedef std::vector<std::pair<int, int>> FileHandleMappingVector;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 typedef std::vector<std::pair<int, int>> FileHandleMappingVector;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Options for launching a subprocess that are passed to LaunchProcess().
 // The default constructor constructs the object with default options.
 struct BASE_EXPORT LaunchOptions {
-#if (defined(OS_POSIX) || defined(OS_FUCHSIA)) && !defined(OS_APPLE)
+#if (BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)) && !BUILDFLAG(IS_APPLE)
   // Delegate to be run in between fork and exec in the subprocess (see
   // pre_exec_delegate below)
   class BASE_EXPORT PreExecDelegate {
@@ -79,7 +79,7 @@ struct BASE_EXPORT LaunchOptions {
     // safe.
     virtual void RunAsyncSafe() = 0;
   };
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   LaunchOptions();
   LaunchOptions(const LaunchOptions&);
@@ -91,7 +91,7 @@ struct BASE_EXPORT LaunchOptions {
   // If not empty, change to this directory before executing the new process.
   base::FilePath current_directory;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool start_hidden = false;
 
   // Process will be started using a shell helper so that it is elevated.
@@ -178,13 +178,13 @@ struct BASE_EXPORT LaunchOptions {
   // If not supported by Windows, has no effect. This flag weakens security by
   // turning off ROP protection.
   bool disable_cetcompat = false;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Remap file descriptors according to the mapping of src_fd->dest_fd to
   // propagate FDs into the child process.
   FileHandleMappingVector fds_to_remap;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN) || defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Set/unset environment variables. These are applied on top of the parent
   // process environment.  Empty (the default) means to inherit the same
   // environment. See internal::AlterEnvironment().
@@ -193,9 +193,9 @@ struct BASE_EXPORT LaunchOptions {
   // Clear the environment for the new process before processing changes from
   // |environment|.
   bool clear_environment = false;
-#endif  // OS_WIN || OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // If non-zero, start the process using clone(), using flags as provided.
   // Unlike in clone, clone_flags may not contain a custom termination signal
   // that is sent to the parent when the child dies. The termination signal will
@@ -208,9 +208,9 @@ struct BASE_EXPORT LaunchOptions {
 
   // Sets parent process death signal to SIGKILL.
   bool kill_on_parent_death = false;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mach ports that will be accessible to the child process. These are not
   // directly inherited across process creation, but they are stored by a Mach
   // IPC server that a child process can communicate with to retrieve them.
@@ -232,9 +232,9 @@ struct BASE_EXPORT LaunchOptions {
   // Apply a process scheduler policy to enable mitigations against CPU side-
   // channel attacks.
   bool enable_cpu_security_mitigations = false;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // If valid, launches the application in that job object.
   zx_handle_t job_handle = ZX_HANDLE_INVALID;
 
@@ -276,15 +276,15 @@ struct BASE_EXPORT LaunchOptions {
   // Suffix that will be added to the process name. When specified process name
   // will be set to "<binary_name><process_suffix>".
   std::string process_name_suffix;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // If not empty, launch the specified executable instead of
   // cmdline.GetProgram(). This is useful when it is necessary to pass a custom
   // argv[0].
   base::FilePath real_path;
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // If non-null, a delegate to be run immediately prior to executing the new
   // program in the child process.
   //
@@ -292,7 +292,7 @@ struct BASE_EXPORT LaunchOptions {
   // code running in this delegate essentially needs to be async-signal safe
   // (see man 7 signal for a list of allowed functions).
   raw_ptr<PreExecDelegate> pre_exec_delegate = nullptr;
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
   // Each element is an RLIMIT_* constant that should be raised to its
   // rlim_max.  This pointer is owned by the caller and must live through
@@ -303,7 +303,7 @@ struct BASE_EXPORT LaunchOptions {
   // inheriting the parent's process group.  The pgid of the child process
   // will be the same as its pid.
   bool new_process_group = false;
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // If non-negative, the specified file descriptor will be set as the launched
@@ -328,7 +328,7 @@ struct BASE_EXPORT LaunchOptions {
 BASE_EXPORT Process LaunchProcess(const CommandLine& cmdline,
                                   const LaunchOptions& options);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows-specific LaunchProcess that takes the command line as a
 // string.  Useful for situations where you need to control the
 // command line arguments directly, but prefer the CommandLine version
@@ -350,7 +350,7 @@ BASE_EXPORT Process LaunchProcess(const CommandLine::StringType& cmdline,
 BASE_EXPORT Process LaunchElevatedProcess(const CommandLine& cmdline,
                                           const LaunchOptions& options);
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // A POSIX-specific version of LaunchProcess that takes an argv array
 // instead of a CommandLine.  Useful for situations where you need to
 // control the command line arguments directly, but prefer the
@@ -358,15 +358,15 @@ BASE_EXPORT Process LaunchElevatedProcess(const CommandLine& cmdline,
 BASE_EXPORT Process LaunchProcess(const std::vector<std::string>& argv,
                                   const LaunchOptions& options);
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 // Close all file descriptors, except those which are a destination in the
 // given multimap. Only call this function in a child process where you know
 // that there aren't any other threads.
 BASE_EXPORT void CloseSuperfluousFds(const InjectiveMultimap& saved_map);
-#endif  // defined(OS_APPLE)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Set |job_object|'s JOBOBJECT_EXTENDED_LIMIT_INFORMATION
 // BasicLimitInformation.LimitFlags to |limit_flags|.
 BASE_EXPORT bool SetJobObjectLimitFlags(HANDLE job_object, DWORD limit_flags);
@@ -374,7 +374,7 @@ BASE_EXPORT bool SetJobObjectLimitFlags(HANDLE job_object, DWORD limit_flags);
 // Output multi-process printf, cout, cerr, etc to the cmd.exe console that ran
 // chrome. This is not thread-safe: only call from main thread.
 BASE_EXPORT void RouteStdioToConsole(bool create_console_if_not_found);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Executes the application specified by |cl| and wait for it to exit. Stores
 // the output (stdout) in |output|. Redirects stderr to /dev/null. Returns true
@@ -393,13 +393,13 @@ BASE_EXPORT bool GetAppOutputAndError(const CommandLine& cl,
 BASE_EXPORT bool GetAppOutputWithExitCode(const CommandLine& cl,
                                           std::string* output, int* exit_code);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // A Windows-specific version of GetAppOutput that takes a command line string
 // instead of a CommandLine object. Useful for situations where you need to
 // control the command line arguments directly.
 BASE_EXPORT bool GetAppOutput(CommandLine::StringPieceType cl,
                               std::string* output);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // A POSIX-specific version of GetAppOutput that takes an argv array
 // instead of a CommandLine.  Useful for situations where you need to
 // control the command line arguments directly.
@@ -410,7 +410,7 @@ BASE_EXPORT bool GetAppOutput(const std::vector<std::string>& argv,
 // stderr.
 BASE_EXPORT bool GetAppOutputAndError(const std::vector<std::string>& argv,
                                       std::string* output);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // If supported on the platform, and the user has sufficent rights, increase
 // the current process's scheduling priority to a high priority.
@@ -420,7 +420,7 @@ BASE_EXPORT void RaiseProcessToHighPriority();
 // binary. This should not be called in production/released code.
 BASE_EXPORT LaunchOptions LaunchOptionsForTest();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // A wrapper for clone with fork-like behavior, meaning that it returns the
 // child's pid in the parent and 0 in the child. |flags|, |ptid|, and |ctid| are
 // as in the clone system call (the CLONE_VM flag is not supported).
