@@ -251,7 +251,7 @@
                     confirmationID:(const int)confirmationID
                         consentIDs:(NSArray<NSNumber*>*)consentIDs {
   self.authenticationFlow = nil;
-  [self.consumer setUIEnabled:YES];
+  [self.consumer setActionToDone];
 
   if (!success) {
     return;
@@ -293,7 +293,7 @@
 // with/without |success|.
 - (void)signinForAdvancedSettingsCompletedWithSuccess:(BOOL)success {
   self.authenticationFlow = nil;
-  [self.consumer setUIEnabled:YES];
+  [self.consumer setActionToDone];
 
   if (!success) {
     return;
@@ -310,7 +310,7 @@
 
 - (void)onSigninStateRestorationCompleted {
   // Stop the loading overlay and call back to the coordinator.
-  [self.consumer setUIEnabled:YES];
+  [self.consumer setActionToDone];
   [self.delegate signinSyncMediatorDidSuccessfulyFinishSignout:self];
 }
 

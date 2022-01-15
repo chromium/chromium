@@ -64,6 +64,12 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 // Button to show sync advanced settings.
 @property(nonatomic, strong) UIButton* advanceSyncSettingsButton;
 
+// YES when the sign-in or sign out action is done.
+@property(nonatomic, assign) BOOL signinSignoutActionDone;
+
+// YES when spinner overlay animation is done.
+@property(nonatomic, assign) BOOL overlayAnimationDone;
+
 @end
 
 @implementation SigninSyncViewController
@@ -235,6 +241,13 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 #pragma mark - Properties
 
+- (void)setOverlayAnimationDone:(BOOL)overlayAnimationDone {
+  _overlayAnimationDone = overlayAnimationDone;
+  if (_overlayAnimationDone) {
+    [self setUIEnabled:YES];
+  }
+}
+
 - (IdentityButtonControl*)identityControl {
   if (!_identityControl) {
     _identityControl = [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
@@ -382,12 +395,33 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 - (void)setUIEnabled:(BOOL)UIEnabled {
   if (UIEnabled) {
-    [self.overlay removeFromSuperview];
+    // Only remove the overlay when both the action and the animation are done.
+    if (self.signinSignoutActionDone && self.overlayAnimationDone) {
+      [self.overlay removeFromSuperview];
+    }
   } else {
+    // Handling the sign-in or sign out action and start the fade-in effect
+    // along with the spinner animation.
+    self.signinSignoutActionDone = NO;
+    self.overlayAnimationDone = NO;
+
+    self.overlay.indicator.alpha = 0.0;
     [self.view addSubview:self.overlay];
     AddSameConstraints(self.view, self.overlay);
     [self.overlay.indicator startAnimating];
+    [UIView animateWithDuration:0.2
+        animations:^{
+          self.overlay.indicator.alpha = 1.0;
+        }
+        completion:^(BOOL finished) {
+          self.overlayAnimationDone = YES;
+        }];
   }
+}
+
+- (void)setActionToDone {
+  self.signinSignoutActionDone = YES;
+  [self setUIEnabled:YES];
 }
 
 #pragma mark - Private

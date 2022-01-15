@@ -25,6 +25,9 @@
 // Sets the UI as interactable or not.
 - (void)setUIEnabled:(BOOL)UIEnabled;
 
+// Sets the value of the sign-in or sign out action to done (YES).
+- (void)setActionToDone;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SYNC_SIGNIN_SYNC_CONSUMER_H_

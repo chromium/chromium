@@ -97,6 +97,10 @@ std::unique_ptr<KeyedService> CreateFakeConsentAuditor(
   self.UIWasEnabled = UIEnabled;
 }
 
+- (void)setActionToDone {
+  self.UIWasEnabled = YES;
+}
+
 @end
 
 class SigninSyncMediatorTest : public PlatformTest {
