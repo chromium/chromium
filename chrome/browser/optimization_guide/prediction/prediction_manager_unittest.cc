@@ -795,7 +795,7 @@ TEST_F(PredictionManagerTest,
                 .value(),
             FILE_PATH_LITERAL("whatever"));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Do not run the DCHECK death test on Windows since there's some weird
   // behavior there.
 
@@ -810,7 +810,7 @@ TEST_F(PredictionManagerTest,
 }
 
 // See crbug/1227996.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelCommandLineOverride) {
   optimization_guide::proto::Any metadata;

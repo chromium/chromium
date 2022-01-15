@@ -502,7 +502,7 @@ class PageContentAnnotationsServiceModelNotLoadedOnStartupTest
 };
 
 // Flaky on Win 7 Tests x64: crbug.com/1223172
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ModelNotAvailableForFirstNavigation \
   DISABLED_ModelNotAvailableForFirstNavigation
 #else

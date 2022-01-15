@@ -16,7 +16,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/bookmarks/bookmark_bridge.h"
 #endif
 
@@ -112,7 +112,7 @@ class OptimizationGuideKeyedService
  private:
   // BookmarkBridge is a friend class since it is a consumer of the
   // CanApplyOptimizationOnDemand API.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   friend class BookmarkBridge;
 #endif
 

@@ -371,7 +371,7 @@ class ChromeHintsManagerPushEnabledTest
 };
 
 TEST_F(ChromeHintsManagerPushEnabledTest, PushManagerSetOnAndroid) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(hints_manager()->push_notification_manager());
 #else
   EXPECT_FALSE(hints_manager()->push_notification_manager());

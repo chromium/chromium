@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   run_loop->Run();
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        GuestProfileUniqueKeyedService) {

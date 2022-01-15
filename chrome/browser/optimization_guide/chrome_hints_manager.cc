@@ -18,7 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/optimization_guide/android/android_push_notification_manager.h"
 #endif
 

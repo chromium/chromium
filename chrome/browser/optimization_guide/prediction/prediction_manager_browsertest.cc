@@ -815,7 +815,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   CreateBrowser(profile);
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
                        GuestProfileReceivesModel) {
