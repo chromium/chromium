@@ -2458,6 +2458,47 @@
             ]
         }
     ],
+    "CombinedNavigationOptimizations": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EarlyCodeCache",
+                        "FontManagerEarlyInit",
+                        "NavigationThreadingOptimizations",
+                        "URLLoaderSyncClient"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CombinedNavigationOptimizationsDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EarlyCodeCache",
+                        "NavigationThreadingOptimizations",
+                        "URLLoaderSyncClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "CommerceMerchantViewer": [
         {
             "platforms": [
@@ -3582,28 +3623,6 @@
             ]
         }
     ],
-    "EarlyCodeCache": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211116",
-                    "enable_features": [
-                        "EarlyCodeCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "EarlyEstablishGpuChannel": [
         {
             "platforms": [
@@ -3854,23 +3873,6 @@
                     },
                     "enable_features": [
                         "IPH_FocusHelpBubbleScreenReaderPromo"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FontManagerEarlyInit": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210921",
-                    "enable_features": [
-                        "FontManagerEarlyInit"
                     ]
                 }
             ]
@@ -5397,28 +5399,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NavigationRequestPreconnect"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NavigationThreadingOptimizations": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NavigationThreadingOptimizations"
                     ]
                 }
             ]
@@ -8128,28 +8108,6 @@
                     },
                     "enable_features": [
                         "UMAPseudoMetricsEffect"
-                    ]
-                }
-            ]
-        }
-    ],
-    "URLLoaderSyncClient": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211102",
-                    "enable_features": [
-                        "URLLoaderSyncClient"
                     ]
                 }
             ]
