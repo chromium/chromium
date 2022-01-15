@@ -363,7 +363,7 @@ TEST_F(WebGPUTest, SPIRVIsDisallowed) {
     *static_cast<bool*>(userdata) = true;
   };
 
-  // The initialization code doesn't set GpuPreferences::enable_webgpu_spirv so
+  // The initialization code doesn't set GpuPreferences::enable_unsafe_webgpu so
   // it stays at the default value of "false".
   Initialize(WebGPUTest::Options());
   wgpu::Device device = GetNewDevice();

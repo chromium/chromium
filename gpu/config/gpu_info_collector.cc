@@ -193,14 +193,14 @@ void AddTogglesToDawnInfoList(dawn_native::Instance* instance,
 
 #if BUILDFLAG(USE_DAWN)
 void ForceDawnTogglesForWebGPU(
-    bool allow_spirv,
+    bool enable_unsafe_webgpu,
     const std::vector<std::string>& enabled_preference,
     const std::vector<std::string>& disabled_preference,
     std::vector<const char*>* force_enabled_toggles,
     std::vector<const char*>* force_disabled_toggles) {
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
   // is secure), unless --enable-unsafe-webgpu is used.
-  if (!allow_spirv) {
+  if (!enable_unsafe_webgpu) {
     force_enabled_toggles->push_back("disallow_spirv");
   }
 
@@ -647,7 +647,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       // Get the list of forced toggles for WebGPU.
       std::vector<const char*> force_enabled_toggles_webgpu;
       std::vector<const char*> force_disabled_toggles_webgpu;
-      ForceDawnTogglesForWebGPU(gpu_preferences.enable_webgpu_spirv,
+      ForceDawnTogglesForWebGPU(gpu_preferences.enable_unsafe_webgpu,
                                 gpu_preferences.enabled_dawn_features_list,
                                 gpu_preferences.disabled_dawn_features_list,
                                 &force_enabled_toggles_webgpu,
