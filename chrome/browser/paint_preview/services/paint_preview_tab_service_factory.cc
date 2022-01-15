@@ -12,13 +12,13 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/paint_preview/android/jni_headers/PaintPreviewTabServiceFactory_jni.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace paint_preview {
 
@@ -65,7 +65,7 @@ SimpleFactoryKey* PaintPreviewTabServiceFactory::GetKeyToUse(
   return key;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForCurrentProfile(
     JNIEnv* env) {
@@ -76,6 +76,6 @@ JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForCurrentProfile(
           ->GetJavaRef();
   return base::android::ScopedJavaLocalRef<jobject>(java_ref);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace paint_preview

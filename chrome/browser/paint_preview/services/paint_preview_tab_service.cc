@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "build/build_config.h"
 #include "chrome/browser/paint_preview/services/paint_preview_tab_service_file_mixin.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/warm_compositor.h"
@@ -21,14 +22,14 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "chrome/browser/paint_preview/android/jni_headers/PaintPreviewTabService_jni.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace paint_preview {
 
@@ -41,13 +42,13 @@ constexpr int kMaxCaptureSizePixels = 100000;
 constexpr size_t kMaxPerCaptureSizeBytes = 8 * 1000L * 1000L;       // 8 MB.
 constexpr uint64_t kMaxDecodedImageSizeBytes = 10 * 1000L * 1000L;  // 10 MB.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void JavaBooleanCallbackAdapter(base::OnceCallback<void(bool)> callback,
                                 PaintPreviewTabService::Status status) {
   DVLOG(1) << "Capture finished with status: " << status;
   std::move(callback).Run(status == PaintPreviewTabService::Status::kOk);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Safe since Tab ID are just converted to strings to be directory keys.
 int TabIdFromDirectoryKey(const DirectoryKey& key) {
@@ -102,21 +103,21 @@ PaintPreviewTabService::PaintPreviewTabService(
             "Browser.PaintPreview.TabService.DiskUsageAtStartup",
             size_bytes / 1000);
       }));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   java_ref_.Reset(Java_PaintPreviewTabService_Constructor(
       env, reinterpret_cast<intptr_t>(this),
       reinterpret_cast<intptr_t>(static_cast<PaintPreviewBaseService*>(this))));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 PaintPreviewTabService::~PaintPreviewTabService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PaintPreviewTabService_onNativeDestroyed(env, java_ref_);
   java_ref_.Reset();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void PaintPreviewTabService::CaptureTab(int tab_id,
@@ -213,7 +214,7 @@ void PaintPreviewTabService::AuditArtifacts(
                      weak_ptr_factory_.GetWeakPtr(), active_tab_ids));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PaintPreviewTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
@@ -262,7 +263,7 @@ PaintPreviewTabService::GetPathAndroid(JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(
       env, GetFileMixin()->GetFileManager()->GetPath().AsUTF8Unsafe());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void PaintPreviewTabService::DeleteTask(int tab_id) {
   tasks_.erase(tab_id);

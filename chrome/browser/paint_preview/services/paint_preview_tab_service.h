@@ -83,7 +83,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   // occurred.
   void AuditArtifacts(const std::vector<int>& active_tab_ids);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // JNI wrapped versions of the above methods
   void CaptureTabAndroid(
       JNIEnv* env,
@@ -103,7 +103,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   base::android::ScopedJavaLocalRef<jstring> GetPathAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   class TabServiceTask {
@@ -204,9 +204,9 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   bool cache_ready_;
   base::flat_set<int> captured_tab_ids_;
   base::flat_map<int, std::unique_ptr<TabServiceTask>> tasks_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PaintPreviewTabService> weak_ptr_factory_{this};
 };
