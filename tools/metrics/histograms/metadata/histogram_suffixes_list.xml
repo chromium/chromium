@@ -2103,20 +2103,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.Timing2.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CloudPrintRequests" separator=".">
-  <obsolete>
-    Removed 06/2021. Cloud Print is no longer supported.
-  </obsolete>
-  <suffix name="DownloadData" label="Download data request"/>
-  <suffix name="Other" label="Other requests"/>
-  <suffix name="Register" label="Register request"/>
-  <suffix name="UpdatePrinter" label="Update printer request"/>
-  <affected-histogram name="CloudPrint.UrlFetcherDownloadSize"/>
-  <affected-histogram name="CloudPrint.UrlFetcherRequestTime"/>
-  <affected-histogram name="CloudPrint.UrlFetcherRetries"/>
-  <affected-histogram name="CloudPrint.UrlFetcherUploadSize"/>
-</histogram_suffixes>
-
 <!-- TODO(https://crbug.com/1275800): convert this to patterned histograms -->
 
 <histogram_suffixes

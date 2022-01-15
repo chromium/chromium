@@ -17,7 +17,6 @@ tools/metrics/histograms/metadata/chrome/histograms.xml
 tools/metrics/histograms/metadata/chromeos/histograms.xml
 tools/metrics/histograms/metadata/chromeos_hps/histograms.xml
 tools/metrics/histograms/metadata/chromeos_settings/histograms.xml
-tools/metrics/histograms/metadata/cloud/histograms.xml
 tools/metrics/histograms/metadata/commerce/histograms.xml
 tools/metrics/histograms/metadata/compositing/histograms.xml
 tools/metrics/histograms/metadata/content/histograms.xml

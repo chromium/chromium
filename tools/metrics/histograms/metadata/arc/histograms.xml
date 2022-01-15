@@ -123,48 +123,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AdaptiveIconLoad.FromArcAppIcon"
-    enum="BooleanIsAdaptiveIcon" expires_after="2020-12-31">
-  <obsolete>
-    Obsoleted in November 2021.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>lgcheng@google.com</owner>
-  <owner>nancylingwang@chromium.org</owner>
-  <summary>
-    The adaptive Arc app icons are loaded from ArcAppIcon. Recorded whether the
-    icon is the adaptive icon when the icon is loaded.
-  </summary>
-</histogram>
-
-<histogram name="Arc.AdaptiveIconLoad.FromArcDefaultAppIcon"
-    enum="BooleanIsAdaptiveIcon" expires_after="2020-12-31">
-  <obsolete>
-    Obsoleted in November 2021.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>lgcheng@google.com</owner>
-  <owner>nancylingwang@chromium.org</owner>
-  <summary>
-    The adaptive Arc app icons are loaded from ArcAppIcon for default Arc apps.
-    Recorded whether the icon is the adaptive icon when the icon is loaded.
-  </summary>
-</histogram>
-
-<histogram name="Arc.AdaptiveIconLoad.FromNonArcAppIcon"
-    enum="BooleanIsAdaptiveIcon" expires_after="2020-12-31">
-  <obsolete>
-    Obsoleted in November 2021.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>lgcheng@google.com</owner>
-  <owner>nancylingwang@chromium.org</owner>
-  <summary>
-    The adaptive Arc app icons are loaded from Non ArcAppIcon. Recorded whether
-    the icon is the adaptive icon when the icon is loaded.
-  </summary>
-</histogram>
-
 <histogram name="Arc.AdbSideloadingEnablingScreen"
     enum="AdbSideloadingPromptEvent" expires_after="2022-05-01">
   <owner>vraheja@chromium.org</owner>
@@ -235,37 +193,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AppListRecommendedImp.AllImpression" units="count"
-    expires_after="2022-01-09">
-  <obsolete>
-    Removed December 2021.
-  </obsolete>
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
-  <summary>
-    Record a count of an impression of FAR result. This is a count _any_ time
-    it's shown, even for a millisecond. Warning: this histogram was expired from
-    09/01/2021 to 10/01/2021; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Arc.AppListRecommendedImp.CountedImpression" units="count"
-    expires_after="2022-01-09">
-  <obsolete>
-    Removed December 2021.
-  </obsolete>
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
-  <summary>
-    Record a count of an impression of FAR result. This is a count of heuristic
-    real impressions: a new showing after a while, a longer showing, etc.
-    Warning: this histogram was expired from 09/01/2021 to 10/01/2021; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Arc.AppShortcuts.BuildMenuTime" units="ms"
     expires_after="2022-03-13">
   <owner>mmourgos@chromium.org</owner>
@@ -332,13 +259,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The status of account check before GMS Sign-in. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Auth.AccountCheck.TimeDelta{ArcUserTypes}" units="ms"
@@ -349,13 +270,7 @@ chromium-metrics-reviews@google.com.
     Elapsed time waiting for the account status check to be completed. This is
     not recorded in case of account status check failure. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Auth.AndroidIdSource{ArcUserTypes}"
@@ -366,13 +281,7 @@ chromium-metrics-reviews@google.com.
     The source of AndroidId during ARC provisioning. Recorded when trying to
     determine if the device is checked in. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Auth.Checkin.Attempts{ArcUserTypes}" units="attempts"
@@ -384,13 +293,7 @@ chromium-metrics-reviews@google.com.
     0 means that device was already checked-in. This is recorded in case
     check-in task is completed successfully. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Auth.Checkin.TimeDelta{ArcUserTypes}" units="ms"
@@ -401,13 +304,7 @@ chromium-metrics-reviews@google.com.
     Elapsed time waiting for the check-in task to be completed. This is recorded
     in case check-in task is completed successfully. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Auth.CodeFetcher.ProxyBypass{ArcUserTypes}" enum="Boolean"
@@ -462,13 +359,7 @@ chromium-metrics-reviews@google.com.
     Elapsed time waiting for network connection before starting other
     authorization operations. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Auth.RequestAccountInfoResult.Primary"
@@ -502,13 +393,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time waiting for GMS sign-in to complete. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.boot_progress{AndroidBootProgressEvents}" units="ms"
@@ -687,11 +572,6 @@ chromium-metrics-reviews@google.com.
     effective. {ArcThrottleObservers}
   </summary>
   <token key="ArcThrottleObservers">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".ArcAppLaunchRequested"
         summary="ARC app launch in progress."/>
     <variant name=".ArcIsBooting" summary="ARC is booting or restarting."/>
@@ -713,22 +593,6 @@ chromium-metrics-reviews@google.com.
     give an estimate of ARC usage time per OS version).
 
     Warning: this histogram was expired after 2021-03-12 and brought back
-    2021-09-17; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Arc.CupsPrinting.PageCount" units="units"
-    expires_after="2020-10-04">
-  <obsolete>
-    Removed 2021-09.
-  </obsolete>
-  <owner>skau@chromium.org</owner>
-  <owner>vkuzkokov@google.com</owner>
-  <summary>
-    The number of pages sent to a native printer by ARC. Reported for every
-    print job originating in ARC container and sent to a CUPS printer.
-
-    Warning: this histogram was expired after 2020-10-04 and brought back
     2021-09-17; data may be missing.
   </summary>
 </histogram>
@@ -1093,51 +957,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.LowMemoryKiller.Count" units="units" expires_after="M82">
-  <obsolete>
-    Removed in Oct 2020. Now reported as Memory.LowMemoryKiller.Count.
-  </obsolete>
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
-  <summary>Cumulative count of low memory kills in one user session.</summary>
-</histogram>
-
-<histogram name="Arc.LowMemoryKiller.FirstKillLatency" units="ms"
-    expires_after="M82">
-  <obsolete>
-    Removed in Oct 2020. Now reported as
-    Memory.LowMemoryKiller.FirstKillLatency.
-  </obsolete>
-  <owner>cywang@google.com</owner>
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
-  <summary>
-    When Chrome OS is in low memory state, TabManager kills some victims to free
-    memory. This value is the elapsed time between TabManager receiving the low
-    memory notification and the first kill.
-  </summary>
-</histogram>
-
-<histogram name="Arc.LowMemoryKiller.FreedSize" units="KB"
-    expires_after="2021-02-21">
-  <obsolete>
-    Removed in Oct 2020. Now reported as Memory.LowMemoryKiller.FreedSize.
-  </obsolete>
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
-  <summary>The memory size freed by each low memory kill event.</summary>
-</histogram>
-
-<histogram name="Arc.LowMemoryKiller.TimeDelta" units="ms"
-    expires_after="2021-02-21">
-  <obsolete>
-    Removed in Oct 2020. Now reported as Memory.LowMemoryKiller.TimeDelta.
-  </obsolete>
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
-  <summary>The elapsed time to last low memory kill event.</summary>
-</histogram>
-
 <histogram name="Arc.NativeBridge" enum="ArcNativeBridgeType"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
@@ -1253,15 +1072,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the success result of DNS query resolution inside ARC.
   </summary>
-</histogram>
-
-<histogram name="Arc.OOMKills.Count" units="kills" expires_after="2021-03-07">
-  <obsolete>
-    Removed in Oct 2020. Now reported as Memory.OOMKills.Count.
-  </obsolete>
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
-  <summary>Cumulative count of OOM kills in one user session.</summary>
 </histogram>
 
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
@@ -1445,35 +1255,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.PrintPreview.RenderAndGeneratePDFTime" units="ms"
-    expires_after="2021-06-01">
-  <obsolete>
-    Removed in May 2021 and merged into PrintPreview.RenderAndGeneratePDFTime.
-  </obsolete>
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>
-    Time taken for ARC to render and generate a PDF for print preview. Includes
-    time to reflow the page back to normal, but not the time to reflow the page
-    to prepare for printing.
-  </summary>
-</histogram>
-
-<histogram name="Arc.PrintPreview.RenderAndGeneratePDFTimeAvgPerPage"
-    units="ms" expires_after="2021-06-01">
-  <obsolete>
-    Removed in May 2021 and merged into
-    PrintPreview.RenderAndGeneratePDFTimeAvgPerPage.
-  </obsolete>
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>
-    Time taken for ARC to render and generate a PDF for print preview divided by
-    the number of pages. Includes time to reflow the page back to normal, but
-    not the time to reflow the page to prepare for printing.
-  </summary>
-</histogram>
-
 <histogram name="Arc.PrintPreview.RendererError" enum="PrintPreviewFailureType"
     expires_after="2022-05-01">
   <owner>bmgordon@chromium.org</owner>
@@ -1484,16 +1265,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2021-06-01">
-  <obsolete>
-    Removed in May 2021 and merged into PrintPreview.RenderToPDFTime.
-  </obsolete>
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>Time taken for ARC to render a PDF for print preview.</summary>
-</histogram>
-
 <histogram name="Arc.Provisioning.CheckInError{ArcUserTypes}"
     enum="ArcProvisioningCheckInError" expires_after="2022-08-01">
   <owner>mhasank@google.com</owner>
@@ -1502,13 +1273,7 @@ chromium-metrics-reviews@google.com.
     The error that occurred during GMS check-in operation. Recorded when ARC++
     provisioning flow fails. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Provisioning.CloudFlowError{ArcUserTypes}"
@@ -1519,34 +1284,7 @@ chromium-metrics-reviews@google.com.
     The result (success or the reason of failure) of Cloud DPC provisioning.
     Recorded when ARC++ provisioning flow completes. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram name="Arc.Provisioning.Result{ArcUserTypes}"
-    enum="ArcProvisioningResult" expires_after="2021-07-01">
-  <obsolete>
-    Removed in Dec 2020. Now reported as Arc.Provisioning.Status.
-  </obsolete>
-  <owner>alexchau@google.com</owner>
-  <owner>phweiss@google.com</owner>
-  <summary>
-    The result (success or the type of failure) of ARC provisioning. The base
-    value has been deprecated on 2016-09-15 in favour of per user type values.
-    {ArcUserTypes}
-  </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Provisioning.SignInError{ArcUserTypes}"
@@ -1557,13 +1295,7 @@ chromium-metrics-reviews@google.com.
     The error that occured during GMS sign-in operation. Recorded when ARC++
     provisioning flow fails. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Provisioning.Status{ArcUserTypes}"
@@ -1573,13 +1305,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The status (success or error) of ARC++ provisioning. {ArcUserTypes}
   </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Failure{ArcUserTypes}" units="ms"
@@ -1637,25 +1363,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Arc.Runtime.Performance.CommitDeviation{ArcPerformanceAppCategories}"
-    units="microseconds" expires_after="2021-06-01">
-  <obsolete>
-    Removed in Mar 2021. Now reported as
-    Arc.Runtime.Performance.CommitDeviation2.
-  </obsolete>
-  <owner>khmel@google.com</owner>
-  <owner>camurcu@google.com</owner>
-  <summary>
-    Standard deviation for commit time delta from ideal time.
-    {ArcPerformanceAppCategories}
-  </summary>
-  <token key="ArcPerformanceAppCategories"
-      variants="ArcPerformanceAppCategories">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Arc.Runtime.Performance.FPS2{ArcPerformanceAppCategories}"
     units="fps" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
@@ -1664,20 +1371,6 @@ chromium-metrics-reviews@google.com.
     Render frames per second. Only collected if the user has app syncing enabled
     and doesn't have a custom passphrase set. {ArcPerformanceAppCategories}
   </summary>
-  <token key="ArcPerformanceAppCategories"
-      variants="ArcPerformanceAppCategories">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Arc.Runtime.Performance.FPS{ArcPerformanceAppCategories}"
-    units="fps" expires_after="2021-06-01">
-  <obsolete>
-    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.FPS2.
-  </obsolete>
-  <owner>khmel@google.com</owner>
-  <owner>camurcu@google.com</owner>
-  <summary>Render frames per second. {ArcPerformanceAppCategories}</summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
     <variant name=""/>
@@ -1724,23 +1417,6 @@ chromium-metrics-reviews@google.com.
     Render quality with maximum 100%. Only collected if the user has app syncing
     enabled and doesn't have a custom passphrase set.
     {ArcPerformanceAppCategories}
-  </summary>
-  <token key="ArcPerformanceAppCategories"
-      variants="ArcPerformanceAppCategories">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
-    name="Arc.Runtime.Performance.RenderQuality{ArcPerformanceAppCategories}"
-    units="%" expires_after="2021-06-01">
-  <obsolete>
-    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.RenderQuality2.
-  </obsolete>
-  <owner>khmel@google.com</owner>
-  <owner>camurcu@google.com</owner>
-  <summary>
-    Render quality with maximum 100%. {ArcPerformanceAppCategories}
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -1797,19 +1473,6 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
   </token>
-</histogram>
-
-<histogram name="Arc.ShareFilesOnExit" enum="ArcShareFilesOnExit"
-    expires_after="M75">
-  <obsolete>
-    Removed in September 2021. Feature launched in 2018, no longer tracked.
-  </obsolete>
-  <owner>weifangsun@google.com</owner>
-  <owner>djacobo@google.com</owner>
-  <summary>
-    Exit code coming from ARC's share files feature. Used to observe stability
-    for the feature.
-  </summary>
 </histogram>
 
 <histogram name="Arc.ShutdownTime" units="ms" expires_after="M85">
