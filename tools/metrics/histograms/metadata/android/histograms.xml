@@ -980,7 +980,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DexFixer" enum="DexFixerReason"
-    expires_after="2022-01-30">
+    expires_after="2023-01-30">
   <owner>agrieve@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
