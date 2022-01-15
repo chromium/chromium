@@ -43,6 +43,8 @@ class ChromeSearchResult {
   using DisplayIndex = ash::SearchResultDisplayIndex;
   using IconInfo = ash::SearchResultIconInfo;
   using IconShape = ash::SearchResultIconShape;
+  using TextItem = ash::SearchResultTextItem;
+  using TextVector = std::vector<TextItem>;
 
   ChromeSearchResult();
 
@@ -55,6 +57,12 @@ class ChromeSearchResult {
   const Tags& title_tags() const { return metadata_->title_tags; }
   const std::u16string& details() const { return metadata_->details; }
   const Tags& details_tags() const { return metadata_->details_tags; }
+  const TextVector& title_text_vector() const {
+    return metadata_->title_vector;
+  }
+  const TextVector& details_text_vector() const {
+    return metadata_->details_vector;
+  }
   const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
@@ -94,6 +102,8 @@ class ChromeSearchResult {
   void SetTitleTags(const Tags& tags);
   void SetDetails(const std::u16string& details);
   void SetDetailsTags(const Tags& tags);
+  void SetTitleTextVector(const TextVector& text_vector);
+  void SetDetailsTextVector(const TextVector& text_vector);
   void SetAccessibleName(const std::u16string& name);
   void SetRating(float rating);
   void SetFormattedPrice(const std::u16string& formatted_price);

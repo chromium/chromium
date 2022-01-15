@@ -199,8 +199,23 @@ SearchResultTextItem::SearchResultTextItem(SearchResultTextItemType type) {
   item_type = type;
 }
 
-SearchResultTextItem::SearchResultTextItem(const SearchResultTextItem& other) =
-    default;
+SearchResultTextItem::SearchResultTextItem(const SearchResultTextItem& other) {
+  item_type = other.item_type;
+  raw_text = other.raw_text;
+  text_tags = other.text_tags;
+  icon_code = other.icon_code;
+  raw_icon = other.raw_icon;
+}
+
+SearchResultTextItem& SearchResultTextItem::operator=(
+    const SearchResultTextItem& other) {
+  item_type = other.item_type;
+  raw_text = other.raw_text;
+  text_tags = other.text_tags;
+  icon_code = other.icon_code;
+  raw_icon = other.raw_icon;
+  return *this;
+}
 
 SearchResultTextItem::~SearchResultTextItem() = default;
 
@@ -210,12 +225,12 @@ SearchResultTextItemType SearchResultTextItem::GetType() {
 
 const std::string& SearchResultTextItem::GetText() {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
-  return text_content.value();
+  return raw_text.value();
 }
 
 SearchResultTextItem& SearchResultTextItem::SetText(std::string text) {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
-  text_content = text;
+  raw_text = text;
   return *this;
 }
 

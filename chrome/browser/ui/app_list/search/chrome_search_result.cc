@@ -51,6 +51,15 @@ void ChromeSearchResult::SetDetailsTags(const Tags& tags) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetTitleTextVector(const TextVector& text_vector) {
+  metadata_->title_vector = text_vector;
+  SetSearchResultMetadata();
+}
+void ChromeSearchResult::SetDetailsTextVector(const TextVector& text_vector) {
+  metadata_->details_vector = text_vector;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetAccessibleName(const std::u16string& name) {
   metadata_->accessible_name = name;
   SetSearchResultMetadata();

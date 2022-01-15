@@ -429,7 +429,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
  public:
   SearchResultTextItem(SearchResultTextItemType type);
   SearchResultTextItem(const SearchResultTextItem&);
-  SearchResultTextItem& operator=(const SearchResultTextItem&) = delete;
+  SearchResultTextItem& operator=(const SearchResultTextItem&);
   ~SearchResultTextItem();
 
   SearchResultTextItemType GetType();
@@ -449,8 +449,8 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
  private:
   SearchResultTextItemType item_type;
   // used for type SearchResultTextItemType::kString.
+  absl::optional<std::string> raw_text;
   absl::optional<SearchResultTags> text_tags;
-  absl::optional<std::string> text_content;
   // used for type SearchResultTextItemType::kIconCode.
   absl::optional<int> icon_code;
   // used for type SearchResultTextItemType::kCustomIcon.
