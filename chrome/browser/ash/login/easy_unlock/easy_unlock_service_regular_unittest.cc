@@ -13,10 +13,12 @@
 
 #include "ash/components/proximity_auth/fake_lock_handler.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
@@ -218,6 +220,9 @@ class EasyUnlockServiceRegularTest : public testing::Test {
   void SetScreenLockState(bool is_locked) {
     if (is_locked)
       proximity_auth::ScreenlockBridge::Get()->SetFocusedUser(account_id_);
+
+    fake_lock_handler_->ClearSmartLockState();
+    fake_lock_handler_->ClearSmartLockAuthResult();
 
     proximity_auth::ScreenlockBridge::Get()->SetLockHandler(
         is_locked ? fake_lock_handler_.get() : nullptr);
@@ -498,6 +503,44 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   histogram_tester_.ExpectBucketCount(
       "ChromeOS.FeatureUsage.SmartLock",
       feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+}
+
+// Regression test for b/213941298.
+// Authenticate with Easy Unlock twice, calling UpdateSmartLockState in between.
+// Ordinarily, this call to UpdateSmartLockState would be made by
+// ProximityAuthClient during the OnScreenDidUnlock event. Check that the second
+// call to AttemptAuth succeeds since UpdateSmartLockState clears out the last
+// auth attempt, allowing the next auth attempt to proceed.
+TEST_F(EasyUnlockServiceRegularTest,
+       UpdateSmartLockStateClearsLastAuthAttempt) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  ASSERT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().value());
+
+  SetScreenLockState(false /* is_locked */);
+  service->UpdateSmartLockState(SmartLockState::kInactive);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state().has_value());
+
+  SetScreenLockState(true /* is_locked */);
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  ASSERT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().value());
+
+  SetScreenLockState(false /* is_locked */);
 }
 
 }  // namespace ash

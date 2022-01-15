@@ -20,10 +20,14 @@ void FakeLockHandler::ShowUserPodCustomIcon(
 void FakeLockHandler::HideUserPodCustomIcon(const AccountId& account_id) {}
 
 void FakeLockHandler::SetSmartLockState(const AccountId& account_id,
-                                        ash::SmartLockState state) {}
+                                        ash::SmartLockState state) {
+  smart_lock_state_ = state;
+}
 
 void FakeLockHandler::NotifySmartLockAuthResult(const AccountId& account_id,
-                                                bool successful) {}
+                                                bool successful) {
+  smart_lock_auth_result_ = successful;
+}
 
 void FakeLockHandler::EnableInput() {}
 
@@ -45,5 +49,13 @@ void FakeLockHandler::Unlock(const AccountId& account_id) {}
 void FakeLockHandler::AttemptEasySignin(const AccountId& account_id,
                                         const std::string& secret,
                                         const std::string& key_label) {}
+
+void FakeLockHandler::ClearSmartLockState() {
+  smart_lock_state_.reset();
+}
+
+void FakeLockHandler::ClearSmartLockAuthResult() {
+  smart_lock_auth_result_.reset();
+}
 
 }  // namespace proximity_auth
