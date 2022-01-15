@@ -92,7 +92,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
           profile->GetPath()));
 
   scoped_refptr<PasswordStore> ps;
-#if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MAC) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || \
     defined(USE_OZONE)
   // Since SyncService has dependency on PasswordStore keyed service, there
   // are no guarantees that during the construction of the password store

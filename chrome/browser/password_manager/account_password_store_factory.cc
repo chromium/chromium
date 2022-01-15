@@ -36,7 +36,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "base/task/task_traits.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,13 +45,13 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_task_traits.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::UnsyncedCredentialsDeletionNotifier;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -115,14 +115,14 @@ UnsyncedCredentialsDeletionNotifierImpl::GetWeakPtr() {
 
 }  // namespace
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SyncEnabledOrDisabled(Profile* profile) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   UpdateAllFormManagersAndPasswordReuseManager(profile);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -172,7 +172,7 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
           profile->GetPath()));
 
   scoped_refptr<password_manager::PasswordStore> ps =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db)));

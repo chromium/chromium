@@ -9,10 +9,10 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "content/public/common/content_features.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
     ChromePasswordManagerClient* client)
@@ -24,7 +24,7 @@ bool ChromeWebAuthnCredentialsDelegate::IsWebAuthnAutofillEnabled() const {
 
 void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::string backend_id) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
           client_->web_contents());
@@ -33,12 +33,12 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
   }
   authenticator_delegate->dialog_model()->OnAccountPreselected(
       std::vector<uint8_t>(backend_id.begin(), backend_id.end()));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 std::vector<autofill::Suggestion>
 ChromeWebAuthnCredentialsDelegate::GetWebAuthnSuggestions() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return {};
 #else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =

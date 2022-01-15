@@ -44,7 +44,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -127,7 +127,7 @@ class ChromePasswordManagerClient
   void ShowTouchToFill(
       password_manager::PasswordManagerDriver* driver) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Notifies `PasswordReuseDetectionManager` about passwords selected from
   // AllPasswordsBottomSheet.
   void OnPasswordSelected(const std::u16string& text) override;
@@ -222,7 +222,7 @@ class ChromePasswordManagerClient
   void LogPasswordReuseDetectedEvent() override;
 
   // Reporting these events is only supported on desktop platforms.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
       bool is_federated,
@@ -267,11 +267,11 @@ class ChromePasswordManagerClient
   void FrameWasScrolled() override;
   void GenerationElementLostFocus() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnImeTextCommittedEvent(const std::u16string& text_str) override;
   void OnImeSetComposingTextEvent(const std::u16string& text_str) override;
   void OnImeFinishComposingTextEvent() override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Observer for PasswordGenerationPopup events. Used for testing.
   void SetTestObserver(PasswordGenerationPopupObserver* observer);
@@ -292,7 +292,7 @@ class ChromePasswordManagerClient
   bool was_on_paste_called() const { return was_on_paste_called_; }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   PasswordAccessoryController* GetOrCreatePasswordAccessory();
 
   TouchToFillController* GetOrCreateTouchToFillController();
@@ -317,7 +317,7 @@ class ChromePasswordManagerClient
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 // TODO(crbug.com/1006430): Paste event is not captured on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnPaste() override;
 #endif
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -366,7 +366,7 @@ class ChromePasswordManagerClient
   password_manager::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Holds and facilitates a credential store for each origin in this tab.
   password_manager::CredentialCache credential_cache_;
 
@@ -382,7 +382,7 @@ class ChromePasswordManagerClient
   SaveUpdatePasswordMessageDelegate save_update_password_message_delegate_;
   GeneratedPasswordSavedMessageDelegate
       generated_password_saved_message_delegate_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   raw_ptr<password_manager::ContentPasswordManagerDriverFactory>
       driver_factory_;

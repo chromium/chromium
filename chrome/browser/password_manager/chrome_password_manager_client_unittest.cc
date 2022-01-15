@@ -79,13 +79,13 @@
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::FieldRendererId;
 using autofill::mojom::FocusedFieldType;
@@ -100,7 +100,7 @@ using testing::NiceMock;
 using testing::Return;
 using testing::StrictMock;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 using password_manager::CredentialCache;
 #endif
 
@@ -816,7 +816,7 @@ TEST_F(ChromePasswordManagerClientTest, MissingUIDelegate) {
   client->HideManualFallbackForSaving();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class ChromePasswordManagerClientAndroidTest
     : public ChromePasswordManagerClientTest {
  protected:
@@ -992,4 +992,4 @@ TEST_F(ChromePasswordManagerClientAndroidTest, HideFillingUIOnNavigatingAway) {
   GURL kUrl2("https://accounts.google.com");
   NavigateAndCommit(kUrl2);
 }
-#endif  //  defined(OS_ANDROID)
+#endif  //  BUILDFLAG(IS_ANDROID)

@@ -2948,7 +2948,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
 // Check that the internals page contains logs from the renderer.
 // Flaky on linux-bfcache-rel crbug.com/1276313.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_InternalsPage_Renderer DISABLED_InternalsPage_Renderer
 #else
 #define MAYBE_InternalsPage_Renderer InternalsPage_Renderer
