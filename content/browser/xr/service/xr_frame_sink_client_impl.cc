@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -15,7 +16,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #endif
 
@@ -127,7 +128,7 @@ void XrFrameSinkClientImpl::ConfigureDOMOverlay() {
 // Since we don't have the ability to get updates to the surface id on non-
 // Android OS's, we let it stay null, which callers can use to as a signal that
 // DOMOverlay will not work.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   RenderWidgetHostViewAndroid* view =
       static_cast<RenderWidgetHostViewAndroid*>(render_frame_host->GetView());
   if (!view)

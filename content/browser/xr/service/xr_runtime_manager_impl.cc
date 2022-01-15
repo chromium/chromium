@@ -15,6 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "content/browser/xr/service/xr_frame_sink_client_impl.h"
 #include "content/browser/xr/xr_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -34,9 +35,9 @@
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "ui/gl/gl_switches.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/xr/service/isolated_device_provider.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -46,7 +47,7 @@ XRRuntimeManagerImpl* g_xr_runtime_manager = nullptr;
 base::LazyInstance<base::ObserverList<XRRuntimeManager::Observer>>::Leaky
     g_xr_runtime_manager_observers;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool IsEnabled(const base::CommandLine* command_line,
                const base::Feature& feature,
                const std::string& name) {
@@ -120,13 +121,13 @@ XRRuntimeManagerImpl::GetOrCreateInstance() {
   }
 
   // Then add any other "built-in" providers
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   providers.push_back(std::make_unique<IsolatedVRDeviceProvider>());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   bool orientation_provider_enabled = true;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   orientation_provider_enabled =
       IsEnabled(cmd_line, device::kWebXrOrientationSensorDevice,
@@ -216,7 +217,7 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetRuntimeForOptions(
 }
 
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto* gvr = GetRuntime(device::mojom::XRDeviceId::GVR_DEVICE_ID);
   if (gvr)
     return gvr;
@@ -232,7 +233,7 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
 }
 
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto* arcore_runtime =
       GetRuntime(device::mojom::XRDeviceId::ARCORE_DEVICE_ID);
   if (arcore_runtime && arcore_runtime->SupportsArBlendMode())
@@ -354,7 +355,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
   }
 
   if (!IsInitializedOnCompatibleAdapter(runtime)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     absl::optional<CHROME_LUID> luid = runtime->GetLuid();
     // IsInitializedOnCompatibleAdapter should have returned true if the
     // runtime doesn't specify a LUID.
@@ -400,7 +401,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 
 bool XRRuntimeManagerImpl::IsInitializedOnCompatibleAdapter(
     BrowserXRRuntimeImpl* runtime) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   absl::optional<CHROME_LUID> luid = runtime->GetLuid();
   if (luid && (luid->HighPart != 0 || luid->LowPart != 0)) {
     CHROME_LUID active_luid =
@@ -455,7 +456,7 @@ XRRuntimeManagerImpl::~XRRuntimeManagerImpl() {
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
         switches::kUseAdapterLuid);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // If we changed the GPU, revert it back to the default GPU. This is
     // separate from xr_compatible_restarted_gpu_ because the GPU process may
     // not have been successfully initialized using the specified GPU and is

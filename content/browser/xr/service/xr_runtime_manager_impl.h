@@ -27,7 +27,7 @@
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -143,7 +143,7 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   size_t num_initialized_providers_ = 0;
 
   bool xr_compatible_restarted_gpu_ = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CHROME_LUID default_gpu_ = {0, 0};
 #endif
 

@@ -65,7 +65,7 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
 
   absl::optional<viz::SurfaceId> dom_surface_id_;
   base::Lock dom_surface_lock_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::CallbackListSubscription surface_id_changed_subscription_;
 #endif
 
