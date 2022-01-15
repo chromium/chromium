@@ -531,7 +531,7 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
 }
 
 // Disabled due to flakiness on Builder Linux Tests. crbug.com/1137759
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CheckHistograms DISABLED_CheckHistograms
 #else
 #define MAYBE_CheckHistograms CheckHistograms
