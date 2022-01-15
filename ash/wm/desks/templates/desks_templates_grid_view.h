@@ -11,10 +11,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-namespace views {
-class TableLayout;
-}  // namespace views
-
 namespace ash {
 
 class DesksTemplatesEventHandler;
@@ -53,6 +49,7 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   bool IsTemplateNameBeingModified() const;
 
   // views::View:
+  void Layout() override;
   void AddedToWidget() override;
 
   // aura::WindowObserver:
@@ -65,12 +62,6 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   // Updates the visibility state of the hover buttons on all the `grid_items_`
   // as a result of mouse and gesture events.
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
-
-  // Owned by the views hierarchy.
-  // TODO(richui): This is temporary until we decide what is the best way to
-  // layout the grid which may be 2x3 or 3x2 depending on the display size and
-  // needs to support animations when items are added or removed.
-  views::TableLayout* layout_ = nullptr;
 
   // The views representing templates. They're owned by views hierarchy.
   std::vector<DesksTemplatesItemView*> grid_items_;
