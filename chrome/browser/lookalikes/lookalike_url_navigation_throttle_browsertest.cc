@@ -483,7 +483,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Navigating to a non-IDN shouldn't show an interstitial or record metrics.
 // TODO(https://crbug.com1207573): re-enable when flakiness is fixed.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_NonIdn_NoMatch DISABLED_NonIdn_NoMatch
 #else
 #define MAYBE_NonIdn_NoMatch NonIdn_NoMatch
@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 
 // TODO(https://crbug.com/1122078): Enable test when MacOS flake is fixed.
 // TODO(https://crbug.com/1106402): Enable test when Win/Linux flake is fixed.
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Idn_SiteEngagement_Match DISABLED_Idn_SiteEngagement_Match
 #else
 #define MAYBE_Idn_SiteEngagement_Match Idn_SiteEngagement_Match
