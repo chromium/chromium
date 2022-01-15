@@ -21,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -2056,7 +2057,7 @@ class WizardControllerProxyAuthOnSigninTest : public WizardControllerTest {
 };
 
 // TODO(crbug.com/1286218): Flakes on CrOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ProxyAuthDialogOnSigninScreen \
   DISABLED_ProxyAuthDialogOnSigninScreen
 #else
