@@ -366,8 +366,15 @@ TEST(GIFImageDecoderTest, firstFrameHasGreaterSizeThanScreenSize) {
 }
 
 TEST(GIFImageDecoderTest, verifyRepetitionCount) {
+  // full2loop.gif has 3 frames (it is an animated GIF) and an explicit loop
+  // count of 2.
   TestRepetitionCount(kWebTestsResourcesDir, "full2loop.gif", 2);
-  TestRepetitionCount(kDecodersTestingDir, "radient.gif", kAnimationNone);
+  // radient.gif has 1 frame (it is a still GIF) and no explicit loop count.
+  // For still images, either kAnimationLoopInfinite or kAnimationNone are
+  // valid and equivalent, in that the pixels on screen do not change over
+  // time. It's arbitrary which one we pick: kAnimationLoopInfinite.
+  TestRepetitionCount(kDecodersTestingDir, "radient.gif",
+                      kAnimationLoopInfinite);
 }
 
 TEST(GIFImageDecoderTest, repetitionCountChangesWhenSeen) {
