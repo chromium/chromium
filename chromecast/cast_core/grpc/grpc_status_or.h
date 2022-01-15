@@ -8,6 +8,7 @@
 #include <grpcpp/support/status.h>
 
 #include <string>
+#include <type_traits>
 
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,7 +20,9 @@ namespace utils {
 std::string GrpcStatusToString(const grpc::Status& status);
 
 // Holds a value of type T with grpc::Status::OK or an error grpc::Status.
-template <typename T>
+template <typename T,
+          typename std::enable_if<!std::is_reference<T>::value, T*>::type =
+              nullptr>
 class GrpcStatusOr {
  public:
   GrpcStatusOr() : status_(grpc::StatusCode::UNKNOWN, "") {}
@@ -36,7 +39,7 @@ class GrpcStatusOr {
 
   // Constructs GrpcStatusOr from an error |status|.
   GrpcStatusOr(grpc::Status status)  // NOLINT
-      : status_(status) {
+      : status_(std::move(status)) {
     DCHECK(!status_.ok());
   }
 
@@ -66,8 +69,11 @@ class GrpcStatusOr {
   // Returns if status is OK.
   bool ok() const { return status_.ok(); }
 
-  // Returns gRPC status.
-  const grpc::Status& status() const { return status_; }
+  // Returns const reference to gRPC status.
+  const grpc::Status& status() const& { return status_; }
+
+  // Returns r-value to gRPC status.
+  grpc::Status&& status() && { return std::move(status_); }
 
   // Returns the pointer to the stored data. Checks if status is not OK.
   T* operator->() {
@@ -81,12 +87,6 @@ class GrpcStatusOr {
     return &*data_;
   }
 
-  // Returns the reference to the stored data. Checks if status is not OK.
-  T& operator*() & {
-    DCHECK(status_.ok());
-    return *data_;
-  }
-
   // Returns the const reference to the stored data. Checks if status is not OK.
   const T& operator*() const& {
     DCHECK(status_.ok());
@@ -94,9 +94,9 @@ class GrpcStatusOr {
   }
 
   // Returns the lvalue-ref to the underlying value. Checks if status is not OK.
-  T& value() & {
+  const T& value() const& {
     DCHECK(status_.ok());
-    return data_.value();
+    return *data_;
   }
 
   // Returns the rvalue-ref to the underlying value. To trigger this accessor,

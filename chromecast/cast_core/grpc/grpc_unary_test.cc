@@ -81,7 +81,8 @@ TEST_F(GrpcUnaryTest, SyncUnaryCallReturnsErrorStatus) {
           [&](TestRequest request,
               SimpleServiceHandler::SimpleCall::Reactor* reactor) {
             EXPECT_EQ(request.foo(), "test_foo");
-            reactor->Write(grpc::StatusCode::NOT_FOUND, "Not found");
+            reactor->Write(
+                grpc::Status(grpc::StatusCode::NOT_FOUND, "Not found"));
           }));
   server.Start(endpoint_);
 
@@ -115,6 +116,7 @@ TEST_F(GrpcUnaryTest, SyncUnaryCallCancelledIfServerIsStopped) {
   auto response = std::move(call).Invoke();
   ASSERT_THAT(response, StatusIs(grpc::StatusCode::UNAVAILABLE));
 
+  // Need to wait for server to fully stop.
   {
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
     ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
@@ -161,7 +163,8 @@ TEST_F(GrpcUnaryTest, AsyncUnaryCallReturnsErrorStatus) {
           [&](TestRequest request,
               SimpleServiceHandler::SimpleCall::Reactor* reactor) {
             EXPECT_EQ(request.foo(), "test_foo");
-            reactor->Write(grpc::StatusCode::NOT_FOUND, "Not Found");
+            reactor->Write(
+                grpc::Status(grpc::StatusCode::NOT_FOUND, "Not Found"));
           })));
   server.Start(endpoint_);
 

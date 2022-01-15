@@ -44,7 +44,33 @@ TEST(GrpcStatusOrTest, ConstructorStatusCodeAndErrorMessage) {
   EXPECT_THAT(status_or, StatusIs(grpc::StatusCode::NOT_FOUND, "error"));
 }
 
-TEST(GrpcStatusOrTest, MoveOperator) {
+struct MoveableOnly {
+  explicit MoveableOnly(int v) : value(v) {}
+  MoveableOnly(MoveableOnly&&) = default;
+  MoveableOnly& operator=(MoveableOnly&&) { return *this; }
+  MoveableOnly(const MoveableOnly& rhs) = delete;
+  MoveableOnly& operator=(const MoveableOnly& rhs) = delete;
+
+  int value;
+};
+
+int GetValueFromMoveableOnly(MoveableOnly&& mo) {
+  return mo.value;
+}
+
+TEST(GrpcStatusOrTest, MoveValueOperator) {
+  GrpcStatusOr<MoveableOnly> status_or(MoveableOnly(1));
+  CU_EXPECT_OK(status_or);
+  MoveableOnly res = std::move(status_or).value();
+  EXPECT_EQ(res.value, 1);
+  EXPECT_THAT(status_or, StatusIs(grpc::StatusCode::UNKNOWN));
+
+  status_or.emplace(MoveableOnly(10));
+  EXPECT_EQ(GetValueFromMoveableOnly(std::move(status_or).value()), 10);
+  EXPECT_THAT(status_or, StatusIs(grpc::StatusCode::UNKNOWN));
+}
+
+TEST(GrpcStatusOrTest, MoveStatusOperator) {
   GrpcStatusOr<int> status_or(1);
   CU_EXPECT_OK(status_or);
   int value = std::move(status_or).value();
@@ -63,11 +89,11 @@ TEST(GrpcStatusOrTest, Accessor) {
   GrpcStatusOr<std::string> status_or("12345");
   EXPECT_EQ(status_or->size(), 5U);
   EXPECT_EQ(*status_or, "12345");
-  *status_or = "567";
+  status_or.emplace("567");
   EXPECT_EQ(*status_or, "567");
   status_or->append("89");
   EXPECT_EQ(*status_or, "56789");
-  status_or.value() = "0";
+  status_or.emplace("0");
   EXPECT_EQ(*status_or, "0");
 }
 

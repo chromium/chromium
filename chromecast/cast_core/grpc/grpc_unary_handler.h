@@ -64,8 +64,9 @@ class GrpcUnaryHandler final : public GrpcHandler {
       DCHECK(buffer);
       FinishWriting(buffer, grpc::Status::OK);
     }
+
     void FinishWriting(const grpc::ByteBuffer* buffer,
-                       grpc::Status status) override {
+                       const grpc::Status& status) override {
       DCHECK((status.ok() && buffer) || !status.ok())
           << "Either buffer must be set or status must flag an error";
       DVLOG(1) << "Reactor is finished: " << name()
@@ -76,16 +77,18 @@ class GrpcUnaryHandler final : public GrpcHandler {
         Finish(status);
       }
     }
-    void OnResponseDone(grpc::Status status) override {
+
+    void OnResponseDone(const grpc::Status& /*status*/) override {
       LOG(FATAL)
           << "Unary handler writes must finish the reactor at the same time";
     }
+
     void OnRequestDone(GrpcStatusOr<TRequest> request) override {
       if (!request.ok()) {
         Finish(request.status());
         return;
       }
-      on_request_callback_.Run(std::move(*request), this);
+      on_request_callback_.Run(std::move(request).value(), this);
     }
 
     OnRequestCallback on_request_callback_;

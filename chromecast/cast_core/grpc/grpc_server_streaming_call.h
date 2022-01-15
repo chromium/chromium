@@ -53,6 +53,8 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
   using ResponseCallback =
       base::RepeatingCallback<void(GrpcStatusOr<Response>, bool /*done*/)>;
 
+  // Invokes a gRPC call asynchronously. The method follows moves semantics:
+  //   std::move(call).InvokeAsync(...);
   void InvokeAsync(ResponseCallback response_callback) && {
     // gRPC doesn't support setting a deadline for individual streaming
     // requests\responses. Hence, the zero timeout is set to allow for

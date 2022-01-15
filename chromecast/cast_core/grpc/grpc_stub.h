@@ -53,11 +53,17 @@ class GrpcStub {
 
   virtual ~GrpcStub() = default;
 
+  // Creates an instance of TGrpcCall that provides the request object and
+  // invoke APIs:
+  //   auto call = stub.CreateCall();
+  //   call.request()->set_xxx();
+  //   std::move(call).InvokeAsync();
   template <typename TGrpcCall>
   TGrpcCall CreateCall() {
     return TGrpcCall(stub_.get());
   }
 
+  // Creates an instance of TGrpcCall and sets the initial |request| object.
   template <typename TGrpcCall>
   TGrpcCall CreateCall(typename TGrpcCall::Request request) {
     return TGrpcCall(stub_.get(), std::move(request));

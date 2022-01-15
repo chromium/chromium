@@ -8,6 +8,7 @@
 #include <grpcpp/grpcpp.h>
 
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chromecast/cast_core/grpc/cancellable_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
@@ -39,6 +40,7 @@ class GrpcServerStreamingHandler : public GrpcHandler {
  public:
   using ReactorBase = GrpcServerReactor<TRequest, TResponse>;
 
+  // Reactor implementation of server streaming handler.
   class Reactor : public ReactorBase {
    public:
     using ReactorBase::name;
@@ -55,11 +57,13 @@ class GrpcServerStreamingHandler : public GrpcHandler {
       ReadRequest();
     }
 
+    // Sets the callback that is called when writes are available.
     void SetWritesAvailableCallback(
         WritesAvailableCallback writes_available_callback) {
       writes_available_callback_ = std::move(writes_available_callback);
     }
 
+    // Writes a packet and sets the writes availability callback.
     void Write(TResponse response,
                WritesAvailableCallback writes_available_callback) {
       writes_available_callback_ = std::move(writes_available_callback);
@@ -79,7 +83,7 @@ class GrpcServerStreamingHandler : public GrpcHandler {
     }
 
     void FinishWriting(const grpc::ByteBuffer* buffer,
-                       grpc::Status status) override {
+                       const grpc::Status& status) override {
       DVLOG(1) << "Reactor finished: " << name()
                << ", status=" << GrpcStatusToString(status);
       DCHECK(!buffer)
@@ -87,7 +91,7 @@ class GrpcServerStreamingHandler : public GrpcHandler {
       Finish(status);
     }
 
-    void OnResponseDone(grpc::Status status) override {
+    void OnResponseDone(const grpc::Status& status) override {
       DCHECK(writes_available_callback_)
           << "Writes available callback must be set";
       writes_available_callback_.Run(status.ok() ? GrpcStatusOr<Reactor*>(this)

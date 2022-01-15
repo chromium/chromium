@@ -33,14 +33,14 @@ class CancellableReactor : public TReactor {
  protected:
   // Implements GrpcServerReactor APIs.
   void FinishWriting(const grpc::ByteBuffer* buffer,
-                     grpc::Status status) override {
+                     const grpc::Status& status) override {
     bool expected = false;
     if (!finished_.compare_exchange_strong(expected, true)) {
       LOG(WARNING) << "Reactor was already cancelled: " << name();
       return;
     }
 
-    TReactor::FinishWriting(buffer, std::move(status));
+    TReactor::FinishWriting(buffer, status);
   }
 
   // Implements grpc::ServerGenericBidiReactor APIs.
@@ -49,14 +49,15 @@ class CancellableReactor : public TReactor {
   // reactors. If they were not finished properly, we must finish them
   // forcefully to unblock server shutdown process.
   void OnCancel() override {
+    static const grpc::Status kReactorCancelledError(grpc::StatusCode::ABORTED,
+                                                     "Reactor was cancelled");
     if (finished_.load()) {
       LOG(INFO) << "Reactor cancelled in finished state: " << name();
       return;
     }
 
     LOG(WARNING) << "Pending reactor got cancelled: " << name();
-    FinishWriting(nullptr, grpc::Status(grpc::StatusCode::ABORTED,
-                                        "Reactor was cancelled"));
+    FinishWriting(nullptr, kReactorCancelledError);
   }
 
  private:

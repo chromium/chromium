@@ -1,7 +1,6 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/rand_util.h"
@@ -65,7 +64,7 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallSucceeds) {
               reactor.value()->Write(std::move(response));
             } else {
               LOG(INFO) << "Writing finished";
-              reactor.value()->Write(grpc::StatusCode::OK);
+              reactor.value()->Write(grpc::Status::OK);
             }
           }));
   auto call_handler = base::BindPostTask(
@@ -122,7 +121,8 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallFailsRightAway) {
                   ServerStreamingServiceHandler::StreamingCall::Reactor*
                       reactor) {
                 EXPECT_EQ(request.foo(), "test_foo");
-                reactor->Write(grpc::StatusCode::NOT_FOUND, "not found");
+                reactor->Write(
+                    grpc::Status(grpc::StatusCode::NOT_FOUND, "not found"));
               })));
   server.Start(endpoint_);
 

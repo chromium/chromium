@@ -67,20 +67,23 @@ class has_error_code_api {
 // dropping the method from compilation.
 class StatusResolver {
  public:
+  struct StatusInfo {
+    int code;
+    std::string message;
+  };
+
   // Constructor that deduces the actual APIs of TStatus and sets the code and
   // message.
   template <typename TStatus>
   explicit StatusResolver(const TStatus& status)
-      : code_and_message_(ResolveCodeAndMessage(ResolveStatus(status))) {}
+      : status_info_(ResolveStatusInfo(ResolveStatus(status))) {}
   ~StatusResolver();
 
   // Returns the status code (as an integer) and message.
-  const std::pair<int, std::string>& code_and_message() const {
-    return code_and_message_;
-  }
+  const StatusInfo& status_info() const { return status_info_; }
 
   // Checks if status is ok.
-  bool ok() const { return code_and_message_.first == 0; }
+  bool ok() const { return status_info_.code == 0; }
 
  private:
   // Returns the actual status from the wrapper.
@@ -88,7 +91,7 @@ class StatusResolver {
             typename std::enable_if<has_status_api<TWrappedStatus>::value,
                                     TWrappedStatus>::type* = nullptr>
   static auto ResolveStatus(const TWrappedStatus& wrapped_status)
-      -> decltype(std::declval<TWrappedStatus>().status()) {
+      -> decltype(std::declval<const TWrappedStatus>().status()) {
     return wrapped_status.status();
   }
 
@@ -105,10 +108,9 @@ class StatusResolver {
   template <typename TStatus,
             typename std::enable_if<has_code_api<TStatus>::value,
                                     TStatus>::type* = nullptr>
-  static std::pair<int, std::string> ResolveCodeAndMessage(
-      const TStatus& status) {
-    return std::make_pair(static_cast<int>(status.code()),
-                          std::string(status.message()));
+  static StatusInfo ResolveStatusInfo(const TStatus& status) {
+    return StatusInfo(
+        {static_cast<int>(status.code()), std::string(status.message())});
   }
 
   // Returns the pair of integer code and error message using
@@ -116,13 +118,12 @@ class StatusResolver {
   template <typename TStatus,
             typename std::enable_if<has_error_code_api<TStatus>::value,
                                     TStatus>::type* = nullptr>
-  static std::pair<int, std::string> ResolveCodeAndMessage(
-      const TStatus& status) {
-    return std::make_pair(static_cast<int>(status.error_code()),
-                          std::string(status.error_message()));
+  static StatusInfo ResolveStatusInfo(const TStatus& status) {
+    return StatusInfo({static_cast<int>(status.error_code()),
+                       std::string(status.error_message())});
   }
 
-  const std::pair<int, std::string> code_and_message_;
+  const StatusInfo status_info_;
 };
 
 // Implementation of MatcherInterface for StatusIs matcher.
@@ -130,7 +131,7 @@ template <typename TStatus>
 class StatusIsImpl : public ::testing::MatcherInterface<TStatus> {
  public:
   StatusIsImpl(::testing::Matcher<int> code,
-               ::testing::Matcher<const std::string&> message)
+               ::testing::Matcher<std::string> message)
       : code_(std::move(code)), message_(std::move(message)) {}
 
   // MatcherInterface implementation.
@@ -153,14 +154,14 @@ class StatusIsImpl : public ::testing::MatcherInterface<TStatus> {
       ::testing::MatchResultListener* result_listener) const override {
     ::testing::StringMatchResultListener listener;
     StatusResolver status_resolver(status);
-    auto code_and_message = status_resolver.code_and_message();
-    if (!code_.MatchAndExplain(code_and_message.first, &listener)) {
-      *result_listener << "has wrong status code " << listener.str();
+    auto status_info = status_resolver.status_info();
+    if (!code_.Matches(status_info.code)) {
+      *result_listener << "has wrong status code " << status_info.code;
       return false;
     }
 
-    if (!message_.Matches(code_and_message.second)) {
-      *result_listener << "has wrong error message " << code_and_message.second;
+    if (!message_.Matches(status_info.message)) {
+      *result_listener << "has wrong error message " << status_info.message;
       return false;
     }
 
@@ -169,7 +170,7 @@ class StatusIsImpl : public ::testing::MatcherInterface<TStatus> {
 
  private:
   const ::testing::Matcher<int> code_;
-  const ::testing::Matcher<const std::string&> message_;
+  const ::testing::Matcher<std::string> message_;
 };
 
 // Allows usage of StatusIs without template parameter
@@ -177,7 +178,7 @@ class StatusIsPolymorphicWrapper {
  public:
   template <typename TStatusCode>
   StatusIsPolymorphicWrapper(TStatusCode code,
-                             ::testing::Matcher<const std::string&>&& message)
+                             ::testing::Matcher<std::string>&& message)
       : code_(static_cast<int>(code)), message_(std::move(message)) {}
   StatusIsPolymorphicWrapper(const StatusIsPolymorphicWrapper&);
   ~StatusIsPolymorphicWrapper();
@@ -186,12 +187,12 @@ class StatusIsPolymorphicWrapper {
   template <typename TStatus>
   operator ::testing::Matcher<TStatus>() const {
     return ::testing::Matcher<TStatus>(
-        new StatusIsImpl<TStatus>(code_, message_));
+        new StatusIsImpl<TStatus>(std::move(code_), std::move(message_)));
   }
 
  private:
   ::testing::Matcher<int> code_;
-  ::testing::Matcher<const std::string&> message_;
+  ::testing::Matcher<std::string> message_;
 };
 
 // Allows usage of IsOk without template parameter
@@ -228,7 +229,7 @@ inline internal::StatusIsPolymorphicWrapper StatusIs(TStatusCode code) {
 template <typename TStatusCode>
 inline internal::StatusIsPolymorphicWrapper StatusIs(
     TStatusCode code,
-    ::testing::Matcher<const std::string&>&& message_matcher) {
+    ::testing::Matcher<std::string>&& message_matcher) {
   return internal::StatusIsPolymorphicWrapper(code, std::move(message_matcher));
 }
 

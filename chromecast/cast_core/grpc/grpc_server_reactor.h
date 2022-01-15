@@ -34,13 +34,7 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
 
   // Set of overloaded methods to write responses or status to the clients.
   // Writes a status. No writes can be done after this call.
-  void Write(grpc::Status status) { FinishWriting(nullptr, status); }
-
-  void Write(grpc::StatusCode status_code) { Write(status_code, ""); }
-
-  void Write(grpc::StatusCode status_code, const std::string& error_message) {
-    Write(grpc::Status(status_code, error_message));
-  }
+  void Write(const grpc::Status& status) { FinishWriting(nullptr, status); }
 
   // Writes a defined response.
   void Write(TResponse response = TResponse()) {
@@ -75,10 +69,10 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
 
   // Called to actually write the status on the wire.
   virtual void FinishWriting(const grpc::ByteBuffer* buffer,
-                             grpc::Status status) = 0;
+                             const grpc::Status& status) = 0;
 
   // Called to actually write the response serialized into a buffer on the wire.
-  virtual void OnResponseDone(grpc::Status status) = 0;
+  virtual void OnResponseDone(const grpc::Status& status) = 0;
 
   // Called when request was read and deserialized. An error is set if reads are
   // terminated.
@@ -86,10 +80,12 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
 
   // Implements grpc::ServerGenericBidiReactor APIs.
   void OnReadDone(bool ok) override {
+    static const grpc::Status kReadsFailedError(grpc::StatusCode::ABORTED,
+                                                "Reads failed");
     DVLOG(1) << "Reads done: " << name() << ", ok=" << ok;
     if (!ok) {
       DVLOG(1) << "Reads failed: " << name();
-      OnRequestDone(grpc::Status(grpc::StatusCode::ABORTED, "Reads failed"));
+      OnRequestDone(kReadsFailedError);
       return;
     }
 
@@ -99,11 +95,13 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
   }
 
   void OnWriteDone(bool ok) override {
+    static const grpc::Status kWritesFailedError(grpc::StatusCode::ABORTED,
+                                                 "Writes failed");
     DVLOG(1) << "Writes done: " << name() << ", ok=" << ok;
     response_byte_buffer_.reset();
     if (!ok) {
       DVLOG(1) << "Writes failed: " << name();
-      OnResponseDone(grpc::Status(grpc::StatusCode::ABORTED, "Writes failed"));
+      OnResponseDone(kWritesFailedError);
       return;
     }
 
