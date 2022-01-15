@@ -26,7 +26,7 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/explore_sites/most_visited_client.h"
 #else
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -111,12 +111,12 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
       profile->GetPrefs(), TopSitesFactory::GetForProfile(profile),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       ChromePopularSitesFactory::NewForProfile(profile),
 #else
       nullptr,
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       ChromeCustomLinksManagerFactory::NewForProfile(profile),
 #else
       nullptr,
@@ -134,13 +134,13 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #else
       nullptr,
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       web_app::IsAnyChromeAppToWebAppMigrationEnabled(*profile)
 #else
       false
 #endif
   );
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   most_visited_sites->SetExploreSitesClient(
       explore_sites::MostVisitedClient::Create());
 #endif
