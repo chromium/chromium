@@ -17,6 +17,7 @@
         border-radius: 50%;
         padding: 8px;
       };
+      --diagnostics-chip-bg-color: var(--cros-bg-color-dropped-elevation-2);
     }
 
     hr {
@@ -82,7 +83,7 @@
 
     .diagnostics-chip {
       @apply --diagnostics-overview-font;
-      background-color: var(--google-grey-200);
+      background-color: var(--diagnostics-chip-bg-color);
       border-radius: 16px;
       height: 20px;
       line-height: 20px;
@@ -232,6 +233,12 @@
         --content-container-width: 720px;
         --chart-width: 620px;
         --data-point-container-padding: 64px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --diagnostics-chip-bg-color: var(--cros-bg-color-elevation-3);
       }
     }
   </style>
