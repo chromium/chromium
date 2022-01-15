@@ -1086,6 +1086,49 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+#if defined(OS_FUCHSIA)
+  if (gfx::HasExtension(enabled_extensions,
+                        VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME)) {
+    vkCreateBufferCollectionFUCHSIA =
+        reinterpret_cast<PFN_vkCreateBufferCollectionFUCHSIA>(
+            vkGetDeviceProcAddr(vk_device, "vkCreateBufferCollectionFUCHSIA"));
+    if (!vkCreateBufferCollectionFUCHSIA) {
+      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                    << "vkCreateBufferCollectionFUCHSIA";
+      return false;
+    }
+
+    vkSetBufferCollectionImageConstraintsFUCHSIA =
+        reinterpret_cast<PFN_vkSetBufferCollectionImageConstraintsFUCHSIA>(
+            vkGetDeviceProcAddr(
+                vk_device, "vkSetBufferCollectionImageConstraintsFUCHSIA"));
+    if (!vkSetBufferCollectionImageConstraintsFUCHSIA) {
+      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                    << "vkSetBufferCollectionImageConstraintsFUCHSIA";
+      return false;
+    }
+
+    vkGetBufferCollectionPropertiesFUCHSIA =
+        reinterpret_cast<PFN_vkGetBufferCollectionPropertiesFUCHSIA>(
+            vkGetDeviceProcAddr(vk_device,
+                                "vkGetBufferCollectionPropertiesFUCHSIA"));
+    if (!vkGetBufferCollectionPropertiesFUCHSIA) {
+      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                    << "vkGetBufferCollectionPropertiesFUCHSIA";
+      return false;
+    }
+
+    vkDestroyBufferCollectionFUCHSIA =
+        reinterpret_cast<PFN_vkDestroyBufferCollectionFUCHSIA>(
+            vkGetDeviceProcAddr(vk_device, "vkDestroyBufferCollectionFUCHSIA"));
+    if (!vkDestroyBufferCollectionFUCHSIA) {
+      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                    << "vkDestroyBufferCollectionFUCHSIA";
+      return false;
+    }
+  }
+#endif  // defined(OS_FUCHSIA)
+
   if (gfx::HasExtension(enabled_extensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
     vkAcquireNextImageKHR = reinterpret_cast<PFN_vkAcquireNextImageKHR>(
         vkGetDeviceProcAddr(vk_device, "vkAcquireNextImageKHR"));

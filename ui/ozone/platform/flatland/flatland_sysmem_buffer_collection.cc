@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 
+#include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/zx/eventpair.h>
 
 #include <tuple>
@@ -73,6 +74,127 @@ size_t GetBytesPerPixel(gfx::BufferFormat buffer_format) {
       NOTREACHED();
       return 1;
   }
+}
+
+bool IsYuvVkFormat(VkFormat format) {
+  switch (format) {
+    case VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM:
+    case VK_FORMAT_G8_B8R8_2PLANE_420_UNORM:
+      return true;
+    case VK_FORMAT_R8_UNORM:
+    case VK_FORMAT_R8G8_UNORM:
+    case VK_FORMAT_B8G8R8A8_UNORM:
+    case VK_FORMAT_R8G8B8A8_UNORM:
+      return false;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+VkFormatFeatureFlags GetFormatFeatureFlagsFromUsage(VkImageUsageFlags usage) {
+  VkFormatFeatureFlags result = {};
+  if (usage & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) {
+    result |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+  }
+  if (usage & VK_IMAGE_USAGE_TRANSFER_DST_BIT) {
+    result |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+  }
+  if (usage & VK_IMAGE_USAGE_SAMPLED_BIT) {
+    result |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+  }
+  if (usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) {
+    result |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+  }
+  if (usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+    result |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+  }
+  if (usage & VK_IMAGE_USAGE_STORAGE_BIT) {
+    result |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
+  }
+  return result;
+}
+
+VkImageFormatConstraintsInfoFUCHSIA GetDefaultImageFormatConstraintsInfo(
+    const VkImageCreateInfo& create_info) {
+  DCHECK(create_info.format != VK_FORMAT_UNDEFINED);
+  DCHECK(create_info.usage != 0);
+
+  static const VkSysmemColorSpaceFUCHSIA kSrgbColorSpace = {
+      .sType = VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA,
+      .pNext = nullptr,
+      .colorSpace =
+          static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::SRGB),
+  };
+
+  static const VkSysmemColorSpaceFUCHSIA kYuvDefaultColorSpace = {
+      .sType = VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA,
+      .pNext = nullptr,
+      .colorSpace =
+          static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC709),
+  };
+
+  VkImageFormatConstraintsInfoFUCHSIA format_info = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_CONSTRAINTS_INFO_FUCHSIA,
+      .pNext = nullptr,
+      .imageCreateInfo = create_info,
+      .requiredFormatFeatures =
+          GetFormatFeatureFlagsFromUsage(create_info.usage),
+      .sysmemPixelFormat = 0u,
+      .colorSpaceCount = 1u,
+      .pColorSpaces = IsYuvVkFormat(create_info.format) ? &kYuvDefaultColorSpace
+                                                        : &kSrgbColorSpace,
+  };
+  return format_info;
+}
+
+struct ImageConstraintsInfo {
+  VkImageConstraintsInfoFUCHSIA image_constraints;
+  VkImageFormatConstraintsInfoFUCHSIA format_constraints;
+
+  ImageConstraintsInfo(
+      const VkImageConstraintsInfoFUCHSIA& image_constraints_in,
+      const VkImageFormatConstraintsInfoFUCHSIA& format_constraints_in)
+      : image_constraints(image_constraints_in),
+        format_constraints(format_constraints_in) {
+    image_constraints.pFormatConstraints = &format_constraints;
+    image_constraints.formatConstraintsCount = 1u;
+  }
+
+  ImageConstraintsInfo(ImageConstraintsInfo&& from) = delete;
+  ImageConstraintsInfo(const ImageConstraintsInfo&) = delete;
+  ImageConstraintsInfo& operator=(const ImageConstraintsInfo&) = delete;
+};
+
+std::unique_ptr<ImageConstraintsInfo> InitializeImageConstraintsInfo(
+    const VkImageCreateInfo& vk_image_info,
+    bool is_protected) {
+  VkImageFormatConstraintsInfoFUCHSIA format_constraints =
+      GetDefaultImageFormatConstraintsInfo(vk_image_info);
+  VkImageConstraintsInfoFUCHSIA image_constraints = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CONSTRAINTS_INFO_FUCHSIA,
+      .pNext = nullptr,
+      .bufferCollectionConstraints =
+          VkBufferCollectionConstraintsInfoFUCHSIA{
+              .sType =
+                  VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CONSTRAINTS_INFO_FUCHSIA,
+              .pNext = nullptr,
+              .minBufferCount = 1u,
+              // Using the default value (0) for the fields below means that
+              // there is no other constraints except for the minimum buffer
+              // count.
+              .maxBufferCount = 0u,
+              .minBufferCountForCamping = 0u,
+              .minBufferCountForDedicatedSlack = 0u,
+              .minBufferCountForSharedSlack = 0u,
+          },
+      .flags = is_protected
+                   ? VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA
+                   : 0u,
+  };
+
+  return std::make_unique<ImageConstraintsInfo>(image_constraints,
+                                                format_constraints);
 }
 
 }  // namespace
@@ -238,18 +360,18 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
     return false;
   }
 
-  VkBufferCollectionPropertiesFUCHSIAX properties = {
-      VK_STRUCTURE_TYPE_BUFFER_COLLECTION_PROPERTIES_FUCHSIAX};
-  if (vkGetBufferCollectionPropertiesFUCHSIAX(vk_device_, vk_buffer_collection_,
-                                              &properties) != VK_SUCCESS) {
-    DLOG(ERROR) << "vkGetBufferCollectionPropertiesFUCHSIAX failed";
+  VkBufferCollectionPropertiesFUCHSIA properties = {
+      VK_STRUCTURE_TYPE_BUFFER_COLLECTION_PROPERTIES_FUCHSIA};
+  if (vkGetBufferCollectionPropertiesFUCHSIA(vk_device_, vk_buffer_collection_,
+                                             &properties) != VK_SUCCESS) {
+    DLOG(ERROR) << "vkGetBufferCollectionPropertiesFUCHSIA failed";
     return false;
   }
 
   InitializeImageCreateInfo(vk_image_info, size);
 
-  VkBufferCollectionImageCreateInfoFUCHSIAX image_format_fuchsia = {
-      VK_STRUCTURE_TYPE_BUFFER_COLLECTION_IMAGE_CREATE_INFO_FUCHSIAX,
+  VkBufferCollectionImageCreateInfoFUCHSIA image_format_fuchsia = {
+      VK_STRUCTURE_TYPE_BUFFER_COLLECTION_IMAGE_CREATE_INFO_FUCHSIA,
   };
   image_format_fuchsia.collection = vk_buffer_collection_;
   image_format_fuchsia.index = buffer_index;
@@ -273,8 +395,8 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
   VkMemoryDedicatedAllocateInfoKHR dedicated_allocate = {
       VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO_KHR};
   dedicated_allocate.image = *vk_image;
-  VkImportMemoryBufferCollectionFUCHSIAX buffer_collection_info = {
-      VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIAX,
+  VkImportMemoryBufferCollectionFUCHSIA buffer_collection_info = {
+      VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIA,
       &dedicated_allocate};
   buffer_collection_info.collection = vk_buffer_collection_;
   buffer_collection_info.index = buffer_index;
@@ -352,8 +474,8 @@ void FlatlandSysmemBufferCollection::AddOnDeletedCallback(
 
 FlatlandSysmemBufferCollection::~FlatlandSysmemBufferCollection() {
   if (vk_buffer_collection_ != VK_NULL_HANDLE) {
-    vkDestroyBufferCollectionFUCHSIAX(vk_device_, vk_buffer_collection_,
-                                      nullptr);
+    vkDestroyBufferCollectionFUCHSIA(vk_device_, vk_buffer_collection_,
+                                     nullptr);
   }
 
   if (collection_)
@@ -442,12 +564,12 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
 
   // Set Vulkan constraints.
   zx::channel token_channel = collection_token_for_vulkan.TakeChannel();
-  VkBufferCollectionCreateInfoFUCHSIAX buffer_collection_create_info = {
-      VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CREATE_INFO_FUCHSIAX};
+  VkBufferCollectionCreateInfoFUCHSIA buffer_collection_create_info = {
+      VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CREATE_INFO_FUCHSIA};
   buffer_collection_create_info.collectionToken = token_channel.get();
-  if (vkCreateBufferCollectionFUCHSIAX(vk_device_,
-                                       &buffer_collection_create_info, nullptr,
-                                       &vk_buffer_collection_) != VK_SUCCESS) {
+  if (vkCreateBufferCollectionFUCHSIA(vk_device_,
+                                      &buffer_collection_create_info, nullptr,
+                                      &vk_buffer_collection_) != VK_SUCCESS) {
     vk_buffer_collection_ = VK_NULL_HANDLE;
     DLOG(ERROR) << "vkCreateBufferCollectionFUCHSIA() failed";
     return false;
@@ -459,9 +581,12 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
   VkImageCreateInfo image_create_info;
   InitializeImageCreateInfo(&image_create_info, min_size_);
 
-  if (vkSetBufferCollectionConstraintsFUCHSIAX(
-          vk_device_, vk_buffer_collection_, &image_create_info) !=
-      VK_SUCCESS) {
+  auto image_constraints_info =
+      InitializeImageConstraintsInfo(image_create_info, is_protected_);
+
+  if (vkSetBufferCollectionImageConstraintsFUCHSIA(
+          vk_device_, vk_buffer_collection_,
+          &image_constraints_info->image_constraints) != VK_SUCCESS) {
     DLOG(ERROR) << "vkSetBufferCollectionConstraintsFUCHSIA() failed";
     return false;
   }

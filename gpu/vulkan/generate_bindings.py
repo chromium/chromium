@@ -243,6 +243,16 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
+    'ifdef': 'defined(OS_FUCHSIA)',
+    'extension': 'VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME',
+    'functions': [
+      'vkCreateBufferCollectionFUCHSIA',
+      'vkSetBufferCollectionImageConstraintsFUCHSIA',
+      'vkGetBufferCollectionPropertiesFUCHSIA',
+      'vkDestroyBufferCollectionFUCHSIA',
+    ]
+  },
+  {
     'extension': 'VK_KHR_SWAPCHAIN_EXTENSION_NAME',
     'functions': [
       'vkAcquireNextImageKHR',
