@@ -82,7 +82,8 @@ import java.io.IOException;
 public class PriceAlertsMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:enable_price_notification/true";
+            "force-fieldtrial-params=Study.Group:enable_price_notification/true"
+            + "/implicit_subscriptions_enabled/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
     private static final String METRICS_IDENTIFIER =
@@ -194,10 +195,28 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/false"})
-    public void testMessageCardNotShowing_ParameterDisabled() {
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/false"
+            + "/implicit_subscriptions_enabled/true"})
+    public void
+    testMessageCardNotShowing_NotificationParameterDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertFalse(PriceTrackingUtilities.isPriceDropNotificationEligible());
+        mMockNotificationManager.setNotificationsEnabled(false);
+        assertFalse(mPriceDropNotificationManager.canPostNotification());
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+
+        enterTabSwitcher(cta);
+        onView(withId(R.id.large_message_card_item)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/true"
+            + "/implicit_subscriptions_enabled/false"})
+    public void
+    testMessageCardNotShowing_ImplicitSubscriptionsParameterDisabled() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertTrue(PriceTrackingUtilities.isPriceDropNotificationEligible());
         mMockNotificationManager.setNotificationsEnabled(false);
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());

@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
+import android.os.Build;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.lang.annotation.Retention;
@@ -135,6 +138,16 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
         if (!isSubscriptionTypeSupported(type)) {
             wrappedCallback.onResult(SubscriptionsManager.StatusCode.INVALID_ARGUMENT);
             return;
+        }
+
+        // Make sure the notification channel is initialized if there is a user-managed PRICE_TRACK
+        // subscription. For chrome-managed subscriptions, channel will be initialized via message
+        // card in tab switcher.
+        if (CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK.equals(type)
+                && CommerceSubscription.SubscriptionManagementType.USER_MANAGED.equals(
+                        subscriptions.get(0).getManagementType())
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            (new PriceDropNotificationManager()).createNotificationChannel();
         }
 
         if (!mCanHandleRequests) {
