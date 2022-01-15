@@ -3764,9 +3764,15 @@ const Program* GLRenderer::GetProgramIfInitialized(
 const gfx::ColorTransform* GLRenderer::GetColorTransform(
     const gfx::ColorSpace& src,
     const gfx::ColorSpace& dst) {
-  std::unique_ptr<gfx::ColorTransform>& transform =
-      color_transform_cache_[dst][src];
+  ColorTransformKey key;
+  key.src = src;
+  key.dst = dst;
+  key.sdr_max_luminance_nits =
+      current_frame()->display_color_spaces.GetSDRMaxLuminanceNits();
+  std::unique_ptr<gfx::ColorTransform>& transform = color_transform_cache_[key];
   if (!transform) {
+    gfx::ColorTransform::Options options;
+    options.sdr_max_luminance_nits = key.sdr_max_luminance_nits;
     transform = gfx::ColorTransform::NewColorTransform(src, dst);
   }
   return transform.get();
@@ -4484,5 +4490,22 @@ gfx::Size GLRenderer::GetRenderPassBackingPixelSize(
 
 GLRenderer::OverlayTexture::OverlayTexture() = default;
 GLRenderer::OverlayTexture::~OverlayTexture() = default;
+
+bool GLRenderer::ColorTransformKey::operator==(
+    const ColorTransformKey& other) const {
+  return src == other.src && dst == other.dst &&
+         sdr_max_luminance_nits == other.sdr_max_luminance_nits;
+}
+
+bool GLRenderer::ColorTransformKey::operator!=(
+    const ColorTransformKey& other) const {
+  return !(*this == other);
+}
+
+bool GLRenderer::ColorTransformKey::operator<(
+    const ColorTransformKey& other) const {
+  return std::tie(src, dst, sdr_max_luminance_nits) <
+         std::tie(other.src, other.dst, other.sdr_max_luminance_nits);
+}
 
 }  // namespace viz

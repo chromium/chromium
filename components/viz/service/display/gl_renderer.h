@@ -445,8 +445,15 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
 
   const gfx::ColorTransform* GetColorTransform(const gfx::ColorSpace& src,
                                                const gfx::ColorSpace& dst);
-  std::map<gfx::ColorSpace,
-           std::map<gfx::ColorSpace, std::unique_ptr<gfx::ColorTransform>>>
+  struct ColorTransformKey {
+    gfx::ColorSpace src;
+    gfx::ColorSpace dst;
+    float sdr_max_luminance_nits = 0.f;
+    bool operator==(const ColorTransformKey& other) const;
+    bool operator!=(const ColorTransformKey& other) const;
+    bool operator<(const ColorTransformKey& other) const;
+  };
+  std::map<ColorTransformKey, std::unique_ptr<gfx::ColorTransform>>
       color_transform_cache_;
 
   raw_ptr<gpu::gles2::GLES2Interface> gl_;

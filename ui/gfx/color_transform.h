@@ -23,6 +23,17 @@ class GFX_EXPORT ColorTransform {
     // Used to adjust the transfer and range adjust matrices.
     uint32_t src_bit_depth = kDefaultBitDepth;
     uint32_t dst_bit_depth = kDefaultBitDepth;
+
+    // Used for tone mapping and for interpreting color spaces whose
+    // definition depends on an SDR white point.
+    // TODO(https://crbug.com/1286082): Use this value in the transform.
+    float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
+
+    // The maximum luminance value for the destination, as a multiple of
+    // `sdr_max_luminance_nits` (so this is 1 for SDR displays).
+    // TODO(https://crbug.com/1286076): Use this value for transforming
+    // PQ and HLG content.
+    float dst_max_luminance_relative = 1.f;
   };
 
   // TriStimulus is a color coordinate in any color space.

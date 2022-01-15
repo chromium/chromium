@@ -362,8 +362,18 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       awaiting_release_overlay_locks_;
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
-  base::flat_map<gfx::ColorSpace,
-                 base::flat_map<gfx::ColorSpace, sk_sp<SkRuntimeEffect>>>
+  struct ColorFilterCacheKey {
+    gfx::ColorSpace src;
+    gfx::ColorSpace dst;
+    float resource_offset = 0.f;
+    float resource_multiplier = 1.f;
+    float sdr_max_luminance_nits = 0.f;
+    float dst_max_luminance_relative = 0.f;
+    bool operator==(const ColorFilterCacheKey& other) const;
+    bool operator!=(const ColorFilterCacheKey& other) const;
+    bool operator<(const ColorFilterCacheKey& other) const;
+  };
+  base::flat_map<ColorFilterCacheKey, sk_sp<SkRuntimeEffect>>
       color_filter_cache_;
 
   bool UsingSkiaForDelegatedInk() const;
