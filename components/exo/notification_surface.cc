@@ -89,6 +89,9 @@ void NotificationSurface::OnWindowPropertyChanged(aura::Window* window,
 }
 
 void NotificationSurface::OnWindowAddedToRootWindow(aura::Window* window) {
+  // Force recreating resources to submit the compositor frame w/o
+  // commit request.
+  root_surface()->SurfaceHierarchyResourcesLost();
   SubmitCompositorFrame();
   is_embedded_ = true;
 }
