@@ -95,7 +95,7 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
 #endif
   EXPECT_EQ(left.enable_native_gpu_memory_buffers,
             right.enable_native_gpu_memory_buffers);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(left.enable_chromeos_direct_video_decoder,
             right.enable_chromeos_direct_video_decoder);
 #endif
@@ -187,7 +187,7 @@ TEST(GpuPreferencesTest, EncodeDecode) {
                                base::MessagePumpType::UI)
 #endif
     GPU_PREFERENCES_FIELD(enable_native_gpu_memory_buffers, true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     GPU_PREFERENCES_FIELD(enable_chromeos_direct_video_decoder, true);
 #endif
 
@@ -280,7 +280,7 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_INT(message_pump_type);
 #endif
   PRINT_BOOL(enable_native_gpu_memory_buffers);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   PRINT_BOOL(enable_chromeos_direct_video_decoder);
 #endif
   printf("}\n");

@@ -4,24 +4,26 @@
 
 #include "gpu/config/gpu_crash_keys.h"
 
+#include "build/build_config.h"
+
 namespace gpu {
 namespace crash_keys {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 crash_reporter::CrashKeyString<16> gpu_vendor_id("gpu-venid");
 crash_reporter::CrashKeyString<16> gpu_device_id("gpu-devid");
 #endif  // !OS_ANDROID
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 crash_reporter::CrashKeyString<16> gpu_sub_sys_id("gpu-subid");
 crash_reporter::CrashKeyString<16> gpu_revision("gpu-rev");
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 crash_reporter::CrashKeyString<64> gpu_driver_version("gpu-driver");
 crash_reporter::CrashKeyString<16> gpu_pixel_shader_version("gpu-psver");
 crash_reporter::CrashKeyString<16> gpu_vertex_shader_version("gpu-vsver");
 crash_reporter::CrashKeyString<16> gpu_generation_intel("gpu-generation-intel");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 crash_reporter::CrashKeyString<64> gpu_gl_version("gpu-glver");
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 crash_reporter::CrashKeyString<256> gpu_vendor("gpu-gl-vendor");
 crash_reporter::CrashKeyString<128> gpu_renderer("gpu-gl-renderer");
 #endif

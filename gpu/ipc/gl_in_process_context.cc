@@ -5,6 +5,8 @@
 #include "gpu/ipc/gl_in_process_context.h"
 
 #include <GLES2/gl2.h>
+
+#include "build/build_config.h"
 #ifndef GL_GLEXT_PROTOTYPES
 #define GL_GLEXT_PROTOTYPES 1
 #endif
@@ -26,7 +28,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_image.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/gl/android/surface_texture.h"
 #endif
 

@@ -5,12 +5,13 @@
 #include "gpu/config/gpu_finch_features.h"
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_surface_egl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
 #include "base/android/build_info.h"
 #include "base/android/sys_utils.h"
@@ -24,7 +25,7 @@
 namespace features {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool FieldIsInBlocklist(const char* current_value, std::string blocklist_str) {
   std::vector<std::string> blocklist = base::SplitString(
       blocklist_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -51,7 +52,7 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Used to limit GL version to 2.0 for skia raster on Android.
 const base::Feature kUseGles2ForOopR{"UseGles2ForOopR",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -124,8 +125,8 @@ const base::FeatureParam<std::string>
 // Android.
 const base::Feature kDefaultEnableGpuRasterization{
   "DefaultEnableGpuRasterization",
-#if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -145,7 +146,7 @@ const base::Feature kDefaultEnableANGLEValidation{
 const base::Feature kCanvasContextLostInBackground{
     "CanvasContextLostInBackground", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Use a high priority for GPU process on Windows.
 const base::Feature kGpuProcessHighPriorityWin{
     "GpuProcessHighPriorityWin", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -154,14 +155,14 @@ const base::Feature kGpuProcessHighPriorityWin{
 // Use ThreadPriority::DISPLAY for GPU main, viz compositor and IO threads.
 const base::Feature kGpuUseDisplayThreadPriority{
   "GpuUseDisplayThreadPriority",
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Enable use of Metal for OOP rasterization.
 const base::Feature kMetal{"Metal", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
@@ -196,7 +197,7 @@ const base::Feature kVaapiWebPImageDecodeAcceleration{
 // Note Android WebView uses kWebViewVulkan instead of this.
 const base::Feature kVulkan {
   "Vulkan",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -211,7 +212,7 @@ const base::Feature kEnableDrDc{"EnableDrDc",
 const base::Feature kWebGPUService{"WebGPUService",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByHardware{
     &kVulkan, "BlockListByHardware", "mt*"};
@@ -257,7 +258,7 @@ const base::Feature kReduceOpsTaskSplitting{
     "ReduceOpsTaskSplitting", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsUsingVulkan() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Force on if Vulkan feature is enabled from command line.
   base::FeatureList* feature_list = base::FeatureList::GetInstance();
   if (feature_list &&
@@ -312,7 +313,7 @@ bool IsUsingVulkan() {
 }
 
 bool IsDrDcEnabled() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Enabled on android P+.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SDK_VERSION_P) {
@@ -335,7 +336,7 @@ bool IsDrDcEnabled() {
 }
 
 bool IsUsingThreadSafeMediaForWebView() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // SurfaceTexture can't be thread-safe.
   if (!IsAImageReaderEnabled())
     return false;
@@ -366,7 +367,7 @@ bool IsANGLEValidationEnabled() {
   return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsAImageReaderEnabled() {
   return base::FeatureList::IsEnabled(kAImageReader) &&
          base::android::AndroidImageReader::GetInstance().IsSupported();

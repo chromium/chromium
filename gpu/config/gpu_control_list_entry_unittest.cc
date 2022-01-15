@@ -1047,7 +1047,7 @@ TEST_F(GpuControlListEntryTest, GpuGenerationSecondary) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(GpuControlListEntryTest, HardwareOverlay) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_HardwareOverlay);
   GPUInfo gpu_info;
@@ -1058,7 +1058,7 @@ TEST_F(GpuControlListEntryTest, HardwareOverlay) {
   gpu_info.overlay_info.supports_overlays = false;
   EXPECT_TRUE(entry.Contains(kOsWin, "10.0", gpu_info));
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(GpuControlListEntryTest, TestSubpixelFontRendering) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_SubpixelFontRendering);
@@ -1139,7 +1139,7 @@ TEST_F(GpuControlListEntryTest, IntelDriverVersionEntry) {
   EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(GpuControlListEntryTest, DeviceRevisionEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_DeviceRevisionEntry);
   GPUInfo gpu_info;
@@ -1171,6 +1171,6 @@ TEST_F(GpuControlListEntryTest, DeviceRevisionUnspecifiedEntry) {
   gpu_info.gpu.revision = 0x0;
   EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace gpu

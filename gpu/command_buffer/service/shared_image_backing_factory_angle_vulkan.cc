@@ -550,7 +550,7 @@ bool SharedImageBackingFactoryAngleVulkan::CanUseAngleVulkanBacking(
   // TODO(penghuang): verify the scanout is the right usage for video playback.
   // crbug.com/1280798
   constexpr auto kSupportedUsages =
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
       SHARED_IMAGE_USAGE_SCANOUT |
 #endif
       SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |

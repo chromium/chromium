@@ -4,7 +4,9 @@
 
 #include "gpu/command_buffer/service/external_vk_image_overlay_representation.h"
 
-#if defined(OS_FUCHSIA)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_FUCHSIA)
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
@@ -64,7 +66,7 @@ gl::GLImage* ExternalVkImageOverlayRepresentation::GetGLImage() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ExternalVkImageOverlayRepresentation::NotifyOverlayPromotion(
     bool promotion,
     const gfx::Rect& bounds) {

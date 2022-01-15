@@ -39,7 +39,7 @@ class SignalTest : public ContextTestBase {
 };
 
 CONTEXT_TEST_F(SignalTest, BasicSignalSyncTokenTest) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The IPC version of ContextTestBase::SetUpOnMainThread does not succeed on
   // some platforms.
   if (!gl_)
@@ -53,7 +53,7 @@ CONTEXT_TEST_F(SignalTest, BasicSignalSyncTokenTest) {
 }
 
 CONTEXT_TEST_F(SignalTest, EmptySignalSyncTokenTest) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The IPC version of ContextTestBase::SetUpOnMainThread does not succeed on
   // some platforms.
   if (!gl_)
@@ -67,7 +67,7 @@ CONTEXT_TEST_F(SignalTest, EmptySignalSyncTokenTest) {
 }
 
 CONTEXT_TEST_F(SignalTest, InvalidSignalSyncTokenTest) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The IPC version of ContextTestBase::SetUpOnMainThread does not succeed on
   // some platforms.
   if (!gl_)
@@ -83,7 +83,7 @@ CONTEXT_TEST_F(SignalTest, InvalidSignalSyncTokenTest) {
 }
 
 CONTEXT_TEST_F(SignalTest, BasicSignalQueryTest) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The IPC version of ContextTestBase::SetUpOnMainThread does not succeed on
   // some platforms.
   if (!gl_)
@@ -100,7 +100,7 @@ CONTEXT_TEST_F(SignalTest, BasicSignalQueryTest) {
 }
 
 CONTEXT_TEST_F(SignalTest, SignalQueryUnboundTest) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The IPC version of ContextTestBase::SetUpOnMainThread does not succeed on
   // some platforms.
   if (!gl_)
@@ -114,7 +114,7 @@ CONTEXT_TEST_F(SignalTest, SignalQueryUnboundTest) {
 }
 
 CONTEXT_TEST_F(SignalTest, InvalidSignalQueryUnboundTest) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The IPC version of ContextTestBase::SetUpOnMainThread does not succeed on
   // some platforms.
   if (!gl_)
@@ -135,7 +135,7 @@ CONTEXT_TEST_F(SignalTest, InvalidSignalQueryUnboundTest) {
 // due to inconsistent initialization of InProcessCommandBuffer which
 // isn't used on that platform. Restrict it to Android for now.
 
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
 class GpuFenceTest : public ContextTestBase {
  public:
@@ -189,7 +189,7 @@ CONTEXT_TEST_F(GpuFenceTest, BasicGpuFenceTest) {
   gl_->DestroyGpuFenceCHROMIUM(id2);
 }
 
-#endif  // defined(OS_ANDROID) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
 }  // namespace
 

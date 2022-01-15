@@ -710,7 +710,7 @@ void prepareUnpackBuffer(GLuint buffer[2],
   uint32_t buf_size = pixel_num * bytes_per_group;
 
   if (format == GL_RGB && type == GL_FLOAT) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Reading pixels to pbo with glReadPixels will cause random failures of
     // GLCopyTextureCHROMIUMES3Test.FormatCombinations in gl_tests. This is seen
     // on Nexus 5 but not Nexus 4. Read pixels to client memory, then upload to

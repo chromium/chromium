@@ -8,10 +8,11 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#if defined(OS_MAC)
+#include "build/build_config.h"
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif
 #include "base/message_loop/message_pump_type.h"
@@ -34,14 +35,14 @@ int main(int argc, char *argv[]) {
   base::CommandLine::StringVector args =
       base::CommandLine::ForCurrentProcess()->GetArgs();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
   std::unique_ptr<const char* []> argsArray(new const char*[args.size() + 1]);
   argsArray[0] = argv[0];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> argsNonWide(args.size());
   for (size_t index = 0; index < args.size(); ++index) {
     argsNonWide[index] = base::WideToASCII(args[index]);

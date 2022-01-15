@@ -88,7 +88,7 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
       gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
 
   bool use_virtualized_gl_context = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference:::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM. https://crbug.com/180463
   use_virtualized_gl_context = true;

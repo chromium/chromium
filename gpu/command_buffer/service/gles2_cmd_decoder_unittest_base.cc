@@ -16,6 +16,7 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -76,11 +77,11 @@ void NormalizeInitState(gpu::gles2::GLES2DecoderTestBase::InitState* init) {
                          base::CompareCase::INSENSITIVE_ASCII)) {
       init->extensions += kVAOExtensions[0];
     } else {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
       init->extensions += kVAOExtensions[1];
 #else
       init->extensions += kVAOExtensions[2];
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     }
   } else {
     // Make sure we don't set up an invalid InitState.
@@ -464,7 +465,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
 
   // TODO(boliu): Remove OS_ANDROID once crbug.com/259023 is fixed and the
   // workaround has been reverted.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (normalized_init.has_alpha && !normalized_init.request_alpha) {
     EXPECT_CALL(*gl_, ClearColor(0, 0, 0, 1)).Times(1).RetiresOnSaturation();
   }

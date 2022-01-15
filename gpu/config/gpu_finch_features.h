@@ -16,7 +16,7 @@ namespace features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
 GPU_EXPORT extern const base::Feature kAndroidSurfaceControl;
 GPU_EXPORT extern const base::Feature kWebViewSurfaceControl;
@@ -25,7 +25,7 @@ GPU_EXPORT extern const base::Feature kWebViewVulkan;
 GPU_EXPORT extern const base::Feature kLimitAImageReaderMaxSizeToOne;
 GPU_EXPORT extern const base::Feature kWebViewZeroCopyVideo;
 GPU_EXPORT extern const base::Feature kIncreaseBufferCountForHighFrameRate;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 GPU_EXPORT extern const base::Feature kDefaultEnableGpuRasterization;
 
@@ -35,13 +35,13 @@ GPU_EXPORT extern const base::Feature kDefaultEnableANGLEValidation;
 
 GPU_EXPORT extern const base::Feature kCanvasContextLostInBackground;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
 #endif
 
 GPU_EXPORT extern const base::Feature kGpuUseDisplayThreadPriority;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 GPU_EXPORT extern const base::Feature kMetal;
 #endif
 
@@ -72,7 +72,7 @@ GPU_EXPORT bool IsDrDcEnabled();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();
 GPU_EXPORT bool IsAndroidSurfaceControlEnabled();
 GPU_EXPORT bool LimitAImageReaderMaxSizeToOne();

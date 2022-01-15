@@ -22,7 +22,7 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_version_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "gpu/config/gpu_finch_features.h"
 #endif
 
@@ -112,7 +112,7 @@ GLuint GetGrGLBackendTextureFormat(
       version_info, viz::TextureStorageFormat(resource_format));
 
   bool use_version_es2 = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
 #endif
 

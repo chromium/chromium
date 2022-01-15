@@ -4,8 +4,6 @@
 
 #include "gpu/command_buffer/service/native_image_buffer.h"
 
-// #include <stdint.h>
-
 #include <list>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +12,7 @@
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -23,7 +21,7 @@ namespace gles2 {
 
 namespace {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 class NativeImageBufferEGL : public NativeImageBuffer {
  public:
   static scoped_refptr<NativeImageBufferEGL> Create(GLuint texture_id);
@@ -162,7 +160,7 @@ class NativeImageBufferStub : public NativeImageBuffer {
 // static
 scoped_refptr<NativeImageBuffer> NativeImageBuffer::Create(GLuint texture_id) {
   switch (gl::GetGLImplementation()) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return NativeImageBufferEGL::Create(texture_id);

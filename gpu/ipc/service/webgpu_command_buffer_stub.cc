@@ -37,11 +37,11 @@
 #include "ui/gl/gl_workarounds.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "gpu/ipc/service/stream_texture_android.h"
 #endif
 
@@ -72,7 +72,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
     CommandBufferStub* share_command_buffer_stub,
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/707031): Implement this.
   NOTIMPLEMENTED();
   LOG(ERROR) << "ContextResult::kFatalFailure: no fuchsia support";
@@ -144,7 +144,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
   manager->delegate()->DidCreateContextSuccessfully();
   initialized_ = true;
   return gpu::ContextResult::kSuccess;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 MemoryTracker* WebGPUCommandBufferStub::GetContextGroupMemoryTracker() const {

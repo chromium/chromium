@@ -82,7 +82,7 @@ VULKAN_INSTANCE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_WIN)',
+    'ifdef': 'BUILDFLAG(IS_WIN)',
     'extension': 'VK_KHR_WIN32_SURFACE_EXTENSION_NAME',
     'functions': [
       'vkCreateWin32SurfaceKHR',
@@ -90,14 +90,14 @@ VULKAN_INSTANCE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_ANDROID)',
+    'ifdef': 'BUILDFLAG(IS_ANDROID)',
     'extension': 'VK_KHR_ANDROID_SURFACE_EXTENSION_NAME',
     'functions': [
       'vkCreateAndroidSurfaceKHR',
     ]
   },
   {
-    'ifdef': 'defined(OS_FUCHSIA)',
+    'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
     'extension': 'VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME',
     'functions': [
       'vkCreateImagePipeSurfaceFUCHSIA',
@@ -176,7 +176,7 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_ANDROID)',
+    'ifdef': 'BUILDFLAG(IS_ANDROID)',
     'extension':
         'VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME',
     'functions': [
@@ -184,7 +184,8 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)',
+    'ifdef':
+    'BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)',
     'extension': 'VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME',
     'functions': [
       'vkGetSemaphoreFdKHR',
@@ -192,7 +193,7 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_WIN)',
+    'ifdef': 'BUILDFLAG(IS_WIN)',
     'extension': 'VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME',
     'functions': [
       'vkGetSemaphoreWin32HandleKHR',
@@ -200,7 +201,8 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)',
+    'ifdef':
+    'BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)',
     'extension': 'VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME',
     'functions': [
       'vkGetMemoryFdKHR',
@@ -208,7 +210,7 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_WIN)',
+    'ifdef': 'BUILDFLAG(IS_WIN)',
     'extension': 'VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME',
     'functions': [
       'vkGetMemoryWin32HandleKHR',
@@ -216,7 +218,7 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_FUCHSIA)',
+    'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
     'extension': 'VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME',
     'functions': [
       'vkImportSemaphoreZirconHandleFUCHSIA',
@@ -224,14 +226,14 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_FUCHSIA)',
+    'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
     'extension': 'VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME',
     'functions': [
       'vkGetMemoryZirconHandleFUCHSIA',
     ]
   },
   {
-    'ifdef': 'defined(OS_FUCHSIA)',
+    'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
     'extension': 'VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME',
     'functions': [
       'vkCreateBufferCollectionFUCHSIAX',
@@ -251,7 +253,7 @@ VULKAN_DEVICE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(OS_LINUX) || defined(OS_CHROMEOS)',
+    'ifdef': 'BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)',
     'extension': 'VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME',
     'functions': [
       'vkGetImageDrmFormatModifierPropertiesEXT',
@@ -389,11 +391,11 @@ def GenerateHeaderFile(out_file):
 #include "build/build_config.h"
 #include "ui/gfx/extension_set.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <vulkan/vulkan_android.h>
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
 // <vulkan/vulkan_fuchsia.h> must be included after <zircon/types.h>
 #include <vulkan/vulkan_fuchsia.h>
@@ -407,7 +409,7 @@ def GenerateHeaderFile(out_file):
 #include <vulkan/vulkan_xcb.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <vulkan/vulkan_win32.h>
 #endif
 

@@ -127,7 +127,7 @@ bool Display::IsValidNativeWindow(EGLNativeWindowType win) {
 #else
   // TODO(alokp): Validate window handle.
   return true;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 EGLBoolean Display::GetConfigAttrib(ThreadState* ts,
@@ -219,7 +219,7 @@ EGLSurface Display::CreateWindowSurface(ThreadState* ts,
     return result;
   }
   scoped_refptr<gl::GLSurface> gl_surface;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget;
 #else
   gfx::AcceleratedWidget widget = static_cast<gfx::AcceleratedWidget>(win);

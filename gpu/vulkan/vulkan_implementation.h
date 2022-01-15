@@ -18,7 +18,7 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "ui/gfx/geometry/size.h"
 #endif
@@ -36,12 +36,12 @@ class VulkanInstance;
 struct GPUInfo;
 struct VulkanYCbCrInfo;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 class SysmemBufferCollection {
  public:
   virtual ~SysmemBufferCollection() {}
 };
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // Base class which provides functions for creating vulkan objects for different
 // platforms that use platform-specific extensions (e.g. for creation of
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
       gfx::Size size,
       VkFormat vk_formae) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Get the sampler ycbcr conversion information from the AHB.
   virtual bool GetSamplerYcbcrConversionInfo(
       const VkDevice& vk_device,
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
       VulkanYCbCrInfo* ycbcr_info) = 0;
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Registers as sysmem buffer collection. The collection can be released by
   // destroying the returned SysmemBufferCollection object. Once a collection is
   // registered the individual buffers in the collection can be referenced by
@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
                                  gfx::Size size,
                                  size_t min_buffer_count,
                                  bool register_with_image_pipe) = 0;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool use_swiftshader() const { return use_swiftshader_; }
   bool allow_protected_memory() const { return allow_protected_memory_; }

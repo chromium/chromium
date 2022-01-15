@@ -4,9 +4,11 @@
 
 #include "gpu/ipc/common/device_perf_info_mojom_traits.h"
 
+#include "build/build_config.h"
+
 namespace mojo {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 gpu::mojom::Direct3DFeatureLevel
 EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL>::ToMojom(
@@ -76,7 +78,7 @@ bool EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL>::FromMojom(
   NOTREACHED() << "Invalid D3D_FEATURE_LEVEL: " << input;
   return false;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 gpu::mojom::HasDiscreteGpu
 EnumTraits<gpu::mojom::HasDiscreteGpu, gpu::HasDiscreteGpu>::ToMojom(
@@ -120,11 +122,11 @@ bool StructTraits<gpu::mojom::DevicePerfInfoDataView, gpu::DevicePerfInfo>::
   out->total_disk_space_mb = data.total_disk_space_mb();
   out->hardware_concurrency = data.hardware_concurrency();
   bool rt = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   out->system_commit_limit_mb = data.system_commit_limit_mb();
   rt &= data.ReadD3d11FeatureLevel(&out->d3d11_feature_level);
   rt &= data.ReadHasDiscreteGpu(&out->has_discrete_gpu);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   return rt;
 }
 

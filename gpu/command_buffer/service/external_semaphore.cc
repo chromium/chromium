@@ -27,7 +27,7 @@ GLuint ImportSemaphoreHandleToGLSemaphore(SemaphoreHandle handle) {
   if (!handle.is_valid())
     return 0;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   if (handle.vk_handle_type() !=
       VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT) {
     DLOG(ERROR) << "Importing semaphore handle of unexpected type:"
@@ -42,7 +42,7 @@ GLuint ImportSemaphoreHandleToGLSemaphore(SemaphoreHandle handle) {
                                 fd.release());
 
   return gl_semaphore;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (handle.vk_handle_type() !=
       VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
     DLOG(ERROR) << "Importing semaphore handle of unexpected type:"
@@ -57,7 +57,7 @@ GLuint ImportSemaphoreHandleToGLSemaphore(SemaphoreHandle handle) {
       gl_semaphore, GL_HANDLE_TYPE_OPAQUE_WIN32_EXT, win32_handle.Take());
 
   return gl_semaphore;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   if (handle.vk_handle_type() !=
       VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
     DLOG(ERROR) << "Importing semaphore handle of unexpected type:"

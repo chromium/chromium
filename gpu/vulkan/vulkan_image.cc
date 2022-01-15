@@ -149,7 +149,7 @@ void VulkanImage::Destroy() {
   device_queue_ = nullptr;
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 base::ScopedFD VulkanImage::GetMemoryFd(
     VkExternalMemoryHandleTypeFlagBits handle_type) {
   VkMemoryGetFdInfoKHR get_fd_info = {
@@ -169,7 +169,7 @@ base::ScopedFD VulkanImage::GetMemoryFd(
 
   return base::ScopedFD(memory_fd);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
                              const gfx::Size& size,
@@ -296,10 +296,10 @@ bool VulkanImage::InitializeWithExternalMemory(
     VkImageTiling image_tiling,
     void* image_create_info_next,
     void* memory_allocation_info_next) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   constexpr auto kHandleType =
       VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   constexpr auto kHandleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;
 #else
   constexpr auto kHandleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
@@ -322,7 +322,7 @@ bool VulkanImage::InitializeWithExternalMemory(
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifier_info = {
       .sType =
           VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,

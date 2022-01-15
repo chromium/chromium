@@ -5,7 +5,8 @@
 #include "base/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
-#if defined(OS_MAC)
+#include "build/build_config.h"
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 #include "base/test/launcher/unit_test_launcher.h"
@@ -59,7 +60,7 @@ int main(int argc, char** argv) {
 #endif
 
   base::TestSuite test_suite(argc, argv);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
   testing::InitGoogleMock(&argc, argv);

@@ -106,7 +106,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
                             SkAlphaType alpha_type,
                             uint32_t usage) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
                                    uint32_t usage,
                                    const SyncToken& sync_token) override;
@@ -146,7 +146,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Registers a sysmem buffer collection. Not reached in this implementation.
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
@@ -156,7 +156,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
 
   // Not reached in this implementation.
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Generates an unverified SyncToken that is released after all previous
   // commands on this interface have executed on the service side.
@@ -228,7 +228,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
   void WaitSyncTokenOnGpuThread(const SyncToken& sync_token);
   void WrapTaskWithGpuUrl(base::OnceClosure task);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void CreateSharedImageWithAHBOnGpuThread(const Mailbox& out_mailbox,
                                            const Mailbox& in_mailbox,
                                            uint32_t usage,

@@ -171,7 +171,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 
   ImageDecodeAcceleratorStub* GetImageDecodeAcceleratorStub() const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const CommandBufferStub* GetOneStub() const;
 
   bool CreateStreamTexture(
@@ -183,7 +183,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   void DestroyStreamTexture(int32_t stream_id);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool CreateDCOMPTexture(
       int32_t route_id,
       mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver);
@@ -191,7 +191,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   // Called by DCOMPTexture to remove the GpuChannel's reference to the
   // DCOMPTexture.
   void DestroyDCOMPTexture(int32_t route_id);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   SharedImageStub* shared_image_stub() const {
     return shared_image_stub_.get();
@@ -206,14 +206,14 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
       mojom::GpuChannel::CreateCommandBufferCallback callback);
   void DestroyCommandBuffer(int32_t routing_id);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(const base::UnguessableToken& id,
                                       mojo::PlatformHandle token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
   void ReleaseSysmemBufferCollection(const base::UnguessableToken& id);
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
  private:
   // Takes ownership of the renderer process handle.
@@ -280,12 +280,12 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 
   const bool is_gpu_host_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Set of active StreamTextures.
   base::flat_map<int32_t, scoped_refptr<StreamTexture>> stream_textures_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Set of active DCOMPTextures.
   base::flat_map<int32_t, scoped_refptr<DCOMPTexture>> dcomp_textures_;
 #endif

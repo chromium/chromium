@@ -49,7 +49,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/gl_image_io_surface.h"
 #endif
@@ -127,7 +127,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat format_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
   IOSurfaceGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format)
@@ -192,7 +192,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   const gfx::Size size_;
   gfx::BufferFormat format_;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 class CommandBufferCheckLostContext : public CommandBufferDirect {
  public:
@@ -252,12 +252,12 @@ GLManager::~GLManager() {
 std::unique_ptr<gfx::GpuMemoryBuffer> GLManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (use_iosurface_memory_buffers_) {
     return base::WrapUnique<gfx::GpuMemoryBuffer>(
         new IOSurfaceGpuMemoryBuffer(size, format));
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   std::vector<uint8_t> data(gfx::BufferSizeForBufferFormat(size, format), 0);
   auto bytes = base::RefCountedBytes::TakeVector(&data);
   return base::WrapUnique<gfx::GpuMemoryBuffer>(
@@ -436,7 +436,7 @@ size_t GLManager::GetSharedMemoryBytesAllocated() const {
 
 void GLManager::SetupBaseContext() {
   if (!use_count_) {
-    #if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base_share_group_ =
         new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);
     gfx::Size size(4, 4);
@@ -503,7 +503,7 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
   gfx::Size size(width, height);
   scoped_refptr<gl::GLImage> gl_image;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (use_iosurface_memory_buffers_) {
     IOSurfaceGpuMemoryBuffer* gpu_memory_buffer =
         IOSurfaceGpuMemoryBuffer::FromClientBuffer(buffer);
@@ -519,7 +519,7 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
     }
     gl_image = image;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   if (use_native_pixmap_memory_buffers_) {
     gfx::GpuMemoryBuffer* gpu_memory_buffer =

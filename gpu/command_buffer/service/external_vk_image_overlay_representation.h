@@ -30,7 +30,7 @@ class ExternalVkImageOverlayRepresentation
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
   gl::GLImage* GetGLImage() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void NotifyOverlayPromotion(bool promotion, const gfx::Rect& bounds) override;
 #endif
 

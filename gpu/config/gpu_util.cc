@@ -4,11 +4,13 @@
 
 #include "gpu/config/gpu_util.h"
 
-#if defined(OS_WIN)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 // Must be included after windows.h.
 #include <psapi.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #include <vulkan/vulkan.h>
 #include <memory>
@@ -47,19 +49,19 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace gpu {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // These values are persistent to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // This should match enum D3D11FeatureLevel in
@@ -106,12 +108,12 @@ inline D3D11FeatureLevel ConvertToHistogramD3D11FeatureLevel(
       return D3D11FeatureLevel::kUnknown;
   }
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
     const std::set<int>& blocklisted_features,
     const GpuPreferences& gpu_preferences) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return kGpuFeatureStatusDisabled;
 #else
   if (!gpu_preferences.enable_android_surface_control)
@@ -132,7 +134,7 @@ GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
 GpuFeatureStatus GetMetalFeatureStatus(
     const std::set<int>& blocklisted_features,
     const GpuPreferences& gpu_preferences) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (blocklisted_features.count(GPU_FEATURE_TYPE_METAL))
     return kGpuFeatureStatusBlocklisted;
 
@@ -319,7 +321,7 @@ void AppendWorkaroundsToCommandLine(const GpuFeatureInfo& gpu_feature_info,
           DISABLE_ES3_GL_CONTEXT_FOR_TESTING)) {
     command_line->AppendSwitch(switches::kDisableES3GLContextForTesting);
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_DIRECT_COMPOSITION)) {
     command_line->AppendSwitch(switches::kDisableDirectComposition);
   }
@@ -399,7 +401,7 @@ void RecordGpuHistogram(uint32_t vendor_id, uint32_t device_id) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 uint32_t GetSystemCommitLimitMb() {
   PERFORMANCE_INFORMATION perf_info = {sizeof(perf_info)};
   if (::GetPerformanceInfo(&perf_info, sizeof(perf_info))) {
@@ -410,7 +412,7 @@ uint32_t GetSystemCommitLimitMb() {
   }
   return 0u;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 GPUInfo* g_gpu_info_cache = nullptr;
 GpuFeatureInfo* g_gpu_feature_info_cache = nullptr;
@@ -671,25 +673,25 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 
 void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
   const GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   crash_keys::gpu_vendor_id.Set(
       base::StringPrintf("0x%04x", active_gpu.vendor_id));
   crash_keys::gpu_device_id.Set(
       base::StringPrintf("0x%04x", active_gpu.device_id));
 #endif  // !OS_ANDROID
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   crash_keys::gpu_sub_sys_id.Set(
       base::StringPrintf("0x%08x", active_gpu.sub_sys_id));
   crash_keys::gpu_revision.Set(base::StringPrintf("%u", active_gpu.revision));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   crash_keys::gpu_driver_version.Set(active_gpu.driver_version);
   crash_keys::gpu_pixel_shader_version.Set(gpu_info.pixel_shader_version);
   crash_keys::gpu_vertex_shader_version.Set(gpu_info.vertex_shader_version);
   crash_keys::gpu_generation_intel.Set(
       base::StringPrintf("%d", GetIntelGpuGeneration(gpu_info)));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   crash_keys::gpu_gl_version.Set(gpu_info.gl_version);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   crash_keys::gpu_vendor.Set(gpu_info.gl_vendor);
   crash_keys::gpu_renderer.Set(gpu_info.gl_renderer);
 #endif
@@ -725,7 +727,7 @@ bool PopGpuFeatureInfoCache(GpuFeatureInfo* gpu_feature_info) {
   return true;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool InitializeGLThreadSafe(base::CommandLine* command_line,
                             const GpuPreferences& gpu_preferences,
                             GPUInfo* out_gpu_info,
@@ -764,7 +766,7 @@ bool InitializeGLThreadSafe(base::CommandLine* command_line,
   CacheGpuFeatureInfo(*out_gpu_feature_info);
   return true;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
                                const GpuFeatureInfo& gpu_feature_info,
@@ -781,7 +783,7 @@ bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
       gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] !=
           kGpuFeatureStatusEnabled) {
     bool legacy_software_gl = true;
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // This setting makes WebGL run on SwANGLE instead of SwiftShader GL.
     legacy_software_gl = false;
 #endif
@@ -964,7 +966,7 @@ void CollectDevicePerfInfo(DevicePerfInfo* device_perf_info,
   device_perf_info->hardware_concurrency =
       static_cast<uint32_t>(std::thread::hardware_concurrency());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   device_perf_info->system_commit_limit_mb = GetSystemCommitLimitMb();
   if (!in_browser_process) {
     D3D_FEATURE_LEVEL d3d11_feature_level = D3D_FEATURE_LEVEL_1_0_CORE;
@@ -986,7 +988,7 @@ void RecordDevicePerfInfoHistograms() {
                             device_perf_info->total_disk_space_mb / 1024);
   UMA_HISTOGRAM_COUNTS_100("Hardware.Concurrency",
                            device_perf_info->hardware_concurrency);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UMA_HISTOGRAM_COUNTS_100("Memory.Total.SystemCommitLimit",
                            device_perf_info->system_commit_limit_mb / 1024);
   UMA_HISTOGRAM_ENUMERATION("GPU.D3D11FeatureLevel",
@@ -994,7 +996,7 @@ void RecordDevicePerfInfoHistograms() {
                                 device_perf_info->d3d11_feature_level));
   UMA_HISTOGRAM_ENUMERATION("GPU.HasDiscreteGpu",
                             device_perf_info->has_discrete_gpu);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   UMA_HISTOGRAM_ENUMERATION("GPU.IntelGpuGeneration",
                             device_perf_info->intel_gpu_generation);
   UMA_HISTOGRAM_BOOLEAN("GPU.SoftwareRendering",
@@ -1011,7 +1013,7 @@ void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info) {
     RecordGpuHistogram(gpu.vendor_id, gpu.device_id);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::string D3DFeatureLevelToString(uint32_t d3d_feature_level) {
   if (d3d_feature_level == 0) {
     return "Not supported";
@@ -1032,5 +1034,5 @@ std::string VulkanVersionToString(uint32_t vulkan_version) {
         (vulkan_version >> 12) & 0x3FF, vulkan_version & 0xFFF);
   }
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace gpu

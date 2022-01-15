@@ -38,9 +38,9 @@ class SharedImageBackingFactoryD3D;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 class SysmemBufferCollection;
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // TODO(ericrk): Make this a very thin wrapper around SharedImageManager like
 // SharedImageRepresentationFactory.
@@ -94,7 +94,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool HasImages() const { return !shared_images_.empty(); }
   void DestroyAllSharedImages(bool have_context);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool CreateSwapChain(const Mailbox& front_buffer_mailbox,
                        const Mailbox& back_buffer_mailbox,
                        viz::ResourceFormat format,
@@ -104,16 +104,16 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                        SkAlphaType alpha_type,
                        uint32_t usage);
   bool PresentSwapChain(const Mailbox& mailbox);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   bool RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
   bool ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd,
@@ -126,7 +126,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
     return shared_context_state_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool CreateSharedImageVideoPlanes(base::span<const Mailbox> mailboxes,
                                     gfx::GpuMemoryBufferHandle handle,
                                     gfx::BufferFormat format,
@@ -135,7 +135,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool CreateSharedImageWithAHB(const Mailbox& out_mailbox,
                                 const Mailbox& in_mailbox,
                                 uint32_t usage);
@@ -178,17 +178,17 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // images.
   std::vector<std::unique_ptr<SharedImageBackingFactory>> factories_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Used for creating swap chains
   raw_ptr<SharedImageBackingFactoryD3D> d3d_backing_factory_ = nullptr;
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   viz::VulkanContextProvider* vulkan_context_provider_;
   base::flat_map<gfx::SysmemBufferCollectionId,
                  std::unique_ptr<gpu::SysmemBufferCollection>>
       buffer_collections_;
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   raw_ptr<SharedImageBackingFactory> backing_factory_for_testing_ = nullptr;
 };

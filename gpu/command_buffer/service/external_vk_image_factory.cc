@@ -177,7 +177,7 @@ bool ExternalVkImageFactory::IsSupported(uint32_t usage,
     return false;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Scanout on Android requires explicit fence synchronization which is only
   // supported by the interop factory.
   if (usage & SHARED_IMAGE_USAGE_SCANOUT) {

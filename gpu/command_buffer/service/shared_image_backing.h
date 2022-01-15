@@ -143,7 +143,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // the SharedImage is not backed by a NativePixmap.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the AHardwareBuffer from backing if supported and available.
   virtual std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer();

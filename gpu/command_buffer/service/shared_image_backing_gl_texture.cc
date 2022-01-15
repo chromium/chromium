@@ -49,12 +49,12 @@
 #include "ui/gl/shared_gl_fence_egl.h"
 #include "ui/gl/trace_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
 #include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
 #endif
 

@@ -17,7 +17,7 @@
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -36,7 +36,7 @@ namespace gpu {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   base::StringPiece manufacturer(build_info->manufacturer());
@@ -173,11 +173,11 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
                               std::string enable_by_device_name) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
-#if !defined(OS_ANDROID)
-#if defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_win32";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_win32";
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   constexpr char kMemoryObjectExtension[] = "GL_ANGLE_memory_object_fuchsia";
   constexpr char kSemaphoreExtension[] = "GL_ANGLE_semaphore_fuchsia";
 #else
@@ -193,9 +193,9 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
                 << " is not supported.";
     return false;
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (vulkan_info.physical_devices.empty())
     return false;
 
@@ -250,7 +250,7 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   // Imagination GPUs.
   if (device_info.properties.vendorID == kVendorImagination)
     return false;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
 }

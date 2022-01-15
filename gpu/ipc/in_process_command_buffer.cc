@@ -80,7 +80,7 @@
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/process/process_handle.h"
 #endif
@@ -376,7 +376,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       task_executor_->passthrough_discardable_manager(),
       task_executor_->shared_image_manager());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference:::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM. https://crbug.com/180463
   use_virtualized_gl_context_ |=
@@ -420,7 +420,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     } else {
       gl::GLSurfaceFormat surface_format;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // Handle Android low-bit-depth surface formats.
       if (params.attribs.red_size <= 5 && params.attribs.green_size <= 6 &&
           params.attribs.blue_size <= 5 && params.attribs.alpha_size == 0) {
@@ -1416,7 +1416,7 @@ void InProcessCommandBuffer::SetFrameRateOnGpuThread(float frame_rate) {
   surface_->SetFrameRate(frame_rate);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void InProcessCommandBuffer::DidCreateAcceleratedSurfaceChildWindow(
     SurfaceHandle parent_window,
     SurfaceHandle child_window) {

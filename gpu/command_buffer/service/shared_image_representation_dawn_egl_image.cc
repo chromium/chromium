@@ -5,7 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_representation_dawn_egl_image.h"
 
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #endif
 
@@ -41,7 +41,7 @@ SharedImageRepresentationDawnEGLImage::
 
 WGPUTexture SharedImageRepresentationDawnEGLImage::BeginAccess(
     WGPUTextureUsage usage) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On D3D11 backings, we must acquire the keyed mutex to do interop. If we
   // ever switch to non-D3D backings on Windows, this code will break horribly.
   // TODO(senorblanco): This should probably be a virtual on SharedImageBacking
@@ -64,7 +64,7 @@ void SharedImageRepresentationDawnEGLImage::EndAccess() {
   if (dawn_native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
     SetCleared();
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(senorblanco): This should probably be a virtual on SharedImageBacking
   // to avoid this cast.
   static_cast<SharedImageBackingD3D*>(backing())->EndAccessD3D11();

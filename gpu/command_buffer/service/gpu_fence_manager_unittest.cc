@@ -20,7 +20,7 @@
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 
@@ -152,7 +152,7 @@ TEST_F(GpuFenceManagerTest, Destruction) {
   manager_->Destroy(true);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 TEST_F(GpuFenceManagerTest, GetGpuFence) {
   const GLuint kClient1Id = 1;
@@ -226,7 +226,7 @@ TEST_F(GpuFenceManagerTest, Duplication) {
   EXPECT_FALSE(manager_->IsValidGpuFence(kClient1Id));
 }
 
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace gles2
 }  // namespace gpu

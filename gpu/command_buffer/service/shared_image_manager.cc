@@ -15,16 +15,17 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gl/trace_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif
@@ -87,10 +88,10 @@ SharedImageManager::SharedImageManager(bool thread_safe,
   DCHECK(!display_context_on_another_thread || thread_safe);
   if (thread_safe)
     lock_.emplace();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   batch_access_manager_ = std::make_unique<SharedImageBatchAccessManager>();
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
   if (d3d11_device) {
     dxgi_shared_handle_manager_ =
@@ -432,7 +433,7 @@ scoped_refptr<gfx::NativePixmap> SharedImageManager::GetNativePixmap(
 }
 
 bool SharedImageManager::BeginBatchReadAccess() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return batch_access_manager_->BeginBatchReadAccess();
 #else
   return true;
@@ -440,7 +441,7 @@ bool SharedImageManager::BeginBatchReadAccess() {
 }
 
 bool SharedImageManager::EndBatchReadAccess() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return batch_access_manager_->EndBatchReadAccess();
 #else
   return true;

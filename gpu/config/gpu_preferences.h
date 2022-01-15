@@ -22,7 +22,7 @@
 namespace gpu {
 
 // The size to set for the program cache for default and low-end device cases.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const size_t kDefaultMaxProgramCacheMemoryBytes = 6 * 1024 * 1024;
 #else
 const size_t kDefaultMaxProgramCacheMemoryBytes = 2 * 1024 * 1024;
@@ -283,7 +283,7 @@ struct GPU_EXPORT GpuPreferences {
   // ===================================
   // Settings from //media/base/media_switches.h
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Enable the hardware-accelerated direct video decoder on ChromeOS.
   bool enable_chromeos_direct_video_decoder = false;
 #endif

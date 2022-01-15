@@ -16,7 +16,7 @@ namespace gpu {
 
 #if defined(CYGPROFILE_INSTRUMENTATION)
 constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(30);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #if defined(ADDRESS_SANITIZER)
 // Use a longer timeout because of slower execution time leading to
 // intermittent flakes. http://crbug.com/1270755
@@ -24,7 +24,7 @@ constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(50);
 #else
 constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(25);
 #endif
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(30);
 #else
 constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(15);
@@ -37,7 +37,7 @@ constexpr int kRestartFactor = 2;
 
 // It takes longer to initialize GPU process in Windows. See
 // https://crbug.com/949839 for details.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr int kInitFactor = 2;
 #else
 constexpr int kInitFactor = 1;

@@ -19,7 +19,7 @@
 #include "gpu/ipc/webgpu_in_process_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "ui/gl/gl_context.h"
 #endif
@@ -53,8 +53,8 @@ bool WebGPUTest::WebGPUSupported() const {
 
 bool WebGPUTest::WebGPUSharedImageSupported() const {
   // Currently WebGPUSharedImage is only implemented on Mac, Linux and Windows
-#if (defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-     defined(OS_WIN)) &&                                             \
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_WIN)) &&                                                 \
     BUILDFLAG(USE_DAWN)
   return true;
 #else
@@ -69,10 +69,10 @@ void WebGPUTest::SetUp() {
 
   gpu::GpuPreferences gpu_preferences;
   gpu_preferences.enable_webgpu = true;
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
   gpu_preferences.use_vulkan = gpu::VulkanImplementationName::kNative;
   gpu_preferences.gr_context_type = gpu::GrContextType::kVulkan;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // D3D shared images are only supported with passthrough command decoder.
   gpu_preferences.use_passthrough_cmd_decoder = true;
 #endif
@@ -95,7 +95,7 @@ void WebGPUTest::Initialize(const Options& options) {
   attributes.context_type = CONTEXT_TYPE_WEBGPU;
 
   static constexpr GpuMemoryBufferManager* memory_buffer_manager = nullptr;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ImageFactory* image_factory = &image_factory_;
 #else
   static constexpr ImageFactory* image_factory = nullptr;
@@ -304,7 +304,7 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedFeature) {
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
   // This must be checked before WebGPUTest::Initialize otherwise context
   // switched is locked and we cannot temporarily have this GLContext.

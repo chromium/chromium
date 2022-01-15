@@ -38,7 +38,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::VideoMemoryUsageStatsDataView,
                                gpu::VideoMemoryUsageStats> {
   static std::map<int32_t, gpu::VideoMemoryUsageStats::ProcessStats>
   process_map(const gpu::VideoMemoryUsageStats& stats) {
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
     std::map<int32_t, gpu::VideoMemoryUsageStats::ProcessStats> map;
     for (const auto& pair : stats.process_map)
       map[static_cast<int32_t>(pair.first)] = pair.second;
@@ -54,7 +54,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::VideoMemoryUsageStatsDataView,
 
   static bool Read(gpu::mojom::VideoMemoryUsageStatsDataView data,
                    gpu::VideoMemoryUsageStats* out) {
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
     std::map<int32_t, gpu::VideoMemoryUsageStats::ProcessStats> process_map;
     if (!data.ReadProcessMap(&process_map))
       return false;

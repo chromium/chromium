@@ -33,7 +33,7 @@
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_surface_egl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <dawn_native/D3D12Backend.h>
 #include "ui/gl/gl_angle_util_win.h"
 #endif
@@ -742,7 +742,7 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
     dawn_instance_->DiscoverAdapters(&optionsES);
   }
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       gl::QueryD3D11DeviceObjectFromANGLE();
   if (!d3d11_device) {
@@ -1008,12 +1008,12 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
   }
 
   if (gr_context_type_ != GrContextType::kVulkan) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
     SendAdapterProperties(request_adapter_serial, -1, nullptr,
                           "WebGPU on Linux requires command-line flag "
                           "--enable-features=Vulkan,UseSkiaRenderer");
     return error::kNoError;
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
   }
 
   int32_t requested_adapter_index = GetPreferredAdapterIndex(power_preference);

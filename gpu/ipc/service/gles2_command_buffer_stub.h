@@ -47,7 +47,7 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
 // ImageTransportSurfaceDelegate implementation:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidCreateAcceleratedSurfaceChildWindow(
       SurfaceHandle parent_window,
       SurfaceHandle child_window) override;

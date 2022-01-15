@@ -107,7 +107,7 @@ void GLContextVirtual::ForceReleaseVirtuallyCurrent() {
   shared_context_->OnReleaseVirtuallyCurrent(this);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 uint64_t GLContextVirtual::BackpressureFenceCreate() {
   return shared_context_->BackpressureFenceCreate();
 }

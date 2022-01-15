@@ -30,9 +30,9 @@
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/progress_reporter.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace gpu {
 namespace gles2 {
@@ -884,7 +884,7 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
   if (entries_processed)
     *entries_processed = process_pos;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Aggressively call glFlush on macOS. This is the only fix that has been
   // found so far to avoid crashes on Intel drivers. The workaround
   // isn't needed for WebGL contexts, though.
@@ -952,12 +952,12 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
     static constexpr const char* kRequiredFunctionalityExtensions[] = {
       "GL_ANGLE_framebuffer_blit",
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       "GL_ANGLE_memory_object_fuchsia",
 #endif
       "GL_ANGLE_memory_size",
       "GL_ANGLE_native_id",
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       "GL_ANGLE_semaphore_fuchsia",
 #endif
       "GL_ANGLE_texture_storage_external",
@@ -975,7 +975,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       "GL_OES_EGL_image",
       "GL_OES_EGL_image_external",
       "GL_OES_EGL_image_external_essl3",
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       "GL_ANGLE_texture_rectangle",
 #endif
       "GL_ANGLE_vulkan_image",
@@ -1233,7 +1233,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   api()->glGetIntegervFn(GL_SCISSOR_BOX, scissor_);
   ApplySurfaceDrawOffset();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On mac we need the ANGLE_texture_rectangle extension to support IOSurface
   // backbuffers, but we don't want it exposed to WebGL user shaders. This
   // disables support for it in the shader compiler. We then enable it
@@ -1622,7 +1622,7 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.discard_framebuffer =
       feature_info_->feature_flags().ext_discard_framebuffer;
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This is unconditionally true on mac, no need to test for it at runtime.
   caps.iosurface = true;
 #endif
@@ -1674,10 +1674,10 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.commit_overlay_planes = surface_->SupportsCommitOverlayPlanes();
   caps.protected_video_swap_chain = surface_->SupportsProtectedVideo();
   caps.gpu_vsync = surface_->SupportsGpuVSync();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   caps.shared_image_swap_chain =
       SharedImageBackingFactoryD3D::IsSwapChainSupported();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.texture_storage_image =
       feature_info_->feature_flags().chromium_texture_storage_image;

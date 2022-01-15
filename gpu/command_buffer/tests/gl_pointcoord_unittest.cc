@@ -6,6 +6,7 @@
 #include <GLES2/gl2ext.h>
 #include <stdint.h>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,7 +67,7 @@ GLfloat s2p(GLfloat s) {
 
 // crbug.com/162976
 // Flaky on Linux ATI bot.
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(NDEBUG))
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(NDEBUG))
 #define MAYBE_RenderTo DISABLED_RenderTo
 #else
 #define MAYBE_RenderTo RenderTo

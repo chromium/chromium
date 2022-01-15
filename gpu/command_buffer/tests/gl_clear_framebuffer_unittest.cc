@@ -14,6 +14,7 @@
 
 #include <vector>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "gpu/config/gpu_test_config.h"
@@ -146,7 +147,7 @@ TEST_P(GLClearFramebufferTest, ClearColorWithMask) {
 }
 
 // crbug.com/434094
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST_P(GLClearFramebufferTest, ClearColorWithScissor) {
   if (!IsApplicable()) {
     return;

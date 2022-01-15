@@ -274,15 +274,15 @@ bool GpuControlList::More::GLVersionInfoMismatch(
 
 // static
 GpuControlList::GLType GpuControlList::More::GetDefaultGLType() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return kGLTypeGL;
-#elif defined(OS_LINUX) || defined(OS_OPENBSD)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
   return kGLTypeGL;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return kGLTypeGL;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return kGLTypeANGLE;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return kGLTypeGLES;
 #else
   return kGLTypeNone;
@@ -374,16 +374,16 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     case kDontCare:
       break;
     case kSupported:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       if (!gpu_info.overlay_info.supports_overlays)
         return false;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
       break;
     case kUnsupported:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       if (gpu_info.overlay_info.supports_overlays)
         return false;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
       break;
   }
   if ((subpixel_font_rendering == kUnsupported &&
@@ -468,17 +468,17 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
       } else {
         for (size_t ii = 0; !found && ii < device_size; ++ii) {
           uint32_t device_id = devices[ii].device_id;
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
           uint32_t revision = devices[ii].revision;
-#endif  // OS_WIN || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
           for (auto& candidate : candidates) {
             if (vendor_id != candidate.vendor_id ||
                 device_id != candidate.device_id)
               continue;
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
             if (revision && revision != candidate.revision)
               continue;
-#endif  // OS_WIN || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
             found = true;
             break;
           }
@@ -773,17 +773,17 @@ uint32_t GpuControlList::max_entry_id() const {
 
 // static
 GpuControlList::OsType GpuControlList::GetOsType() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return kOsChromeOS;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return kOsWin;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return kOsAndroid;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return kOsFuchsia;
-#elif defined(OS_LINUX) || defined(OS_OPENBSD)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
   return kOsLinux;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return kOsMacosx;
 #else
   return kOsAny;

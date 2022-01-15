@@ -32,14 +32,14 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                          const Mailbox& mailbox) override;
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe) override;
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
   SyncToken GenUnverifiedSyncToken() override;
   SyncToken GenVerifiedSyncToken() override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
@@ -67,7 +67,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
                             uint32_t usage) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<Mailbox> CreateSharedImageVideoPlanes(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -75,7 +75,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox) override;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
                                    uint32_t usage,
                                    const SyncToken& sync_token) override;

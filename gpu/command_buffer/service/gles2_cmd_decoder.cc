@@ -117,11 +117,11 @@
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/scoped_make_current.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <IOSurface/IOSurface.h>
 // Note that this must be included after gl_bindings.h to avoid conflicts.
 #include <OpenGL/CGLIOSurface.h>
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
@@ -4092,7 +4092,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   UpdateFramebufferSRGB(nullptr);
 
   bool call_gl_clear = !surfaceless_ && !offscreen;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Temporary workaround for Android WebView because this clear ignores the
   // clip and corrupts that external UI of the App. Not calling glClear is ok
   // because the system already clears the buffer before each draw. Proper
@@ -4316,7 +4316,7 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
 
   caps.chromium_image_rgb_emulation = ChromiumImageNeedsRGBEmulation();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This is unconditionally true on mac, no need to test for it at runtime.
   caps.iosurface = true;
 #endif
@@ -6039,7 +6039,7 @@ error::Error GLES2DecoderImpl::DoCommandsImpl(unsigned int num_commands,
     }
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Aggressively call glFlush on macOS. This is the only fix that has been
   // found so far to avoid crashes on Intel drivers. The workaround
   // isn't needed for WebGL contexts, though.
@@ -14331,7 +14331,7 @@ bool GLES2DecoderImpl::ClearLevel(Texture* texture,
   // https://crbug.com/848952 (slow uploads on macOS)
   // https://crbug.com/883276 (buggy clears on Android)
   bool prefer_use_gl_clear = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const uint32_t kMinSizeForGLClear = 4 * 1024;
   prefer_use_gl_clear = size > kMinSizeForGLClear;
 #endif
@@ -18512,7 +18512,7 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
       source_type, dest_binding_target, dest_level, dest_internal_format,
       unpack_flip_y == GL_TRUE, unpack_premultiply_alpha == GL_TRUE,
       unpack_unmultiply_alpha == GL_TRUE);
-#if defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY)
   // glDrawArrays is faster than glCopyTexSubImage2D on IA Mesa driver,
   // although opposite in Android.
   // TODO(dshwang): After Mesa fixes this issue, remove this hack.

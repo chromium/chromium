@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -12,7 +13,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_fence.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #endif
 
@@ -266,7 +267,7 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkia::BeginReadAccess(
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 AHardwareBuffer* SharedImageRepresentationOverlay::GetAHardwareBuffer() {
   NOTREACHED();
   return nullptr;
@@ -350,7 +351,7 @@ SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
   backing()->MarkForDestruction();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 SharedImageRepresentationFactoryRef::GetAHardwareBuffer() {
   return backing()->GetAHardwareBuffer();

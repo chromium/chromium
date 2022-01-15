@@ -59,7 +59,7 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
                          const std::string& shader) override {}
   void MaybeExitOnContextLost() override { is_exiting_ = true; }
   bool IsExiting() const override { return is_exiting_; }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override {}
   void DidUpdateHDRStatus(bool hdr_enabled) override {}
   void SendCreatedChildWindow(SurfaceHandle parent_window,

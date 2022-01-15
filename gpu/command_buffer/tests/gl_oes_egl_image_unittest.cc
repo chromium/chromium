@@ -14,7 +14,7 @@
 #include "ui/gl/gl_image.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/gl/gl_image_native_pixmap.h"
 #endif
 
@@ -43,7 +43,7 @@ class GpuOESEGLImageTest : public testing::Test,
   bool egl_initialized_{false};
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/835072): re-enable this test on ASAN once bugs are fixed.
 #if !defined(ADDRESS_SANITIZER)
 
@@ -176,6 +176,6 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
   glDeleteTextures(1, &texture_id);
 }
 #endif  // !defined(ADDRESS_SANITIZER)
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

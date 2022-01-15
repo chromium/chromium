@@ -9,7 +9,7 @@
 #include "gpu/gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <d3dcommon.h>
 #endif
 
@@ -45,7 +45,7 @@ struct GPU_EXPORT DevicePerfInfo {
   uint32_t total_physical_memory_mb = 0u;
   uint32_t total_disk_space_mb = 0u;
   uint32_t hardware_concurrency = 0u;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // system commit limit (n pages) x page size.
   uint32_t system_commit_limit_mb = 0u;
   // If multiple GPUs are detected, this holds the highest feature level.

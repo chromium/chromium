@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -557,7 +558,7 @@ TEST_F(GLTextureMailboxTest, FrontBufferSamplerParameters) {
 }
 
 // http://crbug.com/281565
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(GLTextureMailboxTest, TakeFrontBufferMultipleContexts) {
   SetUpContexts();
   Mailbox mailbox[2];

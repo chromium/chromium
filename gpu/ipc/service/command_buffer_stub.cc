@@ -45,7 +45,7 @@
 #include "ui/gl/gl_workarounds.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -504,7 +504,7 @@ void CommandBufferStub::OnAsyncFlush(
   if (pre_state.get_offset != post_state.get_offset)
     ReportState();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   manager->DidAccessGpu();
 #endif

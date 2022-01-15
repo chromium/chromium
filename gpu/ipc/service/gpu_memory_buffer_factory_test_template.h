@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 
-#if defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 #include "base/command_line.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
@@ -27,10 +27,10 @@ namespace gpu {
 template <typename GpuMemoryBufferFactoryType>
 class GpuMemoryBufferFactoryTest : public testing::Test {
  public:
-#if defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
   // Overridden from testing::Test:
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // This test only works with hardware rendering.
     DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kUseGpuInTests));
@@ -38,7 +38,7 @@ class GpuMemoryBufferFactoryTest : public testing::Test {
     gl::GLSurfaceTestSupport::InitializeOneOff();
   }
   void TearDown() override { gl::init::ShutdownGL(false); }
-#endif  // defined(OS_WIN) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 
  protected:
   base::test::TaskEnvironment task_environment_{

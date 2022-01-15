@@ -316,7 +316,7 @@ TEST_F(ES3MapBufferRangeTest, ReadPixels) {
   glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
   GLTestHelper::CheckGLError("no errors", __LINE__);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1230038): This step causes a crash on mac intel-uhd bot.
   if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
     return;

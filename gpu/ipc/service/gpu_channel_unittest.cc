@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/ipc/service/gpu_channel.h"
+
 #include <stdint.h>
 
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
+#include "build/build_config.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
 
@@ -20,7 +22,7 @@ class GpuChannelTest : public GpuChannelTestCommon {
   ~GpuChannelTest() override = default;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const SurfaceHandle kFakeSurfaceHandle = reinterpret_cast<SurfaceHandle>(1);
 #else
 const SurfaceHandle kFakeSurfaceHandle = 1;

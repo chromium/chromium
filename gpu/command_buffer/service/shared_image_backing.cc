@@ -4,13 +4,14 @@
 
 #include "gpu/command_buffer/service/shared_image_backing.h"
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #endif
 
@@ -245,7 +246,7 @@ scoped_refptr<gfx::NativePixmap> SharedImageBacking::GetNativePixmap() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 SharedImageBacking::GetAHardwareBuffer() {
   return nullptr;

@@ -29,7 +29,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_version_info.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_fence_egl.h"
 #else
 #include "base/mac/mac_util.h"
@@ -198,19 +198,19 @@ FeatureInfo::FeatureInfo(
           .status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
       gpu::kGpuFeatureStatusEnabled;
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
   feature_flags_.chromium_image_ycbcr_420v = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::YUV_420_BIPLANAR);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   feature_flags_.chromium_image_ycbcr_420v = true;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   feature_flags_.chromium_image_ycbcr_p010 = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::P010);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   feature_flags_.chromium_image_ycbcr_p010 = base::mac::IsAtLeastOS11();
 #endif
 }
@@ -278,7 +278,7 @@ void FeatureInfo::InitializeForTesting(ContextType context_type) {
 }
 
 bool IsGL_REDSupportedOnFBOs() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The glTexImage2D call below can hang on Mac so skip this since it's only
   // really needed to workaround a Mesa issue. See https://crbug.com/1158744.
   return true;
@@ -314,7 +314,7 @@ bool IsGL_REDSupportedOnFBOs() {
   DCHECK(glGetError() == GL_NO_ERROR);
 
   return result;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void FeatureInfo::EnableCHROMIUMTextureStorageImage() {
@@ -993,7 +993,7 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_sized_texture_filterable_internal_format.AddValue(
         GL_BGRA8_EXT);
     feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // TODO(sugoi): Remove this once crbug.com/1276529 is fixed.
     // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
     // this allows WebGL-rendered canvases to be composited by the OS rather
@@ -1250,10 +1250,10 @@ void FeatureInfo::InitializeFeatures() {
         gfx::BufferFormat::YUV_420_BIPLANAR);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac can create GLImages out of AR30 IOSurfaces only after High Sierra.
   feature_flags_.chromium_image_ar30 = base::mac::IsAtLeastOS10_13();
-#elif !defined(OS_WIN)
+#elif !BUILDFLAG(IS_WIN)
   // TODO(mcasas): connect in Windows, https://crbug.com/803451
   // XB30 support was introduced in GLES 3.0/ OpenGL 3.3, before that it was
   // signalled via a specific extension.
@@ -1685,7 +1685,7 @@ void FeatureInfo::InitializeFeatures() {
 
   EnableWEBGLMultiDrawIfPossible(extensions);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (is_passthrough_cmd_decoder_ &&
       gfx::HasExtension(extensions, "GL_ANGLE_base_vertex_base_instance")) {
 #else

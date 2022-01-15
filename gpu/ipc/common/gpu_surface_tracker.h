@@ -17,7 +17,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -39,19 +39,19 @@ namespace gpu {
 class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
  public:
   struct SurfaceRecord {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     SurfaceRecord(gfx::AcceleratedWidget widget,
                   const base::android::JavaRef<jobject>& j_surface,
                   bool can_be_used_with_surface_control);
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
     explicit SurfaceRecord(gfx::AcceleratedWidget widget);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     SurfaceRecord(SurfaceRecord&&);
     SurfaceRecord(const SurfaceRecord&) = delete;
 
     gfx::AcceleratedWidget widget;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     gl::ScopedJavaSurface surface;
     bool can_be_used_with_surface_control;
 #endif
@@ -64,7 +64,7 @@ class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
       gpu::SurfaceHandle surface_handle,
       bool* can_be_used_with_surface_control) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   gl::ScopedJavaSurface AcquireJavaSurface(
       gpu::SurfaceHandle surface_handle,
       bool* can_be_used_with_surface_control) override;

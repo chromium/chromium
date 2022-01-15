@@ -137,7 +137,7 @@ void GpuWatchdogPowerTest::LongTaskOnResume(
 // GPU Hang In Initialization
 TEST_F(GpuWatchdogTest, GpuInitializationHang) {
   // GPU init takes longer than timeout.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
              kGpuWatchdogTimeoutForTesting *
                  kMaxCountOfMoreGpuThreadTimeAllowed +
@@ -190,7 +190,7 @@ TEST_F(GpuWatchdogTest, GpuRunningATaskHang) {
   watchdog_thread_->OnInitComplete();
 
   // Start running a GPU task.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
@@ -245,7 +245,7 @@ TEST_F(GpuWatchdogTest, GpuSwitchingToForegroundHang) {
   // A task stays in the background for 200 milliseconds, and then
   // switches to the foreground and runs for 6000 milliseconds. This is longer
   // than the first-time foreground watchdog timeout (2000 ms).
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuWatchdogTest::LongTaskFromBackgroundToForeground,
@@ -292,7 +292,7 @@ TEST_F(GpuWatchdogTest, GpuInitializationPause) {
   // Continue the watchdog now.
   watchdog_thread_->ResumeWatchdog();
   // The Gpu init continues for (init timeout + 4000) ms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
              kGpuWatchdogTimeoutForTesting *
                  kMaxCountOfMoreGpuThreadTimeAllowed +
@@ -334,7 +334,7 @@ TEST_F(GpuWatchdogPowerTest, GpuOnResumeHang) {
   // This task stays in the suspension mode for 200 milliseconds, and it
   // wakes up on power resume and then runs for 6000 milliseconds. This is
   // longer than the watchdog resume timeout (2000 ms).
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(

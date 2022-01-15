@@ -6,6 +6,7 @@
 #define GPU_IPC_SERVICE_IMAGE_TRANSPORT_SURFACE_DELEGATE_H_
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -26,7 +27,7 @@ class FeatureInfo;
 
 class GPU_IPC_SERVICE_EXPORT ImageTransportSurfaceDelegate {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Tells the delegate that a child window was created with the provided
   // SurfaceHandle.
   virtual void DidCreateAcceleratedSurfaceChildWindow(

@@ -542,7 +542,7 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, TexImageTexStorageEquivalence) {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const auto kResourceFormats =
     ::testing::Values(viz::ResourceFormat::RGBA_8888,
                       viz::ResourceFormat::BGRA_1010102,

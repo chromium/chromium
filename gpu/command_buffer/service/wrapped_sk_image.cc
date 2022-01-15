@@ -71,7 +71,7 @@ uint64_t BackendTextureTracingID(const GrBackendTexture& backend_texture) {
         return tex_info.fID;
       break;
     }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     case GrBackendApi::kMetal: {
       GrMtlTextureInfo image_info;
       if (backend_texture.getMtlTextureInfo(&image_info))

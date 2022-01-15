@@ -24,7 +24,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 #endif
 
@@ -167,7 +167,7 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     backing()->RegisterImageFactory(factory);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer();
 #endif
@@ -432,7 +432,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
 
     gl::GLImage* gl_image() const { return gl_image_; }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     AHardwareBuffer* GetAHardwareBuffer() {
       return representation()->GetAHardwareBuffer();
     }
@@ -459,7 +459,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     gfx::GpuFenceHandle release_fence_;
   };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual void NotifyOverlayPromotion(bool promotion,
                                       const gfx::Rect& bounds) = 0;
 #endif
@@ -483,7 +483,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   // |release_fence| will be null in that case.
   virtual void EndReadAccess(gfx::GpuFenceHandle release_fence) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual AHardwareBuffer* GetAHardwareBuffer();
 #elif defined(USE_OZONE)
   scoped_refptr<gfx::NativePixmap> GetNativePixmap();

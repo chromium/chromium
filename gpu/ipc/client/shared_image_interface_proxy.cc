@@ -190,7 +190,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
                                                        params->format));
 
   bool requires_sync_token =
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       // Synchronization is not required if the image is being created by
       // FuchsiaVideoDecoder. |gpu_memory_buffer_manager| is nullptr in that
       // case.
@@ -222,7 +222,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   return mailbox;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::vector<Mailbox> SharedImageInterfaceProxy::CreateSharedImageVideoPlanes(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -276,9 +276,9 @@ void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
         std::move(dependencies));
   }
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 Mailbox SharedImageInterfaceProxy::CreateSharedImageWithAHB(
     const Mailbox& mailbox,
     uint32_t usage,
@@ -456,7 +456,7 @@ SharedImageInterfaceProxy::CreateSwapChain(viz::ResourceFormat format,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            uint32_t usage) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const SharedImageInterface::SwapChainMailboxes mailboxes = {
       Mailbox::GenerateForSharedImage(), Mailbox::GenerateForSharedImage()};
   auto params = mojom::CreateSwapChainParams::New();
@@ -484,12 +484,12 @@ SharedImageInterfaceProxy::CreateSwapChain(viz::ResourceFormat format,
 #else
   NOTREACHED();
   return {};
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void SharedImageInterfaceProxy::PresentSwapChain(const SyncToken& sync_token,
                                                  const Mailbox& mailbox) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<SyncToken> dependencies =
       GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
   {
@@ -504,10 +504,10 @@ void SharedImageInterfaceProxy::PresentSwapChain(const SyncToken& sync_token,
   }
 #else
   NOTREACHED();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 void SharedImageInterfaceProxy::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
@@ -523,7 +523,7 @@ void SharedImageInterfaceProxy::ReleaseSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id) {
   host_->GetGpuChannel().ReleaseSysmemBufferCollection(id);
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 scoped_refptr<gfx::NativePixmap> SharedImageInterfaceProxy::GetNativePixmap(
     const gpu::Mailbox& mailbox) {

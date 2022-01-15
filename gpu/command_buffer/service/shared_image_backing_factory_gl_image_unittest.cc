@@ -840,7 +840,7 @@ TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
   EXPECT_EQ(stub_image->update_counter(), 1);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const auto kResourceFormats =
     ::testing::Values(viz::ResourceFormat::RGBA_8888,
                       viz::ResourceFormat::BGRA_1010102,

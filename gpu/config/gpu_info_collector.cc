@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_switches.h"
 #include "skia/buildflags.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
@@ -242,7 +243,7 @@ bool CollectGraphicsDeviceInfoFromCommandLine(
     base::StringToUint(device_id_str, &gpu.device_id);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(switches::kGpuSubSystemId)) {
     const std::string syb_system_id_str =
         command_line->GetSwitchValueASCII(switches::kGpuSubSystemId);
@@ -262,10 +263,10 @@ bool CollectGraphicsDeviceInfoFromCommandLine(
   }
 
   bool info_updated = gpu.vendor_id || gpu.device_id ||
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
                       gpu.revision ||
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                       gpu.sub_sys_id ||
 #endif
                       !gpu.driver_version.empty();
@@ -396,7 +397,7 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
   gpu_info->max_msaa_samples = base::NumberToString(max_samples);
   base::UmaHistogramSparse("GPU.MaxMSAASampleCount", max_samples);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   gpu_info->can_support_threaded_texture_mailbox =
       gl::GLSurfaceEGL::HasEGLExtension("EGL_KHR_fence_sync") &&
       gl::GLSurfaceEGL::HasEGLExtension("EGL_KHR_image_base") &&
@@ -412,7 +413,7 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
     gpu_info->direct_rendering_version =
         window_system_binding_info.direct_rendering_version;
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   bool supports_robustness =
       gfx::HasExtension(extension_set, "GL_EXT_robustness") ||
@@ -433,9 +434,9 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
   gpu_info->vertex_shader_version = glsl_version;
 
   bool active_gpu_identified = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   active_gpu_identified = IdentifyActiveGPUWithLuid(gpu_info);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   if (!active_gpu_identified)
     IdentifyActiveGPU(gpu_info);
@@ -524,7 +525,7 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
 
   gpu_info->gpu.vendor_id = active->vendorId;
   gpu_info->gpu.device_id = active->deviceId;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   gpu_info->gpu.revision = active->revisionId;
 #endif
   gpu_info->gpu.driver_vendor = std::move(active->driverVendor);
@@ -539,7 +540,7 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
     GPUInfo::GPUDevice device;
     device.vendor_id = system_info->gpus[i].vendorId;
     device.device_id = system_info->gpus[i].deviceId;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     device.revision = system_info->gpus[i].revisionId;
 #endif
     device.driver_vendor = std::move(system_info->gpus[i].driverVendor);
@@ -557,11 +558,11 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
 
 void CollectGraphicsInfoForTesting(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CollectContextGraphicsInfo(gpu_info);
 #else
   CollectBasicGraphicsInfo(gpu_info);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,

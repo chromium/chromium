@@ -26,7 +26,7 @@ namespace {
 static const base::FilePath::CharType kGpuCachePath[] =
     FILE_PATH_LITERAL("GPUCache");
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 size_t GetCustomCacheSizeBytesIfExists(base::StringPiece switch_string) {
   const base::CommandLine& process_command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -645,18 +645,18 @@ int ShaderDiskCache::SetCacheCompleteCallback(
 
 // static
 size_t ShaderDiskCache::CacheSizeBytes() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   size_t custom_cache_size =
       GetCustomCacheSizeBytesIfExists(switches::kShaderDiskCacheSizeKB);
   if (custom_cache_size)
     return custom_cache_size;
   return kDefaultMaxProgramCacheMemoryBytes;
-#else   // !defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   if (!base::SysInfo::IsLowEndDevice())
     return kDefaultMaxProgramCacheMemoryBytes;
   else
     return kLowEndMaxProgramCacheMemoryBytes;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace gpu

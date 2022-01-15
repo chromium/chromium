@@ -38,11 +38,11 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
@@ -55,7 +55,7 @@ static constexpr size_t kInitialScratchDeserializationBufferSize = 1024;
 
 size_t MaxNumSkSurface() {
   static constexpr size_t kNormalMaxNumSkSurface = 16;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static constexpr size_t kLowEndMaxNumSkSurface = 4;
   if (base::SysInfo::IsLowEndDevice()) {
     return kLowEndMaxNumSkSurface;
@@ -189,7 +189,7 @@ SharedContextState::SharedContextState(
       break;
     case GrContextType::kMetal:
       if (metal_context_provider_) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         gr_context_ = metal_context_provider_->GetGrContext();
 #endif
         use_virtualized_gl_contexts_ = false;
@@ -267,7 +267,7 @@ bool SharedContextState::InitializeGrContext(
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (metal_context_provider_)
     metal_context_provider_->SetProgressReporter(progress_reporter);
 #endif
@@ -296,7 +296,7 @@ bool SharedContextState::InitializeGrContext(
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
     bool use_version_es2 = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
 #endif
     sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
@@ -485,7 +485,7 @@ bool SharedContextState::InitializeGL(
   if (vk_context_provider_) {
     const auto& extensions =
         vk_context_provider_->GetDeviceQueue()->enabled_extensions();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     vk_supports_external_memory =
         gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME) &&
         gfx::HasExtension(extensions,
@@ -495,7 +495,7 @@ bool SharedContextState::InitializeGL(
                           VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME) &&
         gfx::HasExtension(extensions,
                           VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
     vk_supports_external_memory =
         gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME) &&
         gfx::HasExtension(extensions,

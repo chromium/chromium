@@ -677,7 +677,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         .RetiresOnSaturation();
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (gl_info.is_es3 || gl_info.is_desktop_core_profile ||
       gfx::HasExtension(extension_set, "GL_EXT_texture_rg") ||
       (gfx::HasExtension(extension_set, "GL_ARB_texture_rg"))) {
@@ -736,7 +736,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         .RetiresOnSaturation();
 #endif
   }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 void TestHelper::SetupExpectationsForClearingUniforms(::gl::MockGLInterface* gl,

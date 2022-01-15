@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "ui/gl/gl_context.h"
 #endif
@@ -52,7 +52,7 @@ void ToMockUncapturedErrorCallback(WGPUErrorType type,
 class WebGPUMailboxTest : public WebGPUTest {
  protected:
   void SetUp() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
     // This must be checked before WebGPUTest::Initialize otherwise context
     // switched is locked and we cannot temporarily have this GLContext.
@@ -106,7 +106,7 @@ class WebGPUMailboxTest : public WebGPUTest {
                                &entries_processed);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool mac_m1_ = false;
 #endif
 };
@@ -555,7 +555,7 @@ TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
   if (mac_m1_)
     return;

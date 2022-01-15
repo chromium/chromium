@@ -16,7 +16,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_swap_chain.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
 #endif
 
@@ -81,7 +81,7 @@ uint32_t kMinImageCount = 3u;
 
 VulkanSurface::~VulkanSurface() {
   DCHECK_EQ(static_cast<VkSurfaceKHR>(VK_NULL_HANDLE), surface_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (accelerated_widget_)
     ANativeWindow_release(accelerated_widget_);
 #endif
@@ -97,7 +97,7 @@ VulkanSurface::VulkanSurface(VkInstance vk_instance,
       acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns) {
   DCHECK_NE(static_cast<VkSurfaceKHR>(VK_NULL_HANDLE), surface_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (accelerated_widget_)
     ANativeWindow_acquire(accelerated_widget_);
 #endif

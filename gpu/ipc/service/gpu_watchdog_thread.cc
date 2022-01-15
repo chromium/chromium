@@ -31,7 +31,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/result_codes.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -50,7 +50,7 @@ base::TimeDelta GetGpuWatchdogTimeout() {
                  << timeout_str;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     int num_of_processors = base::SysInfo::NumberOfProcessors();
     if (num_of_processors > 8)
@@ -76,7 +76,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       watched_gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   base::CurrentThread::Get()->AddTaskObserver(this);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // GetCurrentThread returns a pseudo-handle that cannot be used by one thread
   // to identify another. DuplicateHandle creates a "real" handle that can be
   // used for this purpose.
@@ -87,7 +87,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
   }
 #endif
 
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   tty_file_ = base::OpenFile(
       base::FilePath(FILE_PATH_LITERAL("/sys/class/tty/tty0/active")), "r");
   UpdateActiveTTY();
@@ -110,12 +110,12 @@ GpuWatchdogThread::~GpuWatchdogThread() {
   base::CurrentThread::Get()->RemoveTaskObserver(this);
   base::PowerMonitor::RemovePowerSuspendObserver(this);
   GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogEnd);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (watched_thread_handle_)
     CloseHandle(watched_thread_handle_);
 #endif
 
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   if (tty_file_)
     fclose(tty_file_);
 #endif
@@ -230,7 +230,7 @@ void GpuWatchdogThread::Init() {
   next_on_watchdog_timeout_time_ = base::Time::Now() + timeout;
   in_gpu_initialization_ = true;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (watched_thread_handle_) {
     if (base::ThreadTicks::IsSupported())
       base::ThreadTicks::WaitUntilInitialized();
@@ -340,7 +340,7 @@ void GpuWatchdogThread::RestartWatchdogTimeoutTask(
     last_on_watchdog_timeout_timeticks_ = base::TimeTicks::Now();
     next_on_watchdog_timeout_time_ = base::Time::Now() + timeout;
     last_arm_disarm_counter_ = ReadArmDisarmCounter();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (watched_thread_handle_) {
       last_on_watchdog_timeout_thread_ticks_ = GetWatchedThreadTime();
       remaining_watched_thread_ticks_ = timeout;
@@ -450,7 +450,7 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
   if (foregrounded_event_)
     num_of_timeout_after_foregrounded_++;
 
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   UpdateActiveTTY();
 #endif
 
@@ -479,7 +479,7 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
 
   // Still armed without any progress. GPU possibly hangs.
   GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kKill);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (less_than_full_thread_time_after_capped_)
     GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kKillOnLessThreadTime);
 #endif
@@ -503,7 +503,7 @@ bool GpuWatchdogThread::SlowWatchdogThread() {
 
 bool GpuWatchdogThread::WatchedThreadNeedsMoreThreadTime(
     bool no_gpu_hang_detected) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!watched_thread_handle_)
     return false;
 
@@ -550,7 +550,7 @@ bool GpuWatchdogThread::WatchedThreadNeedsMoreThreadTime(
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 base::ThreadTicks GpuWatchdogThread::GetWatchedThreadTime() {
   DCHECK(watched_thread_handle_);
 
@@ -588,7 +588,7 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (IsDebuggerPresent())
     return;
 #endif
@@ -614,7 +614,7 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   base::TimeDelta timeticks_elapses =
       function_begin_timeticks - last_on_watchdog_timeout_timeticks_;
   base::debug::Alias(&timeticks_elapses);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::debug::Alias(&remaining_watched_thread_ticks_);
   base::debug::Alias(&less_than_full_thread_time_after_capped_);
 #endif
@@ -676,7 +676,7 @@ void GpuWatchdogThread::GpuWatchdogTimeoutHistogram(
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuWatchdogThread::WatchedThreadNeedsMoreThreadTimeHistogram(
     bool no_gpu_hang_detected,
     bool start_of_more_thread_time) {
@@ -717,7 +717,7 @@ bool GpuWatchdogThread::WithinOneMinFromForegrounded() {
   return foregrounded_event_ && num_of_timeout_after_foregrounded_ <= count;
 }
 
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
 void GpuWatchdogThread::UpdateActiveTTY() {
   last_active_tty_ = active_tty_;
 
@@ -734,7 +734,7 @@ void GpuWatchdogThread::UpdateActiveTTY() {
 #endif
 
 bool GpuWatchdogThread::ContinueOnNonHostX11ServerTty() {
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   if (host_tty_ == -1 || active_tty_ == -1)
     return false;
 

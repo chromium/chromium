@@ -199,7 +199,7 @@ GrContextType ParseGrContextType() {
   if (base::FeatureList::IsEnabled(features::kSkiaDawn))
     return GrContextType::kDawn;
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(features::kMetal) ? GrContextType::kMetal
                                                         : GrContextType::kGL;
 #else
@@ -210,7 +210,7 @@ GrContextType ParseGrContextType() {
 
 VulkanImplementationName ParseVulkanImplementationName(
     const base::CommandLine* command_line) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
       base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
     return VulkanImplementationName::kForcedNative;

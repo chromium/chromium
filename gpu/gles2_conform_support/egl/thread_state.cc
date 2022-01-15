@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/common/thread_local.h"
 #include "gpu/config/gpu_info_collector.h"
@@ -68,7 +69,7 @@ egl::ThreadState* ThreadState::Get() {
       std::unique_ptr<base::Environment> env(base::Environment::Create());
       std::string env_string;
       env->GetVar("CHROME_COMMAND_BUFFER_GLES2_ARGS", &env_string);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       argv =
           base::SplitString(base::UTF8ToWide(env_string), base::kWhitespaceWide,
                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

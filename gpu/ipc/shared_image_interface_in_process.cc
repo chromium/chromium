@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -379,7 +380,7 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 Mailbox SharedImageInterfaceInProcess::CreateSharedImageWithAHB(
     const Mailbox& in_mailbox,
     uint32_t usage,
@@ -439,7 +440,7 @@ void SharedImageInterfaceInProcess::PresentSwapChain(
   NOTREACHED();
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 void SharedImageInterfaceInProcess::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
@@ -452,7 +453,7 @@ void SharedImageInterfaceInProcess::ReleaseSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id) {
   NOTREACHED();
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 void SharedImageInterfaceInProcess::UpdateSharedImage(
     const SyncToken& sync_token,
