@@ -18,7 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #error "JavaBridge only supports OS_ANDROID"
 #endif
 

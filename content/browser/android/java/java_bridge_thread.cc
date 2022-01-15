@@ -9,7 +9,7 @@
 #include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #error "JavaBridge only supports OS_ANDROID"
 #endif
 
