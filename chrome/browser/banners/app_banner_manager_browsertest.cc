@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoManifest) {
 }
 
 // TODO(crbug.com/1146526): Test is flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MissingManifest DISABLED_MissingManifest
 #else
 #define MAYBE_MissingManifest MissingManifest
