@@ -92,13 +92,13 @@
 #include "base/feature_list.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -295,7 +295,7 @@ void AppMenuModel::Init() {
   Observe(tab_strip_model->GetActiveWebContents());
   UpdateZoomControls();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (local_state) {
     local_state_pref_change_registrar_.Init(local_state);
@@ -305,7 +305,7 @@ void AppMenuModel::Init() {
                             base::Unretained(this)));
     UpdateSettingsItemState();
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool AppMenuModel::DoesCommandIdDismissMenu(int command_id) const {
@@ -314,9 +314,9 @@ bool AppMenuModel::DoesCommandIdDismissMenu(int command_id) const {
 
 bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
   return command_id == IDC_ZOOM_PERCENT_DISPLAY ||
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
          command_id == IDC_FULLSCREEN ||
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
          command_id == IDC_PIN_TO_START_SCREEN ||
 #endif
          command_id == IDC_INSTALL_PWA || command_id == IDC_UPGRADE_DIALOG;
@@ -326,7 +326,7 @@ std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
   switch (command_id) {
     case IDC_ZOOM_PERCENT_DISPLAY:
       return zoom_label_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     case IDC_FULLSCREEN: {
       int string_id = IDS_ENTER_FULLSCREEN_MAC;  // Default to Enter.
       // Note: On startup, |window()| may be NULL.
@@ -334,7 +334,7 @@ std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
         string_id = IDS_EXIT_FULLSCREEN_MAC;
       return l10n_util::GetStringUTF16(string_id);
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     case IDC_PIN_TO_START_SCREEN: {
       int string_id = IDS_PIN_TO_START_SCREEN;
       // TODO(scottmg): Remove http://crbug.com/558054.
@@ -875,7 +875,7 @@ void AppMenuModel::Build() {
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Always show this option if we're in tablet mode on Chrome OS.
   if (chromeos::TabletState::Get() &&
       chromeos::TabletState::Get()->InTabletMode()) {
@@ -998,7 +998,7 @@ void AppMenuModel::OnZoomLevelChanged(
   UpdateZoomControls();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void AppMenuModel::UpdateSettingsItemState() {
   bool is_disabled =
       policy::SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
@@ -1024,4 +1024,4 @@ void AppMenuModel::UpdateSettingsItemState() {
     SetEnabledAt(index, !is_disabled);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

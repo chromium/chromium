@@ -37,9 +37,9 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
-#endif                                                // !defined(OS_ANDROID)
+#endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_utils.h"
@@ -188,7 +188,7 @@ ChromeLocationBarModelDelegate::GetCertificate() const {
 
 const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
     const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   GURL url;
   GetURL(&url);
 
@@ -243,7 +243,7 @@ bool ChromeLocationBarModelDelegate::IsHomePage(const GURL& url) const {
 }
 
 bool ChromeLocationBarModelDelegate::IsShowingAccuracyTip() const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Profile* const profile = GetProfile();
   if (!profile) {
     return false;
