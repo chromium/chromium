@@ -994,5 +994,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
       "EXTRACT_ARCHIVE",
       base::FeatureList::IsEnabled(chromeos::features::kFilesExtractArchive));
 
+  dict->SetBoolKey("FUSEBOX",
+                   base::FeatureList::IsEnabled(chromeos::features::kFuseBox));
+
   dict->SetStringKey("UI_LOCALE", locale);
 }
