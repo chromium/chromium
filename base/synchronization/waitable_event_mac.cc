@@ -183,7 +183,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
 
 // static
 bool WaitableEvent::UseSlowWatchList(ResetPolicy policy) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   const bool use_slow_path = false;
 #else
   static bool use_slow_path = !mac::IsAtLeastOS10_12();
@@ -211,7 +211,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
     DISPATCH,
     PORT_SET,
   };
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   const WaitManyPrimitive kPrimitive = PORT_SET;
 #else
   const WaitManyPrimitive kPrimitive =

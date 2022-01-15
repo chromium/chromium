@@ -193,7 +193,7 @@ TEST_F(ConditionVariableTest, TimeoutTest) {
   lock.Release();
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 const int kDiscontinuitySeconds = 2;
 
 void BackInTime(Lock* lock) {

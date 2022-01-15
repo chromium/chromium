@@ -10,9 +10,9 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <errno.h>
 #include <pthread.h>
 #include <string.h>
@@ -45,9 +45,9 @@ class BASE_EXPORT LockImpl {
   friend class base::win::internal::AutoNativeLock;
   friend class base::win::internal::ScopedHandleVerifier;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   using NativeHandle = CHROME_SRWLOCK;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   using NativeHandle = pthread_mutex_t;
 #endif
 
@@ -70,7 +70,7 @@ class BASE_EXPORT LockImpl {
   // unnecessary.
   NativeHandle* native_handle() { return &native_handle_; }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Whether this lock will attempt to use priority inheritance.
   static bool PriorityInheritanceAvailable();
 #endif
@@ -96,7 +96,7 @@ void LockImpl::Lock() {
   LockInternalWithTracking();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool LockImpl::Try() {
   return !!::TryAcquireSRWLockExclusive(
       reinterpret_cast<PSRWLOCK>(&native_handle_));
@@ -106,7 +106,7 @@ void LockImpl::Unlock() {
   ::ReleaseSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&native_handle_));
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 BASE_EXPORT std::string SystemErrorCodeToString(int error_code);
 

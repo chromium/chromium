@@ -25,7 +25,7 @@ namespace {
 const test::TaskEnvironment::MainThreadType testing_main_threads[] = {
     test::TaskEnvironment::MainThreadType::DEFAULT,
     test::TaskEnvironment::MainThreadType::IO,
-#if !defined(OS_IOS)  // iOS does not allow direct running of the UI loop.
+#if !BUILDFLAG(IS_IOS)  // iOS does not allow direct running of the UI loop.
     test::TaskEnvironment::MainThreadType::UI,
 #endif
 };
