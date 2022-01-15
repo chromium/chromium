@@ -169,6 +169,17 @@ TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
       GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(DataTransferDlpControllerTest, LacrosDst) {
+  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kLacros);
+  EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst,
+                                                         absl::nullopt));
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_Allow) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
   ui::DataTransferEndpoint data_dst(url::Origin::Create(GURL(kExample2Url)));

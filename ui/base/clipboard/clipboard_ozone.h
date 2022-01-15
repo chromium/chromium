@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace ui {
@@ -101,6 +102,11 @@ class ClipboardOzone : public Clipboard {
   void WriteData(const ClipboardFormatType& format,
                  const char* data_data,
                  size_t data_len) override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS.
+  void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::span<uint8_t> ReadPngInternal(const ClipboardBuffer buffer) const;
 

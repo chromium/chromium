@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -23,6 +22,7 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -288,11 +288,15 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
   Clear(buffer);
   default_store_buffer_ = buffer;
 
+  GetStore(buffer).SetDataSource(std::move(data_src));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AddClipboardSourceToDataOffer(buffer);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& kv : objects)
     DispatchPortableRepresentation(kv.first, kv.second);
   default_store_buffer_ = ClipboardBuffer::kCopyPaste;
-  GetStore(buffer).SetDataSource(std::move(data_src));
 }
 
 void TestClipboard::WriteText(const char* text_data, size_t text_len) {
@@ -415,6 +419,21 @@ void TestClipboard::DataStore::SetDataSource(
 DataTransferEndpoint* TestClipboard::DataStore::GetDataSource() const {
   return data_src.get();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TestClipboard::AddClipboardSourceToDataOffer(
+    const ClipboardBuffer buffer) {
+  DataTransferEndpoint* data_src = GetSource(buffer);
+
+  if (!data_src)
+    return;
+
+  std::string dte_json = ConvertDataTransferEndpointToJson(*data_src);
+
+  GetDefaultStore().data[ClipboardFormatType::DataTransferEndpointDataType()] =
+      dte_json;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 const TestClipboard::DataStore& TestClipboard::GetStore(
     ClipboardBuffer buffer) const {

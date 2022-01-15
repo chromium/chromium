@@ -37,6 +37,12 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypePNG[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeOctetStream[];
 
+// Chrome OS-specific MIME type constants.
+#if defined(OS_CHROMEOS)
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern const char kMimeTypeDataTransferEndpoint[];
+#endif  // defined(OS_CHROMEOS)
+
 // Linux-specific MIME type constants (also used in Fuchsia).
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)

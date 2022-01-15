@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   ScopedClipboardWriter& operator=(const ScopedClipboardWriter&) = delete;
   ~ScopedClipboardWriter();
 
+  // Sets the clipboard's source metadata.
+  void SetDataSource(std::unique_ptr<DataTransferEndpoint> data_src);
+
   // Converts |text| to UTF-8 and adds it to the clipboard.
   void WriteText(const std::u16string& text);
 

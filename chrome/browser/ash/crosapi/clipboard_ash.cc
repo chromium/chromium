@@ -20,9 +20,7 @@ void ClipboardAsh::BindReceiver(
 void ClipboardAsh::GetCopyPasteText(GetCopyPasteTextCallback callback) {
   std::u16string text;
 
-  // There is no source that appropriately represents Lacros. Use kDefault for
-  // now.
-  const ui::DataTransferEndpoint endpoint(ui::EndpointType::kDefault);
+  const ui::DataTransferEndpoint endpoint(ui::EndpointType::kLacros);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &endpoint, &text);
 

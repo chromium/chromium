@@ -28,6 +28,7 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -614,13 +615,17 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
 
   async_clipboard_ozone_->PrepareForWriting();
   DispatchPlatformRepresentations(std::move(platform_representations));
+
+  data_src_[buffer] = std::move(data_src);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AddClipboardSourceToDataOffer(buffer);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   for (const auto& object : objects)
     DispatchPortableRepresentation(object.first, object.second);
   async_clipboard_ozone_->OfferData(buffer);
 
   WritePortableTextRepresentation(buffer, objects);
-
-  data_src_[buffer] = std::move(data_src);
 }
 
 void ClipboardOzone::WriteText(const char* text_data, size_t text_len) {
@@ -686,6 +691,24 @@ void ClipboardOzone::WriteData(const ClipboardFormatType& format,
   std::vector<uint8_t> data(data_data, data_data + data_len);
   async_clipboard_ozone_->InsertData(std::move(data), {format.GetName()});
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ClipboardOzone::AddClipboardSourceToDataOffer(
+    const ClipboardBuffer buffer) {
+  DataTransferEndpoint* data_src = GetSource(buffer);
+
+  if (!data_src)
+    return;
+
+  std::string dte_json = ConvertDataTransferEndpointToJson(*data_src);
+  const char* dte_json_c_string = dte_json.c_str();
+  std::vector<uint8_t> data(dte_json_c_string,
+                            dte_json_c_string + dte_json.size());
+
+  async_clipboard_ozone_->InsertData(std::move(data),
+                                     {kMimeTypeDataTransferEndpoint});
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 base::span<uint8_t> ClipboardOzone::ReadPngInternal(
     const ClipboardBuffer buffer) const {

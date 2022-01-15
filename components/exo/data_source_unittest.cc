@@ -209,6 +209,25 @@ TEST_F(DataSourceTest, ReadData_Cancelled) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(DataSourceTest, CheckDteMimeTypeReceived) {
+  TestDataSourceDelegate delegate;
+  DataSource data_source(&delegate);
+  const std::string kDteMimeType("chromium/x-data-transfer-endpoint");
+  data_source.Offer(kDteMimeType);
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure counter =
+      base::BarrierClosure(1, run_loop.QuitClosure());
+  std::atomic_int failure_count{0};
+
+  data_source.ReadDataTransferEndpoint(
+      base::BindOnce(&CheckTextMimeType, kDteMimeType, counter),
+      base::BindRepeating(&IncrementFailureCounter, &failure_count, counter));
+
+  run_loop.Run();
+  EXPECT_EQ(0, failure_count.load());
+}
+
 TEST_F(DataSourceTest, PreferredMimeTypeUTF16) {
   TestDataSourceDelegate delegate;
   DataSource data_source(&delegate);

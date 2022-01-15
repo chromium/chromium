@@ -26,6 +26,12 @@ const char kMimeTypeLinuxString[] = "STRING";
 const char kMimeTypeLinuxText[] = "TEXT";
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
+#if defined(OS_CHROMEOS)
+// Used to sync clipboard source metadata between Ash and LaCrOS.
+const char kMimeTypeDataTransferEndpoint[] =
+    "chromium/x-data-transfer-endpoint";
+#endif  // defined(OS_CHROMEOS)
+
 #if !defined(OS_APPLE)
 const char kMimeTypeWebCustomData[] = "chromium/x-web-custom-data";
 const char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";

@@ -138,4 +138,13 @@ const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
   return *type;
 }
 
+#if defined(OS_CHROMEOS)
+// static
+const ClipboardFormatType& ClipboardFormatType::DataTransferEndpointDataType() {
+  static base::NoDestructor<ClipboardFormatType> type(
+      kMimeTypeDataTransferEndpoint);
+  return *type;
+}
+#endif  // defined(OS_CHROMEOS)
+
 }  // namespace ui

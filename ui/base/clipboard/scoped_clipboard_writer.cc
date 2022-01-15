@@ -50,6 +50,11 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
     Clipboard::GetForCurrentThread()->MarkAsConfidential();
 }
 
+void ScopedClipboardWriter::SetDataSource(
+    std::unique_ptr<DataTransferEndpoint> data_src) {
+  data_src_ = std::move(data_src);
+}
+
 void ScopedClipboardWriter::WriteText(const std::u16string& text) {
   RecordWrite(ClipboardFormatMetric::kText);
   std::string utf8_text = base::UTF16ToUTF8(text);

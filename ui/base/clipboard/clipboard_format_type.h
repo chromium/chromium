@@ -62,6 +62,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& BitmapType();
   static const ClipboardFormatType& WebCustomDataType();
 
+#if defined(OS_CHROMEOS)
+  // ChromeOS custom type to sync clipboard source metadata between Ash and
+  // Lacros.
+  static const ClipboardFormatType& DataTransferEndpointDataType();
+#endif  // defined(OS_CHROMEOS)
+
 #if defined(OS_WIN)
   // ANSI formats. Only Windows differentiates between ANSI and UNICODE formats
   // in ClipboardFormatType. Reference:

@@ -35,6 +35,7 @@ constexpr char kTextHTML[] = "text/html";
 constexpr char kTextUriList[] = "text/uri-list";
 constexpr char kApplicationOctetStream[] = "application/octet-stream";
 constexpr char kWebCustomData[] = "chromium/x-web-custom-data";
+constexpr char kDataTransferEndpoint[] = "chromium/x-data-transfer-endpoint";
 
 constexpr char kUtfPrefix[] = "UTF";
 constexpr char kEncoding16[] = "16";
@@ -251,6 +252,16 @@ void DataSource::OnDataRead(ReadDataCallback callback,
     return;
   }
   std::move(callback).Run(mime_type, *data);
+}
+
+void DataSource::ReadDataTransferEndpoint(
+    ReadTextDataCallback dte_reader,
+    base::RepeatingClosure failure_callback) {
+  ReadData(kDataTransferEndpoint,
+           base::BindOnce(&DataSource::OnTextRead,
+                          read_data_weak_ptr_factory_.GetWeakPtr(),
+                          std::move(dte_reader)),
+           failure_callback);
 }
 
 void DataSource::GetDataForPreferredMimeTypes(

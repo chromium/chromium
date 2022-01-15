@@ -158,6 +158,18 @@ class Seat : public aura::client::FocusChangeObserver,
  private:
   class RefCountedScopedClipboardWriter;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called when the focused window is a Lacros window and a source
+  // DataTransferEndpoint is read in the available MIME types. This
+  // is currently used to synchronize clipboard source metadata from
+  // Lacros to Ash.
+  void OnDataTransferEndpointRead(
+      scoped_refptr<RefCountedScopedClipboardWriter> writer,
+      base::OnceClosure callback,
+      const std::string& mime_type,
+      std::u16string data);
+#endif
+
   // Called when data is read from FD passed from a client.
   // |data| is read data. |source| is source of the data, or nullptr if
   // DataSource has already been destroyed.

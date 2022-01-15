@@ -51,6 +51,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if defined(OS_MAC)
@@ -1299,7 +1300,8 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(
+            url::Origin::Create(GURL("https://www.google.com"))));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
@@ -1307,8 +1309,21 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   std::u16string read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
-  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(kTestText, read_result);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Checks that the clipboard source metadata is encoded in the
+  // DataTransferEndpoint mime type.
+  std::string actual_json;
+  this->clipboard().ReadData(
+      ui::ClipboardFormatType::DataTransferEndpointDataType(),
+      /* data_dst = */ nullptr, &actual_json);
+
+  EXPECT_EQ(R"({"endpoint_type":"url","url_origin":"https://www.google.com"})",
+            actual_json);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
 }
 
 // Test that pasting clipboard data would not work if the policy controller

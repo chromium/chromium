@@ -153,6 +153,13 @@ DlpRulesManager::Level IsDataTransferAllowed(
       break;
     }
 
+    case ui::EndpointType::kLacros: {
+      // Return ALLOW for Lacros destinations, as Lacros itself will make DLP
+      // checks.
+      level = DlpRulesManager::Level::kAllow;
+      break;
+    }
+
     case ui::EndpointType::kUnknownVm:
     case ui::EndpointType::kBorealis:
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

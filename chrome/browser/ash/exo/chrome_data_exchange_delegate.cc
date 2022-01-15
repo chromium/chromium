@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -334,6 +335,9 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
 
   if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))
     return ui::EndpointType::kBorealis;
+
+  if (crosapi::browser_util::IsLacrosWindow(top_level_window))
+    return ui::EndpointType::kLacros;
 
   if (crostini::IsCrostiniWindow(top_level_window))
     return ui::EndpointType::kCrostini;

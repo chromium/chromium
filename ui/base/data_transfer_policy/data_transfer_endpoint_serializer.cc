@@ -36,6 +36,7 @@ constexpr char kArcString[] = "arc";
 constexpr char kBorealisString[] = "borealis";
 constexpr char kCrostiniString[] = "crostini";
 constexpr char kPluginVmString[] = "plugin_vm";
+constexpr char kLacrosString[] = "lacros";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string EndpointTypeToString(EndpointType type) {
@@ -55,6 +56,8 @@ std::string EndpointTypeToString(EndpointType type) {
       return kCrostiniString;
     case EndpointType::kPluginVm:
       return kPluginVmString;
+    case EndpointType::kLacros:
+      return kLacrosString;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case EndpointType::kDefault:
       return kDefaultString;
@@ -77,6 +80,7 @@ std::optional<EndpointType> EndpointStringToType(
       {kBorealisString, EndpointType::kBorealis},
       {kCrostiniString, EndpointType::kCrostini},
       {kPluginVmString, EndpointType::kPluginVm},
+      {kLacrosString, EndpointType::kLacros},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       {kDefaultString, EndpointType::kDefault},
       {kUrlString, EndpointType::kUrl},
