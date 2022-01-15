@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,12 +69,12 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
     app_instance_ = std::make_unique<FakeAppInstance>(
         arc_app_test_.arc_app_list_prefs() /* app_host */);
     intent_helper_instance_ = std::make_unique<FakeIntentHelperInstance>();
-    arc_intent_helper_bridge_ = std::make_unique<ArcIntentHelperBridge>(
-        profile(), arc_bridge_service());
+    intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
+        arc_bridge_service()->intent_helper());
   }
 
   void TearDown() override {
-    arc_intent_helper_bridge_.reset();
+    intent_helper_host_.reset();
     intent_helper_instance_.reset();
     app_instance_.reset();
     arc_app_test_.TearDown();
@@ -100,7 +100,7 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
   // std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   ArcAppTest arc_app_test_;
-  std::unique_ptr<ArcIntentHelperBridge> arc_intent_helper_bridge_;
+  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
 };

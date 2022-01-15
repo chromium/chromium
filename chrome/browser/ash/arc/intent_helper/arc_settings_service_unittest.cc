@@ -29,7 +29,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"
@@ -82,8 +82,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
 
-    arc_intent_helper_bridge_ = std::make_unique<ArcIntentHelperBridge>(
-        profile(), arc_bridge_service());
+    intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
+        arc_bridge_service()->intent_helper());
     ArcSettingsService* arc_settings_service =
         ArcSettingsService::GetForBrowserContext(profile());
     DCHECK(arc_settings_service);
@@ -98,7 +98,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
         &intent_helper_instance_);
     arc_bridge_service()->backup_settings()->CloseInstance(
         &backup_settings_instance_);
-    arc_intent_helper_bridge_.reset();
+    intent_helper_host_.reset();
     arc_session_manager()->Shutdown();
 
     arc_service_manager_->set_browser_context(nullptr);
@@ -148,7 +148,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
       network_config_helper_;
   TestingPrefServiceSimple local_state_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  std::unique_ptr<ArcIntentHelperBridge> arc_intent_helper_bridge_;
+  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   FakeIntentHelperInstance intent_helper_instance_;

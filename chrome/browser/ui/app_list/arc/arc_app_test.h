@@ -15,11 +15,11 @@ namespace arc {
 namespace mojom {
 class AppInfo;
 }
-class ArcIntentHelperBridge;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
 class FakeAppInstance;
+class FakeIntentHelperHost;
 class FakeIntentHelperInstance;
 }  // namespace arc
 
@@ -146,7 +146,7 @@ class ArcAppTest {
   std::unique_ptr<arc::ArcPlayStoreEnabledPreferenceHandler>
       arc_play_store_enabled_preference_handler_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
-  std::unique_ptr<arc::ArcIntentHelperBridge> intent_helper_bridge_;
+  std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

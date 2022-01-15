@@ -8,7 +8,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,7 +26,8 @@ class ArcUserSessionServiceTest : public testing::Test {
   ~ArcUserSessionServiceTest() override = default;
 
   void SetUp() override {
-    ArcIntentHelperBridge::GetForBrowserContextForTesting(&profile_);
+    intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
+        ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
     ArcUserSessionService::GetForBrowserContextForTesting(&profile_);
     // This results in ArcUserSessionService::OnConnectionReady being called
     // by intent_helper().
@@ -51,6 +52,7 @@ class ArcUserSessionServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   session_manager::SessionManager session_manager_;
   ArcServiceManager arc_service_manager_;
+  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   FakeIntentHelperInstance intent_helper_instance_;
   TestingProfile profile_;
 };

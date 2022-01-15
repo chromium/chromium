@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -46,27 +46,27 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
     chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
     BrowserWithTestWindowTest::SetUp();
 
-    profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, true);
+    profile()->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
     arc_test_.set_wait_default_apps(true);
     arc_test_.SetUp(profile());
-    // Set up ArcIntentHelperBridge to emulate full-duplex IntentHelper
+    // Set up FakeIntentHelperHost to emulate full-duplex IntentHelper
     // connection.
-    intent_helper_bridge_ = std::make_unique<arc::ArcIntentHelperBridge>(
-        profile(), arc::ArcServiceManager::Get()->arc_bridge_service());
-    arc::ArcServiceManager::Get()
+    intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
+        ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
+    ArcServiceManager::Get()
         ->arc_bridge_service()
         ->intent_helper()
-        ->SetInstance(&intent_helper_);
+        ->SetInstance(&intent_helper_instance_);
     WaitForInstanceReady(
-        arc::ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
+        ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
   }
 
   void TearDown() override {
-    arc::ArcServiceManager::Get()
+    ArcServiceManager::Get()
         ->arc_bridge_service()
         ->intent_helper()
-        ->CloseInstance(&intent_helper_);
-    intent_helper_bridge_.reset();
+        ->CloseInstance(&intent_helper_instance_);
+    intent_helper_host_.reset();
     arc_test_.TearDown();
     BrowserWithTestWindowTest::TearDown();
     chromeos::SessionManagerClient::Shutdown();
@@ -79,8 +79,8 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
     web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
     if (started_from_arc) {
       web_contents_->SetUserData(
-          &arc::ArcWebContentsData::kArcTransitionFlag,
-          std::make_unique<arc::ArcWebContentsData>(web_contents_));
+          &ArcWebContentsData::kArcTransitionFlag,
+          std::make_unique<ArcWebContentsData>(web_contents_));
     }
   }
 
@@ -104,9 +104,9 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
  private:
   // Keep only one |WebContents| at a time.
   content::WebContents* web_contents_;
-  arc::FakeIntentHelperInstance intent_helper_;
+  FakeIntentHelperInstance intent_helper_instance_;
   ArcAppTest arc_test_;
-  std::unique_ptr<arc::ArcIntentHelperBridge> intent_helper_bridge_;
+  std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
 };
 
 const char* kChromePackageName =
@@ -1047,7 +1047,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
       ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
   bool handled = false;
-  arc::RunArcExternalProtocolDialog(
+  RunArcExternalProtocolDialog(
       GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
       rvh->GetProcess()->GetID(), rvh->GetRoutingID(), ui::PAGE_TRANSITION_LINK,
       /*has_user_gesture=*/true,
