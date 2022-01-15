@@ -144,7 +144,6 @@ void SystemInfoProvider::OnWifiNetworkList(
 
   for (const auto& network : networks) {
     if (network->type == NetworkType::kWiFi) {
-      PA_LOG(VERBOSE) << "OnWifiNetworkList: " << network->connection_state;
       wifi_connection_state_ = network->connection_state;
       return;
     }
