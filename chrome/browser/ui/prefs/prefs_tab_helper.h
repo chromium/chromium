@@ -12,7 +12,7 @@
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #endif
 
@@ -60,10 +60,10 @@ class PrefsTabHelper : public ThemeServiceObserver,
   void NotifyWebkitPreferencesChanged(const std::string& pref_name);
 
   raw_ptr<Profile> profile_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   base::CallbackListSubscription default_zoom_level_subscription_;
   FontPrefChangeNotifier::Registrar font_change_registrar_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   base::WeakPtrFactory<PrefsTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

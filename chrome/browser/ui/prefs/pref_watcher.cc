@@ -43,7 +43,7 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kAccessibilityCaptionsBackgroundColor,
     prefs::kAccessibilityCaptionsTextShadow,
     prefs::kAccessibilityCaptionsBackgroundOpacity,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     prefs::kWebKitFontScaleFactor,
     prefs::kWebKitForceEnableZoom,
     prefs::kWebKitPasswordEchoEnabled,
@@ -89,12 +89,12 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,
                                      renderer_callback);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   profile_pref_change_registrar_.Add(prefs::kCaretBrowsingEnabled,
                                      renderer_callback);
 #endif
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   profile_pref_change_registrar_.Add(prefs::kFullscreenAllowed,
                                      renderer_callback);
 #endif

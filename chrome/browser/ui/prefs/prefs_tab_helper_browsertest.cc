@@ -49,7 +49,7 @@ class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
       return false;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Make the copy writable.  On POSIX we assume the umask allows files
     // we create to be writable.
     if (!::SetFileAttributesW(default_pref_file.value().c_str(),
