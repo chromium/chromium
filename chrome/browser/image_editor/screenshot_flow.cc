@@ -25,7 +25,7 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/background.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/image_editor/event_capture_mac.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/render_view_host.h"
@@ -69,7 +69,7 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   screen_capture_layer_->SetName("ScreenshotRegionSelectionLayer");
   screen_capture_layer_->SetFillsBoundsOpaquely(false);
   screen_capture_layer_->set_delegate(this);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   gfx::Rect bounds = web_contents_->GetViewBounds();
   const gfx::NativeView web_contents_view =
       web_contents_->GetContentNativeView();
@@ -106,7 +106,7 @@ void ScreenshotFlow::RemoveUIOverlay() {
   if (!web_contents_ || !screen_capture_layer_)
     return;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   views::Widget* widget = views::Widget::GetWidgetForNativeView(
       web_contents_->GetContentNativeView());
   if (!widget)
@@ -154,7 +154,7 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
   }
 
   gfx::Rect bounds = web_contents_->GetViewBounds();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
   gfx::Image img;
   bool rval = ui::GrabViewSnapshot(native_view, region, &img);
@@ -192,7 +192,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
     return;
 
   gfx::Point location = located_event->location();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Offset |location| be relative to the WebContents widget, vs the parent
   // window, recomputed rather than cached in case e.g. user disables
   // bookmarks bar from another window.
@@ -324,7 +324,7 @@ void ScreenshotFlow::SetCursor(ui::mojom::CursorType cursor_type) {
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (cursor_type == ui::mojom::CursorType::kCross &&
       lens::features::kRegionSearchMacCursorFix.Get()) {
     EventCaptureMac::SetCrossCursor();

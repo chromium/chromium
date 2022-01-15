@@ -20,7 +20,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/image_editor/event_capture_mac.h"
 #else
 #include "base/scoped_observation.h"
@@ -176,7 +176,7 @@ class ScreenshotFlow : public content::WebContentsObserver,
   ScreenshotCaptureCallback flow_callback_;
 
   // Mac-specific
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<EventCaptureMac> event_capture_mac_;
 #else
   base::ScopedObservation<ui::EventTarget,
