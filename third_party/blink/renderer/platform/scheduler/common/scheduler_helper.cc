@@ -29,28 +29,24 @@ SchedulerHelper::SchedulerHelper(SequenceManager* sequence_manager)
   sequence_manager_->SetWorkBatchSize(4);
 }
 
-void SchedulerHelper::AttachToCurrentThread() {
-  DETACH_FROM_THREAD(thread_checker_);
-  CheckOnValidThread();
-  DCHECK(default_task_runner_) << "Must be invoked after InitDefaultQueues.";
-  DCHECK(!simple_task_executor_.has_value());
-  simple_task_executor_.emplace(default_task_runner_);
-}
-
-void SchedulerHelper::InitDefaultQueues(
-    scoped_refptr<TaskQueue> default_task_queue,
-    scoped_refptr<TaskQueue> control_task_queue,
-    TaskType default_task_type) {
-  control_task_queue->SetQueuePriority(TaskQueue::kControlPriority);
-
-  default_task_runner_ =
-      default_task_queue->CreateTaskRunner(static_cast<int>(default_task_type));
+void SchedulerHelper::InitDefaultTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  default_task_runner_ = std::move(task_runner);
 
   // Invoking SequenceManager::SetDefaultTaskRunner() before attaching the
   // SchedulerHelper to a thread is fine. The default TaskRunner will be stored
   // in TLS by the ThreadController before tasks are executed.
   DCHECK(sequence_manager_);
   sequence_manager_->SetDefaultTaskRunner(default_task_runner_);
+}
+
+void SchedulerHelper::AttachToCurrentThread() {
+  DETACH_FROM_THREAD(thread_checker_);
+  CheckOnValidThread();
+  DCHECK(default_task_runner_)
+      << "Must be invoked after InitDefaultTaskRunner().";
+  DCHECK(!simple_task_executor_.has_value());
+  simple_task_executor_.emplace(default_task_runner_);
 }
 
 SchedulerHelper::~SchedulerHelper() {

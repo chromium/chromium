@@ -23,9 +23,11 @@ NonMainThreadSchedulerHelper::NonMainThreadSchedulerHelper(
       input_task_queue_(NewTaskQueue(TaskQueue::Spec("subthread_input_tq"))),
       control_task_queue_(NewTaskQueue(TaskQueue::Spec("subthread_control_tq")
                                            .SetShouldNotifyObservers(false))) {
-  InitDefaultQueues(default_task_queue_, control_task_queue_,
-                    default_task_type);
+  control_task_queue_->SetQueuePriority(TaskQueue::kControlPriority);
   input_task_queue_->SetQueuePriority(TaskQueue::kHighestPriority);
+
+  InitDefaultTaskRunner(
+      default_task_queue_->CreateTaskRunner(default_task_type));
 }
 
 NonMainThreadSchedulerHelper::~NonMainThreadSchedulerHelper() {
@@ -36,11 +38,6 @@ NonMainThreadSchedulerHelper::~NonMainThreadSchedulerHelper() {
 scoped_refptr<NonMainThreadTaskQueue>
 NonMainThreadSchedulerHelper::DefaultNonMainThreadTaskQueue() {
   return default_task_queue_;
-}
-
-const scoped_refptr<base::SingleThreadTaskRunner>&
-NonMainThreadSchedulerHelper::DefaultTaskRunner() {
-  return default_task_queue_->GetTaskRunnerWithDefaultTaskType();
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&

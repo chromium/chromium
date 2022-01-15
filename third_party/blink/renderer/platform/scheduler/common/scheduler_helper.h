@@ -36,6 +36,10 @@ class PLATFORM_EXPORT SchedulerHelper
   SchedulerHelper& operator=(const SchedulerHelper&) = delete;
   ~SchedulerHelper() override;
 
+  // Must be called before invoking AttachToCurrentThread().
+  void InitDefaultTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   // Must be invoked before running any task from the scheduler, on the thread
   // that will run these tasks. Setups the ThreadChecker and the TaskExecutor.
   void AttachToCurrentThread();
@@ -49,8 +53,9 @@ class PLATFORM_EXPORT SchedulerHelper
   void SetTimerSlack(base::TimerSlack timer_slack);
 
   // Returns the task runner for the default task queue.
-  virtual const scoped_refptr<base::SingleThreadTaskRunner>&
-  DefaultTaskRunner() = 0;
+  const scoped_refptr<base::SingleThreadTaskRunner>& DefaultTaskRunner() {
+    return default_task_runner_;
+  }
 
   // Returns the task runner for the control task queue.  Tasks posted to this
   // queue are executed with the highest priority. Care must be taken to avoid
@@ -119,16 +124,7 @@ class PLATFORM_EXPORT SchedulerHelper
   }
 
  protected:
-  void InitDefaultQueues(
-      scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue,
-      scoped_refptr<base::sequence_manager::TaskQueue> control_task_queue,
-      TaskType default_task_type);
-
   virtual void ShutdownAllQueues() {}
-
-  const scoped_refptr<base::SingleThreadTaskRunner>& default_task_runner() {
-    return default_task_runner_;
-  }
 
   THREAD_CHECKER(thread_checker_);
   base::sequence_manager::SequenceManager* sequence_manager_;  // NOT OWNED
