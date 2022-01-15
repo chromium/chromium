@@ -755,7 +755,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
             request.headers.find("viewport-width")->second, &value));
         EXPECT_TRUE(
             IsSimilarToIntABNF(request.headers.find("viewport-width")->second));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         EXPECT_LT(0.0, value);
 #else
         EXPECT_EQ(980, value);
@@ -766,7 +766,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
             request.headers.find("sec-ch-viewport-width")->second, &value));
         EXPECT_TRUE(IsSimilarToIntABNF(
             request.headers.find("sec-ch-viewport-width")->second));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         EXPECT_LT(0.0, value);
 #else
         EXPECT_EQ(980, value);
@@ -822,12 +822,12 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
             request.headers.find("viewport-width")->second, &value));
         EXPECT_TRUE(
             IsSimilarToIntABNF(request.headers.find("viewport-width")->second));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         EXPECT_LT(0.0, value);
 #else
         EXPECT_EQ(980, value);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         // TODO(tbansal): https://crbug.com/825892: Viewport width on main
         // frame requests may be incorrect when the Chrome window is not
         // maximized.
@@ -840,12 +840,12 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
             request.headers.find("sec-ch-viewport-width")->second, &value));
         EXPECT_TRUE(IsSimilarToIntABNF(
             request.headers.find("sec-ch-viewport-width")->second));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         EXPECT_LT(0.0, value);
 #else
         EXPECT_EQ(980, value);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         // TODO(tbansal): https://crbug.com/825892: Viewport width on main
         // frame requests may be incorrect when the Chrome window is not
         // maximized.
@@ -1322,7 +1322,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // The device-memory and dprheader is attached to the main frame request.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
 #else
   EXPECT_EQ(expected_client_hints_number * 3,
@@ -2958,7 +2958,7 @@ class ClientHintsAcceptCHFrameObserverBrowserTest
       accept_ch_frame_observer_interceptor_;
 };
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // Flaky: https://crbug.com/1195790
 #define MAYBE_AcceptCHFrame DISABLED_AcceptCHFrame
 #else
@@ -3513,7 +3513,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
       /*expected_user_agent_reduced=*/true);
   // Instead of checking all platform types, just check one that has a
   // difference between the full and reduced versions.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("Linux x86_64",
             content::EvalJs(web_contents, "navigator.platform"));
 #endif
@@ -3539,7 +3539,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
       /*expected_user_agent_reduced=*/false);
   // Instead of checking all platform types, just check one that has a
   // difference between the full and reduced versions.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_NE("Linux x86_64",
             content::EvalJs(web_contents, "navigator.platform"));
 #endif
