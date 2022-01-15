@@ -35,7 +35,7 @@ class CONTENT_EXPORT BrowserMainRunner {
   // Run all queued startup tasks. Only defined on Android because other
   // platforms run startup tasks immediately.
   virtual void SynchronouslyFlushStartupTasks() = 0;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Perform the default run logic.
   virtual int Run() = 0;

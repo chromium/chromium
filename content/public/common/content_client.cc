@@ -121,7 +121,7 @@ bool ContentClient::UsingSynchronousCompositing() {
 media::MediaDrmBridgeClient* ContentClient::GetMediaDrmBridgeClient() {
   return nullptr;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,

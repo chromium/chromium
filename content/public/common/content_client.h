@@ -196,7 +196,7 @@ class CONTENT_EXPORT ContentClient {
 
   // Returns the MediaDrmBridgeClient to be used by media code on Android.
   virtual media::MediaDrmBridgeClient* GetMediaDrmBridgeClient();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Allows the embedder to handle incoming interface binding requests from
   // the browser process to any type of child process. This is called once

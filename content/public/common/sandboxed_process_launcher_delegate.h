@@ -60,7 +60,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // Whether or not to enable CPU security mitigations against side-channel
   // attacks. See base::LaunchOptions::enable_cpu_security_mitigations.
   virtual bool EnableCpuSecurityMitigations();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 }  // namespace content

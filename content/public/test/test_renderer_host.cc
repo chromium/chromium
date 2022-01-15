@@ -140,13 +140,13 @@ RenderViewHostTestEnabler::RenderViewHostTestEnabler()
 #if BUILDFLAG(IS_MAC)
   if (base::ThreadTaskRunnerHandle::IsSet())
     ui::WindowResizeHelperMac::Get()->Init(base::ThreadTaskRunnerHandle::Get());
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 RenderViewHostTestEnabler::~RenderViewHostTestEnabler() {
 #if BUILDFLAG(IS_MAC)
   ui::WindowResizeHelperMac::Get()->ShutdownForTests();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 #if !BUILDFLAG(IS_ANDROID)
   // RenderWidgetHostView holds on to a reference to SurfaceManager, so it
   // must be shut down before the ImageTransportFactory.

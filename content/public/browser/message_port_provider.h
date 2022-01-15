@@ -50,7 +50,7 @@ class CONTENT_EXPORT MessagePortProvider {
       const base::android::JavaParamRef<jstring>& target_origin,
       const base::android::JavaParamRef<jstring>& data,
       const base::android::JavaParamRef<jobjectArray>& ports);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
   // If |target_origin| is unset, then no origin scoping is applied.

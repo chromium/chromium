@@ -64,6 +64,6 @@ bool SandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations() {
   return false;
 }
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content
