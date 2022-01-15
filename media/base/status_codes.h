@@ -31,15 +31,6 @@ enum class StatusCode : StatusCodeType {
   kInvalidArgument = 0x0002,
   kWrappedError = 0x0004,
 
-  // Decoder Errors: 0x01
-
-  // MojoDecoder Errors: 0x04
-  kMojoDecoderNoWrappedDecoder = 0x0401,
-  kMojoDecoderStoppedBeforeInitDone = 0x0402,
-  kMojoDecoderUnsupported = 0x0403,
-  kMojoDecoderNoConnection = 0x0404,
-  kMojoDecoderDeletedWithoutInitialization = 0x0405,
-
   // Format Errors: 0x08
   kH264ParsingError = 0x0801,
   kH264BufferTooSmall = 0x0802,
