@@ -365,7 +365,7 @@ class BASE_EXPORT GlobalHistogramAllocator
   // specified |size| taken from the heap.
   static void CreateWithLocalMemory(size_t size, uint64_t id, StringPiece name);
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Create a global allocator by memory-mapping a |file|. If the file does
   // not exist, it will be created with the specified |size|. If the file does
   // exist, the allocator will use and add to its contents, ignoring the passed

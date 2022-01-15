@@ -21,6 +21,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace base {
@@ -719,8 +720,7 @@ TEST(SharedPersistentMemoryAllocatorTest, CreationTest) {
   EXPECT_EQ(0, data[3]);
 }
 
-
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 //----- FilePersistentMemoryAllocator ------------------------------------------
 
 TEST(FilePersistentMemoryAllocatorTest, CreationTest) {
@@ -998,6 +998,6 @@ TEST_F(PersistentMemoryAllocatorTest, TruncateTest) {
   }
 }
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

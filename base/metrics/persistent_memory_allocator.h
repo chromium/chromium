@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -777,7 +778,8 @@ class BASE_EXPORT ReadOnlySharedPersistentMemoryAllocator
   base::ReadOnlySharedMemoryMapping shared_memory_;
 };
 
-#if !defined(OS_NACL)  // NACL doesn't support any kind of file access in build.
+// NACL doesn't support any kind of file access in build.
+#if !BUILDFLAG(IS_NACL)
 // This allocator takes a memory-mapped file object and performs allocation
 // from it. The allocator takes ownership of the file object.
 class BASE_EXPORT FilePersistentMemoryAllocator
@@ -819,7 +821,7 @@ class BASE_EXPORT FilePersistentMemoryAllocator
  private:
   std::unique_ptr<MemoryMappedFile> mapped_file_;
 };
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // An allocation that is defined but not executed until required at a later
 // time. This allows for potential users of an allocation to be decoupled
