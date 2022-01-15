@@ -100,10 +100,15 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
 
   // Examine the presence of HDR.
   bool enable_hdr = false;
+  float hdr_max_lum_relative = 1.f;
   if (@available(macOS 10.15, *)) {
-    if ([screen maximumPotentialExtendedDynamicRangeColorComponentValue] >
-        1.0) {
+    const float max_potential_edr_value =
+        [screen maximumPotentialExtendedDynamicRangeColorComponentValue];
+    const float max_edr_value =
+        [screen maximumExtendedDynamicRangeColorComponentValue];
+    if (max_potential_edr_value > 1) {
       enable_hdr = true;
+      hdr_max_lum_relative = max_edr_value;
     }
   }
 
@@ -138,6 +143,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
             gfx::ContentColorUsage::kHDR, needs_alpha,
             gfx::ColorSpace::CreateExtendedSRGB(), gfx::BufferFormat::RGBA_F16);
       }
+      display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_lum_relative);
     }
     display.set_color_spaces(display_color_spaces);
   }
