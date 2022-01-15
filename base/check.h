@@ -10,7 +10,10 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+
+#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
 #include "base/immediate_crash.h"
+#endif
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
 //

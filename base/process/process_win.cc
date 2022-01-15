@@ -6,6 +6,7 @@
 
 #include "base/clang_profiling_buildflags.h"
 #include "base/debug/activity_tracker.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
