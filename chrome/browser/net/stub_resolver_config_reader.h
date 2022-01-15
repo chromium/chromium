@@ -14,7 +14,7 @@
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/memory/weak_ptr.h"
 #endif
 
@@ -68,7 +68,7 @@ class StubResolverConfigReader {
   // Returns true if there are parental controls detected on the device.
   virtual bool ShouldDisableDohForParentalControls();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Updates the android owned state and network service if the device/prfile is
   // owned.
   void OnAndroidOwnedStateCheckComplete(bool has_profile_owner,
@@ -109,7 +109,7 @@ class StubResolverConfigReader {
 
   PrefChangeRegistrar pref_change_registrar_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Whether or not an Android device or profile is owned.
   // A nullopt indicates this value has not been determined yet.
   absl::optional<bool> android_has_owner_ = absl::nullopt;

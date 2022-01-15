@@ -37,12 +37,12 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "chrome/browser/enterprise/util/android_enterprise_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/win/parental_controls.h"
@@ -75,7 +75,7 @@ enum class SecureDnsModeDetailsForHistogram {
   kMaxValue = kSecureByEnterprisePolicy,
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ShouldDisableDohForWindowsParentalControls() {
   const WinParentalControls& parental_controls = GetWinParentalControls();
   if (parental_controls.web_filter)
@@ -90,13 +90,13 @@ bool ShouldDisableDohForWindowsParentalControls() {
 
   return false;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Check the AsyncDns field trial and return true if it should be enabled. On
 // Android this includes checking the Android version in the field trial.
 bool ShouldEnableAsyncDns() {
   bool feature_can_be_enabled = true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int min_sdk =
       base::GetFieldTrialParamByFeatureAsInt(features::kAsyncDns, "min_sdk", 0);
   if (base::android::BuildInfo::GetInstance()->sdk_int() < min_sdk)
@@ -178,7 +178,7 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
       base::BindOnce(&StubResolverConfigReader::OnParentalControlsDelayTimer,
                      base::Unretained(this)));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome::enterprise_util::AndroidEnterpriseInfo::GetInstance()
       ->GetAndroidEnterpriseInfoState(base::BindOnce(
           &StubResolverConfigReader::OnAndroidOwnedStateCheckComplete,
@@ -217,7 +217,7 @@ void StubResolverConfigReader::UpdateNetworkService(bool record_metrics) {
 
 bool StubResolverConfigReader::ShouldDisableDohForManaged() {
 // This function ignores cloud policies which are loaded on a per-profile basis.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Check for MDM/management/owner apps. android_has_owner_ is true if either a
   // device or policy owner app is discovered by
   // GetAndroidEnterpriseInfoState(). If android_has_owner_ is nullopt, take a
@@ -227,11 +227,11 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
   // sufficient to check for the prescences of policies as well.
   if (android_has_owner_.value_or(false))
     return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (base::IsMachineExternallyManaged())
     return true;
 #endif
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (g_browser_process->browser_policy_connector()->HasMachineLevelPolicies())
     return true;
 #endif
@@ -242,7 +242,7 @@ bool StubResolverConfigReader::ShouldDisableDohForParentalControls() {
   if (parental_controls_testing_override_.has_value())
     return parental_controls_testing_override_.value();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ShouldDisableDohForWindowsParentalControls();
 #else
   return false;
@@ -390,7 +390,7 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
                          forced_management_mode);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
     bool has_profile_owner,
     bool has_device_owner) {

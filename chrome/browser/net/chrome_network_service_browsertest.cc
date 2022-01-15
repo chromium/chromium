@@ -34,7 +34,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/features.h"
 #endif
 
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
 }
 
 // This flakes on Mac10.12 and Windows: http://crbug.com/868667
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_EncryptedCookies DISABLED_EncryptedCookies
 #else
 #define MAYBE_EncryptedCookies EncryptedCookies
@@ -181,7 +181,7 @@ class ChromeNetworkServiceMigrationBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     std::vector<base::Feature> disabled_features, enabled_features;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, the Network Sandbox requires that data migration be enabled
     // to function correctly. Thus, in order to correctly test the case when
     // network data migration is not happening, the network sandbox must also be

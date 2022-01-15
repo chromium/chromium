@@ -29,7 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   bool async_dns_feature_enabled = GetParam();
 
   // Mark as not enterprise managed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(false);
   EXPECT_FALSE(base::IsMachineExternallyManaged());
 #endif
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   bool async_dns_feature_enabled = GetParam();
 
 // Mark as not enterprise managed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(false);
   EXPECT_FALSE(base::IsMachineExternallyManaged());
 #endif
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   // ChromeOS includes its own special functionality to set default policies if
   // any policies are set.  This function is not declared and cannot be invoked
   // in non-CrOS builds. Expect these enterprise user defaults to disable DoH.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Applies the special ChromeOS defaults to `policy_map_`.
   policy::SetEnterpriseUsersDefaults(&policy_map_);
   // Send the PolicyMap to the mock policy provider.
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kOff);
   EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Disable DoH by policy
   ClearPolicies();
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
 IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
                        ConfigFromParentalControls) {
 // Mark as not enterprise managed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(false);
   EXPECT_FALSE(base::IsMachineExternallyManaged());
 #endif

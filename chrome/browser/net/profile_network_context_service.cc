@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -82,13 +83,13 @@
 #include "net/ssl/client_cert_store_nss.h"
 #endif  // defined(USE_NSS_CERTS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/ssl/client_cert_store_win.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "net/ssl/client_cert_store_mac.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 #include "chrome/browser/net/trial_comparison_cert_verifier_controller.h"
@@ -606,16 +607,16 @@ ProfileNetworkContextService::CreateClientCertStore() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return store;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return std::make_unique<net::ClientCertStoreWin>();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return std::make_unique<net::ClientCertStoreMac>();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Android does not use the ClientCertStore infrastructure. On Android client
   // cert matching is done by the OS as part of the call to show the cert
   // selection dialog.
   return nullptr;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1235293)
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;

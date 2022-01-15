@@ -15,7 +15,7 @@
 #include "chrome/common/chrome_paths.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/path_utils.h"
 #endif
@@ -25,7 +25,7 @@ namespace {
 bool g_access_to_all_files_enabled = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    defined(OS_ANDROID)
+    BUILDFLAG(IS_ANDROID)
 // Returns true if |allowlist| contains |path| or a parent of |path|.
 bool IsPathOnAllowlist(const base::FilePath& path,
                        const std::vector<base::FilePath>& allowlist) {
@@ -123,7 +123,7 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Returns true if access is allowed for |path|.
 bool IsAccessAllowedAndroid(const base::FilePath& path) {
   // Access to files in external storage is allowed.
@@ -158,7 +158,7 @@ bool IsAccessAllowedAndroid(const base::FilePath& path) {
 
   return IsPathOnAllowlist(path, allowlist);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsAccessAllowedInternal(const base::FilePath& path,
                              const base::FilePath& profile_path) {
@@ -167,7 +167,7 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return IsAccessAllowedChromeOS(path, profile_path);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return IsAccessAllowedAndroid(path);
 #else
   return true;
@@ -188,7 +188,7 @@ bool ChromeNetworkDelegate::IsAccessAllowed(
     const base::FilePath& path,
     const base::FilePath& absolute_path,
     const base::FilePath& profile_path) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android's allowlist relies on symbolic links (ex. /sdcard is allowed
   // and commonly a symbolic link), thus do not check absolute paths.
   return IsAccessAllowedInternal(path, profile_path);

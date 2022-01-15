@@ -130,7 +130,7 @@ class NetErrorTabHelperWithPrerenderingTest : public NetErrorTabHelperTest {
 };
 
 // TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ErrorPagesDoNotPrerenderOrTriggerDnsProbeStatuses \
   DISABLED_ErrorPagesDoNotPrerenderOrTriggerDnsProbeStatuses
 #else
