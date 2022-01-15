@@ -97,9 +97,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   gfx::Size CalculatePreferredSize() const override;
   const char* GetClassName() const override;
 
-  // Overridden from ui::ListModelObserver:
-  void ListItemsRemoved(size_t start, size_t count) override;
-
   // Overridden from SearchResultContainerView:
   SearchResultView* GetResultViewAt(size_t index) override;
   int ScheduleResultAnimations(int preceeding_result_count) override;

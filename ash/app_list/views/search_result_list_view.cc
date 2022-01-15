@@ -258,14 +258,6 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
 #endif
 }
 
-void SearchResultListView::ListItemsRemoved(size_t start, size_t count) {
-  size_t last = std::min(start + count, search_result_views_.size());
-  for (size_t i = start; i < last; ++i)
-    GetResultViewAt(i)->ClearResult();
-
-  SearchResultContainerView::ListItemsRemoved(start, count);
-}
-
 SearchResultView* SearchResultListView::GetResultViewAt(size_t index) {
   DCHECK(index >= 0 && index < search_result_views_.size());
   return search_result_views_[index];
