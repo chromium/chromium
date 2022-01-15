@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/autocomplete/tab_matcher_android.h"
 #else
 #include "chrome/browser/autocomplete/tab_matcher_desktop.h"
@@ -123,7 +123,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TabMatcherAndroid tab_matcher_;
 #else
   TabMatcherDesktop tab_matcher_;

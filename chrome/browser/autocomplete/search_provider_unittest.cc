@@ -2980,7 +2980,7 @@ TEST_F(SearchProviderTest, DoTrimHttpsScheme) {
   EXPECT_EQ(u"facebook.com", match_inline.contents);
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // Verify entity suggestion parsing.
 TEST_F(SearchProviderTest, ParseEntitySuggestion) {
   struct Match {
@@ -3065,8 +3065,7 @@ TEST_F(SearchProviderTest, ParseEntitySuggestion) {
     }
   }
 }
-#endif  // !defined(OS_WIN)
-
+#endif  // !BUILDFLAG(IS_WIN)
 
 // A basic test that verifies the prefetch metadata parsing logic.
 TEST_F(SearchProviderTest, PrefetchMetadataParsing) {
