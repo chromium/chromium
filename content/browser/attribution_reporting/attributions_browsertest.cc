@@ -41,7 +41,7 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #endif
@@ -163,7 +163,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   AttributionsBrowserTest() {
     AttributionManagerImpl::RunInMemoryForTesting();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     // Fuchsia's network connection tracker always seems to indicate offline in
     // these tests, so override the tracker with a test one, which defaults to
     // online. See crbug.com/1285057 for details.
@@ -211,7 +211,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
 #endif

@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsOriginTrialBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting === undefined"));
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // TODO(https://crbug.com/1121464): Flaky on linux.
 #define MAYBE_OriginTrialEnabled_ImpressionRegistered \
   DISABLED_OriginTrialEnabled_ImpressionRegistered

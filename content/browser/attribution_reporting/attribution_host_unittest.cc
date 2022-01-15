@@ -829,7 +829,7 @@ TEST_F(AttributionHostTest, AndroidConversion_DuringNavigation) {
   }
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -867,7 +867,7 @@ TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation) {
   }
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -895,7 +895,7 @@ TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
   EXPECT_CALL(mock_manager_, HandleSource);
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -918,7 +918,7 @@ TEST_F(AttributionHostTest,
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -946,7 +946,7 @@ TEST_F(AttributionHostTest, AndroidConversion_NavigationAborted) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -975,7 +975,7 @@ TEST_F(AttributionHostTest, AndroidConversion_NavigationError) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -1005,7 +1005,7 @@ TEST_F(AttributionHostTest, AndroidConversion_BeforeNavigation) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -1027,7 +1027,7 @@ TEST_F(AttributionHostTest, AndroidConversion_SameDocument) {
   EXPECT_CALL(mock_manager_, HandleSource);
 
   std::string origin(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       "android-app:com.any.app");
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
@@ -1045,7 +1045,7 @@ TEST_F(AttributionHostTest, AndroidConversion_SameDocument) {
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(AttributionHostTest, AndroidConversion) {
   EXPECT_CALL(mock_manager_, HandleSource);
 
