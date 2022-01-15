@@ -15,7 +15,7 @@ namespace login_detection {
 
 const base::Feature kLoginDetection {
   "LoginDetection",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
