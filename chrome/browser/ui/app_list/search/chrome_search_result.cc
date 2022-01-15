@@ -60,6 +60,11 @@ void ChromeSearchResult::SetDetailsTextVector(const TextVector& text_vector) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetBigTitle(const std::u16string& big_title) {
+  metadata_->big_title = big_title;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetAccessibleName(const std::u16string& name) {
   metadata_->accessible_name = name;
   SetSearchResultMetadata();

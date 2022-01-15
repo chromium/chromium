@@ -490,6 +490,9 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // TODO (crbug/1216097): deprecate details_tags.
   std::vector<SearchResultTag> details_tags;
 
+  // Big title text to be displayed prominently on an answer card.
+  std::u16string big_title;
+
   // Text to be announced by a screen reader app.
   std::u16string accessible_name;
 

@@ -74,6 +74,11 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const Tags& details_tags() const { return metadata_->details_tags; }
   void set_details_tags(const Tags& tags) { metadata_->details_tags = tags; }
 
+  const std::u16string& big_title() const { return metadata_->big_title; }
+  void set_big_title(const std::u16string& big_title) {
+    metadata_->big_title = big_title;
+  }
+
   const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
