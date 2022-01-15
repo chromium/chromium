@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -43,12 +44,12 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "net/base/url_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util_win.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/shell_integration.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -76,7 +77,7 @@ bool ValidateUrl(const GURL& url) {
 
   const GURL settings_url(chrome::kChromeUISettingsURL);
   bool url_points_to_an_approved_settings_page = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS, allow any settings page to be specified on the command line.
   url_points_to_an_approved_settings_page =
       url.DeprecatedGetOriginAsURL() == settings_url.DeprecatedGetOriginAsURL();
@@ -86,15 +87,15 @@ bool ValidateUrl(const GURL& url) {
   const GURL reset_settings_url =
       settings_url.Resolve(chrome::kResetProfileSettingsSubPage);
   url_points_to_an_approved_settings_page = url == reset_settings_url;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, also allow a hash for the Chrome Cleanup Tool.
   const GURL reset_settings_url_with_cct_hash = reset_settings_url.Resolve(
       std::string("#") + settings::ResetSettingsHandler::kCctResetSettingsHash);
   url_points_to_an_approved_settings_page =
       url_points_to_an_approved_settings_page ||
       url == reset_settings_url_with_cct_hash;
-#endif  // defined(OS_WIN)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->IsWebSafeScheme(url.scheme()) ||
@@ -131,7 +132,7 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
     Profile* profile,
     StartupBrowserCreator* browser_creator,
@@ -148,7 +149,7 @@ StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
   }
   return tabs;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 StartupTabs StartupTabProviderImpl::GetDistributionFirstRunTabs(
     StartupBrowserCreator* browser_creator) const {
@@ -257,12 +258,12 @@ StartupTabs StartupTabProviderImpl::GetCrosapiTabs() const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 StartupTabs StartupTabProviderImpl::GetNewFeaturesTabs(
     bool whats_new_enabled) const {
   return GetNewFeaturesTabsForState(whats_new_enabled);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,
@@ -364,7 +365,7 @@ StartupTabs StartupTabProviderImpl::GetPostCrashTabsForState(
   return tabs;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // static
 StartupTabs StartupTabProviderImpl::GetNewFeaturesTabsForState(
     bool whats_new_enabled) {
@@ -385,11 +386,11 @@ GURL StartupTabProviderImpl::GetWelcomePageUrl(bool use_later_run_variant) {
 
 // static
 void StartupTabProviderImpl::AddIncompatibleApplicationsUrl(StartupTabs* tabs) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   UMA_HISTOGRAM_BOOLEAN("IncompatibleApplicationsPage.AddedPostCrash", true);
   GURL url(chrome::kChromeUISettingsURL);
   tabs->emplace_back(url.Resolve("incompatibleApplications"));
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 // static

@@ -369,7 +369,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
     auto has_tabs = instance.HasCommandLineTabs(command_line, base::FilePath());
     // This Windows-specific page is an exception and is not allowed on other
     // platforms, except ChromeOS which allows all chrome://settings pages.
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("chrome://settings/resetProfileSettings#cct"),
               output[0].url);
@@ -390,7 +390,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
 
     auto has_tabs = instance.HasCommandLineTabs(command_line, base::FilePath());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // On Chrome OS (ash-chrome), settings page is allowed to be specified.
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("chrome://settings/syncSetup"), output[0].url);

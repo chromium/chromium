@@ -82,7 +82,7 @@ class StartupBrowserCreator {
   // tabs shown at first run.
   void AddFirstRunTab(const GURL& url);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Configures the instance to include the specified "welcome back" page in a
   // tab before other tabs (e.g., those from session restore). This is used for
   // specific launches via retention experiments for which no URLs are provided
@@ -91,7 +91,7 @@ class StartupBrowserCreator {
     welcome_back_page_ = welcome_back_page;
   }
   bool welcome_back_page() const { return welcome_back_page_; }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // This function is equivalent to ProcessCommandLine but should only be
   // called during actual process startup.
@@ -168,7 +168,7 @@ class StartupBrowserCreator {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Searches for web apps to handle `urls` and prompts the user to pick one.
   // Runs `on_urls_unhandled_cb` (either synchronously or asynchronously) if no
   // web app is found or selected to open `urls`.
@@ -264,10 +264,10 @@ class StartupBrowserCreator {
   // Additional tabs to open during first run.
   std::vector<GURL> first_run_tabs_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The page to be shown in a tab when welcoming a user back to Chrome.
   bool welcome_back_page_ = false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // True if we have already read and reset the preference kWasRestarted. (A
   // member variable instead of a static variable inside WasRestarted because
@@ -296,7 +296,7 @@ StartupProfilePathInfo GetStartupProfilePath(
     const base::CommandLine& command_line,
     bool ignore_profile_picker);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 // Returns the profile that should be loaded on process startup. This is either
 // the profile returned by GetStartupProfilePath, or the guest profile along
 // with StartupProfileMode::kProfilePicker mode if the profile picker should be
@@ -309,6 +309,6 @@ StartupProfileInfo GetStartupProfile(const base::FilePath& cur_dir,
 // GetStartupProfile() returns kError. This may return kError if neither any
 // profile nor the profile picker can be opened.
 StartupProfileInfo GetFallbackStartupProfile();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_H_

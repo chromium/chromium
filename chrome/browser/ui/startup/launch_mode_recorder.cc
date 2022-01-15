@@ -16,13 +16,13 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/mac/dock.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/files/file_path.h"
 #include "base/win/startup_information.h"
 #endif
@@ -37,7 +37,7 @@ LaunchMode GetLaunchModeFast();
 // called on a background thread outside of the critical startup path.
 LaunchMode GetLaunchModeSlow();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns the path to the shortcut from which Chrome was launched, or null if
 // not launched via a shortcut.
 absl::optional<const wchar_t*> GetShortcutPath() {
@@ -91,7 +91,7 @@ LaunchMode GetLaunchModeSlow() {
 
   return LaunchMode::kShortcutUnknown;
 }
-#elif defined(OS_MAC)  // defined(OS_WIN)
+#elif BUILDFLAG(IS_MAC)  // BUILDFLAG(IS_WIN)
 LaunchMode GetLaunchModeFast() {
   DiskImageStatus dmg_launch_status =
       IsAppRunningFromReadOnlyDiskImage(nullptr);
@@ -126,7 +126,7 @@ LaunchMode GetLaunchModeSlow() {
   NOTREACHED();
   return LaunchMode::kToBeDecided;
 }
-#else                  // defined(OS_WIN)
+#else                    // BUILDFLAG(IS_WIN)
 // TODO(cpu): Port to other platforms.
 LaunchMode GetLaunchModeFast() {
   return LaunchMode::kOtherOS;
@@ -136,7 +136,7 @@ LaunchMode GetLaunchModeSlow() {
   NOTREACHED();
   return LaunchMode::kOtherOS;
 }
-#endif                 // defined(OS_WIN)
+#endif                   // BUILDFLAG(IS_WIN)
 
 // Log in a histogram the frequency of launching by the different methods. See
 // LaunchMode enum for the actual values of the buckets.

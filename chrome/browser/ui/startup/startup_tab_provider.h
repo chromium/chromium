@@ -39,14 +39,14 @@ class StartupTabProvider {
   virtual StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns a "welcome back" tab to be shown if requested for a specific
   // launch.
   virtual StartupTabs GetWelcomeBackTabs(
       Profile* profile,
       StartupBrowserCreator* browser_creator,
       chrome::startup::IsProcessStartup process_startup) const = 0;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Checks for the presence of a trigger indicating the need to offer a Profile
   // Reset on this profile. Returns any tabs which should be shown accordingly.
@@ -93,10 +93,10 @@ class StartupTabProvider {
   virtual StartupTabs GetCrosapiTabs() const = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns tabs related to the What's New UI (if applicable).
   virtual StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const = 0;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 class StartupTabProviderImpl : public StartupTabProvider {
@@ -168,7 +168,7 @@ class StartupTabProviderImpl : public StartupTabProvider {
   static StartupTabs GetPostCrashTabsForState(
       bool has_incompatible_applications);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Determines if the what's new page should be shown.
   static StartupTabs GetNewFeaturesTabsForState(bool whats_new_enabled);
 #endif
@@ -191,12 +191,12 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // StartupTabProvider:
   StartupTabs GetOnboardingTabs(Profile* profile) const override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   StartupTabs GetWelcomeBackTabs(
       Profile* profile,
       StartupBrowserCreator* browser_creator,
       chrome::startup::IsProcessStartup process_startup) const override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const override;
@@ -220,9 +220,9 @@ class StartupTabProviderImpl : public StartupTabProvider {
   StartupTabs GetCrosapiTabs() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   struct ParsedCommandLineTabArg {

@@ -164,11 +164,11 @@ class StartupWebAppCreator
     GURL protocol_url;
     base::CommandLine::StringVector args = command_line_.GetArgs();
     for (const auto& arg : args) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       GURL potential_protocol(base::AsStringPiece16(arg));
 #else
       GURL potential_protocol(arg);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
       // protocol_url is checked for validity later with getting the provider
       // and consulting the os_integration_manager. However because that process
       // has a wait for "on_registry_ready()", `potential_protocol` checks for
