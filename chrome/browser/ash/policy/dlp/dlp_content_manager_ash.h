@@ -312,7 +312,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   absl::optional<VideoCaptureInfo> running_video_capture_info_;
 
   // List of the currently running screen shares.
-  std::vector<base::WeakPtr<ScreenShareInfo>> running_screen_shares_;
+  std::vector<std::unique_ptr<ScreenShareInfo>> running_screen_shares_;
 };
 
 // Helper class to call SetDlpContentManagerAshForTesting and
