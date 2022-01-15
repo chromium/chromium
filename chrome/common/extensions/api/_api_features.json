@@ -61,6 +61,10 @@
     "dependencies": ["manifest:action"],
     "contexts": ["blessed_extension"]
   },
+  "action.openPopup": {
+    // TODO(https://crbug.com/1245093): Upgrade to stable channel.
+    "channel": "dev"
+  },
   "activityLogPrivate": [{
     "dependencies": ["permission:activityLogPrivate"],
     "contexts": ["blessed_extension"]

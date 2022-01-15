@@ -356,6 +356,39 @@ class ActionGetUserSettingsFunction : public ExtensionFunction {
   ~ActionGetUserSettingsFunction() override;
 };
 
+// Note: action.openPopup() and browserAction.openPopup() have subtly different
+// implementations:
+//   * action.openPopup() allows the extension to specify a window ID.
+//   * browserAction.openPopup() will time out after 10 seconds;
+//     action.openPopup() does not time out.
+//   * browserAction.openPopup() returns a handle to the HTMLWindow of the
+//     popup; action.openPopup() returns nothing.
+// Due to these differences, the implementations are distinct classes.
+class ActionOpenPopupFunction : public ExtensionFunction,
+                                public ExtensionHostRegistry::Observer {
+ public:
+  DECLARE_EXTENSION_FUNCTION("action.openPopup", ACTION_OPENPOPUP)
+
+  ActionOpenPopupFunction();
+  ActionOpenPopupFunction(const ActionOpenPopupFunction&) = delete;
+  ActionOpenPopupFunction& operator=(const ActionOpenPopupFunction&) = delete;
+
+ protected:
+  // ExtensionFunction:
+  ~ActionOpenPopupFunction() override;
+  ResponseAction Run() override;
+  void OnBrowserContextShutdown() override;
+
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override;
+
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
+};
+
 //
 // browserAction.* aliases for supported browserAction APIs.
 //
@@ -456,6 +489,9 @@ class BrowserActionDisableFunction : public ExtensionActionHideFunction {
   ~BrowserActionDisableFunction() override {}
 };
 
+// Note: action.openPopup() and browserAction.openPopup() have subtly different
+// implementations. See ActionOpenPopupFunction above.
+// TODO(devlin): Remove browserAction.openPopup().
 class BrowserActionOpenPopupFunction : public ExtensionFunction,
                                        public ExtensionHostRegistry::Observer {
  public:

@@ -150,6 +150,16 @@ void ExtensionHostRegistry::ExtensionHostDestroyed(
   }
 }
 
+std::vector<ExtensionHost*> ExtensionHostRegistry::GetHostsForExtension(
+    const ExtensionId& extension_id) {
+  std::vector<ExtensionHost*> hosts;
+  for (ExtensionHost* host : extension_hosts_) {
+    if (host->extension_id() == extension_id)
+      hosts.push_back(host);
+  }
+  return hosts;
+}
+
 void ExtensionHostRegistry::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

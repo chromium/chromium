@@ -16,9 +16,10 @@
 
 class Browser;
 class ChromeExtensionFunctionDetails;
-class GURL;
-class TabStripModel;
 class ExtensionFunction;
+class GURL;
+class Profile;
+class TabStripModel;
 
 namespace base {
 class DictionaryValue;
@@ -101,6 +102,15 @@ class ExtensionTabUtil {
       const ChromeExtensionFunctionDetails& details,
       int window_id,
       std::string* error_message);
+
+  // Returns the Browser with the specified `window id` and the associated
+  // `profile`. Optionally, this will also look at browsers associated with the
+  // incognito version of `profile` if `also_match_incognito_profile` is true.
+  // Populates `error_message` if no matching browser is found.
+  static Browser* GetBrowserInProfileWithId(Profile* profile,
+                                            int window_id,
+                                            bool also_match_incognito_profile,
+                                            std::string* error_message);
 
   // Returns the tabs:: API constant for the window type of the |browser|.
   static std::string GetBrowserWindowTypeText(const Browser& browser);

@@ -62,8 +62,61 @@ const char kOpenPopupError[] =
     "error occurred.";
 const char kInvalidColorError[] =
     "The color specification could not be parsed.";
+constexpr char kNoActiveWindowFound[] =
+    "Could not find an active browser window.";
 
 bool g_report_error_for_invisible_icon = false;
+
+// Returns the browser that was last active in the given `profile`, optionally
+// also checking the incognito profile.
+Browser* FindLastActiveBrowserWindow(Profile* profile,
+                                     bool check_incognito_profile) {
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+
+  if (browser && browser->window()->IsActive())
+    return browser;  // Found an active browser.
+
+  // It's possible that the last active browser actually corresponds to the
+  // associated incognito profile, and this won't be returned by
+  // FindLastActiveWithProfile(). If the extension can operate incognito, then
+  // check the last active incognito, too.
+  if (check_incognito_profile && profile->HasPrimaryOTRProfile()) {
+    Profile* incognito_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/false);
+    DCHECK(incognito_profile);
+    Browser* incognito_browser =
+        chrome::FindLastActiveWithProfile(incognito_profile);
+    if (incognito_browser->window()->IsActive())
+      return incognito_browser;
+  }
+
+  return nullptr;
+}
+
+// Attempts to open `extension`'s popup in the given `browser`. Returns true on
+// success; otherwise, populates `error` and returns false.
+bool OpenPopupInBrowser(Browser& browser,
+                        const Extension& extension,
+                        std::string* error) {
+  if (!browser.window()->IsToolbarVisible()) {
+    *error = "Browser window has no toolbar.";
+    return false;
+  }
+
+  // TODO(https://crbug.com/1245093): Modify
+  // ShowExtensionActionPopupForAPICall() to take a callback so that
+  // a) the API function doesn't have to wait and observe first load for all
+  //    ExtensionHosts, and
+  // b) we catch cases like the associated window being closed before the
+  //    popup complete opening.
+  if (!ExtensionActionAPI::Get(browser.profile())
+           ->ShowExtensionActionPopupForAPICall(&extension, &browser)) {
+    *error = "Failed to open popup.";
+    return false;
+  }
+
+  return true;
+}
 
 }  // namespace
 
@@ -576,33 +629,122 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
   return RespondNow(OneArgument(std::move(ui_settings)));
 }
 
+ActionOpenPopupFunction::ActionOpenPopupFunction() = default;
+ActionOpenPopupFunction::~ActionOpenPopupFunction() = default;
+
+ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
+  // Unfortunately, the action API types aren't compiled. However, the bindings
+  // should still valid the form of the arguments.
+  EXTENSION_FUNCTION_VALIDATE(args().size() == 1u);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+  const base::Value& options = args()[0];
+
+  // TODO(https://crbug.com/1245093): Support specifying the tab ID? This is
+  // kind of racy (because really what the extension probably cares about is
+  // the document ID; tab ID persists across pages, whereas document ID would
+  // detect things like navigations).
+  int window_id = extension_misc::kCurrentWindowId;
+  if (options.is_dict()) {
+    const base::Value* window_value = options.FindKey("windowId");
+    if (window_value) {
+      EXTENSION_FUNCTION_VALIDATE(window_value->is_int());
+      window_id = window_value->GetInt();
+    }
+  }
+
+  Browser* browser = nullptr;
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  std::string error;
+  if (window_id == extension_misc::kCurrentWindowId) {
+    browser =
+        FindLastActiveBrowserWindow(profile, include_incognito_information());
+    if (!browser)
+      error = kNoActiveWindowFound;
+  } else {
+    browser = ExtensionTabUtil::GetBrowserInProfileWithId(
+        profile, window_id, include_incognito_information(), &error);
+  }
+
+  if (!browser) {
+    DCHECK(!error.empty());
+    return RespondNow(Error(std::move(error)));
+  }
+
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  ExtensionAction* extension_action =
+      ExtensionActionManager::Get(browser_context())
+          ->GetExtensionAction(*extension());
+  DCHECK(extension_action);
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  if (!extension_action->HasPopup(tab_id) ||
+      !extension_action->GetIsVisible(tab_id)) {
+    return RespondNow(
+        Error("Extension does not have a popup on the active tab."));
+  }
+
+  if (!OpenPopupInBrowser(*browser, *extension(), &error)) {
+    DCHECK(!error.empty());
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // Even if this is for an incognito window, we want to use the profile
+  // associated with the extension function.
+  // If the extension is runs in spanning mode, then extension hosts are
+  // created with the original profile, and if it's split, then we know the api
+  // call came from the associated profile.
+  host_registry_observation_.Observe(ExtensionHostRegistry::Get(profile));
+
+  // Balanced in OnExtensionHostCompletedFirstLoad() or
+  // OnBrowserContextShutdown().
+  AddRef();
+
+  return RespondLater();
+}
+
+void ActionOpenPopupFunction::OnBrowserContextShutdown() {
+  // No point in responding at this point (the context is gone). However, we
+  // need to explicitly remove the ExtensionHostRegistry observation, since the
+  // ExtensionHostRegistry's lifetime is tied to the BrowserContext. Otherwise,
+  // this would cause a UAF when the observation is destructed as part of this
+  // instance's destruction.
+  host_registry_observation_.Reset();
+  Release();  // Balanced in Run().
+}
+
+void ActionOpenPopupFunction::OnExtensionHostCompletedFirstLoad(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
+  if (did_respond())
+    return;
+
+  if (host->extension_host_type() != mojom::ViewType::kExtensionPopup ||
+      host->extension()->id() != extension_->id())
+    return;
+
+  // TODO(https://crbug.com/1245093): Return the tab for which the extension
+  // popup was shown?
+  Respond(NoArguments());
+  host_registry_observation_.Reset();
+  Release();  // Balanced in Run().
+}
+
 BrowserActionOpenPopupFunction::BrowserActionOpenPopupFunction() = default;
 BrowserActionOpenPopupFunction::~BrowserActionOpenPopupFunction() = default;
 
 ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   // We only allow the popup in the active window.
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  // It's possible that the last active browser actually corresponds to the
-  // associated incognito profile, and this won't be returned by
-  // FindLastActiveWithProfile. If the browser we found isn't active and the
-  // extension can operate incognito, then check the last active incognito, too.
-  if ((!browser || !browser->window()->IsActive()) &&
-      util::IsIncognitoEnabled(extension()->id(), profile) &&
-      profile->HasPrimaryOTRProfile()) {
-    browser = chrome::FindLastActiveWithProfile(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  }
+  Browser* browser =
+      FindLastActiveBrowserWindow(profile, include_incognito_information());
 
-  // If there's no active browser, or the Toolbar isn't visible, abort.
-  // Otherwise, try to open a popup in the active browser.
-  // TODO(justinlin): Remove toolbar check when http://crbug.com/308645 is
-  // fixed.
-  if (!browser || !browser->window()->IsActive() ||
-      !browser->window()->IsToolbarVisible() ||
-      !ExtensionActionAPI::Get(profile)->ShowExtensionActionPopupForAPICall(
-          extension_.get(), browser)) {
-    return RespondNow(Error(kOpenPopupError));
+  if (!browser)
+    return RespondNow(Error(kNoActiveWindowFound));
+
+  std::string error;
+  if (!OpenPopupInBrowser(*browser, *extension(), &error)) {
+    DCHECK(!error.empty());
+    return RespondNow(Error(std::move(error)));
   }
 
   // Even if this is for an incognito window, we want to use the normal profile.

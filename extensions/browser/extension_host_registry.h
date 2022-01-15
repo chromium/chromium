@@ -6,9 +6,11 @@
 #define EXTENSIONS_BROWSER_EXTENSION_HOST_REGISTRY_H_
 
 #include <unordered_set>
+#include <vector>
 
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/common/extension_id.h"
 
 class BrowserContextKeyedServiceFactory;
 
@@ -109,6 +111,13 @@ class ExtensionHostRegistry : public KeyedService {
   // Called when an ExtensionHost is destroyed. Stops tracking the host and
   // notifies observers.
   void ExtensionHostDestroyed(ExtensionHost* extension_host);
+
+  // Returns the collection of ExtensionHosts associated with the specified
+  // `extension_id`.
+  // If performance ever becomes a consideration here, we can update the
+  // storage in the registry to be an unordered_map split apart by extension.
+  std::vector<ExtensionHost*> GetHostsForExtension(
+      const ExtensionId& extension_id);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -8779,6 +8779,8 @@ if (!is_android && !is_fuchsia) {
       # chrome_extensions_interactive_uitests target for more.
       deps += [ "//extensions:chrome_extensions_interactive_uitests" ]
 
+      sources += [ "../browser/extensions/api/extension_action/extension_action_api_interactive_uitest.cc" ]
+
       if (include_js_tests) {
         sources += [
           "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
