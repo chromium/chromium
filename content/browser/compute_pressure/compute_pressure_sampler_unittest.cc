@@ -179,7 +179,7 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
 }
 
 // TODO(crbug.com/1271419): Flaky.
-#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
   DISABLED_Stop_Delayed_EnsureStarted_Immediate
 #else

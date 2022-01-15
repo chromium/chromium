@@ -80,9 +80,9 @@ class ComputePressureManagerTest : public RenderViewHostImplTestHarness {
 };
 
 // Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
-#if defined(OS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
 #define MAYBE_OneObserver DISABLED_OneObserver
-#elif defined(OS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
+#elif BUILDFLAG(IS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
 #define MAYBE_OneObserver DISABLED_OneObserver
 #else
 #define MAYBE_OneObserver OneObserver
@@ -101,9 +101,9 @@ TEST_F(ComputePressureManagerTest, MAYBE_OneObserver) {
 }
 
 // Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
-#if defined(OS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
 #define MAYBE_ThreeObservers DISABLED_ThreeObservers
-#elif defined(OS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
+#elif BUILDFLAG(IS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
 #define MAYBE_ThreeObservers DISABLED_ThreeObservers
 #else
 #define MAYBE_ThreeObservers ThreeObservers
