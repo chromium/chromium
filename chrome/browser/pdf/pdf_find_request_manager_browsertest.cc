@@ -115,7 +115,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 
 // Tests searching in a full-page PDF.
 // Flaky on Windows ASAN: crbug.com/1030368.
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_FindInPDF DISABLED_FindInPDF
 #else
 #define MAYBE_FindInPDF FindInPDF

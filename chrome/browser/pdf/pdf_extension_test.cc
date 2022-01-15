@@ -141,7 +141,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #endif
 
@@ -173,7 +173,7 @@ using ::ui::AXTreeFormatter;
 
 const int kNumberLoadTestParts = 10;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const int kDefaultKeyModifier = blink::WebInputEvent::kMetaKey;
 #else
 const int kDefaultKeyModifier = blink::WebInputEvent::kControlKey;
@@ -920,11 +920,11 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest, DirectNavigationToPDF) {
 }
 
 // TODO(crbug.com/1201401): fix flakiness and reenable
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_EmbedPdfPlaceholderWithCSP DISABLED_EmbedPdfPlaceholderWithCSP
 #else
 #define MAYBE_EmbedPdfPlaceholderWithCSP EmbedPdfPlaceholderWithCSP
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
                        MAYBE_EmbedPdfPlaceholderWithCSP) {
   // Navigate to a page with CSP that uses <embed> to embed a PDF as a plugin.
@@ -1539,7 +1539,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
 }
 
 // Flaky, http://crbug.com/767427
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_PdfZoomWithoutBubble DISABLED_PdfZoomWithoutBubble
 #else
 #define MAYBE_PdfZoomWithoutBubble PdfZoomWithoutBubble
@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
                            zoom::ZoomController::ZOOM_MODE_MANUAL, false));
 
   // Zoom PDF via script.
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 #endif
   ASSERT_TRUE(content::ExecuteScript(guest_contents,
@@ -1584,7 +1584,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
                                      "}, 1);"));
 
   watcher.Wait();
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 #endif
 }
@@ -1834,7 +1834,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
 
   bool control = false;
   bool command = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   command = true;
 #else
   control = true;
@@ -1845,7 +1845,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
                             /*alt=*/false, command);
   run_loop.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr char kExpectedText[] = "this is some text\r\nsome more text";
 #else
   constexpr char kExpectedText[] = "this is some text\nsome more text";
@@ -2169,7 +2169,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityEnableLater) {
 }
 
 // Flaky, see crbug.com/1228762
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PdfAccessibilityInIframe DISABLED_PdfAccessibilityInIframe
 #else
 #define MAYBE_PdfAccessibilityInIframe PdfAccessibilityInIframe
@@ -2940,7 +2940,7 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
 };
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Save DISABLED_Save
 #else
 #define MAYBE_Save Save
@@ -3009,7 +3009,7 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
 };
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SaveWithPolicy DISABLED_SaveWithPolicy
 #else
 #define MAYBE_SaveWithPolicy SaveWithPolicy
@@ -3032,7 +3032,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
 }
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SaveWithPolicyUniqueNumberSuffix \
   DISABLED_SaveWithPolicyUniqueNumberSuffix
 #else
@@ -3062,7 +3062,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
 }
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SaveWithPolicyUniqueTimeSuffix \
   DISABLED_SaveWithPolicyUniqueTimeSuffix
 #else
@@ -3165,7 +3165,7 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
 };
 
 // TODO(crbug.com/1121446): Fix flakiness.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_IndividualShiftRightArrowPresses \
   DISABLED_IndividualShiftRightArrowPresses
 #else
@@ -3220,7 +3220,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 }
 
 // Flaky, http://crbug.com/1121446
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CombinedShiftRightArrowPresses \
   DISABLED_CombinedShiftRightArrowPresses
 #else
@@ -3254,7 +3254,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 }
 
 // Flaky on Linux (https://crbug.com/1121446)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CombinedShiftArrowPresses DISABLED_CombinedShiftArrowPresses
 #else
 #define MAYBE_CombinedShiftArrowPresses CombinedShiftArrowPresses
@@ -3382,7 +3382,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TouchpadPinchInvokesCustomZoom) {
                                std::move(send_pinch));
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Ensure that ctrl-wheel events are handled by the PDF viewer.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
   WebContents* guest_contents =
@@ -3434,7 +3434,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                                std::move(send_touchscreen_pinch));
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 using PDFExtensionHitTestTest = PDFExtensionTest;
 
@@ -4379,7 +4379,7 @@ class PDFExtensionSubmitFormTest : public PDFExtensionTest {
 };
 
 // TODO(crbug.com/1259994): Fix Windows 7 flakes.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SubmitForm DISABLED_SubmitForm
 #else
 #define MAYBE_SubmitForm SubmitForm
