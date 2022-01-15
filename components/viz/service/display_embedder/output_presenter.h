@@ -111,6 +111,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
   virtual void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                                 std::vector<ScopedOverlayAccess*> accesses) = 0;
   virtual void ScheduleBackground(Image* image);
+  virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
 };
 
 }  // namespace viz

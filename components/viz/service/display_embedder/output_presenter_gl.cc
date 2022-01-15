@@ -325,6 +325,10 @@ void OutputPresenterGL::PostSubBuffer(
     const gfx::Rect& rect,
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback) {
+#if BUILDFLAG(IS_MAC)
+  gl_surface_->SetCALayerErrorCode(ca_layer_error_code_);
+#endif
+
   if (supports_async_swap_) {
     gl_surface_->PostSubBufferAsync(
         rect.x(), rect.y(), rect.width(), rect.height(),
@@ -451,5 +455,12 @@ void OutputPresenterGL::ScheduleOverlays(
   }
 #endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 }
+
+#if BUILDFLAG(IS_MAC)
+void OutputPresenterGL::SetCALayerErrorCode(
+    gfx::CALayerResult ca_layer_error_code) {
+  ca_layer_error_code_ = ca_layer_error_code;
+}
+#endif
 
 }  // namespace viz

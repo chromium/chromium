@@ -194,7 +194,9 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
       base::Time::kMicrosecondsPerSecond / 60;
   gfx::PresentationFeedback feedback(
       base::TimeTicks::Now(),
-      base::Microseconds(kRefreshIntervalInMicroseconds), 0 /* flags */);
+      base::Microseconds(kRefreshIntervalInMicroseconds), /*flags=*/0);
+  feedback.ca_layer_error_code = ca_layer_error_code_;
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -207,16 +209,15 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
 template <typename BaseClass>
 gfx::SwapResult ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffers(
     gl::GLSurface::PresentationCallback callback) {
-  return SwapBuffersInternal(
-      base::DoNothing(), std::move(callback));
+  return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
 template <typename BaseClass>
 void ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersAsync(
     gl::GLSurface::SwapCompletionCallback completion_callback,
     gl::GLSurface::PresentationCallback presentation_callback) {
-  SwapBuffersInternal(
-      std::move(completion_callback), std::move(presentation_callback));
+  SwapBuffersInternal(std::move(completion_callback),
+                      std::move(presentation_callback));
 }
 
 template <typename BaseClass>
@@ -400,6 +401,12 @@ void ImageTransportSurfaceOverlayMacBase<BaseClass>::OnGpuSwitched(
   // surface that is observing the GPU switch.
   base::ThreadTaskRunnerHandle::Get()->ReleaseSoon(
       FROM_HERE, std::move(context_on_new_gpu));
+}
+
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::SetCALayerErrorCode(
+    gfx::CALayerResult ca_layer_error_code) {
+  ca_layer_error_code_ = ca_layer_error_code;
 }
 
 // Template instantiation

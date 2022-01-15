@@ -245,6 +245,10 @@ TEST_F(StructTraitsTest, PresentationFeedback) {
   uint32_t flags =
       PresentationFeedback::kVSync | PresentationFeedback::kZeroCopy;
   PresentationFeedback input{timestamp, interval, flags};
+#if defined(OS_MAC)
+  input.ca_layer_error_code = kCALayerFailedPictureContent;
+#endif
+
   input.available_timestamp = base::TimeTicks() + base::Milliseconds(20);
   input.ready_timestamp = base::TimeTicks() + base::Milliseconds(21);
   input.latch_timestamp = base::TimeTicks() + base::Milliseconds(22);
@@ -257,6 +261,9 @@ TEST_F(StructTraitsTest, PresentationFeedback) {
   EXPECT_EQ(input.available_timestamp, output.available_timestamp);
   EXPECT_EQ(input.ready_timestamp, output.ready_timestamp);
   EXPECT_EQ(input.latch_timestamp, output.latch_timestamp);
+#if defined(OS_MAC)
+  EXPECT_EQ(input.ca_layer_error_code, output.ca_layer_error_code);
+#endif
 }
 
 TEST_F(StructTraitsTest, RRectF) {

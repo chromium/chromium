@@ -161,6 +161,7 @@ component("gfx") {
   }
   if (is_mac) {
     sources += [
+      "ca_layer_result.h",
       "canvas_paint_mac.h",
       "canvas_paint_mac.mm",
       "decorated_text_mac.h",

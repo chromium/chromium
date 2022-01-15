@@ -68,6 +68,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   void AdjustOutputSurfaceOverlay(
       absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
+  gfx::CALayerResult GetCALayerErrorCode() const override;
+
  private:
   // The damage that should be added the next frame for drawing to the output
   // surface.

@@ -32,6 +32,10 @@ mojom("mojom") {
     "transform.mojom",
   ]
 
+  if (is_mac) {
+    sources += [ "ca_layer_result.mojom" ]
+  }
+
   public_deps = [
     ":native_handle_types",
     "//mojo/public/mojom/base",
@@ -203,6 +207,17 @@ mojom("mojom") {
       ]
       traits_sources = [ "ca_layer_params_mojom_traits.cc" ]
       traits_headers = [ "ca_layer_params_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.CALayerResult"
+          cpp = "::gfx::CALayerResult"
+        },
+      ]
+      traits_sources = [ "ca_layer_result_mojom_traits.cc" ]
+      traits_headers = [ "ca_layer_result_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx" ]
     },
     {

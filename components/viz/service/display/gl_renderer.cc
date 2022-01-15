@@ -3407,6 +3407,10 @@ void GLRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   output_frame.top_controls_visible_height_changed =
       swap_frame_data.top_controls_visible_height_changed;
   output_frame.size = surface_size;
+#if BUILDFLAG(IS_MAC)
+  output_frame.ca_layer_error_code = swap_frame_data.ca_layer_error_code;
+#endif
+
   if (use_swap_with_bounds_) {
     output_frame.content_bounds = std::move(swap_content_bounds_);
   } else if (use_partial_swap_) {

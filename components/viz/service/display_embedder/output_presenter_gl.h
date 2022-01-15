@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace gl {
 class GLSurface;
@@ -67,6 +69,10 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
                         std::vector<ScopedOverlayAccess*> accesses) final;
   void ScheduleBackground(Image* image) final;
 
+#if BUILDFLAG(IS_MAC)
+  void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) final;
+#endif
+
  private:
   scoped_refptr<gl::GLSurface> gl_surface_;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
@@ -79,6 +85,10 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
   const raw_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   uint32_t shared_image_usage_;
+
+#if BUILDFLAG(IS_MAC)
+  gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
+#endif
 };
 
 }  // namespace viz

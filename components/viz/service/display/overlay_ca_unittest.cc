@@ -15,6 +15,7 @@
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -484,6 +485,62 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
     EXPECT_EQ(gfx::Rect(), damage_rect_);
     EXPECT_EQ(0U, ca_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
+  }
+}
+
+TEST_F(CALayerOverlayTest, OverlayErrorCode) {
+  // Frame #1
+  auto pass = CreateRenderPass();
+  CreateFullscreenCandidateQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+  CALayerOverlayList ca_layer_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+      &damage_rect_, &content_bounds_);
+
+  // There should be no error.
+  gfx::CALayerResult error_code = overlay_processor_->GetCALayerErrorCode();
+  EXPECT_EQ(1U, ca_layer_list.size());
+  // kCALayerSuccess = 0,
+  EXPECT_EQ(0, error_code);
+
+  // Frame #2
+  {
+    auto pass = CreateRenderPass();
+    CreateFullscreenCandidateQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Add a copy request to the render pass
+    pass->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
+
+    CALayerOverlayList ca_layer_list;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+        &damage_rect_, &content_bounds_);
+
+    // Overlay should fail when there is a copy request.
+    EXPECT_EQ(0U, ca_layer_list.size());
+
+    // kCALayerFailedCopyRequests = 31,
+    gfx::CALayerResult error_code = overlay_processor_->GetCALayerErrorCode();
+    EXPECT_EQ(31, error_code);
   }
 }
 

@@ -111,4 +111,8 @@ bool OverlayProcessorMac::NeedsSurfaceDamageRectList() const {
   return false;
 }
 
+gfx::CALayerResult OverlayProcessorMac::GetCALayerErrorCode() const {
+  return ca_layer_overlay_processor_->ca_layer_result();
+}
+
 }  // namespace viz

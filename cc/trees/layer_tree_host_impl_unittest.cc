@@ -1674,10 +1674,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 }
 
 gfx::PresentationFeedback ExampleFeedback() {
-  return gfx::PresentationFeedback(
+  auto feedback = gfx::PresentationFeedback(
       base::TimeTicks() + base::Milliseconds(42), base::Microseconds(18),
       gfx::PresentationFeedback::Flags::kVSync |
           gfx::PresentationFeedback::Flags::kHWCompletion);
+#if defined(OS_MAC)
+  feedback.ca_layer_error_code = gfx::kCALayerFailedQuadBlendMode;
+#endif
+  return feedback;
 }
 
 class LayerTreeHostImplTestInvokeMainThreadCallbacks

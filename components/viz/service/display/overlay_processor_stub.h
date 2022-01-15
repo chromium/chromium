@@ -42,6 +42,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
       absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) final {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) final {}
   void SetViewportSize(const gfx::Size& size) final {}
+  gfx::CALayerResult GetCALayerErrorCode() const final;
 };
 
 }  // namespace viz

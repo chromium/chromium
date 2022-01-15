@@ -793,7 +793,9 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     output_frame.delegated_ink_metadata =
         delegated_ink_handler_->TakeMetadata();
   }
-
+#if BUILDFLAG(IS_MAC)
+  output_frame.ca_layer_error_code = swap_frame_data.ca_layer_error_code;
+#endif
   skia_output_surface_->SwapBuffers(std::move(output_frame));
   swap_buffer_rect_ = gfx::Rect();
 

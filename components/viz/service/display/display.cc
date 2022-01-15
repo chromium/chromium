@@ -940,6 +940,11 @@ bool Display::DrawAndSwap(base::TimeTicks frame_time,
       last_top_controls_visible_height_ = *frame.top_controls_visible_height;
     }
 
+#if BUILDFLAG(IS_MAC)
+    swap_frame_data.ca_layer_error_code =
+        overlay_processor_->GetCALayerErrorCode();
+#endif
+
     // We must notify scheduler and increase |pending_swaps_| before calling
     // SwapBuffers() as it can call DidReceiveSwapBuffersAck synchronously.
     if (scheduler_)

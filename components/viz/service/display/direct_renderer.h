@@ -24,6 +24,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -99,6 +100,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
     std::vector<ui::LatencyInfo> latency_info;
     bool top_controls_visible_height_changed = false;
+#if BUILDFLAG(IS_MAC)
+    gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
+#endif
   };
   virtual void SwapBuffers(SwapFrameData swap_frame_data) = 0;
   virtual void SwapBuffersSkipped() {}

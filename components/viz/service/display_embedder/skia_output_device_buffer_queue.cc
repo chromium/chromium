@@ -474,6 +474,10 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
     DCHECK(submitted_image_);
   }
 
+#if BUILDFLAG(IS_MAC)
+  presenter_->SetCALayerErrorCode(frame.ca_layer_error_code);
+#endif
+
   // Cancelable callback uses weak ptr to drop this task upon destruction.
   // Thus it is safe to use |base::Unretained(this)|.
   // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could

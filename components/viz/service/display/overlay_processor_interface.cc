@@ -100,6 +100,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   // overlay for WebView is enabled, this check still works.
   if (surface_handle == gpu::kNullSurfaceHandle)
     return std::make_unique<OverlayProcessorStub>();
+
 #if BUILDFLAG(IS_APPLE)
   DCHECK(capabilities.supports_surfaceless);
   return std::make_unique<OverlayProcessorMac>();
@@ -217,5 +218,9 @@ void OverlayProcessorInterface::ScheduleOverlays(
     DisplayResourceProvider* display_resource_provider) {}
 
 void OverlayProcessorInterface::OverlayPresentationComplete() {}
+
+gfx::CALayerResult OverlayProcessorInterface::GetCALayerErrorCode() const {
+  return gfx::kCALayerSuccess;
+}
 
 }  // namespace viz
