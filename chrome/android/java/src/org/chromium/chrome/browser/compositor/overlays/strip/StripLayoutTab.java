@@ -303,7 +303,7 @@ public class StripLayoutTab implements VirtualView {
      */
     public int getOutlineTint(boolean foreground) {
         if (foreground) {
-            getTint(true);
+            return getTint(true);
         }
 
         if (mIncognito) {
