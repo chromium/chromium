@@ -210,7 +210,6 @@ external/wpt/css/CSS2/text/text-align-white-space-003.xht [ Skip ]
 external/wpt/css/CSS2/text/text-align-white-space-007.xht [ Skip ]
 
 # CSS2 tests that require files in different directories.
-external/wpt/css/CSS2/linebox/inline-formatting-context-012.xht [ Skip ]
 external/wpt/css/CSS2/normal-flow/blocks-017.xht [ Skip ]
 
 # CSS2 tests that have 1px diff due to font hinting.

@@ -12,5 +12,5 @@ test(() => {
     assert_equals(Event.prototype[name], undefined)
     assert_false(name in new Event("test"))
     assert_equals((new Event("test"))[name], undefined)
-  }, "Event.prototype should not have this property: " + name)
+  }, "Event.prototype should not have property named 'path'")
 </script>
