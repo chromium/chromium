@@ -6457,7 +6457,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="LegacyTLS_NotTriggered"
       label="Page didn't trigger legacy TLS warning"/>
   <suffix name="LegacyTLS_Triggered" label="Page triggered legacy TLS warning"/>
-  <affected-histogram name="Security.LegacyTLS.PageInfo.Action"/>
   <affected-histogram name="Security.PageEndReason"/>
   <affected-histogram name="Security.PageInfo.TimeOpen"/>
   <affected-histogram name="Security.PageInfo.TimeOpen.Action"/>
@@ -14061,7 +14060,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Security.SafetyTips.OpenTime.DismissWithIgnore"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.LeaveSite"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.NoAction"/>
-  <affected-histogram name="Security.SafetyTips.OpenTime.StartNewNavigation"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.SwitchTab"/>
   <affected-histogram name="Security.SafetyTips.PageInfo.Action"/>
   <affected-histogram name="Security.SiteEngagement"/>
