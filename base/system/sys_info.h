@@ -69,7 +69,7 @@ class BASE_EXPORT SysInfo {
   // on failure.
   static int64_t AmountOfTotalDiskSpace(const FilePath& path);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, spaced is the central source-of-truth for disk space
   // information. Spaced takes into account the available extents on the
   // underlying thinpool to make sure that thinly provisioned filesystems
@@ -84,7 +84,7 @@ class BASE_EXPORT SysInfo {
   static int64_t GetTotalDiskSpaceFromSpaced(const FilePath& path);
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Sets the total amount of disk space to report under the specified |path|.
   // If |bytes| is -ve then any existing entry for |path| is removed.
   static void SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes);
@@ -201,7 +201,7 @@ class BASE_EXPORT SysInfo {
   static void CrashIfChromeOSNonTestImage();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the Android build's codename.
   static std::string GetAndroidBuildCodename();
 
@@ -213,16 +213,16 @@ class BASE_EXPORT SysInfo {
 
   static int DalvikHeapSizeMB();
   static int DalvikHeapGrowthLimitMB();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Returns the iOS build number string which is normally an alphanumeric
   // string like 12E456. This build number can differentiate between different
   // versions of iOS that may have the same major/minor/bugfix version numbers.
   // For example, iOS beta releases have the same version number but different
   // build number strings.
   static std::string GetIOSBuildNumber();
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Returns true for low-end devices that may require extreme tradeoffs,
   // including user-visible changes, for acceptable performance.
@@ -245,8 +245,8 @@ class BASE_EXPORT SysInfo {
   static bool IsLowEndDeviceImpl();
   static HardwareInfo GetHardwareInfoSync();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_AIX)
   static int64_t AmountOfAvailablePhysicalMemory(
       const SystemMemoryInfoKB& meminfo);
 #endif
