@@ -101,17 +101,24 @@ public class PriceDropNotifierUnitTest {
 
     static class TestPriceDropNotifier extends PriceDropNotifier {
         private final ImageFetcher mMockImageFetcher;
+        private final NotificationWrapperBuilder mMockNotificationBuilder;
 
         TestPriceDropNotifier(Context context, ImageFetcher imageFetcher,
-                NotificationBuilderFactory notificationBuilderFactory,
+                NotificationWrapperBuilder notificationBuilder,
                 NotificationManagerProxy notificationManager) {
-            super(context, notificationBuilderFactory, notificationManager);
+            super(context, notificationManager);
             mMockImageFetcher = imageFetcher;
+            mMockNotificationBuilder = notificationBuilder;
         }
 
         @Override
         protected ImageFetcher getImageFetcher() {
             return mMockImageFetcher;
+        }
+
+        @Override
+        protected NotificationWrapperBuilder getNotificationBuilder(int notificationId) {
+            return mMockNotificationBuilder;
         }
     }
 
@@ -120,8 +127,6 @@ public class PriceDropNotifierUnitTest {
 
     @Mock
     private ImageFetcher mImageFetcher;
-    @Mock
-    private PriceDropNotifier.NotificationBuilderFactory mNotificationBuilderFactory;
     @Mock
     private NotificationWrapperBuilder mNotificationBuilder;
     @Mock
@@ -143,10 +148,8 @@ public class PriceDropNotifierUnitTest {
     public void setUp() {
         ShadowLog.stream = System.out;
         mPriceDropNotifier = new TestPriceDropNotifier(ContextUtils.getApplicationContext(),
-                mImageFetcher, mNotificationBuilderFactory, mNotificationManagerProxy);
+                mImageFetcher, mNotificationBuilder, mNotificationManagerProxy);
         ChromeBrowserInitializer.setForTesting(mChromeInitializer);
-        when(mNotificationBuilderFactory.createNotificationBuilder())
-                .thenReturn(mNotificationBuilder);
         when(mNotificationBuilder.buildNotificationWrapper()).thenReturn(mNotificationWrapper);
     }
 
@@ -192,6 +195,7 @@ public class PriceDropNotifierUnitTest {
         verify(mNotificationBuilder, times(1)).setContentIntent(any(PendingIntentProvider.class));
         verify(mNotificationBuilder, times(1)).setSmallIcon(anyInt());
         verify(mNotificationBuilder, times(1)).setTimeoutAfter(anyLong());
+        verify(mNotificationBuilder, times(1)).setAutoCancel(eq(true));
     }
 
     @Test
