@@ -51,7 +51,8 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Called after the tray has been added to the widget containing it.
   virtual void Initialize();
 
-  // Initializes animations for the bubble.
+  // Initializes animations for the bubble. This contains only a fade out
+  // animation that hides `bubble_widget` when it becomes invisible.
   static void InitializeBubbleAnimations(views::Widget* bubble_widget);
 
   // ActionableView:

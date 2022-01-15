@@ -142,13 +142,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   void UpdateBubbleBounds();
 
-  // Called when the tray animation is finished.
-  void OnAnimationFinished();
-
-  // Set visibility of bubble frame border. Used for disabling the border during
-  // animation.
-  void SetFrameVisible(bool visible);
-
   // Controller of UnifiedSystemTrayView. As the view is owned by views
   // hierarchy, we have to own the controller here.
   std::unique_ptr<UnifiedSystemTrayController> controller_;
