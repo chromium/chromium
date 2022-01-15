@@ -804,7 +804,7 @@ class SplitCacheComputeHttpCacheSize {
 // resources accessed after the resource is loaded from the blink cache is the
 // same as before that.
 // TODO(crbug.com/1166650): Test is flaky on Win.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NotifyExternalCacheHitCheckSubframeBit \
   DISABLED_NotifyExternalCacheHitCheckSubframeBit
 #else
