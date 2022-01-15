@@ -17,6 +17,7 @@
         border-radius: 50%;
         padding: 8px;
       };
+      --diagnostics-card-bg-color: var(--cros-bg-color);
       --diagnostics-chip-bg-color: var(--cros-bg-color-dropped-elevation-2);
     }
 
@@ -238,6 +239,7 @@
 
     @media (prefers-color-scheme: dark) {
       :host {
+        --diagnostics-card-bg-color: var(--cros-bg-color-elevation-1);
         --diagnostics-chip-bg-color: var(--cros-bg-color-elevation-3);
       }
     }
