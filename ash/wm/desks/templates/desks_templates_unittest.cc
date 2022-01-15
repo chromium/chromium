@@ -2159,4 +2159,32 @@ TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
   EXPECT_EQ(grid_views[2]->bounds().y(), grid_views[3]->bounds().y());
 }
 
+// Tests record metrics when current template being replaced.
+TEST_F(DesksTemplatesTest, ReplaceTemplateRecordMetrics) {
+  base::HistogramTester histogram_tester;
+
+  UpdateDisplay("800x600,800x600");
+
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+
+  // Show replace dialogs.
+  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento");
+  EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
+  ASSERT_TRUE(GetOverviewSession());
+
+  // Accepting the dialog will record metrics.
+  dialog_controller->dialog_widget()
+      ->widget_delegate()
+      ->AsDialogDelegate()
+      ->AcceptDialog();
+
+  // Assert metrics being recorded.
+  histogram_tester.ExpectTotalCount(kReplaceTemplateHistogramName, 1);
+
+  EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
+  EXPECT_TRUE(GetOverviewSession());
+}
+
 }  // namespace ash

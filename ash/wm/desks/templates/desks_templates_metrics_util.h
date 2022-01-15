@@ -30,6 +30,8 @@ constexpr char kUserTemplateCountHistogramName[] =
     "Ash.DeskTemplate.UserTemplateCount";
 constexpr char kUnsupportedAppDialogShowHistogramName[] =
     "Ash.DeskTemplate.UnsupportedAppDialogShow";
+constexpr char kReplaceTemplateHistogramName[] =
+    "Ash.DeskTemplate.ReplaceTemplate";
 
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadTemplateHistogram();
@@ -42,6 +44,7 @@ void RecordUserTemplateCountHistogram(size_t entry_count,
                                       size_t max_entry_count);
 void RecordWindowAndTabCountHistogram(DeskTemplate* desk_template);
 void RecordUnsupportedAppDialogShowHistogram();
+void RecordReplaceTemplateHistogram();
 
 }  // namespace ash
 

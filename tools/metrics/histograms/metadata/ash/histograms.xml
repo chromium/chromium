@@ -1382,6 +1382,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.ReplaceTemplate" units="BooleanHit"
+    expires_after="2022-07-14">
+  <owner>aprilzhou@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Recorded when replace dialog opens and user accepted it, is never false.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.TabCount" units="count"
     expires_after="2022-07-14">
   <owner>richui@chromium.org</owner>

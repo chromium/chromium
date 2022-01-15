@@ -191,17 +191,19 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
 void DesksTemplatesDialogController::ShowReplaceDialog(
     aura::Window* root_window,
     const std::u16string& template_name) {
-  auto dialog = views::Builder<DesksTemplatesDialog>()
-                    .SetTitleText(IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE)
-                    .SetConfirmButtonText(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
-                    .SetDescriptionText(l10n_util::GetStringFUTF16(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
-                        GetStringWithQuotes(template_name)))
-                    .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
-                        template_name))
-                    .Build();
+  auto dialog =
+      views::Builder<DesksTemplatesDialog>()
+          .SetTitleText(IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE)
+          .SetConfirmButtonText(
+              IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
+          .SetDescriptionText(l10n_util::GetStringFUTF16(
+              IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
+              GetStringWithQuotes(template_name)))
+          .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+              IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
+              template_name))
+          .SetAcceptCallback(base::BindOnce(&RecordReplaceTemplateHistogram))
+          .Build();
   CreateDialogWidget(std::move(dialog), root_window);
 }
 

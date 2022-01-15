@@ -78,4 +78,8 @@ void RecordUnsupportedAppDialogShowHistogram() {
   base::UmaHistogramBoolean(kUnsupportedAppDialogShowHistogramName, true);
 }
 
+void RecordReplaceTemplateHistogram() {
+  base::UmaHistogramBoolean(kReplaceTemplateHistogramName, true);
+}
+
 }  // namespace ash
