@@ -63,25 +63,28 @@ namespace {
 // Any reasonable size, will be overridden by the decoder anyway.
 constexpr gfx::Size kDefaultSize(640, 480);
 
-// How many buffers are we willing to receive during init, before we give up and
-// fall back to software?  This is not used once a decoder is initialized.  Also
-// note that this value still counts buffers that were dropped in favor of a
-// more recent keyframe; it represents the maximum number of calls to Decode
-// before the decoder is ready to do work.
-constexpr int32_t kMaxFramesDuringInitBeforeFallback = 256;
+// How many buffers are we willing to receive while decoding is paused, before
+// we give up and fall back to software?  This is not used during normal
+// decoding, only when we believe that the decoder is in a state where it is not
+// ready to decode.  Our goal during this state is to keep the queue of pending
+// buffers very small by requesting a keyframe.
+//
+// Also note that this value still counts buffers that were dropped in favor of
+// a more recent keyframe; it represents the maximum number of calls to
+// Decode before the decoder is ready to do work.
+constexpr int32_t kMaxFramesWhilePausedBeforeFallback = 256;
 
 // Max number of non-keyframes we'll queue without a decoder before we request a
-// keyframe to replace them while the decoder is initializing.  Previously
-// queued frames will be discarded, to prevent a lot of old frames from being
-// dumped onto the newly-initialized decoder, that are probably stale anyway.
-constexpr int32_t kMaxKeyFrameIntervalDuringInit = 8;
+// keyframe to replace them while the decoder is paused.  Previously queued
+// frames will be discarded, to prevent a lot of old frames from being dumped
+// onto the newly-unpaused decoder, that are probably stale anyway.
+constexpr int32_t kMaxKeyFrameIntervalWhilePaused = 8;
 
 // Maximum number of buffers that we will queue in the decoder stream during
 // normal operation.  It includes all buffers that we have not gotten an output
 // for.  "Normal operation" means that we believe that the decoder is trying to
 // drain the queue.  During init and reset, for example, we don't expect it.
-// See above for constants used while the decoder is being initialized.  During
-// reset, we will also allow more buffers since Reset can involve a few hops.
+// See above for constants used while the decoder is in one of those states.
 //
 // If we go over this value, then we'll reset the decoder and request a keyframe
 // to try to catch up.
@@ -91,13 +94,12 @@ constexpr int32_t kMaxKeyFrameIntervalDuringInit = 8;
 constexpr int32_t kMaxPendingBuffers = 64;
 
 // Absolute maximum number of pending buffers.  If, at any time while we have
-// an initialized decoder, we believe that there are this many decodes in-flight
+// an unpaused decoder, we believe that there are this many decodes in-flight
 // when a new decode request arrives, we will fall back to software decoding.
-// It indicates that (a) reset never completed, (b) we're hopelessly behind.
 //
-// This value is not used while we do not have a decoder.  Instead, we use
-// `kMaxFramesDuringInitBeforeFallback`, since we might have different
-// tolerances for "during init" and "during normal decode".
+// This value is not used while decoding is paused.  Instead, we use
+// `kMaxFramesWhilePausedBeforeFallback`, since we might have different
+// tolerances for "during init/reset" and "during normal decode".
 //
 // Note: This value is chosen to be Ludicrously High(tm), so that we can see
 // where reasonable limits should be via UMA.  Changing this changes UMA, so
@@ -473,7 +475,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
       GetDecoderCounter()->IncrementCount();
     }
 
-    // Note that it's okay to FallBackToSoftwareLocked without a software
+    // Note that it's okay to FallBackToSoftware_Locked without a software
     // fallback; it will use the hw decoder anyway.  It's only because chrome sw
     // decoders are not always enabled for RTC that we have to be careful -- we
     // don't want to fall back to rtc software decoders when the only option is
@@ -486,7 +488,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     if (has_software_fallback && contributes_to_decoder_count_ &&
         current_resolution_.GetArea() < kMinResolution.GetArea() &&
         GetDecoderCounter()->Count() > kMaxDecoderInstances) {
-      return FallBackToSoftwareLocked();
+      return FallBackToSoftware_Locked();
     }
 
     // Fall back to software decoding if there's no support for VP9 spatial
@@ -548,7 +550,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     DVLOG(2) << "Key frame received, resume decoding";
     // ok, we got key frame and can continue decoding.
     key_frame_required_ = false;
-    non_keyframe_buffers_ = 0;
+    buffers_since_last_keyframe_ = 0;
   }
 
   std::vector<uint32_t> spatial_layer_frame_size;
@@ -600,29 +602,30 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
           config_.codec(),
           RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode);
       // Since we now need a keyframe, request one.
-      return FallBackToSoftwareLocked();
+      return FallBackToSoftware_Locked();
     }
 
-    if (!decoder_configured_) {
+    if (IsDecodingPaused_Locked()) {
       // If we don't have a decoder, then try to keep the amount of catch-up
       // work to a minimum.  `pending_buffer_count_` indicates the number of
       // buffers that we have sent, including those that were dropped.
-      if (!pending_buffer->buffer->is_key_frame()) {
-        if (pending_buffer_count_ > kMaxFramesDuringInitBeforeFallback) {
-          RecordRTCVideoDecoderFallbackReason(
-              config_.codec(), RTCVideoDecoderFallbackReason::
-                                   kConsecutivePendingBufferOverflowDuringInit);
-          return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-        } else if (non_keyframe_buffers_ > kMaxKeyFrameIntervalDuringInit) {
-          // Too many frames since the last keyframe -- request a new one and
-          // don't queue anything else until we get it.
-          key_frame_required_ = true;
-          return WEBRTC_VIDEO_CODEC_ERROR;
-        }
-        // Else not a keyframe, but we haven't sent too many since the last one.
-      }  // Else a keyframe, yay!
+      if (has_software_fallback &&
+          pending_buffer_count_ > kMaxFramesWhilePausedBeforeFallback) {
+        RecordRTCVideoDecoderFallbackReason(
+            config_.codec(), RTCVideoDecoderFallbackReason::
+                                 kConsecutivePendingBufferOverflowDuringInit);
+        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+      }
+      if (!pending_buffer->buffer->is_key_frame() &&
+          buffers_since_last_keyframe_ > kMaxKeyFrameIntervalWhilePaused) {
+        // Too many frames since the last keyframe -- request a new one and
+        // don't queue anything else until we get it.
+        key_frame_required_ = true;
+        return WEBRTC_VIDEO_CODEC_ERROR;
+      }
+      // Else a keyframe, or we haven't sent too many since the last one.
       pending_buffer_count_++;
-      non_keyframe_buffers_++;
+      buffers_since_last_keyframe_++;
     } else if (pending_buffer_count_ >= max_pending_buffer_count_) {
       // We are severely behind. Drop pending buffers and request a keyframe to
       // catch up as quickly as possible.
@@ -644,7 +647,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
         RecordRTCVideoDecoderFallbackReason(
             config_.codec(),
             RTCVideoDecoderFallbackReason::kConsecutivePendingBufferOverflow);
-        // We might want to try FallBackToSoftwareLocked(), but for now, don't.
+        // We might want to try FallBackToSoftware_Locked(), but for now, don't.
         return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
       }
 
@@ -655,6 +658,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
       // Increase to the absolute max while decoding is paused.  It'll be
       // lowered as we drain the queue.
       max_pending_buffer_count_ = kAbsoluteMaxPendingBuffers;
+      pending_reset_ = true;
 
       PostCrossThreadTask(
           *media_task_runner_.get(), FROM_HERE,
@@ -692,7 +696,7 @@ int32_t RTCVideoDecoderStreamAdapter::RegisterDecodeCompleteCallback(
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(),
         RTCVideoDecoderFallbackReason::kPreviousErrorOnRegisterCallback);
-    return FallBackToSoftwareLocked();
+    return FallBackToSoftware_Locked();
   }
   return WEBRTC_VIDEO_CODEC_OK;
 }
@@ -954,13 +958,17 @@ bool RTCVideoDecoderStreamAdapter::ShouldReinitializeForSettingHDRColorSpace(
 void RTCVideoDecoderStreamAdapter::ResetOnMediaThread() {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!pending_reset_);
+  {
+    base::AutoLock auto_lock(lock_);
+    // `pending_reset_` should have been set for us already, so that decoding
+    // is paused immediately.
+    DCHECK(pending_reset_);
+  }
   TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::ResetOnMediaThread");
   // A pending read is okay.  We may decide to reset at any time, even if a read
   // is in progress.  It'll be aborted when we reset `decoder_stream_`, and no
   // new read will be issued until the reset completes.
 
-  pending_reset_ = true;
   demuxer_stream_->Reset();
   // We might want to go into trimming mode here, and turn it back off when we
   // get the reset callback.  However, this would require that ::Decode also
@@ -972,12 +980,12 @@ void RTCVideoDecoderStreamAdapter::ResetOnMediaThread() {
 void RTCVideoDecoderStreamAdapter::OnResetCompleteOnMediaThread() {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(pending_reset_);
   DCHECK(!pending_read_);
 
   {
     base::AutoLock auto_lock(lock_);
 
+    DCHECK(pending_reset_);
     pending_reset_ = false;
 
     AdjustQueueLength_Locked();
@@ -1129,11 +1137,11 @@ void RTCVideoDecoderStreamAdapter::RestartDecoderStreamOnMedia() {
   InitializeOnMediaThread(config_, std::move(init_cb));
 }
 
-int32_t RTCVideoDecoderStreamAdapter::FallBackToSoftwareLocked() {
+int32_t RTCVideoDecoderStreamAdapter::FallBackToSoftware_Locked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   lock_.AssertAcquired();
   TRACE_EVENT0("webrtc",
-               "RTCVideoDecoderStreamAdapter::FallBackToSoftwareLocked");
+               "RTCVideoDecoderStreamAdapter::FallBackToSoftware_Locked");
 
   // We will either prefer software decoders by asking DecodersStream, or prefer
   // them by asking rtc to use rtc sw decoders.  Either way, we don't contribute
@@ -1161,6 +1169,11 @@ int32_t RTCVideoDecoderStreamAdapter::FallBackToSoftwareLocked() {
 
   // Request a keyframe.
   return WEBRTC_VIDEO_CODEC_ERROR;
+}
+
+bool RTCVideoDecoderStreamAdapter::IsDecodingPaused_Locked() const {
+  lock_.AssertAcquired();
+  return pending_reset_ || !decoder_configured_;
 }
 
 }  // namespace blink

@@ -187,7 +187,11 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // we allow it.
   //
   // Called on decoder thread, with `lock_` held.
-  int32_t FallBackToSoftwareLocked();
+  int32_t FallBackToSoftware_Locked();
+
+  // Returns true if we believe that decoding is paused pending decoder
+  // selection or reset.
+  bool IsDecodingPaused_Locked() const;
 
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
@@ -209,7 +213,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   // Decoding thread members.
   bool key_frame_required_ = true;
-  int non_keyframe_buffers_ = 0;
+  int buffers_since_last_keyframe_ = 0;
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
 
   // Shared members.
@@ -250,14 +254,13 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   bool prefer_software_decoders_ GUARDED_BY(lock_) = false;
   // Have we incremented the decoder count?
   bool contributes_to_decoder_count_ GUARDED_BY(lock_) = false;
+  // Do we have an in-flight `DecoderStream::Reset()`, or is a call to start
+  // one pending via a call to the media thread?
+  bool pending_reset_ GUARDED_BY(lock_) = false;
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.
   bool pending_read_ = false;
-
-  // Do we have an in-flight `DecoderStream::Reset()`?
-  // Media thread only.
-  bool pending_reset_ = false;
 
   // Media thread only.
   std::unique_ptr<InternalDemuxerStream> demuxer_stream_;

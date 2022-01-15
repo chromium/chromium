@@ -288,13 +288,17 @@ class RTCVideoDecoderStreamAdapterTest
     return adapter_->RegisterDecodeCompleteCallback(&decoded_image_callback_);
   }
 
-  int32_t Decode(uint32_t timestamp, bool missing_frames = false) {
+  int32_t Decode(uint32_t timestamp,
+                 bool missing_frames = false,
+                 bool is_keyframe = true) {
     webrtc::EncodedImage input_image;
     static const uint8_t data[1] = {0};
     input_image.SetSpatialIndex(spatial_index_);
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
-    input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
+    input_image._frameType = is_keyframe
+                                 ? webrtc::VideoFrameType::kVideoFrameKey
+                                 : webrtc::VideoFrameType::kVideoFrameDelta;
     input_image.SetTimestamp(timestamp);
     return adapter_->Decode(input_image, missing_frames, 0);
   }
@@ -510,7 +514,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, SlowDecodingCausesReset) {
 
 TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   // If we send really enough(tm) decodes without returning any decoded frames,
-  // then the decoder should fall back to software.
+  // then the decoder should fall back to software.  It should also request
+  // some keyframes along the way.
   auto* decoder = decoder_factory_->decoder();
   EXPECT_TRUE(BasicSetup());
 
@@ -524,12 +529,18 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   EXPECT_CALL(*decoder, Reset_(_)).WillOnce(base::test::RunOnceCallback<0>());
 
   // Add decodes without calling FinishDecode.
+  int keyframes_requested = 0;
   int limit = -1;
+  bool next_is_keyframe = true;
   for (int i = 0; i < 400 && limit < 0; i++) {
-    switch (auto result = Decode(i)) {
+    switch (auto result = Decode(i, false, next_is_keyframe)) {
       case WEBRTC_VIDEO_CODEC_OK:
-      case WEBRTC_VIDEO_CODEC_ERROR:
         // Keep going -- it's still happy.
+        next_is_keyframe = false;
+        break;
+      case WEBRTC_VIDEO_CODEC_ERROR:
+        next_is_keyframe = true;
+        keyframes_requested++;
         break;
       case WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE:
         // Yay -- it now believes that it's hopelessly behind, and has requested
@@ -544,9 +555,13 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   // We should have found a limit at some point.
   EXPECT_GT(limit, -1);
 
+  // It doesn't really matter how many, as long as it requests enough that it'll
+  // try more than once before giving up.
+  EXPECT_GT(keyframes_requested, 2);
+
   // Let the decodes / reset complete.
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(BasicTeardown());
+  EXPECT_TRUE(BasicTeardown());
 }
 
 TEST_P(RTCVideoDecoderStreamAdapterTest, WontForwardFramesAfterRelease) {
