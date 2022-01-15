@@ -52,7 +52,7 @@ class WebContentsViewChildFrame : public WebContentsView,
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool CloseTabAfterEventTrackingIfNeeded() override;
 #endif
   void OnCapturerCountChanged() override;

@@ -99,7 +99,7 @@ class WebContentsView {
   // Called when the capturer-count of the WebContents changes.
   virtual void OnCapturerCountChanged() = 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // If we close the tab while a UI control is in an event-tracking loop, the
   // the control may message freed objects and crash. WebContents::Close will
   // call this. If it returns true, then WebContents::Close will early-out, and

@@ -79,7 +79,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -143,7 +143,7 @@ namespace mojom {
 class CreateNewWindowParams;
 }  // namespace mojom
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class WebContentsAndroid;
 #endif
 
@@ -321,7 +321,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // TODO(https://crbug.com/1170277): Rename to HasAccessedInitialMainDocument
   bool HasAccessedInitialDocument();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetPrimaryMainFrameImportance(ChildProcessImportance importance);
 #endif
 
@@ -506,7 +506,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   RenderFrameHostImpl* GetOpener() override;
   bool HasOriginalOpener() override;
   RenderFrameHostImpl* GetOriginalOpener() override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void DidChooseColorInColorChooser(SkColor color) override;
   void DidEndColorChooser() override;
 #endif
@@ -550,7 +550,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void Resize(const gfx::Rect& new_bounds) override;
   gfx::Size GetSize() override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents() override;
   WebContentsAndroid* GetWebContentsAndroid();
   void ClearWebContentsAndroid();
@@ -643,7 +643,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       absl::optional<ui::AXEventCallback> callback) override;
   device::mojom::GeolocationContext* GetGeolocationContext() override;
   device::mojom::WakeLockContext* GetWakeLockContext() override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void GetNFC(RenderFrameHost*,
               mojo::PendingReceiver<device::mojom::NFC>) override;
 #endif
@@ -699,7 +699,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const gfx::Rect& rect,
       const base::UnguessableToken& guid,
       RenderFrameHostImpl* render_frame_host) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaRenderFrameHostDelegate()
       override;
 #endif
@@ -1004,7 +1004,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // blink::mojom::ColorChooserFactory ---------------------------------------
   void OnColorChooserFactoryReceiver(
       mojo::PendingReceiver<blink::mojom::ColorChooserFactory> receiver);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OpenColorChooser(
       mojo::PendingReceiver<blink::mojom::ColorChooser> chooser,
       mojo::PendingRemote<blink::mojom::ColorChooserClient> client,
@@ -1182,14 +1182,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       scoped_refptr<FileChooserImpl::FileSelectListenerImpl> listener,
       const base::FilePath& directory_path);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called by FindRequestManager when all of the find match rects are in.
   void NotifyFindMatchRectsReply(int version,
                                  const std::vector<gfx::RectF>& rects,
                                  const gfx::RectF& active_rect);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called by WebContentsAndroid to send the Display Cutout safe area to
   // DisplayCutoutHostImpl.
   void SetDisplayCutoutSafeArea(gfx::Insets insets);
@@ -1881,7 +1881,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // is opened with "noopener", and won't be unset if the opener is closed.
   bool opened_by_another_window_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<WebContentsAndroid> web_contents_android_;
 #endif
 
@@ -2034,7 +2034,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   gfx::Size device_emulation_size_;
   gfx::Size view_size_before_emulation_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Holds information about a current color chooser dialog, if one is visible.
   class ColorChooserHolder;
   std::unique_ptr<ColorChooserHolder> color_chooser_holder_;
@@ -2093,7 +2093,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   bool updating_web_preferences_ = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<NFCHost> nfc_host_;
 #endif
 
@@ -2154,7 +2154,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // instructions are displayed to the user in fullscreen mode.
   bool esc_key_locked_ = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<service_manager::InterfaceProvider> java_interfaces_;
 #endif
 

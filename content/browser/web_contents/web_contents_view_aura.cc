@@ -159,7 +159,7 @@ class WebDragSourceAura : public content::WebContentsObserver {
   raw_ptr<aura::Window> window_;
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // Fill out the OSExchangeData with a file contents, synthesizing a name if
 // necessary.
 void PrepareDragForFileContents(const DropData& drop_data,
@@ -171,7 +171,7 @@ void PrepareDragForFileContents(const DropData& drop_data,
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrepareDragForDownload(const DropData& drop_data,
                             ui::OSExchangeDataProvider* provider,
                             WebContentsImpl* web_contents) {
@@ -222,7 +222,7 @@ void PrepareDragForDownload(const DropData& drop_data,
                                      std::move(download_file));
   provider->SetDownloadFileInfo(&file_download);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Returns the ClipboardFormatType to store file system files.
 const ui::ClipboardFormatType& GetFileSystemFileFormatType() {
@@ -236,13 +236,13 @@ void PrepareDragData(const DropData& drop_data,
                      ui::OSExchangeDataProvider* provider,
                      WebContentsImpl* web_contents) {
   provider->MarkOriginatedFromRenderer();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Put download before file contents to prefer the download of a image over
   // its thumbnail link.
   if (!drop_data.download_metadata.empty())
     PrepareDragForDownload(drop_data, provider, web_contents);
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // We set the file contents before the URL because the URL also sets file
   // contents (to a .URL shortcut).  We want to prefer file content data over
   // a shortcut so we add it first.
@@ -275,7 +275,7 @@ void PrepareDragData(const DropData& drop_data,
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Function returning whether this drop target should extract virtual file data
 // from the data store.
 // (1) As with real files, only add virtual files if the drag did not originate
@@ -364,7 +364,7 @@ WebContentsViewAura::OnPerformDropContext::OnPerformDropContext(
 
 WebContentsViewAura::OnPerformDropContext::~OnPerformDropContext() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // A web contents observer that watches for navigations while an async drop
 // operation is in progress during virtual file data retrieval and temp file
 // creation. Navigations may cause completion of the drop to be disallowed. The
@@ -753,7 +753,7 @@ void WebContentsViewAura::PrepareDropData(
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Get a list of virtual files for later retrieval when a drop is performed
   // (will return empty vector if there are any non-virtual files in the data
   // store).
@@ -1312,7 +1312,7 @@ void WebContentsViewAura::OnMouseEvent(ui::MouseEvent* event) {
     // Linux window managers like to handle raise-on-click themselves.  If we
     // raise-on-click manually, this may override user settings that prevent
     // focus-stealing.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     // It is possible for the web-contents to be destroyed while it is being
     // activated. Use a weak-ptr to track whether that happened or not.
     // More in https://crbug.com/1040725
@@ -1391,7 +1391,7 @@ void WebContentsViewAura::OnDragEntered(const ui::DropTargetEvent& event) {
   if (web_contents_->ShouldIgnoreInputEvents())
     return;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   async_drop_navigation_observer_.reset();
 #endif
 
@@ -1594,7 +1594,7 @@ void WebContentsViewAura::FinishOnPerformDropCallback(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (ShouldIncludeVirtualFiles(*current_drop_data_) &&
       context.data->HasVirtualFilenames()) {
     // Asynchronously retrieve the actual content of any virtual files now (this
@@ -1680,7 +1680,7 @@ void WebContentsViewAura::RegisterDropCallbackForTesting(
   drop_callback_for_testing_ = std::move(callback);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void WebContentsViewAura::OnGotVirtualFilesAsTempFiles(
     const std::vector<std::pair<base::FilePath, base::FilePath>>&
         filepaths_and_names) {

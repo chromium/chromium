@@ -169,13 +169,13 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "ui/gfx/geometry/dip_util.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/date_time_chooser_android.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
@@ -184,7 +184,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/android/view_android.h"
 #include "ui/base/device_form_factor.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/browser/media/session/pepper_playback_observer.h"
@@ -403,7 +403,7 @@ base::flat_set<WebContentsImpl*> GetAllOpeningWebContents(
   return result;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 float GetDeviceScaleAdjustment(int min_width) {
   static const float kMinFSM = 1.05f;
   static const int kWidthForMinFSM = 320;
@@ -720,7 +720,7 @@ class WebContentsImpl::WebContentsDestructionObserver
   raw_ptr<WebContentsImpl> owner_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(sreejakshetty): Make |WebContentsImpl::ColorChooserHolder| per-frame
 // instead of WebContents-owned.
 // WebContentsImpl::ColorChooserHolder -----------------------------------------
@@ -951,7 +951,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   pepper_playback_observer_ = std::make_unique<PepperPlaybackObserver>(this);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   display_cutout_host_impl_ = std::make_unique<DisplayCutoutHostImpl>(this);
 #endif
 
@@ -1035,7 +1035,7 @@ WebContentsImpl::~WebContentsImpl() {
     dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   color_chooser_holder_.reset();
 #endif
   find_request_manager_.reset();
@@ -1071,7 +1071,7 @@ WebContentsImpl::~WebContentsImpl() {
       GetOuterWebContents()->OnAudioStateChanged();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For simplicity, destroy the Java WebContents before we notify of the
   // destruction of the WebContents.
   ClearWebContentsAndroid();
@@ -1558,7 +1558,7 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   // Mac display info may originate from a remote process hosting the NSWindow;
   // this local process display::Screen signal should not trigger updates.
   // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // This updates Screen attributes and fires Screen.change events as needed,
   // propagating to all widgets through the VisualProperties update waterfall.
   // This is triggered by system changes, not renderer IPC, so explicitly check
@@ -1570,7 +1570,7 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
     if (!view->IsRenderWidgetHostViewChildFrame())
       view->UpdateScreenInfo();
   }
-#endif  // !OS_MAC
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 void WebContentsImpl::OnScreenOrientationChange() {
@@ -1886,7 +1886,7 @@ bool WebContentsImpl::IsFullAccessibilityModeForTesting() {
   return accessibility_mode_ == ui::kAXModeComplete;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 void WebContentsImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetDisplayCutoutSafeArea");
@@ -2118,13 +2118,13 @@ bool WebContentsImpl::IsCrashed() {
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
     case base::TERMINATION_STATUS_OOM:
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case base::TERMINATION_STATUS_OOM_PROTECTED:
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
 #endif
       return true;
@@ -2298,7 +2298,7 @@ const base::Location& WebContentsImpl::GetCreatorLocation() {
   return creator_location_;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebContentsImpl::SetPrimaryMainFrameImportance(
     ChildProcessImportance importance) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetMainFrameImportance",
@@ -2694,9 +2694,9 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
 // TODO(dtapuska): Enable barrel button selection drag support on Android.
 // crbug.com/758042
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   prefs.barrel_button_for_drag_enabled = true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   prefs.enable_scroll_animator =
       command_line.HasSwitch(switches::kEnableSmoothScrolling) ||
@@ -2718,7 +2718,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
   if (GetController().GetVisibleEntry() &&
       GetController().GetVisibleEntry()->GetIsOverridingUserAgent()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Only ignore viewport meta tag when Request Desktop Site is used, but not
     // in other situations where embedder changes to arbitrary mobile UA string.
     if (renderer_preferences_.user_agent_override.ua_metadata_override &&
@@ -2767,13 +2767,13 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   if (has_persistent_video_)
     prefs.media_controls_enabled = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   gfx::Size size = display.GetSizeInPixel();
   int min_width = size.width() < size.height() ? size.width() : size.height();
   prefs.device_scale_adjustment = GetDeviceScaleAdjustment(
       static_cast<int>(min_width / display.device_scale_factor()));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   GetContentClient()->browser()->OverrideWebkitPrefs(this, &prefs);
   return prefs;
@@ -2795,7 +2795,7 @@ void WebContentsImpl::SetSlowWebPreferences(
     SET_FROM_CACHE(prefs, pointer_events_max_touch_points);
     SET_FROM_CACHE(prefs, number_of_cpu_cores);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     SET_FROM_CACHE(prefs, video_fullscreen_orientation_lock_enabled);
     SET_FROM_CACHE(prefs, video_rotate_to_fullscreen_enabled);
 #endif
@@ -2809,9 +2809,9 @@ void WebContentsImpl::SetSlowWebPreferences(
     // Otherwise default is disabled.
     std::string touch_enabled_default_switch =
         switches::kTouchEventFeatureDetectionDisabled;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     touch_enabled_default_switch = switches::kTouchEventFeatureDetectionEnabled;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     const std::string touch_enabled_switch =
         command_line.HasSwitch(switches::kTouchEventFeatureDetection)
             ? command_line.GetSwitchValueASCII(
@@ -2837,7 +2837,7 @@ void WebContentsImpl::SetSlowWebPreferences(
 
     prefs->number_of_cpu_cores = base::SysInfo::NumberOfProcessors();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const bool device_is_phone =
         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
     prefs->video_fullscreen_orientation_lock_enabled = device_is_phone;
@@ -2856,7 +2856,7 @@ void WebContentsImpl::OnWebPreferencesChanged() {
     return;
   updating_web_preferences_ = true;
   SetWebPreferences(ComputeWebPreferences());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
     if (rfh->is_local_root()) {
@@ -3003,7 +3003,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   screen_orientation_provider_ =
       std::make_unique<ScreenOrientationProvider>(this);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DateTimeChooserAndroid::CreateForWebContents(this);
 #endif
 
@@ -3261,7 +3261,7 @@ bool WebContentsImpl::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
 bool WebContentsImpl::HandleWheelEvent(const blink::WebMouseWheelEvent& event) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::HandleWheelEvent");
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // On platforms other than Mac, control+mousewheel may change zoom. On Mac,
   // this isn't done for two reasons:
   //   -the OS already has a gesture to do this through pinch-zoom
@@ -4277,7 +4277,7 @@ bool WebContentsImpl::ShouldIgnoreUnresponsiveRenderer() {
   if (CheckRemoteDebuggerPresent(process_handle, &debugger_present) &&
       debugger_present)
     return true;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // TODO(pfeldman): Fix this to only return true if the renderer is *actually*
   // sitting on a breakpoint. https://crbug.com/684202
@@ -4385,7 +4385,7 @@ device::mojom::WakeLockContext* WebContentsImpl::GetWakeLockContext() {
   return wake_lock_context_host_->GetWakeLockContext();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebContentsImpl::GetNFC(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<device::mojom::NFC> receiver) {
@@ -4644,7 +4644,7 @@ void WebContentsImpl::Copy() {
 
 void WebContentsImpl::CopyToFindPboard() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::CopyToFindPboard");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
     return;
@@ -5181,7 +5181,7 @@ RenderFrameHostImpl* WebContentsImpl::GetOriginalOpener() {
   return opener_ftn ? opener_ftn->current_frame_host() : nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebContentsImpl::DidChooseColorInColorChooser(SkColor color) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::DidChooseColorInColorChooser",
@@ -6024,7 +6024,7 @@ void WebContentsImpl::CapturePaintPreviewOfCrossProcessSubframe(
   delegate_->CapturePaintPreviewOfSubframe(this, rect, guid, render_frame_host);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 WebContentsImpl::GetJavaRenderFrameHostDelegate() {
   return GetJavaWebContents();
@@ -6214,7 +6214,7 @@ void WebContentsImpl::OnColorChooserFactoryReceiver(
   color_chooser_factory_receivers_.Add(this, std::move(receiver));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebContentsImpl::OpenColorChooser(
     mojo::PendingReceiver<blink::mojom::ColorChooser> chooser_receiver,
     mojo::PendingRemote<blink::mojom::ColorChooserClient> client,
@@ -6542,7 +6542,7 @@ void WebContentsImpl::NotifyFrameSwapped(RenderFrameHostImpl* old_frame,
                                          RenderFrameHostImpl* new_frame) {
   TRACE_EVENT2("content", "WebContentsImpl::NotifyFrameSwapped", "old_frame",
                old_frame, "new_frame", new_frame);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Copy importance from |old_frame| if |new_frame| is a main frame.
   if (old_frame && !new_frame->GetParent()) {
     RenderWidgetHostImpl* old_widget = old_frame->GetRenderWidgetHost();
@@ -6889,7 +6889,7 @@ void WebContentsImpl::RunFileChooser(
 }
 
 double WebContentsImpl::GetPendingPageZoomLevel() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, use the default page zoom level when the AccessibilityPageZoom
   // feature is not enabled.
   if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
@@ -7155,7 +7155,7 @@ void WebContentsImpl::ClearTargetURL() {
 void WebContentsImpl::Close(RenderViewHost* rvh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::Close", "render_view_host",
                         rvh);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The UI may be in an event-tracking loop, such as between the
   // mouse-down and mouse-up in text selection or a button click.
   // Defer the close until after tracking is complete, so that we
@@ -7995,7 +7995,7 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
       rvh_impl->frame_tree()->controller().GetLastCommittedEntryIndex(),
       rvh_impl->frame_tree()->controller().GetEntryCount());
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
   // Force a ViewMsg_Resize to be sent, needed to make plugins show up on
   // linux. See crbug.com/83941.
   RenderWidgetHostView* rwh_view = render_view_host->GetWidget()->GetView();
@@ -8008,7 +8008,7 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   return true;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 base::android::ScopedJavaLocalRef<jobject>
 WebContentsImpl::GetJavaWebContents() {
@@ -8156,14 +8156,14 @@ WebContentsImpl::GetFaviconURLs() {
 
 // The Mac implementation  of the next two methods is in
 // web_contents_impl_mac.mm
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 void WebContentsImpl::Resize(const gfx::Rect& new_bounds) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Resize");
 #if defined(USE_AURA)
   aura::Window* window = GetNativeView();
   window->SetBounds(gfx::Rect(window->bounds().origin(), new_bounds.size()));
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   content::RenderWidgetHostView* view = GetRenderWidgetHostView();
   if (view)
     view->SetBounds(new_bounds);
@@ -8174,13 +8174,13 @@ gfx::Size WebContentsImpl::GetSize() {
 #if defined(USE_AURA)
   aura::Window* window = GetNativeView();
   return window->bounds().size();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   ui::ViewAndroid* view_android = GetNativeView();
   return view_android->bounds().size();
 #endif
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 gfx::Rect WebContentsImpl::GetWindowsControlsOverlayRect() const {
   return window_controls_overlay_rect_;
@@ -8551,7 +8551,7 @@ viz::FrameSinkId WebContentsImpl::GetCaptureFrameSinkId() {
   return base_view->GetFrameSinkId();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebContentsImpl::NotifyFindMatchRectsReply(
     int version,
     const std::vector<gfx::RectF>& rects,
@@ -8814,7 +8814,7 @@ bool WebContentsImpl::ShowPopupMenu(
     std::move(show_poup_menu_callback_).Run(bounds);
     return true;
   }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (browser_plugin_guest_) {
     browser_plugin_guest_->ShowPopupMenu(
         render_frame_host, popup_client, bounds, item_height, font_size,
@@ -9100,7 +9100,7 @@ void WebContentsImpl::RenderFrameHostStateChanged(
                           dict.Add("new", new_state);
                         });
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (old_state == LifecycleState::kActive && !render_frame_host->GetParent()) {
     // TODO(sreejakshetty): Remove this reset when ColorChooserHolder becomes
     // per-frame.
@@ -9243,7 +9243,7 @@ std::pair<int, int> WebContentsImpl::GetAvailablePointerAndHoverTypes() {
   // ui::GetAvailablePointerAndHoverTypes needs to call some in order to
   // figure out tablet device details in base::win::IsDeviceUsedAsATablet,
   // see https://crbug.com/1262162.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ScopedAllowBlocking scoped_allow_blocking;
 #endif
   return ui::GetAvailablePointerAndHoverTypes();

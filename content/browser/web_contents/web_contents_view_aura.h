@@ -296,7 +296,7 @@ class CONTENT_EXPORT WebContentsViewAura
     drag_dest_delegate_ = delegate;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Callback for asynchronous retrieval of virtual files.
   void OnGotVirtualFilesAsTempFiles(
       const std::vector<std::pair</*temp path*/ base::FilePath,

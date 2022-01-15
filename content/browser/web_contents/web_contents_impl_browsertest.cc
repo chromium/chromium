@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 }
 
 // Crashes under ThreadSanitizer, http://crbug.com/356758.
-#if defined(OS_WIN) || defined(OS_ANDROID) || defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || defined(THREAD_SANITIZER)
 #define MAYBE_GetSizeForNewRenderView DISABLED_GetSizeForNewRenderView
 #else
 #define MAYBE_GetSizeForNewRenderView DISABLED_GetSizeForNewRenderView
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // rwhv size. The behavior is correct on OSX, but incorrect on other
   // platforms.
   gfx::Size exp_wcv_size(300, 300);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   exp_wcv_size.Enlarge(size_insets.width(), size_insets.height());
 #endif
 
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 // Once again, the behavior is correct on OSX. The embedder explicitly sets
 // the size to (100,100) during navigation. Both the wcv and the rwhv should
 // take on that size.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   new_size.Enlarge(size_insets.width(), size_insets.height());
 #endif
   gfx::Size actual_size = shell()
@@ -1080,7 +1080,7 @@ struct FirstVisuallyNonEmptyPaintObserver : public WebContentsObserver {
 };
 
 // See: http://crbug.com/395664
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FirstVisuallyNonEmptyPaint DISABLED_FirstVisuallyNonEmptyPaint
 #else
 // http://crbug.com/398471
@@ -5052,7 +5052,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   EXPECT_EQ(bounding_client_rect.height(), EvalJs(web_contents, "rect.height"));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
                        ValidatePageScaleChangesInfoAndFiresEvent) {
   auto* web_contents = shell()->web_contents();
@@ -5103,7 +5103,7 @@ class WebContentsImplBrowserTestWindowControlsOverlayNonOneDeviceScaleFactor
     : public WebContentsImplBrowserTestWindowControlsOverlay {
  public:
   void SetUp() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Device scale factor on MacOSX is always an integer.
     EnablePixelOutput(2.0f);
 #else
@@ -5126,7 +5126,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
   WaitForLoadStop(web_contents);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   ASSERT_EQ(2.0f,
             web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());

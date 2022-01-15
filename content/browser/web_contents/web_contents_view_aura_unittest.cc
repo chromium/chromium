@@ -35,11 +35,11 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #endif
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/buildflags.h"
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 #include "ui/base/x/selection_utils.h"
@@ -48,7 +48,7 @@
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace content {
 namespace {
@@ -229,7 +229,7 @@ TEST_F(WebContentsViewAuraTest, WebContentsDestroyedDuringClick) {
                              0);
   ui::EventHandler* event_handler = GetView();
   event_handler->OnMouseEvent(&mouse_event);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The web-content is not activated during mouse-press on Linux.
   // See comment in WebContentsViewAura::OnMouseEvent() for more details.
   EXPECT_NE(web_contents(), nullptr);
@@ -244,7 +244,7 @@ TEST_F(WebContentsViewAuraTest, OccludeView) {
   EXPECT_EQ(web_contents()->GetVisibility(), Visibility::VISIBLE);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
@@ -252,7 +252,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::vector<ui::FileInfo> test_file_infos = {
       {base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\test_file1")),
        base::FilePath()},
@@ -282,7 +282,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   view->OnDragEntered(event);
   ASSERT_NE(nullptr, view->current_drop_data_);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // By design, Linux implementations return an empty string if file data
   // is also present.
   EXPECT_TRUE(!view->current_drop_data_->text ||
@@ -321,7 +321,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
 
   CheckDropData(view);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // By design, Linux implementations returns an empty string if file data
   // is also present.
   EXPECT_TRUE(!drop_complete_data_->drop_data.text ||
@@ -346,7 +346,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::vector<ui::FileInfo> test_file_infos = {
       {base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\test_file1")),
        base::FilePath()},
@@ -379,7 +379,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   view->OnDragEntered(event);
   ASSERT_NE(nullptr, view->current_drop_data_);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // By design, Linux implementations return an empty string if file data
   // is also present.
   EXPECT_TRUE(!view->current_drop_data_->text ||
@@ -411,7 +411,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
 
   CheckDropData(view);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // By design, Linux implementations returns an empty string if file data is
   // also present.
   EXPECT_TRUE(!drop_complete_data_->drop_data.text ||
@@ -441,7 +441,7 @@ TEST_F(WebContentsViewAuraTest, DragDropImageFromRenderer) {
 
   auto data = std::make_unique<ui::OSExchangeData>();
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(OZONE_PLATFORM_X11)
   // FileContents drag-drop in X relies on XDragDropClient::InitDrag() setting
   // window property 'XdndDirectSave0' to filename. Since XDragDropClient is not
@@ -456,7 +456,7 @@ TEST_F(WebContentsViewAuraTest, DragDropImageFromRenderer) {
             xwindow, xwindow, ui::SelectionFormatMap()));
   }
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // As per WebContentsViewAura::PrepareDragData(), we must call
   // SetFileContents() before SetURL() to get the expected contents since
@@ -517,7 +517,7 @@ TEST_F(WebContentsViewAuraTest, DragDropImageFromRenderer) {
 
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
   WebContentsViewAura* view = GetView();
