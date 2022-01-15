@@ -33,11 +33,13 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePort;
+import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Locale;
@@ -271,6 +273,85 @@ public class PopupWindowTest {
         // trigger DidAccessInitialDocument at the same time.
         Assert.assertTrue(urlList.get(onPageFinishedCount + 2).endsWith(popupPath));
         Assert.assertTrue(urlList.get(onPageFinishedCount + 3).endsWith(popupPath));
+    }
+
+    // Tests that initial NavigationEntries are marked correctly, both on a
+    // fresh WebContents we get immediately and in a new popup WebContents.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testInitialNavigationEntryStatus() throws Throwable {
+        {
+            // Test that the parent WebContents, which hasn't navigated to any
+            // URL, is on the initial NavigationEntry.
+            NavigationHistory navHistory = mParentContents.getNavigationHistory();
+            Assert.assertEquals(1, navHistory.getEntryCount());
+            Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
+            Assert.assertTrue(navHistory.getEntryAtIndex(0).isInitialEntry());
+            Assert.assertEquals(GURL.emptyGURL(), navHistory.getEntryAtIndex(0).getUrl());
+        }
+
+        String nonEmptyUrl = mWebServer.setResponse("/nonEmptyURL.html", "", null);
+        {
+            // Navigate the parent WebContents' main frame to another URL, which
+            // will create a new NavigationEntry that replaces the initial
+            // NavigationEntry.
+            mActivityTestRule.loadUrlSync(
+                    mParentContents, mParentContentsClient.getOnPageFinishedHelper(), nonEmptyUrl);
+            // Assert that we got an onPageFinished call for `nonEmptyUrl`.
+            Assert.assertEquals(
+                    nonEmptyUrl, mParentContentsClient.getOnPageFinishedHelper().getUrl());
+
+            // We committed a brand new NavigationEntry that replaces the initial
+            // NavigationEntry and has no relation to it, so isInitialEntry() is
+            // false and it will be exposed to WebBackForwardList.
+            NavigationHistory navHistory = mParentContents.getNavigationHistory();
+            Assert.assertEquals(1, navHistory.getEntryCount());
+            Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
+            Assert.assertFalse(navHistory.getEntryAtIndex(0).isInitialEntry());
+            Assert.assertEquals(nonEmptyUrl, navHistory.getEntryAtIndex(0).getUrl().getSpec());
+        }
+
+        // Open a popup to about:blank, which will stay on the initial
+        // NavigationEntry.
+        final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
+                "<script>"
+                        + "function tryOpenWindow() {"
+                        + "  var newWindow = window.open('about:blank');"
+                        + "}</script>");
+        mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
+                parentPageHtml, null, null /* popupHtml */, "tryOpenWindow()");
+        PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
+        final AwContents popupContents = popupInfo.popupContents;
+
+        {
+            NavigationHistory navHistory = popupContents.getNavigationHistory();
+            Assert.assertEquals(1, navHistory.getEntryCount());
+            Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
+            // The initial empty document in the popup never generates a commit
+            // and thus stays on the initial NavigationEntry.
+            Assert.assertTrue(navHistory.getEntryAtIndex(0).isInitialEntry());
+            Assert.assertEquals(GURL.emptyGURL(), navHistory.getEntryAtIndex(0).getUrl());
+        }
+
+        {
+            // Navigate the popup main frame to another URL, which will create a new
+            // NavigationEntry that replaces the initial NavigationEntry.
+            TestCallbackHelperContainer.OnPageFinishedHelper popupOnPageFinishedHelper =
+                    popupInfo.popupContentsClient.getOnPageFinishedHelper();
+            mActivityTestRule.loadUrlSync(popupContents, popupOnPageFinishedHelper, nonEmptyUrl);
+            // Assert that we got an onPageFinished call for `nonEmptyUrl`.
+            Assert.assertEquals(nonEmptyUrl, popupOnPageFinishedHelper.getUrl());
+
+            NavigationHistory navHistory = popupContents.getNavigationHistory();
+            Assert.assertEquals(1, navHistory.getEntryCount());
+            Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
+            // We committed a brand new NavigationEntry that replaces the initial
+            // NavigationEntry and has no relation to it, so isInitialEntry() is
+            // false and it will be exposed to WebBackForwardList.
+            Assert.assertFalse(navHistory.getEntryAtIndex(0).isInitialEntry());
+            Assert.assertEquals(nonEmptyUrl, navHistory.getEntryAtIndex(0).getUrl().getSpec());
+        }
     }
 
     @Test

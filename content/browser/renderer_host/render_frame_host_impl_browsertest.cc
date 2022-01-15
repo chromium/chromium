@@ -2949,11 +2949,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       blink::StorageKey(main_origin),
       static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
-  // The synchronous about:blank commit should replace the initial
-  // NavigationEntry.
   EXPECT_EQ(1, popup->GetController().GetEntryCount());
-  EXPECT_FALSE(
-      popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

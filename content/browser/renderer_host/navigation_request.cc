@@ -2187,8 +2187,9 @@ void NavigationRequest::StartNavigation() {
   // entry to replace after the navigation).
   if (commit_params_->should_clear_history_list) {
     common_params_->should_replace_current_entry = false;
-  } else if (ShouldReplaceCurrentEntryForSameUrlNavigation() ||
-             ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument()) {
+  } else if (
+      ShouldReplaceCurrentEntryForSameUrlNavigation() ||
+      ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocumentOrEntry()) {
     common_params_->should_replace_current_entry = true;
   }
 
@@ -7207,7 +7208,8 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
 }
 
 bool NavigationRequest::
-    ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument() const {
+    ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocumentOrEntry()
+        const {
   DCHECK_LE(state_, WILL_START_NAVIGATION);
   if (common_params_->navigation_type !=
           blink::mojom::NavigationType::SAME_DOCUMENT &&
@@ -7216,6 +7218,18 @@ bool NavigationRequest::
     // History navigations, session restore, and reloads shouldn't do
     // replacement.
     return false;
+  }
+
+  if (frame_tree_node_->navigator()
+          .controller()
+          .GetLastCommittedEntry()
+          ->IsInitialEntry()) {
+    // Initial NavigationEntry must always be replaced, to ensure that as long
+    // as the NavigationEntry exists, it will be the only NavigationEntry in
+    // the session history list, making history navigations to initial
+    // NavigationEntry possible. See the comment for `is_initial_entry_` in
+    // NavigationEntryImpl for more details.
+    return true;
   }
 
   return frame_tree_node_->is_on_initial_empty_document();

@@ -1253,10 +1253,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // in turn send it back here as part of |params| and it can be just
     // enforced and renderer process terminated on mismatch.
     details->did_replace_entry = true;
-  } else if (!params.history_list_was_cleared && !rfh->GetParent() &&
-             GetLastCommittedEntry()->IsInitialEntry()) {
-    // Make sure we always replace the initial NavigationEntry.
-    details->did_replace_entry = true;
   } else {
     // The renderer tells us whether the navigation replaces the current entry.
     details->did_replace_entry = params.should_replace_current_entry;
@@ -1264,6 +1260,23 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
   // Do navigation-type specific actions. These will make and commit an entry.
   details->type = ClassifyNavigation(rfh, params, navigation_request, details);
+  if (GetLastCommittedEntry()->IsInitialEntry()) {
+    if (rfh->GetParent()) {
+      // Subframe navigation on initial NavigationEntry must not append a new
+      // NavigationEntry (i.e. should not be classified as NEW_SUBFRAME). This
+      // means every subframe navigation that happens while we're on the initial
+      // NavigationEntry will always reuse the existing NavigationEntry and
+      // just update the corresponding FrameNavigationEntry.
+      DCHECK_EQ(details->type, NAVIGATION_TYPE_AUTO_SUBFRAME);
+    } else if (details->type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY) {
+      // This is a navigation that modifies the initial NavigationEntry, either
+      // for a replacement or a reload. The initial NavigationEntry should
+      // retain its "initial NavigationEntry" status in this case.
+      details->should_stay_as_initial_entry = true;
+    }
+  }
+  DCHECK(!details->should_stay_as_initial_entry ||
+         GetLastCommittedEntry()->IsInitialEntry());
 
   // is_same_document must be computed before the entry gets committed.
   details->is_same_document = is_same_document_navigation;
@@ -1312,15 +1325,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
       NOTREACHED();
       break;
   }
-  // If any navigation has committed on the main frame or created a new
-  // NavigationEntry for a subframe, we can no longer be on an "initial"
-  // NavigationEntry (although the NavigationEntry object itself might be reused
-  // from an originally-initial NavigationEntry, but it would already lose its
-  // "initial" status at this point).
-  // TODO(https://crbug.com/524208): Also remove the "initial" status after
-  // AUTO_SUBFRAME navigations.
-  DCHECK(!GetLastCommittedEntry()->IsInitialEntry() ||
-         (details->type == NAVIGATION_TYPE_AUTO_SUBFRAME));
 
   // At this point, we know that the navigation has just completed, so
   // record the time.
@@ -1337,7 +1341,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // TODO(pbos): Consider a CHECK here that verifies that the pending entry has
   // been cleared instead of protecting against it.
   if (!keep_pending_entry)
-    DiscardNonCommittedEntries();
+    DiscardNonCommittedEntriesWithCommitDetails(details);
 
   // All committed entries should have nonempty content state so WebKit doesn't
   // get confused when we go back to them (see the function for details).
@@ -1434,31 +1438,29 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       navigation_request->is_synchronous_renderer_commit() &&
       !navigation_request->IsSameDocument() && !rfh->GetParent() &&
       params.should_replace_current_entry) {
-    // This is the synchronous about:blank navigation that happens when calling
-    // window.open() with no URL, which used to not create a NavigationEntry
-    // when we have no NavigationEntry on FrameTree creation. We now have the
-    // initial NavigationEntry, but Android WebView still needs this info to
-    // ignore the NavigationStateChanged() call in some cases to avoid firing
-    // onPageFinished etc in more cases than it previously did.
-    // See also https://crbug.com/1277414.
-    details->used_to_be_ignored_due_to_null_navigation_entry = true;
+    // This is a synchronous about:blank navigation on the main frame, which
+    // used to not create a NavigationEntry when we have no NavigationEntry on
+    // FrameTree creation. We now have the initial NavigationEntry and are on
+    // the initial NavigationEntry. To preserve old behavior, we should still
+    // keep the "initial" status for the new NavigationEntry that we will create
+    // for this navigation, so that subframe navigations under the synchronously
+    // committed about:blank document will never append new NavigationEntry, and
+    // instead will just reuse the initial NavigationEntry and modify the
+    // corresponding FrameNavigationEntries. See also https://crbug.com/1277414.
+    details->should_stay_as_initial_entry = true;
   }
 
   TraceReturnReason<tracing_category::kNavigation> trace_return(
       "ClassifyNavigation");
   DCHECK(GetLastCommittedEntry());
-  if (rfh->GetParent() &&
-      GetLastCommittedEntry()
-          ->did_not_exist_without_initial_navigation_entry()) {
+  if (rfh->GetParent() && GetLastCommittedEntry()->IsInitialEntry()) {
     // This is a subframe navigation on the initial empty document, which used
-    // to not have a NavigationEntry to attach to, or other similarly previously
-    // non-existent NavigationEntry. Now it can attach to the initial
-    // NavigationEntry (or other previously non-existent NavigationEntry), but
-    // Android WebView still needs this info to ignore the
-    // NavigationStateChanged() call in some cases to avoid firing
-    // onPageFinished etc in more cases than it previously did.
+    // to not have a NavigationEntry to attach to. Now it can attach to the
+    // initial NavigationEntry, and we must ensure that its NavigationEntry will
+    // keep the "initial NavigationEntry" status and won't append a new
+    // NavigationEntry (it should always do replacement instead).
     // See also https://crbug.com/1277414.
-    details->used_to_be_ignored_due_to_null_navigation_entry = true;
+    details->should_stay_as_initial_entry = true;
   }
 
   if (params.did_create_new_entry) {
@@ -1496,17 +1498,6 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // history entry can result in change of SiteInstance. Check for such a case
     // here and classify it as NEW_ENTRY, as such navigations should be treated
     // as new with replacement.
-
-    if (GetLastCommittedEntry()
-            ->did_not_exist_without_initial_navigation_entry()) {
-      // This is a navigation that used to try to modify a non-existent
-      // NavigationEntry. Now a NavigationEntry should always exist for this
-      // navigation to modify, but Android WebView still needs this info to
-      // ignore the NavigationStateChanged() call in some cases to avoid firing
-      // onPageFinished etc in more cases than it previously did.
-      // See also https://crbug.com/1277414.
-      details->used_to_be_ignored_due_to_null_navigation_entry = true;
-    }
     trace_return.set_return_reason(
         "nav entry 0, last committed, existing entry");
     return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
@@ -1633,12 +1624,10 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
                            ? PAGE_TYPE_ERROR
                            : PAGE_TYPE_NORMAL);
   if (commit_details) {
-    // If this navigation used to get ignored because there's no NavigationEntry
-    // for the FrameNavigationEntry to attach to, note the fact that the new
-    // NavigationEntry used to not exist.
-    entry->set_did_not_exist_without_initial_navigation_entry(
-        commit_details->used_to_be_ignored_due_to_null_navigation_entry);
+    // Retain the "initial NavigationEntry" status if needed.
+    entry->set_is_initial_entry(commit_details->should_stay_as_initial_entry);
   }
+
   if (is_new_entry) {
     // Some properties of the NavigationEntry are only set when the entry is
     // new (we aren't reusing it).
@@ -1693,7 +1682,6 @@ void NavigationControllerImpl::CreateInitialEntry() {
       new_entry.get(), rfh, *params, nullptr /* request */,
       NavigationEntryImpl::UpdatePolicy::kUpdate, true /* is_new_entry */,
       nullptr /* commit_details */);
-  new_entry->set_did_not_exist_without_initial_navigation_entry(true);
 
   InsertOrReplaceEntry(std::move(new_entry), false /* replace_entry */,
                        false /* was_post_commit_error */,
@@ -1828,7 +1816,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   // navigation. Now we know that the renderer has updated its state accordingly
   // and it is safe to also clear the browser side history.
   if (params.history_list_was_cleared) {
-    DiscardNonCommittedEntries();
+    DiscardNonCommittedEntriesWithCommitDetails(commit_details);
     entries_.clear();
     last_committed_entry_index_ = -1;
   }
@@ -1995,6 +1983,8 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
     LoadCommittedDetails* commit_details) {
   DCHECK(ui::PageTransitionCoreTypeIs(params.transition,
                                       ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
+  // The NEW_SUBFRAME path should never result in an initial NavigationEntry.
+  DCHECK(!commit_details->should_stay_as_initial_entry);
 
   // Manual subframe navigations just get the current entry cloned so the user
   // can go back or forward to it. The actual subframe information will be
@@ -2036,12 +2026,6 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   SetShouldSkipOnBackForwardUIIfNeeded(
       replace_entry, previous_document_was_activated,
       request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
-
-  // If this navigation used to get ignored because there's no NavigationEntry
-  // for the FrameNavigationEntry to attach to, note the fact that the new
-  // NavigationEntry used to not exist.
-  new_entry->set_did_not_exist_without_initial_navigation_entry(
-      commit_details->used_to_be_ignored_due_to_null_navigation_entry);
 
   // TODO(creis): Update this to add the frame_entry if we can't find the one
   // to replace, which can happen due to a unique name change. See
@@ -2744,12 +2728,6 @@ void NavigationControllerImpl::InsertOrReplaceEntry(
     }
     entries_[last_committed_entry_index_] = std::move(entry);
     return;
-  }
-
-  if (GetLastCommittedEntry() && GetLastCommittedEntry()->IsInitialEntry()) {
-    // We should remove the old entry's "initial" status, as it will no longer
-    // be the only NavigationEntry.
-    GetLastCommittedEntry()->RemoveInitialEntryStatusIfNecessary();
   }
 
   // We shouldn't see replace == true when there's no committed entries.
@@ -3612,11 +3590,11 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     bool is_browser_initiated) {
   DCHECK(frame_entry);
   GURL dest_url = frame_entry->url();
-  if (entry->IsInitialEntry() && frame_tree_node->IsMainFrame()) {
-    // The main frame of an initial NavigationEntry has an empty URL. Convert it
-    // to about:blank instead. This should only happen when the initial
-    // NavigationEntry is reloaded.
-    DCHECK(dest_url.is_empty());
+  if (entry->IsInitialEntry() && frame_tree_node->IsMainFrame() &&
+      dest_url.is_empty()) {
+    // The main frame of an initial NavigationEntry might have an empty URL.
+    // Convert it to about:blank instead. This should only happen when the
+    // initial NavigationEntry is reloaded.
     dest_url = GURL("about:blank");
   }
   absl::optional<url::Origin> origin_to_commit =
@@ -3739,9 +3717,9 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
   ssl_manager_.DidCommitProvisionalLoad(*details);
 
   delegate_->NotifyNavigationStateChanged(
-      details->used_to_be_ignored_due_to_null_navigation_entry
-          ? INVALIDATE_TYPE_ALL_BUT_USED_TO_BE_IGNORED_DUE_TO_NULL_NAVIGATION_ENTRY
-          : INVALIDATE_TYPE_ALL);
+      (details && details->should_stay_as_initial_entry)
+          ? INVALIDATE_TYPE_ALL_BUT_KEEPS_INITIAL_NAVIGATION_ENTRY_STATUS
+          : INVALIDATE_TYPE_ALL_AND_REMOVES_INITIAL_NAVIGATION_ENTRY_STATUS);
   delegate_->NotifyNavigationEntryCommitted(*details);
 
   // TODO(avi): Remove. http://crbug.com/170921
@@ -3882,12 +3860,12 @@ void NavigationControllerImpl::DiscardNonCommittedEntriesWithCommitDetails(
     return;
   }
   DiscardPendingEntry(false);
-  if (delegate_)
+  if (delegate_) {
     delegate_->NotifyNavigationStateChanged(
-        (commit_details &&
-         commit_details->used_to_be_ignored_due_to_null_navigation_entry)
-            ? INVALIDATE_TYPE_ALL_BUT_USED_TO_BE_IGNORED_DUE_TO_NULL_NAVIGATION_ENTRY
-            : INVALIDATE_TYPE_ALL);
+        (commit_details && commit_details->should_stay_as_initial_entry)
+            ? INVALIDATE_TYPE_ALL_BUT_KEEPS_INITIAL_NAVIGATION_ENTRY_STATUS
+            : INVALIDATE_TYPE_ALL_AND_REMOVES_INITIAL_NAVIGATION_ENTRY_STATUS);
+  }
 }
 
 int NavigationControllerImpl::GetEntryIndexWithUniqueID(

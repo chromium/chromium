@@ -899,7 +899,10 @@ void WebViewGuest::UserAgentOverrideSet(
     const blink::UserAgentOverride& ua_override) {
   content::NavigationController& controller = web_contents()->GetController();
   content::NavigationEntry* entry = controller.GetVisibleEntry();
-  if (entry->IsInitialEntry())
+  // If we're on the initial NavigationEntry and no navigation had committed,
+  // return early. This preserves previous behavior when the initial
+  // NavigationEntry used to not exist.
+  if (controller.IsInitialNavigation())
     return;
   entry->SetIsOverridingUserAgent(!ua_override.ua_string_override.empty());
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);

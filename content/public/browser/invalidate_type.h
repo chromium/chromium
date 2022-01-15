@@ -24,15 +24,26 @@ enum InvalidateTypes {
                                    // inaudible.
                                    // TODO(crbug.com/846374):
                                    // remove this.
-  INVALIDATE_TYPE_ALL = (1 << 5) - 1,
-  // Same as INVALIDATE_TYPE_ALL but this is caused by a navigation that used to
-  // get "ignored" (won't modify an existing NavigationEntry) because there are
-  // no NavigationEntries yet. Now that we will always have at least the initial
-  // NavigationEntry, these navigations won't get ignored anymore, but WebView
-  // still needs this info to ignore the NavigationStateChanged() call in some
-  // cases to avoid firing onPageFinished etc in more cases than it previously
-  // did. See also https://crbug.com/1277414.
-  INVALIDATE_TYPE_ALL_BUT_USED_TO_BE_IGNORED_DUE_TO_NULL_NAVIGATION_ENTRY =
+  // Used only by NavigationStateChanged calls for committing a NavigationEntry.
+  // Signifies that the initial NavigationEntry status will not be retained on
+  // the committing NavigationEntry. This means the committing NavigationEntry
+  // is not an initial NavigationEntry. See the comment below for more details.
+  INVALIDATE_TYPE_REMOVE_INITIAL_NAVIGATION_ENTRY_STATUS = (1 << 5),
+  // These INVALIDATE_TYPE_ALL values are fired when discarding pending entries
+  // or committing a new entry, but which one is used depends on whether it's
+  // for an initial NavigationEntry commit or not. If the NavigationEntry
+  // about to be committed will be an initial NavigationEntry, then it will
+  // retain the "initial NavigationEntry status" and fire the call with
+  // INVALIDATE_TYPE_ALL_BUT_KEEPS_INITIAL_NAVIGATION_ENTRY_STATUS. Otherwise,
+  // if the NavigationEntry will not be an initial NavigationEntry, the value
+  // INVALIDATE_TYPE_ALL_AND_REMOVES_INITIAL_NAVIGATION_ENTRY_STATUS will be
+  // used, which has the INVALIDATE_TYPE_REMOVE_INITIAL_NAVIGATION_ENTRY_STATUS
+  // bit. This is needed for WebView, which should ignore the
+  // INVALIDATE_TYPE_ALL_BUT_KEEPS_INITIAL_NAVIGATION_ENTRY_STATUS
+  // NavigationStateChanged() calls to avoid firing onPageFinished etc in more
+  // cases than it previously did. See also https://crbug.com/1277414.
+  INVALIDATE_TYPE_ALL_BUT_KEEPS_INITIAL_NAVIGATION_ENTRY_STATUS = (1 << 5) - 1,
+  INVALIDATE_TYPE_ALL_AND_REMOVES_INITIAL_NAVIGATION_ENTRY_STATUS =
       (1 << 6) - 1,
 };
 }

@@ -3339,16 +3339,13 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        PopupPendingAndBackToSameSiteInstance) {
   StartEmbeddedServer();
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL popup_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Open a popup to navigate.
-  Shell* new_shell = OpenPopup(shell(), GURL(url::kAboutBlankURL), "foo");
+  Shell* new_shell = OpenPopup(shell(), popup_url, "foo");
   EXPECT_EQ(shell()->web_contents()->GetSiteInstance(),
             new_shell->web_contents()->GetSiteInstance());
-
-  // Do a document.open() so that the initial empty document's history entry
-  // won't get replaced.
-  EXPECT_TRUE(ExecJs(new_shell, "document.open();"));
 
   // Navigate the popup to a different site.
   EXPECT_TRUE(NavigateToURL(

@@ -1744,25 +1744,33 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
   url::Origin initial_origin = url::Origin::Create(initial_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
-  // Open about:blank in a new tab.
   content::WebContents* old_popup = nullptr;
+  content::WebContents* tab1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
   {
+    // Open a new popup.
     EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-    content::WebContents* tab1 =
-        browser()->tab_strip_model()->GetActiveWebContents();
     content::WebContentsAddedObserver popup_observer;
-    ASSERT_TRUE(ExecJs(tab1, "window.open('about:blank')"));
+    ASSERT_TRUE(ExecJs(tab1, "var w = window.open('/title2.html');"));
     old_popup = popup_observer.GetWebContents();
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(initial_origin,
+              old_popup->GetMainFrame()->GetLastCommittedOrigin());
+    EXPECT_TRUE(WaitForLoadStop(old_popup));
+  }
+
+  {
+    // Navigate the popup to about:blank, inheriting the opener origin. Note
+    // that we didn't immediately open the popup to about:blank to avoid making
+    // it use the initial NavigationEntry, which can't be navigated back to.
+    content::TestNavigationObserver nav_observer(old_popup);
+    ASSERT_TRUE(ExecJs(tab1, "w.location.href = 'about:blank';"));
+    nav_observer.Wait();
     EXPECT_EQ(GURL(url::kAboutBlankURL),
               old_popup->GetMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(initial_origin,
               old_popup->GetMainFrame()->GetLastCommittedOrigin());
   }
-
-  // Do a document.open() so that the initial empty document's history entry
-  // won't get replaced.
-  EXPECT_TRUE(ExecJs(old_popup, "document.open();"));
 
   // Navigate the popup to another site.
   GURL other_url = embedded_test_server()->GetURL("bar.com", "/title1.html");

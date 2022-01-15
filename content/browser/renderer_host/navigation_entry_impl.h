@@ -430,19 +430,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     back_forward_cache_metrics_ = metrics;
   }
 
-  // If this is an "initial NavigationEntry", removes the "initial" status and
-  // ensures that the URL saved in the entry is "about:blank" instead of an
-  // empty URL.
-  void RemoveInitialEntryStatusIfNecessary();
-
-  void set_did_not_exist_without_initial_navigation_entry(
-      bool did_not_exist_without_initial_navigation_entry) {
-    did_not_exist_without_initial_navigation_entry_ =
-        did_not_exist_without_initial_navigation_entry;
-  }
-
-  bool did_not_exist_without_initial_navigation_entry() {
-    return did_not_exist_without_initial_navigation_entry_;
+  void set_is_initial_entry(bool is_initial_entry) {
+    is_initial_entry_ = is_initial_entry;
   }
 
  private:
@@ -576,30 +565,31 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;
 
   // Whether this NavigationEntry is the initial NavigationEntry or not. The
-  // initial NavigationEntry is created when the FrameTree is created, so it is
-  // not really associated with any navigation, but represents a placeholder
-  // NavigationEntry for the "initial empty document", which commits in the
-  // renderer on frame creation but doesn't notify the browser of the commit.
-  // The initial NavigationEntry gets replaced or loses its "initial" status on
-  // the next navigation on the main frame, even if the frame stays on the
-  // initial empty document (e.g. same-document navigation on the initial empty
-  // document). The initial NavigationEntry also never gets restored on session
-  // restore, because we never restore tabs with only the initial
-  // NavigationEntry.
+  // original initial NavigationEntry is created when the FrameTree is created,
+  // so it might not be associated with any navigation, but represents a
+  // placeholder NavigationEntry for the "initial empty document", which commits
+  // in the renderer on frame creation but doesn't notify the browser of the
+  // commit. However, more initial NavigationEntries might be created after that
+  // in response to navigations, and replace the original NavigationEntry. The
+  // initial NavigationEntry will only get replaced with a non-initial
+  // NavigationEntry by the first navigation that satisfies all of the
+  // following condition:
+  //   1. Happens on the main frame
+  //   2. Classified as NEW_ENTRY (won't reuse the NavigationEntry)
+  //   3. Is not the synchronous about:blank commit
+  // So the "initial" status will be retained/copied to the new
+  // NavigationEntry on subframe navigations, or when the NavigationEntry is
+  // reused/classified as EXISTING_ENTRY, or on the synchronous about:blank
+  // commit. Some other important properties of initial NavigationEntries:
+  // - The initial NavigationEntry always gets reused or replaced on the next
+  // navigation (potentially by another initial NavigationEntry), so if there
+  // is an initial NavigationEntry in the session history, it must be the only
+  // NavigationEntry (as it is impossible to append to session history if the
+  // initial NavigationEntry exists), which means it's not possible to do
+  // a history navigation to an initial NavigationEntry.
+  // - The initial NavigationEntry never gets restored on session restore,
+  // because we never restore tabs with only the initial NavigationEntry.
   bool is_initial_entry_ = false;
-
-  // True if this NavigationEntry used to not exist before the introduction of
-  // the initial NavigationEntry (see above). This will be true for initial
-  // NavigationEntries, but also for any NavigationEntry that are copied from
-  // the initial NavigationEntry, such as when a subframe navigation uses or
-  // copies the initial NavigationEntry to attach to. This is also true for the
-  // NavigationEntry created after the synchronous about:blank navigation for
-  // window.open() with no URL, which used to get ignored as the browser doesn't
-  // know what to do with it. This information is needed for Android WebView to
-  // ignore the NavigationStateChanged() call in some cases to avoid firing
-  // onPageFinished etc in more cases than it previously did.
-  // See also https://crbug.com/1277414.
-  bool did_not_exist_without_initial_navigation_entry_ = false;
 };
 
 }  // namespace content
