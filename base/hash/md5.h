@@ -11,7 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
 #include "base/hash/md5_nacl.h"
 #else
 #include "base/hash/md5_boringssl.h"
