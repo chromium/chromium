@@ -4,7 +4,10 @@
 
 package org.chromium.components.messages;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import java.util.List;
 /**
  * A helper class providing utility methods that are intended to be used in tests using messages.
  */
+@JNINamespace("messages")
 public class MessagesTestHelper {
     /**
      * Get currently enqueued messages of a specific type.
@@ -36,6 +40,40 @@ public class MessagesTestHelper {
             }
         }
         return messages;
+    }
+
+    /**
+     * Get the number of enqueued messages.
+     * @param windowAndroid The current window.
+     * @return The number of enqueued messages.
+     */
+    @CalledByNative
+    public static int getMessageCount(WindowAndroid windowAndroid) {
+        MessageDispatcherImpl messageDispatcherImpl =
+                (MessageDispatcherImpl) (MessageDispatcherProvider.from(windowAndroid));
+        MessageQueueManager queueManager =
+                messageDispatcherImpl.getMessageQueueManagerForTesting(); // IN-TEST
+        List<MessageState> messageStates =
+                new ArrayList<>(queueManager.getMessagesForTesting().values()); // IN-TEST
+        return messageStates.size();
+    }
+
+    /**
+     * Get the identifier of the enqueued message at a specified index with respect to the message
+     * queue.
+     * @param windowAndroid The current window.
+     * @param index The index of the enqueued message.
+     * @return The identifier of the enqueued message.
+     */
+    @CalledByNative
+    public static int getMessageIdentifier(WindowAndroid windowAndroid, int index) {
+        MessageDispatcherImpl messageDispatcherImpl =
+                (MessageDispatcherImpl) (MessageDispatcherProvider.from(windowAndroid));
+        MessageQueueManager queueManager =
+                messageDispatcherImpl.getMessageQueueManagerForTesting(); // IN-TEST
+        List<MessageState> messageStates =
+                new ArrayList<>(queueManager.getMessagesForTesting().values()); // IN-TEST
+        return messageStates.get(index).handler.getMessageIdentifier();
     }
 
     /**
