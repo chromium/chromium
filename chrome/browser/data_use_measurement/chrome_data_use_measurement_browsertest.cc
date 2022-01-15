@@ -83,7 +83,7 @@ class ChromeDataUseMeasurementBrowsertest
 };
 
 // Flaky on Linux (and Linux MSAN) and ChromeOS: https://crbug.com/1141975.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DataUseTrackerPrefsUpdated DISABLED_DataUseTrackerPrefsUpdated
 #else
 #define MAYBE_DataUseTrackerPrefsUpdated DataUseTrackerPrefsUpdated
