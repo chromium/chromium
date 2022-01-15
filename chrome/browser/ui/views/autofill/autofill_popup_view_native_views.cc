@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -411,7 +412,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
 
   // The Autofill popup may be hovered by the mouse after its creation. In this
   // case, we want to ignore clicks on the hovered menu item until the user made
-  // an explicit choice. See crbug.com/1240472, crbug.com/1241585.
+  // an explicit choice (crbug.com/1240472, crbug.com/1241585).
   bool mouse_observed_outside_of_item_ = false;
 };
 
@@ -624,9 +625,10 @@ void AutofillPopupItemView::OnPaint(gfx::Canvas* canvas) {
 void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
   // OnMouseEntered() also fires if the had been hovering over the item and
   // moved only a little bit. In that case, clicks shall still be ignored and we
-  // don't want to show a preview.
+  // don't want to show a preview (crbug.com/1240472, crbug.com/1241585).
   if (!mouse_observed_outside_of_item_)
     return;
+
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
   if (controller)
@@ -644,9 +646,19 @@ void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
 void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
   // Ignore mouse clicks in case the popup appeared directly under the mouse
   // cursor and we have no indication that the user intentionally selected the
-  // current item.
+  // current item (crbug.com/1240472, crbug.com/1241585).
   if (!mouse_observed_outside_of_item_)
     return;
+
+  // Ignore clicks immediately after the popup was shown. This is to prevent
+  // users accidentally accepting suggestions (crbug.com/1279268).
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIgnoreEarlyClicksOnPopup) &&
+      popup_view()->time_delta_since_popup_shown() <=
+          features::kAutofillIgnoreEarlyClicksOnPopupDuration.Get()) {
+    return;
+  }
+
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
   if (controller && event.IsOnlyLeftMouseButton() &&

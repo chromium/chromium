@@ -62,6 +62,10 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   SkColor GetSeparatorColor() const;
   SkColor GetWarningColor() const;
 
+  base::TimeDelta time_delta_since_popup_shown() const {
+    return base::Time::Now() - show_time_;
+  }
+
  protected:
   AutofillPopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
                         views::Widget* parent_widget);

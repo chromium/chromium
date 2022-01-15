@@ -7,8 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-namespace autofill {
-namespace features {
+namespace autofill::features {
 
 // Controls whether to flatten and fill cross-iframe forms.
 // TODO(crbug.com/1187842) Remove once launched.
@@ -234,6 +233,22 @@ const base::Feature kAutofillFixFillableFieldTypes{
 // TODO(crbug/1213301): Remove this.
 const base::Feature kAutofillIgnoreAutocompleteForImport{
     "AutofillIgnoreAutocompleteForImport", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, the Autofill popup ignores second clicks for a certain period
+// (kAutofillIgnoreEarlyClicksOnPopupDuration) after the Autofill popup was
+// shown. This is to prevent double clicks accidentally accepting suggestions.
+// TODO(crbug/1279268): Remove once launched.
+const base::Feature kAutofillIgnoreEarlyClicksOnPopup{
+    "AutofillIgnoreEarlyClicksOnPopup", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// The duration for which clicks on the just-shown Autofill popup should be
+// ignored if AutofillIgnoreEarlyClicksOnPopup is enabled.
+// TODO(crbug/1279268): Remove once launched. Consider also removing
+// AutofillPopupItemView::mouse_observed_outside_of_item_.
+const base::FeatureParam<base::TimeDelta>
+    kAutofillIgnoreEarlyClicksOnPopupDuration{
+        &kAutofillIgnoreEarlyClicksOnPopup, "duration",
+        base::Milliseconds(500)};
 
 // When enabled, only changed values are highlighted in preview mode.
 // TODO(crbug/1248585): Remove when launched.
@@ -477,5 +492,4 @@ bool IsAutofillManualFallbackEnabled() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-}  // namespace features
-}  // namespace autofill
+}  // namespace autofill::features

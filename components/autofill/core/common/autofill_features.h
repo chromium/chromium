@@ -7,10 +7,10 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
-namespace autofill {
-namespace features {
+namespace autofill::features {
 
 // All features in alphabetical order.
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillAcrossIframes;
@@ -91,6 +91,11 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFixFillableFieldTypes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillIgnoreAutocompleteForImport;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillIgnoreEarlyClicksOnPopup;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<base::TimeDelta>
+    kAutofillIgnoreEarlyClicksOnPopupDuration;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode;
 COMPONENT_EXPORT(AUTOFILL)
@@ -205,7 +210,6 @@ COMPONENT_EXPORT(AUTOFILL)
 bool IsAutofillManualFallbackEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-}  // namespace features
-}  // namespace autofill
+}  // namespace autofill::features
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_FEATURES_H_
