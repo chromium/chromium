@@ -98,7 +98,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/content_url_loader_factory.h"
 #endif
 
@@ -1341,7 +1341,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                             browser_context_->GetSharedCorsOriginAccessList(),
                             file_factory_priority));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   non_network_url_loader_factories_.emplace(url::kContentScheme,
                                             ContentURLLoaderFactory::Create());
 #endif

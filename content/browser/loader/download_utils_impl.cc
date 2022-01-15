@@ -17,9 +17,9 @@ namespace {
 // Allow list to rendering mhtml.
 const char* const kAllowListSchemesToRenderingMhtml[] = {
     url::kFileScheme,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     url::kContentScheme,
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 // Determins whether given url would render the mhtml as html according to

@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "content/public/test/browser_test.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <objbase.h>
 #include <shlobj.h>
 #include <windows.h>
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, FileAccessNotAllowed) {
             test_browser_client.access_allowed_args()[0].profile_path);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 // Test symbolic links on POSIX platforms. These act like the contents of
 // the symbolic link are the same as the contents of the file it links to.
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, SymlinksToFiles) {
             test_browser_client.access_allowed_args()[0].profile_path);
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 // Test shortcuts on Windows. These are treated as redirects.
 IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
             test_browser_client.access_allowed_args()[1].profile_path);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest,
                        RedirectToFileUrlMainFrame) {

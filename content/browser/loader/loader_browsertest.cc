@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SyncXMLHttpRequest_Disallowed) {
 // downloadable) would trigger download and hang the renderer process,
 // if executed while navigating to a new page.
 // Disabled on Mac: see http://crbug.com/56264
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SyncXMLHttpRequest_DuringUnload \
   DISABLED_SyncXMLHttpRequest_DuringUnload
 #else
@@ -289,7 +289,7 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
 // URLRequest, which passes the error on ResourceLoader teardown, rather than in
 // response to call to AsyncResourceHandler::OnResponseComplete.
 // Failed on Android M builder. See crbug/1111427.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SyncXMLHttpRequest_Cancelled DISABLED_SyncXMLHttpRequest_Cancelled
 #else
 #define MAYBE_SyncXMLHttpRequest_Cancelled SyncXMLHttpRequest_Cancelled
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNoUnloadOn204) {
 // app isn't stripped of debug symbols, this takes about five minutes to
 // complete and isn't conducive to quick turnarounds. As we don't currently
 // strip the app on the build bots, this is bad times.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CrossSiteAfterCrash DISABLED_CrossSiteAfterCrash
 #else
 #define MAYBE_CrossSiteAfterCrash CrossSiteAfterCrash

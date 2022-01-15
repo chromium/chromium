@@ -530,7 +530,7 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutTest) {
 // Like NavigationTimeoutTest but the navigation initially results in a redirect
 // before hanging, to test a slightly more complicated navigation.
 // TODO(crbug.com/1271228): Flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NavigationTimeoutRedirectTest \
   DISABLED_NavigationTimeoutRedirectTest
 #else

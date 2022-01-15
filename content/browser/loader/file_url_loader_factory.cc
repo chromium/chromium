@@ -59,7 +59,7 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/shortcut.h"
 #endif
 
@@ -276,9 +276,9 @@ class FileURLDirectoryLoader
     base::FilePath filename = data.info.GetName();
     if (filename.value() != base::FilePath::kCurrentDirectory &&
         filename.value() != base::FilePath::kParentDirectory) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       std::string raw_bytes;  // Empty on Windows means UTF-8 encoded name.
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
       const std::string& raw_bytes = filename.value();
 #endif
       pending_data_.append(net::GetDirectoryListingEntry(
@@ -519,7 +519,7 @@ class FileURLLoader : public network::mojom::URLLoader {
       return;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath shortcut_target;
     if (link_following_policy == LinkFollowingPolicy::kFollow &&
         base::LowerCaseEqualsASCII(path.Extension(), ".lnk") &&
@@ -556,7 +556,7 @@ class FileURLLoader : public network::mojom::URLLoader {
       client_->OnReceiveRedirect(redirect_info, std::move(head));
       return;
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
