@@ -18,6 +18,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_context.h"
@@ -72,7 +73,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
@@ -344,7 +345,7 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
     switches::kEnableFontAntialiasing,
     switches::kAlwaysUseComplexText,
     switches::kStableReleaseMode,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     switches::kRegisterFontFiles,
 #endif
   };
@@ -571,7 +572,7 @@ void WebTestContentBrowserClient::BindWebTestControlHost(
         render_process_id, std::move(receiver));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool WebTestContentBrowserClient::PreSpawnChild(
     sandbox::TargetPolicy* policy,
     sandbox::mojom::Sandbox sandbox_type,
@@ -589,7 +590,7 @@ bool WebTestContentBrowserClient::PreSpawnChild(
   }
   return true;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string WebTestContentBrowserClient::GetAcceptLangs(
     BrowserContext* context) {

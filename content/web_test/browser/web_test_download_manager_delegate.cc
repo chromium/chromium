@@ -14,7 +14,7 @@
 #include "content/web_test/browser/web_test_control_host.h"
 #include "net/base/filename_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 

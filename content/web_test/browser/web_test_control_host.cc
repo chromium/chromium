@@ -103,7 +103,7 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/url_constants.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -273,14 +273,14 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
       command_line.HasSwitch(switches::kForcePresentationReceiverForTesting);
   prefs->translate_service_available = true;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   prefs->editing_behavior = blink::mojom::EditingBehavior::kEditingMacBehavior;
 #else
   prefs->editing_behavior =
       blink::mojom::EditingBehavior::kEditingWindowsBehavior;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
       u"Apple Chancery";
   prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Papyrus";

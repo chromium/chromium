@@ -71,7 +71,7 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
     NOTREACHED();
     return GURL();
   }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, the executable is in
   // out/Release/Content Shell.app/Contents/MacOS/Content Shell.
   // We need to go up 3 directories to get to out/Release.
