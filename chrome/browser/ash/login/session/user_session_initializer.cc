@@ -35,7 +35,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
-#include "chrome/browser/component_updater/sth_set_component_remover.h"
 #include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -159,7 +158,6 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     InitRlz(profile);
     InitializeCerts(profile);
     InitializeCRLSetFetcher();
-    InitializeCertificateTransparencyComponents(user);
     InitializePrimaryProfileServices(profile, user);
 
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
@@ -226,16 +224,6 @@ void UserSessionInitializer::InitializeCRLSetFetcher() {
       g_browser_process->component_updater();
   if (cus)
     component_updater::RegisterCRLSetComponent(cus);
-}
-
-void UserSessionInitializer::InitializeCertificateTransparencyComponents(
-    const user_manager::User* user) {
-  const std::string username_hash = user->username_hash();
-  if (!username_hash.empty()) {
-    base::FilePath path =
-        ProfileHelper::GetProfilePathByUserIdHash(username_hash);
-    component_updater::DeleteLegacySTHSet(path);
-  }
 }
 
 void UserSessionInitializer::InitializePrimaryProfileServices(

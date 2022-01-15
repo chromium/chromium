@@ -25,7 +25,6 @@
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
-#include "chrome/browser/component_updater/sth_set_component_remover.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
 #include "chrome/common/buildflags.h"
@@ -138,13 +137,6 @@ void RegisterComponentsForUpdate() {
     // the old file.
     component_updater::DeleteLegacyCRLSet(path);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
-    // Clean up previous STH sets that may have been installed. This is not
-    // done for:
-    // Android: Because STH sets were never used
-    // Chrome OS: On Chrome OS, this cleanup is delayed until user login.
-    component_updater::DeleteLegacySTHSet(path);
-#endif
 #if defined(OS_ANDROID)
     // Clean up any desktop sharing hubs that were installed on Android.
     component_updater::DeleteDesktopSharingHub(path);

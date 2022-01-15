@@ -68,10 +68,6 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   // Starts loading CRL set.
   void InitializeCRLSetFetcher();
 
-  // Initializes Certificate Transparency-related components.
-  void InitializeCertificateTransparencyComponents(
-      const user_manager::User* user);
-
   // Initialize all services that need the primary profile.
   void InitializePrimaryProfileServices(Profile* profile,
                                         const user_manager::User* user);
