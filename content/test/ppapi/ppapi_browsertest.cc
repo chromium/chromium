@@ -141,7 +141,7 @@ TEST_PPAPI_IN_PROCESS(Var)
 TEST_PPAPI_OUT_OF_PROCESS(Var)
 
 // Flaky on mac, http://crbug.com/121107
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_VarDeprecated DISABLED_VarDeprecated
 #else
 #define MAYBE_VarDeprecated VarDeprecated
@@ -153,7 +153,7 @@ TEST_PPAPI_IN_PROCESS(VarResource)
 TEST_PPAPI_OUT_OF_PROCESS(VarResource)
 
 // Flaky on Win, Linux and CrOS, http://crbug.com/602877
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_VideoDecoder DISABLED_VideoDecoder
 #else
 #define MAYBE_VideoDecoder VideoDecoder

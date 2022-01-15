@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -37,7 +37,7 @@ class ContentTestSuite : public ContentTestSuiteBase {
       test_content_client_initializer_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
 };

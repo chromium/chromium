@@ -21,9 +21,9 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -45,7 +45,7 @@ class ContentBrowserTestSuite : public ContentTestSuiteBase {
 
     ContentTestSuiteBase::Initialize();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     RegisterInProcessThreads();
 #endif
   }
@@ -70,7 +70,7 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
   }
 
  protected:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ContentMainDelegate* CreateContentMainDelegate() override {
     return new ContentBrowserTestShellMainDelegate();
   }
@@ -85,11 +85,11 @@ int main(int argc, char** argv) {
   if (parallel_jobs == 0U)
     return 1;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Load and pin user32.dll to avoid having to load it once tests start while
   // on the main thread loop where blocking calls are disallowed.
   base::win::PinUser32();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   content::ContentTestLauncherDelegate launcher_delegate;
   return LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
 }

@@ -51,8 +51,8 @@ namespace content {
 // TODO(mac): figure out why symbolization doesn't happen in the renderer.
 // http://crbug.com/521456
 // TODO(win): send PDB files for component build. http://crbug.com/521459
-#if !defined(OFFICIAL_BUILD) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
-    !(defined(COMPONENT_BUILD) && defined(OS_WIN))
+#if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_MAC) && !(defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN))
 
 namespace {
 
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 
 // Non-Windows sanitizer builds do not symbolize stack traces internally, so use
 // this macro to avoid looking for symbols from the stack trace.
-#if !defined(OS_WIN) &&                                       \
+#if !BUILDFLAG(IS_WIN) &&                                     \
     (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) || \
      defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER))
 #define USE_EXTERNAL_SYMBOLIZER 1
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 #endif
 
 // Flaky on Linux: crbug.com/1223763
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_RendererCrashCallStack DISABLED_RendererCrashCallStack
 #else
 #define MAYBE_RendererCrashCallStack RendererCrashCallStack
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
 
 // Tests that browser tests print the callstack on asserts.
 // Disabled on Windows crbug.com/1034784
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserCrashCallStack DISABLED_BrowserCrashCallStack
 #else
 #define MAYBE_BrowserCrashCallStack BrowserCrashCallStack
@@ -208,9 +208,9 @@ IN_PROC_BROWSER_TEST_F(MockContentBrowserTest, DISABLED_CrashTest) {
 }
 
 // This is disabled due to flakiness: https://crbug.com/1086372
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RunMockTests DISABLED_RunMockTests
-#elif defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#elif BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 // This is disabled because it fails on bionic: https://crbug.com/1202220
 #define MAYBE_RunMockTests DISABLED_RunMockTests
 #else

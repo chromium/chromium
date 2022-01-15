@@ -52,7 +52,7 @@ namespace content {
 
 TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
     : RenderWidgetHostViewBase(rwh), is_showing_(false), is_occluded_(false) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   frame_sink_id_ = AllocateFrameSinkId();
   GetHostFrameSinkManager()->RegisterFrameSinkId(
       frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kYes);
@@ -167,7 +167,7 @@ gfx::Rect TestRenderWidgetHostView::GetViewBounds() {
   return gfx::Rect();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void TestRenderWidgetHostView::SetActive(bool active) {
   // <viettrungluu@gmail.com>: Do I need to do anything here?
 }

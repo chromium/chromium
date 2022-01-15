@@ -32,7 +32,7 @@
 #include "ui/aura/window.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #endif
 
@@ -78,7 +78,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void WasUnOccluded() override;
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void SetActive(bool active) override;
   void ShowDefinitionForSelection() override {}
   void SpeakSelection() override;
@@ -89,7 +89,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
       const std::string& url,
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Notified in response to a CommitPending where there is no content for
   // TakeFallbackContentFrom to use.

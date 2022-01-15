@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <memory>
 #endif
 
@@ -17,9 +17,9 @@ namespace content {
 struct DisplayFeature;
 class RenderWidgetHostViewBase;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TestViewAndroidDelegate;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class MockDisplayFeature {
  public:
@@ -30,9 +30,9 @@ class MockDisplayFeature {
 
  private:
   raw_ptr<RenderWidgetHostViewBase> render_widget_host_view_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<TestViewAndroidDelegate> test_view_android_delegate_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace content

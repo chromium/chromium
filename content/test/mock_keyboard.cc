@@ -20,7 +20,7 @@ int MockKeyboard::GetCharacters(Layout layout,
                                 int key_code,
                                 Modifiers modifiers,
                                 std::u16string* output) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CHECK(output);
   // Change the keyboard layout only when we have to because it takes a lot of
   // time to load a keyboard-layout driver.
