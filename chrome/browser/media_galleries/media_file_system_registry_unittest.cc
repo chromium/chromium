@@ -704,7 +704,7 @@ void MediaFileSystemRegistryTest::AssertAllAutoAddedGalleries() {
     // Make sure that we have at least one gallery and that they are all
     // auto added galleries.
     const MediaGalleriesPrefInfoMap& galleries = prefs->known_galleries();
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     ASSERT_GT(galleries.size(), 0U);
 #endif
     for (auto it = galleries.begin(); it != galleries.end(); ++it) {
@@ -722,7 +722,7 @@ void MediaFileSystemRegistryTest::InitForGalleriesInfoTest(
   ProfileState* profile_state = GetProfileState(0U);
   *galleries_info = profile_state->GetGalleriesInfo(
       profile_state->all_permission_extension());
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(3U, galleries_info->size());
 #else
   ASSERT_EQ(0U, galleries_info->size());
@@ -939,7 +939,7 @@ TEST_F(MediaFileSystemRegistryTest, GalleryNameDefault) {
 }
 
 // TODO(gbillock): Move the remaining test into the linux directory.
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 TEST_F(MediaFileSystemRegistryTest, GalleryMTP) {
   FSInfoMap galleries_info;
   InitForGalleriesInfoTest(&galleries_info);

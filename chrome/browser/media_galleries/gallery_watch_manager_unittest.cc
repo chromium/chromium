@@ -246,7 +246,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_Basic) {
 }
 
 // TODO(crbug.com/1183482): Flaky on mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_AddAndRemoveTwoWatches DISABLED_AddAndRemoveTwoWatches
 #else
 #define MAYBE_AddAndRemoveTwoWatches AddAndRemoveTwoWatches
@@ -297,7 +297,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_AddAndRemoveTwoWatches) {
 }
 
 // TODO(crbug.com/1182867): Flaky on mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RemoveAllWatches DISABLED_RemoveAllWatches
 #else
 #define MAYBE_RemoveAllWatches RemoveAllWatches
@@ -332,7 +332,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_RemoveAllWatches) {
 
 // Fails on Mac: crbug.com/1183212
 // Fails on Chrome OS: crbug.com/1207878
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DropWatchOnGalleryRemoved DISABLED_DropWatchOnGalleryRemoved
 #else
 #define MAYBE_DropWatchOnGalleryRemoved DropWatchOnGalleryRemoved
@@ -368,7 +368,7 @@ TEST_F(GalleryWatchManagerTest, DropWatchOnGalleryPermissionRevoked) {
 }
 
 // TODO(crbug.com/1183212): flaky on mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DropWatchOnStorageRemoved DISABLED_DropWatchOnStorageRemoved
 #else
 #define MAYBE_DropWatchOnStorageRemoved DropWatchOnStorageRemoved
@@ -395,7 +395,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnStorageRemoved) {
   success_loop.Run();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestWatchOperation DISABLED_TestWatchOperation
 #else
 #define MAYBE_TestWatchOperation TestWatchOperation

@@ -28,17 +28,17 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/preferences_mock_mac.h"
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
     const std::string& name,
@@ -138,32 +138,32 @@ base::FilePath EnsureMediaDirectoriesExists::GetFakeAppDataPath() const {
   return fake_dir_.GetPath().AppendASCII("appdata");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 base::FilePath EnsureMediaDirectoriesExists::GetFakeLocalAppDataPath() const {
   DCHECK(fake_dir_.IsValid());
   return fake_dir_.GetPath().AppendASCII("localappdata");
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 void EnsureMediaDirectoriesExists::Init() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
   return;
 #else
 
   ASSERT_TRUE(fake_dir_.CreateUniqueTempDir());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   mac_preferences_ = std::make_unique<MockPreferences>();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   ChangeMediaPathOverrides();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_ANDROID
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 }
 
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(FILE_PATH_LITERAL("C:\\")).AppendASCII(dir);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::FilePath(FILE_PATH_LITERAL("/")).Append(dir);
 #else
 #error Unknown platform.

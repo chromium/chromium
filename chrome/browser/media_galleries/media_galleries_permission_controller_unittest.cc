@@ -277,7 +277,7 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   galleryName = "gallery2";
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   galleryName = base::FilePath(FILE_PATH_LITERAL("/path/to/gallery"))
                     .Append(gallery.path).MaybeAsASCII();
 #endif
