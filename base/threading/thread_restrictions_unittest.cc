@@ -177,7 +177,7 @@ TEST_F(ThreadRestrictionsTest, DisallowUnresponsiveTasks) {
 }
 
 // thread_restriction_checks_and_has_death_tests
-#if !defined(OS_NACL) && !defined(OS_ANDROID) && DCHECK_IS_ON() && \
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID) && DCHECK_IS_ON() && \
     defined(GTEST_HAS_DEATH_TEST)
 
 TEST_F(ThreadRestrictionsTest, BlockingCheckEmitsStack) {

@@ -81,7 +81,7 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
   ~ScopedMayLoadLibraryAtBackgroundPriority();
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The original priority when invoking entering the scope().
   absl::optional<ThreadPriority> original_thread_priority_;
   const raw_ptr<std::atomic_bool> already_loaded_;

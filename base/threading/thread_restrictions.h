@@ -258,7 +258,7 @@ class ScopedIPCSupport;
 }  // namespace mojo
 namespace printing {
 class LocalPrinterHandlerDefault;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class PrintBackendServiceImpl;
 #endif
 class PrintBackendServiceManager;
@@ -452,7 +452,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::RenderProcessHostImpl;
   friend class content::RenderWidgetHostViewMac;  // http://crbug.com/121917
   friend class content::ShellPathProvider;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   friend class content::WebContentsImpl;  // http://crbug.com/1262162
 #endif
   friend class content::WebContentsViewMac;
@@ -467,7 +467,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class mojo::CoreLibraryInitializer;
   friend class printing::LocalPrinterHandlerDefault;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   friend class printing::PrintBackendServiceImpl;
 #endif
   friend class printing::PrintBackendServiceManager;

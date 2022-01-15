@@ -322,7 +322,7 @@ HangWatcher::HangWatcher()
   g_instance = this;
 }
 
-#if not defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 debug::ScopedCrashKeyString
 HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
   DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
@@ -697,7 +697,7 @@ void HangWatcher::DoDumpWithoutCrashing(
   capture_in_progress_.store(true, std::memory_order_relaxed);
   base::AutoLock scope_lock(capture_lock_);
 
-#if not defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   const std::string list_of_hung_thread_ids =
       watch_state_snapshot.PrepareHungThreadListCrashKey();
 

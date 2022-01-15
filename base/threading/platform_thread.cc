@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -55,7 +56,7 @@ void InitializeThreadPrioritiesFeature() {
     g_use_thread_priorities.store(false);
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
 #endif
 }

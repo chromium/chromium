@@ -24,7 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #endif
 
@@ -44,9 +44,9 @@ constexpr char kStoryBaseCondVar[] = "condition_variable";
 constexpr char kStorySuffixOneThread[] = "_1_thread";
 constexpr char kStorySuffixFourThreads[] = "_4_threads";
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 constexpr char kStoryBasePthreadCondVar[] = "pthread_condition_variable";
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
   perf_test::PerfResultReporter reporter(kMetricPrefixThread, story_name);
@@ -291,7 +291,7 @@ typedef EventPerfTest<ConditionVariableEvent> ConditionVariablePerfTest;
 TEST_F(ConditionVariablePerfTest, EventPingPong) {
   RunPingPongTest(std::string(kStoryBaseCondVar) + kStorySuffixFourThreads, 4);
 }
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 // Absolutely 100% minimal posix waitable event. If there is a better/faster
 // way to force a context switch, we should use that instead.

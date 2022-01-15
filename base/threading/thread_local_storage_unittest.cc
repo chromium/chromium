@@ -5,8 +5,9 @@
 #include "base/threading/thread_local_storage.h"
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <process.h>
 #endif
@@ -16,7 +17,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Ignore warnings about ptr->int conversions that we use when
 // storing ints into ThreadLocalStorage.
 #pragma warning(disable : 4311 4312)
@@ -24,7 +25,7 @@
 
 namespace base {
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 namespace internal {
 
@@ -38,7 +39,7 @@ class ThreadLocalStorageTestInternal {
 
 }  // namespace internal
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace {
 
@@ -99,7 +100,7 @@ void ThreadLocalStorageCleanup(void *value) {
   TLSSlot().Set(value);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 constexpr intptr_t kDummyValue = 0xABCD;
 constexpr size_t kKeyCount = 20;
 
@@ -198,7 +199,7 @@ void* UseTLSTestThreadRun(void* input) {
   return nullptr;
 }
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace
 
@@ -258,7 +259,7 @@ TEST(ThreadLocalStorageTest, TLSReclaim) {
   }
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Unlike POSIX, Windows does not iterate through the OS TLS to cleanup any
 // values there. Instead a per-module thread destruction function is called.
 // However, it is not possible to perform a check after this point (as the code
@@ -274,6 +275,6 @@ TEST(ThreadLocalStorageTest, UseTLSDuringDestruction) {
 
   EXPECT_TRUE(runner.teardown_works_correctly());
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace base

@@ -964,7 +964,7 @@ TEST_F(WatchHangsInScopeBlockingTest, ScopeBlocksDuringCapture) {
   VerifyScopesDontBlock();
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Flaky hangs on arm64 Macs: https://crbug.com/1140207
 #define MAYBE_NewScopeDoesNotBlockDuringCapture \
   DISABLED_NewScopeDoesNotBlockDuringCapture

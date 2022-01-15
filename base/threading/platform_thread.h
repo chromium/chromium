@@ -19,13 +19,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <mach/mach_types.h>
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #include <unistd.h>
 #endif
@@ -33,22 +33,22 @@
 namespace base {
 
 // Used for logging. Always an integer value.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef DWORD PlatformThreadId;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 typedef zx_handle_t PlatformThreadId;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 typedef mach_port_t PlatformThreadId;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 typedef pid_t PlatformThreadId;
 #endif
 
 // Used to operate on threads.
 class PlatformThreadHandle {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef void* Handle;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   typedef pthread_t Handle;
 #endif
 
@@ -205,7 +205,7 @@ class BASE_EXPORT PlatformThread {
   // Returns a realtime period provided by `delegate`.
   static TimeDelta GetRealtimePeriod(Delegate* delegate);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Toggles a specific thread's priority at runtime. This can be used to
   // change the priority of a thread in a different process and will fail
   // if the calling process does not have proper permissions. The
@@ -232,7 +232,7 @@ class BASE_EXPORT PlatformThread {
   // explicitly set default size then returns 0.
   static size_t GetDefaultThreadStackSize();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Initializes realtime threading based on kOptimizedRealtimeThreadingMac
   // feature status.
   static void InitializeOptimizedRealtimeThreadingFeature();

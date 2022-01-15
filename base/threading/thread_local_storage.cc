@@ -12,7 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 #include <pthread.h>
 #include <type_traits>
 #endif
@@ -201,7 +201,7 @@ TlsVectorState GetTlsVectorStateAndValue(void* tls_value,
 // Returns the tls vector and state using the tls key.
 TlsVectorState GetTlsVectorStateAndValue(PlatformThreadLocalStorage::TLSKey key,
                                          TlsVectorEntry** entry = nullptr) {
-#if defined(OS_MAC) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
   // On macOS, pthread_getspecific() is in libSystem, so a call to it has to go
   // through PLT. However, and contrary to some other platforms, *all* TLS keys
   // are in a static array in the thread structure. So they are *always* at a
@@ -368,7 +368,7 @@ namespace base {
 
 namespace internal {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PlatformThreadLocalStorage::OnThreadExit() {
   PlatformThreadLocalStorage::TLSKey key =
       g_native_tls_key.load(std::memory_order_relaxed);
@@ -386,7 +386,7 @@ void PlatformThreadLocalStorage::OnThreadExit() {
     return;
   OnThreadExitInternal(tls_vector);
 }
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 void PlatformThreadLocalStorage::OnThreadExit(void* value) {
   // On posix this function may be called twice. The first pass calls dtors and
   // sets state to kDestroyed. The second pass sets kDestroyed to
@@ -402,7 +402,7 @@ void PlatformThreadLocalStorage::OnThreadExit(void* value) {
 
   OnThreadExitInternal(tls_vector);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace internal
 

@@ -14,14 +14,14 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/threading/platform_thread_internal_posix.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/threading/platform_thread_win.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <mach/thread_policy.h>
@@ -30,7 +30,7 @@
 #include "base/time/time.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <pthread.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
@@ -303,7 +303,7 @@ TEST(PlatformThreadTest, SetCurrentThreadPriority) {
   TestSetCurrentThreadPriority();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Test changing a created thread's priority in an IDLE_PRIORITY_CLASS process
 // (regression test for https://crbug.com/901483).
 TEST(PlatformThreadTest,
@@ -312,14 +312,14 @@ TEST(PlatformThreadTest,
   TestSetCurrentThreadPriority();
   ::SetPriorityClass(Process::Current().Handle(), NORMAL_PRIORITY_CLASS);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Ideally PlatformThread::CanChangeThreadPriority() would be true on all
 // platforms for all priorities. This not being the case. This test documents
 // and hardcodes what we know. Please inform scheduler-dev@chromium.org if this
 // proprerty changes for a given platform.
 TEST(PlatformThreadTest, CanChangeThreadPriority) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Ubuntu, RLIMIT_NICE and RLIMIT_RTPRIO are 0 by default, so we won't be
   // able to increase priority to any level.
   constexpr bool kCanIncreasePriority = false;
@@ -330,7 +330,7 @@ TEST(PlatformThreadTest, CanChangeThreadPriority) {
   for (auto priority : kAllThreadPriorities) {
     EXPECT_TRUE(PlatformThread::CanChangeThreadPriority(priority, priority));
   }
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   EXPECT_FALSE(PlatformThread::CanChangeThreadPriority(
       ThreadPriority::BACKGROUND, ThreadPriority::NORMAL));
 #else
@@ -348,7 +348,7 @@ TEST(PlatformThreadTest, CanChangeThreadPriority) {
 
 // This tests internal PlatformThread APIs used on POSIX platforms except
 // macOS and  iOS.
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 TEST(PlatformThreadTest, GetNiceValueToThreadPriority) {
   using internal::NiceValueToThreadPriority;
   using internal::kThreadPriorityToNiceValueMap;
@@ -403,7 +403,7 @@ TEST(PlatformThreadTest, GetNiceValueToThreadPriority) {
   EXPECT_EQ(ThreadPriority::REALTIME_AUDIO,
             NiceValueToThreadPriority(kLowestNiceValue));
 }
-#endif  // defined(OS_POSIX) && !defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
 TEST(PlatformThreadTest, SetHugeThreadName) {
   // Construct an excessively long thread name.
@@ -416,10 +416,10 @@ TEST(PlatformThreadTest, SetHugeThreadName) {
 
 TEST(PlatformThreadTest, GetDefaultThreadStackSize) {
   size_t stack_size = PlatformThread::GetDefaultThreadStackSize();
-#if defined(OS_WIN) || defined(OS_IOS) || defined(OS_FUCHSIA) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) &&              \
-     !defined(THREAD_SANITIZER)) ||                              \
-    (defined(OS_ANDROID) && !defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA) || \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                \
+     !defined(THREAD_SANITIZER)) ||                                    \
+    (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
   EXPECT_EQ(0u, stack_size);
 #else
   EXPECT_GT(stack_size, 0u);
@@ -427,7 +427,7 @@ TEST(PlatformThreadTest, GetDefaultThreadStackSize) {
 #endif
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 namespace {
 
@@ -473,7 +473,7 @@ class RealtimeTestThread : public FunctionTestThread {
     mach_timebase_info(&tb_info);
 
     if (FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac) &&
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         !mac::IsOS10_14() &&  // Should not be applied on 10.14.
 #endif
         !realtime_period_.is_zero()) {
@@ -576,9 +576,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 }  // namespace
 
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -647,6 +647,6 @@ TEST(PlatformThreadTidCacheTest, MainThreadSecond) {
 
 }  // namespace
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

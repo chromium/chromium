@@ -10,9 +10,9 @@
 #include "base/base_export.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
 #endif
 
@@ -40,10 +40,10 @@ class ThreadLocalStorageTestInternal;
 // * ThreadLocalStorage::StaticSlot/Slot for more direct control of the slot.
 class BASE_EXPORT PlatformThreadLocalStorage {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef unsigned long TLSKey;
   enum : unsigned { TLS_KEY_OUT_OF_INDEXES = TLS_OUT_OF_INDEXES };
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   typedef pthread_key_t TLSKey;
   // The following is a "reserved key" which is used in our generic Chromium
   // ThreadLocalStorage implementation.  We expect that an OS will not return
@@ -66,9 +66,9 @@ class BASE_EXPORT PlatformThreadLocalStorage {
   static void FreeTLS(TLSKey key);
   static void SetTLSValue(TLSKey key, void* value);
   static void* GetTLSValue(TLSKey key) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return TlsGetValue(key);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     return pthread_getspecific(key);
 #endif
   }
@@ -81,11 +81,11 @@ class BASE_EXPORT PlatformThreadLocalStorage {
   // Destructors may end up being called multiple times on a terminating
   // thread, as other destructors may re-set slots that were previously
   // destroyed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Since Windows which doesn't support TLS destructor, the implementation
   // should use GetTLSValue() to retrieve the value of TLS slot.
   static void OnThreadExit();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // |Value| is the data stored in TLS slot, The implementation can't use
   // GetTLSValue() to retrieve the value of slot as it has already been reset
   // in Posix.

@@ -20,10 +20,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/windows_types.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
 #endif
 
@@ -41,9 +41,9 @@ constexpr char kMetricBaseReadWrite[] = "read_write";
 constexpr char kMetricSuffixThroughput[] = "_throughput";
 constexpr char kMetricSuffixOperationTime[] = "_operation_time";
 constexpr char kStoryBaseTLS[] = "thread_local_storage";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kStoryBasePlatformFLS[] = "platform_fiber_local_storage";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 constexpr char kStoryBasePlatformTLS[] = "platform_thread_local_storage";
 constexpr char kStoryBaseCPPTLS[] = "c++_platform_thread_local_storage";
 constexpr char kStorySuffixFourThreads[] = "_4_threads";
@@ -186,7 +186,7 @@ TEST_F(ThreadLocalStoragePerfTest, ThreadLocalStorage) {
             kCount, 4);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void WINAPI destroy(void*) {}
 
@@ -218,7 +218,7 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
             write, kCount, 4);
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
   pthread_key_t key;

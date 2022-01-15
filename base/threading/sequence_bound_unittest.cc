@@ -108,7 +108,7 @@ class BoxedValue {
   base::OnceClosure destruction_callback_;
 };
 
-#if defined(OS_IOS) && !TARGET_OS_SIMULATOR
+#if BUILDFLAG(IS_IOS) && !TARGET_OS_SIMULATOR
 #define MAYBE_ConstructAsyncCallReset FLAKY_ConstructAsyncCallReset
 #else
 #define MAYBE_ConstructAsyncCallReset ConstructAsyncCallReset

@@ -27,7 +27,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_NACL) && !defined(OS_AIX)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 #include <pthread.h>
 #include <sys/prctl.h>
 #include <sys/resource.h>
@@ -61,7 +61,7 @@ int g_scheduler_boost_adj;
 int g_scheduler_limit_adj;
 bool g_scheduler_use_latency_tune_adj;
 
-#if !defined(OS_NACL) && !defined(OS_AIX)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 
 // Defined by linux uclamp ABI of sched_setattr().
 const uint32_t kSchedulerUclampMin = 0;
@@ -129,10 +129,10 @@ int sched_setattr(pid_t pid,
                   unsigned int flags) {
   return syscall(__NR_sched_setattr, pid, attr, flags);
 }
-#endif  // !defined(OS_NACL) && !defined(OS_AIX)
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 const FilePath::CharType kCgroupDirectory[] =
     FILE_PATH_LITERAL("/sys/fs/cgroup");
 
@@ -286,7 +286,7 @@ void SetThreadCgroupsForThreadPriority(PlatformThreadId thread_id,
 namespace internal {
 
 namespace {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 const struct sched_param kRealTimePrio = {8};
 #endif
 }  // namespace
@@ -299,7 +299,7 @@ const ThreadPriorityToNiceValuePair kThreadPriorityToNiceValueMap[4] = {
 };
 
 bool CanSetThreadPriorityToRealtimeAudio() {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // A non-zero soft-limit on RLIMIT_RTPRIO is required to be allowed to invoke
   // pthread_setschedparam in SetCurrentThreadPriorityForPlatform().
   struct rlimit rlim;
@@ -310,7 +310,7 @@ bool CanSetThreadPriorityToRealtimeAudio() {
 }
 
 bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // For legacy schedtune interface
   SetThreadCgroupsForThreadPriority(PlatformThread::CurrentId(), priority);
 
@@ -328,7 +328,7 @@ bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
 }
 
 absl::optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   int maybe_sched_rr = 0;
   struct sched_param maybe_realtime_prio = {0};
   if (pthread_getschedparam(pthread_self(), &maybe_sched_rr,
@@ -347,7 +347,7 @@ absl::optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
 void PlatformThread::SetName(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 
-#if !defined(OS_NACL) && !defined(OS_AIX)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
   // On linux we can get the thread names to show up in the debugger by setting
   // the process name for the LWP.  We don't want to do this for the main
   // thread because that would rename the process, causing tools like killall
@@ -364,10 +364,10 @@ void PlatformThread::SetName(const std::string& name) {
   // We expect EPERM failures in sandboxed processes, just ignore those.
   if (err < 0 && errno != EPERM)
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
-#endif  //  !defined(OS_NACL) && !defined(OS_AIX)
+#endif  //  !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 }
 
-#if !defined(OS_NACL) && !defined(OS_AIX)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 // static
 void PlatformThread::SetThreadPriority(ProcessId process_id,
                                        PlatformThreadId thread_id,
@@ -392,7 +392,7 @@ void PlatformThread::SetThreadPriority(ProcessId process_id,
               << nice_setting;
   }
 }
-#endif  //  !defined(OS_NACL) && !defined(OS_AIX)
+#endif  //  !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void PlatformThread::InitThreadPostFieldTrial() {

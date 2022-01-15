@@ -69,7 +69,7 @@ void PlatformThread::SetName(const std::string& name) {
 // Whether optimized realt-time thread config should be used for audio.
 const Feature kOptimizedRealtimeThreadingMac {
   "OptimizedRealtimeThreadingMac",
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       FEATURE_ENABLED_BY_DEFAULT
 #else
       FEATURE_DISABLED_BY_DEFAULT
@@ -79,7 +79,7 @@ const Feature kOptimizedRealtimeThreadingMac {
 namespace {
 
 bool IsOptimizedRealtimeThreadingMacEnabled() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // There is some platform bug on 10.14.
   if (mac::IsOS10_14())
     return false;
@@ -345,7 +345,7 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
 }
 
 size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return 0;
 #else
   // The Mac OS X default for a pthread stack size is 512kB.
