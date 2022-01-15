@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/immediate_crash.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

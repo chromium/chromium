@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/immediate_crash.h"
 
 // An official build shouldn't generate code to print out messages for
 // the CHECK* macros, nor should it have the strings in the

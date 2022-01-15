@@ -20,7 +20,6 @@
 #include "base/debug/leak_annotations.h"
 #include "base/debug/profiler.h"
 #include "base/files/file.h"
-#include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"

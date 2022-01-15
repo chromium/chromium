@@ -11,7 +11,6 @@
 #include "base/big_endian.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/immediate_crash.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
