@@ -144,7 +144,7 @@ class BASE_EXPORT SamplingHeapProfiler
   // Whether it should record thread names.
   std::atomic<bool> record_thread_names_{false};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Whether to use CFI unwinder or default unwinder.
   std::atomic<bool> use_default_unwinder_{false};
 #endif

@@ -19,7 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 #include <pthread.h>
 #endif
 
@@ -29,7 +29,7 @@ using allocator::AllocatorDispatch;
 
 namespace {
 
-#if defined(OS_APPLE) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 
 // The macOS implementation of libmalloc sometimes calls malloc recursively,
 // delegating allocations between zones. That causes our hooks being called
@@ -321,7 +321,7 @@ AllocatorDispatch g_allocator_dispatch = {&AllocFn,
 
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
 
 void PartitionAllocHook(void* address, size_t size, const char* type) {
   PoissonAllocationSampler::RecordAlloc(
@@ -332,7 +332,7 @@ void PartitionFreeHook(void* address) {
   PoissonAllocationSampler::RecordFree(address);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
 
 void InstallStandardAllocatorHooks() {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -343,10 +343,10 @@ void InstallStandardAllocatorHooks() {
   // happen for tests.
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
   PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
                                         &PartitionFreeHook);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
 }
 
 void RemoveStandardAllocatorHooksForTesting() {
@@ -354,7 +354,7 @@ void RemoveStandardAllocatorHooksForTesting() {
   allocator::RemoveAllocatorDispatchForTesting(
       &g_allocator_dispatch);  // IN-TEST
 #endif
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
   PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
 #endif
 }
