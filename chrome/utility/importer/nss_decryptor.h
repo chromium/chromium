@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/utility/importer/nss_decryptor_win.h"
 #elif defined(USE_NSS_CERTS)
 #include "chrome/utility/importer/nss_decryptor_system_nss.h"

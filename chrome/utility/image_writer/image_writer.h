@@ -18,14 +18,14 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 namespace image_writer {
 
 class ImageWriterHandler;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class DiskUnmounterMac;
 #endif
 
@@ -83,11 +83,11 @@ class ImageWriter : public base::SupportsWeakPtr<ImageWriter> {
   int64_t bytes_processed_;
   bool running_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<HANDLE> volume_handles_;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   friend class DiskUnmounterMac;
   std::unique_ptr<DiskUnmounterMac> unmounter_;
 #endif

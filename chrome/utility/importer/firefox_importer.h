@@ -61,7 +61,7 @@ class FirefoxImporter : public Importer {
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
   void ImportBookmarks();
-#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
   void ImportPasswords();
 #endif
   void ImportHistory();
@@ -116,7 +116,7 @@ class FirefoxImporter : public Importer {
   base::FilePath app_path_;
   base::ScopedTempDir source_path_copy_;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Stored because we can only access it from the UI thread.
   std::string locale_;
 #endif

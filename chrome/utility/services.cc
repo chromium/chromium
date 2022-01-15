@@ -28,7 +28,7 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/services/util_win/processor_metrics.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -39,13 +39,13 @@
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
 #include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
 #include "services/proxy_resolver_win/windows_system_proxy_resolver_impl.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "chrome/utility/importer/profile_import_impl.h"
@@ -53,7 +53,7 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/services/ipp_parser/ipp_parser.h"  // nogncheck
@@ -64,7 +64,7 @@
 #include "chrome/services/file_util/file_util_service.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) && (defined(OS_LINUX) || defined(OS_WIN))
+#if BUILDFLAG(FULL_SAFE_BROWSING) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN))
 #include "chrome/services/file_util/document_analysis_service.h"  // nogncheck
 #endif
 
@@ -73,13 +73,13 @@
 #include "chrome/services/removable_storage_writer/removable_storage_writer.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
 #include "chrome/services/media_gallery_util/media_parser_factory.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
-    (BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN))
+    (BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_WIN))
 #include "chrome/services/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #endif
@@ -147,7 +147,7 @@ auto RunWebAppOriginAssociationParser(
       std::move(receiver));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 auto RunProcessorMetrics(
     mojo::PendingReceiver<chrome::mojom::ProcessorMetrics> receiver) {
   return std::make_unique<ProcessorMetricsImpl>(std::move(receiver));
@@ -174,18 +174,18 @@ auto RunWindowsSystemProxyResolver(
   return std::make_unique<proxy_resolver_win::WindowsSystemProxyResolverImpl>(
       std::move(receiver));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 auto RunMacNotificationService(
     mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
         receiver) {
   return std::make_unique<mac_notifications::MacNotificationProviderImpl>(
       std::move(receiver));
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 auto RunProxyResolver(
     mojo::PendingReceiver<proxy_resolver::mojom::ProxyResolverFactory>
         receiver) {
@@ -209,7 +209,7 @@ auto RunSpeechRecognitionService(
   return std::make_unique<speech::SpeechRecognitionServiceImpl>(
       std::move(receiver));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunCupsIppParser(
@@ -218,7 +218,7 @@ auto RunCupsIppParser(
 }
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) && (defined(OS_LINUX) || defined(OS_WIN))
+#if BUILDFLAG(FULL_SAFE_BROWSING) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN))
 auto RunDocumentAnalysis(
     mojo::PendingReceiver<chrome::mojom::DocumentAnalysisService> receiver) {
   return std::make_unique<DocumentAnalysisService>(std::move(receiver));
@@ -239,15 +239,15 @@ auto RunRemovableStorageWriter(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
 auto RunMediaParserFactory(
     mojo::PendingReceiver<chrome::mojom::MediaParserFactory> receiver) {
   return std::make_unique<MediaParserFactory>(std::move(receiver));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
-    (BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN))
+    (BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_WIN))
 auto RunPrintingService(
     mojo::PendingReceiver<printing::mojom::PrintingService> receiver) {
   return std::make_unique<printing::PrintingService>(std::move(receiver));
@@ -344,7 +344,7 @@ auto RunLibassistantService(
 void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
   // NOTE: This ServiceFactory is only used in utility processes which are run
   // with elevated system privileges.
-#if BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_WIN)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_WIN)
   // On non-Windows, this service runs in a regular utility process.
   services.Add(RunRemovableStorageWriter);
 #endif
@@ -357,46 +357,46 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunQRCodeGeneratorService);
   services.Add(RunWebAppOriginAssociationParser);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
   services.Add(RunSpeechRecognitionService);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   services.Add(RunProcessorMetrics);
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
   services.Add(RunWindowsIconReader);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunCupsIppParser);
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   services.Add(RunMacNotificationService);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunFileUtil);
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) && (defined(OS_LINUX) || defined(OS_WIN))
+#if BUILDFLAG(FULL_SAFE_BROWSING) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN))
   services.Add(RunDocumentAnalysis);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && !defined(OS_WIN)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_WIN)
   // On Windows, this service runs in an elevated utility process.
   services.Add(RunRemovableStorageWriter);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
   services.Add(RunMediaParserFactory);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
-    (BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN))
+    (BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_WIN))
   services.Add(RunPrintingService);
 #endif
 
@@ -428,10 +428,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 }
 
 void RegisterIOThreadServices(mojo::ServiceFactory& services) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProxyResolver);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   services.Add(RunWindowsSystemProxyResolver);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
