@@ -72,7 +72,7 @@ FeatureType NotificationIdToFeature(const std::string& notification_id) {
   return FeatureType::kInvalid;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::Feature GetNotificationIphFeatureForFeature(FeatureType& feature) {
   switch (feature) {
     case FeatureType::kIncognitoTab:

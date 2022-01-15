@@ -28,7 +28,7 @@ std::string NotificationIdForFeature(FeatureType feature);
 // Returns the feature type from the notification ID.
 FeatureType NotificationIdToFeature(const std::string& notification_id);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Returns the notification IPH feature for the given feature.
 base::Feature GetNotificationIphFeatureForFeature(FeatureType& feature);
 #endif

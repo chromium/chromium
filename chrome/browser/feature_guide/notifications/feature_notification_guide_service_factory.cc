@@ -21,7 +21,7 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "content/public/browser/browser_context.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feature_guide/notifications/android/feature_notification_guide_bridge.h"
 #endif
 
@@ -114,7 +114,7 @@ KeyedService* FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
           features::kFeatureNotificationGuide,
           "feature_notification_tracking_only", false);
   std::unique_ptr<FeatureNotificationGuideService::Delegate> delegate;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   delegate.reset(new FeatureNotificationGuideBridge());
 #endif
   return new FeatureNotificationGuideServiceImpl(
