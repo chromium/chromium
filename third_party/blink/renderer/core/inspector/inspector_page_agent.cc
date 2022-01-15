@@ -470,6 +470,7 @@ InspectorPageAgent::InspectorPageAgent(
       inspector_resource_content_loader_(resource_content_loader),
       resource_content_loader_client_id_(
           resource_content_loader->CreateClientId()),
+      intercept_file_chooser_(&agent_state_, false),
       enabled_(&agent_state_, /*default_value=*/false),
       screencast_enabled_(&agent_state_, /*default_value=*/false),
       lifecycle_events_enabled_(&agent_state_, /*default_value=*/false),
@@ -1730,8 +1731,8 @@ void InspectorPageAgent::DidProduceCompilationCache(
 void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
                                            HTMLInputElement* element,
                                            bool* intercepted) {
-  *intercepted |= intercept_file_chooser_;
-  if (!intercept_file_chooser_)
+  *intercepted |= intercept_file_chooser_.Get();
+  if (!intercept_file_chooser_.Get())
     return;
   bool multiple = element->Multiple();
   GetFrontend()->fileChooserOpened(
@@ -1773,7 +1774,7 @@ Response InspectorPageAgent::waitForDebugger() {
 }
 
 Response InspectorPageAgent::setInterceptFileChooserDialog(bool enabled) {
-  intercept_file_chooser_ = enabled;
+  intercept_file_chooser_.Set(enabled);
   return Response::Success();
 }
 
