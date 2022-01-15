@@ -115,6 +115,15 @@ class PrintJobWorker {
   // Get the document name to be used when initiating printing.
   std::u16string GetDocumentName(const PrintedDocument* new_document) const;
 
+#if defined(OS_WIN)
+  // Renders a page in the printer.
+  // This is applicable when using the Windows GDI print API.
+  virtual void SpoolPage(PrintedPage* page);
+#endif
+
+  // Closes the job since spooling is done.
+  virtual void OnDocumentDone();
+
   // Reports settings back to |callback|.
   void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
@@ -128,6 +137,8 @@ class PrintJobWorker {
 
   PrintingContext* printing_context() { return printing_context_.get(); }
   PrintedDocument* document() { return document_.get(); }
+  PrintJob* print_job() { return print_job_; }
+  const PageNumber& page_number() { return page_number_; }
   base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
 
  private:
@@ -144,17 +155,10 @@ class PrintJobWorker {
 #if defined(OS_WIN)
   // Windows print GDI-specific handling for OnNewPage().
   bool OnNewPageHelperGdi();
-
-  // Renders a page in the printer.
-  // This is applicable when using the Windows GDI print API.
-  void SpoolPage(PrintedPage* page);
 #endif  // defined(OS_WIN)
 
   // Renders the document to the printer.
   void SpoolJob();
-
-  // Closes the job since spooling is done.
-  void OnDocumentDone();
 
   // Asks the user for print settings. Must be called on the UI thread.
   // Required on Mac and Linux. Windows can display UI from non-main threads,

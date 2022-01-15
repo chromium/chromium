@@ -80,7 +80,13 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
   // This is applicable when using the Windows GDI print API.
   mojom::ResultCode RenderPrintedPage(const PrintedPage& page,
                                       PrintingContext* context) const;
-#endif
+
+#if !defined(NDEBUG)
+  // Verifies that the page is intended to be printed for the document.
+  // Note: locks for a short amount of time.
+  bool IsPageInList(const PrintedPage& page) const;
+#endif  // !defined(NDEBUG)
+#endif  // defined(OS_WIN)
 
   // Draws the document in the context.  Fails if context->NewPage() or
   // context->PageDone() fails.

@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "printing/buildflags/buildflags.h"
@@ -39,19 +40,36 @@ class PrintJobWorkerOop : public PrintJobWorker {
   void StartPrinting(PrintedDocument* new_document) override;
 
  protected:
-  // Local callback wrapper for Print Backend Service mojom call.  Virtual to
+  // Local callback wrappers for Print Backend Service mojom call.  Virtual to
   // support testing.
   virtual void OnDidStartPrinting(mojom::ResultCode result);
+#if defined(OS_WIN)
+  virtual void OnDidRenderPrintedPage(uint32_t page_index,
+                                      mojom::ResultCode result);
+#endif
 
   // `PrintJobWorker` overrides.
+#if defined(OS_WIN)
+  void SpoolPage(PrintedPage* page) override;
+#endif
+  void OnDocumentDone() override;
   void UpdatePrintSettings(base::Value new_settings,
                            SettingsCallback callback) override;
   void OnFailure() override;
+
+  // Show the print error dialog, virtual to support testing.
+  virtual void ShowErrorDialog();
 
  private:
   // Support to unregister this worker as a printing client.  Applicable any
   // time a print job finishes, is canceled, or needs to be restarted.
   void UnregisterServiceManagerClient();
+
+  // Helper function for restarting a print job after error.
+  bool TryRestartPrinting();
+
+  // Initiate failure handling, including notification to the user.
+  void NotifyFailure(mojom::ResultCode result);
 
   // Local callback wrapper for Print Backend Service mojom call.
   void OnDidUpdatePrintSettings(const std::string& device_name,
@@ -61,6 +79,12 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // Mojo support to send messages from UI thread.
   void SendStartPrinting(const std::string& device_name,
                          const std::u16string& document_name);
+#if defined(OS_WIN)
+  void SendRenderPrintedPage(
+      const PrintedPage* page,
+      mojom::MetafileDataType page_data_type,
+      base::ReadOnlySharedMemoryRegion serialized_page_data);
+#endif  // defined(OS_WIN)
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.
@@ -77,6 +101,14 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // The type of target to print to.  Used only from the UI thread.
   mojom::PrintTargetType print_target_type_ =
       mojom::PrintTargetType::kDirectToDevice;
+
+#if defined(OS_WIN)
+  // Number of pages that have completed printing.
+  uint32_t pages_printed_count_ = 0;
+#endif
+
+  // Tracks if a restart for printing has already been attempted.
+  bool print_retried_ = false;
 
   // Weak pointers have flags that get bound to the thread where they are
   // checked, so it is necessary to use different factories when getting a

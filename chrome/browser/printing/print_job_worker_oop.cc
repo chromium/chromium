@@ -8,13 +8,20 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
+#include "chrome/browser/printing/print_error_dialog.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/metafile.h"
 #include "printing/printed_document.h"
 #include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_WIN)
+#include "printing/printed_page_win.h"
+#endif
 
 using content::BrowserThread;
 
@@ -71,32 +78,103 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error initiating printing via service for document "
                        << document()->cookie() << ": " << result;
-    if (result == mojom::ResultCode::kAccessDenied) {
-      // Register that this printer requires elevated privileges.
-      PrintBackendServiceManager& service_mgr =
-          PrintBackendServiceManager::GetInstance();
-      service_mgr.SetPrinterDriverRequiresElevatedPrivilege(device_name_);
+    if (result != mojom::ResultCode::kAccessDenied || !TryRestartPrinting())
+      NotifyFailure(result);
+    return;
+  }
+  VLOG(1) << "Printing initiated with service for document "
+          << document()->cookie();
+#if defined(OS_WIN)
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&PrintJobWorker::OnNewPage,
+                                         worker_weak_factory_.GetWeakPtr()));
+#else
+  // TODO(crbug.com/809738)  Still need more support for printing pipeline in
+  // the service (need `RenderPrintedDocument()` support).
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&PrintJobWorkerOop::OnFailure,
+                                         worker_weak_factory_.GetWeakPtr()));
+#endif
+}
 
-      // Failure from access-denied means we no longer need this client.
-      UnregisterServiceManagerClient();
-
-      // Retry the operation which should now happen at a higher privilege
-      // level.
-      SendStartPrinting(device_name_, document_name_);
-      return;
-    }
+#if defined(OS_WIN)
+void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
+                                               mojom::ResultCode result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (result != mojom::ResultCode::kSuccess) {
+    PRINTER_LOG(ERROR)
+        << "Error rendering printed page via service for document "
+        << document()->cookie() << ": " << result;
+    NotifyFailure(result);
+    return;
+  }
+  scoped_refptr<PrintedPage> page = document()->GetPage(page_index);
+  if (!page) {
+    DLOG(ERROR) << "Unable to get page " << page_index << " for document "
+                << document()->cookie();
     task_runner()->PostTask(FROM_HERE,
                             base::BindOnce(&PrintJobWorkerOop::OnFailure,
                                            worker_weak_factory_.GetWeakPtr()));
     return;
   }
-  VLOG(1) << "Printing initiated with service for document "
-          << document()->cookie();
-  // TODO(crbug.com/809738)  Still need more support for printing pipeline in
-  // the service.
-  task_runner()->PostTask(FROM_HERE,
-                          base::BindOnce(&PrintJobWorkerOop::OnFailure,
-                                         worker_weak_factory_.GetWeakPtr()));
+  VLOG(1) << "Rendered printed page with service for document "
+          << document()->cookie() << " page " << page_index;
+
+  // Signal everyone that the page is printed.
+  print_job()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PrintJob::OnPageDone, base::RetainedRef(print_job()),
+                     base::RetainedRef(page)));
+
+  ++pages_printed_count_;
+  if (pages_printed_count_ == document()->page_count()) {
+    // The last page has printed, can proceed to document done processing.
+    VLOG(1) << "All pages printed for document";
+    // TODO(crbug.com/809738)  Proceed with `DocumentDone()` processing.
+    task_runner()->PostTask(FROM_HERE,
+                            base::BindOnce(&PrintJobWorkerOop::OnFailure,
+                                           worker_weak_factory_.GetWeakPtr()));
+  }
+}
+
+void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  DCHECK_NE(page_number(), PageNumber::npos());
+
+#if !defined(NDEBUG)
+  DCHECK(document()->IsPageInList(*page));
+#endif
+
+  const MetafilePlayer* metafile = page->metafile();
+  DCHECK(metafile);
+  base::MappedReadOnlyRegion region_mapping =
+      metafile->GetDataAsSharedMemoryRegion();
+  if (!region_mapping.IsValid()) {
+    OnFailure();
+    return;
+  }
+
+  VLOG(1) << "Spooling page " << page_number() << " to print via service";
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PrintJobWorkerOop::SendRenderPrintedPage,
+                     ui_weak_factory_.GetWeakPtr(), base::RetainedRef(page),
+                     metafile->GetDataType(),
+                     std::move(region_mapping.region)));
+}
+#endif  // defined(OS_WIN)
+
+void PrintJobWorkerOop::OnDocumentDone() {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+
+  // Can do browser-side checks related to completeness for sending, but must
+  // wait to do OOP related checks until OnDidDocumentDone() is received.
+  DCHECK_EQ(page_number(), PageNumber::npos());
+  DCHECK(document());
+  // PrintJob must own this, because only PrintJob can send notifications.
+  DCHECK(print_job());
+
+  // TODO(crbug.com/809738)  Further OOP logic pending.
 }
 
 void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
@@ -130,6 +208,10 @@ void PrintJobWorkerOop::OnFailure() {
   PrintJobWorker::OnFailure();
 }
 
+void PrintJobWorkerOop::ShowErrorDialog() {
+  ShowPrintErrorDialog();
+}
+
 void PrintJobWorkerOop::UnregisterServiceManagerClient() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (service_manager_client_id_.has_value()) {
@@ -137,6 +219,51 @@ void PrintJobWorkerOop::UnregisterServiceManagerClient() {
         service_manager_client_id_.value());
     service_manager_client_id_.reset();
   }
+}
+
+bool PrintJobWorkerOop::TryRestartPrinting() {
+  // Safety precaution to avoid any chance of infinite loop for retrying.
+  if (print_retried_)
+    return false;
+  print_retried_ = true;
+
+  // Register that this printer requires elevated privileges.
+  PrintBackendServiceManager& service_mgr =
+      PrintBackendServiceManager::GetInstance();
+  service_mgr.SetPrinterDriverRequiresElevatedPrivilege(device_name_);
+
+  // Failure from access-denied means we no longer need the prior client ID.
+  UnregisterServiceManagerClient();
+
+  // Retry the operation, which should now happen at a higher privilege
+  // level.
+  SendStartPrinting(device_name_, document_name_);
+  return true;
+}
+
+void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (result == mojom::ResultCode::kAccessDenied) {
+    // An attempt to restart could be undesirable if some pages were able to
+    // be sent to the destination before the error occurred.  If we receive
+    // an access-denied error in such cases then we just abort this print job
+    // with an error notification to the user.  This is more clear to the user
+    // what has occurred than if we transparently retry the job and succeed,
+    // where the user could end up with too many printed pages and not know
+    // why.
+    // Register that this printer requires elevated privileges so that any
+    // further attempts to print should succeed.
+    PrintBackendServiceManager& service_mgr =
+        PrintBackendServiceManager::GetInstance();
+    service_mgr.SetPrinterDriverRequiresElevatedPrivilege(device_name_);
+  }
+  ShowErrorDialog();
+
+  // Initiate rest of regular failure handling.
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&PrintJobWorkerOop::OnFailure,
+                                         worker_weak_factory_.GetWeakPtr()));
 }
 
 void PrintJobWorkerOop::OnDidUpdatePrintSettings(
@@ -191,5 +318,27 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
       base::BindOnce(&PrintJobWorkerOop::OnDidStartPrinting,
                      ui_weak_factory_.GetWeakPtr()));
 }
+
+#if defined(OS_WIN)
+void PrintJobWorkerOop::SendRenderPrintedPage(
+    const PrintedPage* page,
+    mojom::MetafileDataType page_data_type,
+    base::ReadOnlySharedMemoryRegion serialized_page_data) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Page numbers are 0-based for the printing context.
+  const uint32_t page_index = page->page_number() - 1;
+  const int32_t document_cookie = document()->cookie();
+  VLOG(1) << "Sending page " << page_index << " of document " << document_cookie
+          << " to `" << device_name_ << "` for printing";
+  PrintBackendServiceManager& service_mgr =
+      PrintBackendServiceManager::GetInstance();
+  service_mgr.RenderPrintedPage(
+      device_name_, document_cookie, *page, page_data_type,
+      std::move(serialized_page_data),
+      base::BindOnce(&PrintJobWorkerOop::OnDidRenderPrintedPage,
+                     ui_weak_factory_.GetWeakPtr(), page_index));
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace printing

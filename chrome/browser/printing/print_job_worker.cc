@@ -125,12 +125,6 @@ void FailedNotificationCallback(PrintJob* print_job) {
   print_job->OnFailed();
 }
 
-#if defined(OS_WIN)
-void PageNotificationCallback(PrintJob* print_job, PrintedPage* page) {
-  print_job->OnPageDone(page);
-}
-#endif
-
 }  // namespace
 
 PrintJobWorker::PrintJobWorker(int render_process_id, int render_frame_id)
@@ -528,10 +522,10 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
 
   // Signal everyone that the page is printed.
   DCHECK(print_job_);
-  print_job_->PostTask(FROM_HERE,
-                       base::BindOnce(&PageNotificationCallback,
-                                      base::RetainedRef(print_job_.get()),
-                                      base::RetainedRef(page)));
+  print_job_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PrintJob::OnPageDone, base::RetainedRef(print_job_.get()),
+                     base::RetainedRef(page)));
 }
 #endif  // defined(OS_WIN)
 

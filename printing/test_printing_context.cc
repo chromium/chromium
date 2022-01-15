@@ -124,6 +124,9 @@ mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
   DCHECK(in_print_job_);
   DVLOG(1) << "Render page " << page.page_number();
 
+  if (render_page_blocked_by_permissions_)
+    return mojom::ResultCode::kAccessDenied;
+
   // No-op.
   return mojom::ResultCode::kSuccess;
 }
