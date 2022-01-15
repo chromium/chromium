@@ -4,6 +4,8 @@
 
 #include "base/files/file_path.h"
 
+#include "build/build_config.h"
+
 // file_path.h is a widely included header and its size has significant impact
 // on build time. Try not to raise this limit unless necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
@@ -25,15 +27,15 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_cftyperef.h"
 #include "base/third_party/icu/icu_utf.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/win_util.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -437,9 +439,9 @@ FilePath FilePath::InsertBeforeExtension(StringPieceType suffix) const {
 FilePath FilePath::InsertBeforeExtensionASCII(StringPiece suffix)
     const {
   DCHECK(IsStringASCII(suffix));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return InsertBeforeExtension(UTF8ToWide(suffix));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return InsertBeforeExtension(suffix);
 #endif
 }
@@ -464,9 +466,9 @@ FilePath FilePath::AddExtension(StringPieceType extension) const {
 
 FilePath FilePath::AddExtensionASCII(StringPiece extension) const {
   DCHECK(IsStringASCII(extension));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return AddExtension(UTF8ToWide(extension));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return AddExtension(extension);
 #endif
 }
@@ -553,9 +555,9 @@ FilePath FilePath::Append(const SafeBaseName& component) const {
 
 FilePath FilePath::AppendASCII(StringPiece component) const {
   DCHECK(base::IsStringASCII(component));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return Append(UTF8ToWide(component));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return Append(component);
 #endif
 }
@@ -620,7 +622,7 @@ bool FilePath::ReferencesParent() const {
   return false;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 std::u16string FilePath::LossyDisplayName() const {
   return AsString16(path_);
@@ -654,7 +656,7 @@ FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
   return FilePath(AsWStringPiece(utf16));
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // See file_path.h for a discussion of the encoding of paths on POSIX
 // platforms.  These encoding conversion functions are not quite correct.
@@ -709,12 +711,12 @@ FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
 #endif
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void FilePath::WriteToPickle(Pickle* pickle) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   pickle->WriteString16(AsStringPiece16(path_));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   pickle->WriteString(path_);
 #else
 #error Unsupported platform
@@ -722,12 +724,12 @@ void FilePath::WriteToPickle(Pickle* pickle) const {
 }
 
 bool FilePath::ReadFromPickle(PickleIterator* iter) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string path;
   if (!iter->ReadString16(&path))
     return false;
   path_ = UTF16ToWide(path);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (!iter->ReadString(&path_))
     return false;
 #else
@@ -740,7 +742,7 @@ bool FilePath::ReadFromPickle(PickleIterator* iter) {
   return true;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows specific implementation of file string comparisons.
 
 int FilePath::CompareIgnoreCase(StringPieceType string1,
@@ -774,7 +776,7 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
   return 0;
 }
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 // Mac OS X specific implementation of file string comparisons.
 
 // cf. http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties
@@ -1334,7 +1336,7 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
   return HFSFastUnicodeCompare(hfs1, hfs2);
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Generic Posix system comparisons.
 int FilePath::CompareIgnoreCase(StringPieceType string1,
@@ -1395,7 +1397,7 @@ FilePath FilePath::NormalizePathSeparatorsTo(CharType separator) const {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool FilePath::IsContentUri() const {
   return StartsWith(path_, "content://", base::CompareCase::INSENSITIVE_ASCII);
 }

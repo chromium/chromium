@@ -14,7 +14,7 @@
 #include "base/files/file.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -46,7 +46,7 @@ class BASE_EXPORT MemoryMappedFile {
     // in the process address space.
     READ_WRITE_EXTEND,
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // This provides read access, but as executable code used for prefetching
     // DLLs into RAM to avoid inefficient hard fault patterns such as during
     // process startup. The accessing thread could be paused while data from
@@ -124,7 +124,7 @@ class BASE_EXPORT MemoryMappedFile {
                                            size_t* aligned_size,
                                            int32_t* offset);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Maps the executable file to memory, set |data_| to that memory address.
   // Return true on success.
   bool MapImageToMemory(Access access);
@@ -141,7 +141,7 @@ class BASE_EXPORT MemoryMappedFile {
   uint8_t* data_;
   size_t length_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   win::ScopedHandle file_mapping_;
 #endif
 };

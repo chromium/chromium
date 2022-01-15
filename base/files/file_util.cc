@@ -4,7 +4,9 @@
 
 #include "base/files/file_util.h"
 
-#if defined(OS_WIN)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <io.h>
 #endif
 #include <stdio.h>
@@ -25,17 +27,17 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 namespace base {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 OnceCallback<void(const FilePath&)> GetDeleteFileCallback() {
   return BindOnce(IgnoreResult(&DeleteFile));
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 OnceCallback<void(const FilePath&)> GetDeletePathRecursivelyCallback() {
   return BindOnce(IgnoreResult(&DeletePathRecursively));
@@ -56,7 +58,7 @@ bool Move(const FilePath& from_path, const FilePath& to_path) {
 }
 
 bool CopyFileContents(File& infile, File& outfile) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   bool retry_slow = false;
   bool res =
       internal::CopyFileContentsWithSendfile(infile, outfile, retry_slow);
@@ -99,15 +101,15 @@ bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
   // We open the file in binary format even if they are text files because
   // we are just comparing that bytes are exactly same in both files and not
   // doing anything smart with text formatting.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::ifstream file1(filename1.value().c_str(),
                       std::ios::in | std::ios::binary);
   std::ifstream file2(filename2.value().c_str(),
                       std::ios::in | std::ios::binary);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::ifstream file1(filename1.value(), std::ios::in | std::ios::binary);
   std::ifstream file2(filename2.value(), std::ios::in | std::ios::binary);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Even if both files aren't openable (and thus, in some sense, "equal"),
   // any unusable file yields a result of "false".
@@ -135,13 +137,13 @@ bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
 }
 
 bool TextContentsEqual(const FilePath& filename1, const FilePath& filename2) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::ifstream file1(filename1.value().c_str(), std::ios::in);
   std::ifstream file2(filename2.value().c_str(), std::ios::in);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::ifstream file1(filename1.value(), std::ios::in);
   std::ifstream file2(filename2.value(), std::ios::in);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Even if both files aren't openable (and thus, in some sense, "equal"),
   // any unusable file yields a result of "false".
@@ -201,7 +203,7 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   constexpr int64_t kDefaultChunkSize = 1 << 16;
   int64_t chunk_size = kDefaultChunkSize - 1;
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BY_HANDLE_FILE_INFORMATION file_info = {};
   if (::GetFileInformationByHandle(
           reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(stream))),
@@ -212,7 +214,7 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
     if (size.QuadPart > 0)
       chunk_size = size.QuadPart;
   }
-#else   // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
   // In cases where the reported file size is 0, use a smaller chunk size to
   // minimize memory allocated and cost of string::resize() in case the read
   // size is small (i.e. proc files). If the file is larger than this, the read
@@ -222,7 +224,7 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   stat_wrapper_t file_info = {};
   if (!File::Fstat(fileno(stream), &file_info) && file_info.st_size > 0)
     chunk_size = file_info.st_size;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   // We need to attempt to read at EOF for feof flag to be set so here we
   // use |chunk_size| + 1.
   chunk_size = std::min<uint64_t>(chunk_size, max_size) + 1;
@@ -317,11 +319,11 @@ bool TouchFile(const FilePath& path,
                const Time& last_modified) {
   int flags = File::FLAG_OPEN | File::FLAG_WRITE_ATTRIBUTES;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, FILE_FLAG_BACKUP_SEMANTICS is needed to open a directory.
   if (DirectoryExists(path))
     flags |= File::FLAG_WIN_BACKUP_SEMANTICS;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // On Fuchsia, we need O_RDONLY for directories, or O_WRONLY for files.
   // TODO(https://crbug.com/947802): Find a cleaner workaround for this.
   flags |= (DirectoryExists(path) ? File::FLAG_READ : File::FLAG_WRITE);
@@ -346,7 +348,7 @@ bool TruncateFile(FILE* file) {
   long current_offset = ftell(file);
   if (current_offset == -1)
     return false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   int fd = _fileno(file);
   if (_chsize(fd, current_offset) != 0)
     return false;

@@ -54,7 +54,7 @@ struct TestDirectory {
 
 void CheckModificationTime(const FileEnumerator::FileInfo& actual,
                            Time expected_last_modified_time) {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On POSIX, GetLastModifiedTime() rounds down to the second, but
   // File::GetInfo() does not.
   Time::Exploded exploded;
@@ -408,14 +408,14 @@ TEST(FileEnumerator, InvalidDirectory) {
   EXPECT_TRUE(path.empty());
 
   // Slightly different outcomes between Windows and POSIX.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(File::Error::FILE_ERROR_FAILED, enumerator.GetError());
 #else
   EXPECT_EQ(File::Error::FILE_ERROR_NOT_A_DIRECTORY, enumerator.GetError());
 #endif
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST(FileEnumerator, SymLinkLoops) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -548,10 +548,10 @@ TEST(FileEnumerator, GetInfoRecursive) {
   }
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // FileEnumerator::GetInfo does not work correctly with INCLUDE_DOT_DOT.
 // https://crbug.com/1106172
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 // Windows has a bug in their handling of ".."; they always report the file
 // modification time of the current directory, not the parent directory. This is
 // a bug in Windows, not us -- you can see it with the "dir" command (notice
@@ -609,6 +609,6 @@ TEST(FileEnumerator, GetInfoDotDot) {
         << "File " << file.path.value() << " was not returned";
   }
 }
-#endif  // !defined(OS_FUCHSIA) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 
 }  // namespace base

@@ -18,13 +18,13 @@
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
-#if defined(OS_BSD) || defined(OS_APPLE) || defined(OS_NACL) || \
-    defined(OS_FUCHSIA) || (defined(OS_ANDROID) && __ANDROID_API__ < 21)
+#if BUILDFLAG(IS_BSD) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_NACL) || \
+    BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 21)
 struct stat;
 namespace base {
 typedef struct stat stat_wrapper_t;
 }
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 struct stat64;
 namespace base {
 typedef struct stat64 stat_wrapper_t;
@@ -123,7 +123,7 @@ class BASE_EXPORT File {
   struct BASE_EXPORT Info {
     Info();
     ~Info();
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // Fills this struct with values from |stat_info|.
     void FromStat(const stat_wrapper_t& stat_info);
 #endif
@@ -277,7 +277,8 @@ class BASE_EXPORT File {
   // Returns some basic information for the given file.
   bool GetInfo(Info* info);
 
-#if !defined(OS_FUCHSIA)  // Fuchsia's POSIX API does not support file locking.
+#if !BUILDFLAG( \
+    IS_FUCHSIA)  // Fuchsia's POSIX API does not support file locking.
   enum class LockMode {
     kShared,
     kExclusive,
@@ -308,7 +309,7 @@ class BASE_EXPORT File {
   // Unlock a file previously locked.
   Error Unlock();
 
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // Returns a new object referencing this file for use within the current
   // process. Handling of FLAG_DELETE_ON_CLOSE varies by OS. On POSIX, the File
@@ -322,7 +323,7 @@ class BASE_EXPORT File {
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sets or clears the DeleteFile disposition on the file. Returns true if
   // the disposition was set or cleared, as indicated by |delete_on_close|.
   //
@@ -357,9 +358,9 @@ class BASE_EXPORT File {
   bool DeleteOnClose(bool delete_on_close);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static Error OSErrorToFileError(DWORD last_error);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static Error OSErrorToFileError(int saved_errno);
 #endif
 
@@ -372,7 +373,7 @@ class BASE_EXPORT File {
   // Converts an error value to a human-readable form. Used for logging.
   static std::string ErrorToString(Error error);
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Wrapper for stat() or stat64().
   static int Stat(const char* path, stat_wrapper_t* sb);
   static int Fstat(int fd, stat_wrapper_t* sb);

@@ -17,7 +17,7 @@ namespace base {
 
 namespace internal {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Use fdsan on android.
 struct BASE_EXPORT ScopedFDCloseTraits : public ScopedGenericOwnershipTracking {
   static int InvalidValue() { return -1; }
@@ -25,8 +25,8 @@ struct BASE_EXPORT ScopedFDCloseTraits : public ScopedGenericOwnershipTracking {
   static void Acquire(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
   static void Release(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
 };
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // On ChromeOS and Linux we guard FD lifetime with a global table and hook into
 // libc close() to perform checks.
 struct BASE_EXPORT ScopedFDCloseTraits : public ScopedGenericOwnershipTracking {
@@ -37,7 +37,7 @@ struct BASE_EXPORT ScopedFDCloseTraits {
     return -1;
   }
   static void Free(int fd);
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   static void Acquire(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
   static void Release(const ScopedGeneric<int, ScopedFDCloseTraits>&, int);
 #endif
@@ -54,7 +54,7 @@ struct ScopedFILECloser {
 
 }  // namespace internal
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 namespace subtle {
 
 // Enables or disables enforcement of FD ownership as tracked by ScopedFD
@@ -86,7 +86,7 @@ void BASE_EXPORT ResetFDOwnership();
 
 // -----------------------------------------------------------------------------
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // A low-level Posix file descriptor closer class. Use this when writing
 // platform-specific code, especially that does non-file-like things with the
 // FD (like sockets).
@@ -104,11 +104,11 @@ typedef ScopedGeneric<int, internal::ScopedFDCloseTraits> ScopedFD;
 // Automatically closes |FILE*|s.
 typedef std::unique_ptr<FILE, internal::ScopedFILECloser> ScopedFILE;
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // Queries the ownership status of an FD, i.e. whether it is currently owned by
 // a ScopedFD in the calling process.
 bool BASE_EXPORT IsFDOwned(int fd);
-#endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 }  // namespace base
 

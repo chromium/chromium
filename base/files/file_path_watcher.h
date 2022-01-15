@@ -46,11 +46,11 @@ class BASE_EXPORT FilePathWatcher {
     // within the directory are watched.
     kRecursive,
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Indicates that the watcher should watch the given path only (neither
     // ancestors nor descendants). The watch fails if the path does not exist.
     kTrivial,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   };
 
   // Callback type for Watch(). |path| points to the file that was updated,
@@ -111,10 +111,10 @@ class BASE_EXPORT FilePathWatcher {
   // Returns true if the platform and OS version support recursive watches.
   static bool RecursiveWatchAvailable();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Whether there are outstanding inotify watches.
   static bool HasWatchesForTest();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Starts watching |path| (and its descendants if |type| is kRecursive) for
   // changes. |callback| will be run on the caller's sequence to report such

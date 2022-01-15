@@ -819,14 +819,14 @@ FilePathWatcher::FilePathWatcher() {
   impl_ = std::make_unique<FilePathWatcherImpl>();
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// Put inside "defined(OS_LINUX) || defined(OS_CHROMEOS)" because Android
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Put inside "BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)" because Android
 // includes file_path_watcher_linux.cc.
 
 // static
 bool FilePathWatcher::HasWatchesForTest() {
   return g_inotify_reader.Get().HasWatches();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

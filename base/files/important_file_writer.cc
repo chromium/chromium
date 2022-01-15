@@ -42,7 +42,7 @@ namespace base {
 namespace {
 
 constexpr auto kDefaultCommitInterval = Seconds(10);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This is how many times we will retry ReplaceFile on Windows.
 constexpr int kReplaceRetries = 5;
 // This is the result code recorded if ReplaceFile still fails.
@@ -74,7 +74,7 @@ void UmaHistogramTimesWithSuffix(const char* histogram_name,
 void DeleteTmpFileWithRetry(File tmp_file,
                             const FilePath& tmp_file_path,
                             int attempt = 0) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Mark the file for deletion when it is closed and then close it implicitly.
   if (tmp_file.IsValid()) {
     if (tmp_file.DeleteOnClose(true))
@@ -150,14 +150,14 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   if (!from_instance)
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
 
-#if defined(OS_WIN) && DCHECK_IS_ON()
+#if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
   // In https://crbug.com/920174, we have cases where CreateTemporaryFileInDir
   // hits a DCHECK because creation fails with no indication why. Pull the path
   // onto the stack so that we can see if it is malformed in some odd way.
   wchar_t path_copy[MAX_PATH];
   base::wcslcpy(path_copy, path.value().c_str(), base::size(path_copy));
   base::debug::Alias(path_copy);
-#endif  // defined(OS_WIN) && DCHECK_IS_ON()
+#endif  // BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, chrome gets killed when it cannot finish shutdown quickly,
@@ -216,15 +216,15 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   // doing its job without oplocks). Boost a background thread's priority on
   // Windows and close as late as possible to improve the chances that the other
   // software will lose the race.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const auto previous_priority = PlatformThread::GetCurrentThreadPriority();
   const bool reset_priority = previous_priority <= ThreadPriority::NORMAL;
   if (reset_priority)
     PlatformThread::SetCurrentThreadPriority(ThreadPriority::DISPLAY);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   tmp_file.Close();
   bool result = ReplaceFile(tmp_file_path, path, &replace_file_error);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Save and restore the last error code so that it's not polluted by the
   // thread priority change.
   auto last_error = ::GetLastError();
@@ -246,10 +246,10 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
     retry_count = kReplaceRetryFailure;
   UmaHistogramExactLinear("ImportantFile.FileReplaceRetryCount", retry_count,
                           kReplaceRetryFailure);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (!result) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Restore the error code from ReplaceFile so that it will be available for
     // the log message, otherwise failures in SetCurrentThreadPriority may be
     // reported instead.

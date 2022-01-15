@@ -25,7 +25,7 @@ namespace base {
 namespace {
 
 base::Time GetUpperBoundTime() {
-#if defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   // If process creation time is not available then use instance creation
   // time as the upper-bound for old files. Modification times may be
   // rounded-down to coarse-grained increments, e.g. FAT has 2s granularity,
