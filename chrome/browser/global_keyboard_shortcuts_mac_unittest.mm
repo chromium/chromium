@@ -5,6 +5,7 @@
 #include <AppKit/NSEvent.h>
 #include <Carbon/Carbon.h>
 #include <stddef.h>
+
 #include <initializer_list>
 
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
