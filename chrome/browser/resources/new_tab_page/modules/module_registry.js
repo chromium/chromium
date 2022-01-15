@@ -67,16 +67,28 @@ export class ModuleRegistry {
     const descriptors =
         this.descriptors_.filter(d => !disabledIds.includes(d.id));
 
-    // Only conform to the persisted order if there exists one in the pref and
-    // the feature is enabled. |orderedIds| will be an empty array if the user
-    // has not reordered the modules before.
-    const orderedIds = loadTimeData.getBoolean('modulesDragAndDropEnabled') ?
+    // Modules may have an updated order, e.g. because of drag&drop or a Finch
+    // param. Apply the updated order such that modules without a specified
+    // order (e.g. because they were just enabled or launched) land at the
+    // bottom of the list.
+    const orderedIds =
         (await NewTabPageProxy.getInstance().handler.getModulesOrder())
-            .moduleIds :
-        [];
+            .moduleIds;
     if (orderedIds.length > 0) {
       descriptors.sort((a, b) => {
-        return orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id);
+        const aHasOrder = orderedIds.includes(a.id);
+        const bHasOrder = orderedIds.includes(b.id);
+        if (aHasOrder && bHasOrder) {
+          // Apply order.
+          return orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id);
+        }
+        if (!aHasOrder && bHasOrder) {
+          return 1;  // Move b up.
+        }
+        if (aHasOrder && !bHasOrder) {
+          return -1;  // Move a up.
+        }
+        return 0;  // Keep current order.
       });
     }
 

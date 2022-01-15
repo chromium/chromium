@@ -21,11 +21,14 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,6 +50,7 @@ namespace {
 
 using testing::_;
 using testing::DoAll;
+using testing::ElementsAre;
 using testing::Optional;
 using testing::SaveArg;
 
@@ -610,4 +614,23 @@ TEST_F(NewTabPageHandlerTest, OnDoodleShared) {
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
       "https://www.google.com/"
       "gen_204?atype=i&ct=doodle&ntp=2&cad=sh,5,ct:food_id&ei=bar_id"));
+}
+
+TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
+  std::vector<std::string> module_ids;
+  base::MockCallback<NewTabPageHandler::GetModulesOrderCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&module_ids));
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{ntp_features::kModules,
+        {{ntp_features::kNtpModulesOrderParam, "bar,baz"}}},
+       {ntp_features::kNtpModulesDragAndDrop, {}}},
+      {});
+  base::Value module_ids_value(base::Value::Type::LIST);
+  module_ids_value.Append("foo");
+  module_ids_value.Append("bar");
+  profile_->GetPrefs()->Set(prefs::kNtpModulesOrder, module_ids_value);
+
+  handler_->GetModulesOrder(callback.Get());
+  EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz"));
 }

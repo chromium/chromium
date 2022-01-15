@@ -52,9 +52,7 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     ];
     windowProxy.setResultFor('now', 5.0);
     handler.setResultFor('getModulesOrder', Promise.resolve({
-      // Returning order different from |descriptors| to test order is ignored
-      // by default.
-      moduleIds: ['bar', 'baz', 'foo', 'buz'],
+      moduleIds: [],
     }));
 
     // Act.
@@ -93,12 +91,6 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
   });
 
   suite('reorder', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesDragAndDropEnabled: true,
-      });
-    });
-
     test(
         'instantiates reordered modules without disabled modules', async () => {
           // Arrange.
@@ -177,16 +169,16 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
 
       // Assert.
       assertEquals(5, modules.length);
-      assertEquals('foo', modules[0].descriptor.id);
-      assertDeepEquals(fooModule, modules[0].element);
-      assertEquals('baz', modules[1].descriptor.id);
-      assertDeepEquals(bazModule, modules[1].element);
-      assertEquals('buz', modules[2].descriptor.id);
-      assertDeepEquals(buzModule, modules[2].element);
-      assertEquals('biz', modules[3].descriptor.id);
-      assertDeepEquals(bizModule, modules[3].element);
-      assertEquals('bar', modules[4].descriptor.id);
-      assertDeepEquals(barModule, modules[4].element);
+      assertEquals('biz', modules[0].descriptor.id);
+      assertDeepEquals(bizModule, modules[0].element);
+      assertEquals('bar', modules[1].descriptor.id);
+      assertDeepEquals(barModule, modules[1].element);
+      assertEquals('foo', modules[2].descriptor.id);
+      assertDeepEquals(fooModule, modules[2].element);
+      assertEquals('baz', modules[3].descriptor.id);
+      assertDeepEquals(bazModule, modules[3].element);
+      assertEquals('buz', modules[4].descriptor.id);
+      assertDeepEquals(buzModule, modules[4].element);
     });
   });
 });

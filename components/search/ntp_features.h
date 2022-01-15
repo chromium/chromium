@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_SEARCH_NTP_FEATURES_H_
 #define COMPONENTS_SEARCH_NTP_FEATURES_H_
 
+#include <string>
+#include <vector>
+
 #include "base/feature_list.h"
 
 namespace base {
@@ -47,6 +50,8 @@ extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
 
 // Parameter determining the module load timeout.
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
+// Parameter determining the module order.
+extern const char kNtpModulesOrderParam[];
 // Parameter determining the type of shopping data to request.
 extern const char kNtpShoppingTasksModuleDataParam[];
 // Parameter determining the type of recipe data to request.
@@ -87,6 +92,9 @@ extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
+
+// Returns a list of module IDs ordered by how they should appear on the NTP.
+std::vector<std::string> GetModulesOrder();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

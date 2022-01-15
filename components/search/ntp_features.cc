@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -117,6 +118,7 @@ const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
 
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
+const char kNtpModulesOrderParam[] = "NtpModulesOrderParam";
 const char kNtpShoppingTasksModuleDataParam[] =
     "NtpShoppingTasksModuleDataParam";
 const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
@@ -155,6 +157,13 @@ base::TimeDelta GetModulesLoadTimeout() {
     return base::Seconds(3);
   }
   return base::Milliseconds(param_value_as_int);
+}
+
+std::vector<std::string> GetModulesOrder() {
+  return base::SplitString(
+      base::GetFieldTrialParamValueByFeature(kModules, kNtpModulesOrderParam),
+      ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace ntp_features
