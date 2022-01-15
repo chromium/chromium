@@ -597,10 +597,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       bool is_auto_sign_in = prefer_auto_sign_in_ && accounts.size() == 1 &&
                              accounts[0].login_state == LoginState::kSignIn &&
                              !screen_reader_is_on;
-      ClientIdData data{endpoints_.client_id_metadata.Resolve(
-                            client_id_metadata_.terms_of_service_url),
-                        endpoints_.client_id_metadata.Resolve(
-                            client_id_metadata_.privacy_policy_url)};
+      // TODO(cbiesinger): Check that the URLs are valid.
+      ClientIdData data{GURL(client_id_metadata_.terms_of_service_url),
+                        GURL(client_id_metadata_.privacy_policy_url)};
       request_dialog_controller_->ShowAccountsDialog(
           rp_web_contents, idp_web_contents_.get(), provider_, accounts,
           idp_metadata, data,
