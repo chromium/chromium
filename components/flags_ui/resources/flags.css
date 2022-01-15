@@ -533,35 +533,8 @@ html.focus-outline-visible button.primary:focus {
   text-align: right; /* csschecker-disable-line left-right */
 }
 
-.os-link-container {
-  align-items: center;
-  border: 1px solid rgb(232, 234, 237);
-  border-radius: 4px;
-  display: flex;
-  font-size: 14px;
-  line-height: 20px;
-  margin-bottom: 28px;
-  padding: 12px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .os-link-container {
-    border: 1px solid rgb(18, 21, 23);
-  }
-}
-
-.os-link-icon {
-  background-image: url(chrome://flags/os_flags_app_icon.svg);
-  background-size: 16px 16px;
-  height: 16px;
-  margin-inline-end: 16px;
-  width: 16px;
-}
-
-#os-link-href {
-  font-size: 14px;
-  line-height: 20px;
-  padding-inline-start: 4px;
+#os-flags-link-container {
+  background-image: url(chrome://resources/images/os_flags_app_icon.svg);
 }
 
 @media (max-width: 360px) {

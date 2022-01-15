@@ -69,6 +69,7 @@ generate_grd("build_grdp") {
 
   if (is_chromeos) {
     input_files += [ "os_flags_app_icon.svg" ]
+    input_files += [ "os_system_app_icon.svg" ]
   }
 
   resource_path_prefix = "images"

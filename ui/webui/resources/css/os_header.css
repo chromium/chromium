@@ -27,7 +27,7 @@
 }
 
 .os-link-icon {
-  background-image: url(chrome://resources/images/os_flags_app_icon.svg);
+  background-image: url(chrome://resources/images/os_system_app_icon.svg);
   background-size: 16px 16px;
   height: 16px;
   margin-inline-end: 16px;
