@@ -228,6 +228,12 @@ Polymer({
      * @private
      */
     showFullOngoingStatus_: Boolean,
+
+    /** @private {string} */
+    fileIcon_: {
+      type: String,
+      computed: 'computeFileIcon_(jobTitle_)',
+    },
   },
 
   observers: [
@@ -446,19 +452,18 @@ Polymer({
    * (i.e. [iron-iconset-svg name]:[SVG <g> tag id]) for a given file.
    * This is a best effort approach, as we are only given the file name and
    * not necessarily its extension.
-   * @param {string} fileName
    * @return {string}
    * @private
    */
-  getFileIcon_(fileName) {
-    const fileExtension = getFileExtensionIconName(fileName);
+  computeFileIcon_() {
+    const fileExtension = getFileExtensionIconName(this.jobTitle_);
     // It's valid for a file to have '.' in its name and not be its extension.
     // If this is the case and we don't have a non-generic file icon, attempt to
     // see if this is a Google file.
     if (fileExtension && fileExtension !== GENERIC_FILE_EXTENSION_ICON) {
       return fileExtension;
     }
-    const gfileExtension = getGFileIconName(fileName);
+    const gfileExtension = getGFileIconName(this.jobTitle_);
     if (gfileExtension) {
       return gfileExtension;
     }
