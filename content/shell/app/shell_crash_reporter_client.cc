@@ -14,7 +14,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/common/shell_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/shell/android/shell_descriptors.h"
 #endif
 
@@ -23,7 +23,7 @@ namespace content {
 ShellCrashReporterClient::ShellCrashReporterClient() {}
 ShellCrashReporterClient::~ShellCrashReporterClient() {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ShellCrashReporterClient::GetProductNameAndVersion(
     const std::wstring& exe_path,
     std::wstring* product_name,
@@ -37,7 +37,7 @@ void ShellCrashReporterClient::GetProductNameAndVersion(
 }
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 void ShellCrashReporterClient::GetProductNameAndVersion(
     const char** product_name,
     const char** version) {
@@ -59,7 +59,7 @@ base::FilePath ShellCrashReporterClient::GetReporterLogFilename() {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ShellCrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {
 #else
 bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
@@ -70,7 +70,7 @@ bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
   base::FilePath crash_directory =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           switches::kCrashDumpsDir);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   *crash_dir = crash_directory.value();
 #else
   *crash_dir = std::move(crash_directory);
@@ -78,7 +78,7 @@ bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
   return true;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int ShellCrashReporterClient::GetAndroidMinidumpDescriptor() {
   return kAndroidMinidumpDescriptor;
 }

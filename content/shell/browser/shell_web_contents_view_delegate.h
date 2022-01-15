@@ -34,7 +34,7 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
   void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void ActionPerformed(int id);
   NSObject<RenderWidgetHostViewMacDelegate>* CreateRenderWidgetHostViewDelegate(
       content::RenderWidgetHost* render_widget_host,
@@ -43,7 +43,7 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
 
  private:
   raw_ptr<WebContents> web_contents_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ContextMenuParams params_;
 #endif
 

@@ -10,13 +10,13 @@
 #include "build/build_config.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if __OBJC__
 @class ShellJavaScriptDialogHelper;
 #else
 class ShellJavaScriptDialogHelper;
 #endif  // __OBJC__
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -40,9 +40,9 @@ class ShellJavaScriptDialog {
   void Cancel();
 
  private:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ShellJavaScriptDialogHelper* helper_;  // owned
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   JavaScriptDialogManager::DialogClosedCallback callback_;
   raw_ptr<ShellJavaScriptDialogManager> manager_;
   JavaScriptDialogType dialog_type_;

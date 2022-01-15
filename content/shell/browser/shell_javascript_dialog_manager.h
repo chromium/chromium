@@ -55,7 +55,7 @@ class ShellJavaScriptDialogManager : public JavaScriptDialogManager {
   }
 
  private:
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // The dialog being shown. No queueing.
   std::unique_ptr<ShellJavaScriptDialog> dialog_;
 #else

@@ -46,7 +46,7 @@
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
@@ -203,7 +203,7 @@ ShellDevToolsBindings::GetInstancesForWebContents(WebContents* web_contents) {
 
 void ShellDevToolsBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
   // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
   // frames. This caller was converted automatically to the primary main frame

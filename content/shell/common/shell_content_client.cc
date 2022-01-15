@@ -68,7 +68,7 @@ blink::OriginTrialPolicy* ShellContentClient::GetOriginTrialPolicy() {
 }
 
 void ShellContentClient::AddAdditionalSchemes(Schemes* schemes) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   schemes->local_schemes.push_back(url::kContentScheme);
 #endif
 }

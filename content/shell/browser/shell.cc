@@ -249,7 +249,7 @@ void Shell::LoadDataWithBaseURL(const GURL& url,
   LoadDataWithBaseURLInternal(url, data, base_url, load_as_string);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void Shell::LoadDataAsStringWithBaseURL(const GURL& url,
                                         const std::string& data,
                                         const GURL& base_url) {
@@ -262,7 +262,7 @@ void Shell::LoadDataWithBaseURLInternal(const GURL& url,
                                         const std::string& data,
                                         const GURL& base_url,
                                         bool load_as_string) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(!load_as_string);  // Only supported on Android.
 #endif
 
@@ -271,7 +271,7 @@ void Shell::LoadDataWithBaseURLInternal(const GURL& url,
   if (load_as_string) {
     params.url = GURL(data_url_header);
     std::string data_url_as_string = data_url_header + data;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     params.data_url_as_string =
         base::RefCountedString::TakeString(&data_url_as_string);
 #endif
@@ -353,13 +353,13 @@ gfx::NativeView Shell::GetContentView() {
   return web_contents_->GetNativeView();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 gfx::NativeWindow Shell::window() {
   return g_platform->GetNativeWindow(this);
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void Shell::ActionPerformed(int control) {
   switch (control) {
     case IDC_NAV_BACK:
@@ -442,7 +442,7 @@ void Shell::LoadingStateChanged(WebContents* source,
   g_platform->SetIsLoading(this, source->IsLoading());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void Shell::SetOverlayMode(bool use_overlay_mode) {
   g_platform->SetOverlayMode(this, use_overlay_mode);
 }
@@ -461,7 +461,7 @@ void Shell::ExitFullscreenModeForTab(WebContents* web_contents) {
 
 void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
                                        bool enter_fullscreen) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   g_platform->ToggleFullscreenModeForTab(this, web_contents, enter_fullscreen);
 #endif
   if (is_fullscreen_ != enter_fullscreen) {
@@ -474,7 +474,7 @@ void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
 }
 
 bool Shell::IsFullscreenForTabOrPending(const WebContents* web_contents) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return g_platform->IsFullscreenForTabOrPending(this, web_contents);
 #else
   return is_fullscreen_;
@@ -537,7 +537,7 @@ JavaScriptDialogManager* Shell::GetJavaScriptDialogManager(
   return dialog_manager_.get();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void Shell::DidNavigatePrimaryMainFramePostCommit(WebContents* contents) {
   g_platform->DidNavigatePrimaryMainFramePostCommit(this, contents);
 }
@@ -568,7 +568,7 @@ void Shell::RendererUnresponsive(
 }
 
 void Shell::ActivateContents(WebContents* contents) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // TODO(danakj): Move this to ShellPlatformDelegate.
   contents->Focus();
 #else
@@ -692,7 +692,7 @@ gfx::Size Shell::GetShellDefaultSize() {
   return default_shell_size;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void Shell::LoadProgressChanged(double progress) {
   g_platform->LoadProgressChanged(this, progress);
 }

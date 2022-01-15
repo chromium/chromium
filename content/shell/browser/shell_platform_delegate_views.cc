@@ -54,7 +54,7 @@
 #include "ui/wm/core/wm_state.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <fcntl.h>
 #include <io.h>
 #endif
@@ -322,7 +322,7 @@ ShellView* ShellViewForWidget(views::Widget* widget) {
 ShellPlatformDelegate::ShellPlatformDelegate() = default;
 
 void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   _setmode(_fileno(stdout), _O_BINARY);
   _setmode(_fileno(stderr), _O_BINARY);
 #endif

@@ -45,7 +45,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                            const std::string& data,
                            const GURL& base_url);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android-only path to allow loading long data strings.
   void LoadDataAsStringWithBaseURL(const GURL& url,
                                    const std::string& data,
@@ -99,11 +99,11 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
 
   WebContents* web_contents() const { return web_contents_.get(); }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   gfx::NativeWindow window();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Public to be called by an ObjC bridge object.
   void ActionPerformed(int control);
   void URLEntered(const std::string& url_string);
@@ -121,7 +121,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                       bool* was_blocked) override;
   void LoadingStateChanged(WebContents* source,
                            bool should_show_loading_ui) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetOverlayMode(bool use_overlay_mode) override;
 #endif
   void EnterFullscreenModeForTab(
@@ -140,7 +140,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                               InvalidateTypes changed_flags) override;
   JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void DidNavigatePrimaryMainFramePostCommit(WebContents* contents) override;
   bool HandleKeyboardEvent(WebContents* source,
                            const NativeWebKeyboardEvent& event) override;
@@ -207,7 +207,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void ToggleFullscreenModeForTab(WebContents* web_contents,
                                   bool enter_fullscreen);
   // WebContentsObserver
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void LoadProgressChanged(double progress) override;
 #endif
   void TitleWasSet(NavigationEntry* entry) override;
