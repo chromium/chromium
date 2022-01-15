@@ -223,20 +223,17 @@ HostResolver::CreateStandaloneContextResolver(
 }
 
 // static
-AddressFamily HostResolver::DnsQueryTypeToAddressFamily(
-    DnsQueryType dns_query_type) {
-  switch (dns_query_type) {
-    case DnsQueryType::UNSPECIFIED:
-      return ADDRESS_FAMILY_UNSPECIFIED;
-    case DnsQueryType::A:
-      return ADDRESS_FAMILY_IPV4;
-    case DnsQueryType::AAAA:
-      return ADDRESS_FAMILY_IPV6;
-    default:
-      // |dns_query_type| should be an address type (A or AAAA) or UNSPECIFIED.
-      NOTREACHED();
-      return ADDRESS_FAMILY_UNSPECIFIED;
-  }
+AddressFamily HostResolver::DnsQueryTypeSetToAddressFamily(
+    DnsQueryTypeSet dns_query_types) {
+  DCHECK(HasAddressType(dns_query_types));
+  // If the set of query types contains A and AAAA, defer the choice of address
+  // family. Otherwise, pick the corresponding address family.
+  if (dns_query_types.HasAll({DnsQueryType::A, DnsQueryType::AAAA}))
+    return ADDRESS_FAMILY_UNSPECIFIED;
+  if (dns_query_types.Has(DnsQueryType::AAAA))
+    return ADDRESS_FAMILY_IPV6;
+  DCHECK(dns_query_types.Has(DnsQueryType::A));
+  return ADDRESS_FAMILY_IPV4;
 }
 
 // static

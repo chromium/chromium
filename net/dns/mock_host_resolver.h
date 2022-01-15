@@ -157,7 +157,7 @@ class MockHostResolverBase
     const RuleResult& Resolve(
         const absl::variant<url::SchemeHostPort, HostPortPair>&
             request_endpoint,
-        DnsQueryType request_type,
+        DnsQueryTypeSet request_types,
         HostResolverSource request_source) const;
 
     void ClearRules();

@@ -33,6 +33,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/httpssvc_metrics.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -296,7 +297,7 @@ class NET_EXPORT HostResolverManager
       const NetLogWithSource& source_net_log);
 
   // Resolves the IP literal hostname represented by `ip_address`.
-  HostCache::Entry ResolveAsIP(DnsQueryType query_type,
+  HostCache::Entry ResolveAsIP(DnsQueryTypeSet query_types,
                                bool resolve_canonname,
                                const IPAddress& ip_address);
 
@@ -327,7 +328,7 @@ class NET_EXPORT HostResolverManager
   // file.
   absl::optional<HostCache::Entry> ServeFromHosts(
       base::StringPiece hostname,
-      DnsQueryType query_type,
+      DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,
       const std::deque<TaskType>& tasks);
 
@@ -335,7 +336,7 @@ class NET_EXPORT HostResolverManager
   // returns a results entry with the loopback IP.
   absl::optional<HostCache::Entry> ServeLocalhost(
       base::StringPiece hostname,
-      DnsQueryType query_type,
+      DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6);
 
   // Returns the secure dns mode to use for a job, taking into account the
@@ -367,14 +368,13 @@ class NET_EXPORT HostResolverManager
   // Determines "effective" request parameters using manager properties and IPv6
   // reachability.
   void GetEffectiveParametersForRequest(
-      base::StringPiece hostname,
+      const absl::variant<url::SchemeHostPort, std::string>& host,
       DnsQueryType dns_query_type,
       HostResolverFlags flags,
       SecureDnsPolicy secure_dns_policy,
-      ResolveHostParameters::CacheUsage cache_usage,
       bool is_ip,
       const NetLogWithSource& net_log,
-      DnsQueryType* out_effective_type,
+      DnsQueryTypeSet* out_effective_types,
       HostResolverFlags* out_effective_flags,
       SecureDnsMode* out_effective_secure_dns_mode);
 
@@ -499,6 +499,9 @@ class NET_EXPORT HostResolverManager
                      false /* allow_reentrancy */>
       registered_contexts_;
   bool invalidation_in_progress_;
+
+  // Helper for metrics associated with `features::kDnsHttpssvc`.
+  HttpssvcExperimentDomainCache httpssvc_domain_cache_;
 
   THREAD_CHECKER(thread_checker_);
 

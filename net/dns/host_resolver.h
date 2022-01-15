@@ -234,8 +234,10 @@ class NET_EXPORT HostResolver {
     ResolveHostParameters();
     ResolveHostParameters(const ResolveHostParameters& other);
 
-    // Requested DNS query type. If UNSPECIFIED, resolver will pick A or AAAA
-    // (or both) based on IPv4/IPv6 settings.
+    // Requested DNS query type. If UNSPECIFIED, the resolver will select a set
+    // of queries automatically. It will select A, AAAA, or both as the address
+    // queries, depending on IPv4/IPv6 settings and reachability. It may also
+    // replace UNSPECIFIED with additional queries, such as HTTPS.
     DnsQueryType dns_query_type = DnsQueryType::UNSPECIFIED;
 
     // The initial net priority for the host resolution request.
@@ -419,7 +421,8 @@ class NET_EXPORT HostResolver {
       bool enable_caching = true);
 
   // Helpers for interacting with HostCache and ProcResolver.
-  static AddressFamily DnsQueryTypeToAddressFamily(DnsQueryType query_type);
+  static AddressFamily DnsQueryTypeSetToAddressFamily(
+      DnsQueryTypeSet query_types);
   static HostResolverFlags ParametersToHostResolverFlags(
       const ResolveHostParameters& parameters);
 

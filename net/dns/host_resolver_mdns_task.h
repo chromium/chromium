@@ -31,7 +31,7 @@ class HostResolverMdnsTask {
   // |mdns_client| must outlive |this|.
   HostResolverMdnsTask(MDnsClient* mdns_client,
                        std::string hostname,
-                       const std::vector<DnsQueryType>& query_types);
+                       DnsQueryTypeSet query_types);
 
   HostResolverMdnsTask(const HostResolverMdnsTask&) = delete;
   HostResolverMdnsTask& operator=(const HostResolverMdnsTask&) = delete;

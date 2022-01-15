@@ -875,7 +875,7 @@ void HostCache::GetList(base::Value* entry_list,
     }
 
     entry_dict->SetIntKey(kDnsQueryTypeKey,
-                          static_cast<int>(key.dns_query_type));
+                          base::strict_cast<int>(key.dns_query_type));
     entry_dict->SetIntKey(kFlagsKey, key.host_resolver_flags);
     entry_dict->SetIntKey(kHostResolverSourceKey,
                           static_cast<int>(key.host_resolver_source));
