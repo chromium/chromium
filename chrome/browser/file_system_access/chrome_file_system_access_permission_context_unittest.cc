@@ -201,7 +201,7 @@ class ChromeFileSystemAccessPermissionContextNoPersistenceTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_NoSpecialPath) {
@@ -316,7 +316,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 permission_context(), PathType::kLocal,
                 download_dir.AppendASCII("foo"), HandleType::kDirectory));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // DIR_IE_INTERNET_CACHE is an example of a directory where nested directories
   // are blocked, but nested files should be allowed.
   base::FilePath internet_cache = user_data_dir.AppendASCII("INetCache");
@@ -362,7 +362,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_ExplicitPathBlock) {
 // Linux is the only OS where we have some blocked directories with explicit
 // paths (as opposed to PathService provided paths).
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // /dev should be blocked.
   EXPECT_EQ(
       SensitiveDirectoryResult::kAbort,
@@ -1963,4 +1963,4 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

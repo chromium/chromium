@@ -53,7 +53,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -181,7 +181,7 @@ const struct {
     {chrome::DIR_DEFAULT_DOWNLOADS_SAFE, nullptr, kDontBlockChildren},
     // The Chrome installation itself should not be modified by the web.
     {base::DIR_EXE, nullptr, kBlockAllChildren},
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     {base::DIR_MODULE, nullptr, kBlockAllChildren},
 #endif
     {base::DIR_ASSETS, nullptr, kBlockAllChildren},
@@ -193,7 +193,7 @@ const struct {
     {base::DIR_HOME, FILE_PATH_LITERAL(".ssh"), kBlockAllChildren},
     // And limit access to ~/.gnupg as well.
     {base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"), kBlockAllChildren},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Some Windows specific directories to block, basically all apps, the
     // operating system itself, as well as configuration data for apps.
     {base::DIR_PROGRAM_FILES, nullptr, kBlockAllChildren},
@@ -209,7 +209,7 @@ const struct {
     // not whole directories.
     {base::DIR_IE_INTERNET_CACHE, nullptr, kBlockNestedDirectories},
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Similar Mac specific blocks.
     {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_HOME, FILE_PATH_LITERAL("Library"), kBlockAllChildren},
@@ -217,7 +217,7 @@ const struct {
     {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
      kDontBlockChildren},
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // On Linux also block access to devices via /dev, as well as security
     // sensitive data in /sys and /proc.
     {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), kBlockAllChildren},
@@ -1401,7 +1401,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
   if (it == origins_.end())
     return;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Iterate over all top-level frames by iterating over all browsers, and all
   // tabs within those browsers. This also counts PWAs in windows without
   // tab strips, as those are still implemented as a Browser with a single tab.
@@ -1686,7 +1686,7 @@ void ChromeFileSystemAccessPermissionContext::ScheduleUsageIconUpdate() {
 void ChromeFileSystemAccessPermissionContext::DoUsageIconUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_icon_update_scheduled_ = false;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile())
       continue;
