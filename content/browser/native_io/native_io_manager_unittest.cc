@@ -116,13 +116,13 @@ struct OpenFileResult {
   NativeIOErrorPtr error;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 struct SetLengthResult {
   base::File file;
   int64_t actual_length;
   NativeIOErrorPtr error;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Synchronous proxies to a wrapped NativeIOHost's methods.
 class NativeIOHostSync {
@@ -221,7 +221,7 @@ class NativeIOFileHostSync {
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetLengthResult SetLength(const int64_t length, base::File file) {
     SetLengthResult result;
     base::RunLoop run_loop;
@@ -238,7 +238,7 @@ class NativeIOFileHostSync {
     run_loop.Run();
     return result;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   const raw_ptr<blink::mojom::NativeIOFileHost> file_host_;
@@ -259,9 +259,9 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
         quota_manager(), base::ThreadTaskRunnerHandle::Get());
     manager_ = std::make_unique<NativeIOManager>(
         data_dir_.GetPath(),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         allow_set_length_ipc(),
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
         /*special storage policy=*/nullptr, quota_manager_proxy());
 
     manager_->BindReceiver(
@@ -631,7 +631,7 @@ TEST_P(NativeIOManagerTest, RenameFile_Names) {
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_P(NativeIOManagerTest, SetLength) {
   const std::string kTestData("Test Data");
   const int kTestDataSize = kTestData.size();
@@ -684,7 +684,7 @@ TEST_P(NativeIOManagerTest, SetLength_NegativeLength) {
                                    : "SetLength() disabled on this OS.",
             bad_message_observer.WaitForBadMessage());
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_P(NativeIOManagerTest, StorageKeyIsolation) {
   const std::string kTestData("Test Data");
@@ -957,12 +957,12 @@ TEST_P(NativeIOManagerTest, GetStorageKeyUsage_NonexistingStorageKeyUsage) {
 INSTANTIATE_TEST_CASE_P(,
                         NativeIOManagerTest,
                         ::testing::Values(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                             false,
                             true
-#else   // !defined(OS_MAC)
+#else   // !BUILDFLAG(IS_MAC)
                             false
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
                             ));
 
 }  // namespace

@@ -51,9 +51,9 @@ class CONTENT_EXPORT NativeIOManager {
   // all the from NativeIOManager to facilitate testing.
   explicit NativeIOManager(
       const base::FilePath& profile_root,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       bool allow_set_length_ipc,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
@@ -153,9 +153,9 @@ class CONTENT_EXPORT NativeIOManager {
   // This path is empty for in-memory (Incognito) profiles.
   const base::FilePath root_path_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool allow_set_length_ipc_;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Tracks special rights for apps and extensions, may be null.
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

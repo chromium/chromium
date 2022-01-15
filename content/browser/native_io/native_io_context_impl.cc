@@ -10,9 +10,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -114,9 +114,9 @@ void NativeIOContextImpl::InitializeOnIOThread(
 
   native_io_manager_ = std::make_unique<NativeIOManager>(
       profile_root,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       !base::mac::IsAtLeastOS10_15(),
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       std::move(special_storage_policy), std::move(quota_manager_proxy));
 }
 

@@ -104,15 +104,15 @@ constexpr base::FilePath::CharType kNativeIODirectoryName[] =
 
 NativeIOManager::NativeIOManager(
     const base::FilePath& profile_root,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     bool allow_set_length_ipc,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
     : root_path_(GetNativeIORootPath(profile_root)),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       allow_set_length_ipc_(allow_set_length_ipc),
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       // Using a raw pointer is safe since NativeIOManager be owned by
@@ -198,9 +198,9 @@ void NativeIOManager::BindReceiverWithBucketInfo(
     std::tie(it, insert_succeeded) = hosts_.emplace(
         storage_key, std::make_unique<NativeIOHost>(
                          storage_key, std::move(storage_key_root_path),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                          allow_set_length_ipc_,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
                          this));
     DCHECK(insert_succeeded);
   }
@@ -252,9 +252,9 @@ void NativeIOManager::DeleteStorageKeyData(
     std::tie(it, insert_succeeded) = hosts_.emplace(
         storage_key, std::make_unique<NativeIOHost>(
                          storage_key, std::move(storage_key_root_path),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                          allow_set_length_ipc_,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
                          this));
     DCHECK(insert_succeeded);
   }
