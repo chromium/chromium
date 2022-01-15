@@ -960,7 +960,7 @@ void VideoCaptureManager::OnScreenLocked() {
   for (auto session_id : desktopcapture_session_ids) {
     Close(session_id);
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void VideoCaptureManager::OnScreenUnlocked() {

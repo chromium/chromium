@@ -1049,7 +1049,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateDevicesUnplugCommunicationsDevice) {
   EXPECT_TRUE(
       base::Contains(removed_device_ids_,
                      media::AudioDeviceDescription::kCommunicationsDeviceId));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(MediaDevicesManagerTest,
@@ -1098,7 +1098,7 @@ TEST_F(MediaDevicesManagerTest,
   EXPECT_TRUE(
       base::Contains(removed_device_ids_,
                      media::AudioDeviceDescription::kCommunicationsDeviceId));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(MediaDevicesManagerTest, GuessVideoGroupID) {

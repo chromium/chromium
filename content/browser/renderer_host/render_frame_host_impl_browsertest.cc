@@ -5121,7 +5121,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoteObjectRelease) {
   EXPECT_EQ(injector.GetObjectHost().ReferenceCount(kInnerObject.id), 0);
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // The RenderFrameHost's last HTTP status code shouldn't change after
 // same-document navigations.

@@ -87,7 +87,7 @@ bool HandleAsanDebugURL(const GURL& url) {
     base::debug::AsanCorruptHeap();
     return true;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   if (url.path_piece() == kAsanHeapOverflow) {
     base::debug::AsanHeapOverflow();

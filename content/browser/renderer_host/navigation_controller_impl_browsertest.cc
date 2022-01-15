@@ -16732,7 +16732,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that the navigation entry that is marked as skippable on back/forward
 // button does not get skipped for GoToOffset calls.
@@ -16903,7 +16903,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_EQ(4, controller.GetCurrentEntryIndex());
   EXPECT_EQ(4, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(redirected_url2, controller.GetLastCommittedEntry()->GetURL());
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Tests that the navigation entry that is marked as skippable on back/forward

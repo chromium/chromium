@@ -142,7 +142,7 @@ void GetFontInfo(gfx::win::SystemFont system_font,
   *name = base::UTF8ToUTF16(font.GetFontName());
   *size = font.GetFontSize();
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Set of RenderViewHostImpl* that can be attached as UserData to a
 // RenderProcessHost. Used to keep track of whether any RenderViewHostImpl
