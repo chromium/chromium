@@ -30,7 +30,7 @@ class CheckedContiguousIterator {
 
   // Required for certain libc++ algorithm optimizations that are not available
   // for NaCl.
-#if defined(_LIBCPP_VERSION) && !defined(OS_NACL)
+#if defined(_LIBCPP_VERSION) && !BUILDFLAG(IS_NACL)
   template <typename Ptr>
   friend struct std::pointer_traits;
 #endif
@@ -217,7 +217,7 @@ using CheckedContiguousConstIterator = CheckedContiguousIterator<const T>;
 
 }  // namespace base
 
-#if defined(_LIBCPP_VERSION) && !defined(OS_NACL)
+#if defined(_LIBCPP_VERSION) && !BUILDFLAG(IS_NACL)
 // Specialize both std::__is_cpp17_contiguous_iterator and std::pointer_traits
 // for CCI in case we compile with libc++ outside of NaCl. The former is
 // required to enable certain algorithm optimizations (e.g. std::copy can be a
