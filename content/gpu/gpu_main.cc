@@ -63,18 +63,18 @@
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <dwmapi.h>
 #include <windows.h>
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
 #include "content/common/android/cpu_affinity_setter.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/trace_event/trace_event_etw_export_win.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
@@ -83,13 +83,13 @@
 #include "sandbox/win/src/sandbox.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/gpu/gpu_sandbox_hook_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/sandbox_type.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_mac.h"
 #include "components/metal_util/device_removal.h"
 #include "components/metal_util/test_shader.h"
@@ -105,11 +105,11 @@ namespace content {
 
 namespace {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool StartSandboxLinux(gpu::GpuWatchdogThread*,
                        const gpu::GPUInfo*,
                        const gpu::GpuPreferences&);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo*);
 #endif
 
@@ -122,7 +122,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 
   ~ContentSandboxHelper() override {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void set_sandbox_info(const sandbox::SandboxInterfaceInfo* info) {
     sandbox_info_ = info;
   }
@@ -140,19 +140,19 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
     }
 
 #if BUILDFLAG(USE_VAAPI)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     media::VaapiWrapper::PreSandboxInitialization();
 #else  // For Linux with VA-API support.
     if (!gpu_prefs.disable_accelerated_video_decode)
       media::VaapiWrapper::PreSandboxInitialization();
 #endif
 #endif  // BUILDFLAG(USE_VAAPI)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     media::DXVAVideoDecodeAccelerator::PreSandboxInitialization();
     media::MediaFoundationVideoEncodeAccelerator::PreSandboxInitialization();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {
       TRACE_EVENT0("gpu", "Initialize VideoToolbox");
       media::InitializeVideoToolbox();
@@ -167,18 +167,18 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
   bool EnsureSandboxInitialized(gpu::GpuWatchdogThread* watchdog_thread,
                                 const gpu::GPUInfo* gpu_info,
                                 const gpu::GpuPreferences& gpu_prefs) override {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     return StartSandboxLinux(watchdog_thread, gpu_info, gpu_prefs);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     return StartSandboxWindows(sandbox_info_);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     return sandbox::Seatbelt::IsSandboxed();
 #else
     return false;
 #endif
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   raw_ptr<const sandbox::SandboxInterfaceInfo> sandbox_info_ = nullptr;
 #endif
 };
@@ -214,7 +214,7 @@ int GpuMain(MainFunctionParams parameters) {
 
   base::Time start_time = base::Time::Now();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::trace_event::TraceEventETWExport::EnableETWExport();
 
   // Prevent Windows from displaying a modal dialog on failures like not being
@@ -249,7 +249,7 @@ int GpuMain(MainFunctionParams parameters) {
         std::make_unique<base::SingleThreadTaskExecutor>(
             base::MessagePumpType::DEFAULT);
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // The GpuMain thread should not be pumping Windows messages because no UI
     // is expected to run on this thread.
     main_thread_task_executor =
@@ -263,9 +263,9 @@ int GpuMain(MainFunctionParams parameters) {
           std::make_unique<base::SingleThreadTaskExecutor>(
               gpu_preferences.message_pump_type);
     }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #error "Unsupported Linux platform."
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     // Cross-process CoreAnimation requires a CFRunLoop to function at all, and
     // requires a NSRunLoop to not starve under heavy load. See:
     // https://crbug.com/312462#c51 and https://crbug.com/783298
@@ -285,7 +285,7 @@ int GpuMain(MainFunctionParams parameters) {
 
   base::PlatformThread::SetName("CrGpuMain");
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)) {
     // Set thread priority before sandbox initialization.
     base::PlatformThread::SetCurrentThreadPriority(
@@ -295,7 +295,7 @@ int GpuMain(MainFunctionParams parameters) {
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   ContentSandboxHelper sandbox_helper;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   sandbox_helper.set_sandbox_info(parameters.sandbox_info);
 #endif
 
@@ -331,7 +331,7 @@ int GpuMain(MainFunctionParams parameters) {
       base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)
           ? base::ThreadPriority::DISPLAY
           : base::ThreadPriority::NORMAL;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Increase the thread priority to get more reliable values in performance
   // test of mac_os.
   GpuProcess gpu_process(
@@ -353,16 +353,16 @@ int GpuMain(MainFunctionParams parameters) {
 
   gpu_process.set_main_thread(child_thread);
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   // Startup tracing is usually enabled earlier, but if we forked from a zygote,
   // we can only enable it after mojo IPC support is brought up initialized by
   // GpuChildThread, because the mojo broker has to create the tracing SMB on
   // our behalf due to the zygote sandbox.
   if (parameters.zygote_child)
     tracing::EnableStartupTracingIfNeeded();
-#endif  // OS_POSIX && !OS_ANDROID && !OS_MAC
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // A GPUEjectPolicy of 'wait' is set in the Info.plist of the browser
   // process, meaning it is "responsible" for making sure it and its
   // subordinate processes (i.e. the GPU process) drop references to the
@@ -380,7 +380,7 @@ int GpuMain(MainFunctionParams parameters) {
   metal::RegisterGracefulExitOnDeviceRemoval();
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       tracing::GraphicsMemoryDumpProvider::GetInstance(), "AndroidGraphics",
       nullptr);
@@ -406,7 +406,7 @@ int GpuMain(MainFunctionParams parameters) {
 
 namespace {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
                        const gpu::GPUInfo* gpu_info,
                        const gpu::GpuPreferences& gpu_prefs) {
@@ -445,9 +445,9 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
 
   return res;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo* sandbox_info) {
   TRACE_EVENT0("gpu,startup", "Lower token");
 
@@ -462,7 +462,7 @@ bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo* sandbox_info) {
 
   return false;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace.
 

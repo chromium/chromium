@@ -21,7 +21,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "content/common/android/cpu_affinity_setter.h"
 #endif
@@ -43,7 +43,7 @@ InProcessGpuThread::~InProcessGpuThread() {
 void InProcessGpuThread::Init() {
   base::ThreadPriority io_thread_priority = base::ThreadPriority::NORMAL;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Call AttachCurrentThreadWithName, before any other AttachCurrentThread()
   // calls. The latter causes Java VM to assign Thread-??? to the thread name.
   // Please note calls to AttachCurrentThreadWithName after AttachCurrentThread

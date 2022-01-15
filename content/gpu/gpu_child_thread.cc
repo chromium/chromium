@@ -45,7 +45,7 @@
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_drm_bridge_client.h"
 #include "media/mojo/clients/mojo_android_overlay.h"
 #endif
@@ -133,7 +133,7 @@ void GpuChildThread::Init(const base::Time& process_start_time) {
 
   // When running in in-process mode, this has been set in the browser at
   // ChromeBrowserMainPartsAndroid::PreMainMessageLoopRun().
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!in_process_gpu()) {
     media::SetMediaDrmBridgeClient(
         GetContentClient()->GetMediaDrmBridgeClient());
@@ -155,7 +155,7 @@ void GpuChildThread::OnInitializationFailed() {
 
 void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
   media::AndroidOverlayMojoFactoryCB overlay_factory_cb;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   overlay_factory_cb =
       base::BindRepeating(&GpuChildThread::CreateAndroidOverlay,
                           base::ThreadTaskRunnerHandle::Get());
@@ -243,7 +243,7 @@ base::RepeatingClosure GpuChildThread::MakeQuitSafelyClosure() {
                              base::ThreadTaskRunnerHandle::Get());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // static
 std::unique_ptr<media::AndroidOverlay> GpuChildThread::CreateAndroidOverlay(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
