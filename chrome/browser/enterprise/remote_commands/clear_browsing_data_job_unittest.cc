@@ -315,7 +315,7 @@ TEST_F(ClearBrowsingDataJobTest, HandleProfilPathCaseSensitivity) {
   // On other platforms, paths are case-sensitive, so passing a lower case path
   // will result in the profile not being found.
   auto expected = policy::RemoteCommandJob::FAILED;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                        base::BindLambdaForTesting([&] {
