@@ -963,7 +963,7 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
 #if !defined(NDEBUG)
     slow_factor *= 4;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     slow_factor *= 10;
 #endif
 

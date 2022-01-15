@@ -171,7 +171,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string client_data_header;
   if (!is_frame_resource && render_frame_id != MSG_ROUTING_NONE) {
     client_data_header =
@@ -180,7 +180,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 #endif
 
   throttles.emplace_back(std::make_unique<GoogleURLLoaderThrottle>(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       client_data_header,
       /* is_tab_large_enough= */ false,
 #endif

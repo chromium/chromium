@@ -106,7 +106,7 @@ class NetErrorHelper
       const std::string& offline_content_json) override;
   content::RenderFrame* GetRenderFrame() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetAutoFetchState(
       chrome::mojom::OfflinePageAutoFetcherScheduleResult state) override;
 #endif

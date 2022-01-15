@@ -36,7 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #endif
 
@@ -145,7 +145,7 @@ class NetErrorHelperCoreTest : public testing::Test,
     return offline_content_summary_json_;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // State of auto fetch, as reported to Delegate. Unset if SetAutoFetchState
   // was not called.
   absl::optional<chrome::mojom::OfflinePageAutoFetcherScheduleResult>
@@ -244,7 +244,7 @@ class NetErrorHelperCoreTest : public testing::Test,
     offline_content_json_ = offline_content_json;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetAutoFetchState(
       chrome::mojom::OfflinePageAutoFetcherScheduleResult result) override {
     auto_fetch_state_ = result;
@@ -278,7 +278,7 @@ class NetErrorHelperCoreTest : public testing::Test,
   bool list_visible_by_prefs_;
   std::string offline_content_json_;
   std::string offline_content_summary_json_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   absl::optional<chrome::mojom::OfflinePageAutoFetcherScheduleResult>
       auto_fetch_state_;
 #endif
@@ -832,7 +832,7 @@ TEST_F(NetErrorHelperCoreTest, CanShowNetworkDiagnostics) {
   EXPECT_EQ(GURL(kFailedUrl), diagnose_error_url());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(NetErrorHelperCoreTest, Download) {
   DoErrorLoad(net::ERR_INTERNET_DISCONNECTED);
   EXPECT_EQ(0, download_count());
@@ -1186,6 +1186,6 @@ TEST_F(NetErrorHelperCoreAutoFetchTest, AutoFetchTriggered) {
             auto_fetch_state());
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

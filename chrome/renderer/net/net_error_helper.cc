@@ -62,7 +62,7 @@
 #include "ui/base/webui/jstemplate_builder.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #endif
 
@@ -89,25 +89,25 @@ bool IsExtensionExtendedErrorCode(int extended_error_code) {
          static_cast<int>(ChromeResourceRequestBlockedReason::kExtension);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsOfflineContentOnNetErrorFeatureEnabled() {
   return true;
 }
-#else   // OS_ANDROID
+#else   // BUILDFLAG(IS_ANDROID)
 bool IsOfflineContentOnNetErrorFeatureEnabled() {
   return false;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {
   return true;
 }
-#else   // OS_ANDROID
+#else   // BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {
   return false;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsRunningInForcedAppMode() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -354,7 +354,7 @@ void NetErrorHelper::SetIsShowingDownloadButton(bool show) {
 void NetErrorHelper::OfflineContentAvailable(
     bool list_visible_by_prefs,
     const std::string& offline_content_json) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!offline_content_json.empty()) {
     std::string isShownParam(list_visible_by_prefs ? "true" : "false");
     render_frame()->ExecuteJavaScript(base::UTF8ToUTF16(
@@ -364,7 +364,7 @@ void NetErrorHelper::OfflineContentAvailable(
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NetErrorHelper::SetAutoFetchState(
     chrome::mojom::OfflinePageAutoFetcherScheduleResult result) {
   const char* scheduled = "false";
@@ -384,7 +384,7 @@ void NetErrorHelper::SetAutoFetchState(
   render_frame()->ExecuteJavaScript(base::UTF8ToUTF16(base::StrCat(
       {"setAutoFetchState(", scheduled, ", ", can_schedule, ");"})));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void NetErrorHelper::DNSProbeStatus(int32_t status_num) {
   DCHECK(status_num >= 0 && status_num < error_page::DNS_PROBE_MAX);

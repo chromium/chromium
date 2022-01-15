@@ -466,7 +466,7 @@ TEST_F(FormAutocompleteTest,
 // compare field data within the forms.
 // TODO(kolos) Re-enable when the implementation of IsFormVisible is on-par
 // for these platforms.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_NoLongerVisibleBothNoActions DISABLED_NoLongerVisibleBothNoActions
 #else
 #define MAYBE_NoLongerVisibleBothNoActions NoLongerVisibleBothNoActions

@@ -48,11 +48,11 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/common/autofill_features.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
@@ -331,7 +331,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
@@ -1771,7 +1771,7 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillPassword) {
   base::RunLoop().RunUntilIdle();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, TouchToFillSuppressesPopups) {
   SimulateOnFillPasswordForm(fill_data_);
   SimulateSuggestionChoice(username_element_);

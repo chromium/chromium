@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "components/error_page/common/localized_error.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
@@ -58,7 +59,7 @@ NetErrorHelperCore::NetErrorHelperCore(Delegate* delegate)
       last_probe_status_(error_page::DNS_PROBE_POSSIBLE),
       can_show_network_diagnostics_dialog_(false),
       navigation_from_button_(NO_BUTTON)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       ,
       page_auto_fetcher_helper_(
           std::make_unique<PageAutoFetcherHelper>(delegate->GetRenderFrame()))
@@ -72,7 +73,7 @@ void NetErrorHelperCore::OnCommitLoad(FrameType frame_type, const GURL& url) {
   if (frame_type != MAIN_FRAME)
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Don't need this state. It will be refreshed if another error page is
   // loaded.
   available_content_helper_.Reset();
@@ -104,7 +105,7 @@ void NetErrorHelperCore::ErrorPageLoadedWithFinalErrorCode() {
   if (page_info->page_state.is_offline_error)
     RecordEvent(error_page::NETWORK_ERROR_PAGE_OFFLINE_ERROR_SHOWN);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The fetch functions shouldn't be triggered multiple times per page load.
   if (page_info->page_state.offline_content_feature_enabled) {
     available_content_helper_.FetchAvailableContent(base::BindOnce(
@@ -117,7 +118,7 @@ void NetErrorHelperCore::ErrorPageLoadedWithFinalErrorCode() {
         false, base::BindOnce(&Delegate::SetAutoFetchState,
                               base::Unretained(delegate_)));
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (page_info->page_state.download_button_shown)
     RecordEvent(error_page::NETWORK_ERROR_PAGE_DOWNLOAD_BUTTON_SHOWN);
@@ -265,7 +266,7 @@ void NetErrorHelperCore::Reload() {
   delegate_->ReloadFrame();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NetErrorHelperCore::SetPageAutoFetcherHelperForTesting(
     std::unique_ptr<PageAutoFetcherHelper> page_auto_fetcher_helper) {
   page_auto_fetcher_helper_ = std::move(page_auto_fetcher_helper);
@@ -306,19 +307,19 @@ void NetErrorHelperCore::ExecuteButtonPress(Button button) {
 
 void NetErrorHelperCore::LaunchOfflineItem(const std::string& id,
                                            const std::string& name_space) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   available_content_helper_.LaunchItem(id, name_space);
 #endif
 }
 
 void NetErrorHelperCore::LaunchDownloadsPage() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   available_content_helper_.LaunchDownloadsPage();
 #endif
 }
 
 void NetErrorHelperCore::SavePageForLater() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   page_auto_fetcher_helper_->TrySchedule(
       /*user_requested=*/true, base::BindOnce(&Delegate::SetAutoFetchState,
                                               base::Unretained(delegate_)));
@@ -326,13 +327,13 @@ void NetErrorHelperCore::SavePageForLater() {
 }
 
 void NetErrorHelperCore::CancelSavePage() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   page_auto_fetcher_helper_->CancelSchedule();
 #endif
 }
 
 void NetErrorHelperCore::ListVisibilityChanged(bool is_visible) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   available_content_helper_.ListVisibilityChanged(is_visible);
 #endif
 }

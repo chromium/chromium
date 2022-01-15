@@ -35,7 +35,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_select_element.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
@@ -284,7 +284,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   ~FormAutofillTest() override {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
 
@@ -3043,7 +3043,7 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
 }
 
 // TODO(crbug.com/616730) Observe flakiness (if so, investigate and/or disable
-// test if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)).
+// test if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)).
 // We should not be able to serialize a form with too many fillable fields.
 TEST_F(FormAutofillTest, WebFormElementToFormDataTooManyFields) {
   std::string html =

@@ -35,7 +35,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -89,14 +89,14 @@ cart_db::ChromeCartContentProto BuildProtoWithProducts(
   return proto;
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
                               Profile* profile,
                               Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED)
     run_loop->Quit();
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 const char kMockExample[] = "guitarcenter.com";
 const char kMockExampleFallbackURL[] = "https://www.guitarcenter.com/cart";
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
 // the rest and below tests don't work on CrOS yet. Re-enable them on CrOS after
 // figuring out the reason for failure.
 // Signing out on Lacros is not possible.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug/1258803): Skip work on non-eligible profiles.
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   Profile* profile =
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
   SendXHR("/add-to-cart", "product: 123");
   WaitForCartCount(kExpectedExampleFallbackCart);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class CommerceHintCacaoTest : public CommerceHintAgentTest {
  public:
@@ -856,7 +856,7 @@ class CommerceHintTimeoutTest : public CommerceHintAgentTest {
 };
 
 // Flaky on Linux and ChromeOS: https://crbug.com/1257964.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ExtractCart DISABLED_ExtractCart
 #else
 #define MAYBE_ExtractCart ExtractCart
@@ -1154,7 +1154,7 @@ class CommerceHintOptimizeRendererTest : public CommerceHintAgentTest {
 };
 
 // Times out on multiple platforms. https://crbug.com/1258553
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CartExtractionSkipped DISABLED_CartExtractionSkipped
 #else
 #define MAYBE_CartExtractionSkipped CartExtractionSkipped

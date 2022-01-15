@@ -17,7 +17,7 @@
 #include "net/base/net_errors.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/net/available_offline_content_helper.h"
 #include "chrome/renderer/net/page_auto_fetcher_helper_android.h"
 #endif
@@ -105,7 +105,7 @@ class NetErrorHelperCore {
     // Returns the render frame associated with NetErrorHelper.
     virtual content::RenderFrame* GetRenderFrame() = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Called after an attempt to automatically schedule a background fetch for
     // a page with a network error.
     virtual void SetAutoFetchState(
@@ -147,7 +147,7 @@ class NetErrorHelperCore {
   // synced preferences.
   void OnEasterEggHighScoreReceived(int high_score);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetPageAutoFetcherHelperForTesting(
       std::unique_ptr<PageAutoFetcherHelper> page_auto_fetcher_helper);
 #endif
@@ -214,7 +214,7 @@ class NetErrorHelperCore {
   // in errors.
   Button navigation_from_button_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   AvailableOfflineContentHelper available_content_helper_;
   std::unique_ptr<PageAutoFetcherHelper> page_auto_fetcher_helper_;
 #endif

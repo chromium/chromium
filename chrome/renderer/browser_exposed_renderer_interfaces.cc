@@ -33,7 +33,7 @@
 #endif  // BUILDFLAG(USE_TCMALLOC)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/renderer/font_prewarmer.h"
 #endif
 
@@ -94,7 +94,7 @@ void ExposeChromeRendererInterfacesToBrowser(
                base::SequencedTaskRunnerHandle::Get());
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   binders->Add(base::BindRepeating(&FontPrewarmer::Bind),
                base::SequencedTaskRunnerHandle::Get());
 #endif
