@@ -112,7 +112,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
                      .Append("MacOS")
                      .Append(child_base_name);
   }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   return child_path;
 }

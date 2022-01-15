@@ -65,7 +65,7 @@ TEST(StateTransitionsTest, DCHECK_STATE_TRANSITION) {
 
 #if DCHECK_IS_ON()
   // EXPECT_DEATH is not defined on IOS.
-#ifndef OS_IOS
+#if !BUILDFLAG(IS_IOS)
   EXPECT_DEATH(
       DCHECK_STATE_TRANSITION(&transitions, State::kState1, State::kState4),
       "Check failed.*Invalid transition: 0 -> 3");
@@ -73,7 +73,7 @@ TEST(StateTransitionsTest, DCHECK_STATE_TRANSITION) {
   EXPECT_DEATH(
       DCHECK_STATE_TRANSITION(&transitions, State::kState3, State::kState4),
       "Check failed.*Invalid transition: 2 -> 3");
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 #endif  // DCHECK_IS_ON()
 }
 
