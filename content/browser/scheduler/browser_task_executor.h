@@ -52,11 +52,11 @@ class CONTENT_EXPORT BaseBrowserTaskExecutor : public base::TaskExecutor {
       const base::TaskTraits& traits,
       base::SingleThreadTaskRunnerThreadMode thread_mode) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<base::SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const base::TaskTraits& traits,
       base::SingleThreadTaskRunnerThreadMode thread_mode) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Returns the task runner for |traits| under |identifier|. Note: during the
   // migration away from task traits extension, |traits| may also contain a

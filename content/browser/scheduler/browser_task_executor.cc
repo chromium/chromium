@@ -20,7 +20,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #endif
 
@@ -114,14 +114,14 @@ BaseBrowserTaskExecutor::CreateSingleThreadTaskRunner(
   return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 scoped_refptr<base::SingleThreadTaskRunner>
 BaseBrowserTaskExecutor::CreateCOMSTATaskRunner(
     const base::TaskTraits& traits,
     base::SingleThreadTaskRunnerThreadMode thread_mode) {
   return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 scoped_refptr<base::SingleThreadTaskRunner>
 BaseBrowserTaskExecutor::GetTaskRunner(BrowserThread::ID identifier,
@@ -260,7 +260,7 @@ void BrowserTaskExecutor::CreateInternal(
   g_browser_task_executor->browser_ui_thread_handle_
       ->EnableAllExceptBestEffortQueues();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::PostTaskAndroid::SignalNativeSchedulerReady();
 #endif
 }
@@ -276,7 +276,7 @@ BrowserTaskExecutor* BrowserTaskExecutor::Get() {
 
 // static
 void BrowserTaskExecutor::ResetForTesting() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
 #endif
   if (g_browser_task_executor) {

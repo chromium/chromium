@@ -47,7 +47,7 @@ class ResponsivenessCalculatorTest : public testing::Test {
   void SetUp() override {
     calculator_ = std::make_unique<testing::StrictMock<FakeCalculator>>();
     last_calculation_time_ = calculator_->GetLastCalculationTime();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener::NotifyApplicationStateChange(
         base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
     base::RunLoop().RunUntilIdle();
@@ -380,7 +380,7 @@ TEST_F(ResponsivenessCalculatorTest, LongEvent) {
   EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Metric should not be recorded when application is in background.
 TEST_F(ResponsivenessCalculatorTest, ApplicationInBackground) {
   constexpr int kQueueTime = 35;

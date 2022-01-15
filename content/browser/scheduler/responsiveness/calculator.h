@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -152,7 +152,7 @@ class CONTENT_EXPORT Calculator {
   JankList& GetExecutionJanksOnUIThread();
   JankList& GetQueueAndExecutionJanksOnUIThread();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Callback invoked when the application state changes.
   void OnApplicationStateChanged(base::android::ApplicationState state);
 #endif
@@ -173,7 +173,7 @@ class CONTENT_EXPORT Calculator {
   // caller is on the UI thread.
   JankList queue_and_execution_janks_on_ui_thread_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Stores the current visibility state of the application. Accessed only on
   // the UI thread.
   bool is_application_visible_ = false;
@@ -207,7 +207,7 @@ class CONTENT_EXPORT Calculator {
   // executed, so a very long execution time should be treated similarly.
   base::TimeTicks most_recent_activity_time_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Listener for changes in application state, unregisters itself when
   // destroyed.
   const std::unique_ptr<base::android::ApplicationStatusListener>

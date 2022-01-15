@@ -72,7 +72,7 @@ Calculator::Jank::Jank(base::TimeTicks start_time, base::TimeTicks end_time)
 Calculator::Calculator()
     : last_calculation_time_(base::TimeTicks::Now()),
       most_recent_activity_time_(last_calculation_time_)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       ,
       application_status_listener_(
           base::android::ApplicationStatusListener::New(
@@ -261,7 +261,7 @@ void Calculator::CalculateResponsivenessIfNecessary(
   // the UI thread. If there's been a significant amount of time since the last
   // calculation, then it's likely because Chrome was suspended.
   bool is_suspended = current_time - last_activity_time > kSuspendInterval;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   is_suspended |= !is_application_visible_;
 #endif
   if (is_suspended) {
@@ -376,7 +376,7 @@ Calculator::JankList& Calculator::GetQueueAndExecutionJanksOnUIThread() {
   return queue_and_execution_janks_on_ui_thread_;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void Calculator::OnApplicationStateChanged(
     base::android::ApplicationState state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
