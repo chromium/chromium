@@ -31,7 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_prefs.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/language/android/jni_headers/LanguageBridge_jni.h"
@@ -39,7 +39,7 @@
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Records per-initialization ULP-related metrics.
 void RecordULPInitMetrics(Profile* profile,
                           const std::vector<std::string>& ulp_languages) {
@@ -148,7 +148,7 @@ void PrepareLanguageModels(Profile* const profile,
 
     // On Android, additionally create a ULPLanguageModel and populate it with
     // ULP data.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(language::kUseULPLanguagesInChrome)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
