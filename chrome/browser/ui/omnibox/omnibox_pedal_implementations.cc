@@ -1603,6 +1603,9 @@ const gfx::VectorIcon& GetSharingHubVectorIcon() {
 #endif
 }
 
+// NOTE: When `testing` is true, all platform-appropriate pedals should be
+// instantiated so that realbox icon checks can detect missing icons for
+// pedals that may or may not be instantiated according to flag states.
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool incognito, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -1611,7 +1614,7 @@ GetPedalImplementations(bool incognito, bool testing) {
   };
 
 #if BUILDFLAG(IS_ANDROID)
-  if (OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled()) {
+  if (testing || OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled()) {
     add(new OmniboxPedalClearBrowsingData(incognito));
     add(new OmniboxPedalManagePasswords());
     add(new OmniboxPedalUpdateCreditCard());
@@ -1651,7 +1654,7 @@ GetPedalImplementations(bool incognito, bool testing) {
     add(new OmniboxPedalChangeGooglePassword());
   }
 
-  if (OmniboxFieldTrial::IsPedalsBatch3Enabled()) {
+  if (testing || OmniboxFieldTrial::IsPedalsBatch3Enabled()) {
     if (incognito) {
       add(new OmniboxPedalCloseIncognitoWindows());
     }
