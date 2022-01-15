@@ -244,7 +244,7 @@ void VaapiMjpegDecodeAccelerator::CreateImageProcessor(
   // (i.e., |decoder_thread_|) and we control the lifetime of |decoder_thread_|.
   // Therefore, base::Unretained(this) is safe.
   image_processor_ = LibYUVImageProcessorBackend::Create(
-      input_config, output_config, {ImageProcessorBackend::OutputMode::IMPORT},
+      input_config, output_config, ImageProcessorBackend::OutputMode::IMPORT,
       VIDEO_ROTATION_0,
       base::BindRepeating(&VaapiMjpegDecodeAccelerator::OnImageProcessorError,
                           base::Unretained(this)),

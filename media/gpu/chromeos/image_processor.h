@@ -55,7 +55,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       base::RepeatingCallback<std::unique_ptr<ImageProcessorBackend>(
           const PortConfig& input_config,
           const PortConfig& output_config,
-          const std::vector<OutputMode>& preferred_output_modes,
+          OutputMode output_mode,
           VideoRotation relative_rotation,
           ErrorCB error_cb,
           scoped_refptr<base::SequencedTaskRunner> backend_task_runner)>;
@@ -64,7 +64,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       CreateBackendCB create_backend_cb,
       const PortConfig& input_config,
       const PortConfig& output_config,
-      const std::vector<OutputMode>& preferred_output_modes,
+      OutputMode output_mode,
       VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner);

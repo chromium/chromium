@@ -62,11 +62,13 @@ bool IsSupported(const ImageProcessorBackend::PortConfig& config) {
 std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
-    const std::vector<OutputMode>& preferred_output_modes,
+    OutputMode output_mode,
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
-// VaapiImageProcessorBackend supports ChromeOS only.
+  DCHECK_EQ(output_mode, OutputMode::IMPORT)
+      << "Only OutputMode::IMPORT supported";
+  // VaapiImageProcessorBackend supports ChromeOS only.
 #if !defined(OS_CHROMEOS)
   return nullptr;
 #else
@@ -87,11 +89,6 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
                       VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
     VLOGF(2) << "VaapiImageProcessorBackend supports Dmabuf-backed or "
                 "GpuMemoryBuffer based VideoFrame only for output";
-    return nullptr;
-  }
-
-  if (!base::Contains(preferred_output_modes, OutputMode::IMPORT)) {
-    VLOGF(2) << "VaapiImageProcessorBackend only supports IMPORT mode.";
     return nullptr;
   }
 
