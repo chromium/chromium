@@ -81,6 +81,11 @@
     </message>
   </if>
 
+  <!--
+  If you are adding or modifying a privacy string to be displayed on
+  chrome://management for managed devices, please add it to
+  go/chrome-policy-privacy-note-mappings
+  -->
   <if expr="chromeos">
     <!-- Strings related to Local trust roots section -->
     <message name="IDS_MANAGEMENT_LOCAL_TRUST_ROOTS" desc="Title of the types of local trust roots section of the page">
@@ -112,7 +117,7 @@
       Detailed system logs
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA" desc="Message stating that administrators see device network interfaces.">
-      Network addresses
+      Networking information such as addresses, interface configuration, and connection quality
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_DATA" desc="Message stating that administrators see device hardware status.">
       Device statistics such as CPU/RAM usage and hardware specifications

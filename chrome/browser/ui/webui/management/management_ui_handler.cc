@@ -541,6 +541,8 @@ const policy::DlpRulesManager* ManagementUIHandler::GetDlpRulesManager() const {
   return policy::DlpRulesManagerFactory::GetForPrimaryProfile();
 }
 
+// If you are adding a privacy note, please also add it to
+// go/chrome-policy-privacy-note-mappings.
 void ManagementUIHandler::AddDeviceReportingInfo(
     base::Value* report_sources,
     const policy::StatusCollector* collector,
