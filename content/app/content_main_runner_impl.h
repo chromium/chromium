@@ -92,7 +92,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
 // BrowserTestBase is implemented in content/public and GetContentClient() is
 // only available to the implementation of content. Hence these functions.
 CONTENT_EXPORT ContentClient* GetContentClientForTesting();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT ContentMainDelegate* GetContentMainDelegateForTesting();
 #endif
 
