@@ -288,17 +288,6 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_FUCHSIA)
-  VulkanFunction<PFN_vkCreateBufferCollectionFUCHSIAX>
-      vkCreateBufferCollectionFUCHSIAX;
-  VulkanFunction<PFN_vkSetBufferCollectionConstraintsFUCHSIAX>
-      vkSetBufferCollectionConstraintsFUCHSIAX;
-  VulkanFunction<PFN_vkGetBufferCollectionPropertiesFUCHSIAX>
-      vkGetBufferCollectionPropertiesFUCHSIAX;
-  VulkanFunction<PFN_vkDestroyBufferCollectionFUCHSIAX>
-      vkDestroyBufferCollectionFUCHSIAX;
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-#if defined(OS_FUCHSIA)
   VulkanFunction<PFN_vkCreateBufferCollectionFUCHSIA>
       vkCreateBufferCollectionFUCHSIA;
   VulkanFunction<PFN_vkSetBufferCollectionImageConstraintsFUCHSIA>
@@ -307,7 +296,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
       vkGetBufferCollectionPropertiesFUCHSIA;
   VulkanFunction<PFN_vkDestroyBufferCollectionFUCHSIA>
       vkDestroyBufferCollectionFUCHSIA;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   VulkanFunction<PFN_vkAcquireNextImageKHR> vkAcquireNextImageKHR;
   VulkanFunction<PFN_vkCreateSwapchainKHR> vkCreateSwapchainKHR;
@@ -1134,17 +1123,6 @@ ALWAYS_INLINE VkResult vkGetMemoryZirconHandleFUCHSIA(
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_FUCHSIA)
-#define vkCreateBufferCollectionFUCHSIAX \
-  gpu::GetVulkanFunctionPointers()->vkCreateBufferCollectionFUCHSIAX
-#define vkSetBufferCollectionConstraintsFUCHSIAX \
-  gpu::GetVulkanFunctionPointers()->vkSetBufferCollectionConstraintsFUCHSIAX
-#define vkGetBufferCollectionPropertiesFUCHSIAX \
-  gpu::GetVulkanFunctionPointers()->vkGetBufferCollectionPropertiesFUCHSIAX
-#define vkDestroyBufferCollectionFUCHSIAX \
-  gpu::GetVulkanFunctionPointers()->vkDestroyBufferCollectionFUCHSIAX
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-#if defined(OS_FUCHSIA)
 ALWAYS_INLINE VkResult vkCreateBufferCollectionFUCHSIA(
     VkDevice device,
     const VkBufferCollectionCreateInfoFUCHSIA* pCreateInfo,
@@ -1175,7 +1153,7 @@ ALWAYS_INLINE void vkDestroyBufferCollectionFUCHSIA(
   return gpu::GetVulkanFunctionPointers()->vkDestroyBufferCollectionFUCHSIA(
       device, collection, pAllocator);
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 ALWAYS_INLINE VkResult vkAcquireNextImageKHR(VkDevice device,
                                              VkSwapchainKHR swapchain,

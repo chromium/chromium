@@ -1044,50 +1044,6 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
 
 #if BUILDFLAG(IS_FUCHSIA)
   if (gfx::HasExtension(enabled_extensions,
-                        VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME)) {
-    vkCreateBufferCollectionFUCHSIAX =
-        reinterpret_cast<PFN_vkCreateBufferCollectionFUCHSIAX>(
-            vkGetDeviceProcAddr(vk_device, "vkCreateBufferCollectionFUCHSIAX"));
-    if (!vkCreateBufferCollectionFUCHSIAX) {
-      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkCreateBufferCollectionFUCHSIAX";
-      return false;
-    }
-
-    vkSetBufferCollectionConstraintsFUCHSIAX =
-        reinterpret_cast<PFN_vkSetBufferCollectionConstraintsFUCHSIAX>(
-            vkGetDeviceProcAddr(vk_device,
-                                "vkSetBufferCollectionConstraintsFUCHSIAX"));
-    if (!vkSetBufferCollectionConstraintsFUCHSIAX) {
-      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkSetBufferCollectionConstraintsFUCHSIAX";
-      return false;
-    }
-
-    vkGetBufferCollectionPropertiesFUCHSIAX =
-        reinterpret_cast<PFN_vkGetBufferCollectionPropertiesFUCHSIAX>(
-            vkGetDeviceProcAddr(vk_device,
-                                "vkGetBufferCollectionPropertiesFUCHSIAX"));
-    if (!vkGetBufferCollectionPropertiesFUCHSIAX) {
-      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkGetBufferCollectionPropertiesFUCHSIAX";
-      return false;
-    }
-
-    vkDestroyBufferCollectionFUCHSIAX =
-        reinterpret_cast<PFN_vkDestroyBufferCollectionFUCHSIAX>(
-            vkGetDeviceProcAddr(vk_device,
-                                "vkDestroyBufferCollectionFUCHSIAX"));
-    if (!vkDestroyBufferCollectionFUCHSIAX) {
-      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkDestroyBufferCollectionFUCHSIAX";
-      return false;
-    }
-  }
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-#if defined(OS_FUCHSIA)
-  if (gfx::HasExtension(enabled_extensions,
                         VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME)) {
     vkCreateBufferCollectionFUCHSIA =
         reinterpret_cast<PFN_vkCreateBufferCollectionFUCHSIA>(
@@ -1127,7 +1083,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
       return false;
     }
   }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   if (gfx::HasExtension(enabled_extensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
     vkAcquireNextImageKHR = reinterpret_cast<PFN_vkAcquireNextImageKHR>(
