@@ -4463,13 +4463,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     // a.test and iframe b.test can have the same message, while the same
     // message from another a.test will be discarded).
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     RenderFrameHost* execution_targets_with_message[] = {cross_origin_iframe};
 #else
     RenderFrameHost* execution_targets_with_message[] = {
         cross_origin_iframe, inner_cross_origin_iframe,
         same_origin_iframe_in_cross_origin_iframe};
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
     if (std::find(std::begin(execution_targets_with_message),
                   std::end(execution_targets_with_message), execution_target) !=

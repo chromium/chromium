@@ -176,7 +176,7 @@ void AuctionProcessManager::LaunchProcess(
       std::move(auction_worklet_service_receiver),
       ServiceProcessHost::Options()
           .WithDisplayName(display_name)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // TODO(https://crbug.com/1281311) add a utility helper for Jit.
           .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
 #endif

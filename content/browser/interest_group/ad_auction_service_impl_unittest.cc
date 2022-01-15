@@ -377,14 +377,14 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     // after navigation -- the page gets destroyed with the main render frame.
     // On Android, this hangs, likely due to architectural differences, so don't
     // perform this wait on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     RenderFrameHostWrapper main_frame_wrapper(web_contents()->GetMainFrame());
     ASSERT_FALSE(main_frame_wrapper.IsDestroyed());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
     NavigateAndCommit(dest_url);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ASSERT_TRUE(main_frame_wrapper.WaitUntilRenderFrameDeleted());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   std::vector<StorageInterestGroup> GetInterestGroupsForOwner(
@@ -1412,7 +1412,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
 // process to parse JSON -- instead, it validates JSON in-process in Java, then,
 // if validation succeeded, uses the C++ JSON parser, also in-proc. On other
 // platforms, the C++ parser runs out-of-proc for safety.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // The server response is valid, but we simulate the JSON parser (which may
 // run in a separate process) crashing, so the update doesn't happen.
@@ -1460,7 +1460,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The network request fails (not implemented), so the update is cancelled.
 TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
