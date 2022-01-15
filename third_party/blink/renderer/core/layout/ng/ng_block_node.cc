@@ -328,6 +328,8 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
 }
 
 bool IsContentMinimumInlineSizeZero(const NGBlockNode& block_node) {
+  if (block_node.IsTable())
+    return false;
   const auto* node = block_node.GetDOMNode();
   const auto* marquee_element = DynamicTo<HTMLMarqueeElement>(node);
   if (marquee_element && marquee_element->IsHorizontal())
