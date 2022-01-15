@@ -17,16 +17,16 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <errno.h>
 #include <pthread.h>
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 #include <os/lock.h>
 
@@ -53,9 +53,9 @@ PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
 
 #pragma clang diagnostic pop
 
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/sync/mutex.h>
 #endif
 
@@ -121,25 +121,25 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   static constexpr int kLockedContended = 2;
 
   std::atomic<int32_t> state_{kUnlocked};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   pthread_mutex_t lock_ = PTHREAD_MUTEX_INITIALIZER;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   sync_mutex lock_;
 #endif
 
 #else  // defined(PA_HAS_FAST_MUTEX)
   std::atomic<bool> lock_{false};
 
-#if defined(OS_APPLE) && !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
+#if BUILDFLAG(IS_APPLE) && !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
   os_unfair_lock unfair_lock_ = OS_UNFAIR_LOCK_INIT;
 #pragma clang diagnostic pop
 
-#endif  // defined(OS_APPLE) && !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
+#endif  // BUILDFLAG(IS_APPLE) && !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 
   // Spinlock-like, fallback.
   ALWAYS_INLINE bool TrySpinLock();
@@ -223,7 +223,7 @@ ALWAYS_INLINE void SpinningMutex::Release() {
   }
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
   return !!::TryAcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
@@ -233,7 +233,7 @@ ALWAYS_INLINE void SpinningMutex::Release() {
   ::ReleaseSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
 }
 
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
   int retval = pthread_mutex_trylock(&lock_);
@@ -246,7 +246,7 @@ ALWAYS_INLINE void SpinningMutex::Release() {
   PA_DCHECK(retval == 0);
 }
 
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
   return sync_mutex_trylock(&lock_) == ZX_OK;
@@ -271,25 +271,25 @@ ALWAYS_INLINE void SpinningMutex::ReleaseSpinLock() {
   lock_.store(false, std::memory_order_release);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
   // ARM64 macOS is macOS 11.x at least, guaranteed to have os_unfair_lock().
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
   return os_unfair_lock_trylock(&unfair_lock_);
 #else
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_trylock(&unfair_lock_);
 
   return TrySpinLock();
-#endif  // defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 }
 
 ALWAYS_INLINE void SpinningMutex::Release() {
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
   return os_unfair_lock_unlock(&unfair_lock_);
 #else
   // Always testing trylock(), since the definitions are all or nothing.
@@ -297,18 +297,18 @@ ALWAYS_INLINE void SpinningMutex::Release() {
     return os_unfair_lock_unlock(&unfair_lock_);
 
   return ReleaseSpinLock();
-#endif  // defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 }
 
 ALWAYS_INLINE void SpinningMutex::LockSlow() {
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
   return os_unfair_lock_lock(&unfair_lock_);
 #else
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_lock(&unfair_lock_);
 
   return LockSlowSpinLock();
-#endif  // defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 }
 
 #pragma clang diagnostic pop
@@ -326,7 +326,7 @@ ALWAYS_INLINE void SpinningMutex::LockSlow() {
   return LockSlowSpinLock();
 }
 
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // defined(PA_HAS_FAST_MUTEX)
 

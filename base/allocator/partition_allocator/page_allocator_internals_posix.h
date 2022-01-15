@@ -16,7 +16,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -25,10 +25,10 @@
 #include <Security/Security.h>
 #include <mach/mach.h>
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <sys/prctl.h>
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/resource.h>
 #endif
 
@@ -38,7 +38,7 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // SecTaskGetCodeSignStatus is marked as unavailable on macOS, although it’s
 // available on iOS and other Apple operating systems. It is, in fact, present
@@ -54,13 +54,13 @@ uint32_t SecTaskGetCodeSignStatus(SecTaskRef task)
     API_AVAILABLE(macos(10.12));
 #pragma clang diagnostic pop
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace base {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char* PageTagToName(PageTag tag) {
   // Important: All the names should be string literals. As per prctl.h in
   // //third_party/android_ndk the kernel keeps a pointer to the name instead
@@ -82,9 +82,9 @@ const char* PageTagToName(PageTag tag) {
       return "";
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Tests whether the version of macOS supports the MAP_JIT flag and if the
 // current process is signed with the hardened runtime and the allow-jit
 // entitlement, returning whether MAP_JIT should be used to allocate regions
@@ -131,7 +131,7 @@ bool UseMapJit() {
 
   return mac::CFCast<CFBooleanRef>(jit_entitlement.get()) == kCFBooleanTrue;
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -145,7 +145,7 @@ void* SystemAllocPagesInternal(void* hint,
                                size_t length,
                                PageAccessibilityConfiguration accessibility,
                                PageTag page_tag) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Use a custom tag to make it easier to distinguish Partition Alloc regions
   // in vmmap(1). Tags between 240-255 are supported.
   PA_DCHECK(PageTag::kFirst <= page_tag);
@@ -158,7 +158,7 @@ void* SystemAllocPagesInternal(void* hint,
   int access_flag = GetAccessFlags(accessibility);
   int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS 10.14 and higher, executables that are code signed with the
   // "runtime" option cannot execute writable memory by default. They can opt
   // into this capability by specifying the "com.apple.security.cs.allow-jit"
@@ -175,7 +175,7 @@ void* SystemAllocPagesInternal(void* hint,
     ret = nullptr;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, anonymous mappings can have a name attached to them. This is
   // useful for debugging, and double-checking memory attribution.
   if (ret) {
@@ -308,7 +308,7 @@ void RecommitSystemPagesInternal(
     SetSystemPagesAccess(address, length, accessibility);
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On macOS, to update accounting, we need to make another syscall. For more
   // details, see https://crbug.com/823915.
   madvise(address, length, MADV_FREE_REUSE);
@@ -329,7 +329,7 @@ bool TryRecommitSystemPagesInternal(
       return false;
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On macOS, to update accounting, we need to make another syscall. For more
   // details, see https://crbug.com/823915.
   madvise(address, length, MADV_FREE_REUSE);
@@ -339,7 +339,7 @@ bool TryRecommitSystemPagesInternal(
 }
 
 void DiscardSystemPagesInternal(void* address, size_t length) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   int ret = madvise(address, length, MADV_FREE_REUSABLE);
   if (ret) {
     // MADV_FREE_REUSABLE sometimes fails, so fall back to MADV_DONTNEED.

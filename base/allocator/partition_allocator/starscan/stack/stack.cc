@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #else
 #include <pthread.h>
@@ -24,7 +24,7 @@ extern "C" void* __libc_stack_end;
 namespace base {
 namespace internal {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void* GetStackTop() {
 #if defined(ARCH_CPU_X86_64)
@@ -44,13 +44,13 @@ void* GetStackTop() {
 #endif
 }
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 
 void* GetStackTop() {
   return pthread_get_stackaddr_np(pthread_self());
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 void* GetStackTop() {
   pthread_attr_t attr;
@@ -75,9 +75,9 @@ void* GetStackTop() {
 #endif  // defined(LIBC_GLIBC)
 }
 
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 #error "Unsupported GetStackTop"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using IterateStackCallback = void (*)(const Stack*, StackVisitor*, uintptr_t*);
 extern "C" void PAPushAllRegistersAndIterateStack(const Stack*,

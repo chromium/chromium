@@ -43,13 +43,13 @@
 #include <arm_acle.h>
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/time.h>
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_APPLE)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
 #include <OpenCL/opencl.h>
 
 #include <base/mac/mac_util.h>
@@ -82,10 +82,10 @@ bool IsLargeMemoryDevice() {
 }
 
 bool SetAddressSpaceLimit() {
-#if !defined(ARCH_CPU_64_BITS) || !defined(OS_POSIX)
+#if !defined(ARCH_CPU_64_BITS) || !BUILDFLAG(IS_POSIX)
   // 32 bits => address space is limited already.
   return true;
-#elif defined(OS_POSIX) && !defined(OS_APPLE)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
   // macOS will accept, but not enforce, |RLIMIT_AS| changes. See
   // https://crbug.com/435269 and rdar://17576114.
   //
@@ -108,9 +108,9 @@ bool SetAddressSpaceLimit() {
 }
 
 bool ClearAddressSpaceLimit() {
-#if !defined(ARCH_CPU_64_BITS) || !defined(OS_POSIX)
+#if !defined(ARCH_CPU_64_BITS) || !BUILDFLAG(IS_POSIX)
   return true;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   struct rlimit limit;
   if (getrlimit(RLIMIT_DATA, &limit) != 0)
     return false;
@@ -433,7 +433,7 @@ void FreeFullSlotSpan(PartitionRoot<base::internal::ThreadSafe>* root,
   EXPECT_TRUE(slot_span->is_empty());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool CheckPageInCore(void* ptr, bool in_core) {
   unsigned char ret = 0;
   EXPECT_EQ(0, mincore(ptr, SystemPageSize(), &ret));
@@ -444,7 +444,7 @@ bool CheckPageInCore(void* ptr, bool in_core) {
   EXPECT_TRUE(CheckPageInCore(ptr, in_core))
 #else
 #define CHECK_PAGE_IN_CORE(ptr, in_core) (void)(0)
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 class MockPartitionStatsDumper : public PartitionStatsDumper {
  public:
@@ -1868,7 +1868,7 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 }
 
 // Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 // Unit tests that check if an allocation fails in "return null" mode,
 // repeating it doesn't crash, and still returns null. The tests need to
@@ -1886,9 +1886,9 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 //
 // Disable these test on Windows, since they run slower, so tend to timout and
 // cause flake.
-#if !defined(OS_WIN) &&            \
+#if !BUILDFLAG(IS_WIN) &&          \
     (!defined(ARCH_CPU_64_BITS) || \
-     (defined(OS_POSIX) && !(defined(OS_APPLE) || defined(OS_ANDROID))))
+     (BUILDFLAG(IS_POSIX) && !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID))))
 
 // The following four tests wrap a called function in an expect death statement
 // to perform their test, because they are non-hermetic. Specifically they are
@@ -1953,8 +1953,8 @@ TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
                "DoReturnNullTest");
 }
 
-#endif  // !defined(ARCH_CPU_64_BITS) || (defined(OS_POSIX) &&
-        // !(defined(OS_APPLE) || defined(OS_ANDROID)))
+#endif  // !defined(ARCH_CPU_64_BITS) || (BUILDFLAG(IS_POSIX) &&
+        // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)))
 
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to
@@ -2044,7 +2044,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
   }
 }
 
-#if (defined(OS_LINUX) || defined(OS_ANDROID)) && defined(ARCH_CPU_ARM64)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)) && defined(ARCH_CPU_ARM64)
 TEST_F(PartitionAllocTest, MTEProtectsFreedPtr) {
   // This test checks that Arm's memory tagging extension is correctly
   // protecting freed pointers. Writes to a freed pointer should cause a crash.
@@ -2161,7 +2161,7 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
 
 #endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
 
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that |PartitionDumpStats| and |PartitionDumpStats| run without
 // crashing and return non-zero values when memory is allocated.
@@ -2579,7 +2579,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableFirstPage) {
     EXPECT_TRUE(stats);
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->decommittable_bytes);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(0u, stats->discardable_bytes);
 #else
     EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
@@ -2719,7 +2719,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
     EXPECT_TRUE(stats);
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->decommittable_bytes);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
 #else
     EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
@@ -3631,7 +3631,7 @@ TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
 }
 
 // Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 #if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
 TEST_F(PartitionAllocDeathTest, CheckTriggered) {
@@ -3643,13 +3643,13 @@ TEST_F(PartitionAllocDeathTest, CheckTriggered) {
 }
 
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
-#endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 // Not on chromecast, since gtest considers extra output from itself as a test
 // failure:
 // https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&              \
-    defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID) && \
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&                \
+    defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) && \
     !BUILDFLAG(IS_CHROMECAST)
 
 namespace {
@@ -3717,7 +3717,7 @@ TEST_F(PartitionAllocTest, DISABLED_PreforkHandler) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID) &&
+        // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMECAST)
 
 // Checks the bucket index logic.
@@ -3940,7 +3940,7 @@ TEST_F(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
             kMaxFreeableSpans * bucket_size);
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     BUILDFLAG(IS_CHROMECAST)
 extern "C" {
 void* __real_malloc(size_t);
@@ -4008,17 +4008,17 @@ TEST_F(PartitionAllocTest, SortFreelist) {
   allocator.root()->Free(first_ptr);
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_LINUX) && \
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_LINUX) && \
     defined(ARCH_CPU_64_BITS)
 TEST_F(PartitionAllocTest, CrashOnUnknownPointer) {
   int not_a_heap_object = 42;
   EXPECT_DEATH(
       allocator.root()->Free(reinterpret_cast<void*>(&not_a_heap_object)), "");
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_LINUX) &&
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_LINUX) &&
         // defined(ARCH_CPU_64_BITS)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_MAC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
 
 // Adapted from crashpad tests.
 class ScopedOpenCLNoOpKernel {
@@ -4117,7 +4117,7 @@ TEST_F(PartitionAllocTest, OpenCL) {
 #endif
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_MAC)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
 
 }  // namespace internal
 }  // namespace base

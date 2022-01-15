@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/windows_version.h"
 // versionhelpers.h must be included after windows.h.
@@ -27,20 +27,20 @@ uintptr_t GetMask() {
   uintptr_t mask = internal::ASLRMask();
 #if defined(ARCH_CPU_64_BITS)
 // Sanitizers use their own ASLR mask constant.
-#if defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if (!IsWindows8Point1OrGreater()) {
     mask = internal::ASLRMaskBefore8_10();
   }
-#endif  // defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR))
+#endif  // BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR))
 #elif defined(ARCH_CPU_32_BITS)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BOOL is_wow64 = FALSE;
   if (!IsWow64Process(GetCurrentProcess(), &is_wow64))
     is_wow64 = FALSE;
   if (!is_wow64) {
     mask = 0;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // defined(ARCH_CPU_32_BITS)
   return mask;
 }
@@ -61,7 +61,7 @@ uintptr_t GetRandomBits() {
 TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
   uintptr_t mask = GetMask();
   if (!mask) {
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
     // ASLR should be turned off on 32-bit Windows.
     EXPECT_EQ(nullptr, base::GetRandomPageBase());
 #else

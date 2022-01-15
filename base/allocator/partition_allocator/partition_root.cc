@@ -25,12 +25,12 @@
 #include "base/memory/tagging.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "wow64apiset.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <pthread.h>
 #endif
 
@@ -44,7 +44,7 @@ namespace base {
 
 namespace {
 
-#if defined(OS_APPLE) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
 // design.
@@ -123,7 +123,7 @@ void AfterForkInChild() {
   internal::ThreadCacheRegistry::Instance()
       .ForcePurgeAllThreadAfterForkUnsafe();
 }
-#endif  // defined(OS_APPLE) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 std::atomic<bool> g_global_init_called;
 void PartitionAllocMallocInitOnce() {
@@ -133,7 +133,7 @@ void PartitionAllocMallocInitOnce() {
   if (!g_global_init_called.compare_exchange_strong(expected, true))
     return;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // When fork() is called, only the current thread continues to execute in the
   // child process. If the lock is held, but *not* by this thread when fork() is
   // called, we have a deadlock.
@@ -158,12 +158,12 @@ void PartitionAllocMallocInitOnce() {
   int err =
       pthread_atfork(BeforeForkInParent, AfterForkInParent, AfterForkInChild);
   PA_CHECK(err == 0);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void PartitionAllocMallocHookOnBeforeForkInParent() {
   BeforeForkInParent();
 }
@@ -175,7 +175,7 @@ void PartitionAllocMallocHookOnAfterForkInParent() {
 void PartitionAllocMallocHookOnAfterForkInChild() {
   AfterForkInChild();
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -213,7 +213,7 @@ static size_t PartitionPurgeSlotSpan(
   constexpr size_t kMaxSlotCount =
       (PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan) /
       SystemPageSize();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   // It's better for slot_usage to be stack-allocated and fixed-size, which
   // demands that its size be constexpr. On OS_APPLE, PartitionPageSize() is
   // always SystemPageSize() << 2, so regardless of what the run time page size
@@ -227,7 +227,7 @@ static size_t PartitionPurgeSlotSpan(
   PA_DCHECK(slot_span->num_unprovisioned_slots < bucket_num_slots);
   size_t num_slots = bucket_num_slots - slot_span->num_unprovisioned_slots;
   char slot_usage[kMaxSlotCount];
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // The last freelist entry should not be discarded when using OS_WIN.
   // DiscardVirtualMemory makes the contents of discarded memory undefined.
   size_t last_slot = static_cast<size_t>(-1);
@@ -246,7 +246,7 @@ static size_t PartitionPurgeSlotSpan(
     PA_DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
     entry = entry->GetNext(slot_size);
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // If we have a slot where the masked freelist entry is 0, we can actually
     // discard that freelist entry because touching a discarded page is
     // guaranteed to return original content or 0. (Note that this optimization
@@ -307,7 +307,7 @@ static size_t PartitionPurgeSlotSpan(
           back = entry;
         }
         num_new_entries++;
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
         last_slot = slot_index;
 #endif
       }
@@ -332,7 +332,7 @@ static size_t PartitionPurgeSlotSpan(
     // we can discard that pointer value too.
     char* begin_ptr = ptr + (i * slot_size);
     char* end_ptr = begin_ptr + slot_size;
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     if (i != last_slot)
       begin_ptr += sizeof(internal::PartitionFreelistEntry);
 #else
@@ -485,7 +485,7 @@ template <bool thread_safe>
     internal::PartitionOutOfMemoryWithLotsOfUncommitedPages(size);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If true then we are running on 64-bit Windows.
   BOOL is_wow_64 = FALSE;
   // Intentionally ignoring failures.
@@ -540,7 +540,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     // but until this is done, forbid them from being used.
     PA_CHECK(thread_safe);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // Needed to statically bound page size, which is a runtime constant on
     // apple OSes.
     PA_CHECK((SystemPageSize() == (size_t{1} << 12)) ||

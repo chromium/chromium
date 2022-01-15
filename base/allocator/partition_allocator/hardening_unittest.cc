@@ -18,7 +18,7 @@ namespace base {
 namespace internal {
 
 // Death tests misbehave on Android, crbug.com/1240184
-#if !defined(OS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) && \
+#if !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) && \
     defined(PA_HAS_FREELIST_HARDENING)
 
 TEST(HardeningTest, PartialCorruption) {
@@ -113,7 +113,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   // Crashes, because |metadata_address| points inside the metadata area.
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
 }
-#endif  // !defined(OS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
+#endif  // !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
         // defined(PA_HAS_FREELIST_HARDENING)
 
 TEST(HardeningTest, SuccessfulCorruption) {

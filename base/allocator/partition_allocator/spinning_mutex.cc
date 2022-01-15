@@ -7,11 +7,11 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #endif
 
@@ -25,7 +25,7 @@
 #if !defined(PA_HAS_FAST_MUTEX)
 #include "base/threading/platform_thread.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sched.h>
 
 #define YIELD_THREAD sched_yield()
@@ -41,7 +41,7 @@
 namespace partition_alloc {
 
 void SpinningMutex::Reinit() {
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // On most platforms, no need to re-init the lock, can just unlock it.
   Release();
 #else
@@ -56,7 +56,7 @@ void SpinningMutex::Reinit() {
 #pragma clang diagnostic pop
 
   Release();
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 #if defined(PA_HAS_FAST_MUTEX)
@@ -113,20 +113,20 @@ void SpinningMutex::LockSlow() {
   }
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 void SpinningMutex::LockSlow() {
   ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
 }
 
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 
 void SpinningMutex::LockSlow() {
   int retval = pthread_mutex_lock(&lock_);
   PA_DCHECK(retval == 0);
 }
 
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 
 void SpinningMutex::LockSlow() {
   sync_mutex_lock(&lock_);

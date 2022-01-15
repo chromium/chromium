@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
 
 #include <mach/vm_page_size.h>
 
@@ -40,7 +40,7 @@ namespace base {
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PageAllocationGranularityShift() {
-#if defined(OS_WIN) || defined(ARCH_CPU_PPC64)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_PPC64)
   // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
   // sizes.  Since 64kB is the de facto standard on the platform and binaries
   // compiled for 64kB are likely to work on 4kB systems, 64kB is a good choice
@@ -48,7 +48,7 @@ PageAllocationGranularityShift() {
   return 16;  // 64kB
 #elif defined(_MIPS_ARCH_LOONGSON)
   return 14;  // 16kB
-#elif defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
+#elif BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
   return vm_page_shift;
 #else
   return 12;  // 4kB
@@ -57,7 +57,7 @@ PageAllocationGranularityShift() {
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PageAllocationGranularity() {
-#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
   // This is literally equivalent to |1 << PageAllocationGranularityShift()|
   // below, but was separated out for OS_APPLE to avoid << on a non-constexpr.
   return vm_page_size;
@@ -81,7 +81,7 @@ SystemPageShift() {
   // On Windows allocation granularity is higher than the page size. This comes
   // into play when reserving address space range (allocation granularity),
   // compared to committing pages into memory (system page granularity).
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return 12;  // 4096=1<<12
 #else
   return PageAllocationGranularityShift();
@@ -90,7 +90,7 @@ SystemPageShift() {
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 SystemPageSize() {
-#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
   // This is literally equivalent to |1 << SystemPageShift()| below, but was
   // separated out for 64-bit OS_APPLE to avoid << on a non-constexpr.
   return PageAllocationGranularity();

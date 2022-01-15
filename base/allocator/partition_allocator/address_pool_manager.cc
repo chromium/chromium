@@ -4,7 +4,9 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 
-#if defined(OS_APPLE)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_APPLE)
 #include <sys/mman.h>
 #endif
 

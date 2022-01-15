@@ -15,15 +15,15 @@
 #include "base/bits.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/allocator/partition_allocator/page_allocator_internals_win.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "base/allocator/partition_allocator/page_allocator_internals_posix.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "base/allocator/partition_allocator/page_allocator_internals_fuchsia.h"
 #else
 #error Platform not supported.

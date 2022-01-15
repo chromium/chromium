@@ -141,7 +141,7 @@ TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
   EXPECT_DEATH(lock.AssertAcquired(), "");
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // On Apple OSes, it is not allowed to unlock a lock from another thread, so
 // we need to re-initialize it.
 TEST(PartitionAllocLockTest, ReinitInOtherThread) NO_THREAD_SAFETY_ANALYSIS {
@@ -158,7 +158,7 @@ TEST(PartitionAllocLockTest, ReinitInOtherThread) NO_THREAD_SAFETY_ANALYSIS {
   base::PlatformThread::Create(0, &delegate, &handle);
   base::PlatformThread::Join(handle);
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 

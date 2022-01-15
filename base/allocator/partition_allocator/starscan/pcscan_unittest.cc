@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
@@ -434,7 +435,7 @@ struct ListWithInnerReference {
 }  // namespace
 
 // Disabled due to consistent failure http://crbug.com/1242407
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DanglingInnerReference DISABLED_DanglingInnerReference
 #else
 #define MAYBE_DanglingInnerReference DanglingInnerReference
@@ -570,7 +571,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
 }
 
 // Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 #if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
 TEST_F(PartitionAllocPCScanTest, DoubleFree) {
   auto* list = List<1>::Create(root());

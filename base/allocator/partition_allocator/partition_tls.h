@@ -9,11 +9,11 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -23,10 +23,10 @@
 namespace base {
 namespace internal {
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 typedef pthread_key_t PartitionTlsKey;
 
-#if defined(OS_MAC) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 namespace {
 
 ALWAYS_INLINE void* FastTlsGet(intptr_t index) {
@@ -54,14 +54,14 @@ ALWAYS_INLINE void* FastTlsGet(intptr_t index) {
 }
 
 }  // namespace
-#endif  // defined(OS_MAC) && defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 
 ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
                                       void (*destructor)(void*)) {
   return !pthread_key_create(key, destructor);
 }
 ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
-#if defined(OS_MAC) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
   PA_DCHECK(pthread_getspecific(key) == FastTlsGet(key));
   return FastTlsGet(key);
 #else
@@ -72,7 +72,7 @@ ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
   int ret = pthread_setspecific(key, value);
   PA_DCHECK(!ret);
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 // Note: supports only a single TLS key on Windows. Not a hard constraint, may
 // be lifted.
 typedef unsigned long PartitionTlsKey;
@@ -124,7 +124,7 @@ ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
 ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
   IMMEDIATE_CRASH();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace internal
 }  // namespace base

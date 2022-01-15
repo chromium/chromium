@@ -13,7 +13,7 @@
 // address space. The only known case where address space is 32-bit is NaCl, so
 // eliminate it explicitly. static_assert below ensures that others won't slip
 // through.
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL)
 #define PA_HAS_64_BITS_POINTERS
 static_assert(sizeof(void*) == 8, "");
 #else
@@ -31,7 +31,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 #if defined(PA_HAS_64_BITS_POINTERS) && \
-    (defined(OS_LINUX) || defined(OS_ANDROID))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 #include <linux/version.h>
 // TODO(bikineev): Enable for ChromeOS.
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
@@ -59,7 +59,7 @@ static_assert(sizeof(void*) != 8, "");
 
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #define PA_HAS_LINUX_KERNEL
 #endif
 
@@ -77,8 +77,8 @@ static_assert(sizeof(void*) != 8, "");
 // assume that pthread_mutex_trylock() is suitable.
 //
 // Otherwise, a userspace spinlock implementation is used.
-#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN) || \
-    (defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA)
+#if defined(PA_HAS_LINUX_KERNEL) || BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) || BUILDFLAG(IS_FUCHSIA)
 #define PA_HAS_FAST_MUTEX
 #endif
 
@@ -91,7 +91,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 // Need TLS support.
-#if defined(OS_POSIX) || defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #define PA_THREAD_CACHE_SUPPORTED
 #endif
 
@@ -145,7 +145,7 @@ static_assert(sizeof(void*) != 8, "");
 //
 // Regardless, the "normal" TLS access is fast on x86_64 (see partition_tls.h),
 // so don't bother with thread_local anywhere.
-#if !(defined(OS_WIN) && defined(COMPONENT_BUILD)) && !defined(OS_APPLE)
+#if !(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)) && !BUILDFLAG(IS_APPLE)
 #define PA_THREAD_LOCAL_TLS
 #endif
 
@@ -157,14 +157,14 @@ static_assert(sizeof(void*) != 8, "");
 // - thread_local TLS to simplify the implementation
 // - Not on Android due to bot failures
 #if DCHECK_IS_ON() && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_LOCAL_TLS) && !defined(OS_ANDROID)
+    defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
 #define PA_HAS_ALLOCATION_GUARD
 #endif
 
 // Lazy commit should only be enabled on Windows, because commit charge is
 // only meaningful and limited on Windows. It affects performance on other
 // platforms and is simply not needed there due to OS supporting overcommit.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr bool kUseLazyCommit = true;
 #else
 constexpr bool kUseLazyCommit = false;

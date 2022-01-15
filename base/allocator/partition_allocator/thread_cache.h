@@ -68,7 +68,7 @@ class ThreadCache;
 extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 // On Android, we have to go through emutls, since this is always a shared
 // library, so don't bother.
-#if defined(PA_THREAD_LOCAL_TLS) && !defined(OS_ANDROID)
+#if defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
 #define PA_THREAD_CACHE_FAST_TLS
 #endif
 
@@ -154,7 +154,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   bool periodic_purge_is_initialized_ = false;
   base::TimeDelta periodic_purge_next_interval_ = kDefaultPurgeInterval;
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't
   // understand enough constexpr to handle the code below.
   uint8_t largest_active_bucket_index_ = 1;
@@ -345,7 +345,7 @@ class BASE_EXPORT ThreadCache {
   static void SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
                               float multiplier);
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't
   // understand enough constexpr to handle the code below.
   static constexpr uint16_t kBucketCount = 1;

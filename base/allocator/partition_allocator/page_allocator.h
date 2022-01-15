@@ -170,7 +170,7 @@ BASE_EXPORT void DecommitAndZeroSystemPages(void* address, size_t length);
 // Whether decommitted memory is guaranteed to be zeroed when it is
 // recommitted. Do not assume that this will not change over time.
 constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   return false;
 #else
   return true;

@@ -46,7 +46,7 @@ namespace {
 // PartitionRoot can use it.
 static std::atomic<PartitionRoot<ThreadSafe>*> g_thread_cache_root;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void OnDllProcessDetach() {
   // Very late allocations do occur (see crbug.com/1159411#c7 for instance),
   // including during CRT teardown. This is problematic for the thread cache
@@ -313,7 +313,7 @@ void ThreadCache::SwapForTesting(PartitionRoot<ThreadSafe>* root) {
     Init(root);
     Create(root);
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // OnDllProcessDetach accesses g_thread_cache_root which is nullptr now.
     PartitionTlsSetOnDllProcessDetach(nullptr);
 #endif
@@ -328,7 +328,7 @@ void ThreadCache::RemoveTombstoneForTesting() {
 
 // static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   IMMEDIATE_CRASH();
 #endif
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size ==
@@ -347,7 +347,7 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
         << "Only one PartitionRoot is allowed to have a thread cache";
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   PartitionTlsSetOnDllProcessDetach(OnDllProcessDetach);
 #endif
 
@@ -491,7 +491,7 @@ void ThreadCache::Delete(void* tcache_ptr) {
   tcache->~ThreadCache();
   root->RawFree(reinterpret_cast<uintptr_t>(tcache_ptr));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, allocations do occur during thread/process teardown, make sure
   // they don't resurrect the thread cache.
   //
@@ -501,7 +501,7 @@ void ThreadCache::Delete(void* tcache_ptr) {
   g_thread_cache = reinterpret_cast<ThreadCache*>(kTombstone);
 #endif
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 ThreadCache::Bucket::Bucket() {

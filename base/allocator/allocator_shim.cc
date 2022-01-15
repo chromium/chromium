@@ -16,13 +16,13 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #include <unistd.h>
 #else
 #include "base/allocator/winheap_stubs_win.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
 #include "base/allocator/allocator_interception_mac.h"
@@ -51,7 +51,7 @@ ALWAYS_INLINE size_t GetCachedPageSize() {
 // Calls the std::new handler thread-safely. Returns true if a new_handler was
 // set and called, false if no new_handler was set.
 bool CallNewHandler(size_t size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::allocator::WinCallNewHandler(size);
 #else
   std::new_handler nh = std::get_new_handler();
@@ -146,7 +146,7 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
   void* ptr;
   do {
     void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_function(chain_head, size, context);
@@ -156,7 +156,7 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
 
 ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
   void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
 #endif
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
@@ -168,7 +168,7 @@ ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
   void* ptr;
   do {
     void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
@@ -179,7 +179,7 @@ ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
 
 ALWAYS_INLINE void ShimCppDelete(void* address) {
   void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
 #endif
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
@@ -328,8 +328,8 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 
 }  // extern "C"
 
-#if !defined(OS_WIN) && \
-    !(defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+#if !BUILDFLAG(IS_WIN) && \
+    !(BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
 // Cpp symbols (new / delete) should always be routed through the shim layer
 // except on Windows and macOS (except for PartitionAlloc-Everywhere) where the
 // malloc intercept is deep enough that it also catches the cpp calls.
@@ -341,14 +341,14 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #include "base/allocator/allocator_shim_override_cpp_symbols.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android does not support symbol interposition. The way malloc symbols are
 // intercepted on Android is by using link-time -wrap flags.
 #include "base/allocator/allocator_shim_override_linker_wrapped_symbols.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 // On Windows we use plain link-time overriding of the CRT symbols.
 #include "base/allocator/allocator_shim_override_ucrt_symbols_win.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_override_mac_default_zone.h"
 #else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -383,7 +383,7 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 namespace base {
 namespace allocator {
 

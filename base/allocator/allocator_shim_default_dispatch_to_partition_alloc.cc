@@ -29,11 +29,11 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
 #endif
 
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 #include <windows.h>
 #endif
 
@@ -187,7 +187,7 @@ base::ThreadSafePartitionRoot* AlignedAllocator() {
   return g_aligned_root.Get();
 }
 
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 bool IsRunning32bitEmulatedOnArm64() {
   using IsWow64Process2Function = decltype(&IsWow64Process2);
@@ -212,15 +212,15 @@ bool IsRunning32bitEmulatedOnArm64() {
 // The number of bytes to add to every allocation. Ordinarily zero, but set to 8
 // when emulating an x86 on ARM64 to avoid a bug in the Windows x86 emulator.
 size_t g_extra_bytes;
-#endif  // defined(OS_WIN) && defined(ARCH_CPU_X86)
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 
 // TODO(brucedawson): Remove this when https://crbug.com/1151455 is fixed.
 ALWAYS_INLINE size_t MaybeAdjustSize(size_t size) {
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
   return base::CheckAdd(size, g_extra_bytes).ValueOrDie();
-#else   // defined(OS_WIN) && defined(ARCH_CPU_X86)
+#else   // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
   return size;
-#endif  // defined(OS_WIN) && defined(ARCH_CPU_X86)
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 }
 
 void* AllocateAlignedMemory(size_t alignment, size_t size) {
@@ -341,7 +341,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        size_t size,
                        void* context) {
   ScopedDisallowAllocations guard{};
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (UNLIKELY(!base::IsManagedByPartitionAlloc(
                    reinterpret_cast<uintptr_t>(address)) &&
                address)) {
@@ -350,13 +350,13 @@ void* PartitionRealloc(const AllocatorDispatch*,
     // dispatching so that it appropriately selects the right zone.
     return realloc(address, size);
   }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   return Allocator()->ReallocFlags(base::PartitionAllocNoHooks, address,
                                    MaybeAdjustSize(size), "");
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
 extern "C" {
 void __real_free(void*);
 }  // extern "C"
@@ -364,7 +364,7 @@ void __real_free(void*);
 
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
   ScopedDisallowAllocations guard{};
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (UNLIKELY(!base::IsManagedByPartitionAlloc(
                    reinterpret_cast<uintptr_t>(address)) &&
                address)) {
@@ -373,13 +373,13 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
     // dispatching so that it appropriately selects the right zone.
     return free(address);
   }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // On Chromecast, there is at least one case where a system malloc() pointer
   // can be passed to PartitionAlloc's free(). If we don't own the pointer, pass
   // it along. This should not have a runtime cost vs regular Android, since on
   // Android we have a PA_CHECK() rather than the branch here.
-#if defined(OS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
   if (UNLIKELY(!base::IsManagedByPartitionAlloc(
                    reinterpret_cast<uintptr_t>(address)) &&
                address)) {
@@ -393,7 +393,7 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
   base::ThreadSafePartitionRoot::FreeNoHooks(address);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // Normal free() path on Apple OSes:
 // 1. size = GetSizeEstimate(ptr);
 // 2. if (size) FreeDefiniteSize(ptr, size)
@@ -409,7 +409,7 @@ void PartitionFreeDefiniteSize(const AllocatorDispatch*,
   // still useful though, as we avoid double-checking that the address is owned.
   base::ThreadSafePartitionRoot::FreeNoHooks(address);
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
@@ -419,23 +419,23 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
   if (!address)
     return 0;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (!base::IsManagedByPartitionAlloc(reinterpret_cast<uintptr_t>(address))) {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc.  The return value `0` means that the pointer does not
     // belong to this malloc zone.
     return 0;
   }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // TODO(lizeb): Returns incorrect values for aligned allocations.
   const size_t size = base::ThreadSafePartitionRoot::GetUsableSize(address);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // The object pointed to by `address` is allocated by the PartitionAlloc.
   // So, this function must not return zero so that the malloc zone dispatcher
   // finds the appropriate malloc zone.
   PA_DCHECK(size);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
   return size;
 }
 
@@ -582,7 +582,7 @@ void EnablePCScan(base::internal::PCScan::InitConfig config) {
 }
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Call this as soon as possible during startup.
 void ConfigurePartitionAlloc() {
 #if defined(ARCH_CPU_X86)
@@ -590,7 +590,7 @@ void ConfigurePartitionAlloc() {
     g_extra_bytes = 8;
 #endif  // defined(ARCH_CPU_X86)
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace allocator
 }  // namespace base
 
@@ -604,7 +604,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &base::internal::PartitionGetSizeEstimate,  // get_size_estimate_function
     nullptr,                                    // batch_malloc_function
     nullptr,                                    // batch_free_function
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // On Apple OSes, free_definite_size() is always called from free(), since
     // get_size_estimate() is used to determine whether an allocation belongs to
     // the current zone. It makes sense to optimize for it.
@@ -625,7 +625,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
 
 extern "C" {
 
-#if !defined(OS_APPLE) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 
 SHIM_ALWAYS_EXPORT void malloc_stats(void) __THROW {}
 
@@ -633,9 +633,9 @@ SHIM_ALWAYS_EXPORT int mallopt(int cmd, int value) __THROW {
   return 0;
 }
 
-#endif  // !defined(OS_APPLE) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   base::SimplePartitionStatsDumper allocator_dumper;
   Allocator()->DumpStats("malloc", true, &allocator_dumper);
@@ -682,11 +682,11 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
 
   return info;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // extern "C"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 namespace base {
 namespace allocator {
@@ -702,6 +702,6 @@ void InitializeDefaultAllocatorPartitionRoot() {
 }  // namespace allocator
 }  // namespace base
 
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

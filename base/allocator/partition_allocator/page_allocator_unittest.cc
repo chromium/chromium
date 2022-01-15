@@ -17,23 +17,23 @@
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "build/build_config.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/debug/proc_maps_linux.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <setjmp.h>
 #include <signal.h>
 #include <sys/mman.h>
 #include <sys/time.h>
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 #include "base/allocator/partition_allocator/arm_bti_test_functions.h"
 
 #if defined(__ARM_FEATURE_MEMORY_TAGGING)
 #include <arm_acle.h>
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MTE_KILLED_BY_SIGNAL_AVAILABLE
 #endif
 #endif
@@ -130,11 +130,11 @@ TEST(PartitionAllocPageAllocatorTest, AllocFailure) {
 }
 
 // TODO(crbug.com/765801): Test failed on chromium.win/Win10 Tests x64.
-#if defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
 #define MAYBE_ReserveAddressSpace DISABLED_ReserveAddressSpace
 #else
 #define MAYBE_ReserveAddressSpace ReserveAddressSpace
-#endif  // defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
 
 // Test that reserving address space can fail.
 TEST(PartitionAllocPageAllocatorTest, MAYBE_ReserveAddressSpace) {
@@ -205,7 +205,7 @@ TEST(PartitionAllocPageAllocatorTest,
   // the Armv8.5 Branch Target Identification extension.
   base::CPU cpu;
   if (!cpu.has_bti()) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // Workaround for incorrectly failed iOS tests with GTEST_SKIP,
     // see crbug.com/912138 for details.
     return;
@@ -256,7 +256,7 @@ TEST(PartitionAllocPageAllocatorTest,
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     return;
 #else
     GTEST_SKIP();
@@ -282,13 +282,13 @@ TEST(PartitionAllocPageAllocatorTest,
   EXPECT_EXIT(
       {
   // Switch to synchronous mode.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         memory::ChangeMemoryTaggingModeForAllThreadsPerProcess(
             memory::TagViolationReportingMode::kSynchronous);
 #else
         memory::ChangeMemoryTaggingModeForCurrentThread(
             memory::TagViolationReportingMode::kSynchronous);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
         EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
                   memory::TagViolationReportingMode::kSynchronous);
         // Write to the buffer using its previous tag. A segmentation fault
@@ -311,7 +311,7 @@ TEST(PartitionAllocPageAllocatorTest,
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     return;
 #else
     GTEST_SKIP();
@@ -332,13 +332,13 @@ TEST(PartitionAllocPageAllocatorTest,
   EXPECT_EXIT(
       {
   // Switch to asynchronous mode.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         memory::ChangeMemoryTaggingModeForAllThreadsPerProcess(
             memory::TagViolationReportingMode::kAsynchronous);
 #else
         memory::ChangeMemoryTaggingModeForCurrentThread(
             memory::TagViolationReportingMode::kAsynchronous);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
         EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
                   memory::TagViolationReportingMode::kAsynchronous);
         // Write to the buffer using its previous tag. A fault should be
@@ -358,7 +358,7 @@ TEST(PartitionAllocPageAllocatorTest,
 }
 
 // Test permission setting on POSIX, where we can set a trap handler.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 namespace {
 sigjmp_buf g_continuation;
@@ -369,7 +369,7 @@ void SignalHandler(int signal, siginfo_t* info, void*) {
 }  // namespace
 
 // On Mac, sometimes we get SIGBUS instead of SIGSEGV, so handle that too.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define EXTRA_FAULT_BEGIN_ACTION() \
   struct sigaction old_bus_action; \
   sigaction(SIGBUS, &action, &old_bus_action);
@@ -441,9 +441,9 @@ TEST(PartitionAllocPageAllocatorTest, ReadExecutePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(PartitionAllocPageAllocatorTest, PageTagging) {
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageInaccessible,
@@ -467,7 +467,7 @@ TEST(PartitionAllocPageAllocatorTest, PageTagging) {
   FreePages(buffer, PageAllocationGranularity());
   EXPECT_TRUE(found);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
   if (!DecommittedMemoryIsAlwaysZeroed())
@@ -505,7 +505,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
   DecommitAndZeroSystemPages(buffer, size);
 
 // Test permission setting on POSIX, where we can set a trap handler.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
   FAULT_TEST_BEGIN()
 

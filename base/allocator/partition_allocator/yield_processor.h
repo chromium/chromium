@@ -13,7 +13,7 @@
 // other hyper-thread on this core. See the following for context:
 // https://software.intel.com/en-us/articles/benefitting-power-and-performance-sleep-loops
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
 // Inline assembly not allowed.
 #define YIELD_PROCESSOR ((void)0)
 #else
@@ -42,6 +42,6 @@
 #define YIELD_PROCESSOR ((void)0)
 #endif
 
-#endif  // defined(OS_NACL)
+#endif  // BUILDFLAG(IS_NACL)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_YIELD_PROCESSOR_H_

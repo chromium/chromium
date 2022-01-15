@@ -34,7 +34,7 @@ const Feature kPartitionAllocBackupRefPtrControl{
 // Use a larger maximum thread cache cacheable bucket size.
 const Feature kPartitionAllocLargeThreadCacheSize{
   "PartitionAllocLargeThreadCacheSize",
-#if defined(OS_ANDROID) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
       // Not unconditionally enabled on 32 bit Android, since it is a more
       // memory-constrained platform.
       FEATURE_DISABLED_BY_DEFAULT

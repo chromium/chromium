@@ -24,10 +24,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <malloc.h>
 #include <windows.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 #include "base/allocator/allocator_interception_mac.h"
 #include "base/mac/mac_util.h"
@@ -36,7 +36,7 @@
 #include <malloc.h>
 #endif
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #include <unistd.h>
 #endif
 
@@ -246,20 +246,20 @@ class AllocatorShimTest : public testing::Test {
     num_new_handler_calls.store(0, std::memory_order_release);
     instance_ = this;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     InitializeAllocatorShim();
 #endif
   }
 
   void TearDown() override {
     instance_ = nullptr;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     UninterceptMallocZonesForTesting();
 #endif
   }
 
   static size_t MaxSizeTracked() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // TODO(crbug.com/1077271): 64-bit iOS uses a page size that is larger than
     // SystemPageSize(), causing this test to make larger allocations, relative
     // to SystemPageSize().
@@ -347,7 +347,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   ASSERT_NE(nullptr, zero_alloc_ptr);
   ASSERT_GE(zero_allocs_intercepted_by_size[2 * 23], 1u);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   void* posix_memalign_ptr = nullptr;
   int res = posix_memalign(&posix_memalign_ptr, 256, 59);
   ASSERT_EQ(0, res);
@@ -358,34 +358,34 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 
   // (p)valloc() are not defined on Android. pvalloc() is a GNU extension,
   // valloc() is not in POSIX.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const size_t kPageSize = base::GetPageSize();
   void* valloc_ptr = valloc(61);
   ASSERT_NE(nullptr, valloc_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(valloc_ptr) % kPageSize);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[kPageSize], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[61], 1u);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#endif  // !OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 
-#if !defined(OS_WIN) && !defined(OS_APPLE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
   void* memalign_ptr = memalign(128, 53);
   ASSERT_NE(nullptr, memalign_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(memalign_ptr) % 128);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[128], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[53], 1u);
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   void* pvalloc_ptr = pvalloc(67);
   ASSERT_NE(nullptr, pvalloc_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(pvalloc_ptr) % kPageSize);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[kPageSize], 1u);
   // pvalloc rounds the size up to the next page.
   ASSERT_GE(aligned_allocs_intercepted_by_size[kPageSize], 1u);
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-#endif  // !OS_WIN && !OS_APPLE
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 
 // See allocator_shim_override_glibc_weak_symbols.h for why we intercept
 // internal libc symbols.
@@ -412,27 +412,27 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   free(zero_alloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(zero_alloc_ptr)], 1u);
 
-#if !defined(OS_WIN) && !defined(OS_APPLE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
   free(memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(memalign_ptr)], 1u);
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   free(pvalloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(pvalloc_ptr)], 1u);
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-#endif  // !OS_WIN && !OS_APPLE
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   free(posix_memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(posix_memalign_ptr)], 1u);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   free(valloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(valloc_ptr)], 1u);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#endif  // !OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 
 #if defined(LIBC_GLIBC) && \
     (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
@@ -452,7 +452,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 }
 
 // PartitionAlloc-Everywhere does not support batch_malloc / batch_free.
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 TEST_F(AllocatorShimTest, InterceptLibcSymbolsBatchMallocFree) {
   InsertAllocatorDispatch(&g_mock_dispatch);
 
@@ -491,9 +491,9 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbolsFreeDefiniteSize) {
   ASSERT_GE(free_definite_sizes_intercepted_by_size[19], 1u);
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
-#endif  // defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(AllocatorShimTest, InterceptUcrtAlignedAllocationSymbols) {
   InsertAllocatorDispatch(&g_mock_dispatch);
 
@@ -517,7 +517,7 @@ TEST_F(AllocatorShimTest, AlignedReallocSizeZeroFrees) {
   alloc_ptr = _aligned_realloc(alloc_ptr, 0, 16);
   CHECK(!alloc_ptr);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(AllocatorShimTest, InterceptCppSymbols) {
   InsertAllocatorDispatch(&g_mock_dispatch);
@@ -601,21 +601,21 @@ TEST_F(AllocatorShimTest, NewHandlerConcurrency) {
   ASSERT_EQ(kNumThreads, GetNumberOfNewHandlerCalls());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(AllocatorShimTest, ShimReplacesCRTHeapWhenEnabled) {
   ASSERT_EQ(::GetProcessHeap(), reinterpret_cast<HANDLE>(_get_heap_handle()));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 static size_t GetUsableSize(void* ptr) {
   return _msize(ptr);
 }
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 static size_t GetUsableSize(void* ptr) {
   return malloc_size(ptr);
 }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 static size_t GetUsableSize(void* ptr) {
   return malloc_usable_size(ptr);
 }
@@ -643,7 +643,7 @@ TEST_F(AllocatorShimTest, ShimDoesntChangeMallocSizeWhenEnabled) {
 }
 #endif  // !defined(NO_MALLOC_SIZE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   auto total_counts = [](const std::vector<size_t>& counts) {
     size_t total = 0;
@@ -711,7 +711,7 @@ TEST_F(AllocatorShimTest, InterceptVasprintf) {
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace allocator

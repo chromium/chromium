@@ -38,7 +38,7 @@
 #else
 #define ALIGN_VAL_T size_t
 #define ALIGN_LINKAGE extern "C"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #error "Mangling is different on these platforms."
 #else
 #define ALIGN_NEW _ZnwmSt11align_val_t
@@ -54,7 +54,7 @@
 #endif
 #endif
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 #define SHIM_CPP_SYMBOLS_EXPORT SHIM_ALWAYS_EXPORT
 #else
 // On Apple OSes, prefer not exporting these symbols (as this reverts to the

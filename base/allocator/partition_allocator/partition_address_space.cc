@@ -17,7 +17,7 @@
 #include "base/debug/alias.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -29,7 +29,7 @@ namespace internal {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 NOINLINE void HandleGigaCageAllocFailureOutOfVASpace() {
   NO_CODE_FOLDING();
   PA_CHECK(false);
@@ -39,7 +39,7 @@ NOINLINE void HandleGigaCageAllocFailureOutOfCommitCharge() {
   NO_CODE_FOLDING();
   PA_CHECK(false);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 NOINLINE void HandleGigaCageAllocFailure() {
   NO_CODE_FOLDING();
@@ -47,7 +47,7 @@ NOINLINE void HandleGigaCageAllocFailure() {
   PA_DEBUG_DATA_ON_STACK("error", static_cast<size_t>(alloc_page_error_code));
   // It's important to easily differentiate these two failures on Windows, so
   // crash with different stacks.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (alloc_page_error_code == ERROR_NOT_ENOUGH_MEMORY) {
     // The error code says NOT_ENOUGH_MEMORY, but since we only do MEM_RESERVE,
     // it must be VA space exhaustion.
@@ -58,7 +58,7 @@ NOINLINE void HandleGigaCageAllocFailure() {
     // committed (see crbug.com/1101421#c16).
     HandleGigaCageAllocFailureOutOfCommitCharge();
   } else
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   {
     PA_CHECK(false);
   }
