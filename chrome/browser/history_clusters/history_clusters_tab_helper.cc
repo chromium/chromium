@@ -26,16 +26,16 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
 #include "base/containers/contains.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/ntp_tiles/custom_links_store.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -74,7 +74,7 @@ class GetMostRecentVisitsToUrl : public history::HistoryDBTask {
 bool IsPageInTabGroup(content::WebContents* contents) {
   DCHECK(contents);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
     int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
     if (tab_index != TabStripModel::kNoTab &&
@@ -83,12 +83,12 @@ bool IsPageInTabGroup(content::WebContents* contents) {
     }
   }
   return false;
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   TabAndroid* const tab = TabAndroid::FromWebContents(contents);
   if (!tab)
     return false;
   return TabModelJniBridge::HasOtherRelatedTabs(tab);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Pass in a separate `url` parameter to ensure that we check the same URL that
@@ -426,7 +426,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
       IsPageBookmarked(web_contents(),
                        incomplete_visit_context_annotations.url_row.url());
   // Android does not have NTP Custom Links.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // This queries the prefs directly if the visit URL is stored as an NTP
   // custom link, bypassing the CustomLinksManager.
   PrefService* pref_service =
@@ -437,7 +437,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
       base::Contains(custom_link_store.RetrieveLinks(),
                      incomplete_visit_context_annotations.url_row.url(),
                      [](const auto& link) { return link.url; });
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   incomplete_visit_context_annotations.status.navigation_end_signals = true;
   history_clusters_service->CompleteVisitContextAnnotationsIfReady(

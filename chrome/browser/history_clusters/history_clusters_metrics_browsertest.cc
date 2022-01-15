@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
 }
 
 // Flaky on Win, Linux and Mac. http://crbug.com/1282122
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_DirectNavigationNoInteraction \
   DISABLED_DirectNavigationNoInteraction
 #else
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
 }
 
 // TODO(crbug.com/1282087): Flaky on Linux, Windows and Mac.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_DirectNavigationWithQuery DISABLED_DirectNavigationWithQuery
 #else
 #define MAYBE_DirectNavigationWithQuery DirectNavigationWithQuery
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
 }
 
 // Disabled on Windows, ChromeOS, and Linux due to flakes: crbug.com/1263465.
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DirectNavigationWithToggleToBasic \
   DISABLED_DirectNavigationWithToggleToBasic
 #else
