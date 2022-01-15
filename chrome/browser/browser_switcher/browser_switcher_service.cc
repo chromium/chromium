@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/browser_switcher/alternative_browser_driver.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -170,9 +171,10 @@ void XmlDownloader::ParseXml(RulesetSource* source,
     DoneParsing(source, ParsedXml({}, {}, "could not fetch XML"));
     return;
   }
-  ParseIeemXml(*bytes, base::BindOnce(&XmlDownloader::DoneParsing,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      base::Unretained(source)));
+  ParseIeemXml(
+      *bytes, service_->prefs().GetParsingMode(),
+      base::BindOnce(&XmlDownloader::DoneParsing,
+                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(source)));
 }
 
 void XmlDownloader::DoneParsing(RulesetSource* source, ParsedXml xml) {
@@ -354,11 +356,10 @@ void BrowserSwitcherService::OnBrowserSwitcherPrefsChanged(
   // |BrowserSwitcherEnabled| or |AlternativeBrowserPath| policies change.
   bool should_record_metrics =
       changed_prefs.end() !=
-      std::find_if(changed_prefs.begin(), changed_prefs.end(),
-                   [](const std::string& pref) {
-                     return pref == prefs::kEnabled ||
-                            pref == prefs::kAlternativeBrowserPath;
-                   });
+      base::ranges::find_if(changed_prefs, [](const std::string& pref) {
+        return pref == prefs::kEnabled ||
+               pref == prefs::kAlternativeBrowserPath;
+      });
   if (should_record_metrics && prefs_.IsEnabled()) {
     UMA_HISTOGRAM_ENUMERATION("BrowserSwitcher.AlternativeBrowser",
                               driver_->GetBrowserType());
@@ -366,13 +367,19 @@ void BrowserSwitcherService::OnBrowserSwitcherPrefsChanged(
 
   auto sources = GetRulesetSources();
 
-  // Re-download if one of the URLs changed. O(n^2), with n <= 3.
-  bool should_redownload = std::any_of(
-      sources.begin(), sources.end(),
-      [&changed_prefs](const RulesetSource& source) {
-        return (std::find(changed_prefs.begin(), changed_prefs.end(),
-                          source.pref_name) != changed_prefs.end());
-      });
+  // Re-download if one of the URLs or the ParsingMode changed. O(n^2), but n<=3
+  // so it's fast.
+  auto it = base::ranges::find(changed_prefs, prefs::kParsingMode);
+  bool parsing_mode_changed = it != changed_prefs.end();
+  bool should_redownload =
+      parsing_mode_changed ||
+      base::ranges::any_of(
+          sources,
+          [&changed_prefs](const std::string& pref_name) {
+            auto it = base::ranges::find(changed_prefs, pref_name);
+            return it != changed_prefs.end();
+          },
+          &RulesetSource::pref_name);
 
   if (should_redownload)
     StartDownload(fetch_delay());

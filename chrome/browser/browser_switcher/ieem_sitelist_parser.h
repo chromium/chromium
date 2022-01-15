@@ -37,7 +37,9 @@ class ParsedXml {
 
 // Parses the XML contained in |xml|, and calls |callback| with the parsed XML
 // result.
-void ParseIeemXml(const std::string& xml, base::OnceCallback<void(ParsedXml)>);
+void ParseIeemXml(const std::string& xml,
+                  ParsingMode parsing_mode,
+                  base::OnceCallback<void(ParsedXml)>);
 
 }  // namespace browser_switcher
 

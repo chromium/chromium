@@ -8,7 +8,9 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/browser_switcher/browser_switcher_features.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,38 +30,52 @@ void OnXmlParsed(base::RepeatingClosure quit_run_loop,
     EXPECT_EQ(*expected.error, *actual.error);
 }
 
-void TestParseXml(const std::string& xml, ParsedXml expected) {
-  base::RunLoop run_loop;
-  ParseIeemXml(xml, base::BindOnce(&OnXmlParsed, run_loop.QuitClosure(),
-                                   std::move(expected)));
-  run_loop.Run();
-}
-
 }  // namespace
 
-class IeemSitelistParserTest : public testing::Test {
+class IeemSitelistParserTest
+    : public testing::TestWithParam<std::tuple<ParsingMode, bool>> {
  public:
-  IeemSitelistParserTest() = default;
+  IeemSitelistParserTest() {
+    parsing_mode_ = std::get<0>(GetParam());
+    none_is_greylist_ = std::get<1>(GetParam());
+    feature_list_.InitWithFeatureState(kBrowserSwitcherNoneIsGreylist,
+                                       none_is_greylist());
+  }
   ~IeemSitelistParserTest() override = default;
 
+  ParsingMode parsing_mode() { return parsing_mode_; }
+  bool none_is_greylist() { return none_is_greylist_; }
+
+  void TestParseXml(const std::string& xml, ParsedXml expected) {
+    base::RunLoop run_loop;
+    ParseIeemXml(xml, parsing_mode(),
+                 base::BindOnce(&OnXmlParsed, run_loop.QuitClosure(),
+                                std::move(expected)));
+    run_loop.Run();
+  }
+
  private:
+  ParsingMode parsing_mode_;
+  bool none_is_greylist_;
+
+  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 };
 
-TEST_F(IeemSitelistParserTest, BadXml) {
+TEST_P(IeemSitelistParserTest, BadXml) {
   TestParseXml("", ParsedXml({}, {}, "Invalid XML: bad content"));
   TestParseXml("thisisnotxml", ParsedXml({}, {}, "Invalid XML: bad content"));
 }
 
-TEST_F(IeemSitelistParserTest, BadXmlParsed) {
+TEST_P(IeemSitelistParserTest, BadXmlParsed) {
   TestParseXml("<bogus></bogus>",
                ParsedXml({}, {}, "Invalid XML root element"));
   TestParseXml("<rules version=\"424\"><unknown></unknown></rules>",
                ParsedXml({}, {}, absl::nullopt));
 }
 
-TEST_F(IeemSitelistParserTest, V1OnlyBogusElements) {
+TEST_P(IeemSitelistParserTest, V1OnlyBogusElements) {
   std::string xml =
       "<rules version=\"424\">"
       "<unknown><more><docMode><domain>ignore.com</domain></docMode>"
@@ -69,7 +85,7 @@ TEST_F(IeemSitelistParserTest, V1OnlyBogusElements) {
   TestParseXml(xml, ParsedXml({}, {}, absl::nullopt));
 }
 
-TEST_F(IeemSitelistParserTest, V1Full) {
+TEST_P(IeemSitelistParserTest, V1Full) {
   std::string xml =
       "<rules version=\"424\"><unknown><more><docMode><domain>ignore"
       "</domain></docMode></more><emie><domain>ignoretoo.com<path>/ignored_path"
@@ -108,39 +124,76 @@ TEST_F(IeemSitelistParserTest, V1Full) {
       "<path doNotTransition=\"true\">/guessnot</path></domain><domain>"
       "yes.com<path doNotTransition=\"true\">/actuallyno</path></domain>"
       "<domain doNotTransition=\"true\">no.com</domain></docMode></rules>";
-  std::vector<std::string> expected_sitelist = {
-      "inside.com",
-      "inside.com/in_domain",
-      "google.com",
-      "more.com",
-      "e100.com",
-      "e100.com/path1",
-      "e100.com/path3",
-      "e200.com/path1",
-      "e200.com/path3",
-      "e300.com",
-      "e300.com/path1",
-      "e300.com/path3",
-      "random.com/path2",
-      "moredomains.com",
-      "evenmore.com",
-      "evenmore.com/r1",
-      "evenmore.com/r2",
-      "domainz.com/r2",
-      "domainz.com/r6",
-      "howmanydomainz.com",
-      "howmanydomainz.com/r8",
-      "howmanydomainz.com/r10",
-      "maybe.com/yestransition",
-      "!maybe.com/guessnot",
-      "yes.com",
-      "!yes.com/actuallyno",
-      "!no.com",
-  };
-  TestParseXml(xml, ParsedXml(std::move(expected_sitelist), {}, absl::nullopt));
+  std::vector<std::string> expected_sitelist;
+  std::vector<std::string> expected_greylist;
+  if (none_is_greylist() && parsing_mode() == ParsingMode::kIESiteListMode) {
+    expected_sitelist = {
+        "inside.com",
+        "inside.com/in_domain",
+        "google.com",
+        "more.com",
+        "e100.com",
+        "e100.com/path1",
+        "e100.com/path3",
+        "e200.com/path1",
+        "e200.com/path3",
+        "e300.com",
+        "e300.com/path1",
+        "e300.com/path3",
+        "random.com/path2",
+        "moredomains.com",
+        "evenmore.com",
+        "evenmore.com/r1",
+        "evenmore.com/r2",
+        "domainz.com/r2",
+        "domainz.com/r6",
+        "howmanydomainz.com",
+        "howmanydomainz.com/r8",
+        "howmanydomainz.com/r10",
+        "maybe.com/yestransition",
+        "yes.com",
+    };
+    expected_greylist = {
+        "maybe.com/guessnot",
+        "yes.com/actuallyno",
+        "no.com",
+    };
+  } else {
+    expected_sitelist = {
+        "inside.com",
+        "inside.com/in_domain",
+        "google.com",
+        "more.com",
+        "e100.com",
+        "e100.com/path1",
+        "e100.com/path3",
+        "e200.com/path1",
+        "e200.com/path3",
+        "e300.com",
+        "e300.com/path1",
+        "e300.com/path3",
+        "random.com/path2",
+        "moredomains.com",
+        "evenmore.com",
+        "evenmore.com/r1",
+        "evenmore.com/r2",
+        "domainz.com/r2",
+        "domainz.com/r6",
+        "howmanydomainz.com",
+        "howmanydomainz.com/r8",
+        "howmanydomainz.com/r10",
+        "maybe.com/yestransition",
+        "!maybe.com/guessnot",
+        "yes.com",
+        "!yes.com/actuallyno",
+        "!no.com",
+    };
+  }
+  TestParseXml(xml, ParsedXml(std::move(expected_sitelist),
+                              std::move(expected_greylist), absl::nullopt));
 }
 
-TEST_F(IeemSitelistParserTest, V2Full) {
+TEST_P(IeemSitelistParserTest, V2Full) {
   // Very subtle issue in the closing element for rules.
   std::string xml =
       "<site-list version=\"205\"><!-- File creation header -->"
@@ -162,11 +215,31 @@ TEST_F(IeemSitelistParserTest, V2Full) {
       "url=\"ignore after site list!\">  <compat-mode>IE8Enterprise\""
       "</compat-mode></site><gibberish>Lorem ipsum sit...</gibberish>"
       "</trailing>-->";
-  std::vector<std::string> expected_sitelist = {
-      "!google.com",  "!good.site",     "www.cpandl.com",
-      "!contoso.com", "!relecloud.com", "!relecloud.com/about",
-  };
-  TestParseXml(xml, ParsedXml(std::move(expected_sitelist), {}, absl::nullopt));
+  std::vector<std::string> expected_sitelist;
+  std::vector<std::string> expected_greylist;
+  if (none_is_greylist() && parsing_mode() == ParsingMode::kIESiteListMode) {
+    expected_sitelist = {"!www.cpandl.com"};
+    expected_greylist = {
+        "google.com",    "good.site",           "contoso.com",
+        "relecloud.com", "relecloud.com/about",
+    };
+  } else {
+    expected_sitelist = {
+        "!google.com",  "!good.site",     "www.cpandl.com",
+        "!contoso.com", "!relecloud.com", "!relecloud.com/about",
+    };
+  }
+  TestParseXml(xml, ParsedXml(std::move(expected_sitelist),
+                              std::move(expected_greylist), absl::nullopt));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ParsingMode,
+    IeemSitelistParserTest,
+    testing::Combine(testing::Values(ParsingMode::kDefault,
+                                     ParsingMode::kIESiteListMode,
+                                     // 999 should behave like kDefault.
+                                     static_cast<ParsingMode>(999)),
+                     testing::Bool()));
 
 }  // namespace browser_switcher

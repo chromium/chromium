@@ -5973,6 +5973,8 @@ static_library("browser") {
   if (is_win || is_mac || (is_linux || is_chromeos_lacros) || is_fuchsia) {
     sources += [
       "browser_switcher/alternative_browser_driver.h",
+      "browser_switcher/browser_switcher_features.cc",
+      "browser_switcher/browser_switcher_features.h",
       "browser_switcher/browser_switcher_navigation_throttle.cc",
       "browser_switcher/browser_switcher_navigation_throttle.h",
       "browser_switcher/browser_switcher_prefs.cc",
