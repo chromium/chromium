@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/allocator/allocator_interception_mac.h"
 #endif
 
@@ -38,7 +38,7 @@ TEST(OutOfMemoryHandledTest, UncheckedMalloc) {
   EXPECT_FALSE(base::UncheckedMalloc(kUnsafeMallocSize, &value));
   EXPECT_EQ(nullptr, value);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::allocator::UninterceptMallocZonesForTesting();
 #endif
 }

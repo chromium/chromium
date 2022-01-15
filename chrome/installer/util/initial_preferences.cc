@@ -104,7 +104,7 @@ InitialPreferences::~InitialPreferences() = default;
 
 void InitialPreferences::InitializeFromCommandLine(
     const base::CommandLine& cmd_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (cmd_line.HasSwitch(installer::switches::kInstallerData)) {
     base::FilePath prefs_path(
         cmd_line.GetSwitchValuePath(installer::switches::kInstallerData));
