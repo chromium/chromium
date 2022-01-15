@@ -4884,61 +4884,13 @@ void InitializeFileURLLoaderFactoryForExtension(
         SpecialAccessFileURLLoaderFactory::Create(render_process_id));
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}  // namespace
 
-void ChromeContentBrowserClient::
-    RegisterNonNetworkSubresourceURLLoaderFactories(
-        int render_process_id,
-        int render_frame_id,
-        const absl::optional<url::Origin>& request_initiator_origin,
-        NonNetworkURLLoaderFactoryMap* factories) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS)
-  content::RenderFrameHost* frame_host =
-      RenderFrameHost::FromID(render_process_id, render_frame_id);
-  WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (web_contents) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    factories->emplace(content::kExternalFileScheme,
-                       chromeos::ExternalFileURLLoaderFactory::Create(
-                           profile, render_process_id));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  factories->emplace(extensions::kExtensionScheme,
-                     extensions::CreateExtensionURLLoaderFactory(
-                         render_process_id, render_frame_id));
-
-  content::BrowserContext* browser_context =
-      content::RenderProcessHost::FromID(render_process_id)
-          ->GetBrowserContext();
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(browser_context)
-          ->enabled_extensions()
-          .GetExtensionOrAppByURL(request_initiator_origin->GetURL());
-
-  // This path will be taken for service workers, where there is no
-  // RenderFrameHost, but we still need to initialize file URL access.
-  // For service worker contexts, we only allow file access. The remainder of
-  // this code is used to allow extensions to access chrome:-scheme
-  // resources, which we are moving away from.
-  // TODO(crbug.com/1280411) Factories should not be created for unloaded
-  // extensions.
-  if (render_frame_id == MSG_ROUTING_NONE && extension) {
-    InitializeFileURLLoaderFactoryForExtension(
-        render_process_id, browser_context, extension, factories);
-  }
-
-  // This logic should match
-  // ChromeExtensionWebContentsObserver::RenderFrameCreated.
-  if (!web_contents)
-    return;
-
+void AddChromeSchemeFactories(
+    int render_process_id,
+    content::RenderFrameHost* frame_host,
+    content::WebContents* web_contents,
+    const extensions::Extension* extension,
+    ChromeContentBrowserClient::NonNetworkURLLoaderFactoryMap* factories) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   InstantService* instant_service =
@@ -4990,9 +4942,61 @@ void ChromeContentBrowserClient::
                            frame_host, content::kChromeUIScheme,
                            std::move(allowed_webui_hosts)));
   }
-  InitializeFileURLLoaderFactoryForExtension(render_process_id,
-                                             web_contents->GetBrowserContext(),
-                                             extension, factories);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}  // namespace
+
+void ChromeContentBrowserClient::
+    RegisterNonNetworkSubresourceURLLoaderFactories(
+        int render_process_id,
+        int render_frame_id,
+        const absl::optional<url::Origin>& request_initiator_origin,
+        NonNetworkURLLoaderFactoryMap* factories) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS)
+  content::RenderFrameHost* frame_host =
+      RenderFrameHost::FromID(render_process_id, render_frame_id);
+  WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (web_contents) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    factories->emplace(content::kExternalFileScheme,
+                       chromeos::ExternalFileURLLoaderFactory::Create(
+                           profile, render_process_id));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  factories->emplace(extensions::kExtensionScheme,
+                     extensions::CreateExtensionURLLoaderFactory(
+                         render_process_id, render_frame_id));
+
+  content::BrowserContext* browser_context =
+      content::RenderProcessHost::FromID(render_process_id)
+          ->GetBrowserContext();
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser_context)
+          ->enabled_extensions()
+          .GetExtensionOrAppByURL(request_initiator_origin->GetURL());
+
+  // For service worker contexts, we only allow file access. The remainder of
+  // this code is used to allow extensions to access chrome:-scheme
+  // resources, which we are moving away from.
+  // TODO(crbug.com/1280411) Factories should not be created for unloaded
+  // extensions.
+  if (extension) {
+    InitializeFileURLLoaderFactoryForExtension(
+        render_process_id, browser_context, extension, factories);
+  }
+
+  // This logic should match
+  // ChromeExtensionWebContentsObserver::RenderFrameCreated.
+  if (web_contents) {
+    AddChromeSchemeFactories(render_process_id, frame_host, web_contents,
+                             extension, factories);
+  }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
