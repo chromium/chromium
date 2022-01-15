@@ -327,7 +327,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     // The viewport meta tag is only enabled on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "DisplayCutoutAPI");
 #endif
@@ -2583,7 +2583,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPDefaultSrc) {
 // TODO(https://crbug.com/1182032): Now the File System Access API is not
 // supported on Android. Enable this browser test after
 // https://crbug.com/1011535 is fixed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DeferPrivateOriginFileSystem DISABLED_DeferPrivateOriginFileSystem
 #else
 #define MAYBE_DeferPrivateOriginFileSystem DeferPrivateOriginFileSystem
@@ -2810,7 +2810,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
 // This is a browser test and cannot be upstreamed to WPT because it diverges
 // from the spec by cancelling prerendering in the Notification constructor,
 // whereas the spec says to defer upon use requestPermission().
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // On Android the Notification constructor throws an exception regardless of
 // whether the page is being prerendered.
 // Tests that we will get the exception from the prerendering if the
@@ -2858,7 +2858,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructor) {
       "Prerender.Experimental.PrerenderCancelledInterface",
       PrerenderCancelledInterface::kNotificationService, 1);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1215073): Make a WPT when we have a stable way to wait
 // cancellation runs.
@@ -2996,7 +2996,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 }
 
 // The viewport meta tag is only enabled on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 // Used to observe the viewport change in the WebContents.
@@ -3075,7 +3075,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ViewportFit) {
   }
   EXPECT_TRUE(host_observer.was_activated());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // End: Tests for feature restrictions in prerendered pages ====================
 
@@ -4112,7 +4112,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
     RenderProcessHost* process =
         GetPrerenderedMainFrameHost(host_id)->GetProcess();
     ScopedAllowRendererCrashes allow_renderer_crashes(process);
-#if defined(OS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
     // On x86 and x86_64 Android, IMMEDIATE_CRASH() macro used in
     // ChildProcessHostImpl::CrashHungProcess() called from ForceCrash()
     // does not seem to work as expected. (See https://crbug.com/1211655)
@@ -4130,11 +4130,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       PrerenderHost::FinalStatus::kRendererProcessKilled, 1);
 #else
       PrerenderHost::FinalStatus::kRendererProcessCrashed, 1);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Test if the host is abandoned when the renderer page is killed.
@@ -4217,7 +4217,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // StorageServiceOutOfProcess is not implemented on Android. Also as commented
 // below, test_api->CrashNow() won't work on x86 and x86_64 Android.
 
@@ -5215,7 +5215,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
 // Tests that prerendering is cancelled when a mixed content subframe is
 // detected.
 // TODO(crbug.com/1282218): Flaky on Linux and Windows
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_MixedContent DISABLED_MixedContent
 #else
 #define MAYBE_MixedContent MixedContent

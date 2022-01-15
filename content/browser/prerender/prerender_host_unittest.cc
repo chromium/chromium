@@ -428,7 +428,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
 }
 
 // Skip this test on Android as it doesn't support the OCCLUDED state.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));

@@ -35,7 +35,7 @@ bool DeviceHasEnoughMemoryForPrerender() {
   // Use the same default threshold as the back/forward cache. See comments in
   // DeviceHasEnoughMemoryForBackForwardCache().
   static constexpr int kDefaultMemoryThresholdMb =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       1700;
 #else
       0;
