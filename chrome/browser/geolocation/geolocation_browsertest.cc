@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForAllowedOrigin) {
 }
 
 // Crashes on Win only.  http://crbug.com/1014506
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PromptForOffTheRecord DISABLED_PromptForOffTheRecord
 #else
 #define MAYBE_PromptForOffTheRecord PromptForOffTheRecord

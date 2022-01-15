@@ -16,14 +16,14 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
 #include "components/location/android/mock_location_settings.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 constexpr char kDSETestUrl[] = "https://www.dsetest.com";
 
@@ -51,7 +51,7 @@ class GeolocationPermissionContextDelegateTests
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     static_cast<permissions::GeolocationPermissionContextAndroid*>(
         PermissionManagerFactory::GetForProfile(profile())
             ->GetPermissionContextForTesting(ContentSettingsType::GEOLOCATION))
@@ -94,7 +94,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
       content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(GeolocationPermissionContextDelegateTests,
        SearchGeolocationInIncognito) {
   GURL requesting_frame(kDSETestUrl);
