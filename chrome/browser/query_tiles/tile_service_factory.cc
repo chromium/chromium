@@ -29,7 +29,7 @@
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -125,7 +125,7 @@ std::unique_ptr<KeyedService> TileServiceFactory::BuildServiceInstanceFor(
                          channel_name.c_str());
 
   std::string default_server_url;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> j_server_url =
       Java_TileServiceUtils_getDefaultServerUrl(env);
