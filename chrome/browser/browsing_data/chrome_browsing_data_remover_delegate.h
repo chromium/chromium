@@ -77,7 +77,7 @@ class ChromeBrowsingDataRemoverDelegate
   void OnStartRemoving() override;
   void OnDoneRemoving() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OverrideWebappRegistryForTesting(
       std::unique_ptr<WebappRegistry> webapp_registry);
 #endif
@@ -213,7 +213,7 @@ class ChromeBrowsingDataRemoverDelegate
   // Used if we need to clear history.
   base::CancelableTaskTracker history_task_tracker_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // WebappRegistry makes calls across the JNI. In unit tests, the Java side is
   // not initialised, so the registry must be mocked out.
   std::unique_ptr<WebappRegistry> webapp_registry_;

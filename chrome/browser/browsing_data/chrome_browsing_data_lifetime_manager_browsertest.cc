@@ -57,7 +57,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -108,7 +108,7 @@ class ChromeBrowsingDataLifetimeManagerScheduledRemovalTest
 
   void SetUpOnMainThread() override {
     ChromeBrowsingDataLifetimeManagerTest::SetUpOnMainThread();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (GetParam() == BrowserType::Incognito)
       UseIncognitoBrowser();
 #endif
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug/1179729): Enable this test for android once we figure out if it
 // is possible to delete download history on Android while the browser is
 // running.
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Disabled because "autofill::AddTestProfile" times out when sync is disabled.
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        DISABLED_Autofill) {

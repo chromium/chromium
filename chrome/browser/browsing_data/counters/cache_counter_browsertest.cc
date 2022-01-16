@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
     counter.Restart();
     WaitForCountingResult();
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     break;
 #else
     if (GetResult() == 0u)

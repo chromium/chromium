@@ -27,7 +27,7 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #endif
 
@@ -90,12 +90,12 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
     // TODO(772337): Enable session storage counting when deletion is fixed.
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Count origins with media licenses on Android.
   tasks_ += 1;
   Done(cdm::MediaDrmStorageImpl::GetOriginsModifiedBetween(profile_->GetPrefs(),
                                                            begin_, end_));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Count origins with media licenses.
@@ -116,7 +116,7 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   const ContentSettingsType content_settings[] = {
     ContentSettingsType::DURABLE_STORAGE,
     ContentSettingsType::APP_BANNER,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::INSTALLED_WEB_APP_METADATA,
 #endif
   };

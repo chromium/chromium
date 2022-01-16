@@ -25,7 +25,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
@@ -36,7 +36,7 @@ class SiteSettingsCounterTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     map_ = HostContentSettingsMapFactory::GetForProfile(profile());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     zoom_map_ = content::HostZoomMap::GetDefaultForBrowserContext(profile());
 #else
     zoom_map_ = nullptr;
@@ -51,7 +51,7 @@ class SiteSettingsCounterTest : public testing::Test {
                    browsing_data::ClearBrowsingDataTab::ADVANCED,
                    base::BindRepeating(&SiteSettingsCounterTest::Callback,
                                        base::Unretained(this)));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ClearNotificationsChannels();
 #endif
   }
@@ -93,7 +93,7 @@ class SiteSettingsCounterTest : public testing::Test {
                   ->Value();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ClearNotificationsChannels() {
     // Because notification channel settings aren't tied to the profile, they
     // will persist across tests. We need to make sure they're reset here.
@@ -232,7 +232,7 @@ TEST_F(SiteSettingsCounterTest, PeriodChanged) {
   EXPECT_EQ(1, GetResult());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SiteSettingsCounterTest, ZoomLevel) {
   zoom_map()->SetZoomLevelForHost("google.com", 1.5);
   zoom_map()->SetZoomLevelForHost("www.google.com", 1.5);

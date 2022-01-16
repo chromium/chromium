@@ -151,14 +151,14 @@
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/origin_verifier.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "components/feed/buildflags.h"
-#else  // !defined(OS_ANDROID)
+#else
 #include "content/public/browser/host_zoom_map.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
@@ -167,10 +167,10 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crashpad.h"
 #include "components/upload_list/crash_upload_list.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/mock_extension_special_storage_policy.h"
@@ -231,7 +231,7 @@ const uint64_t kUnprotected =
 
 // Testers --------------------------------------------------------------------
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TestWebappRegistry : public WebappRegistry {
  public:
   TestWebappRegistry() : WebappRegistry() {}
@@ -1174,7 +1174,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildProtocolHandlerRegistry));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     static_cast<ChromeBrowsingDataRemoverDelegate*>(
         profile_->GetBrowsingDataRemoverDelegate())
         ->OverrideWebappRegistryForTesting(
@@ -2406,7 +2406,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
   ASSERT_EQ(0u, host_settings.size());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveZoomLevel) {
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(GetProfile());
@@ -3050,7 +3050,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeOriginVerifierData) {
   int before =
       customtabs::OriginVerifier::GetClearBrowsingDataCallCountForTesting();
@@ -3060,9 +3060,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeOriginVerifierData) {
       before + 1,
       customtabs::OriginVerifier::GetClearBrowsingDataCallCountForTesting());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeCrashData) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // This test applies only when using a logfile of Crash uploads. Chrome Linux

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -46,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   // Sign the profile in.
   EXPECT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS sync in turned on by default.
   EXPECT_TRUE(ShouldShowCookieException(GetProfile(0)));
 #else
@@ -60,13 +61,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   // Now that we're syncing, we should offer to retain the cookie.
   EXPECT_TRUE(ShouldShowCookieException(GetProfile(0)));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Pause sync.
   GetClient(0)->SignOutPrimaryAccount();
 
   // There's no point in showing the cookie exception.
   EXPECT_FALSE(ShouldShowCookieException(GetProfile(0)));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace browsing_data_counter_utils

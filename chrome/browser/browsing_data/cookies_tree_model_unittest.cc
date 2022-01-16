@@ -1890,7 +1890,7 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
   EXPECT_FALSE(callback);
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
   profile_->SetSupervisedUserId(supervised_users::kChildAccountSUID);
   auto callback =

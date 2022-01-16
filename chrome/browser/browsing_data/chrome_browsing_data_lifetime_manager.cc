@@ -38,7 +38,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -101,7 +101,7 @@ class BrowsingDataRemoverObserver
         filterable_deletion_(filterable_deletion),
         profile_(profile),
         keep_browser_alive_(keep_browser_alive) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (keep_browser_alive) {
       keep_alive_ = std::make_unique<ScopedKeepAlive>(
           KeepAliveOrigin::BROWSING_DATA_LIFETIME_MANAGER,
@@ -147,7 +147,7 @@ class BrowsingDataRemoverObserver
 
   const raw_ptr<Profile> profile_;
   bool keep_browser_alive_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 #endif
 };
@@ -218,7 +218,7 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
 
 base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
   base::flat_set<GURL> result;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile) {
       continue;

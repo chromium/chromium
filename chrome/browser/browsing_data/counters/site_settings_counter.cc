@@ -12,7 +12,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
@@ -27,7 +27,7 @@ SiteSettingsCounter::SiteSettingsCounter(
       pref_service_(pref_service) {
   DCHECK(map_);
   DCHECK(handler_registry_);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(zoom_map_);
 #else
   DCHECK(!zoom_map_);
@@ -86,7 +86,7 @@ void SiteSettingsCounter::Count() {
   iterate_content_settings_list(ContentSettingsType::USB_CHOOSER_DATA,
                                 content_settings_list_for_usb_chooser);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (const auto& zoom_level : zoom_map_->GetAllZoomLevels()) {
     // zoom_level with non-empty scheme are only used for some internal
     // features and not stored in preferences. They are not counted.

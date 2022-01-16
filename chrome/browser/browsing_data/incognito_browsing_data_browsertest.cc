@@ -41,7 +41,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/threading/platform_thread.h"
 #endif
 #include "base/memory/scoped_refptr.h"

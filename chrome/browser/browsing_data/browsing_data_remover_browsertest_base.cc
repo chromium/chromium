@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -13,8 +12,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
@@ -37,14 +38,14 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/models/tree_model.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug/1179729): Move these functions to
 // /chrome/test/base/test_utils.{h|cc}.
 base::FilePath GetTestFilePath(const char* dir, const char* file) {
@@ -142,7 +143,7 @@ void BrowsingDataRemoverBrowserTestBase::InitFeatureList(
   feature_list_.InitWithFeatures(enabled_features, {});
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 Browser* BrowsingDataRemoverBrowserTestBase::GetBrowser() const {
   return incognito_browser_ ? incognito_browser_.get() : browser();
 }
@@ -211,7 +212,7 @@ void BrowsingDataRemoverBrowserTestBase::DownloadAnItem() {
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   GURL download_url = GetTestUrl("downloads", "a_zip_file.zip");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), download_url,
                                      GURL("about:blank")));
@@ -271,22 +272,22 @@ BrowsingDataRemoverBrowserTestBase::network_context() {
 // window created by tests, more specific behaviour requires other means.
 content::WebContents*
 BrowsingDataRemoverBrowserTestBase::GetActiveWebContents() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return chrome_test_utils::GetActiveWebContents(this);
 #else
   return GetBrowser()->tab_strip_model()->GetActiveWebContents();
 #endif
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 content::WebContents* BrowsingDataRemoverBrowserTestBase::GetActiveWebContents(
     Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 Profile* BrowsingDataRemoverBrowserTestBase::GetProfile() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return chrome_test_utils::GetProfile(this);
 #else
   return GetBrowser()->profile();
