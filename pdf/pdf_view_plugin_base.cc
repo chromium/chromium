@@ -534,8 +534,10 @@ void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
   left_point.Scale(inverse_scale);
   right_point.Scale(inverse_scale);
 
-  NotifySelectionChanged(left_point, left_with_offset.height(), right_point,
-                         right_with_offset.height());
+  // TODO(crbug.com/1270502): Add a unit test for scaling height.
+  NotifySelectionChanged(left_point, left_with_offset.height() * inverse_scale,
+                         right_point,
+                         right_with_offset.height() * inverse_scale);
 
   if (accessibility_state_ == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
