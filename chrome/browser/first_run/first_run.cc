@@ -152,7 +152,7 @@ void ImportFromFile(Profile* profile,
   source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
 
   const base::FilePath::StringType& import_bookmarks_path_str =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       base::UTF8ToWide(import_bookmarks_path);
 #else
       import_bookmarks_path;
@@ -280,8 +280,8 @@ void SetupInitialPrefsFromInstallPrefs(
 
 // -- Platform-specific functions --
 
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_BSD) && \
-    !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_BSD) && \
+    !BUILDFLAG(IS_FUCHSIA)
 bool IsOrganicFirstRun() {
   std::string brand;
   google_brand::GetBrand(&brand);
@@ -325,7 +325,7 @@ bool IsChromeFirstRun() {
   return g_first_run == internal::FIRST_RUN_TRUE;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool IsFirstRunSuppressed(const base::CommandLine& command_line) {
   return command_line.HasSwitch(switches::kNoFirstRun);
 }

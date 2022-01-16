@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -90,7 +91,7 @@ void DoPostImportPlatformSpecificTasks(Profile* profile) {
 
   ShowFirstRunDialog(profile);
   startup_metric_utils::SetNonBrowserUIDisplayed();
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {

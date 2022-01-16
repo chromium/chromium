@@ -76,7 +76,7 @@ void RegisterProfilePrefs(
 // run for this user.
 bool IsChromeFirstRun();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Returns true if |command_line|'s switches explicitly specify that first run
 // should be suppressed in the current run.
 bool IsFirstRunSuppressed(const base::CommandLine& command_line);

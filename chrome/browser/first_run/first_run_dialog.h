@@ -12,7 +12,7 @@
 // Hide this function on platforms where the dialog does not exist.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
 class Profile;
 
@@ -26,7 +26,7 @@ void ShowFirstRunDialog(Profile* profile);
 void ShowFirstRunDialogViews(Profile* profile);
 // Maintain Cocoa-based first run dialog until we are confident that views'
 // implementation works well on macOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void ShowFirstRunDialogCocoa(Profile* profile);
 #endif
 
@@ -35,6 +35,6 @@ base::OnceClosure& GetBeforeShowFirstRunDialogHookForTesting();
 
 }  // namespace first_run
 
-#endif  // OS_MAC || DESKTOP_LINUX
+#endif
 
 #endif  // CHROME_BROWSER_FIRST_RUN_FIRST_RUN_DIALOG_H_
