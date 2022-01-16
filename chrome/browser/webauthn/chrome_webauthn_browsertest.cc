@@ -398,7 +398,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 };
 
 // TODO(https://crbug.com/1219708): this test is flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test

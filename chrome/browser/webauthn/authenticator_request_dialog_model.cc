@@ -468,9 +468,9 @@ void AuthenticatorRequestDialogModel::OnAttestationPermissionResponse(
 void AuthenticatorRequestDialogModel::AddAuthenticator(
     const device::FidoAuthenticator& authenticator) {
   if (!authenticator.AuthenticatorTransport()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     DCHECK(authenticator.IsWinNativeApiAuthenticator());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     return;
   }
 

@@ -48,12 +48,12 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/credential_metadata.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #endif
 
@@ -82,7 +82,7 @@ bool IsWebauthnRPIDListedInEnterprisePolicy(
                      });
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kWebAuthnTouchIdMetadataSecretPrefName[] =
     "webauthn.touchid.metadata_secret";
 #endif
@@ -145,7 +145,7 @@ bool ChromeWebAuthenticationDelegate::IsFocused(
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // static
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
@@ -174,7 +174,7 @@ ChromeWebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
   return TouchIdAuthenticatorConfigForProfile(
       Profile::FromBrowserContext(browser_context));
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 content::WebAuthenticationDelegate::ChromeOSGenerateRequestIdCallback
@@ -199,7 +199,7 @@ absl::optional<bool> ChromeWebAuthenticationDelegate::
     return *testing_api_override;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/908622): Enable platform authenticators in Incognito on
   // Windows once the API allows triggering an adequate warning dialog.
   if (render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
@@ -232,7 +232,7 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
 // static
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   registry->RegisterStringPref(kWebAuthnTouchIdMetadataSecretPrefName,
                                std::string());
 #endif
@@ -367,7 +367,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator() &&
       static_cast<const device::WinWebAuthnApiAuthenticator*>(authenticator)
           ->ShowsPrivacyNotice()) {
@@ -375,7 +375,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     std::move(callback).Run(true);
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   weak_dialog_model_->RequestAttestationPermission(is_enterprise_attestation,
                                                    std::move(callback));
