@@ -32,7 +32,7 @@ void StatusIcon::DispatchClickEvent() {
     observer.OnStatusIconClicked();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void StatusIcon::DispatchBalloonClickEvent() {
   for (StatusIconObserver& observer : observers_)
     observer.OnBalloonClicked();
