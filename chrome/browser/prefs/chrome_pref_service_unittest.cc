@@ -78,7 +78,7 @@ TEST_F(ChromePrefServiceWebKitPrefs, PrefsCopied) {
 
   // These values have been overridden by the profile preferences.
   EXPECT_EQ("UTF-8", webkit_prefs.default_encoding);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(20, webkit_prefs.default_font_size);
 #else
   // This pref is not configurable on Android so the default of 16 is always
@@ -88,7 +88,7 @@ TEST_F(ChromePrefServiceWebKitPrefs, PrefsCopied) {
   EXPECT_FALSE(webkit_prefs.text_areas_are_resizable);
 
   // These should still be the default values.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const char16_t kDefaultFont[] = u"Times";
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const char16_t kDefaultFont[] = u"Tinos";
@@ -99,7 +99,7 @@ TEST_F(ChromePrefServiceWebKitPrefs, PrefsCopied) {
             webkit_prefs.standard_font_family_map[prefs::kWebKitCommonScript]);
   EXPECT_TRUE(webkit_prefs.javascript_enabled);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Touch event enabled only on Android.
   EXPECT_TRUE(webkit_prefs.touch_event_feature_detection_enabled);
 #else

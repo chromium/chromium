@@ -60,7 +60,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
   // for a response from a third party provider installed on the device.  So,
   // it will be logged later once all the dependent information is available.
   // See DeferredStartupHandler.java.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   GURL homepage_url(prefs_->GetString(prefs::kHomePage));
   RecordHomePageLaunchMetrics(prefs_->GetBoolean(prefs::kShowHomeButton),
                               prefs_->GetBoolean(prefs::kHomePageIsNewTabPage),
@@ -69,7 +69,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
 
   // Tab restoring is always done on Android, so these metrics are not
   // applicable.  Also, startup pages are not supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   int restore_on_startup = prefs_->GetInteger(prefs::kRestoreOnStartup);
   UMA_HISTOGRAM_ENUMERATION(
       "Settings.StartupPageLoadSettings", restore_on_startup,

@@ -76,12 +76,12 @@
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #if BUILDFLAG(ENABLE_RLZ)
 #include "rlz/lib/machine_id.h"  // nogncheck crbug.com/1125897
 #endif  // BUILDFLAG(ENABLE_RLZ)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -94,12 +94,12 @@ using ValueType = prefs::mojom::TrackedPreferenceMetadata::ValueType;
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Whether we are in testing mode; can be enabled via
 // DisableDomainCheckForTesting(). Forces startup checks to ignore the presence
 // of a domain when determining the active SettingsEnforcement group.
 bool g_disable_domain_check_for_testing = false;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // These preferences must be kept in sync with the TrackedPreference enum in
 // tools/metrics/histograms/enums.xml. To add a new preference, append it to the
@@ -126,7 +126,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
     {7, prefs::kSearchProviderOverrides, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {11, prefs::kPinnedTabs, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif
@@ -149,11 +149,11 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     // releases after M50.
     {18, prefs::kSafeBrowsingIncidentsSent, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {19, prefs::kSwReporterPromptVersion, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {22, prefs::kSwReporterPromptSeed, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif
@@ -161,7 +161,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
     {24, prefs::kGoogleServicesLastAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {25, prefs::kSettingsResetPromptPromptWave,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
@@ -174,20 +174,20 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {28, prefs::kSettingsResetPromptLastTriggeredForHomepage,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     {29, prefs::kMediaStorageIdSalt, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {30, prefs::kModuleBlocklistCacheMD5Digest,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {31, prefs::kSwReporterReportingEnabled, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
     {32, prefs::kMediaCdmOriginData, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.
@@ -212,7 +212,7 @@ enum SettingsEnforcementGroup {
 };
 
 SettingsEnforcementGroup GetSettingsEnforcementGroup() {
-# if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!g_disable_domain_check_for_testing) {
     static bool first_call = true;
     static const bool is_managed = base::IsMachineExternallyManaged();
@@ -229,7 +229,7 @@ SettingsEnforcementGroup GetSettingsEnforcementGroup() {
   // Use the strongest enforcement setting on Windows and MacOS. Remember to
   // update the OFFICIAL_BUILD section of extension_startup_browsertest.cc and
   // pref_hash_browsertest.cc when updating the default value below.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return GROUP_ENFORCE_DEFAULT;
 #else
   return GROUP_NO_ENFORCEMENT;
@@ -275,7 +275,7 @@ GetTrackingConfiguration() {
 std::unique_ptr<ProfilePrefStoreManager> CreateProfilePrefStoreManager(
     const base::FilePath& profile_path) {
   std::string legacy_device_id;
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_RLZ)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_RLZ)
   // This is used by
   // chrome/browser/apps/platform_apps/api/music_manager_private/device_id_win.cc
   // but that API is private (http://crbug.com/276485) and other platforms are
@@ -421,9 +421,9 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
 }
 
 void DisableDomainCheckForTesting() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   g_disable_domain_check_for_testing = true;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 bool InitializePrefsFromMasterPrefs(

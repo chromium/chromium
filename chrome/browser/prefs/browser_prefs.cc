@@ -214,7 +214,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/android/explore_sites/history_statistics_reporter.h"
 #include "chrome/browser/android/ntp/recent_tabs_page_prefs.h"
@@ -234,7 +234,7 @@
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
@@ -260,9 +260,9 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
@@ -270,7 +270,7 @@
 #if defined(USE_CUPS)
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif  // defined(USE_CUPS)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_prefs.h"
@@ -393,13 +393,13 @@
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #include "chrome/browser/ui/cocoa/confirm_quit.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/component_updater/sw_reporter_installer_win.h"
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
@@ -413,19 +413,19 @@
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_prefs_manager.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "components/os_crypt/os_crypt.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/web_applications/url_handler_prefs.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #endif
 
@@ -435,7 +435,7 @@
 #include "chrome/browser/lacros/net/proxy_config_service_lacros.h"
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
 #include "chrome/browser/downgrade/downgrade_prefs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
@@ -525,7 +525,7 @@ const char kGamesInstallDirPref[] = "games.data_files_paths";
 const char kLiteModeUserNeedsNotification[] =
     "previews.litepage.user-needs-notification";
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Deprecated 02/2021
 const char kCartModuleRemoved[] = "cart_module_removed";
 #endif
@@ -546,7 +546,7 @@ const char kSessionStatisticFCPMean[] =
     "optimization_guide.session_statistic.fcp_mean";
 const char kSessionStatisticFCPStdDev[] =
     "optimization_guide.session_statistic.fcp_std_dev";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kWebAuthnLastTransportUsedPrefName[] =
     "webauthn.last_transport_used";
 #endif
@@ -596,7 +596,7 @@ const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[] =
     "optimization_guide.hintsfetcher.top_host_blacklist_min_engagement_score";
 
 // Deprecated 07/2021.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kPasswordRecovery[] = "password_manager.password_recovery";
 #endif
 const char kWasSignInPasswordPromoClicked[] =
@@ -622,7 +622,7 @@ const char kUserAgentClientHintsEnabled[] =
 const char kExtensionCheckupOnStartup[] = "extensions.checkup_on_startup";
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Deprecated 07/2021
 const char kCloudPrintDeprecationWarningsSuppressed[] =
     "cloud_print.deprecation_warnings_suppressed";
@@ -644,7 +644,7 @@ const char kAccountManagerNumTimesMigrationRanSuccessfully[] =
     "account_manager.num_times_migration_ran_successfully";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Deprecated 09/2021.
 const char kNtpSearchSuggestionsBlocklist[] =
     "ntp.search_suggestions_blocklist";
@@ -707,7 +707,7 @@ const char kOsSyncFeatureEnabled[] = "sync.os_sync_feature_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 12/2021.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kSearchGeolocationDisclosureDismissed[] =
     "search_geolocation_disclosure.dismissed";
 const char kSearchGeolocationDisclosureShownCount[] =
@@ -718,7 +718,7 @@ const char kSearchGeolocationPreDisclosureMetricsRecorded[] =
     "search_geolocation_pre_disclosure_metrics_recorded";
 const char kSearchGeolocationPostDisclosureMetricsRecorded[] =
     "search_geolocation_post_disclosure_metrics_recorded";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -797,11 +797,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterFilePathPref(kGamesInstallDirPref, base::FilePath());
   registry->RegisterBooleanPref(kLiteModeUserNeedsNotification, true);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kCartModuleRemoved, false);
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(
       enterprise_connectors::kDeviceTrustPrivateKeyPref, std::string());
   registry->RegisterStringPref(enterprise_connectors::kDeviceTrustPublicKeyPref,
@@ -812,7 +812,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kRunAllFlashInAllowMode, false);
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Removed in M91.
   registry->RegisterBooleanPref(prefs::kMediaFeedsBackgroundFetching, false);
   registry->RegisterBooleanPref(prefs::kMediaFeedsSafeSearchEnabled, false);
@@ -843,7 +843,7 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterListPref(kSpellCheckBlacklistedDictionaries);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(
       prefs::kManagedProfileSerialAllowAllPortsForUrlsDeprecated);
   registry->RegisterListPref(
@@ -868,7 +868,7 @@ void RegisterProfilePrefsForMigration(
       kHintsFetcherTopHostBlocklistMinimumEngagementScore, 0,
       PrefRegistry::LOSSY_PREF);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   registry->RegisterTimePref(kPasswordRecovery, base::Time());
 #endif
 
@@ -889,7 +889,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kExtensionCheckupOnStartup, false);
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kCloudPrintDeprecationWarningsSuppressed,
                                 false);
   registry->RegisterBooleanPref(kForceEnablePrivetPrinting, false);
@@ -899,7 +899,7 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterDictionaryPref(kUserLanguageProfile);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(kNtpSearchSuggestionsBlocklist);
   registry->RegisterDictionaryPref(kNtpSearchSuggestionsImpressions);
   registry->RegisterBooleanPref(kNtpSearchSuggestionsOptOut, false);
@@ -930,7 +930,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kOsSyncFeatureEnabled, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kSearchGeolocationDisclosureDismissed, false);
   registry->RegisterIntegerPref(kSearchGeolocationDisclosureShownCount, 0);
   registry->RegisterInt64Pref(kSearchGeolocationDisclosureLastShowDate, 0);
@@ -986,7 +986,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   RegisterScreenshotPrefs(registry);
   safe_browsing::RegisterLocalStatePrefs(registry);
   secure_origin_allowlist::RegisterPrefs(registry);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts::RegisterPrefs(registry);
 #endif
   sessions::SessionIdGenerator::RegisterPrefs(registry);
@@ -1007,10 +1007,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       policy::policy_prefs::kWebSQLInThirdPartyContextEnabled, false);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled, true);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(policy::policy_prefs::kBackForwardCacheEnabled,
                                 true);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Below this point is for platform-specific and compile-time conditional
   // calls. Please follow the helper-function-first-then-direct-calls pattern
@@ -1024,12 +1024,12 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   PluginsResourceService::RegisterPrefs(registry);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ::android::RegisterPrefs(registry);
 
   registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
   registry->RegisterBooleanPref(lens::kLensCameraAssistedSearchEnabled, true);
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   gcm::RegisterPrefs(registry);
   IntranetRedirectDetector::RegisterPrefs(registry);
   media_router::RegisterLocalStatePrefs(registry);
@@ -1040,7 +1040,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   task_manager::TaskManagerInterface::RegisterPrefs(registry);
   UpgradeDetector::RegisterPrefs(registry);
   WhatsNewUI::RegisterLocalStatePrefs(registry);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   arc::prefs::RegisterLocalStatePrefs(registry);
@@ -1123,19 +1123,19 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   RegisterNearbySharingLocalPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::SystemFeaturesDisableListPolicyHandler::RegisterPrefs(registry);
   policy::DlpRulesManagerImpl::RegisterPrefs(registry);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug/1169547) Remove `BUILDFLAG(IS_CHROMEOS_LACROS)` once the
 // migration is complete.
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   enterprise_connectors::RegisterLocalPrefs(registry);
-#endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   confirm_quit::RegisterLocalState(registry);
   QuitWithAppsController::RegisterPrefs(registry);
   system_media_permissions::RegisterSystemMediaPermissionStatesPrefs(registry);
@@ -1147,7 +1147,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   lacros_prefs::RegisterLocalStatePrefs(registry);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   OSCrypt::RegisterLocalPrefs(registry);
   registry->RegisterBooleanPref(prefs::kRendererCodeIntegrityEnabled, true);
   registry->RegisterBooleanPref(prefs::kBlockBrowserLegacyExtensionPoints,
@@ -1161,14 +1161,14 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ModuleDatabase::RegisterLocalStatePrefs(registry);
   ThirdPartyConflictsManager::RegisterLocalStatePrefs(registry);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   web_app::url_handler_prefs::RegisterLocalStatePrefs(registry);
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   RegisterDefaultBrowserPromptPrefs(registry);
   downgrade::RegisterPrefs(registry);
   DeviceOAuth2TokenStoreDesktop::RegisterPrefs(registry);
@@ -1305,7 +1305,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   SupervisedUserService::RegisterProfilePrefs(registry);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
   content_creation::prefs::RegisterProfilePrefs(registry);
   explore_sites::HistoryStatisticsReporter::RegisterPrefs(registry);
@@ -1324,7 +1324,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   video_tutorials::RegisterPrefs(registry);
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
   feed::RegisterProfilePrefs(registry);
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   AppShortcutManager::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   captions::LiveCaptionController::RegisterProfilePrefs(registry);
@@ -1360,15 +1360,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   TaskModuleService::RegisterProfilePrefs(registry);
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
   CartService::RegisterProfilePrefs(registry);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   extensions::platform_keys::RegisterProfilePrefs(registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // defined(USE_CUPS)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::AppListSyncableService::RegisterProfilePrefs(registry);
@@ -1447,7 +1447,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::ProxyConfigServiceLacros::RegisterProfilePrefs(registry);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CdmPrefServiceHelper::RegisterProfilePrefs(registry);
   component_updater::RegisterProfilePrefsForSwReporter(registry);
   FontPrewarmerTabHelper::RegisterProfilePrefs(registry);
@@ -1459,16 +1459,16 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   browser_switcher::BrowserSwitcherPrefs::RegisterProfilePrefs(registry);
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   preinstalled_apps::RegisterProfilePrefs(registry);
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   sharing_hub::RegisterProfilePrefs(registry);
 #endif
 
@@ -1481,7 +1481,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   side_search_prefs::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       prefs::kLensRegionSearchEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -1502,7 +1502,7 @@ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                               const std::string& locale) {
   RegisterProfilePrefs(registry, locale);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ::android::RegisterUserProfilePrefs(registry);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1623,16 +1623,16 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kDataReductionProxyLastConfigRetrievalTime);
   profile_prefs->ClearPref(kDataReductionProxyConfig);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Added 02/2021
   feed::MigrateObsoleteProfilePrefsFeb_2021(profile_prefs);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   syncer::ClearObsoletePassphrasePromptPrefs(profile_prefs);
 
   // Added 02/2021
   profile_prefs->ClearPref(kGamesInstallDirPref);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Added 02/2021
   profile_prefs->ClearPref(kCartModuleRemoved);
 #endif
@@ -1640,7 +1640,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 03/2021
   profile_prefs->ClearPref(kLiteModeUserNeedsNotification);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Added 03/2021
   profile_prefs->ClearPref(enterprise_connectors::kDeviceTrustPrivateKeyPref);
   profile_prefs->ClearPref(enterprise_connectors::kDeviceTrustPublicKeyPref);
@@ -1651,7 +1651,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kRunAllFlashInAllowMode);
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Added 04/2021
   profile_prefs->ClearPref(prefs::kMediaFeedsBackgroundFetching);
   profile_prefs->ClearPref(prefs::kMediaFeedsSafeSearchEnabled);
@@ -1686,7 +1686,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 05/2021
   profile_prefs->ClearPref(kSpellCheckBlacklistedDictionaries);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Added 05/2021
   profile_prefs->ClearPref(
       prefs::kManagedProfileSerialAllowAllPortsForUrlsDeprecated);
@@ -1715,13 +1715,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistMinimumEngagementScore);
   profile_prefs->ClearPref(kTimeHintsFetcherTopHostBlocklistLastInitialized);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Added 06/2021
   feed::MigrateObsoleteProfilePrefsJune_2021(profile_prefs);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 07/2021
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   profile_prefs->ClearPref(kPasswordRecovery);
 #endif
   profile_prefs->ClearPref(kWasSignInPasswordPromoClicked);
@@ -1745,7 +1745,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   guest_os::GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(profile_prefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Added 2021/07
   profile_prefs->ClearPref(kCloudPrintDeprecationWarningsSuppressed);
   profile_prefs->ClearPref(kForceEnablePrivetPrinting);
@@ -1768,7 +1768,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Added 09/2021.
   profile_prefs->ClearPref(kNtpSearchSuggestionsBlocklist);
   profile_prefs->ClearPref(kNtpSearchSuggestionsImpressions);
@@ -1819,13 +1819,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Added 12/2021.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kSearchGeolocationDisclosureDismissed);
   profile_prefs->ClearPref(kSearchGeolocationDisclosureShownCount);
   profile_prefs->ClearPref(kSearchGeolocationDisclosureLastShowDate);
   profile_prefs->ClearPref(kSearchGeolocationPreDisclosureMetricsRecorded);
   profile_prefs->ClearPref(kSearchGeolocationPostDisclosureMetricsRecorded);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 01/2022.
   profile_prefs->ClearPref(kHasSeenLiteModeInfoBar);

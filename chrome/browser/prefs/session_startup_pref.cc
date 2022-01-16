@@ -48,7 +48,7 @@ void URLListToPref(const base::Value* url_list, SessionStartupPref* pref) {
 // static
 void SessionStartupPref::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;
 #else
   uint32_t flags = user_prefs::PrefRegistrySyncable::SYNCABLE_PREF;

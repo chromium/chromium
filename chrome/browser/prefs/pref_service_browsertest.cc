@@ -67,7 +67,7 @@ class PreferenceServiceTest : public InProcessBrowserTest {
     EXPECT_TRUE(base::PathExists(original_pref_file_));
     EXPECT_TRUE(base::CopyFile(original_pref_file_, tmp_pref_file_));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Make the copy writable.  On POSIX we assume the umask allows files
     // we create to be writable.
     EXPECT_TRUE(::SetFileAttributesW(tmp_pref_file_.value().c_str(),
@@ -81,7 +81,7 @@ class PreferenceServiceTest : public InProcessBrowserTest {
   base::FilePath tmp_pref_file_;
 };
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // This test verifies that the window position from the prefs file is restored
 // when the app restores.  This doesn't really make sense on Linux, where
 // the window manager might fight with you over positioning.  However, we

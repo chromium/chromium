@@ -67,7 +67,7 @@ class ProfilePrefStoreManager {
   // was built by ProfilePrefStoreManager.
   static void ClearResetTime(PrefService* pref_service);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Call before startup tasks kick in to use a different registry path for
   // storing and validating tracked preference MACs. Callers are responsible
   // for ensuring that the key is deleted on shutdown. For testing only.

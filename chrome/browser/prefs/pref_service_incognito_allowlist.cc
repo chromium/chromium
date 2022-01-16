@@ -16,9 +16,9 @@
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/ukm/ukm_pref_names.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
@@ -73,11 +73,11 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
     ash::prefs::kShouldAlwaysShowAccessibilityMenu,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     kAnimationPolicyAllowed,
     kAnimationPolicyOnce,
     kAnimationPolicyNone,
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     prefs::kAnimationPolicy,
 #endif
@@ -91,11 +91,11 @@ const char* const kPersistentPrefNames[] = {
     bookmarks::prefs::kShowReadingListInBookmarkBar,
     bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
     bookmarks::prefs::kShowBookmarkBar,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     prefs::kPartnerBookmarkMappings,
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Clipboard modification state is updated over all profiles.
     prefs::kClipboardLastModifiedTime,
 #endif
@@ -121,7 +121,7 @@ const char* const kPersistentPrefNames[] = {
     prefs::kDevToolsDiscoverTCPTargetsEnabled,
     prefs::kDevToolsTCPDiscoveryConfig,
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // The total number of times that network profile warning is shown is
     // aggregated between regular and incognito modes.
     prefs::kNetworkProfileWarningsLeft,
@@ -133,13 +133,13 @@ const char* const kPersistentPrefNames[] = {
     prefs::kTabStatsWindowCountMax,
     prefs::kTabStatsDailySample,
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     prefs::kShowFullscreenToolbar,
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Toggleing custom frames affects all open windows in the profile, hence
     // should be written to the regular profile when changed in incognito mode.
     prefs::kUseCustomChromeFrame,
