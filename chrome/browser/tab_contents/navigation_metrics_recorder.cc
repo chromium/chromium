@@ -24,7 +24,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -38,7 +38,7 @@ NavigationMetricsRecorder::NavigationMetricsRecorder(
       site_engagement::SiteEngagementService::Get(profile);
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The site isolation synthetic field trial is only needed on Android, as on
   // desktop it would be unnecessarily set for all users.
   is_synthetic_isolation_trial_enabled_ = true;
