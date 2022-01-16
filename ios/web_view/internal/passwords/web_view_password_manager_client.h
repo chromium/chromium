@@ -94,6 +94,8 @@ class WebViewPasswordManagerClient
       const override;
   password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher()
       override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() override;
   void NotifyUserAutoSignin(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin) override;

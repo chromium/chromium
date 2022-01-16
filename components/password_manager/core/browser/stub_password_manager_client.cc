@@ -85,6 +85,11 @@ PasswordScriptsFetcher* StubPasswordManagerClient::GetPasswordScriptsFetcher() {
   return nullptr;
 }
 
+PasswordChangeSuccessTracker*
+StubPasswordManagerClient::GetPasswordChangeSuccessTracker() {
+  return nullptr;
+}
+
 const GURL& StubPasswordManagerClient::GetLastCommittedURL() const {
   return GURL::EmptyGURL();
 }

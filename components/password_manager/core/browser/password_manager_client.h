@@ -81,6 +81,7 @@ class PasswordFormManagerForUI;
 class PasswordManagerDriver;
 class PasswordManagerMetricsRecorder;
 class HttpAuthManager;
+class PasswordChangeSuccessTracker;
 class PasswordRequirementsService;
 class PasswordReuseManager;
 class PasswordScriptsFetcher;
@@ -282,6 +283,9 @@ class PasswordManagerClient {
 
   // Returns the PasswordScriptsFetcher associated with this instance.
   virtual PasswordScriptsFetcher* GetPasswordScriptsFetcher() = 0;
+
+  // Returns the PasswordChangeSuccessTracker associated with this instance.
+  virtual PasswordChangeSuccessTracker* GetPasswordChangeSuccessTracker() = 0;
 
   // Reports whether and how passwords are synced in the embedder. The default
   // implementation always returns kNotSyncing.

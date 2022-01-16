@@ -201,6 +201,15 @@ WebViewPasswordManagerClient::GetPasswordScriptsFetcher() {
   return nullptr;
 }
 
+password_manager::PasswordChangeSuccessTracker*
+WebViewPasswordManagerClient::GetPasswordChangeSuccessTracker() {
+  // TODO(crbug.com/1281844): As WebView on iOS can run Autofill Assistant and
+  // can be used to update a password manually (i.e. submit a change password
+  // form), WebViewPasswordManagerClient should get access to a
+  // PasswordChangeSuccessTracker.
+  return nullptr;
+}
+
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
