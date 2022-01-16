@@ -14,7 +14,7 @@ namespace {
 
 // Returns whether the URL of the navigation matches the video player URL.
 bool IsVideoPlayerURL(GURL url) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string url_string = url.possibly_invalid_spec();
   if (url_string.find(chrome::kChromeUIUntrustedVideoPlayerUrl) == 0)
     return true;
