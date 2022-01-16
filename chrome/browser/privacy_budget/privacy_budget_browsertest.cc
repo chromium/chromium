@@ -67,7 +67,7 @@ namespace ukm {
 class UkmService;
 }  // namespace ukm
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 }
 
 // TODO(crbug.com/1238940, crbug.com/1238859): Test is flaky on Win and Android.
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CanvasToBlobDifferentDocument \
   DISABLED_CanvasToBlobDifferentDocument
 #else
