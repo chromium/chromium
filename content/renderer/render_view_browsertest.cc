@@ -1536,7 +1536,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
   EXPECT_EQ(1u, updated_states().size());
   gfx::Rect edit_context_control_bounds_expected =
       main_frame_widget()->BlinkSpaceToEnclosedDIPs(
-          gfx::Rect(-2147483648, -2147483648, 0, 2147483647));
+          gfx::Rect(-2147483648, -1073741825, 0, 2147483647));
   gfx::Rect edit_context_selection_bounds_expected =
       main_frame_widget()->BlinkSpaceToEnclosedDIPs(gfx::Rect(10, 20, 1, 5));
   gfx::Rect actual_active_element_control_bounds(

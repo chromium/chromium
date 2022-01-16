@@ -47,9 +47,6 @@
 
 namespace blink {
 
-// TODO(crbug.com/940846): Consider using double-type without casting and
-// DoublePoint & DoubleRect instead of gfx::PointF & gfx::RectF.
-
 void CanvasPath::closePath() {
   if (UNLIKELY(path_.IsEmpty()))
     return;

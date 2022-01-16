@@ -44,8 +44,6 @@
 
 namespace blink {
 
-class DoubleRect;
-
 class PLATFORM_EXPORT LayoutRect {
   DISALLOW_NEW();
 
@@ -72,7 +70,6 @@ class PLATFORM_EXPORT LayoutRect {
   // Don't do these implicitly since they are lossy.
   constexpr explicit LayoutRect(const gfx::RectF& r)
       : location_(r.origin()), size_(r.size()) {}
-  explicit LayoutRect(const DoubleRect&);
 
   constexpr explicit operator gfx::RectF() const {
     return gfx::RectF(X(), Y(), Width(), Height());

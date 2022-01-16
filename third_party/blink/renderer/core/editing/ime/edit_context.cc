@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
-#include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -242,29 +241,18 @@ void EditContext::updateCharacterBounds(
   character_bounds_range_start_ = static_cast<uint32_t>(range_start);
 
   character_bounds_.Clear();
-  std::for_each(
-      character_bounds.begin(), character_bounds.end(),
-      [this](const auto& bound) {
-        const DoubleRect double_rect(bound->x(), bound->y(), bound->width(),
-                                     bound->height());
-        character_bounds_.push_back(ToEnclosingRect(double_rect));
-      });
+  std::for_each(character_bounds.begin(), character_bounds.end(),
+                [this](const auto& bound) {
+                  character_bounds_.push_back(bound->ToEnclosingRect());
+                });
 }
 
 void EditContext::updateControlBounds(DOMRect* control_bounds) {
-  // Return the gfx::Rect containing the given DOMRect.
-  const DoubleRect control_bounds_double_rect(
-      control_bounds->x(), control_bounds->y(), control_bounds->width(),
-      control_bounds->height());
-  control_bounds_ = ToEnclosingRect(control_bounds_double_rect);
+  control_bounds_ = control_bounds->ToEnclosingRect();
 }
 
 void EditContext::updateSelectionBounds(DOMRect* selection_bounds) {
-  // Return the gfx::Rect containing the given DOMRect.
-  const DoubleRect selection_bounds_double_rect(
-      selection_bounds->x(), selection_bounds->y(), selection_bounds->width(),
-      selection_bounds->height());
-  selection_bounds_ = ToEnclosingRect(selection_bounds_double_rect);
+  selection_bounds_ = selection_bounds->ToEnclosingRect();
 }
 
 void EditContext::updateText(uint32_t start,
