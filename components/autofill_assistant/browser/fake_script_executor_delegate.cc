@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
+
 namespace autofill_assistant {
 
 FakeScriptExecutorDelegate::FakeScriptExecutorDelegate()
@@ -47,6 +49,11 @@ FakeScriptExecutorDelegate::GetPersonalDataManager() {
 }
 
 WebsiteLoginManager* FakeScriptExecutorDelegate::GetWebsiteLoginManager() {
+  return nullptr;
+}
+
+password_manager::PasswordChangeSuccessTracker*
+FakeScriptExecutorDelegate::GetPasswordChangeSuccessTracker() {
   return nullptr;
 }
 

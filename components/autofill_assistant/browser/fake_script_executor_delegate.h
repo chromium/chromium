@@ -15,6 +15,10 @@
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace autofill_assistant {
 
 // Implementation of ScriptExecutorDelegate that's convenient to use in
@@ -38,6 +42,8 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   TriggerContext* GetTriggerContext() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   WebsiteLoginManager* GetWebsiteLoginManager() override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;

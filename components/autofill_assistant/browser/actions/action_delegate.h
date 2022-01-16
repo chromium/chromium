@@ -35,6 +35,10 @@ struct FormFieldData;
 class PersonalDataManager;
 }  // namespace autofill
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -271,8 +275,12 @@ class ActionDelegate {
   // Get current personal data manager.
   virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 
-  // Get current login fetcher.
+  // Get current login manager.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
+
+  // Get current password change success tracker.
+  virtual password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() const = 0;
 
   // Get associated web contents.
   virtual content::WebContents* GetWebContents() const = 0;

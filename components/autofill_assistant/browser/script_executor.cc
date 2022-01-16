@@ -619,6 +619,11 @@ WebsiteLoginManager* ScriptExecutor::GetWebsiteLoginManager() const {
   return delegate_->GetWebsiteLoginManager();
 }
 
+password_manager::PasswordChangeSuccessTracker*
+ScriptExecutor::GetPasswordChangeSuccessTracker() const {
+  return delegate_->GetPasswordChangeSuccessTracker();
+}
+
 content::WebContents* ScriptExecutor::GetWebContents() const {
   return delegate_->GetWebContents();
 }

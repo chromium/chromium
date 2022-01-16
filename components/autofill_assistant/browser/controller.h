@@ -45,6 +45,10 @@ namespace base {
 class TickClock;
 }  // namespace base
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}  // namespace password_manager
+
 namespace autofill_assistant {
 class ControllerTest;
 
@@ -116,6 +120,8 @@ class Controller : public ScriptExecutorDelegate,
   const TriggerContext* GetTriggerContext() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   WebsiteLoginManager* GetWebsiteLoginManager() override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;

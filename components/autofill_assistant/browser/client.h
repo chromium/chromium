@@ -21,6 +21,10 @@ namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}  // namespace password_manager
+
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
@@ -62,8 +66,12 @@ class Client {
   // Returns the current active personal data manager.
   virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 
-  // Returns the currently active login fetcher.
+  // Returns the currently active login manager.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
+
+  // Returns the current password change success tracker.
+  virtual password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() const = 0;
 
   // Returns the locale.
   virtual std::string GetLocale() const = 0;

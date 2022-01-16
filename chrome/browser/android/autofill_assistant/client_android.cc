@@ -25,6 +25,7 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_change_success_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
@@ -35,6 +36,7 @@
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/variations/service/variations_service.h"
 #include "components/version_info/android/channel_getter.h"
@@ -538,6 +540,12 @@ WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
         GetWebContents());
   }
   return website_login_manager_.get();
+}
+
+password_manager::PasswordChangeSuccessTracker*
+ClientAndroid::GetPasswordChangeSuccessTracker() const {
+  return PasswordChangeSuccessTrackerFactory::GetForBrowserContext(
+      GetWebContents()->GetBrowserContext());
 }
 
 std::string ClientAndroid::GetLocale() const {

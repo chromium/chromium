@@ -25,6 +25,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace autofill_assistant {
 
 // Creates a Autofill Assistant client associated with a WebContents.
@@ -131,6 +135,8 @@ class ClientAndroid : public Client,
   AccessTokenFetcher* GetAccessTokenFetcher() override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() const override;
   std::string GetLocale() const override;
   std::string GetCountryCode() const override;
   DeviceContext GetDeviceContext() const override;

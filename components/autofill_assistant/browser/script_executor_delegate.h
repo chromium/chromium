@@ -25,6 +25,10 @@ namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}  // namespace password_manager
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -63,6 +67,8 @@ class ScriptExecutorDelegate {
   virtual const TriggerContext* GetTriggerContext() = 0;
   virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
   virtual WebsiteLoginManager* GetWebsiteLoginManager() = 0;
+  virtual password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() = 0;
   virtual content::WebContents* GetWebContents() = 0;
   virtual std::string GetEmailAddressForAccessTokenAccount() = 0;
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;

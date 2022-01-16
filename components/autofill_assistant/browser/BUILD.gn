@@ -373,6 +373,7 @@ static_library("unit_test_support") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/password_manager/core/browser:browser",
     "//components/version_info",
     "//testing/gmock",
     "//testing/gtest",

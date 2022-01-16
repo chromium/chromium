@@ -17,6 +17,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace autofill_assistant {
 
 class MockClient : public Client {
@@ -38,6 +42,8 @@ class MockClient : public Client {
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
+  MOCK_CONST_METHOD0(GetPasswordChangeSuccessTracker,
+                     password_manager::PasswordChangeSuccessTracker*());
   MOCK_METHOD0(GetAccessTokenFetcher, AccessTokenFetcher*());
   MOCK_METHOD1(Shutdown, void(Metrics::DropOutReason reason));
   MOCK_METHOD1(RecordDropOut, void(Metrics::DropOutReason reason));

@@ -206,6 +206,8 @@ class ScriptExecutor : public ActionDelegate,
   void Close() override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() const override;
   content::WebContents* GetWebContents() const override;
   ElementStore* GetElementStore() const override;
   WebController* GetWebController() const override;

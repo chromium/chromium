@@ -25,6 +25,10 @@
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace autofill_assistant {
 class UserModel;
 
@@ -126,6 +130,8 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetUserData, UserData*());
   MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
+  MOCK_CONST_METHOD0(GetPasswordChangeSuccessTracker,
+                     password_manager::PasswordChangeSuccessTracker*());
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());

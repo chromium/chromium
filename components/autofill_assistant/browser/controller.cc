@@ -123,6 +123,11 @@ WebsiteLoginManager* Controller::GetWebsiteLoginManager() {
   return client_->GetWebsiteLoginManager();
 }
 
+password_manager::PasswordChangeSuccessTracker*
+Controller::GetPasswordChangeSuccessTracker() {
+  return client_->GetPasswordChangeSuccessTracker();
+}
+
 content::WebContents* Controller::GetWebContents() {
   return web_contents();
 }
@@ -735,6 +740,7 @@ void Controller::InitFromParameters() {
     DCHECK(GetDeeplinkURL().is_valid());  // |deeplink_url_| must be set.
     user_data_.selected_login_.emplace(
         GetDeeplinkURL().DeprecatedGetOriginAsURL(), *password_change_username);
+    // TODO(crbug.com/1281844): Inform PasswordChangeSuccessTracker.
   }
 
   user_model_.SetCurrentURL(GetCurrentURL());

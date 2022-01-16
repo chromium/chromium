@@ -21,6 +21,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace autofill_assistant {
 
 class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
@@ -40,6 +44,10 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
               (),
               (override));
   MOCK_METHOD(WebsiteLoginManager*, GetWebsiteLoginManager, (), (override));
+  MOCK_METHOD(password_manager::PasswordChangeSuccessTracker*,
+              GetPasswordChangeSuccessTracker,
+              (),
+              (override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));
   MOCK_METHOD(std::string,
               GetEmailAddressForAccessTokenAccount,
