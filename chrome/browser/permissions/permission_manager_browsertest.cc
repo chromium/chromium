@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
 
 // Disable the test as it's flaky on Win7 dbg.
 // crbug.com/1068190
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
   DISABLED_ServiceWorkerPermissionAfterRendererCrash
 #else

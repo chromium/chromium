@@ -22,7 +22,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #else
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
@@ -122,7 +122,7 @@ class PermissionContextBasePermissionsPolicyTest
   MakeGeolocationPermissionContext() {
     return std::make_unique<permissions::GeolocationPermissionContext>(
         profile(),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         std::make_unique<GeolocationPermissionContextDelegateAndroid>(profile())
 #else
         std::make_unique<GeolocationPermissionContextDelegate>(profile())

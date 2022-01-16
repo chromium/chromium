@@ -39,7 +39,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void AreSitesImportant(
       content::BrowserContext* browser_context,
       std::vector<std::pair<url::Origin, bool>>* urls) override;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsCookieDeletionDisabled(content::BrowserContext* browser_context,
                                 const GURL& origin) override;
 #endif
@@ -73,7 +73,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       const GURL& embedding_origin) override;
   bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
                                 const GURL& embedding_origin) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsDseOrigin(content::BrowserContext* browser_context,
                    const url::Origin& origin) override;
   infobars::InfoBarManager* GetInfoBarManager(
