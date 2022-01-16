@@ -32,7 +32,7 @@
 #include "third_party/zlib/zlib.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <io.h>
 #endif
 
@@ -89,7 +89,7 @@ void ProfilingProcessHost::SaveTraceToFileOnBlockingThread(
 
   // Pass ownership of the underlying fd/HANDLE to zlib.
   base::PlatformFile platform_file = file.TakePlatformFile();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The underlying handle |platform_file| is also closed when |fd| is closed.
   int fd = _open_osfhandle(reinterpret_cast<intptr_t>(platform_file), 0);
 #else
