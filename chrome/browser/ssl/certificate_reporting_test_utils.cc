@@ -21,7 +21,7 @@
 #include "net/url_request/report_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #endif
 
@@ -96,7 +96,7 @@ SSLCertReporterCallback::GetLatestChromeChannelReported() const {
   return chrome_channel_;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void SetCertReportingOptIn(Browser* browser, OptIn opt_in) {
   safe_browsing::SetExtendedReportingPrefForTests(
       browser->profile()->GetPrefs(), opt_in == EXTENDED_REPORTING_OPT_IN);

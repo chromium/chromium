@@ -38,7 +38,7 @@
 #include "chrome/common/webui_url_constants.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "base/path_service.h"
 #include "base/win/windows_version.h"

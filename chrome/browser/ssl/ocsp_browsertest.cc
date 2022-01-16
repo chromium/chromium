@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, TestHTTPSOCSPIntermediateRevoked) {
 
   net::CertStatus cert_status = GetCurrentCertStatus();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(mattm): Seems to be flaky on Windows. Either returns
   // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
   // soft-fail), or CERT_STATUS_REVOKED.

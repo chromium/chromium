@@ -14,7 +14,7 @@
 #include "components/security_interstitials/content/cert_logger.pb.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class Browser;
 #endif
 
@@ -58,7 +58,7 @@ class SSLCertReporterCallback {
   chrome_browser_ssl::CertLoggerRequest::ChromeChannel chrome_channel_;
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Sets the browser preference to enable or disable extended reporting.
 void SetCertReportingOptIn(Browser* browser, OptIn opt_in);
 #endif

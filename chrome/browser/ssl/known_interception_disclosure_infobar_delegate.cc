@@ -9,6 +9,7 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -20,7 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar.h"
@@ -34,7 +35,7 @@ KnownInterceptionDisclosureCooldown::GetInstance() {
 bool KnownInterceptionDisclosureCooldown::IsActive(Profile* profile) {
   base::Time last_dismissal;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   last_dismissal = profile->GetPrefs()->GetTime(
       prefs::kKnownInterceptionDisclosureInfobarLastShown);
 #else
@@ -46,7 +47,7 @@ bool KnownInterceptionDisclosureCooldown::IsActive(Profile* profile) {
 }
 
 void KnownInterceptionDisclosureCooldown::Activate(Profile* profile) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   profile->GetPrefs()->SetTime(
       prefs::kKnownInterceptionDisclosureInfobarLastShown, clock_->Now());
 #else
@@ -84,7 +85,7 @@ void MaybeShowKnownInterceptionDisclosureDialog(
       std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(profile);
 
   if (!KnownInterceptionDisclosureCooldown::GetInstance()->IsActive(profile)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     infobar_manager->AddInfoBar(
         KnownInterceptionDisclosureInfoBar::CreateInfoBar(std::move(delegate)));
 #else
@@ -126,7 +127,7 @@ std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetMessageText()
 }
 
 int KnownInterceptionDisclosureInfoBarDelegate::GetButtons() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return BUTTON_OK;
 #else
   return BUTTON_NONE;
@@ -139,7 +140,7 @@ bool KnownInterceptionDisclosureInfoBarDelegate::Accept() {
 }
 
 // Platform specific implementations.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int KnownInterceptionDisclosureInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_WARNING;
 }

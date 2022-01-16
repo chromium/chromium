@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
 // Tests that disabling Extended Reporting causes the cache to be cleared.
 // TODO(crbug.com/1179504): Reenable. Flakes heavily on Linux, Win, and CrOS.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_OptingOutClearsSCTAuditingCache \
   DISABLED_OptingOutClearsSCTAuditingCache
 #else

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -31,14 +32,14 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "components/security_interstitials/content/captive_portal_helper_android.h"
 #include "content/public/common/referrer.h"
@@ -81,7 +82,7 @@ bool IsEnterpriseManaged() {
     return false;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::IsMachineExternallyManaged()) {
     return true;
   }
@@ -321,7 +322,7 @@ void ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(
       base::BindRepeating([](CertificateErrorReport* report) {
         report->AddChromeChannel(chrome::GetChannel());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         report->SetIsEnterpriseManaged(base::IsMachineExternallyManaged());
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
         report->SetIsEnterpriseManaged(g_browser_process->platform_part()
