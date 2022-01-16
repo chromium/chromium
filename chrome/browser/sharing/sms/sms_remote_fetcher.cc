@@ -45,7 +45,7 @@ base::OnceClosure FetchRemoteSms(
 // being Android is a simplification we have made at this point and not a
 // fundamental limitation. This may be relaxed in the future. e.g. allows
 // tablets that run Android fetch a remote sms.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   auto* ui_controller =
       SmsRemoteFetcherUiController::GetOrCreateFromWebContents(web_contents);
   return ui_controller->FetchRemoteSms(origin_list, std::move(callback));
