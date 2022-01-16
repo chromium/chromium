@@ -5,12 +5,14 @@
 #include "chrome/browser/performance_monitor/process_monitor.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/bind.h"
 #include "base/process/process_iterator.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_monitor/process_metrics_history.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -29,7 +31,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/mojom/sandbox.mojom-shared.h"
 #endif
 
@@ -79,12 +81,12 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
                                     const ProcessMonitor::Metrics& rhs) {
   lhs.cpu_usage += rhs.cpu_usage;
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_AIX)
   lhs.idle_wakeups += rhs.idle_wakeups;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   lhs.package_idle_wakeups += rhs.package_idle_wakeups;
   lhs.energy_impact += rhs.energy_impact;
 #endif
@@ -189,7 +191,7 @@ std::vector<ProcessMetadata> ProcessMonitor::GatherNonRendererProcesses() {
   // Find all child processes (does not include renderers), which has to be
   // done on the IO thread.
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Cannot gather process metrics for elevated process as browser has no
     // access to them.
     if (iter.GetData().sandbox_type ==
@@ -251,7 +253,7 @@ void ProcessMonitor::GatherProcesses() {
     }
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (coalition_data_provider_.IsAvailable())
     aggregated_metrics.coalition_data = coalition_data_provider_.GetDataRate();
 #endif

@@ -17,7 +17,7 @@ namespace performance_monitor {
 void RecordProcessHistograms(const char* histogram_suffix,
                              const ProcessMonitor::Metrics& metrics);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void RecordCoalitionData(const ProcessMonitor::Metrics& metrics,
                          const std::vector<const char*>& suffixes);
 #endif

@@ -9,13 +9,13 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/performance_monitor/resource_coalition_mac.h"
 #endif
 
 namespace performance_monitor {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST(ProcessMetricsRecorderUtilTest, RecordCoalitionData) {
   base::HistogramTester histogram_tester;
   ProcessMonitor::Metrics metrics;

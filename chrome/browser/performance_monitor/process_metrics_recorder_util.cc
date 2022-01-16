@@ -11,7 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/performance_monitor/resource_coalition_mac.h"
 #endif
 
@@ -41,14 +41,14 @@ void RecordProcessHistograms(const char* histogram_suffix,
                        ""),
       metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
       kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_AIX)
   base::UmaHistogramCounts10000(
       base::JoinString({"PerformanceMonitor.IdleWakeups.", histogram_suffix},
                        ""),
       metrics.idle_wakeups);
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::UmaHistogramCounts1000(
       base::JoinString(
           {"PerformanceMonitor.PackageExitIdleWakeups.", histogram_suffix}, ""),
@@ -60,7 +60,7 @@ void RecordProcessHistograms(const char* histogram_suffix,
 #endif
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void RecordCoalitionData(const ProcessMonitor::Metrics& metrics,
                          const std::vector<const char*>& suffixes) {
   if (!metrics.coalition_data.has_value())

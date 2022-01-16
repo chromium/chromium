@@ -10,7 +10,7 @@
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/public/browser/browser_child_process_host.h"
 #endif
 
@@ -26,7 +26,7 @@ void ProcessMetricsHistory::Initialize(const ProcessMetadata& process_data,
   process_data_ = process_data;
   last_update_sequence_ = initial_update_sequence;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   process_metrics_ = base::ProcessMetrics::CreateProcessMetrics(
       process_data_.handle,
       content::BrowserChildProcessHost::GetPortProvider());
@@ -40,11 +40,11 @@ ProcessMonitor::Metrics ProcessMetricsHistory::SampleMetrics() {
   ProcessMonitor::Metrics metrics;
 
   metrics.cpu_usage = process_metrics_->GetPlatformIndependentCPUUsage();
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_AIX)
   metrics.idle_wakeups = process_metrics_->GetIdleWakeupsPerSecond();
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   metrics.package_idle_wakeups =
       process_metrics_->GetPackageIdleWakeupsPerSecond();
   metrics.energy_impact = process_metrics_->GetEnergyImpact();
