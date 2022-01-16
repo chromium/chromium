@@ -44,7 +44,7 @@ bool IsInstantNTPURL(const GURL& url, Profile* profile);
 // Returns the New Tab page URL for the given |profile|.
 GURL GetNewTabPageURL(Profile* profile);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Returns true if |url| should be rendered in the Instant renderer process.
 bool ShouldAssignURLToInstantRenderer(const GURL& url, Profile* profile);
@@ -85,7 +85,7 @@ bool HandleNewTabURLRewrite(GURL* url,
 bool HandleNewTabURLReverseRewrite(GURL* url,
                                    content::BrowserContext* browser_context);
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search
 

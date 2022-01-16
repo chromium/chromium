@@ -30,7 +30,7 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 
