@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
 
 // |OpenDevToolsWindowSync| is slow on Linux Debug and can result in flacky test
 // failure. See (crbug.com/1186994).
-#if defined(OS_LINUX) && !defined(NDEBUG)
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_DevToolsWindowsNotCounted DISABLED_DevToolsWindowsNotCounted
 #else
 #define MAYBE_DevToolsWindowsNotCounted DevToolsWindowsNotCounted
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
 }
 
 // TODO(crbug.com/935746): Test is flaky on Win and Linux.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_OpenBrowserWindowForProfileWithSigninRequired \
   DISABLED_OpenBrowserWindowForProfileWithSigninRequired
 #else

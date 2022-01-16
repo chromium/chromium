@@ -8,9 +8,9 @@
 #include "build/build_config.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_key_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 ProfileKey::ProfileKey(const base::FilePath& path, ProfileKey* original_key)
     : SimpleFactoryKey(path, original_key != nullptr /* is_off_the_record */),
@@ -52,10 +52,10 @@ ProfileKey* ProfileKey::FromSimpleFactoryKey(SimpleFactoryKey* key) {
   return key ? static_cast<ProfileKey*>(key) : nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 ProfileKeyAndroid* ProfileKey::GetProfileKeyAndroid() {
   if (!profile_key_android_)
     profile_key_android_ = std::make_unique<ProfileKeyAndroid>(this);
   return profile_key_android_.get();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

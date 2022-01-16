@@ -48,13 +48,13 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/url_canon.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "ui/gfx/icon_util.h"  // For Iconutil::kLargeIconSize.
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -63,7 +63,7 @@
 // Helper methods for transforming and drawing avatar icons.
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const int kOldAvatarIconWidth = 38;
 const int kOldAvatarIconHeight = 31;
 
@@ -97,7 +97,7 @@ SkBitmap GetSkBitmapCopy(const gfx::Image& image) {
                              bitmap_copy.rowBytes(), 0, 0);
   return bitmap_copy;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Determine what the scaled height of the avatar icon should be for a
 // specified width, to preserve the aspect ratio.
@@ -201,7 +201,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
     y = canvas_size_.height() - height_ - 1;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Circular shape is only available on desktop platforms.
   DCHECK(shape_ != profiles::SHAPE_CIRCLE);
 #else
@@ -343,7 +343,7 @@ constexpr base::FilePath::CharType kHighResAvatarFolderName[] =
     FILE_PATH_LITERAL("Avatars");
 
 // The size of the function-static kDefaultAvatarIconResources array below.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr size_t kDefaultAvatarIconsCount = 1;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr size_t kDefaultAvatarIconsCount = 27;
@@ -351,14 +351,14 @@ constexpr size_t kDefaultAvatarIconsCount = 27;
 constexpr size_t kDefaultAvatarIconsCount = 56;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The first 8 icons are generic.
 constexpr size_t kGenericAvatarIconsCount = 8;
 #else
 constexpr size_t kGenericAvatarIconsCount = 0;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The avatar used as a placeholder.
 constexpr size_t kPlaceholderAvatarIndex = 26;
 #else
@@ -425,7 +425,7 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
   return gfx::Image(gfx::ImageSkia(std::move(source), dst_size));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -459,7 +459,7 @@ size_t GetPlaceholderAvatarIndex() {
 }
 
 size_t GetModernAvatarIconStartIndex() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   return GetPlaceholderAvatarIndex() + 1;
 #else
   // Only use the placeholder avatar on ChromeOS and Android.
@@ -495,7 +495,7 @@ const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
   CHECK_LT(index, kDefaultAvatarIconsCount);
   static const IconResourceInfo resource_info[kDefaultAvatarIconsCount] = {
   // Old avatar icons:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {IDR_PROFILE_AVATAR_0, "avatar_generic.png", IDS_DEFAULT_AVATAR_LABEL_0},
     {IDR_PROFILE_AVATAR_1, "avatar_generic_aqua.png",
      IDS_DEFAULT_AVATAR_LABEL_1},
@@ -538,7 +538,7 @@ const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
     // Placeholder avatar icon:
     {IDR_PROFILE_AVATAR_26, nullptr, IDS_DEFAULT_AVATAR_LABEL_26},
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     // Modern avatar icons:
     {IDR_PROFILE_AVATAR_27, "avatar_origami_cat.png",
      IDS_DEFAULT_AVATAR_LABEL_27},
@@ -621,12 +621,12 @@ int GetDefaultAvatarIconResourceIDAtIndex(size_t index) {
   return GetDefaultAvatarIconResourceInfo(index)->resource_id;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index) {
   DCHECK_LT(index, base::size(kProfileAvatarIconResources2x));
   return kProfileAvatarIconResources2x[index];
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 const char* GetDefaultAvatarIconFileNameAtIndex(size_t index) {
   CHECK_NE(index, kPlaceholderAvatarIndex);
@@ -641,7 +641,7 @@ base::FilePath GetPathOfHighResAvatarAtIndex(size_t index) {
 }
 
 std::string GetDefaultAvatarIconUrl(size_t index) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   CHECK(IsDefaultAvatarIconIndex(index));
 #endif
   return base::StringPrintf("%s%" PRIuS, kDefaultUrlPrefix, index);
@@ -735,7 +735,7 @@ size_t GetRandomAvatarIconIndex(
   return interval_begin + random_offset;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry) {
   // Request just one size large enough for all uses.
   return GetSkBitmapCopy(entry->GetAvatarIcon(IconUtil::kLargeIconSize));
@@ -809,6 +809,6 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   offscreen_canvas.drawImage(sk_icon.asImage(), icon_left, icon_top);
   return badged_bitmap;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace profiles

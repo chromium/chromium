@@ -183,7 +183,7 @@ class ProfileImpl : public Profile {
               base::Time path_creation_time,
               scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Takes the ownership of the pre-created PrefService and other objects if
   // they have been created.
   void TakePrefsFromStartupData();

@@ -43,7 +43,7 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck crbug.com/1125897
 #endif
 
@@ -345,15 +345,15 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
       return *image;
   }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1100835): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
   if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
     return GetPlaceholderAvatarIcon(size_for_placeholder_avatar);
   }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Use the high resolution version of the avatar if it exists. Mobile doesn't
   // need the high resolution version so no need to fetch it.
   if (use_high_res_file) {
@@ -364,7 +364,7 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
 #endif
 
   const int icon_index = GetAvatarIconIndex();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!profiles::IsModernAvatarIconIndex(icon_index)) {
     // Return the 2x version of the old avatar, defined specifically for
     // Windows. No special treatment is needed for modern avatars as they
@@ -528,7 +528,7 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
 }
 
 ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Profile theme colors shouldn't be queried on Android.
   NOTREACHED();
   return {SK_ColorRED, SK_ColorRED, SK_ColorRED};

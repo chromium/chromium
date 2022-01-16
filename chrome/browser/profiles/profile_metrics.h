@@ -21,11 +21,11 @@ namespace profile_metrics {
 struct Counts;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace signin {
 enum GAIAServiceType : int;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class ProfileMetrics {
  public:
@@ -126,7 +126,7 @@ class ProfileMetrics {
     NUM_PROFILE_AUTH_METRICS
   };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Enum for tracking user interactions with the account management menu
   // on Android.
   //
@@ -156,7 +156,7 @@ class ProfileMetrics {
     PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_DIRECT_ADD_ACCOUNT = 8,
     NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS,
   };
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns whether profile |entry| is considered active for metrics.
   static bool IsProfileActive(const ProfileAttributesEntry* entry);
@@ -175,11 +175,11 @@ class ProfileMetrics {
   static void LogProfileSwitchGaia(ProfileGaia metric);
   static void LogProfileSyncInfo(ProfileSync metric);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static void LogProfileAndroidAccountManagementMenu(
       ProfileAndroidAccountManagementMenu metric,
       signin::GAIAServiceType gaia_service);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // These functions should only be called on the UI thread because they hook
   // into g_browser_process through a helper function.

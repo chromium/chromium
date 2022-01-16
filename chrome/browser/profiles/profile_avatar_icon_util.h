@@ -32,14 +32,14 @@ class SkBitmap;
 
 namespace profiles {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The avatar badge size needs to be half of the shortcut icon size because
 // the Windows taskbar icon is 32x32 and the avatar icon overlay is 16x16. So to
 // get the shortcut avatar badge and the avatar icon overlay to match up, we
 // need to preserve those ratios when creating the shortcut icon.
 const int kShortcutIconSizeWin = 48;
 const int kProfileAvatarBadgeSizeWin = kShortcutIconSizeWin / 2;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Size of the small identity images for list of profiles to switch to.
 constexpr int kMenuAvatarIconSize = 20;
@@ -90,7 +90,7 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
                                     int dst_width,
                                     int dst_height);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Returns the image for the profile at |profile_path| that is suitable for use
 // in the macOS menu bar.
 gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path);
@@ -126,11 +126,11 @@ gfx::Image GetPlaceholderAvatarIconWithColors(SkColor fill_color,
 // Gets the resource ID of the default avatar icon at |index|.
 int GetDefaultAvatarIconResourceIDAtIndex(size_t index);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Gets the resource ID of the 2x sized version of the old profile avatar icon
 // at |index|.
 int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Gets the resource filename of the default avatar icon at |index|.
 const char* GetDefaultAvatarIconFileNameAtIndex(size_t index);
@@ -179,7 +179,7 @@ std::vector<base::Value> GetCustomProfileAvatarIconsAndLabels(
 size_t GetRandomAvatarIconIndex(
     const std::unordered_set<size_t>& used_icon_indices);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Get the 2x avatar image for a ProfileAttributesEntry.
 SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry);
 
@@ -191,7 +191,7 @@ SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap);
 // returns the resulting SkBitmap.
 SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
                                          const SkBitmap& avatar_bitmap);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace profiles
 

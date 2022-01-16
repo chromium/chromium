@@ -81,9 +81,9 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "storage/browser/database/database_tracker.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/prefs/scoped_user_pref_update.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/preferences.h"

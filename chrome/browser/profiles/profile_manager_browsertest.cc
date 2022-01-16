@@ -253,7 +253,7 @@ class ProfileManagerBrowserTestBase : public InProcessBrowserTest {
   void SetUp() override {
     // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
     // See crbug.com/1073451.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     AppShortcutManager::SuppressShortcutsForTesting();
 #endif
     InProcessBrowserTest::SetUp();
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
 }
 
 // Test is flaky. https://crbug.com/1206184
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_DeleteAllProfiles DISABLED_DeleteAllProfiles
 #else
 #define MAYBE_DeleteAllProfiles DeleteAllProfiles
@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
 // The following check is flaky on Windows.
 // TODO(https://crbug.com/1191455): re-enable this check when the profile
 // directory deletion works more reliably on Windows.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // Check that NukeProfileFromDisk() works correctly.
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -712,11 +712,11 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
     run_loop.Run();
     EXPECT_FALSE(base::PathExists(path_profile2));
   }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 // The test makes sense on those platforms where the keychain exists.
-#if !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ASSERT_TRUE(profile);
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
   verify_delete.Wait();
   EXPECT_EQ(0u, verify_delete.GetPasswords().size());
 }
-#endif  // !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests Profile::HasOffTheRecordProfile, Profile::IsValidProfile and the
 // profile counts in ProfileManager with respect to the creation and destruction

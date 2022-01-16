@@ -32,7 +32,7 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #endif
 
@@ -52,7 +52,7 @@
 namespace profiles {
 
 bool IsMultipleProfilesEnabled() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;
@@ -84,9 +84,9 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kBrowserProfilePickerAvailabilityOnStartup,
       static_cast<int>(ProfilePicker::AvailabilityOnStartup::kEnabled));
   registry->RegisterBooleanPref(prefs::kBrowserProfilePickerShown, false);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kLacrosSecondaryProfilesAllowed, true);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void SetLastUsedProfile(const base::FilePath& profile_dir) {
@@ -100,7 +100,7 @@ void SetLastUsedProfile(const base::FilePath& profile_dir) {
   local_state->SetFilePath(prefs::kProfileLastUsed, profile_dir);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path) {
   if (profile_path == ProfileManager::GetGuestProfilePath()) {
     return l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
@@ -175,8 +175,8 @@ bool IsRegularOrGuestSession(Browser* browser) {
 bool IsGuestModeRequested(const base::CommandLine& command_line,
                           PrefService* local_state,
                           bool show_warning) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
   DCHECK(local_state);
 
   // Check if guest mode enforcement commandline switch or policy are provided.
@@ -328,6 +328,6 @@ std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace profiles

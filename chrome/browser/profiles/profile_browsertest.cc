@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileReadmeCreated) {
 
 // The EndSession IO synchronization is only critical on Windows, but also
 // happens under the USE_OZONE define. See BrowserProcessImpl::EndSession.
-#if defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 
 namespace {
 
@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   ASSERT_TRUE(succeeded) << "profile->EndSession() timed out too often.";
 }
 
-#endif  // defined(OS_WIN) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 
 // The following tests make sure that it's safe to shut down while one of the
 // Profile's URLLoaderFactories is in use by a SimpleURLLoader.
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
                        OTRProfileKeepsRegularProfileAlive) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, deleting the OTR profile is not enough. Because Chrome doesn't
   // exit when you close all windows, Chrome always keeps the last Profile*
   // alive. See ProfileKeepAliveOrigin::kAppControllerMac.
@@ -863,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
   Profile* profile2 = profile_manager->GetProfile(
       profile_manager->user_data_dir().AppendASCII("Profile 2"));
   CreateBrowser(profile2);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   Profile* regular_profile = browser()->profile();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
   EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
             profile_metrics::GetBrowserProfileType(otr_profile));
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   Browser* guest_browser = CreateGuestBrowser();
 
   EXPECT_EQ(profile_metrics::BrowserProfileType::kGuest,
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
 #endif
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   base::HistogramTester tester;
@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
 }
 
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,

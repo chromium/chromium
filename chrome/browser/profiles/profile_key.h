@@ -11,9 +11,9 @@
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_key_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class PrefService;
 
@@ -43,9 +43,9 @@ class ProfileKey : public SimpleFactoryKey {
 
   static ProfileKey* FromSimpleFactoryKey(SimpleFactoryKey* key);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ProfileKeyAndroid* GetProfileKeyAndroid();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   raw_ptr<PrefService> prefs_ = nullptr;
@@ -54,9 +54,9 @@ class ProfileKey : public SimpleFactoryKey {
   // Points to the original (non off-the-record) ProfileKey.
   raw_ptr<ProfileKey> original_key_ = nullptr;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ProfileKeyAndroid> profile_key_android_;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_KEY_H_

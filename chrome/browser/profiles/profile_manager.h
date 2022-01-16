@@ -30,9 +30,9 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/common/buildflags.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_list_observer.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class AccountProfileMapper;
@@ -233,7 +233,7 @@ class ProfileManager : public Profile::Delegate {
   AccountProfileMapper* GetAccountProfileMapper();
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Less strict version of ScheduleProfileForDeletion(), silently exits if
   // profile is either scheduling or marked for deletion.
   void MaybeScheduleProfileForDeletion(
@@ -428,7 +428,7 @@ class ProfileManager : public Profile::Delegate {
   // Returns true if the profile was added, false otherwise.
   bool AddProfile(std::unique_ptr<Profile> profile);
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Removes the Profile at |profile_dir| from the manager and destroys it. If
   // it's an ephemeral profile, also nuke the |profile_dir| directory from disk
   // afterwards.
@@ -440,7 +440,7 @@ class ProfileManager : public Profile::Delegate {
   // null if creation fails.
   Profile* CreateAndInitializeProfile(const base::FilePath& profile_dir);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Continues the scheduled profile deletion after closing all the profile's
   // browsers tabs. Creates a new profile if the profile to be deleted is the
   // last non-supervised profile. In the Mac, loads the next non-supervised
@@ -500,7 +500,7 @@ class ProfileManager : public Profile::Delegate {
 
   void SaveActiveProfiles();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnBrowserOpened(Browser* browser);
   void OnBrowserClosed(Browser* browser);
 
@@ -539,7 +539,7 @@ class ProfileManager : public Profile::Delegate {
       Profile::CreateStatus status);
 
   void OnClosingAllBrowsersChanged(bool closing);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Destroy after |profile_attributes_storage_| since Profile destruction may
   // trigger some observers to unregister themselves.
@@ -570,9 +570,9 @@ class ProfileManager : public Profile::Delegate {
   // default.
   bool logged_in_ = false;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   BrowserListObserver browser_list_observer_{this};
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Maps profile path to ProfileInfo (if profile has been created). Use
   // RegisterProfile() to add into this map. This map owns all loaded profile

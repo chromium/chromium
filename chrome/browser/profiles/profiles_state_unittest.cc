@@ -13,7 +13,7 @@
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Params for the parameterized test IsGuestModeRequestedTest.
 struct IsGuestModeRequestedTestParams {
   bool has_switch;
@@ -35,11 +35,11 @@ const IsGuestModeRequestedTestParams kIsGuestModeRequestedParams[] {
   {  false,       false,          false,         false},
 };
 // clang-format on
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class IsGuestModeRequestedTest
     : public testing::TestWithParam<IsGuestModeRequestedTestParams> {};
 
@@ -66,4 +66,4 @@ TEST_P(IsGuestModeRequestedTest, Requested) {
 INSTANTIATE_TEST_SUITE_P(ProfilesState,
                          IsGuestModeRequestedTest,
                          testing::ValuesIn(kIsGuestModeRequestedParams));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

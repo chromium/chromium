@@ -17,7 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -121,7 +121,7 @@ class Profile : public content::BrowserContext {
 
     bool AllowsBrowserWindows() const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Constructs a Java OTRProfileID from the provided C++ OTRProfileID
     base::android::ScopedJavaLocalRef<jobject> ConvertToJavaOTRProfileID(
         JNIEnv* env) const;

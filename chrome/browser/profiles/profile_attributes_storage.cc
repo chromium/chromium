@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -43,7 +44,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
@@ -82,10 +83,10 @@ enum class MultiProfileUserType {
 };
 
 const char kProfileCountLastUpdatePref[] = "profile.profile_counts_reported";
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kLegacyProfileNameMigrated[] = "legacy.profile.name.migrated";
 bool g_migration_enabled_for_testing = false;
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Reads a PNG from disk and decodes it. If the bitmap was successfully read
 // from disk then this will return the bitmap image, otherwise it will return
@@ -310,11 +311,11 @@ ProfileAttributesStorage::ProfileAttributesStorage(
   if (!disable_avatar_download_for_testing_)
     DownloadAvatars();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   LoadGAIAPictureIfNeeded();
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   bool migrate_legacy_profile_names =
       (!prefs_->GetBoolean(kLegacyProfileNameMigrated) ||
        g_migration_enabled_for_testing);
@@ -327,7 +328,7 @@ ProfileAttributesStorage::ProfileAttributesStorage(
       prefs_, kProfileCountLastUpdatePref, base::Hours(24),
       base::BindRepeating(&ProfileMetrics::LogNumberOfProfiles, this));
   repeating_timer_->Start();
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ProfileAttributesStorage::~ProfileAttributesStorage() = default;
@@ -336,9 +337,9 @@ ProfileAttributesStorage::~ProfileAttributesStorage() = default;
 void ProfileAttributesStorage::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileAttributes);
   registry->RegisterTimePref(kProfileCountLastUpdatePref, base::Time());
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kLegacyProfileNameMigrated, false);
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
@@ -501,7 +502,7 @@ std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
     size_t icon_index) const {
   std::u16string name;
   for (int name_index = 1; ; ++name_index) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     // Using native digits will break IsDefaultProfileName() below because
     // it uses sscanf.
     // TODO(jshin): fix IsDefaultProfileName to handle native digits.
@@ -550,7 +551,7 @@ bool ProfileAttributesStorage::IsDefaultProfileName(
   if (assignments == 1)
     return true;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   if (!include_check_for_legacy_profile_name)
     return false;
 #endif
@@ -645,7 +646,7 @@ void ProfileAttributesStorage::RemoveObserver(Observer* obs) {
   observer_list_.RemoveObserver(obs);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void ProfileAttributesStorage::RecordDeletedProfileState(
     ProfileAttributesEntry* entry) {
   DCHECK(entry);
@@ -765,7 +766,7 @@ std::string ProfileAttributesStorage::StorageKeyFromProfilePath(
 }
 
 void ProfileAttributesStorage::DisableProfileMetricsForTesting() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   repeating_timer_.reset();
 #endif
 }
@@ -773,7 +774,7 @@ void ProfileAttributesStorage::DisableProfileMetricsForTesting() {
 void ProfileAttributesStorage::DownloadHighResAvatarIfNeeded(
     size_t icon_index,
     const base::FilePath& profile_path) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return;
 #endif
   DCHECK(!disable_avatar_download_for_testing_);
@@ -797,7 +798,7 @@ void ProfileAttributesStorage::DownloadHighResAvatarIfNeeded(
 void ProfileAttributesStorage::DownloadHighResAvatar(
     size_t icon_index,
     const base::FilePath& profile_path) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const char* file_name =
       profiles::GetDefaultAvatarIconFileNameAtIndex(icon_index);
   DCHECK(file_name);
@@ -868,7 +869,7 @@ ProfileAttributesEntry* ProfileAttributesStorage::InitEntryWithKey(
 }
 
 void ProfileAttributesStorage::DownloadAvatars() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
     DownloadHighResAvatarIfNeeded(entry->GetAvatarIconIndex(),
@@ -877,7 +878,7 @@ void ProfileAttributesStorage::DownloadAvatars() {
 #endif
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void ProfileAttributesStorage::LoadGAIAPictureIfNeeded() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
@@ -894,7 +895,7 @@ void ProfileAttributesStorage::LoadGAIAPictureIfNeeded() {
 }
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileAttributesStorage::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (size_t i = 0; i < entries.size(); i++) {
@@ -929,7 +930,7 @@ void ProfileAttributesStorage::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
 void ProfileAttributesStorage::SetLegacyProfileMigrationForTesting(bool value) {
   g_migration_enabled_for_testing = value;
 }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ProfileAttributesStorage::OnAvatarPictureLoaded(
     const base::FilePath& profile_path,

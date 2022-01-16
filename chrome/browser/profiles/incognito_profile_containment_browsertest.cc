@@ -48,9 +48,9 @@ const char* kAllowListPrefixesForAllPlatforms[] = {
     "/Default/Shortcuts",
     "/GrShaderCache/GPUCache",
     "/Local State"};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char* kAllowListPrefixesForPlatform[] = {"/Default/Visited Links"};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const char* kAllowListPrefixesForPlatform[] = {
     "/Default/databases-off-the-record",
     "/Default/heavy_ad_intervention_opt_out.db", "/Default/Top Sites",
@@ -59,12 +59,12 @@ const char* kAllowListPrefixesForPlatform[] = {
     // This file only contains the path to the latest executable of Chrome,
     // therefore it's safe to be written in Incognito.
     "/Last Browser"};
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
 const char* kAllowListPrefixesForPlatform[] = {
     "/Default/Local Storage/leveldb/CURRENT",
     "/Default/Site Characteristics Database", "/Default/Sync Data/LevelDB",
     "/test-user/.variations-list.txt"};
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
 #else
 const char* kAllowListPrefixesForPlatform[] = {};
@@ -235,7 +235,7 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
   IncognitoProfileContainmentBrowserTest()
       : allow_list_(std::begin(kAllowListPrefixesForAllPlatforms),
                     std::end(kAllowListPrefixesForAllPlatforms)) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // These prefixes are allowed twice, once under "Default" and once under
     // "test-user".
     std::set<std::string> test_folder;
