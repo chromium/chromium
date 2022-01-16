@@ -4,6 +4,7 @@
 
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/grit/locale_settings.h"
@@ -60,7 +61,7 @@ void SpellcheckServiceFactory::RegisterProfilePrefs(
       l10n_util::GetStringUTF8(IDS_SPELLCHECK_DICTIONARY));
   user_prefs->RegisterBooleanPref(
       spellcheck::prefs::kSpellCheckUseSpellingService, false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;
 #else
   uint32_t flags = user_prefs::PrefRegistrySyncable::SYNCABLE_PREF;

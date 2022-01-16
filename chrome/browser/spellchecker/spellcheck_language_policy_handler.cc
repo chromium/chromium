@@ -37,7 +37,7 @@ bool SpellcheckLanguagePolicyHandler::CheckPolicySettings(
   std::vector<std::string> unknown;
   SortForcedLanguages(policies, &forced, &unknown);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   for (const auto& language : unknown) {
     errors->AddError(policy_name(), IDS_POLICY_SPELLCHECK_UNKNOWN_LANGUAGE,
                      language);

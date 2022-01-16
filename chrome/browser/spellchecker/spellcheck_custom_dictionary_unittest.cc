@@ -1117,7 +1117,7 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncLimit) {
             server_custom_dictionary->GetWords().size());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Failing consistently on Win7+. See crbug.com/230534.
 #define MAYBE_RecordSizeStatsCorrectly DISABLED_RecordSizeStatsCorrectly
 #else
