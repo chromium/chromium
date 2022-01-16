@@ -78,7 +78,7 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
       base::span<const uint8_t> blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void RefreshDeviceInfo(
       const std::string& guid,
       device::mojom::UsbDeviceManager::RefreshDeviceInfoCallback callback);
@@ -103,7 +103,7 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
   void OnDeviceManagerConnectionError();
   void EnsureConnectionWithDeviceManager();
   void SetUpDeviceManagerConnection();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnDeviceInfoRefreshed(
       device::mojom::UsbDeviceManager::RefreshDeviceInfoCallback callback,
       device::mojom::UsbDeviceInfoPtr device_info);

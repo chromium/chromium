@@ -12,14 +12,14 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "content/public/browser/navigation_handle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/usb/web_usb_chooser_android.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/web_usb_chooser_desktop.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using content::WebContents;
 
@@ -46,7 +46,7 @@ void UsbTabHelper::NotifyIsDeviceConnectedChanged(bool is_device_connected) {
       &GetWebContents(), is_device_connected);
 
   // TODO(https://crbug.com/601627): Implement tab indicator for Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   if (browser) {
     TabStripModel* tab_strip_model = browser->tab_strip_model();

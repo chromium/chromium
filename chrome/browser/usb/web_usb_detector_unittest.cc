@@ -40,7 +40,7 @@
 // These tests are disabled because WebUsbDetector::Initialize is a noop on
 // Windows due to jank and hangs caused by enumerating devices.
 // https://crbug.com/656702
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 namespace {
 
 const char* kProfileName = "test@example.com";
@@ -756,4 +756,4 @@ TEST_F(WebUsbDetectorTest,
   EXPECT_TRUE(display_service_->GetNotification(guid_2));
 }
 
-#endif  // !OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)

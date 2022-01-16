@@ -71,7 +71,7 @@ std::pair<int, int> GetDeviceIds(const base::Value& object) {
 }
 
 std::u16string GetDeviceNameFromIds(int vendor_id, int product_id) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const char* product_name =
       device::UsbIds::GetProductName(vendor_id, product_id);
   if (product_name)
@@ -90,7 +90,7 @@ std::u16string GetDeviceNameFromIds(int vendor_id, int product_id) {
         base::ASCIIToUTF16(base::StringPrintf("0x%04X", product_id)),
         base::UTF8ToUTF16(vendor_name));
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (product_id == kDeviceIdWildcard) {
     if (vendor_id == kDeviceIdWildcard)
@@ -232,7 +232,7 @@ void UsbChooserContext::SetUpDeviceManagerConnection() {
                      weak_factory_.GetWeakPtr()));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void UsbChooserContext::OnDeviceInfoRefreshed(
     device::mojom::UsbDeviceManager::RefreshDeviceInfoCallback callback,
     device::mojom::UsbDeviceInfoPtr device_info) {
@@ -531,7 +531,7 @@ const device::mojom::UsbDeviceInfo* UsbChooserContext::GetDeviceInfo(
   return it == devices_.end() ? nullptr : it->second.get();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void UsbChooserContext::RefreshDeviceInfo(
     const std::string& guid,
     device::mojom::UsbDeviceManager::RefreshDeviceInfoCallback callback) {
