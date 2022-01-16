@@ -18,11 +18,11 @@ ExternalInstallOptions GetConfigForYouTube() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://www.youtube.com/s/notifications/manifest/cr_install.html"),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       /*user_display_mode=*/DisplayMode::kStandalone,
 #else
       /*user_display_mode=*/DisplayMode::kBrowser,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed"};

@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -18,12 +19,12 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_slides.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -62,12 +63,12 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
       GetConfigForGoogleSheets(),
       GetConfigForGoogleSlides(),
       GetConfigForYouTube(),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       GetConfigForCalculator(),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(),
       GetConfigForGoogleMeet(),
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       // clang-format on
   };
 #else

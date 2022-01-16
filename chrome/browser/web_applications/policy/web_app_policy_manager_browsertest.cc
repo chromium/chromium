@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -117,7 +119,7 @@ class WebAppPolicyManagerTest : public InProcessBrowserTest {
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, DontOverrideManifest) {
   WebAppPolicyManager& policy_manager =
@@ -224,6 +226,6 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, MismatchedInstallAndStartUrl) {
   EXPECT_EQ(GURL(kDefaultCustomIconUrl), manifest->icons[0].src);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

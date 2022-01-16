@@ -87,7 +87,7 @@ bool IsExternalExtensionUninstalled(content::BrowserContext* context,
   return prefs && prefs->IsExternalExtensionUninstalled(extension_id);
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
                                          const std::string& extension_id) {
   if (!base::FeatureList::IsEnabled(features::kChromeAppsDeprecation))
@@ -120,12 +120,12 @@ void OnExtensionSystemReady(content::BrowserContext* context,
 }
 
 bool DidPreinstalledAppsPerformNewInstallation(Profile* profile) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   return preinstalled_apps::Provider::DidPerformNewInstallationForProfile(
       profile);
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif
 }
 
 bool IsPreinstalledAppId(const std::string& app_id) {

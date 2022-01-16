@@ -68,12 +68,12 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/command_line.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/url_handler_manager_impl.h"
@@ -303,9 +303,9 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   }
 
   bool RuleAppliesToThisOS(int os, int size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return os == kWin || os == kNotMac || os == kAll;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     // Older MAC OS versions don't seem to write size 48 to the shortcut.
     // Instead of complicating all the call sites with OS-specific information,
     // just make size 48 optional on those MAC OS versions.
@@ -2278,7 +2278,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(ApiApprovalState::kAllowed,
             GetProvider().registrar().GetAppFileHandlerApprovalState(app_id));
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Make sure that blocking the permission also unregisters the MIME type on
   // Linux.
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
@@ -3065,8 +3065,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
 class ManifestUpdateManagerBrowserTest_UrlHandlers
     : public ManifestUpdateManagerBrowserTest {
  public:
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   void SetUpUrlHandlerManager() {
     auto url_handler_manager =
         std::make_unique<UrlHandlerManagerImpl>(browser()->profile());
@@ -3204,8 +3204,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
   ASSERT_EQ(0u, url_handlers.size());
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
                        NoHandlersChangeUpdateAssociations) {
   constexpr char kManifestTemplate[] = R"(
