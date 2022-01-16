@@ -26,15 +26,15 @@
 
 using blink::mojom::ShareError;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webshare/mac/sharing_service_operation.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"
 #endif
 
@@ -50,15 +50,15 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     ShareServiceImpl::Create(
         main_rfh(), share_service_remote_.BindNewPipeAndPassReceiver());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     webshare::SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     webshare::SharingServiceOperation::SetSharePickerCallbackForTesting(
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (!webshare::ScopedShareOperationFakeComponents::IsSupportedEnvironment())
       GTEST_SKIP();
 
@@ -132,7 +132,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     return builder;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   static void AcceptShareRequest(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
@@ -145,7 +145,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static void AcceptShareRequest(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
@@ -157,7 +157,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif
   base::test::ScopedFeatureList feature_list_;
@@ -215,7 +215,7 @@ TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".pdf", "application/pdf"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(ShareServiceUnitTest, ReservedNames) {
   EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("CON"));
   EXPECT_TRUE(ShareServiceImpl::IsDangerousFilename("PRN"));
@@ -228,7 +228,7 @@ TEST_F(ShareServiceUnitTest, ReservedNames) {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // On Chrome OS, like Android, we prevent sharing of Android applications.
 TEST_F(ShareServiceUnitTest, AndroidPackage) {
   EXPECT_EQ(ShareError::PERMISSION_DENIED,

@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "third_party/cros_system_api/constants/cryptohome.h"
 #endif
 
@@ -99,11 +99,11 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
       }
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
         static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes +
                              required_space)) {
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
         static_cast<int64_t>(required_space)) {
 #else

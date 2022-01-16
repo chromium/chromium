@@ -18,14 +18,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webshare/mac/sharing_service_operation.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #endif
@@ -37,7 +37,7 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (!webshare::ScopedShareOperationFakeComponents::IsSupportedEnvironment())
       GTEST_SKIP();
 #endif
@@ -46,20 +46,20 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     webshare::SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindRepeating(&ShareServiceBrowserTest::AcceptShareRequest));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     webshare::SharingServiceOperation::SetSharePickerCallbackForTesting(
         base::BindRepeating(&ShareServiceBrowserTest::AcceptShareRequest));
 #endif
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   static void AcceptShareRequest(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
@@ -72,7 +72,7 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
   }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static void AcceptShareRequest(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
@@ -86,7 +86,7 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif
 };
