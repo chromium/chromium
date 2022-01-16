@@ -17,7 +17,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
 #include "base/memory/memory_pressure_monitor.h"
 #endif
 
@@ -122,7 +122,7 @@ void HighPMFDiscardPolicy::OnProcessMemoryMetricsAvailable(
 
   if (should_discard) {
     discard_attempt_in_progress_ = true;
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
     // Record the memory pressure level before discarding a tab.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce([]() {

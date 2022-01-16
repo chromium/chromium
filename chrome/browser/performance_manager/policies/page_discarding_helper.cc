@@ -29,7 +29,7 @@ namespace performance_manager {
 namespace policies {
 namespace {
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Time during which non visible pages are protected from urgent discarding
 // (not on ChromeOS).
 constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
@@ -330,7 +330,7 @@ PageDiscardingHelper::CanUrgentlyDiscard(const PageNode* page_node) const {
       return CanUrgentlyDiscardResult::kProtected;
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (page_node->GetTimeSinceLastVisibilityChange() <
       kNonVisiblePagesUrgentProtectionTime) {
     return CanUrgentlyDiscardResult::kProtected;
@@ -380,7 +380,7 @@ PageDiscardingHelper::CanUrgentlyDiscard(const PageNode* page_node) const {
       return CanUrgentlyDiscardResult::kProtected;
     if (live_state_data->IsConnectedToUSBDevice())
       return CanUrgentlyDiscardResult::kProtected;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
     // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.
     if (live_state_data->WasDiscarded())
       return CanUrgentlyDiscardResult::kProtected;

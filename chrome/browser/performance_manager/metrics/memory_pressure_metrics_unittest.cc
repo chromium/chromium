@@ -53,7 +53,7 @@ class MemoryPressureMetricsTest : public GraphTestHarness {
 };
 
 // Very flaky on Android. http://crbug.com/1069043.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestHistograms DISABLED_TestHistograms
 #else
 #define MAYBE_TestHistograms TestHistograms

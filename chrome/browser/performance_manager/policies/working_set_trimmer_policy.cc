@@ -18,7 +18,7 @@
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_win.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_chromeos.h"
@@ -120,7 +120,7 @@ base::Value WorkingSetTrimmerPolicy::DescribeProcessNodeData(
 
 // static
 bool WorkingSetTrimmerPolicy::PlatformSupportsWorkingSetTrim() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return WorkingSetTrimmerPolicyWin::PlatformSupportsWorkingSetTrim();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return WorkingSetTrimmerPolicyChromeOS::PlatformSupportsWorkingSetTrim();
@@ -132,7 +132,7 @@ bool WorkingSetTrimmerPolicy::PlatformSupportsWorkingSetTrim() {
 // static
 std::unique_ptr<WorkingSetTrimmerPolicy>
 WorkingSetTrimmerPolicy::CreatePolicyForPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_unique<WorkingSetTrimmerPolicyWin>();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<WorkingSetTrimmerPolicyChromeOS>();

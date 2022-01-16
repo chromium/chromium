@@ -18,10 +18,10 @@
 namespace performance_manager {
 namespace features {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The EmptyWorkingSet feature as used on Windows.
 extern const base::Feature kEmptyWorkingSet;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

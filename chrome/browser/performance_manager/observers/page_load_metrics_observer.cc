@@ -23,7 +23,7 @@
 #include "extensions/browser/process_manager.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #else
 #include "chrome/browser/devtools/devtools_window.h"
@@ -146,7 +146,7 @@ WebContentsType PageLoadMetricsWebContentsObserver::GetWebContentsType() {
 }
 
 bool PageLoadMetricsWebContentsObserver::IsTab() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return !!TabAndroid::FromWebContents(web_contents());
 #else
   return !!chrome::FindBrowserWithWebContents(web_contents());
@@ -172,7 +172,7 @@ bool PageLoadMetricsWebContentsObserver::IsPrerender() const {
 }
 
 bool PageLoadMetricsWebContentsObserver::IsDevTools() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return DevToolsWindow::IsDevToolsWindow(web_contents());
