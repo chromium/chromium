@@ -137,7 +137,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
   DCHECK(!cancellation_flag_.get() && !shortcuts_determined());
 
   cancellation_flag_ = new SharedCancellationFlag;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateCOMSTATaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
@@ -145,7 +145,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
       FROM_HERE, base::BindOnce(&GetChromeLaunchShortcuts, cancellation_flag_),
       base::BindOnce(&ResettableSettingsSnapshot::SetShortcutsAndReport,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-#else   // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
   // Shortcuts are only supported on Windows.
   std::vector<ShortcutCommand> no_shortcuts;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -153,7 +153,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
       base::BindOnce(&ResettableSettingsSnapshot::SetShortcutsAndReport,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(no_shortcuts)));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void ResettableSettingsSnapshot::SetShortcutsAndReport(

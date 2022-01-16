@@ -44,7 +44,7 @@ KeyedService* TriggeredProfileResetterFactory::BuildServiceInstanceFor(
 
 void TriggeredProfileResetterFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   registry->RegisterInt64Pref(prefs::kLastProfileResetTimestamp, 0L);
 #endif
 }

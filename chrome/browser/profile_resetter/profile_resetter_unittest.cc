@@ -60,7 +60,7 @@
 #include "services/network/test/test_utils.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -132,7 +132,7 @@ class ProfileResetterTest : public extensions::ExtensionServiceTestBase,
   TestingProfile* profile() { return profile_.get(); }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ScopedPathOverride user_desktop_override_;
   base::ScopedPathOverride app_dir_override_;
   base::ScopedPathOverride start_menu_override_;
@@ -142,7 +142,7 @@ class ProfileResetterTest : public extensions::ExtensionServiceTestBase,
 };
 
 ProfileResetterTest::ProfileResetterTest()
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     : user_desktop_override_(base::DIR_USER_DESKTOP),
       app_dir_override_(base::DIR_ROAMING_APP_DATA),
       start_menu_override_(base::DIR_START_MENU),
@@ -248,12 +248,12 @@ class ShortcutHandler {
   bool IsFileHidden() const;
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath shortcut_path_;
 #endif
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 ShortcutHandler::ShortcutHandler() {
 }
 
@@ -340,7 +340,7 @@ void ShortcutHandler::HideFile() {}
 bool ShortcutHandler::IsFileHidden() const {
   return false;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // helper functions -----------------------------------------------------------
 
@@ -728,7 +728,7 @@ TEST_F(ProfileResetterTest, ResetShortcuts) {
       L"chrome.lnk", L"--profile-directory=Default foo.com");
   shortcut.HideFile();
   shortcut.CheckShortcutHasArguments(L"--profile-directory=Default foo.com");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_TRUE(shortcut.IsFileHidden());
 #endif
 

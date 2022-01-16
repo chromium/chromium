@@ -50,7 +50,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths.h"
 #include "base/path_service.h"
 #include "chrome/installer/util/shell_util.h"
@@ -77,7 +77,7 @@ void ResetShortcutsOnBlockingThread() {
 }
 
 }  // namespace
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 ProfileResetter::ProfileResetter(Profile* profile)
     : profile_(profile),
@@ -332,7 +332,7 @@ void ProfileResetter::ResetPinnedTabs() {
 }
 
 void ProfileResetter::ResetShortcuts() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
       ->PostTaskAndReply(
@@ -378,7 +378,7 @@ void ProfileResetter::OnBrowsingDataRemoverDone(uint64_t failed_data_types) {
   MarkAsDone(COOKIES_AND_SITE_DATA);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::vector<ShortcutCommand> GetChromeLaunchShortcuts(
     const scoped_refptr<SharedCancellationFlag>& cancel) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -402,4 +402,4 @@ std::vector<ShortcutCommand> GetChromeLaunchShortcuts(
   }
   return shortcuts;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
