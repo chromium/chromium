@@ -5,6 +5,7 @@
 #include "chrome/browser/background_sync/periodic_background_sync_permission_context.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/installable/installable_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/shortcut_helper.h"
 #endif
 
@@ -55,7 +56,7 @@ bool PeriodicBackgroundSyncPermissionContext::IsPwaInstalled(
   return DoesOriginContainAnyInstalledWebApp(browser_context(), origin);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool PeriodicBackgroundSyncPermissionContext::IsTwaInstalled(
     const GURL& origin) const {
   return ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
@@ -88,7 +89,7 @@ PeriodicBackgroundSyncPermissionContext::GetPermissionStatusInternal(
     const GURL& embedding_origin) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (IsTwaInstalled(requesting_origin))
     return CONTENT_SETTING_ALLOW;
 #endif

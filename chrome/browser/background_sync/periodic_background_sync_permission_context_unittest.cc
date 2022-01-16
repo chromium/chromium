@@ -29,7 +29,7 @@ class TestPeriodicBackgroundSyncPermissionContext
 
   void InstallPwa(const GURL& url) { installed_pwas_.insert(url); }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void InstallTwa(const GURL& url) { installed_twas_.insert(url); }
 #endif
 
@@ -38,7 +38,7 @@ class TestPeriodicBackgroundSyncPermissionContext
     return installed_pwas_.find(url) != installed_pwas_.end();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsTwaInstalled(const GURL& url) const override {
     return installed_twas_.find(url) != installed_twas_.end();
   }
@@ -54,7 +54,7 @@ class TestPeriodicBackgroundSyncPermissionContext
 
  private:
   std::set<GURL> installed_pwas_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::set<GURL> installed_twas_;
 #endif
   GURL default_search_engine_url_;
@@ -110,7 +110,7 @@ class PeriodicBackgroundSyncPermissionContextTest
   }
 
   void InstallPwa(const GURL& url) { permission_context_->InstallPwa(url); }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void InstallTwa(const GURL& url) { permission_context_->InstallTwa(url); }
 #endif
 
@@ -168,7 +168,7 @@ TEST_F(PeriodicBackgroundSyncPermissionContextTest, DesktopPwa) {
   EXPECT_EQ(GetPermissionStatus(url), CONTENT_SETTING_BLOCK);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PeriodicBackgroundSyncPermissionContextTest, Twa) {
   GURL url("https://example.com");
 

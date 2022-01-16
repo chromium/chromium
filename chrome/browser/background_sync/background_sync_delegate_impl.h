@@ -40,7 +40,7 @@ class BackgroundSyncDelegateImpl
   explicit BackgroundSyncDelegateImpl(Profile* profile);
   ~BackgroundSyncDelegateImpl() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   class BackgroundSyncEventKeepAliveImpl
       : public content::BackgroundSyncController::BackgroundSyncEventKeepAlive {
    public:
@@ -69,14 +69,14 @@ class BackgroundSyncDelegateImpl
   void NoteSuspendedPeriodicSyncOrigins(
       std::set<url::Origin> suspended_origins) override;
   int GetSiteEngagementPenalty(const GURL& url) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ScheduleBrowserWakeUpWithDelay(
       blink::mojom::BackgroundSyncType sync_type,
       base::TimeDelta delay) override;
   void CancelBrowserWakeup(blink::mojom::BackgroundSyncType sync_type) override;
   bool ShouldDisableBackgroundSync() override;
   bool ShouldDisableAndroidNetworkDetection() override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // SiteEngagementObserver overrides.
   void OnEngagementEvent(

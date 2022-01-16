@@ -45,7 +45,7 @@ class PeriodicBackgroundSyncPermissionContext
  protected:
   // Virtual for testing.
   virtual bool IsPwaInstalled(const GURL& origin) const;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual bool IsTwaInstalled(const GURL& origin) const;
 #endif
   virtual GURL GetDefaultSearchEngineUrl() const;
