@@ -22,7 +22,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/reputation/safety_tip_message_delegate.h"
 #endif
 
@@ -119,7 +119,7 @@ class ReputationWebContentsObserver
 
   base::OnceClosure safety_tip_close_callback_for_testing_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SafetyTipMessageDelegate delegate_;
 #endif
 
