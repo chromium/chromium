@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesRefInURL) {
 
 // crbug.com/1139864
 // TODO(crbug.com/1227242): Test is flaky on Mac and Windows.
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_InvalidSelectorForIframe DISABLED_InvalidSelectorForIframe
 #else
 #define MAYBE_InvalidSelectorForIframe InvalidSelectorForIframe

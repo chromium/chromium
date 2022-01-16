@@ -55,16 +55,16 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // RenderViewContextMenuObserver implementation.
   void InitMenu(const content::ContextMenuParams& params) override;
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   void OnContextMenuShown(const content::ContextMenuParams& params,
                           const gfx::Rect& bounds_in_screen) override;
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   bool IsCommandIdSupported(int command_id) override;
   bool IsCommandIdChecked(int command_id) override;
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // A callback function called when the platform spellchecker finishes getting
   // suggestions for a misspelled word.
   void OnGetPlatformSuggestionsComplete(
@@ -80,7 +80,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
   // before confirming the presence of expected menu items.
   void RegisterSuggestionsCompleteCallbackForTesting(
       base::OnceClosure callback);
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   // A callback function called when the Spelling service finishes checking a
   // misspelled word.
@@ -100,12 +100,12 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
                               bool success,
                               const std::vector<SpellCheckResult>& results);
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // Fires a callback for testing when local (and possibly remote) retrieval of
   // suggestions has completed. This allows tests to wait in a run loop before
   // confirming the presence of expected menu items.
   void FireSuggestionsCompleteCallbackIfNeededForTesting();
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   // The callback function for base::RepeatingTimer. This function updates the
   // "loading..." animation in the context-menu item for the given command_id.
@@ -162,7 +162,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
   // available.
   bool use_remote_suggestions_ = false;
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // Flag indicating that suggestions should be retrieved asynchronously from
   // the platform spellchecker (effectively just Windows versions > Win7).
   bool use_platform_suggestions_ = false;
@@ -178,7 +178,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // Callback registered using RegisterSuggestionsCompleteCallbackForTesting.
   base::OnceClosure suggestions_complete_callback_for_testing_;
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   base::WeakPtrFactory<SpellingMenuObserver> weak_ptr_factory_{this};
 };

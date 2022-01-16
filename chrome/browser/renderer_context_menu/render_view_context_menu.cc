@@ -1408,7 +1408,7 @@ void RenderViewContextMenu::AppendLinkItems() {
             params_.link_url);
     if (browser && !ShouldUseShareMenu() && should_offer_to_share_url) {
       if (send_tab_to_self::GetValidDeviceCount(GetProfile()) == 1) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         menu_model_.AddItem(
             IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
             l10n_util::GetStringFUTF16(
@@ -1428,7 +1428,7 @@ void RenderViewContextMenu::AppendLinkItems() {
                 source_web_contents_,
                 send_tab_to_self::SendTabToSelfMenuType::kLink,
                 params_.link_url);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         menu_model_.AddSubMenuWithStringId(
             IDC_CONTENT_LINK_SEND_TAB_TO_SELF, IDS_LINK_MENU_SEND_TAB_TO_SELF,
             send_tab_to_self_sub_menu_model_.get());
@@ -1441,7 +1441,7 @@ void RenderViewContextMenu::AppendLinkItems() {
       }
     }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     AppendClickToCallItem();
 #endif
 
@@ -1712,7 +1712,7 @@ void RenderViewContextMenu::AppendPageItems() {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     send_tab_to_self_menu_present = true;
     if (send_tab_to_self::GetValidDeviceCount(GetProfile()) == 1) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       menu_model_.AddItem(
           IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
           l10n_util::GetStringFUTF16(
@@ -1731,7 +1731,7 @@ void RenderViewContextMenu::AppendPageItems() {
           std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
               source_web_contents_,
               send_tab_to_self::SendTabToSelfMenuType::kContent);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       menu_model_.AddSubMenuWithStringId(
           IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
           send_tab_to_self_sub_menu_model_.get());
@@ -1922,7 +1922,7 @@ void RenderViewContextMenu::AppendEditableItems() {
 // 'Undo' and 'Redo' for text input with no suggestions and no text selected.
 // We make an exception for OS X as context clicking will select the closest
 // word. In this case both items are always shown.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_UNDO,
                                   IDS_CONTENT_CONTEXT_UNDO);
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_REDO,
@@ -1995,7 +1995,7 @@ void RenderViewContextMenu::AppendLanguageSettings() {
   if (!use_spelling)
     return;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS,
                                   IDS_CONTENT_CONTEXT_LANGUAGE_SETTINGS);
 #else
@@ -2095,7 +2095,7 @@ void RenderViewContextMenu::AppendSharingItems() {
   int items_before_sharing = menu_model_.GetItemCount();
   bool starting_separator_added = items_before_sharing > items_initial;
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   AppendClickToCallItem();
 #endif
   AppendSharedClipboardItem();
@@ -2109,7 +2109,7 @@ void RenderViewContextMenu::AppendSharingItems() {
     menu_model_.RemoveItemAt(items_initial);
 }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 void RenderViewContextMenu::AppendClickToCallItem() {
   SharingClickToCallEntryPoint entry_point;
   absl::optional<std::string> phone_number;
@@ -2136,7 +2136,7 @@ void RenderViewContextMenu::AppendClickToCallItem() {
   click_to_call_context_menu_observer_->BuildMenu(*phone_number, selection_text,
                                                   entry_point);
 }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 void RenderViewContextMenu::AppendSharedClipboardItem() {
   if (!ShouldOfferSharedClipboard(browser_context_, params_.selection_text))
@@ -2395,7 +2395,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CHECK_SPELLING_WHILE_TYPING:
       return prefs->GetBoolean(spellcheck::prefs::kSpellCheckEnable);
 
-#if !defined(OS_MAC) && defined(OS_POSIX)
+#if !BUILDFLAG(IS_MAC) && BUILDFLAG(IS_POSIX)
     // TODO(suzhe): this should not be enabled for password fields.
     case IDC_INPUT_METHODS_MENU:
       return true;
@@ -3144,7 +3144,7 @@ void RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
     return;
   auto string_id = for_image ? IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE
                              : IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   draw_icon = false;
 #endif
   if (draw_icon) {

@@ -233,7 +233,7 @@ class RenderViewContextMenu
   void AppendPasswordItems();
   void AppendPictureInPictureItem();
   void AppendSharingItems();
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   void AppendClickToCallItem();
 #endif
   void AppendSharedClipboardItem();
@@ -338,7 +338,7 @@ class RenderViewContextMenu
       accessibility_labels_menu_observer_;
   ui::SimpleMenuModel accessibility_labels_submenu_model_;
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // An observer that handles the submenu for showing spelling options. This
   // submenu lets users select the spelling language, for example.
   std::unique_ptr<SpellingOptionsSubMenuObserver>

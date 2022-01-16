@@ -173,7 +173,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     params.selection_text = selection_text;
     params.page_url = web_contents->GetVisibleURL();
     params.source_type = ui::MENU_SOURCE_NONE;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
@@ -210,7 +210,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     params.link_text = link_text;
     params.page_url = web_contents->GetVisibleURL();
     params.source_type = source_type;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
@@ -1032,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 
 // Verify that "Open link in [App Name]" opens a new App window.
 // TODO(crbug.com/1180790): Test is flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_OpenLinkInWebApp DISABLED_OpenLinkInWebApp
 #else
 #define MAYBE_OpenLinkInWebApp OpenLinkInWebApp
@@ -1203,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                              IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Check whether correct non-located context menu shows up for image element
 // with height more than visual viewport bounds.
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -1411,7 +1411,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DISABLED_OpenLinkInProfileEntryPr
 }
 
 // Test is flaky on Win and Mac dbg: crbug.com/1121731
-#if defined(OS_WIN) || (defined(OS_MAC) && !defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
 #define MAYBE_OpenLinkInProfile DISABLED_OpenLinkInProfile
 #else
 #define MAYBE_OpenLinkInProfile OpenLinkInProfile
@@ -1762,7 +1762,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
 }
 
 // Flaky on Linux and LaCros. http://crbug.com/1234671
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_LensImageSearchWithValidImage \
   DISABLED_LensImageSearchWithValidImage
 #else
