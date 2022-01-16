@@ -785,7 +785,7 @@ TEST_F(IntersectionObserverTest, CachedRectsTest) {
     <style>
     body { margin: 0; }
     .spacer { height: 1000px; }
-    .scroller { overflow-y: scroll; height: 100px; }
+    .scroller { overflow-y: scroll; height: 100px; position: relative; }
     </style>
     <div id='root' class='scroller'>
       <div id='target1-container'>

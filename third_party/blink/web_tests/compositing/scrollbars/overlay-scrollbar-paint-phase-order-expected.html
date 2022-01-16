@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
+<style>
+  #scroller {
+    position: absolute;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    will-change: transform;
+    overflow: scroll;
+  }
+  #foreground1 {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 80px;
+    height: 80px;
+    background: yellow;
+  }
+  #foreground2 {
+    position: absolute;
+    width: 20px;
+    height: 100px;
+    background: magenta;
+  }
+</style>
+<div style="position: relative; width: 100px; height: 100px; background: green">
+  <div id="foreground1"></div>
+  <div id="scroller">
+    <div>
+      <div style="width: 200px; height: 200px; display: inline-block"></div>
+    </div>
+  </div>
+  <div id="foreground2"></div>
+</div>

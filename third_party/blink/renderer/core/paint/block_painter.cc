@@ -78,9 +78,8 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     layout_block_.PaintObject(local_paint_info, paint_offset);
   } else if (original_phase != PaintPhase::kSelfBlockBackgroundOnly &&
              original_phase != PaintPhase::kSelfOutlineOnly &&
-             // For now all scrollers with overlay overflow controls are
-             // self-painting layers, so we don't need to traverse descendants
-             // here.
+             // kOverlayOverflowControls is for the current object itself,
+             // so we don't need to traverse descendants here.
              original_phase != PaintPhase::kOverlayOverflowControls) {
     ScopedBoxContentsPaintState contents_paint_state(paint_state,
                                                      layout_block_);

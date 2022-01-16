@@ -378,7 +378,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
                     paint_flags) == kMayBeClippedByCullRect)
     result = kMayBeClippedByCullRect;
 
-  if (paint_layer_.GetScrollableArea() &&
+  if (should_paint_content && paint_layer_.GetScrollableArea() &&
       paint_layer_.GetScrollableArea()
           ->ShouldOverflowControlsPaintAsOverlay()) {
     if (!paint_layer_.NeedsReorderOverlayOverflowControls())
@@ -386,6 +386,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
     // Otherwise the overlay overflow controls will be painted after scrolling
     // children in PaintChildren().
   }
+  // Overlay overflow controls of scrollers without a self-painting layer are
+  // painted in the foreground paint phase. See ScrollableAreaPainter.
 
   if (is_video && should_paint_self_outline) {
     // We paint outlines for video later so that they aren't obscured by the
@@ -460,7 +462,8 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     const NGPhysicalBoxFragment* physical_fragment,
     GraphicsContext& context,
     PaintFlags paint_flags) {
-  DCHECK(paint_layer_.IsSelfPaintingLayer());
+  DCHECK(paint_layer_.IsSelfPaintingLayer() ||
+         phase == PaintPhase::kOverlayOverflowControls);
 
   CullRect cull_rect = fragment_data.GetCullRect();
   if (cull_rect.Rect().IsEmpty())

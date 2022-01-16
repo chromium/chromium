@@ -752,6 +752,9 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollWith3DPreserveParent) {
         height: 200px;
         width: 200px;
         background: white;
+        /* TODO(crbug.com/1256990): This is to work around the issue of
+           unexpected effect node on a non-self-painting PaintLayer. */
+        position: relative;
       }
     </style>
     <div style='transform-style: preserve-3d;'>
