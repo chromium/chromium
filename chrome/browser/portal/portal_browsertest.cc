@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalActivation) {
 }
 
 // Flaky on Linux ASAN. crbug.com/1182702
-#if defined(ADDRESS_SANITIZER) && defined(OS_LINUX)
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_LINUX)
 #define MAYBE_DevToolsWindowStaysOpenAfterActivation \
   DISABLED_DevToolsWindowStaysOpenAfterActivation
 #else
@@ -443,7 +443,7 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
 // by Safe Browsing, the embedder is also treated as dangerous in terms of how
 // we display the Safe Browsing interstitial.
 // Flaky on ChromeOS & under Ozone (crbug.com/1220319)
-#if defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
 #define MAYBE_EmbedderOfDangerousPortalConsideredDangerous \
   DISABLED_EmbedderOfDangerousPortalConsideredDangerous
 #else
