@@ -30,7 +30,7 @@ bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context);
 // through the sharing hub.
 extern const base::Feature kDesktopScreenshots;
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 #endif
 
