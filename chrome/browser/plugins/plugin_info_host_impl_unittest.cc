@@ -106,7 +106,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
 
     PluginService::GetInstance()->SetFilter(&filter_);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // Can't go out of process in unit tests.
     content::RenderProcessHost::SetRunRendererInProcess(true);
 #endif
@@ -114,7 +114,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
     PluginService::GetInstance()->GetPlugins(
         base::BindOnce(&PluginsLoaded, run_loop.QuitClosure()));
     run_loop.Run();
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     content::RenderProcessHost::SetRunRendererInProcess(false);
 #endif
   }

@@ -39,7 +39,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -99,7 +99,7 @@ void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
   std::u16string plugin_name =
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
   std::u16string infobar_text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Find out whether the plugin process is still alive.
   // Note: Although the chances are slim, it is possible that after the plugin
   // process died, |plugin_pid| has been reused by a new process. The
