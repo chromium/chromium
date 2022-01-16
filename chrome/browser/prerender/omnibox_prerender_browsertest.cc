@@ -26,7 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -70,7 +70,7 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
   }
 
   Profile* GetProfile() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return chrome_test_utils::GetProfile(this);
 #else
     return browser()->profile();
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderDefaultPrerender2BrowserTest,
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(true,
             EvalJs(GetActiveWebContents(), "document.prerendering === false"));
   EXPECT_EQ(0, EvalJs(GetActiveWebContents(),
