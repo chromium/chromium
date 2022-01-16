@@ -511,7 +511,7 @@ void AutofillAgent::BatchDataListOptionChange(
   if (element.GetDocument().IsNull())
     return;
 
-  OnProvisionallySaveForm(WebFormElement(), element,
+  OnProvisionallySaveForm(element.Form(), element,
                           ElementChangeSource::TEXTFIELD_CHANGED);
 }
 
