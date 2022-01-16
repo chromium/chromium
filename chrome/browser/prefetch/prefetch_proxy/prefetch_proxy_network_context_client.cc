@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -35,7 +36,7 @@ void PrefetchProxyNetworkContextClient::OnCanSendDomainReliabilityUpload(
   std::move(callback).Run(false);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PrefetchProxyNetworkContextClient::OnGenerateHttpNegotiateAuthToken(
     const std::string& server_auth_token,
     bool can_delegate,

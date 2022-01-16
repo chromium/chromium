@@ -2270,7 +2270,7 @@ void RunFirstParam(base::RepeatingClosure closure,
 }
 
 // crbug.com/1272805
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ServiceWorkerServedPrefetchWithPreload \
   DISABLED_ServiceWorkerServedPrefetchWithPreload
 #else

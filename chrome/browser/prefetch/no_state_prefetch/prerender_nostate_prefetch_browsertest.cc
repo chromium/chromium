@@ -416,7 +416,7 @@ class NoStatePrefetchBrowserTest
   }
 
   void OpenDestURLViaClickNewForegroundTab(GURL& dest_url) const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     OpenURLWithJSImpl("MetaShiftClick", dest_url, GURL(), true);
 #else
     OpenURLWithJSImpl("CtrlShiftClick", dest_url, GURL(), true);
@@ -1380,7 +1380,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, IssuesIdlePriorityRequests) {
   WaitForRequestCount(script_url, 1);
   monitor.WaitForUrls();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android requests from prerenders do not get downgraded
   // priority. See: https://crbug.com/652746.
   constexpr net::RequestPriority kExpectedPriority = net::HIGHEST;

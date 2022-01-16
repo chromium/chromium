@@ -32,7 +32,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #include "net/base/network_interfaces.h"
 #endif
@@ -102,7 +102,7 @@ std::string GenerateNetworkID(
 
 // Further identify WiFi and cell connections. These calls are only supported
 // for Android devices.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (connection_type == network::mojom::ConnectionType::CONNECTION_WIFI) {
     return base::StringPrintf("%s,%s", id.c_str(), net::GetWifiSSID().c_str());
   }
