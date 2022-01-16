@@ -135,7 +135,7 @@ class SessionRestorePolicy {
                                            size_t score);
 
  protected:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   friend class TabDataAccess;
 #endif
 

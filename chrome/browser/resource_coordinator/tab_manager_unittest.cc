@@ -118,8 +118,8 @@ TEST_F(TabManagerTest, IsInternalPage) {
 
 // Data race on Linux. http://crbug.com/787842
 // Flaky on Mac and Windows: https://crbug.com/995682
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_DiscardTabWithNonVisibleTabs DISABLED_DiscardTabWithNonVisibleTabs
 #else
 #define MAYBE_DiscardTabWithNonVisibleTabs DiscardTabWithNonVisibleTabs

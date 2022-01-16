@@ -56,8 +56,8 @@
 
 using content::OpenURLParams;
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 
 namespace resource_coordinator {
 
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
 }
 
 // On Linux, memory pressure listener is not implemented yet.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 class TabManagerMemoryPressureTest : public TabManagerTest {
  public:
@@ -1091,8 +1091,9 @@ IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest,
   EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(2)));
 }
 
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace resource_coordinator
 
-#endif  // OS_WIN || OS_MAXOSX || OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)

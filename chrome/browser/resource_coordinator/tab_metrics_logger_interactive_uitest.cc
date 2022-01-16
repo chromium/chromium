@@ -45,7 +45,7 @@ class TabMetricsLoggerTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, the browser window needs to be forced to the front. This will
     // create a UKM entry for the activation because it happens after the
     // WindowActivityWatcher creation. On other platforms, activation happens
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest, GetDiscardCount) {
 }
 
 // TODO(https://crbug.com/51364): Implement BrowserWindow::Deactivate() on Mac.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Tests WindowMetrics by activating/deactivating the window.
 IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest,
                        CreateWindowFeaturesTestWindowActivation) {
@@ -239,4 +239,4 @@ IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest,
   }
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
