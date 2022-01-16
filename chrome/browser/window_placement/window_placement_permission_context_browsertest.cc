@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
 
 // TODO(enne): Windows assumes that display::GetScreen() is a ScreenWin
 // which is not true here.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 // Verify that window.screen.isExtended returns true in a same-origin
 // iframe without the window placement permission policy allowed.
@@ -365,6 +365,6 @@ IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace
