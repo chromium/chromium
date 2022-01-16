@@ -47,7 +47,7 @@ std::string UIThreadSearchTermsData::GetApplicationLocale() const {
 }
 
 // Android implementations are in ui_thread_search_terms_data_android.cc.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
@@ -83,7 +83,7 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
 std::string UIThreadSearchTermsData::GetSuggestClient() const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android does not send non-searchbox suggest requests from NTP at this time.
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ?
       "chrome" : "chrome-omni";
@@ -95,7 +95,7 @@ std::string UIThreadSearchTermsData::GetSuggestClient() const {
 std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier() const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE)
     return "chrome-mobile-ext-ansg";
 #endif

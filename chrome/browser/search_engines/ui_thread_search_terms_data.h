@@ -26,7 +26,7 @@ class UIThreadSearchTermsData : public SearchTermsData {
   std::string GetSuggestRequestIdentifier() const override;
   std::string GoogleImageSearchSource() const override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string GetYandexReferralID() const override;
   std::string GetMailRUReferralID() const override;
 #endif
