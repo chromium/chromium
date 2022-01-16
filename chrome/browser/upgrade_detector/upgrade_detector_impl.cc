@@ -41,11 +41,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/mac/keystone_glue.h"
 #endif
 
@@ -219,7 +219,7 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
     if (google_brand::GetBrand(&brand) && !google_brand::IsOrganic(brand))
       return;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // TODO(crbug/1027107): Replace with a more generic CBCM check.
     // Don't show the update bubbles to enterprise users.
     if (base::IsMachineExternallyManaged() ||
@@ -231,7 +231,7 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
     if (!ShouldDetectOutdatedBuilds())
       return;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Only check to if autoupdates are enabled if the user has not already been
     // asked about re-enabling them.
     if (!g_browser_process->local_state() ||
@@ -479,12 +479,12 @@ void UpgradeDetectorImpl::Init() {
 
   // On Windows, only enable upgrade notifications for Google Chrome builds.
   // Chromium does not use an auto-updater.
-#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING) || \
+#if !BUILDFLAG(IS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING) || \
     BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
   // On macOS, only enable upgrade notifications if the updater (Keystone) is
   // present.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!keystone_glue::KeystoneEnabled())
     return;
 #endif
