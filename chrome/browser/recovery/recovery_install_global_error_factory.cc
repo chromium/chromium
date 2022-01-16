@@ -35,7 +35,7 @@ RecoveryInstallGlobalErrorFactory::GetInstance() {
 
 KeyedService* RecoveryInstallGlobalErrorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return new RecoveryInstallGlobalError(static_cast<Profile*>(context));
 #else
   return NULL;
