@@ -64,7 +64,7 @@ class PrintJobWorker {
   // Set the new print settings from a dictionary value.
   void SetSettings(base::Value new_settings, SettingsCallback callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Set the new print settings from a POD type.
   void SetSettingsFromPOD(std::unique_ptr<printing::PrintSettings> new_settings,
                           SettingsCallback callback);
@@ -115,7 +115,7 @@ class PrintJobWorker {
   // Get the document name to be used when initiating printing.
   std::u16string GetDocumentName(const PrintedDocument* new_document) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Renders a page in the printer.
   // This is applicable when using the Windows GDI print API.
   virtual void SpoolPage(PrintedPage* page);
@@ -152,10 +152,10 @@ class PrintJobWorker {
   // available.
   void PostWaitForPage();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows print GDI-specific handling for OnNewPage().
   bool OnNewPageHelperGdi();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Renders the document to the printer.
   void SpoolJob();
@@ -168,7 +168,7 @@ class PrintJobWorker {
                          bool is_scripted,
                          SettingsCallback callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Called on the UI thread to update the print settings.
   void UpdatePrintSettingsFromPOD(
       std::unique_ptr<printing::PrintSettings> new_settings,

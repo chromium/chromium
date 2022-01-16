@@ -36,13 +36,13 @@
 #include "printing/printing_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_printer.h"
 #include "printing/printing_context_android.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/threading/thread_restrictions.h"
 #include "printing/printed_page_win.h"
 #endif
@@ -193,7 +193,7 @@ void PrintJobWorker::SetSettings(base::Value new_settings,
                                 std::move(callback)));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintJobWorker::SetSettingsFromPOD(
     std::unique_ptr<PrintSettings> new_settings,
     SettingsCallback callback) {
@@ -214,7 +214,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
       new_settings.FindIntKey(kSettingPrinterType).value());
   if (type == mojom::PrinterType::kLocal) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Blocking is needed here because Windows printer drivers are oftentimes
     // not thread-safe and have to be accessed on the UI thread.
     base::ScopedAllowBlocking allow_blocking;
@@ -225,7 +225,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
     crash_key = std::make_unique<crash_keys::ScopedPrinterInfo>(
         print_backend->GetPrinterDriverInfo(printer_name));
 
-#if defined(OS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
     PrinterBasicInfo basic_info;
     if (print_backend->GetPrinterBasicInfo(printer_name, &basic_info) ==
         mojom::ResultCode::kSuccess) {
@@ -236,12 +236,12 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
       new_settings.SetKey(kSettingAdvancedSettings,
                           std::move(advanced_settings));
     }
-#endif  // defined(OS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
   }
 
   mojom::ResultCode result;
   {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Blocking is needed here because Windows printer drivers are oftentimes
     // not thread-safe and have to be accessed on the UI thread.
     base::ScopedAllowBlocking allow_blocking;
@@ -251,7 +251,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
   GetSettingsDone(std::move(callback), result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintJobWorker::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> new_settings,
     SettingsCallback callback) {
@@ -280,7 +280,7 @@ void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,
 
   content::WebContents* web_contents = GetWebContents();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (is_scripted) {
     TabAndroid* tab =
         web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
@@ -314,7 +314,7 @@ void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,
 void PrintJobWorker::UseDefaultSettings(SettingsCallback callback) {
   mojom::ResultCode result;
   {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Blocking is needed here because Windows printer drivers are oftentimes
     // not thread-safe and have to be accessed on the UI thread.
     base::ScopedAllowBlocking allow_blocking;
@@ -403,7 +403,7 @@ void PrintJobWorker::OnNewPage() {
     return;
 
   bool do_spool_job = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const bool source_is_pdf =
       !print_job_->document()->settings().is_modifiable();
   if (!features::ShouldPrintUsingXps(source_is_pdf)) {
@@ -413,7 +413,7 @@ void PrintJobWorker::OnNewPage() {
 
     do_spool_job = false;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (do_spool_job) {
     if (!document_->GetMetafile()) {
@@ -427,7 +427,7 @@ void PrintJobWorker::OnNewPage() {
   // Don't touch |this| anymore since the instance could be destroyed.
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool PrintJobWorker::OnNewPageHelperGdi() {
   if (page_number_ == PageNumber::npos()) {
     // Find first page to print.
@@ -454,7 +454,7 @@ bool PrintJobWorker::OnNewPageHelperGdi() {
   }
   return true;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJobWorker::Cancel() {
   // This is the only function that can be called from any thread.
@@ -508,7 +508,7 @@ void PrintJobWorker::OnDocumentDone() {
   document_ = nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintJobWorker::SpoolPage(PrintedPage* page) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_NE(page_number_, PageNumber::npos());
@@ -527,7 +527,7 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
       base::BindOnce(&PrintJob::OnPageDone, base::RetainedRef(print_job_.get()),
                      base::RetainedRef(page)));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJobWorker::SpoolJob() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

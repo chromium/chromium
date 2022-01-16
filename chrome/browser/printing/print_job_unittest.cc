@@ -103,9 +103,9 @@ TEST(PrintJobTest, SimplePrint) {
   volatile bool check = false;
   scoped_refptr<PrintJob> job(new TestPrintJob(&check));
   job->Initialize(std::make_unique<TestQuery>(), std::u16string(), 1);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   job->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   job->Stop();
   while (job->document()) {
     base::RunLoop().RunUntilIdle();
@@ -148,7 +148,7 @@ TEST(PrintJobTest, SimplePrintLateInit) {
   */
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(PrintJobTest, PageRangeMapping) {
   content::BrowserTaskEnvironment task_environment;
 
@@ -183,6 +183,6 @@ TEST(PrintJobTest, PageRangeMapping) {
   EXPECT_EQ(expected_output_invalid,
             PrintJob::GetFullPageMapping(input_invalid, page_count));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

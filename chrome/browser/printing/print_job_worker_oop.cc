@@ -19,7 +19,7 @@
 #include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "printing/printed_page_win.h"
 #endif
 
@@ -31,7 +31,7 @@ namespace {
 
 mojom::PrintTargetType DeterminePrintTargetType(
     const base::Value& job_settings) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (job_settings.FindKey(kSettingOpenPDFInPreview))
     return mojom::PrintTargetType::kExternalPreview;
 #endif
@@ -84,7 +84,7 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
   }
   VLOG(1) << "Printing initiated with service for document "
           << document()->cookie();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   task_runner()->PostTask(FROM_HERE,
                           base::BindOnce(&PrintJobWorker::OnNewPage,
                                          worker_weak_factory_.GetWeakPtr()));
@@ -97,7 +97,7 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
                                                mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -162,7 +162,7 @@ void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
                      metafile->GetDataType(),
                      std::move(region_mapping.region)));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJobWorkerOop::OnDocumentDone() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
@@ -319,7 +319,7 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
                      ui_weak_factory_.GetWeakPtr()));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintJobWorkerOop::SendRenderPrintedPage(
     const PrintedPage* page,
     mojom::MetafileDataType page_data_type,
@@ -339,6 +339,6 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
       base::BindOnce(&PrintJobWorkerOop::OnDidRenderPrintedPage,
                      ui_weak_factory_.GetWeakPtr(), page_index));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

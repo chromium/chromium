@@ -43,7 +43,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "printing/emf_win.h"
 #endif
 
@@ -83,7 +83,7 @@ constexpr int kPrintSettingsOverrideDpi = 150;
 
 // TODO(crbug.com/809738)  `LoadMetafileDataFromFile()` can be used for other
 // platforms once support is added for `RenderPrintedDocument()`.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool LoadMetafileDataFromFile(const std::string& file_name,
                               Metafile& metafile) {
   base::FilePath data_file;
@@ -100,7 +100,7 @@ bool LoadMetafileDataFromFile(const std::string& file_name,
   }
   return metafile.InitFromData(base::as_bytes(base::make_span(data)));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   ASSERT_TRUE(settings->is_settings());
   EXPECT_EQ(settings->get_settings().copies(), kPrintSettingsCopies);
   EXPECT_EQ(settings->get_settings().dpi(), kPrintSettingsOverrideDpi);
-#if defined(OS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
   const PrintSettings::AdvancedSettings& advanced_settings =
       settings->get_settings().advanced_settings();
   EXPECT_EQ(advanced_settings.size(), kDefaultPrintInfoOptions.size());
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
     ASSERT_NE(option, kDefaultPrintInfoOptions.end());
     EXPECT_EQ(option->second, advanced_setting.second.GetString());
   }
-#endif  // defined(OS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
 
   // Updating for an invalid printer should not return print settings.
   print_settings.set_device_name(
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingInvalidPrinter) {
   EXPECT_EQ(result, mojom::ResultCode::kFailed);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
   LaunchService();
   AddDefaultPrinter();
@@ -564,6 +564,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
   WaitUntilCallbackReceived();
   EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

@@ -97,7 +97,7 @@ TEST_F(PrintPreviewDialogControllerUnitTest, GetOrCreatePreviewDialog) {
 // initiator gets focused.
 //
 // Flaky on Mac. https://crbug.com/845844
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MultiplePreviewDialogs DISABLED_MultiplePreviewDialogs
 #else
 #define MAYBE_MultiplePreviewDialogs MultiplePreviewDialogs

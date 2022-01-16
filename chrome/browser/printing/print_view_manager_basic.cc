@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/bind.h"
 #include "printing/printing_context_android.h"
 #endif
@@ -16,14 +16,14 @@ namespace printing {
 PrintViewManagerBasic::PrintViewManagerBasic(content::WebContents* web_contents)
     : PrintViewManagerBase(web_contents),
       content::WebContentsUserData<PrintViewManagerBasic>(*web_contents) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   set_pdf_writing_done_callback(
       base::BindRepeating(&PrintingContextAndroid::PdfWritingDone));
 #endif
 }
 
 PrintViewManagerBasic::~PrintViewManagerBasic() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Must do this call here and not let ~PrintViewManagerBase do it as
   // TerminatePrintJob() calls PdfWritingDone() and if that is done from
   // ~PrintViewManagerBase then a pure virtual call is done.
@@ -44,7 +44,7 @@ void PrintViewManagerBasic::BindPrintManagerHost(
   print_manager->BindReceiver(std::move(receiver), rfh);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PrintViewManagerBasic::PdfWritingDone(int page_count) {
   pdf_writing_done_callback().Run(page_count);
 }

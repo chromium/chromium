@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "printing/printed_page_win.h"
 #endif
 
@@ -331,7 +331,7 @@ void PrintBackendServiceManager::StartPrinting(
                      saved_callback_id));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintBackendServiceManager::RenderPrintedPage(
     const std::string& printer_name,
     int document_cookie,
@@ -377,7 +377,7 @@ void PrintBackendServiceManager::RenderPrintedPage(
                      base::Unretained(this), is_sandboxed, remote_id,
                      saved_callback_id));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
     const std::string& printer_name) const {
@@ -437,7 +437,7 @@ std::string PrintBackendServiceManager::GetRemoteIdForPrinterName(
                            // all printers.
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows drivers are not thread safe.  Use a
   // process per driver to prevent bad interactions
   // when interfacing to multiple drivers in parallel.
@@ -603,7 +603,7 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
       mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
   RunSavedCallbacksResult(GetRemoteSavedStartPrintingCallbacks(sandboxed),
                           remote_id, mojom::ResultCode::kFailed);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RunSavedCallbacksResult(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
                           remote_id, mojom::ResultCode::kFailed);
 #endif
@@ -654,7 +654,7 @@ PrintBackendServiceManager::GetRemoteSavedStartPrintingCallbacks(
                    : unsandboxed_saved_start_printing_callbacks_;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 PrintBackendServiceManager::RemoteSavedRenderPrintedPageCallbacks&
 PrintBackendServiceManager::GetRemoteSavedRenderPrintedPageCallbacks(
     bool sandboxed) {
@@ -766,7 +766,7 @@ void PrintBackendServiceManager::StartPrintingDone(
                       remote_id, saved_callback_id, result);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintBackendServiceManager::RenderPrintedPageDone(
     bool sandboxed,
     const std::string& remote_id,

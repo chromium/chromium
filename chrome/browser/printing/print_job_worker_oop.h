@@ -43,13 +43,13 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // Local callback wrappers for Print Backend Service mojom call.  Virtual to
   // support testing.
   virtual void OnDidStartPrinting(mojom::ResultCode result);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual void OnDidRenderPrintedPage(uint32_t page_index,
                                       mojom::ResultCode result);
 #endif
 
   // `PrintJobWorker` overrides.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SpoolPage(PrintedPage* page) override;
 #endif
   void OnDocumentDone() override;
@@ -79,12 +79,12 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // Mojo support to send messages from UI thread.
   void SendStartPrinting(const std::string& device_name,
                          const std::u16string& document_name);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SendRenderPrintedPage(
       const PrintedPage* page,
       mojom::MetafileDataType page_data_type,
       base::ReadOnlySharedMemoryRegion serialized_page_data);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.
@@ -102,7 +102,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
   mojom::PrintTargetType print_target_type_ =
       mojom::PrintTargetType::kDirectToDevice;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Number of pages that have completed printing.
   uint32_t pages_printed_count_ = 0;
 #endif

@@ -24,7 +24,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printed_document.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,7 +47,7 @@ void HoldRefCallback(scoped_refptr<PrintJob> job, base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Those must be kept in sync with the values defined in policy_templates.json.
 enum class PrintPostScriptMode {
   // Do normal PostScript generation. Text is always rendered with Type 3 fonts.
@@ -97,7 +97,7 @@ PrefService* GetPrefsForWebContents(content::WebContents* web_contents) {
   return context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -125,7 +125,7 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
   worker_->SetPrintJob(this);
   std::unique_ptr<PrintSettings> settings = query->ExtractSettings();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   pdf_page_mapping_ = PageRange::GetPages(settings->ranges());
   if (pdf_page_mapping_.empty()) {
     for (uint32_t i = 0; i < page_count; i++)
@@ -139,7 +139,7 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
   UpdatePrintedDocument(new_doc);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 std::vector<uint32_t> PrintJob::GetFullPageMapping(
     const std::vector<uint32_t>& pages,
@@ -187,7 +187,7 @@ void PrintJob::ResetPageMapping() {
   pdf_page_mapping_ =
       GetFullPageMapping(pdf_page_mapping_, document_->page_count());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJob::StartPrinting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -281,7 +281,7 @@ const PrintSettings& PrintJob::settings() const {
   return document()->settings();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintJob::SetSource(PrintJob::Source source,
                          const std::string& source_id) {
   source_ = source;
@@ -295,9 +295,9 @@ PrintJob::Source PrintJob::source() const {
 const std::string& PrintJob::source_id() const {
   return source_id_;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PrintJob::PdfConversionState {
  public:
   PdfConversionState(const gfx::Size& page_size, const gfx::Rect& content_area)
@@ -458,7 +458,7 @@ void PrintJob::StartPdfToPostScriptConversion(
       bytes, render_settings,
       base::BindOnce(&PrintJob::OnPdfConversionStarted, this));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJob::UpdatePrintedDocument(
     scoped_refptr<PrintedDocument> new_document) {
@@ -493,7 +493,7 @@ void PrintJob::SyncPrintedDocumentToWorker() {
                                     base::RetainedRef(document_))));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintJob::OnPageDone(PrintedPage* page) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (pdf_conversion_state_) {
@@ -502,7 +502,7 @@ void PrintJob::OnPageDone(PrintedPage* page) {
   }
   document_->RemovePage(page);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJob::OnFailed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -566,7 +566,7 @@ void PrintJob::ControlledWorkerShutdown() {
 
   // The deadlock this code works around is specific to window messaging on
   // Windows, so we aren't likely to need it on any other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We could easily get into a deadlock case if worker_->Stop() is used; the
   // printer driver created a window as a child of the browser window. By
   // canceling the job, the printer driver initiated dialog box is destroyed,

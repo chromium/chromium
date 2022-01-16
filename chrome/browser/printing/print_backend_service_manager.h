@@ -71,7 +71,7 @@ class PrintBackendServiceManager {
       mojom::PrintTargetType target_type,
       const PrintSettings& settings,
       mojom::PrintBackendService::StartPrintingCallback callback);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RenderPrintedPage(
       const std::string& printer_name,
       int document_cookie,
@@ -144,7 +144,7 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
   using RemoteSavedStartPrintingCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   using RemoteSavedRenderPrintedPageCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
 #endif
@@ -191,7 +191,7 @@ class PrintBackendServiceManager {
   GetRemoteSavedUpdatePrintSettingsCallbacks(bool sandboxed);
   RemoteSavedStartPrintingCallbacks& GetRemoteSavedStartPrintingCallbacks(
       bool sandboxed);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RemoteSavedRenderPrintedPageCallbacks&
   GetRemoteSavedRenderPrintedPageCallbacks(bool sandboxed);
 #endif
@@ -238,7 +238,7 @@ class PrintBackendServiceManager {
                          const std::string& remote_id,
                          const base::UnguessableToken& saved_callback_id,
                          mojom::ResultCode result);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RenderPrintedPageDone(bool sandboxed,
                              const std::string& remote_id,
                              const base::UnguessableToken& saved_callback_id,
@@ -299,7 +299,7 @@ class PrintBackendServiceManager {
       unsandboxed_saved_update_print_settings_callbacks_;
   RemoteSavedStartPrintingCallbacks sandboxed_saved_start_printing_callbacks_;
   RemoteSavedStartPrintingCallbacks unsandboxed_saved_start_printing_callbacks_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RemoteSavedRenderPrintedPageCallbacks
       sandboxed_saved_render_printed_page_callbacks_;
   RemoteSavedRenderPrintedPageCallbacks

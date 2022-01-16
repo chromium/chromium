@@ -90,7 +90,7 @@ using ErrorCheckCallback =
 using OnDidStartPrintingCallback =
     base::RepeatingCallback<void(mojom::ResultCode result,
                                  PrintJob* print_job)>;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 using OnDidRenderPrintedPageCallback =
     base::RepeatingCallback<void(uint32_t page_number,
                                  mojom::ResultCode result)>;
@@ -112,7 +112,7 @@ using OnStopCallback = base::RepeatingCallback<void()>;
 struct TestPrintCallbacks {
   ErrorCheckCallback error_check_callback;
   OnDidStartPrintingCallback did_start_printing_callback;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   OnDidRenderPrintedPageCallback did_render_printed_page_callback;
 #endif
 
@@ -130,7 +130,7 @@ namespace {
 
 // TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
 // hooked up to make use of `TestPrintingContext` yet.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr int kTestPrintingDpi = 72;
 constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
 constexpr gfx::Size kTestPrinterCapabilitiesDpi(kTestPrintingDpi,
@@ -141,7 +141,7 @@ const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis{
     kTestPrinterCapabilitiesDpi};
 const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},
                                                          {"opt2", "456"}};
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 constexpr int kDefaultDocumentCookie = 1234;
 
@@ -1259,7 +1259,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, RegularPrinting) {
   EXPECT_EQ(content::AreAllSitesIsolatedForTesting(), IsOopifEnabled());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that if user allows printing after being shown a warning due to DLP
 // restrictions, the print preview is rendered.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowed) {
@@ -1790,7 +1790,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
 // hooked up to make use of `TestPrintingContext` yet.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 class TestPrintJobWorker : public PrintJobWorkerOop {
@@ -1812,7 +1812,7 @@ class TestPrintJobWorker : public PrintJobWorkerOop {
     callbacks_->did_start_printing_callback.Run(result, print_job());
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnDidRenderPrintedPage(uint32_t page_number,
                               mojom::ResultCode result) override {
     DVLOG(1) << "Observed render for printed page " << page_number;
@@ -1820,7 +1820,7 @@ class TestPrintJobWorker : public PrintJobWorkerOop {
     PrintJobWorkerOop::OnDidRenderPrintedPage(page_number, result);
     callbacks_->did_render_printed_page_callback.Run(page_number, result);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   void ShowErrorDialog() override {
     // Do not show real error dialog, it blocks the UI thread.
@@ -1861,7 +1861,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
       test_print_callbacks_.did_start_printing_callback = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::OnDidStartPrinting,
           base::Unretained(this));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       test_print_callbacks_.did_render_printed_page_callback =
           base::BindRepeating(
               &PrintBackendPrintBrowserTestBase::OnDidRenderPrintedPage,
@@ -1969,7 +1969,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
         /*cause_errors=*/true);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void PrimeForAccessDeniedErrorsInRenderPrintedPage() {
     test_printing_context_factory_.SetAccessDeniedErrorOnRenderPage(
         /*cause_errors=*/true);
@@ -1980,12 +1980,12 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     return start_printing_result_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::ResultCode render_printed_page_result() const {
     return render_printed_page_result_;
   }
   int render_printed_page_count() const { return render_printed_pages_count_; }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   bool error_dialog_shown() const { return error_dialog_shown_; }
 
@@ -2010,7 +2010,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 
       if (access_denied_errors_for_new_document_)
         context->SetNewDocumentBlockedByPermissions();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       if (access_denied_errors_for_render_page_)
         context->SetOnRenderPageBlockedByPermissions();
 #endif
@@ -2026,7 +2026,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
       access_denied_errors_for_new_document_ = cause_errors;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     void SetAccessDeniedErrorOnRenderPage(bool cause_errors) {
       access_denied_errors_for_render_page_ = cause_errors;
     }
@@ -2035,7 +2035,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
    private:
     std::string printer_name_;
     bool access_denied_errors_for_new_document_ = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     bool access_denied_errors_for_render_page_ = false;
 #endif
   };
@@ -2061,7 +2061,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     CheckForQuit();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnDidRenderPrintedPage(uint32_t page_number, mojom::ResultCode result) {
     render_printed_page_result_ = result;
     if (result == mojom::ResultCode::kSuccess)
@@ -2087,7 +2087,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 
     test_printing_context_factory_.SetAccessDeniedErrorOnNewDocument(
         /*cause_errors=*/false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     test_printing_context_factory_.SetAccessDeniedErrorOnRenderPage(
         /*cause_errors=*/false);
 #endif
@@ -2106,7 +2106,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   PrintJob* print_job_ = nullptr;
   bool reset_errors_after_check_ = true;
   mojom::ResultCode start_printing_result_ = mojom::ResultCode::kFailed;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::ResultCode render_printed_page_result_ = mojom::ResultCode::kFailed;
   int render_printed_pages_count_ = 0;
 #endif
@@ -2163,7 +2163,7 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   ASSERT_TRUE(print_view_manager.snooped_settings());
   EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
             kTestPrintSettingsCopies);
-#if defined(OS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
   // Collect just the keys to compare the info options vs. advanced settings.
   std::vector<std::string> advanced_setting_keys;
   std::vector<std::string> print_info_options_keys;
@@ -2177,7 +2177,7 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   }
   EXPECT_THAT(advanced_setting_keys,
               testing::UnorderedElementsAreArray(print_info_options_keys));
-#endif  // defined(OS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2195,7 +2195,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The test will succeed to start the print job and render a page of content.
   // Wait for a call to `Stop()` to ensure print job wrap-up finished cleanly
   // before completing the test.  This results in a total of 3 expected calls.
@@ -2209,7 +2209,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
 #endif
@@ -2231,7 +2231,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The test will retry to print after getting an access-denied error when
   // trying to start printing.  After that the printing will succeed to start
   // and render a page of content.  Wait for a call to `Stop()` to ensure print
@@ -2248,7 +2248,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
 #endif
@@ -2285,7 +2285,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   EXPECT_TRUE(stop_invoked());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
                        StartPrintingRenderPageAccessDenied) {
   AddPrinter("printer1");
@@ -2317,10 +2317,10 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   EXPECT_TRUE(error_dialog_shown());
   EXPECT_TRUE(stop_invoked());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  //  BUILDFLAG(ENABLE_OOP_PRINTING)
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

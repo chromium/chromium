@@ -76,7 +76,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
 // Notifies the print view manager that the system dialog has been cancelled
 // after being opened from Print Preview.
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void SystemDialogCancelled();
 #endif
 
