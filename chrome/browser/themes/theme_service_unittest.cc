@@ -99,7 +99,7 @@ std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
   const bool high_contrast = contrast_mode == ContrastMode::kHighContrast;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (high_contrast)
     color_scheme = ui::NativeTheme::ColorScheme::kPlatformHighContrast;
   native_theme->set_forced_colors(high_contrast);
@@ -472,7 +472,7 @@ TEST_F(ThemeServiceTest, IncognitoTest) {
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   EXPECT_EQ(theme_service_, otr_theme_service);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Should get a different ThemeProvider for incognito and original profiles.
   const ui::ThemeProvider& provider =
       ThemeService::GetThemeProviderForProfile(profile());
@@ -932,7 +932,7 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
 
 // TODO(crbug.com/1056953): Enable on Mac.
 // Flaky on linux-chromeos-rel crbug.com/1273727
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_GetColor DISABLED_GetColor
 #else
 #define MAYBE_GetColor GetColor

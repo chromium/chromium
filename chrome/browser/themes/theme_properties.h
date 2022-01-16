@@ -247,11 +247,11 @@ class ThemeProperties {
     // Color for the background of the most visited/custom link tile.
     COLOR_NTP_SHORTCUT,
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // The colors of the 1px border around the window on Windows 10.
     COLOR_ACCENT_BORDER_ACTIVE,
     COLOR_ACCENT_BORDER_INACTIVE,
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
     SHOULD_FILL_BACKGROUND_TAB_COLOR,
 
