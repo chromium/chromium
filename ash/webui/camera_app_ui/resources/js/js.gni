@@ -71,6 +71,7 @@ compile_js_files = [
   "util.ts",
   "views/camera_intent.ts",
   "views/camera.ts",
+  "views/camera/camera_manager.ts",
   "views/camera/layout.ts",
   "views/camera/mode/index.ts",
   "views/camera/mode/mode_base.ts",

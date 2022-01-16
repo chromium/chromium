@@ -41,6 +41,8 @@ import {
 import * as util from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {windowController} from '../../window_controller.js';
+// eslint-disable-next-line no-unused-vars
+import {CameraManager} from './camera_manager.js';
 
 /**
  * Creates a controller for the video preview of Camera view.
@@ -76,11 +78,6 @@ export class Preview {
    */
   private focus: Promise<void>|null = null;
 
-  /**
-   * The last time of all screen state turning from OFF to ON during the app
-   * execution. Sets to -Infinity for no such time since app is opened.
-   */
-  private lastScreenOnTime = -Infinity;
   private facing = Facing.NOT_SET;
   private deviceId: string|null;
   private vidPid: string|null = null;
@@ -98,7 +95,9 @@ export class Preview {
   /**
    * @param onNewStreamNeeded Callback to request new stream.
    */
-  constructor(private readonly onNewStreamNeeded: () => Promise<void>) {
+  constructor(
+      private readonly cameraManager: CameraManager,
+      private readonly onNewStreamNeeded: () => Promise<void>) {
     window.addEventListener('resize', () => this.onWindowStatusChanged());
 
     windowController.addListener(() => this.onWindowStatusChanged());
@@ -142,13 +141,6 @@ export class Preview {
   getConstraints(): StreamConstraints {
     assert(this.constraints !== null);
     return this.constraints;
-  }
-
-  /**
-   * Notifies the screen state changed from OFF to ON.
-   */
-  onScreenOn(): void {
-    this.lastScreenOnTime = performance.now();
   }
 
   private async updateFacing() {
@@ -297,7 +289,8 @@ export class Preview {
     // TODO(b/173679752): Removes this workaround after fix delay on
     // kernel side.
     if (loadTimeData.getBoard() === 'zork') {
-      const screenOnTime = performance.now() - this.lastScreenOnTime;
+      const screenOnTime =
+          performance.now() - this.cameraManager.getLastScreenOnTime();
       const delay = 2500 - screenOnTime;
       if (delay > 0) {
         await util.sleep(delay);

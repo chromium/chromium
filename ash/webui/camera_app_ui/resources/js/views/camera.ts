@@ -28,7 +28,6 @@ import {ResultSaver} from '../models/result_saver.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
-import {ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import * as newFeatureToast from '../new_feature_toast.js';
 import {PerfLogger} from '../perf.js';
@@ -50,8 +49,8 @@ import {
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
-import {windowController} from '../window_controller.js';
 
+import {CameraManager} from './camera/camera_manager.js';
 import {Layout} from './camera/layout.js';
 import {
   getDefaultScanCorners,
@@ -127,6 +126,8 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
    */
   private readonly options: Options;
 
+  readonly cameraManager: CameraManager;
+
   private readonly videoEncoderOptions =
       new VideoEncoderOptions((parameters) => setAvc1Parameters(parameters));
 
@@ -155,7 +156,6 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   protected readonly review = new review.Review();
   protected facingMode: Facing;
   protected shutterType = metrics.ShutterType.UNKNOWN;
-  private locked = false;
   private retryStartTimeout: number|null = null;
 
   /**
@@ -200,7 +200,9 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
       new View(ViewName.FLASH),
     ];
 
-    this.preview = new Preview(async () => {
+    this.cameraManager = new CameraManager(() => this.start());
+
+    this.preview = new Preview(this.cameraManager, async () => {
       await this.start();
     });
 
@@ -273,63 +275,13 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
     });
 
     this.initOpenPTZPanel();
-
-    // Monitor the states to stop camera when locked/minimized.
-    const idleDetector = new IdleDetector();
-    idleDetector.addEventListener('change', () => {
-      this.locked = idleDetector.screenState === 'locked';
-      if (this.locked) {
-        this.start();
-      }
-    });
-    idleDetector.start().catch((e) => {
-      error.reportError(
-          ErrorType.IDLE_DETECTOR_FAILURE, ErrorLevel.ERROR,
-          assertInstanceof(e, Error));
-    });
-
-    document.addEventListener('visibilitychange', () => {
-      const recording = state.get(state.State.TAKING) && state.get(Mode.VIDEO);
-      if (this.isTabletBackground() && !recording) {
-        this.start();
-      }
-    });
   }
 
   /**
    * Initializes camera view.
    */
   async initialize(): Promise<void> {
-    const helper = ChromeHelper.getInstance();
-
-    const setTablet = (isTablet) => state.set(state.State.TABLET, isTablet);
-    const isTablet = await helper.initTabletModeMonitor(setTablet);
-    setTablet(isTablet);
-
-    const setScreenOffAuto = (s) => {
-      const offAuto = s === ScreenState.OFF_AUTO;
-      state.set(state.State.SCREEN_OFF_AUTO, offAuto);
-    };
-    const screenState = await helper.initScreenStateMonitor(setScreenOffAuto);
-    setScreenOffAuto(screenState);
-
-    const updateExternalScreen = (hasExternalScreen) => {
-      state.set(state.State.HAS_EXTERNAL_SCREEN, hasExternalScreen);
-    };
-    const hasExternalScreen =
-        await helper.initExternalScreenMonitor(updateExternalScreen);
-    updateExternalScreen(hasExternalScreen);
-
-    const handleScreenStateChange = () => {
-      if (this.screenOff) {
-        this.start();
-      } else {
-        this.preview.onScreenOn();
-      }
-    };
-
-    state.addObserver(state.State.SCREEN_OFF_AUTO, handleScreenStateChange);
-    state.addObserver(state.State.HAS_EXTERNAL_SCREEN, handleScreenStateChange);
+    await this.cameraManager.initialize();
 
     state.addObserver(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT, () => {
       this.start();
@@ -454,39 +406,6 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
 
   private removeConfigureCompleteListener(listener: () => void) {
     this.configureCompleteListeners.delete(listener);
-  }
-
-  /**
-   * @return If the App window is invisible to user with respect to screen off
-   *     state.
-   */
-  private get screenOff(): boolean {
-    return state.get(state.State.SCREEN_OFF_AUTO) &&
-        !state.get(state.State.HAS_EXTERNAL_SCREEN);
-  }
-
-  /**
-   * @return Returns if window is fully overlapped by other window in both
-   *     window mode or tablet mode.
-   */
-  private get isVisible(): boolean {
-    return document.visibilityState !== 'hidden';
-  }
-
-  /**
-   * @return Whether window is put to background in tablet mode.
-   */
-  private isTabletBackground(): boolean {
-    return state.get(state.State.TABLET) && !this.isVisible;
-  }
-
-  /**
-   * Whether app window is suspended.
-   */
-  isSuspended(): boolean {
-    return this.locked || windowController.isMinimized() ||
-        state.get(state.State.SUSPEND) || this.screenOff ||
-        this.isTabletBackground();
   }
 
   getSubViews(): View[] {
@@ -1178,7 +1097,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   private async startInternal(): Promise<boolean> {
     try {
       await this.infoUpdater.lockDeviceInfo(async () => {
-        if (this.isSuspended()) {
+        if (this.cameraManager.shouldSuspended()) {
           throw new CameraSuspendedError();
         }
         const congfigureSucceed = await (async () => {
@@ -1186,7 +1105,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
           state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
 
           for await (const c of this.getConfigurationCandidates()) {
-            if (this.isSuspended()) {
+            if (this.cameraManager.shouldSuspended()) {
               throw new CameraSuspendedError();
             }
             this.modes.setCaptureParams(

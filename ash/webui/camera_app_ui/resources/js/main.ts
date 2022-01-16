@@ -325,8 +325,7 @@ export class App {
    * Suspends app and hides app window.
    */
   async suspend(): Promise<void> {
-    state.set(state.State.SUSPEND, true);
-    await this.cameraView.start();
+    await this.cameraView.cameraManager.requestSuspend();
     nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
@@ -334,7 +333,7 @@ export class App {
    * Resumes app from suspension and shows app window.
    */
   resume(): void {
-    state.set(state.State.SUSPEND, false);
+    this.cameraView.cameraManager.requestResume();
     nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 

@@ -29,7 +29,6 @@ export enum State {
   GRID_GOLDEN = 'grid-golden',
   GRID = 'grid',
   HAS_BACK_CAMERA = 'has-back-camera',
-  HAS_EXTERNAL_SCREEN = 'has-external-screen',
   HAS_FRONT_CAMERA = 'has-front-camera',
   HAS_PAN_SUPPORT = 'has-pan-support',
   HAS_TILT_SUPPORT = 'has-tilt-support',
@@ -54,7 +53,6 @@ export enum State {
   // Controls appearance of paused/resumed UI.
   RECORDING_UI_PAUSED = 'recording-ui-paused',
   SAVE_METADATA = 'save-metadata',
-  SCREEN_OFF_AUTO = 'screen-off-auto',
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',
   SHOW_GIF_RECORDING_OPTION = 'show-gif-recording-option',
   SHOW_METADATA = 'show-metadata',
