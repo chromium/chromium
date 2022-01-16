@@ -60,6 +60,32 @@ void RemoveSiteFromPrefs(ExtensionPrefs* extension_prefs,
   list->EraseListValue(base::Value(origin.Serialize()));
 }
 
+// Returns sites from `pref` in `extension_prefs`.
+std::set<url::Origin> GetSitesFromPrefs(ExtensionPrefs* extension_prefs,
+                                        const char* pref) {
+  const base::Value* user_permissions =
+      extension_prefs->GetPrefAsDictionary(kUserPermissions);
+  std::set<url::Origin> sites;
+
+  auto* list = user_permissions->FindListKey(pref);
+  if (!list)
+    return sites;
+
+  for (const auto& site : list->GetList()) {
+    const std::string* site_as_string = site.GetIfString();
+    if (!site_as_string)
+      continue;
+
+    GURL site_as_url(*site_as_string);
+    if (!site_as_url.is_valid())
+      continue;
+
+    url::Origin origin = url::Origin::Create(site_as_url);
+    sites.insert(origin);
+  }
+  return sites;
+}
+
 class PermissionsManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   PermissionsManagerFactory();
@@ -114,11 +140,16 @@ PermissionsManager::UserPermissionsSettings::~UserPermissionsSettings() =
 // Implementation of PermissionsManager.
 PermissionsManager::PermissionsManager(content::BrowserContext* browser_context)
     : extension_prefs_(ExtensionPrefs::Get(browser_context)) {
-  // TODO(crbug.com/1268198): Populate `user_permissions_` from
-  // `kUserPermissions` pref.
+  user_permissions_.restricted_sites =
+      GetSitesFromPrefs(extension_prefs_, kRestrictedSites);
+  user_permissions_.permitted_sites =
+      GetSitesFromPrefs(extension_prefs_, kPermittedSites);
 }
 
-PermissionsManager::~PermissionsManager() = default;
+PermissionsManager::~PermissionsManager() {
+  user_permissions_.restricted_sites.clear();
+  user_permissions_.permitted_sites.clear();
+}
 
 // static
 PermissionsManager* PermissionsManager::Get(
