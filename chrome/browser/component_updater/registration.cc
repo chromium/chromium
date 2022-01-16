@@ -40,30 +40,30 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/component_updater/sw_reporter_installer_win.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/component_updater/third_party_module_list_component_installer_win.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 #else
 #include "chrome/browser/component_updater/recovery_component_installer.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "media/base/media_switches.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
@@ -94,12 +94,12 @@ namespace component_updater {
 void RegisterComponentsForUpdate() {
   auto* const cus = g_browser_process->component_updater();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RegisterRecoveryImprovedComponent(cus, g_browser_process->local_state());
 #else
   // TODO(crbug.com/687231): Implement the Improved component on Mac, etc.
   RegisterRecoveryComponent(cus, g_browser_process->local_state());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
   RegisterMediaFoundationWidevineCdmComponent(cus);
@@ -109,7 +109,7 @@ void RegisterComponentsForUpdate() {
   RegisterWidevineCdmComponent(cus);
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 
-#if BUILDFLAG(ENABLE_NACL) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // PNaCl on Chrome OS is on rootfs and there is no need to download it. But
   // Chrome4ChromeOS on Linux doesn't contain PNaCl so enable component
@@ -120,7 +120,7 @@ void RegisterComponentsForUpdate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(ENABLE_NACL) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_ANDROID)
 
   RegisterSubresourceFilterComponent(cus);
   RegisterFlocComponent(cus,
@@ -137,17 +137,17 @@ void RegisterComponentsForUpdate() {
     // the old file.
     component_updater::DeleteLegacyCRLSet(path);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Clean up any desktop sharing hubs that were installed on Android.
     component_updater::DeleteDesktopSharingHub(path);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
   RegisterSSLErrorAssistantComponent(cus);
 
   // Since file type policies are per-platform, and we don't support
   // Fuchsia-specific component versions, we don't dynamically update file type
   // policies on Fuchsia.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   RegisterFileTypePoliciesComponent(cus);
 #endif
 
@@ -161,7 +161,7 @@ void RegisterComponentsForUpdate() {
   RegisterOriginTrialsComponent(cus);
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // SwReporter is only needed for official builds.  However, to enable testing
   // on chromium build bots, it is always registered here and
   // RegisterSwReporterComponent() has support for running only in official
@@ -170,7 +170,7 @@ void RegisterComponentsForUpdate() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   RegisterThirdPartyModuleListComponent(cus);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_VR)
   if (component_updater::ShouldRegisterVrAssetsComponentOnStartup()) {
@@ -187,14 +187,14 @@ void RegisterComponentsForUpdate() {
   RegisterSmartDimComponent(cus);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !BUILDFLAG(IS_ANDROID)
   RegisterHyphenationComponent(cus);
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   RegisterDesktopSharingHubComponent(cus);
   RegisterZxcvbnDataComponent(cus);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
 

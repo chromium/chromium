@@ -39,7 +39,7 @@
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/media/component_widevine_cdm_hint_file_linux.h"
 #endif
 
@@ -64,13 +64,13 @@ static_assert(base::size(kWidevineSha2Hash) == crypto::kSHA256Length,
 
 // Name of the Widevine CDM OS in the component manifest.
 const char kWidevineCdmPlatform[] =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     "mac";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     "win";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
     "cros";
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
     "linux";
 #else
 #error This file should only be included for supported platforms.
@@ -100,7 +100,7 @@ base::FilePath GetPlatformDirectory(const base::FilePath& base_path) {
   return base_path.AppendASCII("_platform_specific").AppendASCII(platform_arch);
 }
 
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 // On Linux the Widevine CDM is loaded at startup before the zygote is locked
 // down. As a result there is no need to register the CDM with Chrome as it
 // can't be used until Chrome is restarted. Instead we simply update the hint
@@ -126,7 +126,7 @@ void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
       kWidevineCdmDisplayName, kWidevineCdmType, cdm_version, cdm_path);
   CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
   base::FilePath cdm_platform_dir = GetPlatformDirectory(install_dir);
@@ -260,7 +260,7 @@ void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
     return;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   VLOG(1) << "Updating hint file with Widevine CDM " << cdm_version;
 
   // This is running on a thread that allows IO, so simply update the hint file.

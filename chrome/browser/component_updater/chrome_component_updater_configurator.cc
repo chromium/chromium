@@ -36,7 +36,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #include "chrome/installer/util/google_update_settings.h"
 #endif
@@ -155,7 +155,7 @@ ChromeConfigurator::ExtraRequestParams() const {
 }
 
 std::string ChromeConfigurator::GetDownloadPreference() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This group policy is supported only on Windows and only for enterprises.
   return base::IsMachineExternallyManaged()
              ? base::SysWideToUTF8(

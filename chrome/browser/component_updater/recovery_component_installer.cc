@@ -45,7 +45,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/authorization_util.h"
 #include "base/mac/scoped_authorizationref.h"
 #endif
@@ -55,7 +55,7 @@ using content::BrowserThread;
 namespace component_updater {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -69,9 +69,9 @@ static_assert(base::size(kRecoverySha2Hash) == crypto::kSHA256Length,
 
 // File name of the recovery binary on different platforms.
 const base::FilePath::CharType kRecoveryFileName[] =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     FILE_PATH_LITERAL("ChromeRecovery.exe");
-#else  // OS_LINUX, OS_MAC, etc.
+#else  // BUILDFLAG(IS_LINUX), BUILDFLAG(IS_MAC), etc.
     FILE_PATH_LITERAL("ChromeRecovery");
 #endif
 
@@ -190,7 +190,7 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
     return;
 
   const bool is_deferred_run = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const auto cmdline = BuildRecoveryInstallCommandLine(
       main_file, *manifest, is_deferred_run, version);
 
@@ -199,7 +199,7 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   base::LaunchOptions options;
   options.start_hidden = true;
   base::Process process = base::LaunchElevatedProcess(cmdline, options);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::mac::ScopedAuthorizationRef authRef(
       base::mac::AuthorizationCreateToRunAsRoot(nullptr));
   if (!authRef.get()) {
@@ -367,7 +367,7 @@ bool RecoveryComponentInstaller::RunInstallCommand(
   RecordRecoveryComponentUMAEvent(RCE_RUNNING_NON_ELEVATED);
 
   base::LaunchOptions options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.start_hidden = true;
 #endif
   base::Process process = base::LaunchProcess(cmdline, options);
@@ -389,7 +389,7 @@ bool RecoveryComponentInstaller::RunInstallCommand(
   return true;
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Sets the POSIX executable permissions on a file
 bool SetPosixExecutablePermission(const base::FilePath& path) {
   int permissions = 0;
@@ -402,7 +402,7 @@ bool SetPosixExecutablePermission(const base::FilePath& path) {
     return true;  // No need to update
   return base::SetPosixFilePermissions(path, permissions | kExecutableMask);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 void RecoveryComponentInstaller::Install(
     const base::FilePath& unpack_path,
@@ -452,7 +452,7 @@ bool RecoveryComponentInstaller::DoInstall(
   if (!base::PathExists(main_file))
     return false;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // The current version of the CRX unzipping does not restore
   // correctly the executable flags/permissions. See https://crbug.com/555011
   if (!SetPosixExecutablePermission(main_file)) {
@@ -492,13 +492,13 @@ bool RecoveryComponentInstaller::Uninstall() {
   return false;
 }
 
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void RegisterRecoveryComponent(ComponentUpdateService* cus,
                                PrefService* prefs) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (SimulatingElevatedRecovery()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SimulateElevatedRecoveryHelper, prefs));
@@ -524,7 +524,7 @@ void AcceptedElevatedRecoveryInstall(PrefService* prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ElevatedInstallRecoveryComponent(
       prefs->GetFilePath(prefs::kRecoveryComponentUnpackPath));
 #endif

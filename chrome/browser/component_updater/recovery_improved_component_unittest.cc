@@ -83,7 +83,7 @@ void TestActionHandler::Elevate(Callback callback) {
 
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(RecoveryImprovedActionHandlerTest, Handle) {
   unzip::SetUnzipperLaunchOverrideForTesting(
       base::BindRepeating(&unzip::LaunchInProcessUnzipper));

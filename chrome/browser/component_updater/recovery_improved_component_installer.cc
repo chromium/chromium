@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 
 // The recovery component is built and used by Google Chrome only.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -97,7 +98,7 @@ void RecoveryComponentActionHandler::RunCommand(
     const base::CommandLine& cmdline) {
   VLOG(1) << "run command: " << cmdline.GetCommandLineString();
   base::LaunchOptions options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.start_hidden = true;
 #endif
   base::Process process = base::LaunchProcess(cmdline, options);
@@ -183,7 +184,7 @@ RecoveryImprovedInstallerPolicy::GetInstallerAttributes() const {
 void RegisterRecoveryImprovedComponent(ComponentUpdateService* cus,
                                        PrefService* prefs) {
 // TODO(sorin): enable recovery component for macOS. crbug/687231.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DVLOG(1) << "Registering RecoveryImproved component.";
 
   // |cus| keeps a reference to the |installer| in the CrxComponent instance.
