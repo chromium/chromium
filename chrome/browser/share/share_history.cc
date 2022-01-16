@@ -8,12 +8,13 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/proto/share_history_message.pb.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile_android.h"
 
@@ -238,7 +239,7 @@ mojom::TargetShareHistory* ShareHistory::TargetShareHistoryByName(
 
 }  // namespace sharing
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
                                           const JavaParamRef<jobject>& jprofile,
                                           const JavaParamRef<jstring>& name) {
