@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, RegisterEngine) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // https://crbug.com/709115 tracks test flakiness.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #define MAYBE_EngineError DISABLED_EngineError
 #else
 #define MAYBE_EngineError EngineError
