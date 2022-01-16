@@ -37,7 +37,7 @@ std::vector<std::string> GetSyncedServicePrefNames() {
     prefs::kSearchSuggestEnabled, embedder_support::kAlternateErrorPagesEnabled,
         prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingScoutReportingEnabled,
         spellcheck::prefs::kSpellCheckUseSpellingService,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         prefs::kContextualSearchEnabled
 #endif
   };
