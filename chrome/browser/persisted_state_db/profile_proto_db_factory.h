@@ -13,7 +13,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #else
@@ -32,7 +32,7 @@ const char kCouponDBFolder[] = "coupon_db";
 ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
 GetPersistedStateProfileProtoDBFactory();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
 GetChromeCartProfileProtoDBFactory();
 ProfileProtoDBFactory<coupon_db::CouponContentProto>*
@@ -109,7 +109,7 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kPersistedStateDBFolder),
         leveldb_proto::ProtoDbType::PERSISTED_STATE_DATABASE);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   } else if (std::is_base_of<cart_db::ChromeCartContentProto, T>::value) {
     return new ProfileProtoDB<T>(
         context, proto_database_provider,

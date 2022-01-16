@@ -5,6 +5,7 @@
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 
 ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
@@ -22,7 +23,7 @@ ProfileProtoDBFactory<
   return GetPersistedStateProfileProtoDBFactory();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
 GetChromeCartProfileProtoDBFactory() {
   static base::NoDestructor<
