@@ -27,7 +27,7 @@ class ChromeWebappsClient : public WebappsClient {
                                        InstallTrigger trigger) override;
   AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsInstallationInProgress(content::WebContents* web_contents,
                                 const GURL& manifest_url) override;
   bool CanShowAppBanners(content::WebContents* web_contents) override;
