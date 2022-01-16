@@ -149,7 +149,7 @@ class FamilyInfoFetcherTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return identity_test_env_.SetPrimaryAccount(kAccountId,
                                                 signin::ConsentLevel::kSync);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     // Android supports Unicorn accounts in signed in state with sync disabled.
     // Using that setup in these tests checks that we aren't overly
     // restrictive.
@@ -164,7 +164,7 @@ class FamilyInfoFetcherTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
                                                    signin::ConsentLevel::kSync);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     // Android supports Unicorn accounts in signed in state with sync disabled.
     // Using that setup in these tests checks that we aren't overly
     // restrictive.

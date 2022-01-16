@@ -85,7 +85,7 @@ ChildAccountService::~ChildAccountService() {}
 bool ChildAccountService::IsChildAccountDetectionEnabled() {
 // Child account detection is always enabled on Android and ChromeOS, and
 // disabled in other platforms.
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;

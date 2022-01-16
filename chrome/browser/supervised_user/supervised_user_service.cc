@@ -51,7 +51,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -407,14 +407,14 @@ void SupervisedUserService::SetActive(bool active) {
   active_ = active;
 
   if (!delegate_ || !delegate_->SetActive(active_)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     DCHECK(!active_);
 #endif
   }
 
   // Now activate/deactivate anything not handled by the delegate yet.
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Re-set the default theme to turn the SU theme on/off.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   if (theme_service->UsingDefaultTheme() || theme_service->UsingSystemTheme())
@@ -474,7 +474,7 @@ void SupervisedUserService::SetActive(bool active) {
     RefreshApprovedExtensionsFromPrefs();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(bauerb): Get rid of the platform-specific #ifdef here.
     // http://crbug.com/313377
     BrowserList::AddObserver(this);
@@ -497,7 +497,7 @@ void SupervisedUserService::SetActive(bool active) {
     for (SupervisedUserServiceObserver& observer : observer_list_)
       observer.OnURLFilterChanged();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(bauerb): Get rid of the platform-specific #ifdef here.
     // http://crbug.com/313377
     BrowserList::RemoveObserver(this);
@@ -1014,7 +1014,7 @@ bool SupervisedUserService::IsCustomPassphraseAllowed() const {
   return !active_;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {
   bool profile_became_active = profile_->IsSameOrParent(browser->profile());
   if (!is_profile_active_ && profile_became_active)
@@ -1024,7 +1024,7 @@ void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {
 
   is_profile_active_ = profile_became_active;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SupervisedUserService::OnSiteListUpdated() {
   for (SupervisedUserServiceObserver& observer : observer_list_)

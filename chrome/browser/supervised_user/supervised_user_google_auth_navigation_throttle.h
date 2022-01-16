@@ -52,7 +52,7 @@ class SupervisedUserGoogleAuthNavigationThrottle
   raw_ptr<ChildAccountService> child_account_service_;
   base::CallbackListSubscription google_auth_state_subscription_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool has_shown_reauth_;
 #endif
 

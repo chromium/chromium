@@ -285,7 +285,7 @@ void SupervisedUserNavigationThrottleTest::SetUpOnMainThread() {
 }
 
 // Tests that prerendering fails in supervised user mode.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/1259146): Flaky on ChromeOS.
 #define MAYBE_DisallowPrerendering DISABLED_DisallowPrerendering
 #else

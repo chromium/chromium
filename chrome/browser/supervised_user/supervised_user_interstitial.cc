@@ -38,7 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -75,7 +75,7 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
 
     // Close the tab only if there is a browser for it (which is not the case
     // for example in a <webview>).
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (!chrome::FindBrowserWithWebContents(web_contents))
       return;
 #endif
@@ -94,7 +94,7 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
 
   void CloseTabImpl() {
     // On Android, FindBrowserWithWebContents and TabStripModel don't exist.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
     DCHECK(browser);
     TabStripModel* tab_strip = browser->tab_strip_model();
@@ -262,7 +262,7 @@ void SupervisedUserInterstitial::ShowFeedback() {
           reason_, second_custodian.empty()));
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ReportChildAccountFeedback(web_contents_, message, url_);
 #else
   chrome::ShowFeedbackPage(
