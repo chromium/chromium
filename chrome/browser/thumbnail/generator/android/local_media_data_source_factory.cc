@@ -39,7 +39,7 @@ void ReadFile(const base::FilePath& file_path,
               scoped_refptr<base::SequencedTaskRunner> main_task_runner,
               ReadFileCallback cb) {
   base::File file;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
     file = base::OpenContentUriForRead(file_path);
     if (!file.IsValid()) {
@@ -48,7 +48,7 @@ void ReadFile(const base::FilePath& file_path,
       return;
     }
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!file.IsValid())
     file = base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
