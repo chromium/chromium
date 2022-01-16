@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DISABLED_BasicRestoreFromClosedWindow) {
   EXPECT_EQ(url1_, web_contents->GetURL());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flakily times out: http://crbug.com/171503
 #define MAYBE_DontLoadRestoredTab DISABLED_DontLoadRestoredTab
 #else
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
 
 // https://crbug.com/1196530: Test is flaky on Linux, disabled for
 // investigation.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_RestoreGroupWithUnloadHandlerRejected \
   DISABLED_RestoreGroupWithUnloadHandlerRejected
 #else
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWithExistingSiteInstance) {
 }
 
 // See crbug.com/248574
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RestoreCrossSiteWithExistingSiteInstance \
   DISABLED_RestoreCrossSiteWithExistingSiteInstance
 #else
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 }
 
 // Test is flaky on Win. https://crbug.com/1241761.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TabsFromRestoredWindowsAreLoadedGradually \
   DISABLED_TabsFromRestoredWindowsAreLoadedGradually
 #else

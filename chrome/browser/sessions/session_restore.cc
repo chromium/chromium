@@ -604,14 +604,14 @@ class SessionRestoreImpl : public BrowserListObserver {
                        initial_tab_count);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // On the mac, app visibility is asynchronously available, so we can't
       // rely on a particular value here.
       const bool is_visibility_async =
           browser->type() == Browser::Type::TYPE_APP;
 #else
       const bool is_visibility_async = false;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
       DCHECK(is_visibility_async || browser->window()->IsVisible() ||
              browser->window()->IsMinimized());
@@ -847,7 +847,7 @@ class SessionRestoreImpl : public BrowserListObserver {
           /*user_gesture=*/false);
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     params.restore_id = restore_id;
 #endif
 

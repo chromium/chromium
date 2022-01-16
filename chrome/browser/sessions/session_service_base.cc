@@ -39,7 +39,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/session_storage_namespace.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
 #endif
 

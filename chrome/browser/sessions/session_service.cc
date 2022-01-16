@@ -63,7 +63,7 @@
 #include "components/app_restore/features.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
 #endif
 
@@ -205,11 +205,11 @@ bool SessionService::ShouldRestore(Browser* browser) {
   if (!has_open_trackable_browsers_ &&
       !StartupBrowserCreator::InSynchronousProfileLaunch() &&
       !SessionRestore::IsRestoring(profile())
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // On OSX, a new window should not start a new session if it was opened
       // from the dock or the menubar.
       && !app_controller_mac::IsOpeningNewWindow()
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   ) {
     return true;
   }

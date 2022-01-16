@@ -176,7 +176,7 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
   MockSessionRestoreObserver mock_observer_;
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SingleTabSessionRestore DISABLED_SingleTabSessionRestore
 #else
 #define MAYBE_SingleTabSessionRestore SingleTabSessionRestore

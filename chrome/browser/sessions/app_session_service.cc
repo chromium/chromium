@@ -36,7 +36,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
 #endif
 
