@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -59,7 +60,7 @@ class SyncServiceImplHarness {
   // Signs out of the primary account. ChromeOS doesn't have the concept of
   // sign-out, so this only exists on other platforms.
   void SignOutPrimaryAccount();
-#endif  // !OS_CHROMEOS
+#endif
 
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.
