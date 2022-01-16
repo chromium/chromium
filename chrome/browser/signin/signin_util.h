@@ -56,7 +56,7 @@ void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile);
 //   is not longer allowed, then this removes the profile.
 void EnsurePrimaryAccountAllowedForProfile(Profile* profile);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns true if profile separation is enforced by policy.
 bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,

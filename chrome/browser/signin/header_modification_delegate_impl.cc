@@ -35,7 +35,7 @@
 
 namespace signin {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 HeaderModificationDelegateImpl::HeaderModificationDelegateImpl(
     Profile* profile,
     bool incognito_enabled)
@@ -82,7 +82,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 #endif
 
   ConsentLevel consent_level = ConsentLevel::kSync;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   consent_level = ConsentLevel::kSignin;
 #endif
 
@@ -96,7 +96,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 
   int incognito_mode_availability =
       prefs->GetInteger(prefs::kIncognitoModeAvailability);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   incognito_mode_availability =
       incognito_enabled_
           ? incognito_mode_availability

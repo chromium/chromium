@@ -1120,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
 }
 
 // Failed run on MAC CI builder. https://crbug.com/1245200
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EnterpriseSwitchAlreadyOpen DISABLED_EnterpriseSwitchAlreadyOpen
 #else
 #define MAYBE_EnterpriseSwitchAlreadyOpen EnterpriseSwitchAlreadyOpen

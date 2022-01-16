@@ -22,7 +22,7 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 class ForceSigninVerifier;
 #endif
 class Profile;
@@ -102,7 +102,7 @@ class ChromeSigninClient
 #endif
 
   bool should_display_user_manager_ = true;
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ForceSigninVerifier> force_signin_verifier_;
 #endif
 

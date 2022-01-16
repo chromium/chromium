@@ -16,15 +16,15 @@ using base::Value;
 namespace signin {
 namespace test {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::string kPlatform = "win";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 std::string kPlatform = "mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 std::string kPlatform = "chromeos";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 std::string kPlatform = "linux";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 std::string kPlatform = "android";
 #else
 std::string kPlatform = "all_platform";

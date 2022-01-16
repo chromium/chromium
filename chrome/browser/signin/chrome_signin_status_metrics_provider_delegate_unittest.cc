@@ -11,7 +11,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST(ChromeSigninStatusMetricsProviderDelegateTest,
      UpdateStatusWhenBrowserAdded) {
   content::BrowserTaskEnvironment task_environment;

@@ -125,7 +125,7 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
 
   // Set profile prefs.
   CheckProfilePrefsReset(pref_service, true);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   SetProfilePrefs(pref_service);
 
   // Set UPA should reset profile prefs.
@@ -137,7 +137,7 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
   // Signout should reset profile prefs.
   identity_test_env_.ClearPrimaryAccount();
   CheckProfilePrefsReset(pref_service, false);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   SetProfilePrefs(pref_service);
   // Set primary account should reset profile prefs.
@@ -150,7 +150,7 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
   CheckProfilePrefsReset(pref_service, false);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SigninProfileAttributesUpdaterTest,
        EnablingSyncWithUPAAccountShouldNotResetProfilePrefs) {
   PrefService* pref_service = profile_->GetPrefs();
@@ -190,7 +190,7 @@ TEST_F(SigninProfileAttributesUpdaterTest,
   EXPECT_TRUE(entry->IsAuthenticated());
   CheckProfilePrefsReset(pref_service, false);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class SigninProfileAttributesUpdaterWithForceSigninTest
     : public SigninProfileAttributesUpdaterTest {
