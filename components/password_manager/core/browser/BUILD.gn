@@ -510,6 +510,8 @@ static_library("test_support") {
     "mock_bulk_leak_check_service.h",
     "mock_field_info_store.cc",
     "mock_field_info_store.h",
+    "mock_password_change_success_tracker.cc",
+    "mock_password_change_success_tracker.h",
     "mock_password_feature_manager.cc",
     "mock_password_feature_manager.h",
     "mock_password_form_manager_for_ui.cc",
