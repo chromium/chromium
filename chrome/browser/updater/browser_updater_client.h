@@ -42,10 +42,10 @@ class BrowserUpdaterClient
   virtual void GetUpdaterVersion(
       base::OnceCallback<void(const std::string&)> callback) = 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Resets the XPC Connection with the given scope.
   virtual void ResetConnection(updater::UpdaterScope scope) = 0;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;
