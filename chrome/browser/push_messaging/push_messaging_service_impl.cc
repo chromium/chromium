@@ -72,7 +72,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/PushMessagingServiceObserver_jni.h"
 #endif
@@ -669,7 +669,7 @@ void PushMessagingServiceImpl::DidHandleMessage(
   if (message_callback_for_testing_)
     message_callback_for_testing_.Run();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome::android::Java_PushMessagingServiceObserver_onMessageHandled(
       base::android::AttachCurrentThread());
 #endif
@@ -1168,7 +1168,7 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
     auto unregister_callback =
         base::BindOnce(&PushMessagingServiceImpl::DidUnregister,
                        weak_factory_.GetWeakPtr(), was_subscribed);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android the backend is different, and requires the original sender_id.
     // DidGetSenderIdUnexpectedUnsubscribe and
     // DidDeleteServiceWorkerRegistration sometimes call us with an empty one.
@@ -1328,9 +1328,9 @@ void PushMessagingServiceImpl::UnexpectedUnsubscribe(
   // GetPushSubscriptionFromAppIdentifier callback and do not get the info from
   // IO twice
   bool need_sender_id = false;
-#if defined(OS_ANDROID)
-    need_sender_id =
-        !PushMessagingAppIdentifier::UseInstanceID(app_identifier.app_id());
+#if BUILDFLAG(IS_ANDROID)
+  need_sender_id =
+      !PushMessagingAppIdentifier::UseInstanceID(app_identifier.app_id());
 #endif
     if (need_sender_id) {
       GetSenderId(

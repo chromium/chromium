@@ -40,10 +40,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/instance_id_android.h"
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -230,14 +230,14 @@ class PushMessagingServiceTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   PushMessagingTestingProfile profile_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   instance_id::InstanceIDAndroid::ScopedBlockOnAsyncTasksForTesting
       block_async_;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 // Fails too often on Linux TSAN builder: http://crbug.com/1211350.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_PayloadEncryptionTest DISABLED_PayloadEncryptionTest
 #else
 #define MAYBE_PayloadEncryptionTest PayloadEncryptionTest
@@ -334,7 +334,7 @@ TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
 }
 
 // Fails too often on Linux TSAN builder: http://crbug.com/1211350.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_RemoveExpiredSubscriptions DISABLED_RemoveExpiredSubscriptions
 #else
 #define MAYBE_RemoveExpiredSubscriptions RemoveExpiredSubscriptions
