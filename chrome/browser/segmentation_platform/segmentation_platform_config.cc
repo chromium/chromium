@@ -13,7 +13,7 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -31,7 +31,7 @@ namespace {
 
 constexpr int kDummyFeatureSelectionTTLDays = 1;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
 
@@ -51,9 +51,9 @@ const char kNumDaysMVCkicksBelowThreshold[] =
 constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
 // DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD
 constexpr int kQueryTilesDefaultUnknownTTLDays = 7;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kAdaptiveToolbarSegmentationKey;
@@ -86,7 +86,7 @@ std::unique_ptr<Config> GetConfigForDummyFeature() {
   return config;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kChromeStartAndroidSegmentationKey;
@@ -140,7 +140,7 @@ std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
   return config;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -150,7 +150,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
           segmentation_platform::features::kSegmentationPlatformDummyFeature)) {
     configs.emplace_back(GetConfigForDummyFeature());
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
     configs.emplace_back(GetConfigForAdaptiveToolbar());
