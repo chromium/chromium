@@ -82,7 +82,7 @@ bool SubresourceFilterBrowserTest::AdsBlockedInContentSettings(
   return content_settings->IsContentBlocked(ContentSettingsType::ADS);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool SubresourceFilterBrowserTest::PresentingAdsBlockedInfobar(
     content::WebContents* web_contents) {
   auto* infobar_manager =

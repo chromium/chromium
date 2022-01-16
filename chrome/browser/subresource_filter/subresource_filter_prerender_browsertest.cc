@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     // still prerendering.
     EXPECT_FALSE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
     EXPECT_FALSE(AdsBlockedInContentSettings(prerender_rfh));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_FALSE(PresentingAdsBlockedInfobar());
 #endif
   }
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
     EXPECT_TRUE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
     EXPECT_TRUE(AdsBlockedInContentSettings(prerender_rfh));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(PresentingAdsBlockedInfobar());
 #endif
   }
