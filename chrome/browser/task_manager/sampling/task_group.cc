@@ -19,7 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/memory_stats.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -34,18 +34,18 @@ namespace {
 // A mask for the refresh types that are done in the background thread.
 const int kBackgroundRefreshTypesMask =
     REFRESH_TYPE_CPU | REFRESH_TYPE_SWAPPED_MEM | REFRESH_TYPE_IDLE_WAKEUPS |
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     REFRESH_TYPE_START_TIME | REFRESH_TYPE_CPU_TIME |
-#endif  // defined(OS_WIN)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     REFRESH_TYPE_FD_COUNT |
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_NACL)
     REFRESH_TYPE_NACL |
 #endif  // BUILDFLAG(ENABLE_NACL)
     REFRESH_TYPE_PRIORITY;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Gets the GDI and USER Handles on Windows at one shot.
 void GetWindowsHandles(base::ProcessHandle handle,
                        int64_t* out_gdi_current,
@@ -73,7 +73,7 @@ void GetWindowsHandles(base::ProcessHandle handle,
     CloseHandle(process_with_query_rights);
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_NACL)
 int GetNaClDebugStubPortOnProcessThread(int process_id) {
@@ -112,19 +112,19 @@ TaskGroup::TaskGroup(
       gpu_memory_(-1),
       per_process_network_usage_rate_(-1),
       cumulative_per_process_network_usage_(0),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       gdi_current_handles_(-1),
       gdi_peak_handles_(-1),
       user_current_handles_(-1),
       user_peak_handles_(-1),
       hard_faults_per_second_(-1),
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(ENABLE_NACL)
       nacl_debug_stub_port_(nacl::kGdbDebugStubPortUnknown),
 #endif  // BUILDFLAG(ENABLE_NACL)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
       open_fd_count_(-1),
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
       idle_wakeups_per_second_(-1),
       gpu_memory_has_duplicates_(false),
       is_backgrounded_(false) {
@@ -141,10 +141,10 @@ TaskGroup::TaskGroup(
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindRepeating(&TaskGroup::OnIdleWakeupsRefreshDone,
                             weak_ptr_factory_.GetWeakPtr()),
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
         base::BindRepeating(&TaskGroup::OnOpenFdCountRefreshDone,
                             weak_ptr_factory_.GetWeakPtr()),
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
         base::BindRepeating(&TaskGroup::OnProcessPriorityDone,
                             weak_ptr_factory_.GetWeakPtr()));
 
@@ -217,12 +217,12 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
   }
 
   // 3- Refresh Windows handles (if enabled).
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_HANDLES,
                                                     refresh_flags)) {
     RefreshWindowsHandles();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // 4- Refresh the NACL debug stub port (if enabled). This calls out to
 //    NaClBrowser on the browser's IO thread, completing asynchronously.
@@ -296,10 +296,10 @@ void TaskGroup::RefreshGpuMemory(
 }
 
 void TaskGroup::RefreshWindowsHandles() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   GetWindowsHandles(process_handle_, &gdi_current_handles_, &gdi_peak_handles_,
                     &user_current_handles_, &user_peak_handles_);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -321,14 +321,14 @@ void TaskGroup::OnRefreshNaClDebugStubPortDone(int nacl_debug_stub_port) {
 }
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 void TaskGroup::OnOpenFdCountRefreshDone(int open_fd_count) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   open_fd_count_ = open_fd_count;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_FD_COUNT);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
 void TaskGroup::OnCpuRefreshDone(double cpu_usage) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -369,14 +369,14 @@ void TaskGroup::OnSamplerRefreshDone(
   if (results) {
     cpu_time_ = results->cpu_time;
     idle_wakeups_per_second_ = results->idle_wakeups_per_second;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     hard_faults_per_second_ = results->hard_faults_per_second;
 #endif
     start_time_ = results->start_time;
   } else {
     cpu_time_ = base::TimeDelta();
     idle_wakeups_per_second_ = -1;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     hard_faults_per_second_ = 0;
 #endif
     start_time_ = base::Time();
