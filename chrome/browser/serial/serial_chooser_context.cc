@@ -37,16 +37,16 @@ namespace {
 
 constexpr char kPortNameKey[] = "name";
 constexpr char kTokenKey[] = "token";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kDeviceInstanceIdKey[] = "device_instance_id";
 #else
 constexpr char kVendorIdKey[] = "vendor_id";
 constexpr char kProductIdKey[] = "product_id";
 constexpr char kSerialNumberKey[] = "serial_number";
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr char kUsbDriverKey[] = "usb_driver";
-#endif  // defined(OS_MAC)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string EncodeToken(const base::UnguessableToken& token) {
   const uint64_t data[2] = {token.GetHighForSerialization(),
@@ -81,7 +81,7 @@ base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {
     return value;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows provides a handy device identifier which we can rely on to be
   // sufficiently stable for identifying devices across restarts.
   value.SetStringKey(kDeviceInstanceIdKey, port.device_instance_id);
@@ -93,11 +93,11 @@ base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {
   DCHECK(port.serial_number);
   value.SetStringKey(kSerialNumberKey, *port.serial_number);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   DCHECK(port.usb_driver_name && !port.usb_driver_name->empty());
   value.SetStringKey(kUsbDriverKey, *port.usb_driver_name);
-#endif  // defined(OS_MAC)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
   return value;
 }
 
@@ -167,18 +167,18 @@ SerialChooserContext::~SerialChooserContext() = default;
 std::string SerialChooserContext::GetKeyForObject(const base::Value& object) {
   if (!IsValidObject(object))
     return std::string();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return *(object.FindStringKey(kDeviceInstanceIdKey));
 #else
   std::vector<std::string> key_pieces{
       base::NumberToString(*(object.FindIntKey(kVendorIdKey))),
       base::NumberToString(*(object.FindIntKey(kProductIdKey))),
       *(object.FindStringKey(kSerialNumberKey))};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   key_pieces.push_back(*(object.FindStringKey(kUsbDriverKey)));
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   return base::JoinString(key_pieces, "|");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 bool SerialChooserContext::IsValidObject(const base::Value& object) {
@@ -189,19 +189,19 @@ bool SerialChooserContext::IsValidObject(const base::Value& object) {
   if (token)
     return object.DictSize() == 2 && DecodeToken(*token);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return object.DictSize() == 2 && object.FindStringKey(kDeviceInstanceIdKey);
 #else
   if (!object.FindIntKey(kVendorIdKey) || !object.FindIntKey(kProductIdKey) ||
       !object.FindStringKey(kSerialNumberKey)) {
     return false;
   }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return object.DictSize() == 5 && object.FindStringKey(kUsbDriverKey);
 #else
   return object.DictSize() == 4;
-#endif  // defined(OS_MAC)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 std::u16string SerialChooserContext::GetObjectDisplayName(
@@ -403,7 +403,7 @@ bool SerialChooserContext::HasPortPermission(
     // Objects provided by the parent class can be assumed valid.
     DCHECK(IsValidObject(device));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     const std::string& device_instance_id =
         *device.FindStringKey(kDeviceInstanceIdKey);
     if (port.device_instance_id == device_instance_id)
@@ -422,15 +422,15 @@ bool SerialChooserContext::HasPortPermission(
       continue;
     }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     const std::string& usb_driver_name = *device.FindStringKey(kUsbDriverKey);
     if (port.usb_driver_name != usb_driver_name) {
       continue;
     }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
   return false;
 }
@@ -445,7 +445,7 @@ bool SerialChooserContext::CanStorePersistentEntry(
   if (!port.display_name || port.display_name->empty())
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return !port.device_instance_id.empty();
 #else
   if (!port.has_vendor_id || !port.has_product_id || !port.serial_number ||
@@ -453,7 +453,7 @@ bool SerialChooserContext::CanStorePersistentEntry(
     return false;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The combination of the standard USB vendor ID, product ID and serial
   // number properties should be enough to uniquely identify a device
   // however recent versions of macOS include built-in drivers for common
@@ -463,10 +463,10 @@ bool SerialChooserContext::CanStorePersistentEntry(
   // USB driver name allows us to distinguish between the two.
   if (!port.usb_driver_name || port.usb_driver_name->empty())
     return false;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 device::mojom::SerialPortManager* SerialChooserContext::GetPortManager() {
