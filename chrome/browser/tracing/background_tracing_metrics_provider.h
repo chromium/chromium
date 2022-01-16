@@ -36,9 +36,9 @@ class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
 
   // metrics::MetricsProvider:
   void Init() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void AsyncInit(base::OnceClosure done_callback) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   bool HasIndependentMetrics() override;
   void ProvideIndependentMetrics(
       base::OnceCallback<void(bool)> done_callback,
@@ -48,7 +48,7 @@ class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
  private:
   std::vector<std::unique_ptr<metrics::MetricsProvider>>
       system_profile_providers_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // owned by |system_profile_providers_|.
   raw_ptr<MetricsProvider> av_metrics_provider_ = nullptr;
 #endif
