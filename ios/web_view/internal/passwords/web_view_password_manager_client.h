@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -48,7 +49,8 @@ class WebViewPasswordManagerClient
       password_manager::PasswordStoreInterface* profile_store,
       password_manager::PasswordStoreInterface* account_store,
       password_manager::PasswordReuseManager* reuse_manager,
-      password_manager::PasswordRequirementsService* requirements_service);
+      password_manager::PasswordRequirementsService* requirements_service,
+      password_manager::PasswordChangeSuccessTracker* password_change_tracker);
 
   WebViewPasswordManagerClient(const WebViewPasswordManagerClient&) = delete;
   WebViewPasswordManagerClient& operator=(const WebViewPasswordManagerClient&) =
@@ -158,6 +160,7 @@ class WebViewPasswordManagerClient
   WebViewPasswordFeatureManager password_feature_manager_;
   const password_manager::SyncCredentialsFilter credentials_filter_;
   password_manager::PasswordRequirementsService* requirements_service_;
+  password_manager::PasswordChangeSuccessTracker* password_change_tracker_;
 
   // The preference associated with
   // password_manager::prefs::kCredentialsEnableService.

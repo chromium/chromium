@@ -64,7 +64,8 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
         /*identity_manager=*/nullptr,
         std::make_unique<autofill::StubLogManager>(), profile_store_.get(),
         account_store_.get(), /*reuse_manager=*/nullptr,
-        /*requirements_service=*/nullptr);
+        /*requirements_service=*/nullptr,
+        /*password_change_success_tracker=*/nullptr);
   }
 
   ~WebViewPasswordManagerClientTest() override {

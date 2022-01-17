@@ -98,7 +98,8 @@ class CWVAutofillControllerTest : public web::WebTest {
             /*identity_manager=*/nullptr, /*log_manager=*/nullptr,
             /*profile_store=*/nullptr, /*account_store=*/nullptr,
             /*reuse_manager=*/nullptr,
-            /*requirements_service=*/nullptr);
+            /*requirements_service=*/nullptr,
+            /*password_change_success_tracker=*/nullptr);
     auto password_manager = std::make_unique<password_manager::PasswordManager>(
         password_manager_client.get());
     auto password_manager_driver =

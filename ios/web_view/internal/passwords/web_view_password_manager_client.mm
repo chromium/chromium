@@ -14,6 +14,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_password_change_success_tracker_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_reuse_manager_factory.h"
@@ -62,10 +63,13 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
   password_manager::PasswordRequirementsService* requirements_service =
       WebViewPasswordRequirementsServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  password_manager::PasswordChangeSuccessTracker* password_change_tracker =
+      WebViewPasswordChangeSuccessTrackerFactory::GetForBrowserState(
+          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   return std::make_unique<ios_web_view::WebViewPasswordManagerClient>(
       web_state, sync_service, browser_state->GetPrefs(), identity_manager,
       std::move(log_manager), profile_store.get(), account_store.get(),
-      reuse_manager, requirements_service);
+      reuse_manager, requirements_service, password_change_tracker);
 }
 
 WebViewPasswordManagerClient::WebViewPasswordManagerClient(
@@ -77,7 +81,8 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     password_manager::PasswordReuseManager* reuse_manager,
-    password_manager::PasswordRequirementsService* requirements_service)
+    password_manager::PasswordRequirementsService* requirements_service,
+    password_manager::PasswordChangeSuccessTracker* password_change_tracker)
     : web_state_(web_state),
       sync_service_(sync_service),
       pref_service_(pref_service),
@@ -92,6 +97,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
           base::BindRepeating(&WebViewPasswordManagerClient::GetSyncService,
                               base::Unretained(this))),
       requirements_service_(requirements_service),
+      password_change_tracker_(password_change_tracker),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
@@ -203,11 +209,7 @@ WebViewPasswordManagerClient::GetPasswordScriptsFetcher() {
 
 password_manager::PasswordChangeSuccessTracker*
 WebViewPasswordManagerClient::GetPasswordChangeSuccessTracker() {
-  // TODO(crbug.com/1281844): As WebView on iOS can run Autofill Assistant and
-  // can be used to update a password manually (i.e. submit a change password
-  // form), WebViewPasswordManagerClient should get access to a
-  // PasswordChangeSuccessTracker.
-  return nullptr;
+  return password_change_tracker_;
 }
 
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(

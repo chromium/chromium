@@ -165,6 +165,8 @@ source_set("web_view_sources") {
     "internal/passwords/cwv_password_internal.h",
     "internal/passwords/web_view_account_password_store_factory.h",
     "internal/passwords/web_view_account_password_store_factory.mm",
+    "internal/passwords/web_view_password_change_success_tracker_factory.h",
+    "internal/passwords/web_view_password_change_success_tracker_factory.mm",
     "internal/passwords/web_view_password_feature_manager.h",
     "internal/passwords/web_view_password_feature_manager.mm",
     "internal/passwords/web_view_password_manager_client.h",
