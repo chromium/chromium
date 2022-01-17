@@ -621,10 +621,9 @@ BackForwardCacheCanStoreDocumentResultWithTree
 BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult flattened_result;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree =
-      PopulateReasonsForDocumentAndDescendants(rfh, rfh->GetLastCommittedURL(),
-                                               flattened_result,
-                                               /*include_non_sticky=*/true,
-                                               /*create_tree=*/true);
+      PopulateReasonsForPage(rfh, flattened_result,
+                             /*include_non_sticky=*/true,
+                             /*create_tree=*/true);
 
   // TODO(https://crbug.com/1280150): Call
   // UpdateCanStoreToIncludeCacheControlNoStore() for tree structure.
@@ -652,16 +651,41 @@ BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh) {
 BackForwardCacheCanStoreDocumentResult
 BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result;
-  PopulateReasonsForDocumentAndDescendants(rfh, rfh->GetLastCommittedURL(),
-                                           result,
-                                           /*include_non_sticky = */ false,
-                                           /*create_tree = */ false);
+  PopulateReasonsForPage(rfh, result,
+                         /*include_non_sticky = */ false,
+                         /*create_tree = */ false);
   DVLOG(1) << "CanPotentiallyStorePageLater: " << rfh->GetLastCommittedURL()
            << " : " << result.ToString();
   TRACE_EVENT(
       "navigation", "BackForwardCacheImpl::CanPotentiallyStorePageLater",
       ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, result);
   return result;
+}
+
+std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheImpl::PopulateReasonsForPage(
+    RenderFrameHostImpl* rfh,
+    BackForwardCacheCanStoreDocumentResult& flattened_result,
+    bool include_non_sticky,
+    bool create_tree) {
+  BackForwardCacheCanStoreDocumentResult main_document_specific_result;
+  PopulateReasonsForMainDocument(main_document_specific_result, rfh);
+  // Add the reasons for main document to the flattened list.
+  flattened_result.AddReasonsFrom(main_document_specific_result);
+
+  GURL main_url = rfh->GetLastCommittedURL();
+  // Call the recursive function that adds the reasons from the subtree to the
+  // flattened list, and return the tree if needed.
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> result_tree =
+      PopulateReasonsForDocumentAndDescendants(rfh, main_url, flattened_result,
+                                               include_non_sticky, create_tree);
+
+  if (!create_tree)
+    return nullptr;
+  // |result_tree| does not have main document specific reasons such as
+  // "disabled via command line", and we have to manually add them.
+  result_tree->AddReasonsToSubtreeRootFrom(main_document_specific_result);
+  return result_tree;
 }
 
 void BackForwardCacheImpl::PopulateReasonsForMainDocument(
@@ -796,6 +820,8 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   if (!IsAllowed(rfh->GetLastCommittedURL()))
     result.No(BackForwardCacheMetrics::NotRestoredReason::kDomainNotAllowed);
 
+  // TODO(yuzus): Remove this block entirely, as it is checked multiple times
+  // currently with |PopulateReasonsForDocumentAndDescendants|.
   if (IsOptInHeaderRequired()) {
     HeaderPresence presence = OptInUnloadHeaderPresence(rfh);
     switch (presence) {
@@ -809,8 +835,9 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
       case HeaderPresence::kUnsure:
         // For the cases which we didn't parse the opt-in header, we should have
         // already bailed out of BFCache for other reasons.
+        // TODO(yuzus): Specify the reasons |main_document_specific_result|
+        // should have.
         DCHECK(!result.CanStore());
-        break;
     }
   }
 }
@@ -860,7 +887,6 @@ void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
           case HeaderPresence::kUnsure:
             // For the cases which we didn't parse the opt-in header, we should
             // have already bailed out of BFCache for other reasons.
-            DCHECK(!result.CanStore());
             break;
         }
       }
@@ -926,21 +952,14 @@ void BackForwardCacheImpl::PopulateReasonsForDocument(
   }
 }
 
-// TODO(https://crbug.com/1275977): Remove |first_call| and move
-// |PopulateReasonsForMainDocument| to |PopulateReasonsForDocument|.
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheImpl::PopulateReasonsForDocumentAndDescendants(
     RenderFrameHostImpl* rfh,
     const GURL main_url,
     BackForwardCacheCanStoreDocumentResult& flattened_result,
     bool include_non_sticky,
-    bool create_tree,
-    bool first_call) {
+    bool create_tree) {
   BackForwardCacheCanStoreDocumentResult result_for_this_document;
-  // Stores the reasons for flattened_result
-  if (first_call) {
-    PopulateReasonsForMainDocument(result_for_this_document, rfh);
-  }
   PopulateReasonsForDocument(result_for_this_document, rfh, include_non_sticky);
   flattened_result.AddReasonsFrom(result_for_this_document);
 
@@ -951,8 +970,7 @@ BackForwardCacheImpl::PopulateReasonsForDocumentAndDescendants(
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> child =
         PopulateReasonsForDocumentAndDescendants(
             rfh->child_at(i)->current_frame_host(), main_url, flattened_result,
-            include_non_sticky, create_tree,
-            /*first_call=*/false);
+            include_non_sticky, create_tree);
     if (create_tree) {
       children_result.emplace_back(std::move(child));
     }
@@ -1395,12 +1413,19 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     BackForwardCacheCanStoreTreeResult::ChildrenVector children)
     : document_result_(std::move(result_for_this_document)),
       children_(std::move(children)),
+      // TODO(yuzus): Instead of |main_document_url|, compare rfh's
+      // |GetLastCommittedURL()| with the main frame's |GetLastCommittedURL()|.
       is_same_origin_(
           url::IsSameOriginWith(rfh->GetLastCommittedURL(), main_document_url)),
       url_(rfh->GetLastCommittedURL()) {}
 
 BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
     default;
+
+void BackForwardCacheCanStoreTreeResult::AddReasonsToSubtreeRootFrom(
+    const BackForwardCacheCanStoreDocumentResult& result) {
+  document_result_.AddReasonsFrom(result);
+}
 
 BackForwardCacheCanStoreDocumentResultWithTree::
     BackForwardCacheCanStoreDocumentResultWithTree(
