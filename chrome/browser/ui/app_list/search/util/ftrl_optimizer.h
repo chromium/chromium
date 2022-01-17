@@ -31,8 +31,39 @@ class FtrlExpert {
 // A class implementing the follow-the-regularized-leader optimization
 // algorithm.
 //
-// TODO(crbug.com/1199206): Work in progress, expand this comment with algorithm
-// details once implemented.
+// ALGORITHM
+// =========
+//
+// This is an ensemble model over experts E[i], keeping a weight for each W[i].
+// The Score method takes a vector of items, and requests a score from each
+// expert. The final score for an item is simply a weighted average:
+//
+// Score(item):
+//   return sum(W[i] * E[i].Score(item))
+//
+// After the user clicks an item, the weights are then updated to reflect the
+// accuracy of each expert, like so:
+//
+// Train(item):
+//   for expert i:
+//     if E[i] did not rank item in its last scores:
+//       loss = 1
+//     else
+//       loss = (rank of item in E[i]'s last scores) / scores.size
+//
+//     w[i] = gamma/num_experts + (1-gamma) exp(-alpha * loss) * w[i]
+//
+//   normalize weights to sum to 1.
+//
+// PARAMETERS
+// ==========
+//
+// - Alpha is a positive learning rate. Higher values mean weights change more
+//   quickly.
+//
+// - Gamma is a regularization parameter in [0,1]. It controls the minimum
+//   weight of an expert. 0 means no regularization, and 1 means all weights
+//   will always be equal.
 class FtrlOptimizer {
  public:
   // All user-settable parameters of the FTRL optimizer. The defaults should be
@@ -40,6 +71,9 @@ class FtrlOptimizer {
   struct Params {
     // How long to wait until writing any updates to disk.
     base::TimeDelta write_delay = base::Seconds(5);
+    // TODO(crbug.com/1199206): These need tweaking.
+    double alpha = 0.1;
+    double gamma = 0.1;
   };
 
   FtrlOptimizer(const base::FilePath& path,
@@ -55,11 +89,20 @@ class FtrlOptimizer {
   void Train(const std::string& item);
 
  private:
+  double Loss(size_t expert, const std::string& item);
+
   void OnProtoRead(ReadStatus status);
 
   Params params_;
 
   std::vector<std::unique_ptr<FtrlExpert>> experts_;
+
+  // The items most recently passed to |Score|.
+  std::vector<std::string> last_items_;
+  // For each expert (outer vector) the scores returned by that expert for the
+  // content of |last_items_|. The inner vector will be the same size as
+  // |last_items_|.
+  std::vector<std::vector<double>> last_expert_scores_;
 
   PersistentProto<FtrlOptimizerProto> proto_;
 
