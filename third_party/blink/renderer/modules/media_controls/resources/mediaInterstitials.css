@@ -38,7 +38,7 @@ video::-internal-media-interstitial-background-image {
 }
 
 video::-internal-media-remoting-cast-icon {
-    -webkit-appearance: none;
+    appearance: none;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center center;

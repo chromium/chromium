@@ -30,7 +30,7 @@ body {
     --color-swatch-height: 18px;
     --color-swatch-width: 18px;
     --scrollbar-width: 4px;
-    -webkit-user-select: none;
+    user-select: none;
     background-color: white;
     font: -webkit-small-control;
     margin: 0;

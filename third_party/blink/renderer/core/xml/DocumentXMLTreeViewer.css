@@ -47,7 +47,7 @@ div.folder > span.hidden {
 }
 
 .folder-button {
-    -webkit-user-select: none;
+    user-select: none;
     cursor: pointer;
     display: inline-block;
     margin-left: -10px;

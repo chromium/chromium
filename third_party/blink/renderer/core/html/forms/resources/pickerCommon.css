@@ -24,7 +24,7 @@
  */
 
 body {
-    -webkit-user-select: none;
+    user-select: none;
     background-color: white;
     font: -webkit-small-control;
     margin: 0;

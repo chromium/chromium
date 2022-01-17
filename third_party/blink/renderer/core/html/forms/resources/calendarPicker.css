@@ -29,7 +29,7 @@
  */
 
 body {
-    -webkit-user-select: none;
+    user-select: none;
     background-color: white;
     font: -webkit-control;
     font-size: 12px;
@@ -184,7 +184,7 @@ body {
 }
 
 .calendar-title {
-    -webkit-align-self: flex-start;
+    align-self: flex-start;
     flex: 1;
     text-align: left;
 }
@@ -241,7 +241,7 @@ body {
 }
 
 .calendar-navigation-button {
-    -webkit-align-self: center;
+    align-self: center;
     width: 28px;
     height: 24px;
     min-width: 0 !important;
@@ -418,7 +418,7 @@ body {
 }
 
 .clear-button, .today-button {
-  -webkit-align-self: center;
+  align-self: center;
   background-color: #ffffff;
   border: 1px solid transparent;
   bottom: 12px;

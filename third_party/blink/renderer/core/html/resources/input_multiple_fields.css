@@ -15,7 +15,7 @@ input[type="month" i],
 input[type="time" i],
 input[type="week" i] {
     align-items: center;
-    display: -webkit-inline-flex;
+    display: inline-flex;
     font-family: monospace;
     overflow: hidden;
     padding: 0;

@@ -402,7 +402,7 @@ button {
 
 /* Form controls don't go vertical. */
 input, textarea, select, button, meter, progress {
-    -webkit-writing-mode: horizontal-tb !important;
+    writing-mode: horizontal-tb !important;
 }
 
 input, textarea, select, button {
@@ -643,7 +643,7 @@ input[type="radio" i] {
 input[type="button" i], input[type="submit" i], input[type="reset" i] {
     -internal-empty-line-height: fabricated;
     appearance: auto;
-    -webkit-user-select: none;
+    user-select: none;
     white-space: pre
 }
 
@@ -710,7 +710,7 @@ input[type="range" i]:-internal-has-datalist::-webkit-slider-container {
 input[type="range" i]::-webkit-slider-runnable-track {
     flex: 1;
     min-inline-size: 0;
-    -webkit-align-self: center;
+    align-self: center;
 
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
@@ -1300,7 +1300,7 @@ ruby, rt {
 
 rt {
     line-height: normal;
-    -webkit-text-emphasis: none;
+    text-emphasis: none;
 }
 
 ruby > rt {

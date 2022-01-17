@@ -45,12 +45,12 @@ video::-webkit-media-controls-enclosure {
 
 audio::-webkit-media-controls-panel,
 video::-webkit-media-controls-panel {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
 
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  -webkit-user-select: none;
+  user-select: none;
   z-index: 0;
   overflow: hidden;
   bottom: auto;
@@ -106,7 +106,7 @@ video::-webkit-media-controls.sizing-large div[pseudo="-webkit-media-controls-pa
 
 audio::-internal-media-controls-button-panel,
 video::-internal-media-controls-button-panel {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
 
   flex-direction: row;
   align-items: flex-end;
@@ -116,7 +116,7 @@ video::-internal-media-controls-button-panel {
    * if we are too small to show all controls.
    */
   justify-content: flex-start;
-  -webkit-user-select: none;
+  user-select: none;
   position: relative;
   width: 100%;
   z-index: 0;
@@ -174,7 +174,7 @@ video::-internal-media-controls-download-button,
 audio::-internal-media-controls-playback-speed-button,
 video::-internal-media-controls-playback-speed-button,
 video::-internal-media-controls-picture-in-picture-button {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
   background-size: 20px;
   background-repeat: no-repeat;
   background-position: center center;
@@ -428,7 +428,7 @@ video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-p
 }
 
 video::-webkit-media-controls-overlay-play-button {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -608,7 +608,7 @@ video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-contr
 
 audio::-webkit-media-controls-timeline,
 video::-webkit-media-controls-timeline {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
 
   height: 4px;
   padding-left: 16px;
@@ -713,7 +713,7 @@ div[pseudo="-internal-media-controls-loading-panel" i]::-internal-media-controls
 
 input[pseudo="-webkit-media-controls-timeline" i]::-internal-media-controls-segmented-track,
 input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-media-controls-segmented-track {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
 
   flex: 1;
   background: -internal-light-dark(rgba(0, 0, 0, .2), rgba(255, 255, 255, 0.2));
@@ -728,7 +728,7 @@ video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-contr
 
 input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb,
 input[pseudo="-webkit-media-controls-volume-slider" i]::-webkit-slider-thumb {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
   background: -internal-light-dark(rgba(0, 0, 0, .87), rgba(255, 255, 255, 0.87));
 
   box-shadow: 0 0 10px 0 -internal-light-dark(#ffffff, #000000);
@@ -789,7 +789,7 @@ video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-contr
 
 audio::-webkit-media-controls-volume-slider,
 video::-webkit-media-controls-volume-slider {
-  -webkit-appearance: -internal-media-control;
+  appearance: -internal-media-control;
 
   height: 4px;
   width: 52px;
@@ -1069,7 +1069,7 @@ label[pseudo="-internal-media-controls-playback-speed-list-item"] * {
 
 label[pseudo="-internal-media-controls-text-track-list-item"] input,
 label[pseudo="-internal-media-controls-playback-speed-list-item"] input {
-  -webkit-appearance: none;
+  appearance: none;
   width: 18px;
   height: 18px;
   margin: 15px;
@@ -1223,7 +1223,7 @@ video::-webkit-media-text-track-container {
     text-indent: 0;
     text-decoration: none;
     pointer-events: none;
-    -webkit-user-select: none;
+    user-select: none;
     word-break: break-word;
 }
 
@@ -1261,7 +1261,7 @@ video::-webkit-media-text-track-display {
     position: absolute;
     overflow: hidden;
     white-space: pre-wrap;
-    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
     flex: 0 0 auto;
 }
 
@@ -1286,7 +1286,7 @@ video::cue(i) {
  */
 
 video::-internal-media-controls-overlay-cast-button {
-    -webkit-appearance: none;
+    appearance: none;
     background-image: -webkit-image-set(
       url(default_100_percent/mediaplayer_overlay_cast_off.png) 1x);
     background-size: cover;
@@ -1328,8 +1328,8 @@ video::-internal-media-controls-scrubbing-message {
 }
 
 video::-internal-media-controls-text-track-list-kind-captions {
-    -webkit-appearance: none;
-      background-image: -internal-light-dark(-webkit-image-set(url(ic_closed_caption.svg) 1x), -webkit-image-set(url(ic_closed_caption_white.svg) 1x));
+    appearance: none;
+    background-image: -internal-light-dark(-webkit-image-set(url(ic_closed_caption.svg) 1x), -webkit-image-set(url(ic_closed_caption_white.svg) 1x));
     background-size: 18px;
     background-repeat: no-repeat;
     background-position: center center;
@@ -1339,8 +1339,8 @@ video::-internal-media-controls-text-track-list-kind-captions {
 }
 
 video::-internal-media-controls-text-track-list-kind-subtitles {
-    -webkit-appearance: none;
-      background-image: -internal-light-dark(-webkit-image-set(url(ic_subtitles.svg) 1x), -webkit-image-set(url(ic_subtitles_white.svg) 1x));
+    appearance: none;
+    background-image: -internal-light-dark(-webkit-image-set(url(ic_subtitles.svg) 1x), -webkit-image-set(url(ic_subtitles_white.svg) 1x));
     background-size: 18px;
     background-repeat: no-repeat;
     background-position: center center;
