@@ -321,7 +321,7 @@ bool TestNavigationObserver::DoesNavigationMatchExpectedInitialUrl(
 
   // Find the real URL being navigated to (e.g. stripping the "view-source:"
   // prefix if necessary).
-  GURL expected_url = *expected_initial_url_;
+  GURL expected_url = navigation_request->GetOriginalRequestURL();
   BrowserContext* browser_context = navigation_request->frame_tree_node()
                                         ->navigator()
                                         .controller()
