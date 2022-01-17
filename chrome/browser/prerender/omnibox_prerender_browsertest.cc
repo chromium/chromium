@@ -157,9 +157,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 }
 
 // Verifies that prerendering functions in document are properly exposed.
+// TODO(https://crbug.com/1286374): test is flaky.
 IN_PROC_BROWSER_TEST_F(
     OmniboxPrerenderBrowserTest,
-    PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox) {
+    DISABLED_PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
