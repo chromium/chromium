@@ -55,6 +55,20 @@ bool IsCharacterKeyEvent(const ui::KeyEvent* event) {
   return !IsControlChar(event) && !ui::IsSystemKeyModifier(event->flags());
 }
 
+// Return true if the given key event is used for language switching by IME.
+// Please refer to ui::InputMethodAsh::DispatchKeyEvent for details.
+bool IsLanguageInputKey(const ui::KeyEvent* event) {
+  switch (event->key_code()) {
+    case ui::VKEY_CONVERT:
+    case ui::VKEY_NONCONVERT:
+    case ui::VKEY_DBE_SBCSCHAR:
+    case ui::VKEY_DBE_DBCSCHAR:
+      return true;
+    default:
+      return false;
+  }
+}
+
 int CursorBehaviorToCursorPosition(
     ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   switch (cursor_behavior) {
@@ -391,6 +405,7 @@ void ArcImeService::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                                  KeyEventDoneCallback callback) {
   ui::InputMethod* const input_method = GetInputMethod();
   receiver_->SetCallback(std::move(callback), key_event.get());
+
   if (input_method)
     std::ignore = input_method->DispatchKeyEvent(key_event.get());
 }
@@ -664,6 +679,11 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
       event->properties() && (event->properties()->find(ui::kPropertyFromVK) !=
                               event->properties()->end());
   if (from_vk && IsCharacterKeyEvent(event) && IsTextInputActive(ime_type_))
+    event->SetHandled();
+
+  // Do not forward the language input key event from virtual keyboard because
+  // it's already handled by ui::InputMethodAsh.
+  if (from_vk && IsLanguageInputKey(event))
     event->SetHandled();
 
   // Do no forward a fabricated key event which is not originated from a
