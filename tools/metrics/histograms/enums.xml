@@ -90178,6 +90178,9 @@ Full version information for the fingerprint enum values:
   <int value="7" label="Missing experiment entry for default experient"/>
   <int value="8" label="Missing study name"/>
   <int value="9" label="Experiment probability overflow"/>
+  <int value="10"
+      label="Experiment has a google_web_experiment_id and a
+             web_trigger_experiment_id"/>
 </enum>
 
 <enum name="VariationsPermanentConsistencyCountryResult">

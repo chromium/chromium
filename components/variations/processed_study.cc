@@ -30,7 +30,8 @@ enum class InvalidStudyReason {
   kMissingDefaultExperimentInList = 7,
   kBlankStudyName = 8,
   kExperimentProbabilityOverflow = 9,
-  kMaxValue = kExperimentProbabilityOverflow,
+  kTriggerAndNonTriggerExperimentId = 10,
+  kMaxValue = kTriggerAndNonTriggerExperimentId,
 };
 
 void LogInvalidReason(InvalidStudyReason reason) {
@@ -114,6 +115,15 @@ bool ValidateStudyAndComputeTotalProbability(
       for (int j = 0; j < features.disable_feature_size(); ++j) {
         features_to_associate.insert(features.disable_feature(j));
       }
+    }
+
+    if (experiment.has_google_web_experiment_id() &&
+        experiment.has_google_web_trigger_experiment_id()) {
+      LogInvalidReason(InvalidStudyReason::kTriggerAndNonTriggerExperimentId);
+      DVLOG(1) << study.name() << " has experiment (" << experiment.name()
+               << ") with a google_web_experiment_id and a "
+               << "web_trigger_experiment_id.";
+      return false;
     }
 
     if (!experiment.has_forcing_flag() && experiment.probability_weight() > 0) {
