@@ -170,6 +170,7 @@ crbug.com/1058792 external/wpt/css/css-break/transform-004.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-005.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/transform-006.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/transform-008.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/transform-010.html [ Failure ]
 
 ### external/wpt/css/css-flexbox/
 crbug.com/591099 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-001.html [ Failure ]
@@ -801,12 +802,10 @@ crbug.com/591099 fast/writing-mode/flipped-blocks-inline-map-local-to-container.
 
 ### external/wpt/html/rendering
 crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-block-size.html [ Failure ]
-crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-containing-block.html [ Failure ]
 crbug.com/880062 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-before-legend.html [ Failure ]
 crbug.com/880062 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-generated-content.html [ Failure ]
 crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-overflow-hidden.html [ Failure ]
 crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-overflow.html [ Crash Failure ]
-crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-vertical.html [ Failure ]
 crbug.com/591099 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/grid-template-propagation.html [ Failure ]
 crbug.com/875235 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-painting-order.html [ Failure ]
 crbug.com/1151295 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-position-relative-2.html [ Failure ]
