@@ -3753,20 +3753,6 @@ TEST_F(PartitionAllocTest, MallocFunctionAnnotations) {
   Free(buffer);
 }
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-TEST_F(PartitionAllocTest, Padding) {
-  uintptr_t brp_enabled_offset =
-      reinterpret_cast<uintptr_t>(&allocator.root()->brp_enabled_) -
-      reinterpret_cast<uintptr_t>(allocator.root());
-  uintptr_t lock_offset =
-      reinterpret_cast<uintptr_t>(&allocator.root()->lock_) -
-      reinterpret_cast<uintptr_t>(allocator.root());
-
-  // Double-check that the padding in the root was not removed.
-  EXPECT_GT(lock_offset - brp_enabled_offset, 64u);
-}
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-
 // Test that the ConfigurablePool works properly.
 TEST_F(PartitionAllocTest, ConfigurablePool) {
   EXPECT_FALSE(IsConfigurablePoolAvailable());

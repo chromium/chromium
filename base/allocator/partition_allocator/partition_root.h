@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
@@ -203,63 +204,58 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
   using PCScan = internal::PCScan;
 
-  // Start of read-mostly flags.
-
-  // Flags accessed on fast paths.
-  //
-  // Careful! PartitionAlloc's performance is sensitive to its layout. Please
-  // put the fast-path objects below, and the other ones further (see comment in
-  // this file).
-
-  // Defines whether objects should be quarantined for this root.
   enum class QuarantineMode : uint8_t {
     kAlwaysDisabled,
     kDisabledByDefault,
     kEnabled,
-  } quarantine_mode = QuarantineMode::kAlwaysDisabled;
+  };
 
-  // Defines whether the root should be scanned.
   enum class ScanMode : uint8_t {
     kDisabled,
     kEnabled,
-  } scan_mode = ScanMode::kDisabled;
-
-  bool with_thread_cache = false;
-
-  bool allow_aligned_alloc;
-  bool allow_cookie;
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-  bool brp_enabled_;
-#endif
-  bool use_configurable_pool;
+  };
 
 #if !defined(PA_EXTRAS_REQUIRED)
-  // Teach the compiler that code can be optimized in builds that use no extras.
-  static constexpr uint32_t extras_size = 0;
-  static constexpr uint32_t extras_offset = 0;
-#else
-  uint32_t extras_size;
-  uint32_t extras_offset;
+  // Teach the compiler that code can be optimized in builds that use no
+  // extras.
+  static constexpr inline uint32_t extras_size = 0;
+  static constexpr inline uint32_t extras_offset = 0;
 #endif  // !defined(PA_EXTRAS_REQUIRED)
 
-  // End of read-mostly flags.
+  // Read-mostly flags.
+  union {
+    // Flags accessed on fast paths.
+    //
+    // Careful! PartitionAlloc's performance is sensitive to its layout.  Please
+    // put the fast-path objects in the struct below, and the other ones after
+    // the union..
+    struct {
+      // Defines whether objects should be quarantined for this root.
+      QuarantineMode quarantine_mode;
 
-  // DO NOT MOVE THIS.
-  //
-  // The flags above are accessed for all (de)allocations, and are mostly
-  // read-only. They should not share a cacheline with the data below, which is
-  // only touched when the lock is taken.
-  //
-  // We add too much padding for most configurations, since the size of the
-  // flags above is not fixed, and the computation below accounts for the
-  // minimum size.
-  //
-  // Note: with C++17, it will be possible to reduce the padding, but as of
-  // C++14, static members are forbidden inside anonymous structs, so we cannot
-  // use the union { struct { /* all flags */}; /* padding */} trick. Wasting an
-  // entire cacheline per PartitionRoot is not a big issue, given that
-  // the object is very large anyway.
-  uint8_t padding[kPartitionCachelineSize - 6];
+      // Defines whether the root should be scanned.
+      ScanMode scan_mode;
+
+      bool with_thread_cache = false;
+
+      bool allow_aligned_alloc;
+      bool allow_cookie;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+      bool brp_enabled_;
+#endif
+      bool use_configurable_pool;
+
+#if defined(PA_EXTRAS_REQUIRED)
+      uint32_t extras_size;
+      uint32_t extras_offset;
+#endif  // defined(PA_EXTRAS_REQUIRED)
+    };
+
+    // The flags above are accessed for all (de)allocations, and are mostly
+    // read-only. They should not share a cacheline with the data below, which
+    // is only touched when the lock is taken.
+    uint8_t one_cacheline[kPartitionCachelineSize];
+  };
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
@@ -267,7 +263,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   ::partition_alloc::Lock lock_;
 
   Bucket buckets[kNumBuckets] = {};
-  Bucket sentinel_bucket;
+  Bucket sentinel_bucket{};
 
   // All fields below this comment are not accessed on the fast path.
   bool initialized = false;
@@ -335,7 +331,9 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 
   bool quarantine_always_for_testing = false;
 
-  PartitionRoot() = default;
+  PartitionRoot()
+      : quarantine_mode(QuarantineMode::kAlwaysDisabled),
+        scan_mode(ScanMode::kDisabled) {}
   explicit PartitionRoot(PartitionOptions opts) { Init(opts); }
   ~PartitionRoot();
 
@@ -798,7 +796,7 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
   PA_DCHECK(ret ==
             reinterpret_cast<void*>(reservation_start + PartitionPageSize() +
                                     padding_for_alignment));
-#endif  // DCHECK_IS_ON()
+#endif                                      // DCHECK_IS_ON()
   return reinterpret_cast<uintptr_t>(ret);  // TODO(bartekn): Remove cast.
 }
 
@@ -1851,6 +1849,10 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
 
 using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
 using ThreadUnsafePartitionRoot = PartitionRoot<internal::NotThreadSafe>;
+
+static_assert(offsetof(ThreadSafePartitionRoot, lock_) ==
+                  kPartitionCachelineSize,
+              "Padding is incorrect");
 
 }  // namespace base
 
