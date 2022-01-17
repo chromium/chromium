@@ -37,6 +37,10 @@ namespace {
 #if !BUILDFLAG(IS_IOS)
 const char kObsoleteFullscreenDefaultPref[] =
     "profile.default_content_setting_values.fullscreen";
+// The "nfc" preference was superseded by "nfc-devices" once Web NFC gained the
+// ability to make NFC tags permanently read-only. See crbug.com/1275576
+const char kObsoleteNfcDefaultPref[] =
+    "profile.default_content_setting_values.nfc";
 #if !BUILDFLAG(IS_ANDROID)
 const char kObsoleteMouseLockDefaultPref[] =
     "profile.default_content_setting_values.mouselock";
@@ -120,6 +124,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       kObsoleteFullscreenDefaultPref, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(kObsoleteNfcDefaultPref, 0);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kObsoleteMouseLockDefaultPref, 0,
@@ -405,6 +410,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   // deleted.
 #if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteFullscreenDefaultPref);
+  prefs_->ClearPref(kObsoleteNfcDefaultPref);
 #if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);

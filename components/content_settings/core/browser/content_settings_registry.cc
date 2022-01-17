@@ -503,7 +503,9 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  Register(ContentSettingsType::NFC, "nfc", CONTENT_SETTING_ASK,
+  // The "nfc" name should not be used in the future to avoid name collisions.
+  // See crbug.com/1275576
+  Register(ContentSettingsType::NFC, "nfc-devices", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, AllowlistedSchemes(),
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
                          CONTENT_SETTING_BLOCK),

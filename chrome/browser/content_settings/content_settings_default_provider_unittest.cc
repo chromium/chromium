@@ -125,10 +125,13 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
                                          ContentSettingsType::COOKIES, false));
 }
 
-// Tests that fullscreen and mouselock content settings are cleared.
+// Tests that fullscreen, obsolete NFC (with the old semantics, see
+// crbug.com/1275576), and mouselock content settings are cleared.
 TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   static const char kFullscreenPrefPath[] =
       "profile.default_content_setting_values.fullscreen";
+  static const char kNfcPrefPath[] =
+      "profile.default_content_setting_values.nfc";
 #if !BUILDFLAG(IS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.default_content_setting_values.mouselock";
@@ -159,6 +162,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
 
   // Check that obsolete prefs have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
+  EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));
