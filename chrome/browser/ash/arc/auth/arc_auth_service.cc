@@ -567,8 +567,19 @@ void ArcAuthService::OnAccountAvailableInArc(
   DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  UpsertAccountToArc(identity_manager_->FindExtendedAccountInfoByEmailAddress(
-      account.raw_email));
+  CoreAccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByEmailAddress(
+          account.raw_email);
+  // If account doesn't have a refresh token, `account_info` will be empty. In
+  // this case `OnAccountAvailableInArc` will be called again after the refresh
+  // token is loaded.
+  if (account_info.IsEmpty()) {
+    VLOG(1) << "Ignoring account update because CoreAccountInfo is empty for "
+               "account: "
+            << account.raw_email;
+    return;
+  }
+  UpsertAccountToArc(account_info);
 }
 
 void ArcAuthService::OnAccountUnavailableInArc(
