@@ -7095,23 +7095,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.MSE.CodecChangeTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MediaTimelineWidths" separator=".">
-  <obsolete>
-    Deprecated as of 2020/10.
-  </obsolete>
-  <suffix name="32_47" label=""/>
-  <suffix name="48_79" label=""/>
-  <suffix name="80_127" label=""/>
-  <suffix name="128_255" label=""/>
-  <suffix name="256_511" label=""/>
-  <suffix name="512_inf" label=""/>
-  <affected-histogram name="Media.Timeline.DragGestureDuration"/>
-  <affected-histogram name="Media.Timeline.DragPercent"/>
-  <affected-histogram name="Media.Timeline.DragSumAbsTimeDelta"/>
-  <affected-histogram name="Media.Timeline.DragTimeDelta"/>
-  <affected-histogram name="Media.Timeline.SeekType"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MediaVideoCaptureManagerTime" separator=".">
   <suffix name="GetAvailableDevicesInfoOnDeviceThreadTime"
       label="Measures the time taken to enumerate devices and their

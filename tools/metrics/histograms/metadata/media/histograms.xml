@@ -76,22 +76,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Android.BackgroundVideoTime" units="ms"
-    expires_after="2020-04-05">
-  <obsolete>
-    Removed as of 2021/02.
-  </obsolete>
-  <owner>mlamouri@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Android-specific metric. The time between the moment the backgrounded video
-    playback is started (meaning the user just resumed the backgrounded video
-    allowing playback) and the moment it stops being background playback by the
-    current playing video either going foreground or being paused by the user.
-    Note: on Android, videos are suspended when backgrounded.
-  </summary>
-</histogram>
-
 <histogram name="Media.Android.BecomingNoisy" enum="Boolean"
     expires_after="2022-07-01">
   <owner>liberato@chromium.org</owner>
@@ -428,59 +412,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.Win.MonotonicTimestamps"
-    enum="BooleanSuccess" expires_after="2021-10-08">
-  <obsolete>
-    Removed as of 2021-09-30.
-  </obsolete>
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Each audio frame which is recorded when an audio input stream is active also
-    comes with a timestamp. By design, the sequcence of timestamps should be
-    monotonic. This metric should therefore always result in 'Success', hence
-    'Failure' should never happen and is seen as an error that must be fixed.
-    This value is logged when an audio input stream is closed on Windows.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
     expires_after="2022-06-12">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
     Success/error cases for opening an audio input stream on Windows.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.TimestampErrors" units="errors"
-    expires_after="2021-10-08">
-  <obsolete>
-    Removed as of 2021-09-30.
-  </obsolete>
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The number of timestamp errors that were detected at the OS level while an
-    audio input stream was active. A timestamp error in this case corresponds to
-    a certain error code from the IAudioCaptureClient::GetBuffer() API:
-    AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR. This value is logged when an audio
-    input stream is closed on Windows.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.TimeUntilFirstTimestampError"
-    units="ms" expires_after="2021-10-08">
-  <obsolete>
-    Removed as of 2021-09-30.
-  </obsolete>
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The time from the start of an input audio stream until the first timestamp
-    error is detected. Logged once when the input stream stops but only if at
-    least one error was detected. Only implemented on Windows. See
-    Media.Audio.Capture.Win.TimestampErrors for more details.
   </summary>
 </histogram>
 
@@ -495,20 +432,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.Win.VolumeRangeMax" units="dB"
-    expires_after="2021-09-30">
-  <obsolete>
-    Removed as of 2021-05-07.
-  </obsolete>
-  <owner>alessiob@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Volume range maximum for the audio capture stream on Windows. Only uploaded
-    when volume range information is available and when analog AGC is enabled -
-    i.e., for WebRTC-based audio input streams.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Capture.Win.VolumeRangeMax2" units="dB"
     expires_after="2021-09-30">
   <owner>alessiob@chromium.org</owner>
@@ -518,20 +441,6 @@ chromium-metrics-reviews@google.com.
     time that an audio capture stream is stopped only when analog AGC is enabled
     and if the volume range information is available. The values in UMA have an
     offset equal to 60 since a volume range may include negative values.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.VolumeRangeMin" units="dB"
-    expires_after="2021-09-30">
-  <obsolete>
-    Removed as of 2021-05-07.
-  </obsolete>
-  <owner>alessiob@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Volume range minimum for the audio capture stream on Windows. Only uploaded
-    when volume range information is available and when analog AGC is enabled -
-    i.e., for WebRTC-based audio input streams.
   </summary>
 </histogram>
 
@@ -1835,19 +1744,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.D3D11.AV1Status" enum="MediaStatusCode"
-    expires_after="2021-06-13">
-  <obsolete>
-    Deprecated as of 2021/10.
-  </obsolete>
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <summary>
-    This records the media::StatusCode from the AV1 accelerator. It is emitted
-    when the accelerator encounters an error during decoding.
-  </summary>
-</histogram>
-
 <histogram name="Media.D3D11.DecoderLifetimeProgression"
     enum="D3D11LifetimeProgression" expires_after="2022-07-03">
   <owner>liberato@chromium.org</owner>
@@ -1856,19 +1752,6 @@ chromium-metrics-reviews@google.com.
     This enum allows us to count D3D11VideoDecoder specific crashes and
     initialization failures. This is recorded whenever the decoder is
     initialized or destroyed.
-  </summary>
-</histogram>
-
-<histogram name="Media.D3D11.H264Status" enum="MediaStatusCode"
-    expires_after="2022-05-01">
-  <obsolete>
-    Deprecated as of 2021/10.
-  </obsolete>
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <summary>
-    This records the media::StatusCode from the H264 accelerator. It is emitted
-    when the accelerator encounters an error during decoding.
   </summary>
 </histogram>
 
@@ -1881,33 +1764,6 @@ chromium-metrics-reviews@google.com.
     recorded here. It is recorded when D3D11VideoDecoder reports an error to the
     client. For decoder failures, an additional status code may be logged by the
     accelerator -- see Media.D3D11{H264,VP9}Status for that.
-  </summary>
-</histogram>
-
-<histogram name="Media.D3D11.VP9Status" enum="MediaStatusCode"
-    expires_after="2022-01-02">
-  <obsolete>
-    Deprecated as of 2021/10.
-  </obsolete>
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <summary>
-    This records the media::StatusCode from the VP9 accelerator. It is emitted
-    when the accelerator encounters an error during decoding.
-  </summary>
-</histogram>
-
-<histogram name="Media.D3D11.WasVideoSupported"
-    enum="D3D11VideoNotSupportedReason" expires_after="2021-12-19">
-  <obsolete>
-    Deprecated as of 2021/12.
-  </obsolete>
-  <owner>liberato@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <summary>
-    This enum measures whether or not d3d11 is supported and if not, what the
-    reason is.
   </summary>
 </histogram>
 
@@ -2168,20 +2024,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.MaxCdmProcessCount" units="processes"
-    expires_after="2022-05-07">
-  <obsolete>
-    Deprecated as of 2021/04.
-  </obsolete>
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Reported at most once during browser process shutdown the max number of
-    concurrent CDM processes at any time during the lifetime of that browser
-    process. Will NOT be reported if no CDM process has ever been created.
-  </summary>
-</histogram>
-
 <histogram name="Media.EME.MediaCryptoAvailable" enum="BooleanAvailable"
     expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
@@ -2355,17 +2197,6 @@ chromium-metrics-reviews@google.com.
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
-<histogram name="Media.EME.{KeySystem}.CreateSession" enum="EmeSessionType"
-    expires_after="2022-05-07">
-  <obsolete>
-    Replaced by GenerateRequest on 2015-01.
-  </obsolete>
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>Result of EME CreateSesson promise.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
-</histogram>
-
 <histogram name="Media.EME.{KeySystem}.CreateSession.SessionType"
     enum="EmeSessionType" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
@@ -2524,72 +2355,6 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev@chromium.org</owner>
   <summary>
     Whether Chrome had to fallback to the high latency audio path or not.
-  </summary>
-</histogram>
-
-<histogram name="Media.Feeds.AggregateWatchtime" units="ms"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M91.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Records the aggregate watchtime for all Media Feeds on startup. The
-    aggregate watchtime is the total watchtime for a website recorded across
-    sessions. It is also cleared every 90 days.
-  </summary>
-</histogram>
-
-<histogram name="Media.Feeds.Feed.ReadResult" enum="MediaFeedReadResult"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M91.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when a Media Feed is loaded from the database. If there was an
-    error reading from the database then the result will include the reason.
-  </summary>
-</histogram>
-
-<histogram name="Media.Feeds.FeedItem.ReadResult"
-    enum="MediaFeedItemReadResult" expires_after="2021-05-09">
-  <obsolete>
-    Removed in M91.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when a Media Feed item is loaded from the database. If there was an
-    error reading from the database then the result will include the reason.
-  </summary>
-</histogram>
-
-<histogram name="Media.Feeds.Fetch.Size" units="KB" expires_after="2021-05-09">
-  <obsolete>
-    Removed in M91.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Records the size of the fetched feed when a Media Feed is periodically
-    fetched in the background.
-  </summary>
-</histogram>
-
-<histogram name="Media.Feeds.SafeSearch.Result"
-    enum="MediaFeedSafeSearchResult" expires_after="2021-05-09">
-  <obsolete>
-    Removed in M91.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when a Media Feed Item is checked against Safe Search. This happens
-    automatically when Chrome fetches the feed so long as the user has opted
-    into Safe Search checking.
   </summary>
 </histogram>
 
@@ -2915,101 +2680,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Kaleidoscope.DialogClosed"
-    enum="KaleidoscopeDialogClosedBoolean" expires_after="2021-08-19">
-  <obsolete>
-    Deprecated as of 2020/12.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded each time a user closes a dialog inside Kaleidoscope with whether
-    the user opened a watch action from that dialog.
-  </summary>
-</histogram>
-
-<histogram name="Media.Kaleidoscope.FirstRunProgress"
-    enum="KaleidoscopeFirstRunProgress" expires_after="2021-08-19">
-  <obsolete>
-    Deprecated as of 2020/12.
-  </obsolete>
-  <owner>steimel@chromium.org</owner>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded each time the Kaleidoscope First Run Experience is shown when
-    either the tab is closed or the FRE is completed. Records how far into the
-    FRE the user got before exiting (or completing).
-  </summary>
-</histogram>
-
-<histogram name="Media.Kaleidoscope.Navigation" enum="KaleidoscopeNavigation"
-    expires_after="2021-08-19">
-  <obsolete>
-    Deprecated as of 2020/12.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded each time a user selects a media recommendation inside Kaleidoscope
-    and this triggers a navigation to a media partner's site.
-  </summary>
-</histogram>
-
-<histogram name="Media.Kaleidoscope.NewTabPage.CacheHitWhenForced"
-    enum="KaleidoscopeCacheHit" expires_after="2021-08-19">
-  <obsolete>
-    Deprecated as of 2020/12.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded each time the Kaleidoscope module is loaded on the New Tab Page
-    with whether the data was loaded from the server or whether it hit the
-    cache.
-  </summary>
-</histogram>
-
-<histogram name="Media.Kaleidoscope.NewTabPage.ServerFetchTime" units="ms"
-    expires_after="2021-08-19">
-  <obsolete>
-    Deprecated as of 2020/12.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded each time the Kaleidoscope module is loaded on the New Tab Page
-    with the time it takes to fetch the data from the server.
-  </summary>
-</histogram>
-
-<histogram name="Media.Kaleidoscope.OpenedMediaRecommendation" enum="Boolean"
-    expires_after="2021-08-19">
-  <obsolete>
-    Deprecated as of 2020/12.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded each time that Kaleidoscope is closed with whether the user opened
-    a media recommendation from Kaleidoscope during that session.
-  </summary>
-</histogram>
-
-<histogram name="Media.Kaleidoscope.TimeTakenToStartWatch" units="ms"
-    expires_after="2021-08-19">
-  <obsolete>
-    Deprecated as of 2020/12.
-  </obsolete>
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded the first time in a Kaleidoscope session a user selects a watch
-    action in Kaleidoscope with the time taken from loading the page to the user
-    clicking on the watch action.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Media.Learning.BinaryThreshold.Aggregate"
     enum="ConfusionMatrix" expires_after="2019-10-30">
 <!-- Name completed by histogram_suffixes
@@ -3081,17 +2751,6 @@ chromium-metrics-reviews@google.com.
 
     Please see |LearningTask::max_reporting_weight| and
     |LearningTask::num_reporting_weight_buckets| for the the appropriate task.
-  </summary>
-</histogram>
-
-<histogram name="Media.LinuxAudioIO" enum="LinuxAudioIO"
-    expires_after="2021-10-25">
-  <obsolete>
-    Deprecated as of 2021/09.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <summary>
-    Audio IO layer used by the Linux OS, sampled once at startup of the browser.
   </summary>
 </histogram>
 
@@ -3700,18 +3359,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the peak number of WebMediaPlayer objects per RenderFrame upon
     RenderFrame destruction (both cleanly and via render process termination).
-  </summary>
-</histogram>
-
-<histogram name="Media.Pepper.PlayedSound" enum="Boolean"
-    expires_after="2021-03-01">
-  <obsolete>
-    Deprecated as of 2021/01.
-  </obsolete>
-  <owner>mlamouri@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Whether Pepper players have played sound through its lifetime.
   </summary>
 </histogram>
 
@@ -4390,94 +4037,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.Timeline.DragGestureDuration" units="ms"
-    expires_after="2020-10-23">
-  <obsolete>
-    Deprecated as of 2020/10.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
-
-  <owner>mlamouri@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The duration of the user gesture (how long their finger is down), recorded
-    at the end of each drag gesture. This histogram is split according to the
-    width of the slider track in CSS px - see histogram name suffix.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.Timeline.DragPercent"
-    enum="MediaTimelinePercent" expires_after="2020-10-23">
-  <obsolete>
-    Deprecated as of 2020/10.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
-
-  <owner>mlamouri@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The net distance the media scrubber moved, recorded at the end of each drag
-    gesture, as a percentage of the width of the slider track. This histogram is
-    split according to the width of the slider track in CSS px - see histogram
-    name suffix.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.Timeline.DragSumAbsTimeDelta"
-    enum="MediaTimelineAbsTimeDelta" expires_after="2020-10-23">
-  <obsolete>
-    Deprecated as of 2020/10.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
-
-  <owner>mlamouri@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The sum of absolute distances the media scrubber incrementally moved,
-    recorded at the end of each drag gesture, each measured as the change in
-    media current time. If the scrubber was dragged back and forth before being
-    released, this will be larger than the value recorded for
-    Media.Timeline.DragTimeDelta (and may even be larger than the media
-    duration), otherwise it will be the same as DragTimeDelta. This histogram is
-    split according to the width of the slider track in CSS px - see histogram
-    name suffix.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.Timeline.DragTimeDelta"
-    enum="MediaTimelineTimeDelta" expires_after="2020-10-23">
-  <obsolete>
-    Deprecated as of 2020/10.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
-
-  <owner>mlamouri@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The net distance the media scrubber moved, recorded at the end of each drag
-    gesture, measured as the change in media current time. This histogram is
-    split according to the width of the slider track in CSS px - see histogram
-    name suffix.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.Timeline.SeekType"
-    enum="MediaTimelineSeekType" expires_after="2020-10-23">
-  <obsolete>
-    Deprecated as of 2020/10.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
-
-  <owner>mlamouri@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The type of user gesture, recorded at the end of each input sequence. For
-    example holding down the right arrow key with the scrubber focused will only
-    be logged as a single event. This histogram is split according to the width
-    of the slider track in CSS px - see histogram name suffix.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Media.TimeToFirstFrame" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
@@ -4519,23 +4078,6 @@ chromium-metrics-reviews@google.com.
   <owner>kouhei@chromium.org</owner>
   <owner>scherkus@chromium.org</owner>
   <summary>Size of HTML5 media (when known), in MB.</summary>
-</histogram>
-
-<histogram
-    name="Media.Ui.GetCurrentBrowsingContextMedia.ExplicitSelection.UserInteraction"
-    enum="GetCurrentBrowsingContextMediaExplicitSelectionUserInteraction"
-    expires_after="2022-01-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>eladalon@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <owner>agpalak@chromium.org</owner>
-  <summary>
-    Records the result of the user's interaction with the media picker dialog
-    which is displayed following a call to getCurrentBrowsingContextMedia. This
-    histogram refers to the explicit-selection variant of the dialog.
-  </summary>
 </histogram>
 
 <histogram name="Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult"
@@ -4663,16 +4205,6 @@ chromium-metrics-reviews@google.com.
     Records the autoplay source of videos. This includes
     Media.Video.Autoplay.Muted.
   </summary>
-</histogram>
-
-<histogram name="Media.Video.Autoplay.Muted" enum="AutoplaySource"
-    expires_after="2021-06-01">
-  <obsolete>
-    Removed in May 2021.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>Records the autoplay source of muted videos.</summary>
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.BecomesVisible"
@@ -5166,19 +4698,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCaptureManager.Event" enum="VideoCaptureEvent"
-    expires_after="M82">
-  <obsolete>
-    Expired in M82.
-  </obsolete>
-  <owner>chfremer@chromium.org</owner>
-  <owner>mcasas@chromium.org</owner>
-  <summary>
-    Counts video capture event, such as start and stop capture. Note that the
-    ideal case is 50% start events and 50% normal stop events.
-  </summary>
-</histogram>
-
 <histogram
     name="Media.VideoCaptureService.DurationFromLastConnectToClosingConnectionAfterCapture"
     units="ms" expires_after="M78">
@@ -5393,14 +4912,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoRotation" enum="VideoRotation" expires_after="M79">
-  <obsolete>
-    Went untouched since M79. Removed as of 11/21.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <summary>Metadata rotation in mp4 videos. Emitted during demuxing.</summary>
-</histogram>
-
 <histogram name="Media.VirtualAudioCaptureStartupSuccess"
     enum="AudioCaptureStartupResult" expires_after="2020-10-01">
   <owner>armax@chromium.org</owner>
@@ -5419,20 +4930,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether a VTDecompressionSession is internally using hardware accelerated
     decoding.
-  </summary>
-</histogram>
-
-<histogram name="Media.VTVDA.InitializationFailureReason"
-    enum="VTVDAInitializationFailureType" expires_after="2021-08-01">
-  <obsolete>
-    No longer recorded.
-  </obsolete>
-  <owner>sandersd@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Count of VideoToolbox initialization failure reasons. Successful
-    initializations are counted as a special failure type. The sum of successes
-    and failures gives a lower bound on the number of attempted initializations.
   </summary>
 </histogram>
 
@@ -5830,20 +5327,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.CastStreaming.Start.Failure"
-    enum="MirrorFailureType" expires_after="2021-08-09">
-  <obsolete>
-    Unused after August 2021.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Whenever a Cast Streaming session fails to start, record the error
-    associated with the event. This is recorded only for the extension Cast MRP.
-    See MediaRouter.CastStreaming.Start.Failure.Native for the native MRP.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.CastStreaming.Start.Failure.Native"
     enum="MirroringServiceErrorType" expires_after="2022-07-11">
   <owner>takumif@chromium.org</owner>
@@ -5862,45 +5345,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whenever a Cast Streaming session is successfully started, record if it was
     for a Tab or Desktop mirroring session.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.CastWebSenderExtensionLoaded"
-    enum="BooleanEnabled" expires_after="2021-10-01">
-  <obsolete>
-    The Media Router component extension was removed in M93.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Whenever a resource is loaded from the Media Router Component Extension,
-    this metric gets logged. The value for this metric is always true.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Cloud.PrefAtDialogOpen" enum="BooleanEnabled"
-    expires_after="2021-10-01">
-  <obsolete>
-    The Media Router component extension was removed in M93.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The pref value to enable the cloud services. Recorded whenever the Cast
-    dialog is opened.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Cloud.PrefAtInit" enum="BooleanEnabled"
-    expires_after="2021-10-01">
-  <obsolete>
-    The Media Router component extension was removed in M93.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The pref value to enable the cloud services. Recorded whenever the browser
-    is initialized for a regular (not incognito or guest) profile.
   </summary>
 </histogram>
 
@@ -6001,32 +5445,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.NetworkMonitor.ConnectionType"
-    enum="DiscoveryNetworkMonitorConnectionType" expires_after="2021-06-06">
-  <obsolete>
-    Unused after 2021-01-06.
-  </obsolete>
-  <owner>btolsch@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Network connection type reported by DiscoveryNetworkMonitor whenever it
-    detects a change in the set of networks connected to the host device which
-    may affect local discovery.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.NetworkMonitor.NetworkChangeEventDelta" units="ms"
-    expires_after="2021-02-01">
-  <obsolete>
-    Unused after 2021-01-06.
-  </obsolete>
-  <owner>btolsch@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Time between network change events reported by DiscoveryNetworkMonitor.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
     enum="PresentationUrlType" expires_after="2022-06-26">
   <owner>takumif@chromium.org</owner>
@@ -6089,43 +5507,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.Provider.Version" enum="MediaRouteProviderVersion"
-    expires_after="M93">
-  <obsolete>
-    Removed in M93.
-  </obsolete>
-  <owner>mfoltz@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records how the major version of the Media Router component extension
-    compares to the major version of the browser.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Provider.WakeReason"
-    enum="MediaRouteProviderWakeReason" expires_after="M93">
-  <obsolete>
-    Removed in M93.
-  </obsolete>
-  <owner>mfoltz@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Reason that the Media Router woke the Media Route Provider event page.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Provider.Wakeup" enum="MediaRouteProviderWakeup"
-    expires_after="M93">
-  <obsolete>
-    Removed in M93.
-  </obsolete>
-  <owner>mfoltz@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records the outcome of waking the Media Router component's event page.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.Route.CreationOutcome"
     enum="MediaRouterCreateRouteOutcome" expires_after="2023-01-03">
   <owner>takumif@chromium.org</owner>
@@ -6183,35 +5564,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The source of a Media Router session. This is recorded to keep track of what
     kind of media is being streamed.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Source.LocalFileFormat" enum="MediaContainers"
-    expires_after="2022-02-01">
-  <obsolete>
-    Unused after 2022-01.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The file format of a local media Media Router session. This is recorded when
-    a casting session begins to keep track of what kind of media is being
-    streamed.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Source.LocalFileSize" units="MB"
-    expires_after="2022-02-01">
-  <obsolete>
-    Unused after 2022-01.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The file size of a local media Media Router session. This is recorded when a
-    casting session begins to keep track of what kind of media is being
-    streamed, specifically, whether it is a clip or a song, or a full length
-    film or podcast.
   </summary>
 </histogram>
 
