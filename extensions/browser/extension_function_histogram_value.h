@@ -1674,6 +1674,7 @@ enum HistogramValue {
   WEB_AUTHENTICATION_PROXY_COMPLETE_CREATE_REQUEST = 1611,
   DEVELOPERPRIVATE_GETUSERSITESETTINGS = 1612,
   ACTION_OPENPOPUP = 1613,
+  OS_TELEMETRY_GETCPUINFO = 1614,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

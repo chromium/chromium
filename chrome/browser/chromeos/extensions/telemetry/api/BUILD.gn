@@ -24,6 +24,8 @@ source_set("api") {
     "hardware_info_delegate.h",
     "telemetry_api.cc",
     "telemetry_api.h",
+    "telemetry_api_converters.cc",
+    "telemetry_api_converters.h",
   ]
 
   deps = [
@@ -95,7 +97,10 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "diagnostics_api_converters_unittest.cc" ]
+  sources = [
+    "diagnostics_api_converters_unittest.cc",
+    "telemetry_api_converters_unittest.cc",
+  ]
 
   deps = [
     ":api",

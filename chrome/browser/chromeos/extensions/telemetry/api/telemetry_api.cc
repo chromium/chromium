@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -142,6 +143,40 @@ void OsTelemetryGetMemoryInfoFunction::OnResult(
 
   Respond(
       ArgumentList(api::os_telemetry::GetMemoryInfo::Results::Create(result)));
+}
+
+// OsTelemetryGetCpuInfoFunction -----------------------------------------------
+
+OsTelemetryGetCpuInfoFunction::OsTelemetryGetCpuInfoFunction() = default;
+OsTelemetryGetCpuInfoFunction::~OsTelemetryGetCpuInfoFunction() = default;
+
+void OsTelemetryGetCpuInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetCpuInfoFunction::OnResult, this);
+
+  remote_probe_service_->ProbeTelemetryInfo(
+      {ash::health::mojom::ProbeCategoryEnum::kCpu}, std::move(cb));
+}
+
+void OsTelemetryGetCpuInfoFunction::OnResult(
+    ash::health::mojom::TelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->cpu_result || !ptr->cpu_result->is_cpu_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  const auto& cpu_info = ptr->cpu_result->get_cpu_info();
+
+  api::os_telemetry::CpuInfo result;
+  if (cpu_info->num_total_threads) {
+    result.num_total_threads =
+        std::make_unique<int32_t>(cpu_info->num_total_threads->value);
+  }
+  result.architecture = converters::Convert(cpu_info->architecture);
+  result.physical_cpus =
+      converters::ConvertPtrVector<api::os_telemetry::PhysicalCpuInfo>(
+          std::move(cpu_info->physical_cpus));
+
+  Respond(ArgumentList(api::os_telemetry::GetCpuInfo::Results::Create(result)));
 }
 
 }  // namespace chromeos
