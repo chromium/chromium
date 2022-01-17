@@ -127,6 +127,7 @@ using signin_metrics::PromoAction;
             self.browser->GetBrowserState());
     syncSetupService->CommitSyncChanges();
   }
+  _syncObserver.reset();
 }
 
 #pragma mark - Properties
