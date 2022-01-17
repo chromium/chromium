@@ -1068,12 +1068,13 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
       HasCurrentBackdropFilterAnimation() !=
           other.HasCurrentBackdropFilterAnimation() ||
       SubtreeWillChangeContents() != other.SubtreeWillChangeContents() ||
+      WillChangeScrollPosition() != other.WillChangeScrollPosition() ||
+      WillChangeProperties() != other.WillChangeProperties() ||
       BackfaceVisibility() != other.BackfaceVisibility() ||
       UsedTransformStyle3D() != other.UsedTransformStyle3D() ||
       ContainsPaint() != other.ContainsPaint() ||
       IsOverflowVisibleAlongBothAxes() !=
           other.IsOverflowVisibleAlongBothAxes() ||
-      WillChangeProperties() != other.WillChangeProperties() ||
       !BackdropFilterDataEquivalent(other) ||
       PotentialCompositingReasonsFor3DTransformChanged(other)) {
     diff.SetCompositingReasonsChanged();

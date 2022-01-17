@@ -248,6 +248,9 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
   if (reasons_except_scrolling != CompositingReason::kNone)
     return true;
 
+  if (object.StyleRef().WillChangeScrollPosition())
+    return true;
+
   // Though we don't treat hidden backface as a direct compositing reason, it's
   // very likely that the object will be composited, and it also indicates
   // preference of compositing, so we prefer composited scrolling here.

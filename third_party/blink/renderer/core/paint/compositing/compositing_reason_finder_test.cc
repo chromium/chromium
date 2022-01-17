@@ -487,4 +487,27 @@ TEST_P(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
                  DirectReasonsForPaintProperties(*feBlend));
 }
 
+TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 100px; overflow: scroll;
+                            will-change: scroll-position">
+      <div style="height: 2000px"></div>
+    </div>
+  )HTML");
+
+  auto* target = GetLayoutObjectByElementId("target");
+  EXPECT_TRUE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
+      *target, CompositingReason::kNone));
+  EXPECT_REASONS(CompositingReason::kOverflowScrolling,
+                 DirectReasonsForPaintProperties(*target));
+
+  GetDocument().getElementById("target")->RemoveInlineStyleProperty(
+      CSSPropertyID::kWillChange);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
+      *target, CompositingReason::kNone));
+  EXPECT_REASONS(CompositingReason::kNone,
+                 DirectReasonsForPaintProperties(*target));
+}
+
 }  // namespace blink
