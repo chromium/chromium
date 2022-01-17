@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TabClosed) {
       chrome_test_utils::GetActiveWebContents(this));
   tab_model->CloseTabAt(tab_model->GetActiveIndex());
 #else
-  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabStripModel::CLOSE_NONE);
 #endif  // defined (OS_ANDROID)
