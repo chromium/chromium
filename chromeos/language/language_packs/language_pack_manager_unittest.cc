@@ -113,22 +113,6 @@ class LanguagePackManagerTest : public testing::Test {
   }
 };
 
-TEST_F(LanguagePackManagerTest, IsPackAvailableTrueTest) {
-  const bool available =
-      manager_->IsPackAvailable(kHandwritingFeatureId, kSupportedLocale);
-  EXPECT_TRUE(available);
-}
-
-TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
-  // Correct ID, wrong language.
-  bool available = manager_->IsPackAvailable(kHandwritingFeatureId, "fr");
-  EXPECT_FALSE(available);
-
-  // ID doesn't exists.
-  available = manager_->IsPackAvailable("foo", "fr");
-  EXPECT_FALSE(available);
-}
-
 TEST_F(LanguagePackManagerTest, InstallSuccessTest) {
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
@@ -329,10 +313,26 @@ TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
 // Check that all supported locales are available.
 TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
   // Handwriting Recognition.
-  const std::vector<std::string> handwriting({"es", "spa"});
+  const std::vector<std::string> handwriting(
+      {"am", "ar", "be", "bg", "bn", "ca", "cs", "da", "de", "el", "es",
+       "et", "fa", "fi", "fr", "ga", "gu", "hi", "hr", "hu", "hy", "id",
+       "is", "it", "iw", "ja", "ka", "kk", "km", "kn", "ko", "lo", "lt",
+       "lv", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "or",
+       "pa", "pl", "pt", "ro", "ru", "si", "sk", "sl", "sr", "sv", "ta",
+       "te", "th", "ti", "tl", "tr", "uk", "ur", "vi", "zh"});
   for (const auto& locale : handwriting) {
     EXPECT_TRUE(manager_->IsPackAvailable(kHandwritingFeatureId, locale));
   }
+}
+
+TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
+  // Correct ID, wrong language.
+  bool available = manager_->IsPackAvailable(kHandwritingFeatureId, "xx");
+  EXPECT_FALSE(available);
+
+  // ID doesn't exists.
+  available = manager_->IsPackAvailable("foo", "fr");
+  EXPECT_FALSE(available);
 }
 
 }  // namespace language_packs
