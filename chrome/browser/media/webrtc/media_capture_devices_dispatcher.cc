@@ -39,7 +39,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_features.h"
-#else  // !OS_ANDROID
+#else
 #include "chrome/browser/media/webrtc/display_media_access_handler.h"
 #endif  //  BUILDFLAG(IS_ANDROID)
 

@@ -13,7 +13,7 @@ class PrefService;
 
 namespace media_router {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace prefs {
 // Pref name that allows the AccessCode/QR code scanning dialog button to be
@@ -38,7 +38,7 @@ bool GetAccessCodeCastEnabledPref(PrefService* pref_service);
 // in the cast list.
 base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service);
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router
 

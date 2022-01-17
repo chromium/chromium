@@ -136,6 +136,6 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
          MediaRouterEnabled(context);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

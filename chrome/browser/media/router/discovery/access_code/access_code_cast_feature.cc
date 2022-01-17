@@ -9,13 +9,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/prefs/pref_registry_simple.h"
 #endif
 
 namespace media_router {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 void RegisterAccessCodeProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kAccessCodeCastEnabled, false,
@@ -35,6 +35,6 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
   return base::Seconds(
       pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router
