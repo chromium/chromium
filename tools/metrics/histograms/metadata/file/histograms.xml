@@ -256,32 +256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.LauncherSearch.Drive" units="ms"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The time taken to execute launcher search for drive files. Recorded when the
-    complete result set is returned from drive.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.LauncherSearch.Local" units="ms"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The time taken to execute launcher search for local files. Recorded when the
-    complete result set has been calculated for files on the local disk.
-  </summary>
-</histogram>
-
 <histogram name="FileBrowser.Load{FileBrowserLoad}" units="ms"
     expires_after="M108">
   <owner>simmonsjosh@google.com</owner>
@@ -301,23 +275,6 @@ chromium-metrics-reviews@google.com.
         summary="Time to create a window on restart."/>
     <variant name=".BackgroundScript"
         summary="Time to initialize backend script to wait for events."/>
-    <variant name=".Construct"
-        summary="Time spent constructing the main Javascript object.">
-      <obsolete>
-        Deprecated as of 12/2016.
-      </obsolete>
-    </variant>
-    <variant name=".DOM" summary="Time to initialize DOM.">
-      <obsolete>
-        Deprecated as of 12/2016.
-      </obsolete>
-    </variant>
-    <variant name=".FileSystem"
-        summary="Time to get access to the local file system.">
-      <obsolete>
-        Deprecated as of 9/2013.
-      </obsolete>
-    </variant>
     <variant name=".ImportElements"
         summary="Time to initialize the polymer elements."/>
     <variant name=".InitBackgroundPage"
@@ -328,20 +285,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".InitUI"
         summary="Time to initialize all UI after all elements are
                  initialized."/>
-    <variant name=".Parse"
-        summary="Time to parse Javascript and CSS (Deprecated).">
-      <obsolete>
-        Deprecated as of 12/2016.
-      </obsolete>
-    </variant>
     <variant name=".ProcessInitialSearchQuery"
         summary="Time to process LaunchParam.searchQuery (time to find a
                  query-matched directory)."/>
-    <variant name=".Roots" summary="Time to enumerate file system roots.">
-      <obsolete>
-        Deprecated as of 12/2016.
-      </obsolete>
-    </variant>
     <variant name=".Script" summary="Time to parse Javascript and CSS."/>
     <variant name=".Total"
         summary="Total load time from the moment the Javascript started
@@ -489,108 +435,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.PhotoEditor.DisplayTime" units="ms"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Photo Editor: time to display an image. Measured from the moment
-    the user selected the image till the moment it is displayed (not counting
-    the low resolution preview).
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.FileType" enum="PhotoEditorFileType"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>Chrome OS Photo Editor: the type of the file opened.</summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.LoadMode" enum="PhotoEditorLoadMode"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>Chrome OS Photo Editor: the way the image has been loaded.</summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.LoadTime" units="ms"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>Chrome OS Photo Editor: time to load an image from a file.</summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.SaveResult"
-    enum="PhotoEditorSaveResult" expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Photo Editor: the result of a file save operation.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.SaveTime" units="ms"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>Chrome OS Photo Editor: time to save an image to a file.</summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.Size.MB" units="MBytes"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Photo Editor: size of an image file in megabytes. Measured on
-    every image load.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.Size.MPix" units="MPixels"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Photo Editor: size of an image in megapixels. Measured on every
-    image load.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.PhotoEditor.Tool" enum="PhotoEditorToolType"
-    expires_after="M98">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>Chrome OS Photo Editor: the button which the user clicked.</summary>
-</histogram>
-
 <histogram name="FileBrowser.QuickView.DialogType" enum="FileDialogType"
     expires_after="2022-04-10">
   <owner>simmonsjosh@google.com</owner>
@@ -675,97 +519,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time to load a recently modified file list from all sources. It is triggered
     when the user opens or reloads Recent view in the Files app.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.Share.ActionSource" enum="SharingActionSource"
-    expires_after="2022-04-24">
-  <obsolete>
-    Removed in M97. File sharing is now done by Sharesheet, not Files.app.
-    Replaced with ChromeOS.Sharesheet.LaunchSource.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>Chrome OS File Browser: the source of file sharing action.</summary>
-</histogram>
-
-<histogram name="FileBrowser.Share.FileCount" units="files"
-    expires_after="2022-04-17">
-  <obsolete>
-    Removed in M97. File sharing is now done by Sharesheet, not Files.app.
-    Replaced with ChromeOS.Sharesheet.FileCount.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: The number of files shared via a single Share
-    action.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.Share.FileType" enum="ViewFileType"
-    expires_after="2022-04-24">
-  <obsolete>
-    Removed in M99. File sharing is now done by Sharesheet, not Files.app.
-    Replaced with ChromeOS.Sharesheet.Invocation.Mimetype.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: The type of the file shared via Share action.
-    Recorded for each file being shared by a share action
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.SuggestApps.CloseDialog"
-    enum="SuggestAppsDialogCloseReason" expires_after="M92">
-  <obsolete>
-    Removed in M90. Files.app no longer displays CWS dialog.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: the reason why the suggest apps dialog was closed.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.SuggestApps.Install"
-    enum="SuggestAppsDialogInstall" expires_after="2021-08-09">
-  <obsolete>
-    Removed in M90. Files.app no longer displays CWS dialog.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: whether the Webstore item user selected was
-    successfully installed or not.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.SuggestApps.Load" enum="SuggestAppsDialogLoad"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M90. Files.app no longer displays CWS dialog.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: whether the initialization of the dialog succeeded
-    or not.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.SuggestApps.LoadTime" units="ms"
-    expires_after="M92">
-  <obsolete>
-    Removed in M90. Files.app no longer displays CWS dialog.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: time to load the suggest apps dialog. Measured
-    between the moment window appears and the moment all the contents in the
-    dialog including the Chrome Webstore widget are ready.
   </summary>
 </histogram>
 
@@ -914,19 +667,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Chrome OS File Browser: counts the number of times volumes are mounted for
     each volume type.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.ZipFileTask" enum="FileManagerZipHandlerType"
-    expires_after="M98">
-  <obsolete>
-    Related to NaCl-based ZipArchiver extension, removed in M96
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: counts the number of times ZIP file was opened or
-    created, categorized by component extensions and its operation types.
   </summary>
 </histogram>
 

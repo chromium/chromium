@@ -64,21 +64,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CrosDisks.Fuse.Archivemount" enum="ArchivemountError"
-    expires_after="2022-04-17">
-  <obsolete>
-    Deprecated 10/2021. This feature (using the older archivemount program
-    instead of newer fuse-archive) was never enabled-by-default, although some
-    people opted into the chrome://flags/#files-archivemount flag anyway.
-  </obsolete>
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The error code returned by the archivemount program, which is called every
-    time a user opens various archive files in ChromeOS Files App.
-  </summary>
-</histogram>
-
 <histogram name="CrosDisks.Fuse.FuseArchive" enum="FuseArchiveError"
     expires_after="2022-04-17">
   <owner>fdegros@chromium.org</owner>
@@ -173,86 +158,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time taken by the Chrome OS cros-disks daemon to perform an Unmount
     operation.
-  </summary>
-</histogram>
-
-<histogram name="CrosFirstRun.DialogShown" units="units"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Records the number of times when first-run dialog was shown.
-  </summary>
-</histogram>
-
-<histogram name="CrosFirstRun.FurthestStep" units="units"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Index of furthest step that was reached during tutorial. Since order of
-    steps could change eventially and new steps could apear we use index here
-    instead of step name.
-  </summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TimeSpent" units="ms" expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>The total time that user spent on first-run tutorial.</summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TimeSpentOnStep" units="ms"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>The time that user spent on some step of tutorial.</summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TutorialCompletion"
-    enum="CrosFirstRunTutorialCompletionType" expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>Tracks the way how user left tutorial.</summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TutorialLaunched" units="units"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Records the number of times when first-run tutorial has been launched.
-  </summary>
-</histogram>
-
-<histogram name="CrosUsb.NotificationClosed" enum="CrosUsbNotificationClosed"
-    expires_after="2021-01-31">
-  <obsolete>
-    Removed 01/2021. We haven't been making use of this.
-  </obsolete>
-  <owner>clumptini@google.com</owner>
-  <owner>tbuckley@chromium.org</owner>
-  <summary>
-    Records the reason why the &quot;Cros USB device detected&quot; notification
-    was dismissed. Recorded on notificiation close, after usb attached.
   </summary>
 </histogram>
 

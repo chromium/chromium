@@ -3000,13 +3000,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.Busyloop"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CrosFirstRunStep" separator="">
-  <suffix name="AppList" label=""/>
-  <suffix name="Help" label=""/>
-  <suffix name="Tray" label=""/>
-  <affected-histogram name="CrosFirstRun.TimeSpentOnStep"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CrosNotificationActions" separator=".">
   <suffix name="CountOfNotificationShownInFirstMinutePerUser"
       label="Count of notifications displayed in the first minute since login
