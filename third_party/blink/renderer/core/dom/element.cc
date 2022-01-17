@@ -3638,8 +3638,21 @@ struct Element::AffectedByPseudoStateChange {
         if (auto* style = element.GetComputedStyle())
           ancestors = style->AncestorsAffectedByActiveInHas();
         break;
+
       case CSSSelector::kPseudoChecked:
+      case CSSSelector::kPseudoDefault:
+      case CSSSelector::kPseudoDisabled:
+      case CSSSelector::kPseudoEnabled:
       case CSSSelector::kPseudoIndeterminate:
+      case CSSSelector::kPseudoInRange:
+      case CSSSelector::kPseudoInvalid:
+      case CSSSelector::kPseudoOutOfRange:
+      case CSSSelector::kPseudoOptional:
+      case CSSSelector::kPseudoPlaceholderShown:
+      case CSSSelector::kPseudoReadOnly:
+      case CSSSelector::kPseudoReadWrite:
+      case CSSSelector::kPseudoRequired:
+      case CSSSelector::kPseudoValid:
         ancestors = true;
         break;
       default:
