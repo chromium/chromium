@@ -178,7 +178,7 @@ void UnsentLogStore::MarkStagedLogAsSent() {
 }
 
 void UnsentLogStore::TrimAndPersistUnsentLogs() {
-  ListPrefUpdateDeprecated update(local_state_, log_data_pref_name_);
+  ListPrefUpdate update(local_state_, log_data_pref_name_);
   TrimLogs();
   WriteLogsToPrefList(update.Get());
 }
@@ -373,8 +373,8 @@ void UnsentLogStore::WriteToMetricsPref(
   if (metadata_pref_name_ == nullptr)
     return;
 
-  DictionaryPrefUpdateDeprecated update(local_state_, metadata_pref_name_);
-  base::DictionaryValue* pref_data = update.Get();
+  DictionaryPrefUpdate update(local_state_, metadata_pref_name_);
+  base::Value* pref_data = update.Get();
   pref_data->SetKey(kLogUnsentCountKey, base::Value(unsent_samples_count));
   pref_data->SetKey(kLogSentCountKey, base::Value(sent_samples_count));
   // Round up to kb.
