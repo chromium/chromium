@@ -1759,7 +1759,11 @@ const char kOmniboxRichAutocompletionPromisingName[] =
 const char kOmniboxRichAutocompletionPromisingDescription[] =
     "Allow autocompletion for titles and non-prefixes; see Omnibox Rich "
     "Autocompletion.";
-
+const char kOmniboxSiteSearchStarterPackName[] =
+    "Omnibox Site Search Starter Pack";
+const char kOmniboxSiteSearchStarterPackDescription[] =
+    "Enables @history, @bookmarks, and @settings scopes in Omnibox Site "
+    "Search/Keyword Mode";
 const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPName[] =
     "Allow Omnibox contextual web on-focus suggestions on the SRP";
 const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription[] =

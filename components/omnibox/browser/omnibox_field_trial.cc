@@ -715,6 +715,10 @@ bool OmniboxFieldTrial::IsActiveSearchEnginesEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kActiveSearchEngines);
 }
 
+bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kSiteSearchStarterPack);
+}
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";

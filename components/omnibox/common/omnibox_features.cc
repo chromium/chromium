@@ -322,6 +322,11 @@ const base::Feature kKeywordSpaceTriggeringSetting{
 const base::Feature kActiveSearchEngines{"OmniboxActiveSearchEngines",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, adds a "starter pack" of @history, @bookmarks, and @settings
+// scopes to Site Search/Keyword Mode.
+const base::Feature kSiteSearchStarterPack{"OmniboxSiteSearchStarterPack",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Experiment to introduce new security indicators for HTTPS.
 const base::Feature kUpdatedConnectionSecurityIndicators{
     "OmniboxUpdatedConnectionSecurityIndicators",

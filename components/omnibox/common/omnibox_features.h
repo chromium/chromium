@@ -90,6 +90,7 @@ extern const base::Feature kOmniboxAssistantVoiceSearch;
 // page
 extern const base::Feature kKeywordSpaceTriggeringSetting;
 extern const base::Feature kActiveSearchEngines;
+extern const base::Feature kSiteSearchStarterPack;
 
 // Experiment to introduce new security indicators for HTTPS.
 extern const base::Feature kUpdatedConnectionSecurityIndicators;

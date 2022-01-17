@@ -4321,6 +4321,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "omnibox-site-search-starter-pack",
+    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 107
+  },
+  {
     "name": "omnibox-spare-renderer",
     "owners": [ "instant-nav@google.com" ],
     "expiry_milestone": 92

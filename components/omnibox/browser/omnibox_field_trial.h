@@ -401,6 +401,10 @@ bool ShouldDisableCGIParamMatching();
 // active search engines.
 bool IsActiveSearchEnginesEnabled();
 
+// If true, enables a "starter pack" of @history, @bookmarks, and @settings
+// scopes for Site Search.
+bool IsSiteSearchStarterPackEnabled();
+
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
 
