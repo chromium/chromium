@@ -27,8 +27,8 @@
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "components/webxr/android/arcore_device_provider.h"
 #include "components/webxr/android/arcore_install_helper.h"
-#endif  // ENABLE_ARCORE
-#endif  // OS_WIN/OS_ANDROID
+#endif  // BUILDFLAG(ENABLE_ARCORE)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace vr {
 
@@ -42,8 +42,8 @@ ChromeXrIntegrationClient::GetInstallHelper(
 #if BUILDFLAG(ENABLE_ARCORE)
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
       return std::make_unique<webxr::ArCoreInstallHelper>();
-#endif  // ENABLE_ARCORE
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(ENABLE_ARCORE)
+#endif  // BUILDFLAG(IS_ANDROID)
     default:
       return nullptr;
   }

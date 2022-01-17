@@ -830,7 +830,7 @@ TEST_F(UiTest, WebVrTimeout) {
       {kWebVrTimeoutSpinner, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
       false);
-#endif  // OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {
           kWebVrBackground,
@@ -849,7 +849,7 @@ TEST_F(UiTest, WebVrTimeout) {
   VerifyVisibility({kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
                     kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
                    false);
-#endif  // OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {
           kWebVrTimeoutSpinner, kWebVrBackground,
@@ -875,7 +875,7 @@ TEST_F(UiTest, WebVrTimeout) {
       {kWebVrBackground, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
       true);
-#endif  // OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 TEST_F(UiTest, SpeechRecognitionUiVisibility) {
