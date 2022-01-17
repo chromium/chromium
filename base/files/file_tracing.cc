@@ -4,21 +4,19 @@
 
 #include "base/files/file_tracing.h"
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/files/file.h"
 #include "base/trace_event/base_tracing.h"
-
-using base::subtle::AtomicWord;
 
 namespace base {
 
 namespace {
-AtomicWord g_provider;
+std::atomic<FileTracing::Provider*> g_provider;
 }
 
 FileTracing::Provider* GetProvider() {
-  AtomicWord provider = base::subtle::Acquire_Load(&g_provider);
-  return reinterpret_cast<FileTracing::Provider*>(provider);
+  return g_provider.load(std::memory_order_acquire);
 }
 
 // static
@@ -29,8 +27,7 @@ bool FileTracing::IsCategoryEnabled() {
 
 // static
 void FileTracing::SetProvider(FileTracing::Provider* provider) {
-  base::subtle::Release_Store(&g_provider,
-                              reinterpret_cast<AtomicWord>(provider));
+  g_provider.store(provider, std::memory_order_release);
 }
 
 FileTracing::ScopedEnabler::ScopedEnabler() {
