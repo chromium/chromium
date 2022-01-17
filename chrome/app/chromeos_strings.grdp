@@ -1139,13 +1139,13 @@
     Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite all data on your device.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_0" desc="First part of body text of the OS install screen's introduction step.">
-    Before starting, make sure you have a backup of your data. Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite your hard drive. Learn more at g.co/TBD.
+    Before starting, make sure you have a backup of your data. Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite your hard drive. Learn more at g.co/CR2/InstallGuide.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_1" desc="Second part of body text of the OS install screen's introduction step.">
     Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_FOOTER" desc="Footer text of the OS install screen's introduction step.">
-    Google isn’t responsible for any data loss, and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may not work on uncertified models. Learn more at g.co/TBD.
+    Google isn’t responsible for any data loss, and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may not work on uncertified models. Learn more at g.co/CR2/InstallGuide.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
     Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
@@ -1171,7 +1171,7 @@
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Something went wrong and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> couldn’t be installed.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help visit: g.co/xxxxx<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_ERROR_VIEW_LOGS" desc="Label for an actionable link that opens dialog with installation logs.">
     View logs
@@ -1188,7 +1188,7 @@
     <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure you're using a certified model and check install notes
     <ph name="END_LIST">&lt;/ul&gt;</ph>
     <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/xxxxx<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
     Installation complete
@@ -2250,7 +2250,7 @@
   <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT" desc="Steps that can help users to properly setup TPM manually.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before enrolling you need to clear the TPM so <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> can take ownership of the device.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> documentation on a separate device before you reboot: [URL link]<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> documentation on a separate device before you reboot: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT_BUTTON" desc="Label on button that restarts device.">
     Restart
@@ -4068,10 +4068,10 @@
   <message name="IDS_HW_DATA_COLLECTION_CONTENT" desc="Content of the hardware data collection notice screen.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>To provide the best experience, <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> collects hardware data about devices and shares it with Google to determine which updates should be delivered. Optionally, you can allow Google to use this data for additional purposes like support and improvements to the <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> experience and service.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can log in on this device and visit the CLOUDREADY_HARDWARE_INFO section in chrome://system to see the data sent to Google for update filtering, as well as any other instances where you choose to share data with Google.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>For more details on data <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may share with Google, and how it is used visit g.co/xxxxx<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>For more details on data <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may share with Google, and how it is used visit g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_HW_DATA_COLLECTION_USAGE_INFO" desc="Checkbox description for additional hardware data usage. This message is followed by a 'Learn more' link.">
-    Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise.
+    Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise. Learn more at g.co/CR2/HWDataCollection.
   </message>
   <message name="IDS_HW_DATA_COLLECTION_ACCEPT_AND_CONTINUE_BUTTON_TEXT" desc="Label on a button on the hardware data collection notice screen to accept the terms and continue.">
     Accept and continue

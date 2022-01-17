@@ -84,11 +84,6 @@ class HWDataCollectionScreen extends HWDataCollectionScreenElementBase {
       this.userActed('unselect-hw-data-usage');
     }
   }
-
-  /**
-   * @private
-   */
-  onDataUsageHelpLinkClicked_() {}
 }
 
 customElements.define(HWDataCollectionScreen.is, HWDataCollectionScreen);
