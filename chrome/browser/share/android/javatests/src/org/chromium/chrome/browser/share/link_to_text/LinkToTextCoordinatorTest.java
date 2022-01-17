@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.share.link_to_text;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,8 +67,18 @@ public class LinkToTextCoordinatorTest {
     private WebContents mWebContents;
     @Mock
     private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock
+    private LinkToTextBridge.Natives mLinkToTextBridge;
 
+    private LinkToTextCoordinator mLinkToTextCoordinator;
     private Activity mActivity;
+    private ChromeShareExtras mChromeShareExtras;
+    private ChromeShareExtras mReshareChromeShareExtras;
+    private String mSelector;
+    private Integer mError;
+    private Integer mReadyStatus;
+    private boolean mIsRemoteRequestResultSet;
+
     private static final String SELECTED_TEXT = "selection";
     private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String AMP_URL = JUnitTestGURLs.AMP_URL;
@@ -76,8 +88,39 @@ public class LinkToTextCoordinatorTest {
     private static final String MOBILE_SUBDOMAIN_URL = "https://m.foo.com";
     private static final String AMP_MOBILE_SUBDOMAIN_URL =
             "https://m.google.com/amp/www.nyt.com/ampthml/blogs.html";
+    private static final String BLOCKLIST_URL = JUnitTestGURLs.URL_1;
     private static final String SELECTED_TEXT_LONG =
             "This textbook has more freedom than most (but see some exceptions).";
+    private static final long SHARE_START_TIME = 1L;
+
+    private void checkShowsShareSheetWithNoLink() {
+        ShareParams shareParams = mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK);
+        verify(mShareCallback, times(1))
+                .showShareSheet(eq(shareParams), any(), eq(SHARE_START_TIME));
+        Assert.assertEquals("", shareParams.getUrl());
+        Assert.assertEquals(false, shareParams.getLinkToTextSuccessful());
+    }
+
+    private void checkShowsShareSheetWithLink(String url) {
+        ShareParams shareParams = mLinkToTextCoordinator.getShareParams(LinkToggleState.LINK);
+        verify(mShareCallback, times(1))
+                .showShareSheet(eq(shareParams), any(), eq(SHARE_START_TIME));
+        Assert.assertEquals(url, shareParams.getUrl());
+        Assert.assertEquals(true, shareParams.getLinkToTextSuccessful());
+    }
+
+    private void setGenerationRemoteRequestResults(
+            String selector, Integer error, Integer readyStatus) {
+        mIsRemoteRequestResultSet = true;
+        mSelector = selector;
+        mError = error;
+        mReadyStatus = readyStatus;
+    }
+
+    private void setReshareRemoteRequestResults(String selector) {
+        mIsRemoteRequestResultSet = true;
+        mSelector = selector;
+    }
 
     @Before
     public void setUpTest() {
@@ -88,10 +131,37 @@ public class LinkToTextCoordinatorTest {
                 .thenAnswer((invocation) -> {
                     return new GURL((String) invocation.getArguments()[0]);
                 });
-        doNothing().when(mShareCallback).showThirdPartyShareSheet(any(), any(), anyLong());
         doNothing().when(mShareCallback).showShareSheet(any(), any(), anyLong());
-        Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
-        Mockito.when(mTab.getWindowAndroid()).thenReturn(mWindow);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getWindowAndroid()).thenReturn(mWindow);
+
+        jniMocker.mock(LinkToTextBridgeJni.TEST_HOOKS, mLinkToTextBridge);
+        when(mLinkToTextBridge.shouldOfferLinkToText(any(GURL.class))).thenAnswer((invocation) -> {
+            return !((GURL) invocation.getArguments()[0]).getSpec().equals(BLOCKLIST_URL);
+        });
+        mChromeShareExtras = new ChromeShareExtras.Builder().build();
+        mReshareChromeShareExtras =
+                new ChromeShareExtras.Builder().setIsReshareHighlightedText(true).build();
+
+        mLinkToTextCoordinator = Mockito.spy(new LinkToTextCoordinator() {
+            @Override
+            void requestSelector() {
+                // Consider solutions that will not leak implementation details to tests.
+                mLinkToTextCoordinator.mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
+                if (mIsRemoteRequestResultSet) {
+                    mLinkToTextCoordinator.onRemoteRequestCompleted(
+                            mSelector, mError, mReadyStatus);
+                }
+            }
+
+            @Override
+            void reshareHighlightedText() {
+                mLinkToTextCoordinator.mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
+                if (mIsRemoteRequestResultSet) {
+                    mLinkToTextCoordinator.onReshareSelectorsRemoteRequestCompleted(mSelector);
+                }
+            }
+        });
     }
 
     @Test
@@ -99,15 +169,10 @@ public class LinkToTextCoordinatorTest {
     public void showShareSheetTest_LinkGeneration() {
         String selector = "selector";
         String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
-
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
-        coordinator.onSelectorReady(selector);
-        ShareParams shareParams = coordinator.getShareParams(LinkToggleState.LINK);
-        verify(mShareCallback).showShareSheet(eq(shareParams), any(), anyLong());
-        Assert.assertEquals(expectedUrlToShare, shareParams.getUrl());
-        Assert.assertEquals(true, shareParams.getLinkToTextSuccessful());
+        mLinkToTextCoordinator.initLinkToTextCoordinator(mTab, mShareCallback, mChromeShareExtras,
+                SHARE_START_TIME, VISIBLE_URL, SELECTED_TEXT);
+        mLinkToTextCoordinator.onSelectorReady(selector);
+        checkShowsShareSheetWithLink(expectedUrlToShare);
     }
 
     @Test
@@ -119,14 +184,10 @@ public class LinkToTextCoordinatorTest {
         String expectedUrlToShare =
                 VISIBLE_URL + "#:~:text=selector1&text=selector2&text=selector3";
 
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
-        coordinator.onSelectorReady(fragmentDirective);
-        ShareParams shareParams = coordinator.getShareParams(LinkToggleState.LINK);
-        verify(mShareCallback).showShareSheet(eq(shareParams), any(), anyLong());
-        Assert.assertEquals(expectedUrlToShare, shareParams.getUrl());
-        Assert.assertEquals(true, shareParams.getLinkToTextSuccessful());
+        mLinkToTextCoordinator.initLinkToTextCoordinator(mTab, mShareCallback, mChromeShareExtras,
+                SHARE_START_TIME, VISIBLE_URL, SELECTED_TEXT);
+        mLinkToTextCoordinator.onSelectorReady(fragmentDirective);
+        checkShowsShareSheetWithLink(expectedUrlToShare);
     }
 
     @Test
@@ -135,48 +196,225 @@ public class LinkToTextCoordinatorTest {
         String selector = "";
         String expectedUrlToShare = "";
 
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
-        coordinator.onSelectorReady(selector);
-        ShareParams shareParams = coordinator.getShareParams(LinkToggleState.NO_LINK);
-        verify(mShareCallback).showShareSheet(eq(shareParams), any(), anyLong());
-        Assert.assertEquals(expectedUrlToShare, shareParams.getUrl());
-        Assert.assertEquals(false, shareParams.getLinkToTextSuccessful());
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mChromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
+        mLinkToTextCoordinator.onSelectorReady(selector);
+        checkShowsShareSheetWithNoLink();
     }
 
     @Test
     @SmallTest
     public void isAmpUrlTest() {
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, AMP_URL, SELECTED_TEXT);
+        Assert.assertEquals(true, mLinkToTextCoordinator.isAmpUrl(AMP_URL));
+        Assert.assertEquals(false, mLinkToTextCoordinator.isAmpUrl(VISIBLE_URL));
 
-        Assert.assertEquals(true, coordinator.isAmpUrl(AMP_URL));
-        Assert.assertEquals(false, coordinator.isAmpUrl(VISIBLE_URL));
+        Assert.assertEquals(true, mLinkToTextCoordinator.isAmpUrl(AMP_MOBILE_URL));
+        Assert.assertEquals(false, mLinkToTextCoordinator.isAmpUrl(MOBILE_URL));
 
-        Assert.assertEquals(true, coordinator.isAmpUrl(AMP_MOBILE_URL));
-        Assert.assertEquals(false, coordinator.isAmpUrl(MOBILE_URL));
-
-        Assert.assertEquals(true, coordinator.isAmpUrl(AMP_MOBILE_SUBDOMAIN_URL));
-        Assert.assertEquals(false, coordinator.isAmpUrl(MOBILE_SUBDOMAIN_URL));
+        Assert.assertEquals(true, mLinkToTextCoordinator.isAmpUrl(AMP_MOBILE_SUBDOMAIN_URL));
+        Assert.assertEquals(false, mLinkToTextCoordinator.isAmpUrl(MOBILE_SUBDOMAIN_URL));
     }
 
     @Test
     @SmallTest
     public void getPreviewTextLongTest() {
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT_LONG);
-        Assert.assertEquals("This textbook has more freedom t...", coordinator.getPreviewText());
+        mLinkToTextCoordinator.initLinkToTextCoordinator(mTab, mShareCallback, mChromeShareExtras,
+                SHARE_START_TIME, VISIBLE_URL, SELECTED_TEXT_LONG);
+        Assert.assertEquals(
+                "This textbook has more freedom t...", mLinkToTextCoordinator.getPreviewText());
     }
 
     @Test
     @SmallTest
     public void getPreviewTextTest() {
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
-        Assert.assertEquals("selection", coordinator.getPreviewText());
+        mLinkToTextCoordinator.initLinkToTextCoordinator(mTab, mShareCallback, mChromeShareExtras,
+                SHARE_START_TIME, VISIBLE_URL, SELECTED_TEXT);
+        Assert.assertEquals("selection", mLinkToTextCoordinator.getPreviewText());
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_BlocklistUrl() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(mTab, mShareCallback, mChromeShareExtras,
+                SHARE_START_TIME, BLOCKLIST_URL, SELECTED_TEXT);
+        mLinkToTextCoordinator.shareLinkToText();
+
+        // Check that shows share sheet without link to text
+        checkShowsShareSheetWithNoLink();
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1)).logFailureMetrics(LinkGenerationError.BLOCK_LIST);
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_GenerationError() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        setGenerationRemoteRequestResults("", new Integer(LinkGenerationError.EMPTY_SELECTION),
+                new Integer(LinkGenerationReadyStatus.REQUESTED_AFTER_READY));
+        mLinkToTextCoordinator.shareLinkToText();
+
+        // Check that shows share sheet without link to text
+        checkShowsShareSheetWithNoLink();
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1)).logFailureMetrics(LinkGenerationError.EMPTY_SELECTION);
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_Timeout_BeforeRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        mLinkToTextCoordinator.shareLinkToText();
+        mLinkToTextCoordinator.timeout();
+
+        // Check that shows share sheet without link to text
+        checkShowsShareSheetWithNoLink();
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1)).logFailureMetrics(LinkGenerationError.TIMEOUT);
+
+        // Receiving generation result after timeout, should not trigger another sharesheet.
+        mLinkToTextCoordinator.onRemoteRequestCompleted("",
+                new Integer(LinkGenerationError.EMPTY_SELECTION),
+                new Integer(LinkGenerationReadyStatus.REQUESTED_BEFORE_READY));
+        verify(mShareCallback, times(1)).showShareSheet(any(), any(), anyLong());
+
+        // No new histogram is recorded.
+        verify(mLinkToTextBridge, times(1)).logFailureMetrics(anyInt());
+        verify(mLinkToTextBridge, times(0)).logSuccessMetrics();
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_Timeout_AfterRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        setGenerationRemoteRequestResults("selector", new Integer(LinkGenerationError.NONE),
+                new Integer(LinkGenerationReadyStatus.REQUESTED_AFTER_READY));
+        mLinkToTextCoordinator.shareLinkToText();
+
+        // Check that shows share sheet without link to text
+        checkShowsShareSheetWithLink(VISIBLE_URL + "#:~:text=selector");
+        verify(mLinkToTextBridge, times(1)).logSuccessMetrics();
+
+        // Timeout after remote request was completed should not trigger another sharesheet.
+        mLinkToTextCoordinator.timeout();
+        verify(mShareCallback, times(1)).showShareSheet(any(), any(), anyLong());
+
+        // No new histogram is recorded.
+        verify(mLinkToTextBridge, times(0)).logFailureMetrics(anyInt());
+        verify(mLinkToTextBridge, times(1)).logSuccessMetrics();
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_OmniboxNavigation_BeforeRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        mLinkToTextCoordinator.shareLinkToText();
+        mLinkToTextCoordinator.onUpdateUrl(mTab, new GURL(VISIBLE_URL));
+
+        // check doesn't show share sheet
+        verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1))
+                .logFailureMetrics(LinkGenerationError.OMNIBOX_NAVIGATION);
+
+        // Receiving generation result should not trigger another sharesheet.
+        mLinkToTextCoordinator.onRemoteRequestCompleted("",
+                new Integer(LinkGenerationError.EMPTY_SELECTION),
+                new Integer(LinkGenerationReadyStatus.REQUESTED_BEFORE_READY));
+        verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
+
+        // No new histogram is recorded.
+        verify(mLinkToTextBridge, times(1)).logFailureMetrics(anyInt());
+        verify(mLinkToTextBridge, times(0)).logSuccessMetrics();
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_Reshare_Success() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mReshareChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        setReshareRemoteRequestResults("selector");
+        mLinkToTextCoordinator.shareLinkToText();
+
+        // Check that shows share sheet without link to text
+        checkShowsShareSheetWithLink(VISIBLE_URL + "#:~:text=selector");
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1))
+                .logLinkToTextReshareStatus(LinkToTextReshareStatus.SUCCESS);
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_Reshare_Timeout_BeforeRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mReshareChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        mLinkToTextCoordinator.shareLinkToText();
+        mLinkToTextCoordinator.timeout();
+
+        // Check that shows share sheet without link to text
+        checkShowsShareSheetWithNoLink();
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1))
+                .logLinkToTextReshareStatus(LinkToTextReshareStatus.TIMEOUT);
+
+        // Receiving generation result after timeout, should not trigger another sharesheet.
+        mLinkToTextCoordinator.onReshareSelectorsRemoteRequestCompleted("");
+        verify(mShareCallback, times(1)).showShareSheet(any(), any(), anyLong());
+
+        // No new histogram is recorded.
+        verify(mLinkToTextBridge, times(1)).logLinkToTextReshareStatus(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_Reshare_Timeout_AfterRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mReshareChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        setReshareRemoteRequestResults("selector");
+        mLinkToTextCoordinator.shareLinkToText();
+
+        // Check that shows share sheet without link to text
+        checkShowsShareSheetWithLink(VISIBLE_URL + "#:~:text=selector");
+        verify(mLinkToTextBridge, times(1))
+                .logLinkToTextReshareStatus(LinkToTextReshareStatus.SUCCESS);
+
+        // Timeout after remote request was completed should not trigger another sharesheet.
+        mLinkToTextCoordinator.timeout();
+        verify(mShareCallback, times(1)).showShareSheet(any(), any(), anyLong());
+
+        // No new histogram is recorded.
+        verify(mLinkToTextBridge, times(1)).logLinkToTextReshareStatus(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_Reshare_OmniboxNavigation_BeforeRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mReshareChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
+        mLinkToTextCoordinator.shareLinkToText();
+        mLinkToTextCoordinator.onUpdateUrl(mTab, new GURL(VISIBLE_URL));
+
+        // check doesn't show share sheet
+        verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1))
+                .logLinkToTextReshareStatus(LinkToTextReshareStatus.OMNIBOX_NAVIGATION);
+
+        // Receiving generation result should not trigger another sharesheet.
+        mLinkToTextCoordinator.onReshareSelectorsRemoteRequestCompleted("");
+        verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
+
+        // No new histogram is recorded.
+        verify(mLinkToTextBridge, times(1)).logLinkToTextReshareStatus(anyInt());
     }
 }

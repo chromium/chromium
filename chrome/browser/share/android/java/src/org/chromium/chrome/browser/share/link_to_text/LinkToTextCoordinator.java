@@ -57,19 +57,30 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private static final int PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH = 32;
     private static final String PREVIEW_ELLIPSIS = "...";
 
-    private final ChromeOptionShareCallback mChromeOptionShareCallback;
-    private final Tab mTab;
-    private final ChromeShareExtras mChromeShareExtras;
-    private final long mShareStartTime;
+    private ChromeOptionShareCallback mChromeOptionShareCallback;
+    private Tab mTab;
+    private ChromeShareExtras mChromeShareExtras;
+    private long mShareStartTime;
 
     private String mShareUrl;
     private TextFragmentReceiver mProducer;
     private String mSelectedText;
     private ShareParams mShareLinkParams;
     private ShareParams mShareTextParams;
-    private @RemoteRequestStatus int mRemoteRequestStatus;
+    public @RemoteRequestStatus int mRemoteRequestStatus;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    LinkToTextCoordinator() {}
 
     public LinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
+            ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl,
+            String selectedText) {
+        initLinkToTextCoordinator(tab, chromeOptionShareCallback, chromeShareExtras, shareStartTime,
+                visibleUrl, selectedText);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void initLinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl,
             String selectedText) {
         mTab = tab;
@@ -149,7 +160,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         requestSelectorForCanonicalUrl();
     }
 
-    private void reshareHighlightedText() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void reshareHighlightedText() {
         setTextFragmentReceiver();
         if (mProducer == null) {
             completeReshareWithFailure(LinkToTextReshareStatus.NO_REMOTE_CONNECTION);
@@ -160,13 +172,17 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
         LinkToTextHelper.extractTextFragmentsMatches(mProducer, (matches) -> {
             mSelectedText = String.join(",", matches);
-            LinkToTextHelper.getExistingSelectorsAllFrames(mTab, (selectors) -> {
-                if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
-
-                mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
-                completeRemoteRequestWithSuccess(selectors);
-            });
+            LinkToTextHelper.getExistingSelectorsAllFrames(
+                    mTab, this::onReshareSelectorsRemoteRequestCompleted);
         });
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void onReshareSelectorsRemoteRequestCompleted(String selectors) {
+        if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
+
+        mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
+        completeRemoteRequestWithSuccess(selectors);
     }
 
     // Discard results if tab is not on foreground anymore.
@@ -199,11 +215,33 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
     }
 
-    private void requestSelector() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-            LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
-                    LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.REQUEST_SELECTOR);
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void onRemoteRequestCompleted(String selector, Integer error, Integer readyStatus) {
+        if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
+
+        mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
+        boolean success = !selector.isEmpty();
+        assert error != null;
+
+        if (success) {
+            assert error == LinkGenerationError.NONE;
+            completeRemoteRequestWithSuccess(selector);
+        } else {
+            assert error != LinkGenerationError.NONE;
+            completeRequestWithFailure(error.intValue());
         }
+
+        assert readyStatus != null;
+
+        @LinkGenerationStatus
+        int status = success ? LinkGenerationStatus.FAILURE : LinkGenerationStatus.SUCCESS;
+        LinkToTextBridge.logLinkRequestedBeforeStatus(status, readyStatus.intValue());
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void requestSelector() {
+        LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.REQUEST_SELECTOR);
 
         setTextFragmentReceiver();
 
@@ -213,27 +251,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
-        LinkToTextHelper.requestSelector(mProducer, (selector, error, readyStatus) -> {
-            if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
-
-            mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
-            boolean success = !selector.isEmpty();
-            assert error != null;
-
-            if (success) {
-                assert error == LinkGenerationError.NONE;
-                completeRemoteRequestWithSuccess(selector);
-            } else {
-                assert error != LinkGenerationError.NONE;
-                completeRequestWithFailure(error.intValue());
-            }
-
-            assert readyStatus != null;
-
-            @LinkGenerationStatus
-            int status = success ? LinkGenerationStatus.FAILURE : LinkGenerationStatus.SUCCESS;
-            LinkToTextBridge.logLinkRequestedBeforeStatus(status, readyStatus.intValue());
-        });
+        LinkToTextHelper.requestSelector(mProducer, this::onRemoteRequestCompleted);
     }
 
     public boolean isAmpUrl(String url) {
@@ -310,7 +328,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mTab.removeObserver(this);
     }
 
-    private void timeout() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void timeout() {
         assert (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED
                 || mRemoteRequestStatus == RemoteRequestStatus.COMPLETED);
 
