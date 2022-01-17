@@ -524,9 +524,13 @@ void SiteSettingsHandler::RegisterMessages() {
 
 void SiteSettingsHandler::OnJavascriptAllowed() {
   ObserveSourcesForProfile(profile_);
-  if (profile_->HasPrimaryOTRProfile())
-    ObserveSourcesForProfile(
-        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  if (profile_->HasPrimaryOTRProfile()) {
+    auto* primary_otr_profile =
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    // Avoid duplicate observation.
+    if (primary_otr_profile != profile_)
+      ObserveSourcesForProfile(primary_otr_profile);
+  }
 
   // Here we only subscribe to the HostZoomMap for the default storage partition
   // since we don't allow the user to manage the zoom levels for apps.
