@@ -1894,10 +1894,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged {
-  DCHECK(!self.isSigninInProgress);
-  if (![self.tableViewModel
+  if (self.isSigninInProgress ||
+      ![self.tableViewModel
           hasItemForItemType:SettingsItemTypeSigninPromo
            sectionIdentifier:SettingsSectionIdentifierSignIn]) {
+    // Don't reload the sign-in promo if sign-in is in progress, to avoid having
+    // UI glitches. The table view should be reloaded once the sign-in is
+    // finished.
     return;
   }
   NSIndexPath* signinPromoCellIndexPath = [self.tableViewModel
