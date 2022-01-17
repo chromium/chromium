@@ -57,11 +57,11 @@ class PlatformStateStoreTestBase : public ::testing::Test {
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
-#else  // OS_WIN
+#else  // BUILDFLAG(IS_WIN)
 
 using PlatformStateStoreTestBase = ::testing::Test;
 
-#endif  // !OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // A test fixture with a testing profile that writes its user prefs to a json
 // file.
