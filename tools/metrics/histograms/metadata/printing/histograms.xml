@@ -32,19 +32,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.ConversionSize.EmfWithGdiText" units="KB"
-    expires_after="2022-09-30">
-  <obsolete>
-    Removed 2021-11.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On Windows, the average size of a printed page after converting to EMF with
-    the GDI Text experiment turned on. Recorded after conversion.
-  </summary>
-</histogram>
-
 <histogram name="Printing.ConversionSize.EmfWithReducedRasterization"
     units="KB" expires_after="2022-09-30">
   <owner>thestig@chromium.org</owner>
@@ -52,20 +39,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     On Windows, the average size of a printed page after converting to EMF with
     the reduced rasterization feature turned on. Recorded after conversion.
-  </summary>
-</histogram>
-
-<histogram name="Printing.ConversionSize.EmfWithReducedRasterizationAndGdiText"
-    units="KB" expires_after="2022-09-30">
-  <obsolete>
-    Removed 2021-11.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On Windows, the average size of a printed page after converting to EMF with
-    the reduced rasterization feature turned on and the GDI Text experiment
-    turned on. Recorded after conversion.
   </summary>
 </histogram>
 
@@ -131,32 +104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.IppAttributes" enum="IppAttribute"
-    expires_after="M93">
-  <obsolete>
-    Removed 2021-09.
-  </obsolete>
-  <owner>vkuzkokov@chromium.org</owner>
-  <owner>skau@chromium.org</owner>
-  <summary>
-    Records when advanced attribute is set for a print job. Recorded when print
-    job is being formed for sending.
-  </summary>
-</histogram>
-
-<histogram name="Printing.CUPS.IppAttributesCount" units="count"
-    expires_after="M82">
-  <obsolete>
-    Removed 2021-09.
-  </obsolete>
-  <owner>vkuzkokov@chromium.org</owner>
-  <owner>skau@chromium.org</owner>
-  <summary>
-    Records the number of advanced capabilities made available by a single
-    printer. Recorded when attributes are pulled from the printer.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
     expires_after="2022-06-05">
   <owner>skau@chromium.org</owner>
@@ -167,19 +114,6 @@ chromium-metrics-reviews@google.com.
     Starting with M79, this is only recorded if the printer was reachable.
 
     Recorded when printers are queried for attributes in ChromeOS settings.
-  </summary>
-</histogram>
-
-<histogram name="Printing.CUPS.IppAttributesUsed" units="count"
-    expires_after="M93">
-  <obsolete>
-    Removed 2021-09.
-  </obsolete>
-  <owner>vkuzkokov@chromium.org</owner>
-  <owner>skau@chromium.org</owner>
-  <summary>
-    Records the number of advanced attributes used by a single print job.
-    Recorded when print job is being formed for sending.
   </summary>
 </histogram>
 
@@ -347,31 +281,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.PrintJobsQueued" units="count"
-    expires_after="M85">
-  <obsolete>
-    New data not needed 2020-10
-  </obsolete>
-  <owner>skau@chromium.org</owner>
-  <summary>
-    The size of the print queue when a print job is initially queued. When the
-    first job is started, a zero is recorded. Only used on Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Printing.CUPS.PrintManagementAppEntryPoint"
-    enum="PrintManagementAppEntryPoint" expires_after="2021-08-22">
-  <obsolete>
-    Data no longer needed 2021-02.
-  </obsolete>
-  <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Records the entry point of where the Print Management App was launched from
-    in Chrome OS. Used to track the relative entry points of the app.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.ProtocolUsed" enum="PrinterProtocol"
     expires_after="2022-04-17">
   <owner>skau@chromium.org</owner>
@@ -418,21 +327,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.ValidPpdReference" enum="BooleanSuccess"
-    expires_after="2020-08-01">
-  <obsolete>
-    Data no longer needed. Bug is resolved. 2020-12.
-  </obsolete>
-  <owner>skau@chromium.org</owner>
-  <owner>luum@chromium.org</owner>
-  <summary>
-    Tracks printer setups with a valid/invalid PpdReference. PpdReferences are
-    invalid if more than one field is specified. Due to a bug, some invalid
-    references could be saved in users' profile, track if they need to be
-    migrated. Recorded during printer install. Only tracked on ChromeOS.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.ZeroconfPrinterSetupResult"
     enum="PrinterSetupResult" expires_after="never">
 <!-- expires-never: Monitors printer setup health for Chrome OS. -->
@@ -469,18 +363,6 @@ chromium-metrics-reviews@google.com.
     access-denied errors when used in a sandboxed utility process. This can
     occur from queries for setting up print preview as well as when printing a
     document to a destination.
-  </summary>
-</histogram>
-
-<histogram name="Printing.PrinterCapabilities" units="ms" expires_after="M80">
-  <obsolete>
-    New data no longer needed 2020-12
-  </obsolete>
-  <owner>vkuzkokov@chromium.org</owner>
-  <owner>skau@chromium.org</owner>
-  <summary>
-    Records the time it takes to pull capabilities of a single printer from
-    OS-specific backend. Recorded immediately on completion.
   </summary>
 </histogram>
 

@@ -160,29 +160,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.PrintDocumentSize.HTML" units="KB"
-    expires_after="2021-03-07">
-  <obsolete>
-    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    The average size of a page in the printed document when the source is HTML.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.PrintDocumentSize.PDF" units="KB"
-    expires_after="2020-12-31">
-  <obsolete>
-    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>dhoss@chromium.org</owner>
-  <summary>
-    The average size of a page in the printed document when the source is PDF.
-  </summary>
-</histogram>
-
 <histogram name="PrintPreview.PrintDocumentType"
     enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2022-06-19">
   <owner>rbpotter@chromium.org</owner>
