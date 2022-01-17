@@ -63,7 +63,7 @@ const AppLaunchInfo& GetAppLaunchInfo(const Extension* extension) {
 }  // namespace
 
 AppLaunchInfo::AppLaunchInfo()
-    : launch_container_(LaunchContainer::kLaunchContainerTab),
+    : launch_container_(apps::mojom::LaunchContainer::kLaunchContainerTab),
       launch_width_(0),
       launch_height_(0) {}
 
@@ -82,7 +82,7 @@ const GURL& AppLaunchInfo::GetLaunchWebURL(const Extension* extension) {
 }
 
 // static
-extensions::LaunchContainer AppLaunchInfo::GetLaunchContainer(
+apps::mojom::LaunchContainer AppLaunchInfo::GetLaunchContainer(
     const Extension* extension) {
   return GetAppLaunchInfo(extension).launch_container_;
 }
@@ -240,9 +240,10 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
       tmp_launcher_container->GetString();
 
   if (launch_container_string == values::kLaunchContainerPanelDeprecated) {
-    launch_container_ = LaunchContainer::kLaunchContainerPanelDeprecated;
+    launch_container_ =
+        apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
   } else if (launch_container_string == values::kLaunchContainerTab) {
-    launch_container_ = LaunchContainer::kLaunchContainerTab;
+    launch_container_ = apps::mojom::LaunchContainer::kLaunchContainerTab;
   } else {
     *error = errors::kInvalidLaunchContainer;
     return false;
@@ -251,7 +252,8 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
   // TODO(manucornet): Remove this special behavior now that panels are
   // deprecated.
   bool can_specify_initial_size =
-      launch_container_ == LaunchContainer::kLaunchContainerPanelDeprecated;
+      launch_container_ ==
+      apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
 
   // Validate the container width if present.
   if (!ReadLaunchDimension(extension->manifest(),

@@ -31,6 +31,7 @@ component("views") {
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//components/keep_alive_registry",
+    "//components/services/app_service/public/mojom",
     "//components/vector_icons",
     "//content/public/browser",
     "//printing/buildflags",

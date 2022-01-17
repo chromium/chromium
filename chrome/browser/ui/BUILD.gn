@@ -3062,6 +3062,7 @@ static_library("ui") {
       "//components/services/app_service/public/cpp:app_update",
       "//components/services/app_service/public/cpp:icon_loader",
       "//components/services/app_service/public/cpp:instance_update",
+      "//components/services/app_service/public/mojom",
       "//components/session_manager/core",
       "//components/user_manager",
       "//content/public/common",

@@ -52,13 +52,13 @@ void CreateAndInitializeLocalCache() {
 }
 
 Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
-  EXPECT_TRUE(
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
-              extension_app->id(), LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::CURRENT_TAB,
-              apps::mojom::LaunchSource::kFromTest)));
+  EXPECT_TRUE(apps::AppServiceProxyFactory::GetForProfile(profile)
+                  ->BrowserAppLauncher()
+                  ->LaunchAppWithParams(apps::AppLaunchParams(
+                      extension_app->id(),
+                      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                      WindowOpenDisposition::CURRENT_TAB,
+                      apps::mojom::LaunchSource::kFromTest)));
 
   Browser* browser = chrome::FindLastActive();
   bool is_correct_app_browser =

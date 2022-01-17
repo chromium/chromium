@@ -36,7 +36,7 @@ namespace {
 bool GetAppLaunchContainer(Profile* profile,
                            const std::string& app_id,
                            const extensions::Extension** out_app,
-                           extensions::LaunchContainer* out_launch_container) {
+                           apps::mojom::LaunchContainer* out_launch_container) {
   const extensions::Extension* app =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           app_id);
@@ -50,8 +50,9 @@ bool GetAppLaunchContainer(Profile* profile,
 
   // Look at preferences to find the right launch container. If no
   // preference is set, launch as a window.
-  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
-      extensions::ExtensionPrefs::Get(profile), app);
+  apps::mojom::LaunchContainer launch_container =
+      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
+                                     app);
 
   *out_app = app;
   *out_launch_container = launch_container;
@@ -77,12 +78,12 @@ bool OpenExtensionApplicationWindow(Profile* profile,
                                     const std::string& app_id,
                                     const base::CommandLine& command_line,
                                     const base::FilePath& current_directory) {
-  extensions::LaunchContainer launch_container;
+  apps::mojom::LaunchContainer launch_container;
   const extensions::Extension* app;
   if (!GetAppLaunchContainer(profile, app_id, &app, &launch_container))
     return false;
 
-  if (launch_container == extensions::LaunchContainer::kLaunchContainerTab)
+  if (launch_container == apps::mojom::LaunchContainer::kLaunchContainerTab)
     return false;
 
   RecordCmdLineAppHistogram(app->GetType());
@@ -101,20 +102,20 @@ bool OpenExtensionApplicationWindow(Profile* profile,
 }
 
 bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id) {
-  extensions::LaunchContainer launch_container;
+  apps::mojom::LaunchContainer launch_container;
   const extensions::Extension* app;
   if (!GetAppLaunchContainer(profile, app_id, &app, &launch_container))
     return false;
 
   // If the user doesn't want to open a tab, fail.
-  if (launch_container != extensions::LaunchContainer::kLaunchContainerTab)
+  if (launch_container != apps::mojom::LaunchContainer::kLaunchContainerTab)
     return false;
 
   RecordCmdLineAppHistogram(app->GetType());
 
   content::WebContents* app_tab = ::OpenApplication(
       profile, apps::AppLaunchParams(
-                   app_id, extensions::LaunchContainer::kLaunchContainerTab,
+                   app_id, apps::mojom::LaunchContainer::kLaunchContainerTab,
                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
                    apps::mojom::LaunchSource::kFromCommandLine));
   return app_tab != nullptr;
@@ -152,7 +153,7 @@ bool OpenExtensionApplicationWithReenablePrompt(
 
   RecordCmdLineAppHistogram(extensions::Manifest::TYPE_PLATFORM_APP);
   apps::AppLaunchParams params(
-      app_id, extensions::LaunchContainer::kLaunchContainerNone,
+      app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW,
       apps::mojom::LaunchSource::kFromCommandLine);
   params.command_line = command_line;

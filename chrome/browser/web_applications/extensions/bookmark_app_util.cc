@@ -65,16 +65,16 @@ LaunchContainerAndType GetLaunchContainerAndTypeFromDisplayMode(
       web_app::ConvertDisplayModeToAppLaunchContainer(display_mode);
   switch (apps_launch_container) {
     case apps::mojom::LaunchContainer::kLaunchContainerNone:
-      return {extensions::LaunchContainer::kLaunchContainerNone,
+      return {apps::mojom::LaunchContainer::kLaunchContainerNone,
               extensions::LaunchType::LAUNCH_TYPE_DEFAULT};
     case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-      return {extensions::LaunchContainer::kLaunchContainerPanelDeprecated,
+      return {apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
               extensions::LaunchType::LAUNCH_TYPE_REGULAR};
     case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      return {extensions::LaunchContainer::kLaunchContainerTab,
+      return {apps::mojom::LaunchContainer::kLaunchContainerTab,
               extensions::LaunchType::LAUNCH_TYPE_REGULAR};
     case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      return {extensions::LaunchContainer::kLaunchContainerTab,
+      return {apps::mojom::LaunchContainer::kLaunchContainerTab,
               display_mode == web_app::DisplayMode::kFullscreen
                   ? extensions::LaunchType::LAUNCH_TYPE_FULLSCREEN
                   : extensions::LaunchType::LAUNCH_TYPE_WINDOW};

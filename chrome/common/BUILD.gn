@@ -314,7 +314,10 @@ static_library("common") {
       "initialize_extensions_client.cc",
       "initialize_extensions_client.h",
     ]
-    deps += [ "//chrome/common/apps/platform_apps" ]
+    deps += [
+      "//chrome/common/apps/platform_apps",
+      "//components/services/app_service/public/mojom",
+    ]
     public_deps += [
       "//chrome/common/extensions/api",
       "//chrome/common/extensions/api:extensions_features",

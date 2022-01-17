@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"

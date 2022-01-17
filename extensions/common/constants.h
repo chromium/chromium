@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/chromeos_buildflags.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 
 namespace extensions {
 
@@ -137,8 +136,6 @@ extern const char kUpdateURLData[];
 // This is the default thread id used for extension event listeners registered
 // from a non-service worker context
 extern const int kMainThreadId;
-
-using apps::mojom::LaunchContainer;
 
 // Enumeration of possible app launch sources.
 // This should be kept in sync with LaunchSource in

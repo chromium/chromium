@@ -429,7 +429,7 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   // returned.
   // TODO(crbug.com/1003602): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
-  extensions::LaunchContainer launch_container =
+  apps::mojom::LaunchContainer launch_container =
       GetLaunchContainer(extensions::ExtensionPrefs::Get(context), extension);
   Profile* profile = Profile::FromBrowserContext(context);
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {

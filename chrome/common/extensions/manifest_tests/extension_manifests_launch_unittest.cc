@@ -23,15 +23,15 @@ class AppLaunchManifestTest : public ChromeManifestTest {
 
 TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
   scoped_refptr<Extension> extension = LoadAndExpectSuccess("launch_tab.json");
-  EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
+  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_panel.json");
-  EXPECT_EQ(LaunchContainer::kLaunchContainerPanelDeprecated,
+  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_default.json");
-  EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
+  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_width.json");

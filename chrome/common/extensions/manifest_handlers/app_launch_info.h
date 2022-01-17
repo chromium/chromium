@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -38,7 +39,7 @@ class AppLaunchInfo : public Extension::ManifestData {
   // users can override the way each app launches.  See
   // ExtensionPrefs::GetLaunchContainer(), which looks at a per-app pref
   // to decide what container an app will launch in.
-  static LaunchContainer GetLaunchContainer(
+  static apps::mojom::LaunchContainer GetLaunchContainer(
       const Extension* extension);
 
   // The default size of the container when launching. Only respected for
@@ -60,7 +61,7 @@ class AppLaunchInfo : public Extension::ManifestData {
 
   GURL launch_web_url_;
 
-  LaunchContainer launch_container_;
+  apps::mojom::LaunchContainer launch_container_;
 
   int launch_width_;
   int launch_height_;

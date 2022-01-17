@@ -174,9 +174,10 @@ bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
   if (!extension)
     return false;
 
-  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
-      extensions::ExtensionPrefs::Get(profile), extension);
-  return launch_container == extensions::LaunchContainer::kLaunchContainerTab;
+  apps::mojom::LaunchContainer launch_container =
+      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
+                                     extension);
+  return launch_container == apps::mojom::LaunchContainer::kLaunchContainerTab;
 }
 
 }  // namespace

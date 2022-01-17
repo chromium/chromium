@@ -33,7 +33,7 @@ bool BookmarkAppIsLocallyInstalled(const ExtensionPrefs* prefs,
 bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url);
 
 struct LaunchContainerAndType {
-  extensions::LaunchContainer launch_container;
+  apps::mojom::LaunchContainer launch_container;
   extensions::LaunchType launch_type;
 };
 

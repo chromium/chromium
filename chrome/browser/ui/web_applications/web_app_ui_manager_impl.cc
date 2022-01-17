@@ -118,11 +118,11 @@ DisplayMode GetExtensionDisplayMode(Profile* profile,
 
   switch (extensions::GetLaunchContainer(
       extensions::ExtensionPrefs::Get(profile), extension)) {
-    case extensions::LaunchContainer::kLaunchContainerWindow:
-    case extensions::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
       return DisplayMode::kStandalone;
-    case extensions::LaunchContainer::kLaunchContainerTab:
-    case extensions::LaunchContainer::kLaunchContainerNone:
+    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+    case apps::mojom::LaunchContainer::kLaunchContainerNone:
       return DisplayMode::kBrowser;
   }
 }

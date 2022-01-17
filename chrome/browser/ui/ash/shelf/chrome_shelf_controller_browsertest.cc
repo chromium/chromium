@@ -1707,7 +1707,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), extensions::LaunchContainer::kLaunchContainerTab,
+          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerTab,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
