@@ -110,9 +110,6 @@ AutoScrollHandler = class {
       return true;
     }
 
-    // TODO(crbug/761415): handle more precise positioning after scroll.
-    // e.g. list with 10 items showing 1-7, scroll forward, should position at
-    // item 8.
     this.isScrolling_ = true;
     this.scrollingNode_ = scrollable;
     this.lastScrolledTime_ = new Date();
@@ -132,11 +129,6 @@ AutoScrollHandler = class {
       }
 
       // Wait for a scrolled event or timeout.
-      // TODO(hirokisato): On large page scrolling in Android, the
-      // SCROLL_POSITION_CHANGED event is dispatched multiple times, and if
-      // we only listen the first event, there is a chance that the ui tree
-      // is intermediate state and we set the focus on the inappropriate
-      // node. Consider waiting until the UI gets stabilized.
       await new Promise((resolve, reject) => {
         let cleanUp;
         let timeoutId;
@@ -161,6 +153,14 @@ AutoScrollHandler = class {
         timeoutId =
             setTimeout(onTimeout, AutoScrollHandler.TIMEOUT_SCROLLED_EVENT_MS);
       });
+
+      // When a scrolling animation happens, SCROLL_POSITION_CHANGED event can
+      // be dispatched multiple times, and there is a chance that the ui tree is
+      // in an intermediate state. Just wait for a while so that the UI gets
+      // stabilized.
+      await new Promise(
+          resolve =>
+              setTimeout(resolve, AutoScrollHandler.DELAY_HANDLE_SCROLLED_MS));
 
       this.isScrolling_ = false;
 
@@ -285,6 +285,14 @@ AutoScrollHandler.TIMEOUT_SCROLLED_EVENT_MS = 1500;
  * @const {number}
  */
 AutoScrollHandler.TIMEOUT_FOCUS_EVENT_DROP_MS = 2000;
+
+/**
+ * The delay in milliseconds to wait to handle a scrolled event after the event
+ * is first dispatched in order to wait for UI stabilized. See also
+ * https://github.com/google/talkback/blob/6c0b475b7f52469e309e51bfcc13de58f18176ff/talkback/src/main/java/com/google/android/accessibility/talkback/interpreters/AutoScrollInterpreter.java#L42
+ * @const {number}
+ */
+AutoScrollHandler.DELAY_HANDLE_SCROLLED_MS = 150;
 
 goog.addSingletonGetter(AutoScrollHandler);
 });  // goog.scope
