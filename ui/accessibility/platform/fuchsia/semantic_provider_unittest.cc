@@ -175,7 +175,8 @@ class AXFuchsiaSemanticProviderTest
   std::unique_ptr<AXFuchsiaSemanticProvider> semantic_provider_;
 };
 
-TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnSemanticsConnectionClosed) {
+TEST_F(AXFuchsiaSemanticProviderTest,
+       DISABLED_HandlesOnSemanticsConnectionClosed) {
   semantic_tree_binding_.Close(ZX_ERR_PEER_CLOSED);
 
   // Spin the loop to allow the channel-close to be handled.
@@ -184,7 +185,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnSemanticsConnectionClosed) {
   EXPECT_TRUE(delegate_->on_semantics_manager_connection_closed_called_);
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnAccessibilityAction) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_HandlesOnAccessibilityAction) {
   bool action_handled = false;
   semantic_listener_->OnAccessibilityActionRequested(
       /*node_id=*/1u, fuchsia::accessibility::semantics::Action::DEFAULT,
@@ -200,7 +201,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnAccessibilityAction) {
             fuchsia::accessibility::semantics::Action::DEFAULT);
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnHitTest) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_HandlesOnHitTest) {
   // Note that the point is sent here and will be converted according to the
   // device scale used. Only then it gets sent to the handler, which receives
   // the value already with the proper scaling.
@@ -217,7 +218,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnHitTest) {
   EXPECT_EQ(delegate_->on_hit_test_point_.y, 12.0);
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnSemanticsEnabled) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_HandlesOnSemanticsEnabled) {
   semantic_listener_->OnSemanticsModeChanged(false, [](auto...) {});
 
   // Spin the loop to handle the call.
@@ -226,7 +227,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnSemanticsEnabled) {
   EXPECT_TRUE(delegate_->on_semantics_enabled_called_);
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, SendsRootOnly) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_SendsRootOnly) {
   Node root;
   root.set_node_id(0u);
   EXPECT_TRUE(semantic_provider_->Update(std::move(root)));
@@ -238,7 +239,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, SendsRootOnly) {
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromRootToLeaves) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_SendsNodesFromRootToLeaves) {
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
@@ -251,7 +252,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromRootToLeaves) {
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromLeavesToRoot) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_SendsNodesFromLeavesToRoot) {
   auto nodes = TreeNodes();
   std::reverse(nodes.begin(), nodes.end());
   for (auto& node : nodes) {
@@ -266,7 +267,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromLeavesToRoot) {
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest,
-       SendsNodesOnlyAfterParentNoLongerPointsToDeletedChild) {
+       DISABLED_SendsNodesOnlyAfterParentNoLongerPointsToDeletedChild) {
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
@@ -302,7 +303,7 @@ TEST_F(AXFuchsiaSemanticProviderTest,
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest,
-       SendsNodesOnlyAfterDanglingChildIsDeleted) {
+       DISABLED_SendsNodesOnlyAfterDanglingChildIsDeleted) {
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
@@ -334,7 +335,7 @@ TEST_F(AXFuchsiaSemanticProviderTest,
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithADeletion) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_ReparentsNodeWithADeletion) {
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
@@ -378,7 +379,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithADeletion) {
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithAnUpdate) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_ReparentsNodeWithAnUpdate) {
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
@@ -416,7 +417,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithAnUpdate) {
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, ChangesRoot) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_ChangesRoot) {
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
@@ -441,7 +442,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, ChangesRoot) {
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, BatchesUpdates) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_BatchesUpdates) {
   std::vector<Node> updates;
   for (uint32_t i = 0; i < 30; ++i) {
     Node node;
@@ -464,7 +465,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, BatchesUpdates) {
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
-TEST_F(AXFuchsiaSemanticProviderTest, ClearsTree) {
+TEST_F(AXFuchsiaSemanticProviderTest, DISABLED_ClearsTree) {
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
