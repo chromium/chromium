@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -3406,7 +3407,17 @@ IN_PROC_BROWSER_TEST_F(
   // 2) Navigate to B, and inject a blank subframe just before it commits.
   {
     InjectCreateChildFrame injector(shell()->web_contents(), url_b);
-    ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    navigation_observer.set_expected_initial_url(url_b);
+    shell()->LoadURL(url_b);
+
+    // Waiting for DidNavigationFinished is sufficient to ensure that
+    // `injector.was_called()`. We can't waiting for DidStopLoading, because
+    // running a nested message loop in the injector confuses
+    // TestNavigationObserver by changing the order of notifications.
+    navigation_observer.WaitForNavigationFinished();
+
     EXPECT_TRUE(injector.was_called());
   }
 
