@@ -9899,7 +9899,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="Encryption-migration" label=""/>
   <suffix name="Enroll" label=""/>
   <suffix name="Error-message" label=""/>
-  <suffix name="Eula" label=""/>
+  <suffix name="Eula" label="">
+    <obsolete>
+      Renamed to Oobe-eula-md.
+    </obsolete>
+  </suffix>
   <suffix name="Family-link-notice" label=""/>
   <suffix name="Fingerprint-setup" label=""/>
   <suffix name="Gaia-signin" label=""/>
@@ -9919,6 +9923,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="Network" label=""/>
   <suffix name="Network-selection" label=""/>
   <suffix name="Offline-login" label=""/>
+  <suffix name="Oobe-eula-md" label=""/>
+  <suffix name="Oobe-update" label=""/>
   <suffix name="Packaged-license" label=""/>
   <suffix name="Parental-handoff" label=""/>
   <suffix name="Pin-setup" label=""/>
@@ -9931,7 +9937,11 @@ chromium-metrics-reviews@google.com.
   </suffix>
   <suffix name="Sync-consent" label=""/>
   <suffix name="Tos" label=""/>
-  <suffix name="Update" label=""/>
+  <suffix name="Update" label="">
+    <obsolete>
+      Renamed to Oobe-Update.
+    </obsolete>
+  </suffix>
   <suffix name="Update-required" label=""/>
   <suffix name="User-creation" label=""/>
   <suffix name="UserBoard" label="">
@@ -9971,10 +9981,31 @@ chromium-metrics-reviews@google.com.
     </obsolete>
   </suffix>
   <suffix name="Edu-coexistence-login.Done" label=""/>
-  <suffix name="Eula.AcceptedWithoutStats" label=""/>
-  <suffix name="Eula.AcceptedWithStats" label=""/>
-  <suffix name="Eula.AlreadyAccepted" label=""/>
-  <suffix name="Eula.Back" label=""/>
+  <suffix name="Enterprise-enrollment.Back" label=""/>
+  <suffix name="Enterprise-enrollment.BackToAutoEnrollmentCheck" label=""/>
+  <suffix name="Enterprise-enrollment.Completed" label=""/>
+  <suffix name="Enterprise-enrollment.TpmDbusError" label=""/>
+  <suffix name="Enterprise-enrollment.TpmError" label=""/>
+  <suffix name="Eula.AcceptedWithoutStats" label="">
+    <obsolete>
+      Renamed to Oobe-eula-md.
+    </obsolete>
+  </suffix>
+  <suffix name="Eula.AcceptedWithStats" label="">
+    <obsolete>
+      Renamed to Oobe-eula-md.
+    </obsolete>
+  </suffix>
+  <suffix name="Eula.AlreadyAccepted" label="">
+    <obsolete>
+      Renamed to Oobe-eula-md.
+    </obsolete>
+  </suffix>
+  <suffix name="Eula.Back" label="">
+    <obsolete>
+      Renamed to Oobe-eula-md.
+    </obsolete>
+  </suffix>
   <suffix name="Family-link-notice.Done" label=""/>
   <suffix name="Fingerprint-setup.Done" label=""/>
   <suffix name="Fingerprint-setup.Next" label="">
@@ -10016,6 +10047,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="Oauth-enrollment.Completed" label=""/>
   <suffix name="Offline-login.Back" label=""/>
   <suffix name="Offline-login.ReloadOnlineLogin" label=""/>
+  <suffix name="Oobe-eula-md.AcceptedWithStats" label=""/>
+  <suffix name="Oobe-eula-md.AcceptedWithoutStats" label=""/>
+  <suffix name="Oobe-eula-md.Back" label=""/>
+  <suffix name="Oobe-update.UpdateError" label=""/>
+  <suffix name="Oobe-update.UpdateNotRequired" label=""/>
   <suffix name="Packaged-license.DontEnroll" label=""/>
   <suffix name="Packaged-license.Enroll" label=""/>
   <suffix name="Parental-Handoff.Done" label=""/>
@@ -10033,8 +10069,16 @@ chromium-metrics-reviews@google.com.
   <suffix name="Sync-consent.Next" label=""/>
   <suffix name="Terms-of-service.Accepted" label=""/>
   <suffix name="Terms-of-service.Declined" label=""/>
-  <suffix name="Update.UpdateError" label=""/>
-  <suffix name="Update.UpdateNotRequired" label=""/>
+  <suffix name="Update.UpdateError" label="">
+    <obsolete>
+      Renamed to Oobe-update.
+    </obsolete>
+  </suffix>
+  <suffix name="Update.UpdateNotRequired" label="">
+   <obsolete>
+      Renamed to Oobe-update.
+    </obsolete>
+  </suffix>
   <suffix name="User-creation.Cancel" label=""/>
   <suffix name="User-creation.CreateChildAccount" label=""/>
   <suffix name="User-creation.EnterpriseEnroll" label=""/>

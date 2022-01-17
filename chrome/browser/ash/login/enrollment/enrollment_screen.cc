@@ -99,6 +99,8 @@ constexpr int kMaxInstallAttributesStateCheckRetries = 60;
 }  // namespace
 
 // static
+// The return value of this function is recorded as histogram. If you change
+// it, make sure to change all relevant histogram suffixes accordingly.
 std::string EnrollmentScreen::GetResultString(Result result) {
   switch (result) {
     case Result::COMPLETED:
