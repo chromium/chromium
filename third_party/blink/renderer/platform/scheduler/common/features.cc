@@ -84,7 +84,7 @@ const base::Feature kThrottleForegroundTimers{
     "ThrottleForegroundTimers", base::FEATURE_DISABLED_BY_DEFAULT};
 
 base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
-  constexpr int kForegroundTimersThrottling_WakeUpIntervalMillis_Default = 100;
+  constexpr int kForegroundTimersThrottling_WakeUpIntervalMillis_Default = 32;
   static const base::FeatureParam<int>
       kForegroundTimersThrottledWakeUpIntervalMills{
           &kThrottleForegroundTimers,

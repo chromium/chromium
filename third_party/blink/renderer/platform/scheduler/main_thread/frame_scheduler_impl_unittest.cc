@@ -3890,8 +3890,8 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
        ForegroundPageTimerThrottling) {
   page_scheduler_->SetPageVisible(true);
 
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
+  // Snap the time to a multiple of 32ms.
+  FastForwardToAlignedTime(base::Milliseconds(32));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
@@ -3909,10 +3909,10 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(100),
-                                   start + base::Milliseconds(100),
-                                   start + base::Milliseconds(200),
-                                   start + base::Milliseconds(200)));
+              testing::ElementsAre(start, start + base::Milliseconds(64),
+                                   start + base::Milliseconds(128),
+                                   start + base::Milliseconds(160),
+                                   start + base::Milliseconds(224)));
 }
 
 // Make sure the normal throttling (1 wake up per second) is applied when the
@@ -3947,12 +3947,12 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
 }
 
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
-       HiddenAudiblePageimerThrottling) {
+       HiddenAudiblePageTimerThrottling) {
   page_scheduler_->SetPageVisible(false);
   page_scheduler_->AudioStateChanged(/*is_audio_playing=*/true);
 
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
+  // Snap the time to a multiple of 32ms.
+  FastForwardToAlignedTime(base::Milliseconds(32));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
@@ -3970,10 +3970,10 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(100),
-                                   start + base::Milliseconds(100),
-                                   start + base::Milliseconds(200),
-                                   start + base::Milliseconds(200)));
+              testing::ElementsAre(start, start + base::Milliseconds(64),
+                                   start + base::Milliseconds(128),
+                                   start + base::Milliseconds(160),
+                                   start + base::Milliseconds(224)));
 }
 
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
@@ -3989,8 +3989,8 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
           TaskType::kJavascriptTimerDelayedLowNesting);
 
   cross_origin_frame_scheduler->SetFrameVisible(true);
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
+  // Snap the time to a multiple of 32ms.
+  FastForwardToAlignedTime(base::Milliseconds(32));
   const base::TimeTicks start = base::TimeTicks::Now();
 
   std::vector<base::TimeTicks> run_times;
@@ -4004,10 +4004,10 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
   task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(100),
-                                   start + base::Milliseconds(100),
-                                   start + base::Milliseconds(200),
-                                   start + base::Milliseconds(200)));
+              testing::ElementsAre(start, start + base::Milliseconds(64),
+                                   start + base::Milliseconds(128),
+                                   start + base::Milliseconds(160),
+                                   start + base::Milliseconds(224)));
 }
 
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
