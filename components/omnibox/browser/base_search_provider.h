@@ -47,6 +47,9 @@ class BaseSearchProvider : public AutocompleteProvider {
   // Returns whether |match| is flagged as a query that should be prefetched.
   static bool ShouldPrefetch(const AutocompleteMatch& match);
 
+  // Returns whether |match| is flagged as a query that should be prerendered.
+  static bool ShouldPrerender(const AutocompleteMatch& match);
+
   // Returns a simpler AutocompleteMatch suitable for persistence like in
   // ShortcutsDatabase.  This wrapper function uses a number of default values
   // that may or may not be appropriate for your needs.
@@ -128,6 +131,10 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   // Indicates whether the server said a match should be prefetched.
   static const char kShouldPrefetchKey[];
+
+  // Indicates whether the server said a match should be prerendered by
+  // Prerender2. See content/browser/prerender/README.md for more information.
+  static const char kShouldPrerenderKey[];
 
   // Used to store metadata from the server response, which is needed for
   // prefetching.
