@@ -332,7 +332,39 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutMethods) {
                          false, callback.callback());
   callback.WaitForCall();
 
-  EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
+  EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
+}
+
+std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithWildcardMethods(
+    const test_server::HttpRequest& request) {
+  if (request.method_string != "OPTIONS") {
+    return nullptr;
+  }
+  auto it = request.headers.find("Origin");
+  EXPECT_TRUE(it != request.headers.end());
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->AddCustomHeader("Access-Control-Allow-Origin", it->second);
+  response->AddCustomHeader("Access-Control-Allow-Headers", "Content-Type");
+  response->AddCustomHeader("Access-Control-Allow-Methods", "*");
+  response->set_code(HTTP_OK);
+  response->set_content("");
+  response->set_content_type("text/plain");
+  return std::move(response);
+}
+
+TEST_F(ReportingUploaderTest, CorsPreflightWildcardMethods) {
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnPreflightWithWildcardMethods));
+  server_.RegisterRequestHandler(base::BindRepeating(&ReturnResponse, HTTP_OK));
+  ASSERT_TRUE(server_.Start());
+
+  TestUploadCallback callback;
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
 }
 
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithoutHeaders(
@@ -364,6 +396,38 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutHeaders) {
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
+}
+
+std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithWildcardHeaders(
+    const test_server::HttpRequest& request) {
+  if (request.method_string != "OPTIONS") {
+    return nullptr;
+  }
+  auto it = request.headers.find("Origin");
+  EXPECT_TRUE(it != request.headers.end());
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->AddCustomHeader("Access-Control-Allow-Origin", it->second);
+  response->AddCustomHeader("Access-Control-Allow-Headers", "*");
+  response->AddCustomHeader("Access-Control-Allow-Methods", "POST");
+  response->set_code(HTTP_OK);
+  response->set_content("");
+  response->set_content_type("text/plain");
+  return std::move(response);
+}
+
+TEST_F(ReportingUploaderTest, CorsPreflightWildcardHeaders) {
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnPreflightWithWildcardHeaders));
+  server_.RegisterRequestHandler(base::BindRepeating(&ReturnResponse, HTTP_OK));
+  ASSERT_TRUE(server_.Start());
+
+  TestUploadCallback callback;
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
 }
 
 TEST_F(ReportingUploaderTest, RemoveEndpoint) {
