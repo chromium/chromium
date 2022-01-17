@@ -294,25 +294,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.CriticalActionBackgroundTimeRemaining" units="ms"
-    expires_after="2021-05-30">
-  <obsolete>
-    Recording removed 12/2020.
-  </obsolete>
-  <owner>justincohen@chromium.org</owner>
-  <summary>
-    Recorded when app is running in the background and posted a background task.
-    This time is obtained by calling UIApplication.backgroundTimeRemaining. When
-    backgroundTimeRemaining reaches 0 and there is at least one running
-    background task, then iOS terminates the app instead of suspending it. The
-    lower recorded value is, the higher chances that posted task will keep
-    running when backgroundTimeRemaining reaches 0, causing the app termination.
-    When app is relaunched after termination the app starts cold which is slower
-    and does not fully restore the prior UI state, so terminations are worse
-    than suspensions.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CRWWKNavigationStatesRemoveOldPending" enum="Boolean"
     expires_after="2022-12-11">
   <owner>justincohen@chromium.org</owner>
@@ -438,29 +419,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Appear"/>
     <variant name="Dismiss"/>
   </token>
-</histogram>
-
-<histogram name="IOS.Dialogs.JavaScriptDialogClosed"
-    enum="IOSJavaScriptDialogDismissalCause" expires_after="M80">
-  <obsolete>
-    Deprecated 07/2021 as it is no longer used for analysis.
-  </obsolete>
-  <owner>kkhorimoto@chromium.org</owner>
-  <owner>michaeldo@chromium.org</owner>
-  <summary>Tracks the way JavaScript dialogs are closed on iOS.</summary>
-</histogram>
-
-<histogram name="IOS.DragAndDrop.DragContent" enum="DragContent"
-    expires_after="2020-03-01">
-  <obsolete>
-    Removed 12/2020 as it is no longer needed for analysis.
-  </obsolete>
-  <owner>jif@chromium.org</owner>
-  <summary>
-    The type of content that the user is dragging into Chrome. Because a drag
-    can contain multiple types of objects, multiple DragContent values may be
-    recorded for a single drag event.
-  </summary>
 </histogram>
 
 <histogram name="IOS.EnterTabSwitcherSnapshotResult"
@@ -668,17 +626,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.IPHBubbleDismissalReason" enum="BubbleDismissalReason"
-    expires_after="M77">
-  <obsolete>
-    Deprecated 12/2020 as it is no longer used for analysis.
-  </obsolete>
-  <owner>pkl@chromium.org</owner>
-  <summary>
-    Tracks the reason for why the In Product Help bubble was dismissed.
-  </summary>
-</histogram>
-
 <histogram name="IOS.IsDefaultBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
@@ -744,32 +691,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result of conditional disable/enable checking for the Link to Text
     feature, including granular failure reasons when the feature is not offered.
-  </summary>
-</histogram>
-
-<histogram name="IOS.LocationPermissions.FirstRunModal.Interaction"
-    enum="LocationPermissionsFirstRunModalIOSEnum" expires_after="M97">
-  <obsolete>
-    Deprecated 10/2021 as it was removed
-  </obsolete>
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The user engagement of the Location permissions first run modal.
-  </summary>
-</histogram>
-
-<histogram name="IOS.LocationPermissionsUI" enum="LocationPermissionsIOSUI"
-    expires_after="M96">
-  <obsolete>
-    Deprecated 09/2021 as it is launched
-  </obsolete>
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The user was shown an arm of the location permissions experiment. Recorded
-    when the user is shown the UI of an experiment arm. Not recorded for the
-    control arm.
   </summary>
 </histogram>
 
@@ -1297,17 +1218,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.SharePageLatency" units="ms" expires_after="M77">
-  <obsolete>
-    Deprecated 12/2020 as it is no longer used for analysis.
-  </obsolete>
-  <owner>pkl@chromium.org</owner>
-  <summary>
-    The latency in milliseconds between the start of the Share Page operation
-    and when the UI is ready to be presented.
-  </summary>
-</histogram>
-
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
     expires_after="2023-02-06">
   <owner>gujen@google.com</owner>
@@ -1574,18 +1484,6 @@ chromium-metrics-reviews@google.com.
     exceptions have been observed. This histogram counts the frequency of this
     invariant violation at the time when a new navigation is finished. True
     means navigation finish callback happened before navigation commit.
-  </summary>
-</histogram>
-
-<histogram name="IOS.WKWebViewLinkPreview" enum="IOSWKWebViewLinkPreviewAction"
-    expires_after="M73">
-  <obsolete>
-    Deprecated 12/2020 as it is no longer used for analysis.
-  </obsolete>
-  <owner>kkhorimoto@chromium.org</owner>
-  <owner>pkl@chromium.org</owner>
-  <summary>
-    Records the user actions related to the WKWebView 3D touch link preview API.
   </summary>
 </histogram>
 
