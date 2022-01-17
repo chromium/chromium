@@ -14,8 +14,6 @@
     <!-- Tab Switcher Colors -->
     <color name="tab_switcher_background">#14181C</color>
     <color name="accessibility_tab_switcher_list_item">#252525</color>
-    <color name="tab_back">#F1F1F1</color>
-    <color name="tab_back_incognito">#4F4F4F</color>
 
     <!-- App menu colors -->
     <color name="update_menu_item_text_color">@color/default_red</color>

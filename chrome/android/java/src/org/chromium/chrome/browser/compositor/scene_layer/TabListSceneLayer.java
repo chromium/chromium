@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.compositor.scene_layer;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.RectF;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
@@ -109,15 +107,6 @@ public class TabListSceneLayer extends SceneLayer {
 
             int defaultThemeColor = ChromeColors.getDefaultThemeColor(context, useIncognitoColors);
 
-            int closeButtonColor = useIncognitoColors
-                    ? Color.WHITE
-                    : SemanticColorUtils.getDefaultIconColorSecondary(context);
-            float closeButtonSizePx =
-                    res.getDimensionPixelSize(R.dimen.tab_switcher_close_button_size);
-
-            int borderColorResource =
-                    t.isIncognito() ? R.color.tab_back_incognito : R.color.tab_back;
-
             int[] relatedTabIds = getRelatedTabIds(t.getId());
 
             float toolbarYOffset = 0;
@@ -131,29 +120,24 @@ public class TabListSceneLayer extends SceneLayer {
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
             TabListSceneLayerJni.get().putTabLayer(mNativePtr, TabListSceneLayer.this, t.getId(),
                     relatedTabIds, mUseAdditionalIds, R.id.control_container,
-                    R.drawable.btn_delete_24dp, R.drawable.tabswitcher_border_frame_shadow,
-                    R.drawable.tabswitcher_border_frame_decoration, R.drawable.logo_card_back,
+                    R.drawable.tabswitcher_border_frame_shadow,
+                    R.drawable.tabswitcher_border_frame_decoration,
                     R.drawable.tabswitcher_border_frame,
                     R.drawable.tabswitcher_border_frame_inner_shadow, t.canUseLiveTexture(),
-                    t.getBackgroundColor(),
-                    ApiCompatibilityUtils.getColor(res, borderColorResource), t.isIncognito(),
-                    t.isCloseButtonOnRight(), t.getRenderX() * dpToPx, t.getRenderY() * dpToPx,
-                    t.getScaledContentWidth() * dpToPx, t.getScaledContentHeight() * dpToPx,
-                    t.getOriginalContentWidth() * dpToPx, t.getOriginalContentHeight() * dpToPx,
-                    t.getClippedX() * dpToPx, t.getClippedY() * dpToPx,
+                    t.getBackgroundColor(), t.isIncognito(), t.getRenderX() * dpToPx,
+                    t.getRenderY() * dpToPx, t.getScaledContentWidth() * dpToPx,
+                    t.getScaledContentHeight() * dpToPx, t.getOriginalContentWidth() * dpToPx,
+                    t.getOriginalContentHeight() * dpToPx, t.getClippedX() * dpToPx,
+                    t.getClippedY() * dpToPx,
                     Math.min(t.getClippedWidth(), t.getScaledContentWidth()) * dpToPx,
                     Math.min(t.getClippedHeight(), t.getScaledContentHeight()) * dpToPx,
-                    t.getTiltXPivotOffset() * dpToPx, t.getTiltYPivotOffset() * dpToPx,
-                    t.getTiltX(), t.getTiltY(), t.getAlpha(), t.getBorderAlpha() * decoration,
+                    t.getAlpha(), t.getBorderAlpha() * decoration,
                     t.getBorderInnerShadowAlpha() * decoration, decoration,
-                    shadowAlpha * decoration, t.getBorderCloseButtonAlpha() * decoration,
-                    LayoutTab.CLOSE_BUTTON_WIDTH_DP * dpToPx, closeButtonSizePx,
-                    t.getStaticToViewBlend(), t.getBorderScale(), t.getSaturation(),
-                    t.getBrightness(), t.showToolbar(), defaultThemeColor,
-                    t.getToolbarBackgroundColor(), closeButtonColor, t.anonymizeToolbar(),
-                    t.isTitleNeeded(), urlBarBackgroundId, t.getTextBoxBackgroundColor(),
-                    t.getToolbarAlpha(), toolbarYOffset, contentOffset, t.getSideBorderScale(),
-                    t.insetBorderVertical());
+                    shadowAlpha * decoration, t.getStaticToViewBlend(), t.getBorderScale(),
+                    t.getSaturation(), t.getBrightness(), t.showToolbar(), defaultThemeColor,
+                    t.getToolbarBackgroundColor(), t.anonymizeToolbar(), urlBarBackgroundId,
+                    t.getTextBoxBackgroundColor(), t.getToolbarAlpha(), toolbarYOffset,
+                    contentOffset, t.getSideBorderScale(), t.insetBorderVertical());
         }
         TabListSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabListSceneLayer.this);
     }
@@ -204,21 +188,17 @@ public class TabListSceneLayer extends SceneLayer {
                 float viewportHeight);
         // TODO(meiliang): Need to provide a resource that indicates the selected tab on the layer.
         void putTabLayer(long nativeTabListSceneLayer, TabListSceneLayer caller, int selectedId,
-                int[] ids, boolean useAdditionalIds, int toolbarResourceId,
-                int closeButtonResourceId, int shadowResourceId, int contourResourceId,
-                int backLogoResourceId, int borderResourceId, int borderInnerShadowResourceId,
-                boolean canUseLiveLayer, int tabBackgroundColor, int backLogoColor,
-                boolean incognito, boolean isPortrait, float x, float y, float width, float height,
-                float contentWidth, float contentHeight, float shadowX, float shadowY,
-                float shadowWidth, float shadowHeight, float pivotX, float pivotY, float rotationX,
-                float rotationY, float alpha, float borderAlpha, float borderInnerShadowAlpha,
-                float contourAlpha, float shadowAlpha, float closeAlpha, float closeBtnWidth,
-                float closeBtnAssetSize, float staticToViewBlend, float borderScale,
-                float saturation, float brightness, boolean showToolbar, int defaultThemeColor,
-                int toolbarBackgroundColor, int closeButtonColor, boolean anonymizeToolbar,
-                boolean showTabTitle, int toolbarTextBoxResource, int toolbarTextBoxBackgroundColor,
-                float toolbarTextBoxAlpha, float toolbarYOffset, float contentOffset,
-                float sideBorderScale, boolean insetVerticalBorder);
+                int[] ids, boolean useAdditionalIds, int toolbarResourceId, int shadowResourceId,
+                int contourResourceId, int borderResourceId, int borderInnerShadowResourceId,
+                boolean canUseLiveLayer, int tabBackgroundColor, boolean incognito, float x,
+                float y, float width, float height, float contentWidth, float contentHeight,
+                float shadowX, float shadowY, float shadowWidth, float shadowHeight, float alpha,
+                float borderAlpha, float borderInnerShadowAlpha, float contourAlpha,
+                float shadowAlpha, float staticToViewBlend, float borderScale, float saturation,
+                float brightness, boolean showToolbar, int defaultThemeColor,
+                int toolbarBackgroundColor, boolean anonymizeToolbar, int toolbarTextBoxResource,
+                int toolbarTextBoxBackgroundColor, float toolbarTextBoxAlpha, float toolbarYOffset,
+                float contentOffset, float sideBorderScale, boolean insetVerticalBorder);
 
         void putBackgroundLayer(long nativeTabListSceneLayer, TabListSceneLayer caller,
                 int resourceId, float alpha, int topOffset);

@@ -114,7 +114,7 @@ public class StartSurfaceLayout extends Layout {
     public StartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker) {
         super(context, updateHost, renderHost);
-        mDummyLayoutTab = createLayoutTab(Tab.INVALID_TAB_ID, false, false, false);
+        mDummyLayoutTab = createLayoutTab(Tab.INVALID_TAB_ID, false);
         mDummyLayoutTab.setShowToolbar(true);
         mStartSurface = startSurface;
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
@@ -246,8 +246,8 @@ public class StartSurfaceLayout extends Layout {
 
         // Keep the current tab in mLayoutTabs even if we are not going to show the shrinking
         // animation so that thumbnail taking is not blocked.
-        LayoutTab sourceLayoutTab = createLayoutTab(mTabModelSelector.getCurrentTabId(),
-                mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
+        LayoutTab sourceLayoutTab = createLayoutTab(
+                mTabModelSelector.getCurrentTabId(), mTabModelSelector.isIncognitoSelected());
         sourceLayoutTab.setDecorationAlpha(0);
 
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
@@ -331,8 +331,8 @@ public class StartSurfaceLayout extends Layout {
             sourceTabId = mTabModelSelector.getCurrentTabId();
         }
 
-        LayoutTab sourceLayoutTab = createLayoutTab(
-                sourceTabId, mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
+        LayoutTab sourceLayoutTab =
+                createLayoutTab(sourceTabId, mTabModelSelector.isIncognitoSelected());
         sourceLayoutTab.setDecorationAlpha(0);
 
         List<LayoutTab> layoutTabs = new ArrayList<>();
@@ -341,8 +341,8 @@ public class StartSurfaceLayout extends Layout {
         if (sourceTabId != mTabModelSelector.getCurrentTabId()) {
             // Keep the original tab in mLayoutTabs to unblock thumbnail taking at the end of
             // the animation.
-            LayoutTab originalTab = createLayoutTab(mTabModelSelector.getCurrentTabId(),
-                    mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
+            LayoutTab originalTab = createLayoutTab(
+                    mTabModelSelector.getCurrentTabId(), mTabModelSelector.isIncognitoSelected());
             originalTab.setScale(0);
             originalTab.setDecorationAlpha(0);
             layoutTabs.add(originalTab);

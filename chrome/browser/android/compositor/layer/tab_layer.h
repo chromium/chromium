@@ -16,7 +16,6 @@ namespace cc {
 class Layer;
 class NinePatchLayer;
 class SolidColorLayer;
-class UIResourceLayer;
 }
 
 namespace gfx {
@@ -50,15 +49,11 @@ class TabLayer : public Layer {
                      const std::vector<int>& ids,
                      bool can_use_live_layer,
                      int toolbar_resource_id,
-                     int close_button_resource_id,
                      int shadow_resource_id,
                      int contour_resource_id,
-                     int back_logo_resource_id,
                      int border_resource_id,
                      int border_inner_shadow_resource_id,
                      int default_background_color,
-                     int back_logo_color,
-                     bool is_portrait,
                      float x,
                      float y,
                      float width,
@@ -67,21 +62,14 @@ class TabLayer : public Layer {
                      float shadow_y,
                      float shadow_width,
                      float shadow_height,
-                     float pivot_x,
-                     float pivot_y,
-                     float rotation_x,
-                     float rotation_y,
                      float alpha,
                      float border_alpha,
                      float border_inner_shadow_alpha,
                      float contour_alpha,
                      float shadow_alpha,
-                     float close_alpha,
                      float border_scale,
                      float saturation,
                      float brightness,
-                     float close_btn_width,
-                     float close_btn_asset_size,
                      float static_to_view_blend,
                      float content_width,
                      float content_height,
@@ -89,9 +77,7 @@ class TabLayer : public Layer {
                      bool show_toolbar,
                      int default_theme_color,
                      int toolbar_background_color,
-                     int close_button_color,
                      bool anonymize_toolbar,
-                     bool show_tab_title,
                      int toolbar_textbox_resource_id,
                      int toolbar_textbox_background_color,
                      float toolbar_alpha,
@@ -135,12 +121,9 @@ class TabLayer : public Layer {
   // [layer]-+-[toolbar]
   //         +-[front border]
   //         +-[content]
-  //         +-[back_logo]
   //         +-[padding]
   //         +-[contour_shadow]
   //         +-[shadow]
-  //
-  // [back logo]
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<ToolbarLayer> toolbar_layer_;
   scoped_refptr<ContentLayer> content_;
@@ -153,7 +136,6 @@ class TabLayer : public Layer {
   scoped_refptr<cc::NinePatchLayer> contour_shadow_;
 
   scoped_refptr<cc::NinePatchLayer> shadow_;
-  scoped_refptr<cc::UIResourceLayer> back_logo_;
   float brightness_;
 };
 

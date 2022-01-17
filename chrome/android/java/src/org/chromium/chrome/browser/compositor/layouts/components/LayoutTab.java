@@ -41,16 +41,6 @@ public class LayoutTab extends PropertyModel {
     // Fields initialized in init()
     public static final WritableFloatPropertyKey SCALE = new WritableFloatPropertyKey();
 
-    public static final WritableFloatPropertyKey TILT_X_IN_DEGREES = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey TILT_Y_IN_DEGREES = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey TILT_X_PIVOT_OFFSET =
-            new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey TILT_Y_PIVOT_OFFSET =
-            new WritableFloatPropertyKey();
-
     public static final WritableFloatPropertyKey X = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey Y = new WritableFloatPropertyKey();
@@ -74,9 +64,6 @@ public class LayoutTab extends PropertyModel {
     public static final WritableFloatPropertyKey SATURATION = new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey BORDER_ALPHA = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey BORDER_CLOSE_BUTTON_ALPHA =
-            new WritableFloatPropertyKey();
 
     public static final WritableFloatPropertyKey BORDER_SCALE = new WritableFloatPropertyKey();
 
@@ -161,17 +148,15 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
             new PropertyModel.WritableFloatPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TAB_ID, IS_INCOGNITO, SCALE,
-            TILT_X_IN_DEGREES, TILT_Y_IN_DEGREES, TILT_X_PIVOT_OFFSET, TILT_Y_PIVOT_OFFSET, X, Y,
-            RENDER_X, RENDER_Y, CLIPPED_X, CLIPPED_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA,
-            SATURATION, BORDER_ALPHA, BORDER_CLOSE_BUTTON_ALPHA, BORDER_SCALE,
-            ORIGINAL_CONTENT_WIDTH_IN_DP, ORIGINAL_CONTENT_HEIGHT_IN_DP, MAX_CONTENT_WIDTH,
-            MAX_CONTENT_HEIGHT, STATIC_TO_VIEW_BLEND, BRIGHTNESS, IS_VISIBLE, SHOULD_STALL,
-            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, TOOLBAR_ALPHA,
-            INSET_BORDER_VERTICAL, TOOLBAR_Y_OFFSET, SIDE_BORDER_SCALE, CLOSE_BUTTON_IS_ON_RIGHT,
-            BOUNDS, CLOSE_PLACEMENT, DECORATION_ALPHA, IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED,
-            BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR, TEXT_BOX_BACKGROUND_COLOR, TEXT_BOX_ALPHA,
-            CONTENT_OFFSET};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TAB_ID, IS_INCOGNITO, SCALE, X,
+            Y, RENDER_X, RENDER_Y, CLIPPED_X, CLIPPED_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA,
+            SATURATION, BORDER_ALPHA, BORDER_SCALE, ORIGINAL_CONTENT_WIDTH_IN_DP,
+            ORIGINAL_CONTENT_HEIGHT_IN_DP, MAX_CONTENT_WIDTH, MAX_CONTENT_HEIGHT,
+            STATIC_TO_VIEW_BLEND, BRIGHTNESS, IS_VISIBLE, SHOULD_STALL, CAN_USE_LIVE_TEXTURE,
+            SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, TOOLBAR_ALPHA, INSET_BORDER_VERTICAL, TOOLBAR_Y_OFFSET,
+            SIDE_BORDER_SCALE, CLOSE_BUTTON_IS_ON_RIGHT, BOUNDS, CLOSE_PLACEMENT, DECORATION_ALPHA,
+            IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED, BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR,
+            TEXT_BOX_BACKGROUND_COLOR, TEXT_BOX_ALPHA, CONTENT_OFFSET};
 
     /**
      * Default constructor for a {@link LayoutTab}.
@@ -180,13 +165,9 @@ public class LayoutTab extends PropertyModel {
      * @param isIncognito             Whether the tab in the in the incognito stack.
      * @param maxContentTextureWidth  The maximum width for drawing the content in px.
      * @param maxContentTextureHeight The maximum height for drawing the content in px.
-     * @param showCloseButton         Whether a close button should be displayed in the corner.
-     * @param isTitleNeeded           Whether that tab need a title texture. This is an
-     *                                optimization to save cycles and memory. This is
-     *                                ignored if the title texture is already set.
      */
     public LayoutTab(int tabId, boolean isIncognito, int maxContentTextureWidth,
-            int maxContentTextureHeight, boolean showCloseButton, boolean isTitleNeeded) {
+            int maxContentTextureHeight) {
         super(ALL_KEYS);
 
         set(TAB_ID, tabId);
@@ -198,7 +179,7 @@ public class LayoutTab extends PropertyModel {
         set(TEXT_BOX_BACKGROUND_COLOR, Color.WHITE);
         set(TEXT_BOX_ALPHA, 1.0f);
 
-        init(maxContentTextureWidth, maxContentTextureHeight, showCloseButton, isTitleNeeded);
+        init(maxContentTextureWidth, maxContentTextureHeight);
     }
 
     /**
@@ -206,26 +187,18 @@ public class LayoutTab extends PropertyModel {
      *
      * @param maxContentTextureWidth  The maximum width of the page content in px.
      * @param maxContentTextureHeight The maximum height of the page content in px.
-     * @param showCloseButton         Whether to show the close button on the tab border.
-     * @param isTitleNeeded           Whether that tab need a title texture. This is an
-     *                                optimization to save cycles and memory. This is
-     *                                ignored if the title texture is already set.
      */
-    public void init(int maxContentTextureWidth, int maxContentTextureHeight,
-            boolean showCloseButton, boolean isTitleNeeded) {
+    public void init(int maxContentTextureWidth, int maxContentTextureHeight) {
         set(ALPHA, 1.0f);
         set(SATURATION, 1.0f);
         set(BRIGHTNESS, 1.0f);
         set(BORDER_ALPHA, 1.0f);
-        set(BORDER_CLOSE_BUTTON_ALPHA, showCloseButton ? 1.f : 0.f);
         set(BORDER_SCALE, 1.0f);
         set(CLIPPED_X, 0.0f);
         set(CLIPPED_Y, 0.0f);
         set(CLIPPED_WIDTH, Float.MAX_VALUE);
         set(CLIPPED_HEIGHT, Float.MAX_VALUE);
         set(SCALE, 1.0f);
-        set(TILT_X_IN_DEGREES, 0.0f);
-        set(TILT_Y_IN_DEGREES, 0.0f);
         set(IS_VISIBLE, true);
         set(X, 0.0f);
         set(Y, 0.0f);
@@ -233,7 +206,6 @@ public class LayoutTab extends PropertyModel {
         set(RENDER_Y, 0.0f);
         set(STATIC_TO_VIEW_BLEND, 0.0f);
         set(DECORATION_ALPHA, 1.0f);
-        set(IS_TITLE_NEEDED, isTitleNeeded);
         set(CAN_USE_LIVE_TEXTURE, true);
         set(SHOW_TOOLBAR, false);
         set(ANONYMIZE_TOOLBAR, false);
@@ -301,52 +273,6 @@ public class LayoutTab extends PropertyModel {
      */
     public void setScale(float scale) {
         set(SCALE, scale);
-    }
-
-    /**
-     * @param tilt        The tilt angle around the X axis of the tab in degree.
-     * @param pivotOffset The offset of the X axis of the tilt pivot.
-     */
-    public void setTiltX(float tilt, float pivotOffset) {
-        set(TILT_X_IN_DEGREES, tilt);
-        set(TILT_X_PIVOT_OFFSET, pivotOffset);
-    }
-
-    /**
-     * @return The tilt angle around the X axis of the tab in degree.
-     */
-    public float getTiltX() {
-        return get(TILT_X_IN_DEGREES);
-    }
-
-    /**
-     * @return The offset of the X axis of the tilt pivot.
-     */
-    public float getTiltXPivotOffset() {
-        return get(TILT_X_PIVOT_OFFSET);
-    }
-
-    /**
-     * @param tilt        The tilt angle around the Y axis of the tab in degree.
-     * @param pivotOffset The offset of the Y axis of the tilt pivot.
-     */
-    public void setTiltY(float tilt, float pivotOffset) {
-        set(TILT_Y_IN_DEGREES, tilt);
-        set(TILT_Y_PIVOT_OFFSET, pivotOffset);
-    }
-
-    /**
-     * @return The tilt angle around the Y axis of the tab in degree.
-     */
-    public float getTiltY() {
-        return get(TILT_Y_IN_DEGREES);
-    }
-
-    /**
-     * @return The offset of the Y axis of the tilt pivot.
-     */
-    public float getTiltYPivotOffset() {
-        return get(TILT_Y_IN_DEGREES);
     }
 
     /**
@@ -588,20 +514,6 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @param alpha The maximum alpha value of the close button on the border.
-     */
-    public void setBorderCloseButtonAlpha(float alpha) {
-        set(BORDER_CLOSE_BUTTON_ALPHA, alpha);
-    }
-
-    /**
-     * @return The current alpha value at which the close button on the border is drawn.
-     */
-    public float getBorderCloseButtonAlpha() {
-        return get(BORDER_CLOSE_BUTTON_ALPHA);
-    }
-
-    /**
      * @param scale The scale factor of the border.
      *              1.0f yields 1:1 pixel with the source image.
      */
@@ -705,13 +617,6 @@ public class LayoutTab extends PropertyModel {
     public void setContentSize(int originalContentWidth, int originalContentHeight) {
         set(ORIGINAL_CONTENT_WIDTH_IN_DP, originalContentWidth * sPxToDp);
         set(ORIGINAL_CONTENT_HEIGHT_IN_DP, originalContentHeight * sPxToDp);
-    }
-
-    /**
-     * @return Whether the tab title should be displayed.
-     */
-    public boolean isTitleNeeded() {
-        return get(IS_TITLE_NEEDED);
     }
 
     /**

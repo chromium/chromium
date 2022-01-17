@@ -789,15 +789,14 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     @Override
-    public LayoutTab createLayoutTab(int id, boolean incognito, boolean showCloseButton,
-            boolean isTitleNeeded, float maxContentWidth, float maxContentHeight) {
+    public LayoutTab createLayoutTab(
+            int id, boolean incognito, float maxContentWidth, float maxContentHeight) {
         LayoutTab tab = mTabCache.get(id);
         if (tab == null) {
-            tab = new LayoutTab(id, incognito, mHost.getWidth(), mHost.getHeight(), showCloseButton,
-                    isTitleNeeded);
+            tab = new LayoutTab(id, incognito, mHost.getWidth(), mHost.getHeight());
             mTabCache.put(id, tab);
         } else {
-            tab.init(mHost.getWidth(), mHost.getHeight(), showCloseButton, isTitleNeeded);
+            tab.init(mHost.getWidth(), mHost.getHeight());
         }
         if (maxContentWidth > 0.f) tab.setMaxContentWidth(maxContentWidth);
         if (maxContentHeight > 0.f) tab.setMaxContentHeight(maxContentHeight);

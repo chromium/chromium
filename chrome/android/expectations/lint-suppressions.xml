@@ -23,7 +23,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- This is intentional to reduce APK size. See: http://crrev/c/1352161 -->
     <ignore regexp="chrome/android/features/autofill_assistant/java/res/drawable-*"/>
     <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
-    <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png, logo_card_back.png"/>
+    <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png"/>
     <!-- This is intentional to save on WebAPKs' size. -->
     <ignore regexp="chrome/android/webapk/shell_apk/res/drawable-*"/>
   </issue>

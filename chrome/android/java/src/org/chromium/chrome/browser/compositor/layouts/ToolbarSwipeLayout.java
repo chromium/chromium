@@ -159,7 +159,7 @@ public class ToolbarSwipeLayout extends Layout {
         if (model == null) return;
         int fromTabId = mTabModelSelector.getCurrentTabId();
         if (fromTabId == TabModel.INVALID_TAB_INDEX) return;
-        mFromTab = createLayoutTab(fromTabId, model.isIncognito(), NO_CLOSE_BUTTON, NEED_TITLE);
+        mFromTab = createLayoutTab(fromTabId, model.isIncognito());
         prepareLayoutTabForSwipe(mFromTab, false);
     }
 
@@ -207,14 +207,13 @@ public class ToolbarSwipeLayout extends Layout {
         TabModel model = mTabModelSelector.getCurrentModel();
         if (0 <= leftIndex && leftIndex < model.getCount()) {
             leftTabId = model.getTabAt(leftIndex).getId();
-            mLeftTab = createLayoutTab(leftTabId, model.isIncognito(), NO_CLOSE_BUTTON, NEED_TITLE);
+            mLeftTab = createLayoutTab(leftTabId, model.isIncognito());
             prepareLayoutTabForSwipe(mLeftTab, leftIndex != fromIndex);
             mLeftTabSupplier.set(model.getTabAt(leftIndex));
         }
         if (0 <= rightIndex && rightIndex < model.getCount()) {
             rightTabId = model.getTabAt(rightIndex).getId();
-            mRightTab =
-                    createLayoutTab(rightTabId, model.isIncognito(), NO_CLOSE_BUTTON, NEED_TITLE);
+            mRightTab = createLayoutTab(rightTabId, model.isIncognito());
             prepareLayoutTabForSwipe(mRightTab, rightIndex != fromIndex);
             mRightTabSupplier.set(model.getTabAt(rightIndex));
         }
