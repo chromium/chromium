@@ -61,7 +61,7 @@ StartupAppLauncher::StartupAppLauncher(Profile* profile,
 }
 
 StartupAppLauncher::~StartupAppLauncher() {
-  if (waiting_for_window_)
+  if (state_ == LaunchState::kWaitingForWindow)
     window_registry_->RemoveObserver(this);
 }
 
@@ -71,13 +71,12 @@ void StartupAppLauncher::Initialize() {
 
 void StartupAppLauncher::ContinueWithNetworkReady() {
   SYSLOG(INFO) << "ContinueWithNetworkReady"
-               << ", network_ready_handled_=" << network_ready_handled_
-               << ", ready_to_launch_=" << ready_to_launch_;
+               << ", state_="
+               << static_cast<typename std::underlying_type<LaunchState>::type>(
+                      state_);
 
-  if (ready_to_launch_ || network_ready_handled_)
+  if (state_ != LaunchState::kInitializingNetwork)
     return;
-
-  network_ready_handled_ = true;
 
   if (delegate_->ShouldSkipAppInstallation()) {
     FinalizeAppInstall();
@@ -87,7 +86,7 @@ void StartupAppLauncher::ContinueWithNetworkReady() {
   // The network might not be ready when KioskAppManager tries to update
   // external cache initially. Update the external cache now that the network
   // is ready for sure.
-  wait_for_crx_update_ = true;
+  state_ = LaunchState::kWaitingForCache;
   KioskAppManager::Get()->UpdateExternalCache();
 }
 
@@ -95,7 +94,7 @@ void StartupAppLauncher::RestartLauncher() {
   // Do not allow restarts after the launcher finishes kiosk apps installation -
   // notify the delegate that kiosk app is ready to launch, in case the launch
   // was delayed, for example by network config dialog.
-  if (ready_to_launch_) {
+  if (state_ == LaunchState::kReadyToLaunch) {
     delegate_->OnAppPrepared();
     return;
   }
@@ -115,9 +114,9 @@ void StartupAppLauncher::RestartLauncher() {
 }
 
 void StartupAppLauncher::MaybeInitializeNetwork() {
-  DCHECK(!ready_to_launch_);
-
-  network_ready_handled_ = false;
+  DCHECK(state_ != LaunchState::kReadyToLaunch &&
+         state_ != LaunchState::kWaitingForWindow &&
+         state_ != LaunchState::kLaunchSucceeded);
 
   const Extension* extension = GetPrimaryAppExtension();
   bool crx_cached = KioskAppManager::Get()->HasCachedCrx(app_id_);
@@ -129,6 +128,8 @@ void StartupAppLauncher::MaybeInitializeNetwork() {
   SYSLOG(INFO) << "MaybeInitializeNetwork"
                << ", requires_network=" << requires_network
                << ", network_ready=" << delegate_->IsNetworkReady();
+
+  state_ = LaunchState::kInitializingNetwork;
 
   if (requires_network) {
     delegate_->InitializeNetwork();
@@ -160,13 +161,12 @@ void StartupAppLauncher::OnKioskExtensionDownloadFailed(
 
 void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     const std::string& app_id) {
-  if (ready_to_launch_)
+  if (state_ != LaunchState::kWaitingForCache)
     return;
 
-  if (app_id != app_id_ || !wait_for_crx_update_)
+  if (app_id != app_id_)
     return;
 
-  wait_for_crx_update_ = false;
   if (KioskAppManager::Get()->HasCachedCrx(app_id_))
     BeginInstall();
   else
@@ -180,7 +180,7 @@ const extensions::Extension* StartupAppLauncher::GetPrimaryAppExtension()
 }
 
 void StartupAppLauncher::LaunchApp() {
-  if (!ready_to_launch_) {
+  if (state_ != LaunchState::kReadyToLaunch) {
     NOTREACHED();
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
   }
@@ -210,21 +210,22 @@ void StartupAppLauncher::LaunchApp() {
 
 void StartupAppLauncher::OnLaunchSuccess() {
   delegate_->OnAppLaunched();
+  state_ = LaunchState::kWaitingForWindow;
 
   window_registry_ = extensions::AppWindowRegistry::Get(profile_);
   // Start waiting for app window.
   if (!window_registry_->GetAppWindowsForApp(app_id_).empty()) {
     delegate_->OnAppWindowCreated();
+    state_ = LaunchState::kLaunchSucceeded;
     return;
   } else {
-    waiting_for_window_ = true;
     window_registry_->AddObserver(this);
   }
 }
 
 void StartupAppLauncher::OnAppWindowAdded(extensions::AppWindow* app_window) {
   if (app_window->extension_id() == app_id_) {
-    waiting_for_window_ = false;
+    state_ = LaunchState::kLaunchSucceeded;
     window_registry_->RemoveObserver(this);
     delegate_->OnAppWindowCreated();
   }
@@ -242,6 +243,7 @@ void StartupAppLauncher::FinalizeAppInstall() {
 }
 
 void StartupAppLauncher::BeginInstall(bool finalize_only) {
+  state_ = LaunchState::kInstallingApp;
   if (!finalize_only) {
     delegate_->OnAppInstalling();
   }
@@ -253,9 +255,11 @@ void StartupAppLauncher::BeginInstall(bool finalize_only) {
 
 void StartupAppLauncher::OnInstallComplete(
     ChromeAppKioskAppInstaller::InstallResult result) {
+  DCHECK(state_ == LaunchState::kInstallingApp);
+
   switch (result) {
     case ChromeAppKioskAppInstaller::InstallResult::kSuccess:
-      ready_to_launch_ = true;
+      state_ = LaunchState::kReadyToLaunch;
       // Updates to cached primary app crx will be ignored after this point, so
       // there is no need to observe the kiosk app manager any longer.
       kiosk_app_manager_observation_.Reset();

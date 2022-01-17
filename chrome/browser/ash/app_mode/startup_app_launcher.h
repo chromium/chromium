@@ -45,6 +45,18 @@ class StartupAppLauncher : public KioskAppLauncher,
   // Class used to watch for app window creation.
   class AppWindowWatcher;
 
+  // Launch state of the kiosk application
+  enum class LaunchState {
+    kNotStarted,
+    kInitializingNetwork,
+    kWaitingForCache,
+    kInstallingApp,
+    kReadyToLaunch,
+    kWaitingForWindow,
+    kLaunchSucceeded,
+    kLaunchFailed
+  };
+
   // KioskAppLauncher:
   void Initialize() override;
   void ContinueWithNetworkReady() override;
@@ -72,11 +84,8 @@ class StartupAppLauncher : public KioskAppLauncher,
 
   Profile* const profile_;
   const std::string app_id_;
-  bool network_ready_handled_ = false;
   int launch_attempt_ = 0;
-  bool wait_for_crx_update_ = false;
-  bool waiting_for_window_ = false;
-  bool ready_to_launch_ = false;
+  LaunchState state_ = LaunchState::kNotStarted;
 
   std::unique_ptr<ChromeAppKioskAppInstaller> installer_;
 
