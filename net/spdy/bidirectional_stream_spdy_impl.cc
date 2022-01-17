@@ -81,7 +81,8 @@ void BidirectionalStreamSpdyImpl::Start(
       request_info_->socket_tag, net_log,
       base::BindOnce(&BidirectionalStreamSpdyImpl::OnStreamInitialized,
                      weak_factory_.GetWeakPtr()),
-      traffic_annotation);
+      traffic_annotation, request_info_->detect_broken_connection,
+      request_info_->heartbeat_interval);
   if (rv != ERR_IO_PENDING)
     OnStreamInitialized(rv);
 }
