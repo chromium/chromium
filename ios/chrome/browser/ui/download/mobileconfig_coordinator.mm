@@ -16,8 +16,7 @@
 #import "ios/chrome/browser/download/mobileconfig_tab_helper_delegate.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -30,18 +29,13 @@
 const char kUmaDownloadMobileConfigFileUI[] =
     "Download.IOSDownloadMobileConfigFileUI";
 
-@interface MobileConfigCoordinator () <CRWWebStateObserver,
+@interface MobileConfigCoordinator () <DependencyInstalling,
                                        MobileConfigTabHelperDelegate,
-                                       SFSafariViewControllerDelegate,
-                                       WebStateListObserving> {
-  // WebStateList observers.
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
-  std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
-      _scopedWebStateListObserver;
+                                       SFSafariViewControllerDelegate> {
+  // Bridge which observes WebStateList and alerts this coordinator when this
+  // needs to register the Mediator with a new WebState.
+  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
 }
-
-// The WebStateList being observed.
-@property(nonatomic, readonly) WebStateList* webStateList;
 
 // Coordinator used to display modal alerts to the user.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
@@ -55,51 +49,27 @@ const char kUmaDownloadMobileConfigFileUI[] =
 
 @implementation MobileConfigCoordinator
 
-- (WebStateList*)webStateList {
-  return self.browser->GetWebStateList();
-}
-
-- (void)start {
-  for (int i = 0; i < self.webStateList->count(); i++) {
-    web::WebState* webState = self.webStateList->GetWebStateAt(i);
-    [self installDelegatesForWebState:webState];
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser {
+  if (self = [super initWithBaseViewController:baseViewController
+                                       browser:browser]) {
+    _dependencyInstallerBridge =
+        std::make_unique<WebStateDependencyInstallerBridge>(
+            self, browser->GetWebStateList());
   }
-
-  _webStateListObserverBridge =
-      std::make_unique<WebStateListObserverBridge>(self);
-  _scopedWebStateListObserver = std::make_unique<
-      base::ScopedObservation<WebStateList, WebStateListObserver>>(
-      _webStateListObserverBridge.get());
-  _scopedWebStateListObserver->Observe(self.webStateList);
+  return self;
 }
 
 - (void)stop {
-  _scopedWebStateListObserver.reset();
-
-  for (int i = 0; i < self.webStateList->count(); i++) {
-    web::WebState* webState = self.webStateList->GetWebStateAt(i);
-    [self uninstallDelegatesForWebState:webState];
-  }
+  // Reset this observer manually. We want this to go out of scope now, to
+  // ensure it detaches before |browser| and its WebStateList get destroyed.
+  _dependencyInstallerBridge.reset();
 
   self.safariViewController = nil;
   [self.alertCoordinator stop];
 }
 
 #pragma mark - Private
-
-// Installs delegates for |webState|.
-- (void)installDelegatesForWebState:(web::WebState*)webState {
-  if (MobileConfigTabHelper::FromWebState(webState)) {
-    MobileConfigTabHelper::FromWebState(webState)->set_delegate(self);
-  }
-}
-
-// Uninstalls delegates for |webState|.
-- (void)uninstallDelegatesForWebState:(web::WebState*)webState {
-  if (MobileConfigTabHelper::FromWebState(webState)) {
-    MobileConfigTabHelper::FromWebState(webState)->set_delegate(nil);
-  }
-}
 
 // Presents SFSafariViewController in order to download .mobileconfig file.
 - (void)presentSFSafariViewController:(NSURL*)fileURL {
@@ -118,27 +88,18 @@ const char kUmaDownloadMobileConfigFileUI[] =
                                       completion:nil];
 }
 
-#pragma mark - WebStateListObserving
+#pragma mark - DependencyInstalling methods
 
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  [self installDelegatesForWebState:webState];
+- (void)installDependencyForWebState:(web::WebState*)webState {
+  if (MobileConfigTabHelper::FromWebState(webState)) {
+    MobileConfigTabHelper::FromWebState(webState)->set_delegate(self);
+  }
 }
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)index {
-  [self uninstallDelegatesForWebState:oldWebState];
-  [self installDelegatesForWebState:newWebState];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)index {
-  [self uninstallDelegatesForWebState:webState];
+- (void)uninstallDependencyForWebState:(web::WebState*)webState {
+  if (MobileConfigTabHelper::FromWebState(webState)) {
+    MobileConfigTabHelper::FromWebState(webState)->set_delegate(nil);
+  }
 }
 
 #pragma mark - MobileConfigTabHelperDelegate
