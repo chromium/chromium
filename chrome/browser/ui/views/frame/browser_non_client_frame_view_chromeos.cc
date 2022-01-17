@@ -475,7 +475,6 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
 }
 
 void BrowserNonClientFrameViewChromeOS::OnThemeChanged() {
-  OnUpdateBackgroundColor();
   OnUpdateFrameColor();
   BrowserNonClientFrameView::OnThemeChanged();
 }
@@ -912,34 +911,6 @@ bool BrowserNonClientFrameViewChromeOS::GetHideCaptionButtonsForFullscreen()
     return true;
 
   return immersive_controller->ShouldHideTopViews();
-}
-
-void BrowserNonClientFrameViewChromeOS::OnUpdateBackgroundColor() {
-  auto* browser_view = this->browser_view();
-  if (!browser_view)
-    return;
-
-  auto* contents_web_view = browser_view->contents_web_view();
-  if (!contents_web_view)
-    return;
-
-  absl::optional<SkColor> background_color;
-  if (browser_view->GetIsWebAppType()) {
-    auto* browser = browser_view->browser();
-    if (browser && web_app::IsSystemWebApp(browser)) {
-      // The personalization app manages its own background color override to
-      // facilitate previewing of wallpaper selection which requires background
-      // transparency. That being the case, background color override for the
-      // personalization app should not be set here.
-      if (web_app::IsBrowserForSystemWebApp(
-              browser, web_app::SystemAppType::PERSONALIZATION)) {
-        return;
-      }
-      background_color = browser->app_controller()->GetBackgroundColor();
-    }
-  }
-
-  contents_web_view->SetBackgroundColorOverride(background_color);
 }
 
 void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {

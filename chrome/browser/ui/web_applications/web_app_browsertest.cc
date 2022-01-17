@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
@@ -54,8 +53,6 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -325,104 +322,39 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithColor) {
   EXPECT_EQ(provider->registrar().GetAppThemeColor(app_id), SK_ColorGREEN);
 }
 
-// Base class for background color change browser tests parameterized by whether
-// to use a SWA or a non-SWA.
-class WebAppBackgroundColorChangeBrowserTest
-    : public WebAppBrowserTest,
-      public testing::WithParamInterface</*use_swa=*/bool> {
- public:
-  // Returns whether to use a SWA given test parameterization.
-  bool UseSwa() const { return GetParam(); }
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
+  const GURL app_url = GetSecureAppURL();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->theme_color = SK_ColorBLUE;
+  const AppId app_id = InstallWebApp(std::move(web_app_info));
 
-  // Installs an SWA or a non-SWA depending on test parameterization, returning
-  // the `AppId` of the installed app. Note that this method may only be invoked
-  // once per test.
-  AppId InstallWebApp() {
-    DCHECK(!app_id_.has_value());
-    if (UseSwa()) {
-      web_app::WebAppProvider::GetForSystemWebApps(profile())
-          ->system_web_app_manager()
-          .InstallSystemAppsForTesting();
-      app_id_ = *web_app::GetAppIdForSystemWebApp(profile(),
-                                                  web_app::SystemAppType::HELP);
-    } else {
-      const GURL app_url = GetSecureAppURL();
-      auto web_app_info = std::make_unique<WebAppInstallInfo>();
-      web_app_info->start_url = app_url;
-      web_app_info->scope = app_url.GetWithoutFilename();
-      web_app_info->theme_color = SK_ColorBLUE;
-      web_app_info->background_color = SK_ColorBLUE;
-      app_id_ = WebAppBrowserTest::InstallWebApp(std::move(web_app_info));
-    }
-    return app_id_.value();
-  }
-
-  // Returns the background color for the installed SWA or non-SWA depending on
-  // test parameterization. Note that this method may only be invoked after
-  // having called `InstallWebApp()`.
-  absl::optional<SkColor> GetBackgroundColorFromRegistrar() {
-    auto* provider = WebAppProvider::GetForTest(profile());
-    return provider->registrar().GetAppBackgroundColor(app_id_.value());
-  }
-
- private:
-  absl::optional<AppId> app_id_;
-};
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppBackgroundColorChangeBrowserTest,
-                         /*use_swa=*/testing::Bool());
-#else
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppBackgroundColorChangeBrowserTest,
-                         /*use_swa=*/testing::Values(false));
-#endif
-
-IN_PROC_BROWSER_TEST_P(WebAppBackgroundColorChangeBrowserTest,
-                       BackgroundColorChange) {
-  const AppId app_id = WebAppBackgroundColorChangeBrowserTest::InstallWebApp();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  // Verify background color is resolved from the registrar prior to the web
-  // contents background color being loaded.
-  const SkColor registrar_color = GetBackgroundColorFromRegistrar().value();
-  EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-            registrar_color);
-
-  // Wait for the web contents background color to load. For SWAs, the app
-  // controller should still resolve background color from the registrar while
-  // for non-SWAs the app controller should resolve background color from the
-  // web contents.
+  // Wait for original background color (not cyan) to load.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-              UseSwa() ? registrar_color
-                       : web_contents->GetBackgroundColor().value());
+    EXPECT_NE(app_browser->app_controller()->GetBackgroundColor().value(),
+              SK_ColorCYAN);
   }
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
-  // Changing web contents background color should update download shelf theme
-  // for non-SWAs. For SWAs, background color and shelf theme should still be
-  // resolved from the registrar.
+  // Changing background color should update download shelf theme.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
-    const SkColor web_contents_color =
-        web_contents->GetBackgroundColor().value();
-    EXPECT_EQ(web_contents_color, SK_ColorCYAN);
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-              UseSwa() ? registrar_color : web_contents_color);
+              SK_ColorCYAN);
     SkColor download_shelf_color;
     app_browser->app_controller()->GetThemeSupplier()->GetColor(
         ThemeProperties::COLOR_DOWNLOAD_SHELF, &download_shelf_color);
-    EXPECT_EQ(download_shelf_color,
-              UseSwa() ? registrar_color : web_contents_color);
+    EXPECT_EQ(download_shelf_color, SK_ColorCYAN);
   }
 }
 

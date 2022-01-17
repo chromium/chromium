@@ -240,24 +240,18 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 }
 
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
-  auto web_contents_color = AppBrowserController::GetBackgroundColor();
-  auto registrar_color = registrar().GetAppBackgroundColor(app_id());
+  if (auto color = AppBrowserController::GetBackgroundColor())
+    return color;
 
   if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     absl::optional<SkColor> dark_mode_color =
         registrar().GetAppDarkModeBackgroundColor(app_id());
-    if (dark_mode_color)
-      registrar_color = dark_mode_color;
+    if (dark_mode_color) {
+      return dark_mode_color;
+    }
   }
 
-  // SWAs give preference to registrar colors over colors resolved from web
-  // contents to work around the asynchronous nature of web contents' background
-  // color updates on theme change which would otherwise result in out of sync
-  // transitions between the browser's non-client frame header and background.
-  if (system_app_)
-    return registrar_color ? registrar_color : web_contents_color;
-
-  return web_contents_color ? web_contents_color : registrar_color;
+  return registrar().GetAppBackgroundColor(app_id());
 }
 
 GURL WebAppBrowserController::GetAppStartUrl() const {

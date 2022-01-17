@@ -82,7 +82,6 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -98,7 +97,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -137,127 +135,6 @@ using BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTest>;
 using BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTouchTest>;
-
-// Base class for background color change browser tests parameterized by whether
-// to use a SWA or a non-SWA.
-class BrowserNonClientFrameViewChromeOSTestBackgroundColorChange
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface</*use_swa=*/bool> {
- public:
-  // Returns whether to use a SWA given test parameterization.
-  bool UseSwa() const { return GetParam(); }
-
-  // Installs an SWA or a non-SWA depending on test parameterization, returning
-  // the `AppId` of the installed app. Note that this method may only be invoked
-  // once per test.
-  web_app::AppId InstallWebApp() {
-    DCHECK(!app_id_.has_value());
-    app_id_ = UseSwa() ? InstallSWA() : InstallNonSWA();
-    return app_id_.value();
-  }
-
-  // Toggles the color mode, triggering propagation of theme change events.
-  void ToggleColorMode() {
-    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-
-    const bool is_dark_mode_enabled = native_theme->ShouldUseDarkColors();
-
-    native_theme->set_use_dark_colors(!is_dark_mode_enabled);
-    native_theme_web->set_preferred_color_scheme(
-        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kLight
-                             : ui::NativeTheme::PreferredColorScheme::kDark);
-
-    native_theme->NotifyOnNativeThemeUpdated();
-    native_theme_web->NotifyOnNativeThemeUpdated();
-  }
-
-  // Returns the profile associated with the test.
-  Profile* profile() { return browser()->profile(); }
-
- private:
-  web_app::AppId InstallSWA() {
-    web_app::WebAppProvider::GetForSystemWebApps(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
-    return *web_app::GetAppIdForSystemWebApp(profile(),
-                                             web_app::SystemAppType::SETTINGS);
-  }
-
-  web_app::AppId InstallNonSWA() {
-    if (!test_server_) {
-      test_server_ = std::make_unique<net::EmbeddedTestServer>(
-          net::EmbeddedTestServer::TYPE_HTTPS);
-      test_server_->AddDefaultHandlers(GetChromeTestDataDir());
-      CHECK(test_server_->Start());
-    }
-    const GURL app_url = test_server_->GetURL("app.com", "/ssl/google.html");
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
-    web_app_info->scope = app_url.GetWithoutFilename();
-    web_app_info->theme_color = SK_ColorBLUE;
-    web_app_info->background_color = SK_ColorBLUE;
-    web_app_info->dark_mode_theme_color = SK_ColorRED;
-    web_app_info->dark_mode_background_color = SK_ColorRED;
-    return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  }
-
-  absl::optional<web_app::AppId> app_id_;
-  std::unique_ptr<net::EmbeddedTestServer> test_server_;
-};
-
-IN_PROC_BROWSER_TEST_P(
-    BrowserNonClientFrameViewChromeOSTestBackgroundColorChange,
-    BackgroundColorChange) {
-  const web_app::AppId app_id = InstallWebApp();
-  Browser* const app_browser = web_app::LaunchWebAppBrowser(profile(), app_id);
-  ContentsWebView* const contents_web_view =
-      BrowserView::GetBrowserViewForBrowser(app_browser)->contents_web_view();
-  content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-
-  // Verify background color is immediately resolved from the app controller
-  // despite the fact that the web contents background color hasn't loaded yet.
-  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-            app_browser->app_controller()->GetBackgroundColor().value());
-  EXPECT_FALSE(web_contents->GetBackgroundColor().has_value());
-
-  // Wait for the web contents background color to load and verify that the
-  // background color still matches that resolved from the app controller.
-  {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
-    waiter.Wait();
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              app_browser->app_controller()->GetBackgroundColor().value());
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
-
-  content::AwaitDocumentOnLoadCompleted(web_contents);
-
-  // Toggle color mode and verify background color is immediately resolved from
-  // the app controller. In the case of SWAs, there may be a temporary mismatch
-  // between the contents background color and the web contents background color
-  // due to the fact that the web contents background color update is async.
-  ToggleColorMode();
-  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-            app_browser->app_controller()->GetBackgroundColor().value());
-  if (!UseSwa()) {
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
-
-  // Wait for the web contents background color to update and verify that the
-  // background color still matches that resolved from the app controller.
-  {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
-    waiter.Wait();
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              app_browser->app_controller()->GetBackgroundColor().value());
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
-}
 
 // This test does not make sense for the webUI tabstrip, since the window layout
 // is different in that case.
@@ -1288,8 +1165,6 @@ IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-INSTANTIATE_TEST_SUITE(
-    BrowserNonClientFrameViewChromeOSTestBackgroundColorChange);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
