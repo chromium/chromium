@@ -21,14 +21,8 @@ class FollowProvider;
 class MailtoHandlerProvider;
 class UserFeedbackProvider;
 
-namespace web {
-class WebState;
-}
-
-@protocol LogoVendor;
 @class UITextField;
 @class UIView;
-class Browser;
 
 namespace ios {
 
@@ -75,9 +69,6 @@ class ChromeBrowserProvider {
   ChromeBrowserProvider();
   virtual ~ChromeBrowserProvider();
 
-  // This is called after web startup.
-  virtual void Initialize() const;
-
   // Sets the current instance of Chrome identity service. Used for testing.
   void SetChromeIdentityServiceForTesting(
       std::unique_ptr<ChromeIdentityService> service);
@@ -85,22 +76,9 @@ class ChromeBrowserProvider {
   ChromeIdentityService* GetChromeIdentityService();
   // Returns an instance of a Chrome trusted vault service.
   virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
-  // Creates and returns a new styled text field.
-  virtual UITextField* CreateStyledTextField() const NS_RETURNS_RETAINED;
-
-  virtual id<LogoVendor> CreateLogoVendor(Browser* browser,
-                                          web::WebState* web_state) const
-      NS_RETURNS_RETAINED;
 
   // Returns an instance of the user feedback provider.
   virtual UserFeedbackProvider* GetUserFeedbackProvider() const;
-
-  // Hides immediately the modals related to this provider.
-  virtual void HideModalViewStack() const;
-
-  // Logs if any modals created by this provider are still presented. It does
-  // not dismiss them.
-  virtual void LogIfModalViewsArePresented() const;
 
   // Returns a valid non-null instance of the mailto handler provider.
   virtual MailtoHandlerProvider* GetMailtoHandlerProvider() const;
