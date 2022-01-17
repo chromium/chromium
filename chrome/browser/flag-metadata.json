@@ -2568,8 +2568,8 @@
   },
   {
     "name": "enable-restricted-web-apis",
-    "owners": [ "anqing", "apotapchuk" ],
-    "expiry_milestone": 95
+    "owners": [ "bfranz", "anqing", "apotapchuk" ],
+    "expiry_milestone": 105
   },
   {
     "name": "enable-retail-coupons",
