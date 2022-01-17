@@ -187,50 +187,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Crostini.Crosvm.CpuPercentage" units="%"
-    expires_after="2022-05-15">
-  <obsolete>
-    Removed in M99, no longer useful for Crostini as it measured all crosvm
-    processes.
-  </obsolete>
-  <owner>clumptini@google.com</owner>
-  <owner>laurentt@google.com</owner>
-  <summary>
-    The percentage of the system CPU that crosvm processes used during the
-    10-minute measuring period. This is recorded once every 10 minutes when
-    crosvm is running.
-  </summary>
-</histogram>
-
-<histogram name="Crostini.Crosvm.Processes.Count" units="processes"
-    expires_after="2022-01-06">
-  <obsolete>
-    Removed in M99, no longer useful for Crostini as it measured all crosvm
-    processes.
-  </obsolete>
-  <owner>clumptini@google.com</owner>
-  <owner>laurentt@google.com</owner>
-  <summary>
-    The number of crosvm processes that are running at the end of the 10-minute
-    interval. This is recorded once every 10 minutes when crosvm is running.
-  </summary>
-</histogram>
-
-<histogram name="Crostini.Crosvm.RssPercentage" units="%"
-    expires_after="2022-05-15">
-  <obsolete>
-    Removed in M99, no longer useful for Crostini as it measured all crosvm
-    processes.
-  </obsolete>
-  <owner>clumptini@google.com</owner>
-  <owner>laurentt@google.com</owner>
-  <summary>
-    The percentage of the system memory that crosvm processes used at the end of
-    the 10-minute measuring period. This is recorded once every 10 minutes when
-    crosvm is running.
-  </summary>
-</histogram>
-
 <histogram name="Crostini.DiskResize.Result" enum="CrostiniDiskImageStatus"
     expires_after="2022-05-15">
   <owner>clumptini@google.com</owner>
@@ -360,21 +316,6 @@ chromium-metrics-reviews@google.com.
     The result of a single run of CrostiniRestarter. This is recorded any time
     the crostini restart flow is triggered except during the initial install.
   </summary>
-</histogram>
-
-<histogram name="Crostini.RestarterTimeInState.{state}" units="ms"
-    expires_after="2023-01-06">
-  <obsolete>
-    Removed in M93, and had misleading data before M93. Do not use.
-  </obsolete>
-  <owner>clumptini@google.com</owner>
-  <owner>laurentt@google.com</owner>
-  <summary>
-    Was intended to be time spent in each state in the restarter flow, but there
-    were some issues with how the metric was emitted. Use
-    Crostini.RestarterTimeInState2.* instead.
-  </summary>
-  <token key="state" variants="CrostiniState"/>
 </histogram>
 
 <histogram name="Crostini.RestarterTimeInState2.{state}" units="ms"
