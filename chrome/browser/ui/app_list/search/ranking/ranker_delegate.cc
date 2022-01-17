@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_category_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_result_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/query_highlighter.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
@@ -37,6 +38,7 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
           state_dir.AppendASCII("score_norm.pb"), kStandardWriteDelay)));
 
   // Result post-processing.
+  AddRanker(std::make_unique<QueryHighlighter>());
   AddRanker(std::make_unique<TopMatchRanker>());
   AddRanker(std::make_unique<AnswerRanker>());
   AddRanker(std::make_unique<FilteringRanker>());

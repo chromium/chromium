@@ -15,6 +15,8 @@ void ACMatchClassificationsToTags(const std::u16string& text,
                                   const ACMatchClassifications& text_classes,
                                   ChromeSearchResult::Tags* tags);
 
+// TODO(crbug.com/1258415): Remove references to this from individual providers
+// once the productivity launcher is enabled.
 // Calculates ChromeSearchResult tags for highlighting occurrences of |query| in
 // |text|.
 ChromeSearchResult::Tags CalculateTags(const std::u16string& query,
