@@ -1,3 +1,5 @@
 file://ash/components/policy/OWNERS
 
 swapnilgupta@google.com
+
+per-file *user_event_reporter*=file://components/reporting/OWNERS
