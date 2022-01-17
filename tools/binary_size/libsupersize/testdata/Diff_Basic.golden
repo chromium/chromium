@@ -3,7 +3,6 @@ Common Metadata:
     foo=1
     gn_args=var1=true var2="foo"
     linker_name=gold
-    tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
 Old Metadata:
     bar=[1, 2, 3]
     git_revision=abc123

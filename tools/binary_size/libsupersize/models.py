@@ -18,13 +18,11 @@ import match_util
 BUILD_CONFIG_GIT_REVISION = 'git_revision'
 BUILD_CONFIG_GN_ARGS = 'gn_args'
 BUILD_CONFIG_LINKER_NAME = 'linker_name'
-BUILD_CONFIG_TOOL_PREFIX = 'tool_prefix'  # Path relative to SRC_ROOT.
 
 BUILD_CONFIG_KEYS = (
     BUILD_CONFIG_GIT_REVISION,
     BUILD_CONFIG_GN_ARGS,
     BUILD_CONFIG_LINKER_NAME,
-    BUILD_CONFIG_TOOL_PREFIX,
 )
 
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.
@@ -34,7 +32,7 @@ METADATA_ZIPALIGN_OVERHEAD = 'zipalign_padding'  # Overhead from zipalign.
 METADATA_SIGNING_BLOCK_SIZE = 'apk_signature_block_size'  # Size in bytes.
 METADATA_MAP_FILENAME = 'map_file_name'  # Path relative to output_directory.
 METADATA_ELF_ALGORITHM = 'elf_algorithm'  # linker_map / dwarf / sections.
-METADATA_ELF_ARCHITECTURE = 'elf_arch'  # "Machine" field from readelf -h
+METADATA_ELF_ARCHITECTURE = 'elf_arch'  # "arm", "arm64", "x86", or "x64".
 METADATA_ELF_FILENAME = 'elf_file_name'  # Path relative to output_directory.
 METADATA_ELF_MTIME = 'elf_mtime'  # int timestamp in utc.
 METADATA_ELF_BUILD_ID = 'elf_build_id'

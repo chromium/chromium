@@ -83,7 +83,7 @@ def _ReadlineSession():
 
 class _Session:
 
-  def __init__(self, size_infos, output_directory_finder, tool_prefix_finder):
+  def __init__(self, size_infos, output_directory_finder):
     self._printed_variables = []
     self._variables = {
         'Print': self._PrintFunc,
@@ -103,7 +103,6 @@ class _Session:
         'models': models,
     }
     self._output_directory_finder = output_directory_finder
-    self._tool_prefix_finder = tool_prefix_finder
     self._size_infos = size_infos
 
     if len(size_infos) == 1:
@@ -139,12 +138,11 @@ class _Session:
       return []
     size_info = self._SizeInfoForSymbol(first_sym)
     container = first_sym.container
-    tool_prefix = self._ToolPrefixForSymbol(size_info)
-    elf_path = self._ElfPathForSymbol(size_info, container, tool_prefix,
-                                      elf_path)
+    elf_path = self._ElfPathForSymbol(size_info, container, elf_path)
 
-    return string_extract.ReadStringLiterals(
-        thing, elf_path, tool_prefix, all_rodata=all_rodata)
+    return string_extract.ReadStringLiterals(thing,
+                                             elf_path,
+                                             all_rodata=all_rodata)
 
   def _DiffFunc(self, before=None, after=None, sort=True):
     """Diffs two SizeInfo objects. Returns a DeltaSizeInfo.
@@ -267,25 +265,9 @@ class _Session:
                                    format_name='csv')
     _WriteToStream(lines, use_pager=use_pager, to_file=to_file)
 
-  def _ToolPrefixForSymbol(self, size_info):
-    tool_prefix = self._tool_prefix_finder.Tentative()
-    orig_tool_prefix = size_info.build_config.get(
-        models.BUILD_CONFIG_TOOL_PREFIX)
-    if orig_tool_prefix:
-      orig_tool_prefix = path_util.FromToolsSrcRootRelative(orig_tool_prefix)
-      if os.path.exists(path_util.GetObjDumpPath(orig_tool_prefix)):
-        tool_prefix = orig_tool_prefix
-
-    # TODO(agrieve): Would be even better to use objdump --info to check that
-    #     the toolchain is for the correct architecture.
-    assert tool_prefix is not None, (
-        'Could not determine --tool-prefix. Possible fixes include setting '
-        '--tool-prefix, or setting --output-directory')
-    return tool_prefix
-
-  def _ElfPathForSymbol(self, size_info, container, tool_prefix, elf_path=None):
+  def _ElfPathForSymbol(self, size_info, container, elf_path=None):
     def build_id_matches(elf_path):
-      found_build_id = readelf.BuildIdFromElf(elf_path, tool_prefix)
+      found_build_id = readelf.BuildIdFromElf(elf_path)
       expected_build_id = container.metadata.get(models.METADATA_ELF_BUILD_ID)
       return found_build_id == expected_build_id
 
@@ -347,9 +329,7 @@ class _Session:
                                   'passing .before_symbol or .after_symbol.')
     size_info = self._SizeInfoForSymbol(symbol)
     container = symbol.container
-    tool_prefix = self._ToolPrefixForSymbol(size_info)
-    elf_path = self._ElfPathForSymbol(size_info, container, tool_prefix,
-                                      elf_path)
+    elf_path = self._ElfPathForSymbol(size_info, container, elf_path)
     # Always use Android NDK's objdump because llvm-objdump does not print
     # the target of jump instructions, which is really useful.
     output_directory_finder = self._output_directory_finder
@@ -357,34 +337,20 @@ class _Session:
       output_directory_finder = path_util.OutputDirectoryFinder(
           any_path_within_output_directory=elf_path)
     if output_directory_finder.Tentative():
-      tool_prefix = path_util.ToolPrefixFinder(
-          output_directory=output_directory_finder.Finalized(),
-          linker_name='ld').Finalized()
       # Running objdump from an output directory means that objdump can
       # interleave source file lines in the disassembly.
       objdump_pwd = output_directory_finder.Finalized()
     else:
-      # Output directory is not set, so we cannot load tool_prefix from
-      # build_vars.json, nor resolve the output directory-relative path stored
-      # size_info.metadata.
-      is_android = next(
-          filter(None, (m.get(models.METADATA_APK_FILENAME)
-                        for m in size_info.metadata)), None)
-      arch = next(
-          filter(None, (m.get(models.METADATA_ELF_ARCHITECTURE)
-                        for m in size_info.metadata)), None)
-      # Hardcode path for arm32.
-      if is_android and arch == 'arm':
-        tool_prefix = path_util.ANDROID_ARM_NDK_TOOL_PREFIX
       # If we do not know/guess the output directory, run from any directory 2
       # levels below src since it is better than a random cwd (because usually
       # source file paths are relative to an output directory two levels below
       # src and start with ../../).
-      objdump_pwd = os.path.join(path_util.TOOLS_SRC_ROOT, 'tools',
-                                 'binary_size')
+      objdump_pwd = path_util.FromToolsSrcRoot('tools', 'binary_size')
 
+    arch = readelf.ArchFromElf(elf_path)
+    objdump_path = path_util.GetDisassembleObjDumpPath(arch)
     args = [
-        os.path.relpath(path_util.GetObjDumpPath(tool_prefix), objdump_pwd),
+        os.path.relpath(objdump_path, objdump_pwd),
         '--disassemble',
         '--source',
         '--line-numbers',
@@ -417,7 +383,6 @@ class _Session:
       A new SizeInfo.
     """
     size_info = size_info or self._size_infos[0]
-    tool_prefix = self._ToolPrefixForSymbol(size_info)
 
     new_syms = []
     new_containers = []
@@ -433,9 +398,8 @@ class _Session:
 
       new_containers.append(container)
 
-      elf_path = self._ElfPathForSymbol(size_info, container, tool_prefix)
-      relro_addresses = readelf.CollectRelocationAddresses(
-          elf_path, tool_prefix)
+      elf_path = self._ElfPathForSymbol(size_info, container)
+      relro_addresses = readelf.CollectRelocationAddresses(elf_path)
 
       # More likely for there to be a bug in supersize than an ELF to have any
       # relative relocations.
@@ -579,9 +543,6 @@ def AddArguments(parser):
   parser.add_argument('--query',
                       help='Execute the given snippet. '
                            'Example: Print(size_info)')
-  parser.add_argument('--tool-prefix',
-                      help='Path prefix for objdump. Required only for '
-                           'Disassemble().')
   parser.add_argument('--output-directory',
                       help='Path to the root build directory. Used only for '
                            'Disassemble().')
@@ -602,12 +563,7 @@ def Run(args, on_config_error):
   output_directory_finder = path_util.OutputDirectoryFinder(
       value=args.output_directory,
       any_path_within_output_directory=args.inputs[0])
-  linker_name = size_infos[-1].build_config.get(models.BUILD_CONFIG_LINKER_NAME)
-  tool_prefix_finder = path_util.ToolPrefixFinder(
-      value=args.tool_prefix,
-      output_directory=output_directory_finder.Tentative(),
-      linker_name=linker_name)
-  session = _Session(size_infos, output_directory_finder, tool_prefix_finder)
+  session = _Session(size_infos, output_directory_finder)
 
   if args.query:
     logging.info('Running query from command-line.')

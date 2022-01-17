@@ -327,9 +327,11 @@ def _ParseBcAnalyzer(lines):
 
 class _BcAnalyzerRunner:
   """Helper to run bcanalyzer and extract output lines. """
-  def __init__(self, tool_prefix, output_directory):
-    self._args = [path_util.GetBcAnalyzerPath(tool_prefix), '--dump',
-                  '--disable-histogram']
+
+  def __init__(self, output_directory):
+    self._args = [
+        path_util.GetBcAnalyzerPath(), '--dump', '--disable-histogram'
+    ]
     self._output_directory = output_directory
 
   def RunOnFile(self, obj_file):
@@ -339,14 +341,14 @@ class _BcAnalyzerRunner:
 
 
 # This is a target for BulkForkAndCall().
-def RunBcAnalyzerOnIntermediates(target, tool_prefix, output_directory):
+def RunBcAnalyzerOnIntermediates(target, output_directory):
   """Calls bcanalyzer and returns encoded map from path to strings.
 
   Args:
     target: A list of BC file paths.
   """
   assert isinstance(target, list)
-  runner = _BcAnalyzerRunner(tool_prefix, output_directory)
+  runner = _BcAnalyzerRunner(output_directory)
   strings_by_path = {}
   for t in target:
     strings_by_path[t] = [s for _, s in _ParseBcAnalyzer(runner.RunOnFile(t))]
@@ -357,14 +359,13 @@ def RunBcAnalyzerOnIntermediates(target, tool_prefix, output_directory):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--tool-prefix', required=True)
   parser.add_argument('--output-directory', default='.')
   parser.add_argument('--char-width-limit', type=int)
   parser.add_argument('objects', type=os.path.realpath, nargs='+')
 
   args = parser.parse_args()
   base_path = os.path.normpath(args.output_directory)
-  runner = _BcAnalyzerRunner(args.tool_prefix, args.output_directory)
+  runner = _BcAnalyzerRunner(args.output_directory)
   if args.char_width_limit is not None:
     global _CHAR_WIDTH_LIMIT
     _CHAR_WIDTH_LIMIT = args.char_width_limit
