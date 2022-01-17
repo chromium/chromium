@@ -2054,6 +2054,7 @@
     'webid': {
         'filepath': 'third_party/blink/renderer/modules/webid/'\
                     '|third_party/blink/public/mojom/webid/'\
+                    '|content/browser/webid'\
                     '|chrome/browser/.*webid',
     },
     'weblayer': {
@@ -2277,8 +2278,7 @@
     'blink_layers': ['blink-layers+watch@chromium.org'],
     'blink_layout': ['blink-reviews-layout@chromium.org',
                      'zoltan@webkit.org'],
-    'blink_layout_ng': ['cbiesinger@chromium.org',
-                        'glebl+reviews@chromium.org',
+    'blink_layout_ng': ['glebl+reviews@chromium.org',
                         'dgrogan+ng@chromium.org',
                         'atotic+reviews@chromium.org',
                         'lchoi+reviews@chromium.org',
@@ -2902,7 +2902,7 @@
     'webcodecs': ['feature-media-reviews@chromium.org'],
     'webgpu': ['cwallez+watch@chromium.org',
                'kainino+watch@chromium.org'],
-    'webid': ['yigu+watch@chromium.org'],
+    'webid': ['yigu+watch@chromium.org', 'cbiesinger@chromium.org'],
     'weblayer': ['cricke+watch@chromium.org'],
     'weblayer_safe_browsing' : ['carlosil+watch@chromium.org'],
     'weblayer_ssl' : ['carlosil+watch@chromium.org'],
