@@ -4,6 +4,7 @@
 
 #include "components/exo/seat.h"
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
@@ -59,11 +60,11 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   void OnDataSourceDestroying(DataSource* device) override {}
   void OnTarget(const absl::optional<std::string>& mime_type) override {}
   void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
-    if (!data_.has_value()) {
+    if (data_map_.empty()) {
       const char kTestData[] = "TestData";
       ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), kTestData));
     } else {
-      ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), *data_));
+      ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), data_map_[mime_type]));
     }
   }
   void OnCancelled() override { cancelled_ = true; }
@@ -74,13 +75,15 @@ class TestDataSourceDelegate : public DataSourceDelegate {
     return can_accept_;
   }
 
-  void SetData(std::vector<uint8_t> data) { data_ = std::move(data); }
+  void SetData(const std::string& mime_type, std::vector<uint8_t> data) {
+    data_map_[mime_type] = std::move(data);
+  }
 
   bool can_accept_ = true;
 
  private:
   bool cancelled_ = false;
-  absl::optional<std::vector<uint8_t>> data_;
+  base::flat_map<std::string, std::vector<uint8_t>> data_map_;
 };
 
 void RunReadingTask() {
@@ -91,6 +94,9 @@ void RunReadingTask() {
 class TestSeat : public Seat {
  public:
   TestSeat() : Seat(std::make_unique<TestDataExchangeDelegate>()) {}
+  explicit TestSeat(
+      std::unique_ptr<TestDataExchangeDelegate> data_exchange_delegate)
+      : Seat(std::move(data_exchange_delegate)) {}
 
   TestSeat(const TestSeat&) = delete;
   void operator=(const TestSeat&) = delete;
@@ -150,6 +156,95 @@ TEST_F(SeatTest, SetSelection) {
   EXPECT_EQ(clipboard, std::string("TestData"));
 }
 
+TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
+  std::unique_ptr<TestDataExchangeDelegate> data_exchange_delegate(
+      std::make_unique<TestDataExchangeDelegate>());
+  data_exchange_delegate->set_endpoint_type(ui::EndpointType::kLacros);
+  TestSeat seat(std::move(data_exchange_delegate));
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
+
+  const std::string kTestText = "TestData";
+  const std::string kEncodedTestDte =
+      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
+
+  const std::string kTextMimeType = "text/plain;charset=utf-8";
+  const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";
+
+  TestDataSourceDelegate delegate;
+  DataSource source(&delegate);
+
+  source.Offer(kTextMimeType);
+  delegate.SetData(kTextMimeType,
+                   std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
+  source.Offer(kDteMimeType);
+  delegate.SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
+                                                      kEncodedTestDte.end()));
+  seat.SetSelection(&source);
+
+  RunReadingTask();
+
+  std::string clipboard;
+  ui::Clipboard::GetForCurrentThread()->ReadAsciiText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
+
+  EXPECT_EQ(clipboard, kTestText);
+
+  const ui::DataTransferEndpoint* source_dte =
+      ui::Clipboard::GetForCurrentThread()->GetSource(
+          ui::ClipboardBuffer::kCopyPaste);
+
+  ASSERT_TRUE(source_dte);
+  EXPECT_EQ(ui::EndpointType::kUrl, source_dte->type());
+
+  const ui::DataTransferEndpoint expected_dte = ui::DataTransferEndpoint(
+      url::Origin::Create(GURL("https://www.google.com")));
+  EXPECT_TRUE(
+      expected_dte.GetOrigin()->IsSameOriginWith(*source_dte->GetOrigin()));
+}
+
+TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
+  std::unique_ptr<TestDataExchangeDelegate> data_exchange_delegate(
+      std::make_unique<TestDataExchangeDelegate>());
+  data_exchange_delegate->set_endpoint_type(ui::EndpointType::kCrostini);
+  TestSeat seat(std::move(data_exchange_delegate));
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
+
+  const std::string kTestText = "TestData";
+  const std::string kEncodedTestDte =
+      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
+
+  const std::string kTextMimeType = "text/plain;charset=utf-8";
+  const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";
+
+  TestDataSourceDelegate delegate;
+  DataSource source(&delegate);
+
+  source.Offer(kTextMimeType);
+  delegate.SetData(kTextMimeType,
+                   std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
+  source.Offer(kDteMimeType);
+  delegate.SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
+                                                      kEncodedTestDte.end()));
+  seat.SetSelection(&source);
+
+  RunReadingTask();
+
+  std::string clipboard;
+  ui::Clipboard::GetForCurrentThread()->ReadAsciiText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
+
+  EXPECT_EQ(clipboard, kTestText);
+
+  const ui::DataTransferEndpoint* source_dte =
+      ui::Clipboard::GetForCurrentThread()->GetSource(
+          ui::ClipboardBuffer::kCopyPaste);
+
+  ASSERT_TRUE(source_dte);
+  EXPECT_EQ(ui::EndpointType::kCrostini, source_dte->type());
+}
+
 TEST_F(SeatTest, SetSelectionTextUTF8) {
   TestSeat seat;
   Surface focused_surface;
@@ -166,9 +261,15 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
-  source.Offer("text/plain;charset=utf-8");
-  source.Offer("text/html;charset=utf-8");
-  delegate.SetData(std::vector<uint8_t>(data, data + sizeof(data)));
+
+  const std::string kTextPlainType = "text/plain;charset=utf-8";
+  const std::string kTextHtmlType = "text/html;charset=utf-8";
+  source.Offer(kTextPlainType);
+  source.Offer(kTextHtmlType);
+  delegate.SetData(kTextPlainType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextHtmlType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -202,8 +303,9 @@ TEST_F(SeatTest, SetSelectionTextUTF8Legacy) {
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
-  source.Offer("UTF8_STRING");
-  delegate.SetData(std::vector<uint8_t>(data, data + sizeof(data)));
+  const std::string kMimeType = "UTF8_STRING";
+  source.Offer(kMimeType);
+  delegate.SetData(kMimeType, std::vector<uint8_t>(data, data + sizeof(data)));
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -232,9 +334,14 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
-  source.Offer("text/plain;charset=utf-16");
-  source.Offer("text/html;charset=utf-16");
-  delegate.SetData(std::vector<uint8_t>(data, data + sizeof(data)));
+  const std::string kTextPlainType = "text/plain;charset=utf-16";
+  const std::string kTextHtmlType = "text/html;charset=utf-16";
+  source.Offer(kTextPlainType);
+  source.Offer(kTextHtmlType);
+  delegate.SetData(kTextPlainType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextHtmlType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -270,9 +377,14 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
-  source.Offer("text/plain;charset=utf-16");
-  source.Offer("text/html;charset=utf-16");
-  delegate.SetData(std::vector<uint8_t>(data, data + sizeof(data)));
+  const std::string kTextPlainType = "text/plain;charset=utf-16";
+  const std::string kTextHtmlType = "text/html;charset=utf-16";
+  source.Offer(kTextPlainType);
+  source.Offer(kTextHtmlType);
+  delegate.SetData(kTextPlainType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextHtmlType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -299,9 +411,14 @@ TEST_F(SeatTest, SetSelectionTextEmptyString) {
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
-  source.Offer("text/plain;charset=utf-8");
-  source.Offer("text/html;charset=utf-16");
-  delegate.SetData(std::vector<uint8_t>(data, data + sizeof(data)));
+  const std::string kTextPlainType = "text/plain;charset=utf-8";
+  const std::string kTextHtmlType = "text/html;charset=utf-16";
+  source.Offer(kTextPlainType);
+  source.Offer(kTextHtmlType);
+  delegate.SetData(kTextPlainType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextHtmlType,
+                   std::vector<uint8_t>(data, data + sizeof(data)));
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -343,12 +460,13 @@ TEST_F(SeatTest, SetSelectionFilenames) {
   Surface focused_surface;
   seat.set_focused_surface(&focused_surface);
 
-  std::string data("file:///path1\r\nfile:///path2");
+  const std::string data("file:///path1\r\nfile:///path2");
 
   TestDataSourceDelegate delegate;
-  delegate.SetData(std::vector<uint8_t>(data.begin(), data.end()));
+  const std::string kMimeType = "text/uri-list";
+  delegate.SetData(kMimeType, std::vector<uint8_t>(data.begin(), data.end()));
   DataSource source(&delegate);
-  source.Offer("text/uri-list");
+  source.Offer(kMimeType);
   seat.SetSelection(&source);
 
   RunReadingTask();
