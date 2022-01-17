@@ -518,39 +518,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.WebStates.ForwardItemsCountAfterNavigation"
-    units="items" expires_after="2020-12-01">
-  <obsolete>
-    Removed 10/2020.
-  </obsolete>
-  <owner>ajuma@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Number of forward navigation items when navigation was committed/finished.
-    Recorded when main frame navigation was finished and there is at least one
-    navigation item. In conjunction with
-    Session.WebStates.HasForwardItemsAfterNavigation this metric will help to
-    understand how many navigation items Chrome should restore after relaunch.
-  </summary>
-</histogram>
-
-<histogram name="Session.WebStates.HasForwardItemsAfterNavigation"
-    enum="BooleanPresent" expires_after="2020-12-01">
-  <obsolete>
-    Removed 10/2020.
-  </obsolete>
-  <owner>ajuma@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    True if navigation manager has forward navigation items when navigation was
-    committed/finished. Recorded when main frame navigation was finished. Can be
-    used to understand how often the users load items in the middle of
-    back-forward list. In conjunction with
-    Session.WebStates.ForwardItemsCountAfterNavigation this metric will help to
-    understand how many navigation items Chrome should restore after relaunch.
-  </summary>
-</histogram>
-
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
     expires_after="2022-05-01">
   <owner>justincohen@chromium.org</owner>

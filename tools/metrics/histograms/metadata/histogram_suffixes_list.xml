@@ -780,7 +780,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="AccountManager" label="Using Android AccountManager API"/>
   <suffix name="GoogleAuthUtil" label="Using GoogleAuthUtil API"/>
   <affected-histogram name="Signin.AndroidGetAccountsTime"/>
-  <affected-histogram name="Signin.AndroidGetAccountsTimeUiThread"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AndroidProcessExitReasons" separator=".">
@@ -15328,7 +15327,6 @@ chromium-metrics-reviews@google.com.
       label="The authenticaion token can not be verified due to persisten
              error"/>
   <suffix name="Success" label="The authenticaion token is valid"/>
-  <affected-histogram name="Signin.ForceSigninVerificationTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Signin_ObsoleteActions" separator=".">
@@ -15357,9 +15355,6 @@ chromium-metrics-reviews@google.com.
       label="Execution of the reconciler triggered by some other change of
              state."/>
   <affected-histogram name="Signin.Reconciler.AddedToChrome"/>
-  <affected-histogram name="Signin.Reconciler.AddedToCookieJar"/>
-  <affected-histogram name="Signin.Reconciler.DifferentPrimaryAccounts"/>
-  <affected-histogram name="Signin.Reconciler.RemovedFromCookieJar"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Signin_Reconciler_Duration" separator=".">

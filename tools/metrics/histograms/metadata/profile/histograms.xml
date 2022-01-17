@@ -132,48 +132,6 @@ chromium-metrics-reviews@google.com.
   <summary>Size of the cookies database.</summary>
 </histogram>
 
-<histogram name="Profile.CreateResult" enum="ProfileCreateResult"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M90.
-  </obsolete>
-  <owner>treib@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <summary>Result (final status) when creating a new profile.</summary>
-</histogram>
-
-<histogram name="Profile.CreateTimeNoTimeout" units="ms"
-    expires_after="2021-01-31">
-  <obsolete>
-    Removed in M90.
-  </obsolete>
-  <owner>treib@chromium.org</owner>
-  <owner>michaelpg@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <summary>
-    Time elapsed from when the handler received the message that a user clicked
-    'Create' until the creation either failed with a local error (see
-    Profile.CreateResult), was canceled (also recorded in
-    Profile.CreateTimeCanceledNoTimeout), or completed successfully.
-  </summary>
-</histogram>
-
-<histogram name="Profile.Delete" enum="BooleanProfileSignedIn"
-    expires_after="2021-07-31">
-  <obsolete>
-    Removed in M96.
-  </obsolete>
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    This histogram tracks the deletion of the profile. This tracks when the
-    cleanup actually takes place, not the UI interaction. The parameter
-    indicates if the profile was signed in or not; true means the profile was
-    signed in, false means the profile was not signed in.
-  </summary>
-</histogram>
-
 <histogram name="Profile.DeleteProfileAction" enum="ProfileDeleteAction"
     expires_after="2022-06-26">
   <owner>msarda@chromium.org</owner>
@@ -230,20 +188,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.EphemeralGuest.Signin" enum="BooleanProfileSignedIn"
-    expires_after="2022-02-02">
-  <obsolete>
-    Removed on 2021-07.
-  </obsolete>
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    This histogram records if user's sign-in state to a GAIA account in an
-    Ephemeral Guest profile is changed. This is recorded when user signs in and
-    when user signs out in an Ephemeral Guest profile.
-  </summary>
-</histogram>
-
 <histogram name="Profile.ExtensionSize" units="MB" expires_after="2022-06-19">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
@@ -274,28 +218,6 @@ chromium-metrics-reviews@google.com.
     This histogram records the lifetime duration of an off-the-record Guest
     profile. It is recorded once the profile for the Guest session is closed.
   </summary>
-</histogram>
-
-<histogram name="Profile.Guest.{Type}.Lifetime" units="minutes"
-    expires_after="2022-02-02">
-  <obsolete>
-    Removed on 2021-07.
-  </obsolete>
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    This histogram records the lifetime duration of {Type}. It is recorded once
-    the profile for the Guest session is closed.
-  </summary>
-  <token key="Type">
-    <variant name="BlankState"
-        summary="a Guest profile where the session is initialized in blank
-                 state"/>
-    <variant name="Ephemeral" summary="an Ephemeral Guest profile"/>
-    <variant name="SigninTransferred"
-        summary="a Guest profile to which a sign-in token has been
-                 transferred"/>
-  </token>
 </histogram>
 
 <histogram name="Profile.HistorySize" units="MB" expires_after="2022-06-26">
@@ -403,19 +325,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.Menu.OpenedAfterAvatarHighlight" units="ms"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed on 2021-07.
-  </obsolete>
-  <owner>droger@chromium.org</owner>
-  <owner>siyua@chromium.org</owner>
-  <summary>
-    When the profile menu is opened, after the avatar was highlighted, this
-    records the time since the highlight was shown.
-  </summary>
-</histogram>
-
 <histogram name="Profile.NetUserCount" enum="ProfileNetUserCount"
     expires_after="2022-06-26">
   <owner>rogerta@chromium.org</owner>
@@ -478,21 +387,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.NumberOfNamedProfiles" units="profiles"
-    expires_after="2021-03-12">
-  <obsolete>
-    Removed on 2021-03.
-  </obsolete>
-  <owner>feuunk@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <summary>
-    Counts the number of profiles that have a user-defined name on a user's
-    machine every 24 hours while Chrome is running.
-
-    This counts only profiles that have been used in the last 28 days.
-  </summary>
-</histogram>
-
 <histogram name="Profile.NumberOfProfiles" units="profiles"
     expires_after="2022-06-05">
   <owner>droger@chromium.org</owner>
@@ -518,21 +412,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.NumberOfProfilesWithAuthErrors" units="profiles"
-    expires_after="2021-03-12">
-  <obsolete>
-    Removed on 2021-03.
-  </obsolete>
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Counts the number of signed-in (syncing) profiles with GAIA authentication
-    error on a user's machine every 24 hours while Chrome is running.
-
-    This counts only profiles that have been used in the last 28 days.
-  </summary>
-</histogram>
-
 <histogram name="Profile.NumberOfSignedInProfiles" units="profiles"
     expires_after="2022-06-12">
   <owner>droger@chromium.org</owner>
@@ -540,23 +419,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts the number of signed-in (syncing) profiles on a user's machine every
     24 hours while Chrome is running.
-
-    This counts only profiles that have been used in the last 28 days.
-  </summary>
-</histogram>
-
-<histogram name="Profile.NumberOfSignedInProfilesWithGAIAIcons"
-    units="profiles" expires_after="2021-03-12">
-  <obsolete>
-    Removed on 2021-03.
-  </obsolete>
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Counts the number of signed-in (syncing) profiles that are using the GAIA
-    image as the avatar icon. Note that profiles with a GAIA image but without
-    Sync consent are not counted. This is counted every 24 hours while Chrome is
-    running.
 
     This counts only profiles that have been used in the last 28 days.
   </summary>
@@ -580,19 +442,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the percentage (0-100) of profiles that are locally managed, recorded
     when Chrome starts up.
-  </summary>
-</histogram>
-
-<histogram name="Profile.ProfileError" enum="ProfileErrorType"
-    expires_after="M85">
-  <obsolete>
-    Removed on 2020-11 (crbug.com/1089331).
-  </obsolete>
-  <owner>tnagel@chromium.org</owner>
-  <summary>
-    The error with the current user profile that caused an error dialog to be
-    shown. This dialog is shown usually when there is some sort of corruption in
-    the user's profile data.
   </summary>
 </histogram>
 
@@ -680,24 +529,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.SyncCustomizationBubbleDelay" units="ms"
-    expires_after="2022-02-01">
-  <obsolete>
-    Removed 2021-12.
-  </obsolete>
-  <owner>jkrcal@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    The histogram gets recorded for every signed-in profile creation flow where
-    the user enables sync right in the flow. In this case, Chrome needs to check
-    theme sync before showing a profile customization bubble. The recorded value
-    is the delay between the moment sync consent is given and the moment Chrome
-    decides whether to show the customization bubble (if the consent is given in
-    the profile creation flow, the start of the measured interval is actually
-    when a new browser window opens after the consent is given).
-  </summary>
-</histogram>
-
 <histogram name="Profile.SyncCustomize" enum="ProfileSyncCustomize"
     expires_after="2021-10-10">
   <owner>msalama@chromium.org</owner>
@@ -707,19 +538,6 @@ chromium-metrics-reviews@google.com.
     profile. Percentages are not meaningful. To determine percentages, take the
     count of a given action over the count of number of customizations. The
     histogram has expired in '2018-08-30' and is resurrected in '2020-03-09'.
-  </summary>
-</histogram>
-
-<histogram name="Profile.TimeToOpenUserManagerUpTo1min" units="ms"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed 2021-07.
-  </obsolete>
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Time required to open the UserManager, from when it started to show until
-    when its javascript started executing.
   </summary>
 </histogram>
 
@@ -784,42 +602,6 @@ chromium-metrics-reviews@google.com.
 
     Note: The guest profile has bucket 0. Regular profiles start at bucket 1.
     Incognito profiles count towards the original profile.
-  </summary>
-</histogram>
-
-<histogram name="Profile.ValidateMenuItemInvalidIndex.IsGuest" enum="Boolean"
-    expires_after="M85">
-  <obsolete>
-    Removed in M90.
-  </obsolete>
-  <owner>anthonyvd@chromium.org</owner>
-  <summary>
-    Whether the active profile is a guest profile when -validateMenuItem in the
-    ProfileMenuController gets an invalid value for the current profile's index.
-  </summary>
-</histogram>
-
-<histogram name="Profile.ValidateMenuItemInvalidIndex.ProfileCount"
-    units="units" expires_after="M85">
-  <obsolete>
-    Removed in M90.
-  </obsolete>
-  <owner>anthonyvd@chromium.org</owner>
-  <summary>
-    The count of profiles in the avatar menu when -validateMenuItem in the
-    ProfileMenuController gets an invalid value for the current profile's index.
-  </summary>
-</histogram>
-
-<histogram name="Profile.ValidateMenuItemInvalidIndex.Selector"
-    enum="ValidateMenuItemSelectorType" expires_after="M85">
-  <obsolete>
-    Removed in M90.
-  </obsolete>
-  <owner>anthonyvd@chromium.org</owner>
-  <summary>
-    The selector associated with the menu item when -validateMenuItem in the
-    ProfileMenuController gets an invalid value for the current profile's index.
   </summary>
 </histogram>
 
