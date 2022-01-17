@@ -12,8 +12,8 @@
 <link rel="import" href="../../components/oobe_cr_lottie.html">
 <link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
 <link rel="import" href="../../components/buttons/oobe_back_button.html">
 <link rel="import" href="../../components/buttons/oobe_icon_button.html">
 <link rel="import" href="../../components/buttons/oobe_text_button.html">
@@ -92,7 +92,7 @@
       }
     </style>
     <oobe-adaptive-dialog id="marketingOptInOverviewDialog" role="dialog"
-        hidden="[[isAccessibilitySettingsShown_]]"
+        for-step="overview"
         aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
         aria-describedby="marketing-opt-in-subtitle">
       <iron-icon slot="icon" icon="oobe-32:checkmark">
@@ -162,7 +162,7 @@
     </oobe-adaptive-dialog>
 
     <oobe-adaptive-dialog id="finalAccessibilityPage" role="dialog"
-        hidden="[[!isAccessibilitySettingsShown_]]"
+        for-step="accessibility"
         aria-label$="[[i18nDynamic(locale, 'finalA11yPageTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:accessibility">
       </iron-icon>

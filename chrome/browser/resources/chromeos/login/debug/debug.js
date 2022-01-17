@@ -1205,6 +1205,7 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'marketing-opt-in',
       kind: ScreenKind.NORMAL,
+      handledSteps: 'overview',
       states: [
         {
           id: 'WithOptionToSubscribe',
@@ -1214,6 +1215,7 @@ cr.define('cr.ui.login.debug', function() {
             legalFooterVisibility: false,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(false);
           },
         },
@@ -1225,6 +1227,7 @@ cr.define('cr.ui.login.debug', function() {
             legalFooterVisibility: false,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(false);
           },
         },
@@ -1236,17 +1239,19 @@ cr.define('cr.ui.login.debug', function() {
             legalFooterVisibility: true,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(false);
           },
         },
         {
-          id: 'WithAceessibilityButton',
+          id: 'WithAccessibilityButton',
           data: {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: true,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(true);
           },
         },
