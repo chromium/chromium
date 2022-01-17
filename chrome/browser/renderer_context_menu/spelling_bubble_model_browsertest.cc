@@ -81,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest,
                        OpenHelpPageAfterWebContentsClosed) {
   // Open a new tab so the whole browser does not close once we close
   // the tab via WebContents::Close() below.
-  AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
+                            ui::PAGE_TRANSITION_TYPED));
   std::unique_ptr<SpellingBubbleModel> model = CreateSpellingBubble();
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
