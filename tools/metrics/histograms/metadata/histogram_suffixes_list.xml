@@ -2489,7 +2489,6 @@ chromium-metrics-reviews@google.com.
       Deprecated December 2020 because it isn't recorded.
     </obsolete>
   </suffix>
-  <affected-histogram name="PasswordManager.CompromisedCredentials"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ConnCountImpact" separator="_">
