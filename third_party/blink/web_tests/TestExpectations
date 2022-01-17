@@ -7632,3 +7632,5 @@ crbug.com/1233938 http/tests/notifications/click-shared-worker.html [ Pass Timeo
 # Temporarily disable test to allow fixing of devtools path escaping
 crbug.com/1094436 http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Failure Skip Timeout ]
 crbug.com/1256763 virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Failure Pass ]
+crbug.com/1287093 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/document-referrer.html [ Failure Pass ]
+crbug.com/1287093 [ Linux ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/document-referrer.html [ Failure Pass ]
