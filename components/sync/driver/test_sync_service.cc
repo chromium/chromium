@@ -132,12 +132,12 @@ void TestSyncService::SetIsUsingExplicitPassphrase(bool enabled) {
 }
 
 void TestSyncService::FireStateChanged() {
-  for (auto& observer : observers_)
+  for (SyncServiceObserver& observer : observers_)
     observer.OnStateChanged(this);
 }
 
 void TestSyncService::FireSyncCycleCompleted() {
-  for (auto& observer : observers_)
+  for (SyncServiceObserver& observer : observers_)
     observer.OnSyncCycleCompleted(this);
 }
 
@@ -293,7 +293,7 @@ void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     base::OnceClosure callback) {}
 
 void TestSyncService::Shutdown() {
-  for (auto& observer : observers_)
+  for (SyncServiceObserver& observer : observers_)
     observer.OnSyncShutdown(this);
 }
 

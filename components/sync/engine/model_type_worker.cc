@@ -771,9 +771,9 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
     }
     // Try to insert. If we already saw an item with the same client tag hash,
     // this will fail but give us its iterator.
-    auto it_and_success = tag_to_index.emplace(candidate.entity.client_tag_hash,
-                                               pending_updates_.size());
-    if (it_and_success.second) {
+    auto [it, success] = tag_to_index.emplace(candidate.entity.client_tag_hash,
+                                              pending_updates_.size());
+    if (success) {
       // New client tag hash, append at the end. Note that we already inserted
       // the correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
@@ -782,7 +782,7 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
 
     // Duplicate! Overwrite the existing update if |candidate| has a more recent
     // version.
-    const size_t existing_index = it_and_success.first->second;
+    const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
     if (candidate.response_version >= existing_update.response_version) {
       existing_update = std::move(candidate);
@@ -807,10 +807,10 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
     }
     // Try to insert. If we already saw an item with the same originator item
     // ID, this will fail but give us its iterator.
-    auto it_and_success = id_to_index.emplace(
+    auto [it, success] = id_to_index.emplace(
         base::ToLowerASCII(candidate.entity.originator_client_item_id),
         pending_updates_.size());
-    if (it_and_success.second) {
+    if (success) {
       // New item ID, append at the end. Note that we already inserted the
       // correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
@@ -819,7 +819,7 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
 
     // Duplicate! Overwrite the existing update if |candidate| has a more recent
     // version.
-    const size_t existing_index = it_and_success.first->second;
+    const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
     if (candidate.response_version >= existing_update.response_version) {
       existing_update = std::move(candidate);
@@ -868,8 +868,8 @@ void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
 std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo>
 ModelTypeWorker::RemoveKeysNoLongerUnknown() {
   std::set<std::string> keys_blocking_updates;
-  for (const auto& id_and_update : entries_pending_decryption_) {
-    const std::string key_name = GetEncryptionKeyName(id_and_update.second);
+  for (const auto& [id, update] : entries_pending_decryption_) {
+    const std::string key_name = GetEncryptionKeyName(update);
     DCHECK(!key_name.empty());
     keys_blocking_updates.insert(key_name);
   }

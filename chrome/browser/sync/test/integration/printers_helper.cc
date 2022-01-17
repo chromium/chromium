@@ -38,11 +38,11 @@ bool PrintersAreMostlyEqual(const chromeos::Printer& left,
 bool ListsContainTheSamePrinters(const PrinterList& list_a,
                                  const PrinterList& list_b) {
   std::unordered_multimap<std::string, const chromeos::Printer*> map_b;
-  for (const auto& b : list_b) {
+  for (const chromeos::Printer& b : list_b) {
     map_b.insert({b.id(), &b});
   }
 
-  for (const auto& a : list_a) {
+  for (const chromeos::Printer& a : list_a) {
     auto range = map_b.equal_range(a.id());
 
     auto it = std::find_if(
@@ -154,9 +154,11 @@ int GetPrinterCount(int index) {
 }
 
 bool AllProfilesContainSamePrinters(std::ostream* os) {
-  auto reference_printers = GetPrinterStore(0)->GetSavedPrinters();
+  std::vector<chromeos::Printer> reference_printers =
+      GetPrinterStore(0)->GetSavedPrinters();
   for (int i = 1; i < test()->num_clients(); ++i) {
-    auto printers = GetPrinterStore(i)->GetSavedPrinters();
+    std::vector<chromeos::Printer> printers =
+        GetPrinterStore(i)->GetSavedPrinters();
     if (!ListsContainTheSamePrinters(reference_printers, printers)) {
       if (os) {
         *os << "Printers in client [" << i << "] don't match client 0";

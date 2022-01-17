@@ -69,7 +69,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
       const base::HistogramTester& ht,
       const std::vector<std::string>& histogram_suffixes,
       const base::TimeDelta& expected_session_time) {
-    for (const auto& histogram_suffix : histogram_suffixes) {
+    for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTimeBucketCount(GetSessionHistogramName(histogram_suffix),
                                expected_session_time, 1);
     }
@@ -77,14 +77,14 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
 
   void ExpectOneSession(const base::HistogramTester& ht,
                         const std::vector<std::string>& histogram_suffixes) {
-    for (const auto& histogram_suffix : histogram_suffixes) {
+    for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTotalCount(GetSessionHistogramName(histogram_suffix), 1);
     }
   }
 
   void ExpectNoSession(const base::HistogramTester& ht,
                        const std::vector<std::string>& histogram_suffixes) {
-    for (const auto& histogram_suffix : histogram_suffixes) {
+    for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTotalCount(GetSessionHistogramName(histogram_suffix), 0);
     }
   }
@@ -240,7 +240,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   EnableSync();
 
   // Simulate sync initializing (before first connection to the server).
-  auto active_sync_snapshot = sync_service_.GetLastCycleSnapshotForDebugging();
+  SyncCycleSnapshot active_sync_snapshot =
+      sync_service_.GetLastCycleSnapshotForDebugging();
   sync_service_.SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
   ASSERT_TRUE(sync_service_.IsSyncFeatureActive());
   ASSERT_FALSE(sync_service_.HasCompletedSyncCycle());

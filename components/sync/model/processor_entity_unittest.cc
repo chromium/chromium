@@ -595,7 +595,8 @@ TEST_F(ProcessorEntityTest, RestoredLocalChangeWithUpdatedSpecifics) {
   // Restore entity from metadata and emulate bridge passing different specifics
   // to SetCommitData.
   entity = RestoreFromMetadata(std::move(entity_metadata));
-  auto entity_data = GenerateEntityData(kHash, kName, kValue2);
+  std::unique_ptr<EntityData> entity_data =
+      GenerateEntityData(kHash, kName, kValue2);
   entity->SetCommitData(std::move(entity_data));
 
   // No verification is necessary. SetCommitData shouldn't DCHECK.

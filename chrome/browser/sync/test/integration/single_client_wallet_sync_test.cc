@@ -279,9 +279,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTestWithoutAccountStorage,
                                   CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_EQ(nullptr, account_data);
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
@@ -332,9 +334,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
 
   // Check that no data is stored in the profile storage.
@@ -1405,9 +1409,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
 
   // Check that the data is stored in the account storage (ephemeral), but not
@@ -1473,9 +1479,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
 
   // Check that the card is stored in the account storage (ephemeral), but not
@@ -1490,7 +1498,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now start actually configuring Sync.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
-  auto setup_handle = GetSyncService(0)->GetSetupInProgressHandle();
+  std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
+      GetSyncService(0)->GetSetupInProgressHandle();
 
   GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, {syncer::UserSelectableType::kAutofill});
@@ -1559,9 +1568,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
   EXPECT_FALSE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
 
   // Check that the card is stored in the profile storage (persisted), but not

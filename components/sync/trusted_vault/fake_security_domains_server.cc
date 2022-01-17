@@ -284,7 +284,7 @@ bool FakeSecurityDomainsServer::AllMembersHaveKey(
         SecureBoxPublicKey::CreateByImport(ProtoStringToBytes(public_key));
     DCHECK(member_public_key);
 
-    for (const auto& shared_key : shared_keys) {
+    for (const sync_pb::SharedMemberKey& shared_key : shared_keys) {
       // Member has |trusted_vault_key| if there is a member proof signed by
       // |trusted_vault_key|.
       if (VerifyMemberProof(*member_public_key, trusted_vault_key,
@@ -413,11 +413,11 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
   sync_pb::SecurityDomainMember::SecurityDomainMembership* membership =
       member.add_memberships();
   membership->set_security_domain(kSyncSecurityDomainName);
-  for (const auto& shared_key :
+  for (const sync_pb::SharedMemberKey& shared_key :
        state_.public_key_to_shared_keys[member_public_key]) {
     *membership->add_keys() = shared_key;
   }
-  for (const auto& rotation_proof :
+  for (const sync_pb::RotationProof& rotation_proof :
        state_.public_key_to_rotation_proofs[member_public_key]) {
     *membership->add_rotation_proofs() = rotation_proof;
   }

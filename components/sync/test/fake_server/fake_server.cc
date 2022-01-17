@@ -124,7 +124,7 @@ uint64_t ComputeEntitiesHash(const std::vector<sync_pb::SyncEntity>& entities) {
   // receiving the same data. We sum up the hashes which has the nice side
   // effect of being independent of the order.
   uint64_t hash = 0;
-  for (const auto& entity : entities) {
+  for (const sync_pb::SyncEntity& entity : entities) {
     hash += base::PersistentHash(entity.id_string());
     hash += entity.version();
   }
@@ -184,7 +184,7 @@ void PopulateFullUpdateTypeResults(
     // previous data.
     int64_t version =
         (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds();
-    for (const auto& entity : entities) {
+    for (const sync_pb::SyncEntity& entity : entities) {
       sync_pb::SyncEntity* response_entity = gu_response->add_entries();
       *response_entity = entity;
       response_entity->set_version(version);
@@ -623,7 +623,7 @@ void FakeServer::RemoveObserver(Observer* observer) {
 
 void FakeServer::OnCommit(const std::string& committer_invalidator_client_id,
                           syncer::ModelTypeSet committed_model_types) {
-  for (auto& observer : observers_)
+  for (Observer& observer : observers_)
     observer.OnCommit(committer_invalidator_client_id, committed_model_types);
 }
 

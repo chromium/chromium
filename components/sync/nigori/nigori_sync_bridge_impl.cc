@@ -245,46 +245,46 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
   void OnPassphraseRequired(
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnPassphraseRequired(key_derivation_params, pending_keys);
     }
   }
 
   void OnPassphraseAccepted() override {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnPassphraseAccepted();
     }
   }
 
   void OnTrustedVaultKeyRequired() override {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnTrustedVaultKeyRequired();
     }
   }
 
   void OnTrustedVaultKeyAccepted() override {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnTrustedVaultKeyAccepted();
     }
   }
 
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnEncryptedTypesChanged(encrypted_types, encrypt_everything);
     }
   }
 
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnCryptographerStateChanged(cryptographer, has_pending_keys);
     }
   }
 
   void OnPassphraseTypeChanged(PassphraseType type,
                                base::Time passphrase_time) override {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnPassphraseTypeChanged(type, passphrase_time);
     }
   }

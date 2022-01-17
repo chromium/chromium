@@ -76,7 +76,8 @@ void BookmarksSyncPerfTest::AddURLs(int profile, size_t num_urls) {
 }
 
 void BookmarksSyncPerfTest::UpdateURLs(int profile) {
-  for (const auto& child : GetBookmarkBarNode(profile)->children())
+  for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
+       GetBookmarkBarNode(profile)->children())
     ASSERT_TRUE(SetURL(profile, child.get(), GURL(NextIndexedURL())));
 }
 
@@ -101,7 +102,7 @@ std::string BookmarksSyncPerfTest::NextIndexedURLTitle() {
 IN_PROC_BROWSER_TEST_F(BookmarksSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter =
+  perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumBookmarks) + "_bookmarks");
   AddURLs(0, kNumBookmarks);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));

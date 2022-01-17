@@ -38,13 +38,13 @@ bool TwoClientWebAppsIntegrationTestBase::IsSyncTest() {
 }
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOff() {
-  for (auto* client : GetSyncClients()) {
+  for (SyncServiceImplHarness* client : GetSyncClients()) {
     client->StopSyncServiceAndClearData();
   }
 }
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOn() {
-  for (auto* client : GetSyncClients()) {
+  for (SyncServiceImplHarness* client : GetSyncClients()) {
     client->StartSyncService();
   }
   AwaitWebAppQuiescence();

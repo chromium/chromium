@@ -331,7 +331,7 @@ TEST_F(MAYBE_SyncHttpBridgeTest, HttpErrors) {
       net::HTTP_SERVICE_UNAVAILABLE,
       net::HTTP_GATEWAY_TIMEOUT,
   };
-  for (auto error : http_errors) {
+  for (net::HttpStatusCode error : http_errors) {
     function.Run(error);
   }
 }

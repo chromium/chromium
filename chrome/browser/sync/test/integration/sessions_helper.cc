@@ -118,10 +118,10 @@ bool OpenTabAtIndex(int browser_index, int tab_index, const GURL& url) {
 
 bool OpenMultipleTabs(int browser_index, const std::vector<GURL>& urls) {
   Browser* browser = test()->GetBrowser(browser_index);
-  for (auto it = urls.begin(); it != urls.end(); ++it) {
-    DVLOG(1) << "Opening tab: " << it->spec() << " using browser "
+  for (const GURL& url : urls) {
+    DVLOG(1) << "Opening tab: " << url.spec() << " using browser "
              << browser_index << ".";
-    ShowSingletonTab(browser, *it);
+    ShowSingletonTab(browser, url);
   }
   return WaitForTabsToLoad(browser_index, urls);
 }
@@ -204,7 +204,7 @@ bool ExecJs(int browser_index, int tab_index, const std::string& script) {
 
 bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls) {
   int tab_index = 0;
-  for (const auto& url : urls) {
+  for (const GURL& url : urls) {
     content::WebContents* web_contents = test()
                                              ->GetBrowser(browser_index)
                                              ->tab_strip_model()
@@ -267,7 +267,7 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
                 new_tab->navigations.begin());
       new_window->wrapped_window.tabs.push_back(std::move(new_tab));
     }
-    auto id = new_window->wrapped_window.window_id;
+    SessionID id = new_window->wrapped_window.window_id;
     (*local_windows)[id] = std::move(new_window);
   }
 

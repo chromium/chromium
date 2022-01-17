@@ -231,7 +231,7 @@ void SyncSchedulerImpl::SendInitialSnapshot() {
 
   SyncCycleEvent event(SyncCycleEvent::STATUS_CHANGED);
   event.snapshot = SyncCycle(cycle_context_, this).TakeSnapshot();
-  for (auto& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
     observer.OnSyncCycleEvent(event);
 }
 
@@ -740,7 +740,7 @@ void SyncSchedulerImpl::ExponentialBackoffRetry() {
 }
 
 void SyncSchedulerImpl::NotifyRetryTime(base::Time retry_time) {
-  for (auto& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
     observer.OnRetryTimeChanged(retry_time);
 }
 
@@ -759,7 +759,7 @@ void SyncSchedulerImpl::NotifyBlockedTypesChanged() {
     }
   }
 
-  for (auto& observer : *cycle_context_->listeners()) {
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnThrottledTypesChanged(IsGlobalThrottle() ? ModelTypeSet::All()
                                                         : throttled_types);
     observer.OnBackedOffTypesChanged(IsGlobalBackoff() ? ModelTypeSet::All()
@@ -783,7 +783,7 @@ void SyncSchedulerImpl::OnThrottled(const base::TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   wait_interval_ = std::make_unique<WaitInterval>(
       WaitInterval::BlockingMode::kThrottled, throttle_duration);
-  for (auto& observer : *cycle_context_->listeners()) {
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnThrottledTypesChanged(ModelTypeSet::All());
   }
   RestartWaiting();
@@ -864,7 +864,7 @@ void SyncSchedulerImpl::OnSyncProtocolError(
   }
   if (IsActionableError(sync_protocol_error)) {
     SDVLOG(2) << "OnActionableError";
-    for (auto& observer : *cycle_context_->listeners())
+    for (SyncEngineEventListener& observer : *cycle_context_->listeners())
       observer.OnActionableError(sync_protocol_error);
   }
 }
@@ -880,7 +880,7 @@ void SyncSchedulerImpl::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {
 void SyncSchedulerImpl::OnReceivedMigrationRequest(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
     observer.OnMigrationRequested(types);
 }
 

@@ -100,15 +100,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
   const char kServerAddress[] = "ipp://192.168.1.1:631";
 
   // Initialize sync bridge with test printer.
-  auto printer = CreateTestPrinterSpecifics(0);
+  std::unique_ptr<sync_pb::PrinterSpecifics> printer =
+      CreateTestPrinterSpecifics(0);
   const std::string spec_printer_id = printer->id();
   printer->set_print_server_uri(kServerAddress);
-  auto* bridge = GetPrinterStore(0)->GetSyncBridge();
+  ash::PrintersSyncBridge* bridge = GetPrinterStore(0)->GetSyncBridge();
   bridge->AddPrinter(std::move(printer));
 
   // Start the sync.
   ASSERT_TRUE(SetupSync());
-  auto spec_printer = bridge->GetPrinter(spec_printer_id);
+  absl::optional<sync_pb::PrinterSpecifics> spec_printer =
+      bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
 
   // Verify that the print server address was saved correctly.

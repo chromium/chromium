@@ -120,7 +120,8 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
       const std::vector<ServerBookmarksEqualityChecker::ExpectedBookmark>&
           expected_bookmarks,
       const std::string& passphrase) {
-    auto cryptographer = CreateCryptographerFromServerNigori(passphrase);
+    std::unique_ptr<Cryptographer> cryptographer =
+        CreateCryptographerFromServerNigori(passphrase);
     return ServerBookmarksEqualityChecker(GetSyncService(), GetFakeServer(),
                                           expected_bookmarks,
                                           cryptographer.get())

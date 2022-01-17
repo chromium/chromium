@@ -188,9 +188,10 @@ class SyncEngineImplTest : public testing::Test {
 
     ON_CALL(invalidator_, UpdateInterestedTopics)
         .WillByDefault(testing::Return(true));
-    auto sync_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    scoped_refptr<base::SequencedTaskRunner> sync_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     auto mock_active_devices_provider =
         std::make_unique<NiceMock<MockActiveDevicesProvider>>();
     ON_CALL(*mock_active_devices_provider.get(), CalculateInvalidationInfo)
@@ -201,7 +202,7 @@ class SyncEngineImplTest : public testing::Test {
         std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(&pref_service_),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
-        sync_task_runner, sync_transport_data_cleared_cb_.Get());
+        std::move(sync_task_runner), sync_transport_data_cleared_cb_.Get());
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
@@ -672,10 +673,12 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   InitializeBackend(/*expect_success=*/true);
 
   sync_pb::SyncInvalidationsPayload payload;
-  auto* bookmarks_invalidation = payload.add_data_type_invalidations();
+  sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
+      bookmarks_invalidation = payload.add_data_type_invalidations();
   bookmarks_invalidation->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(ModelType::BOOKMARKS));
-  auto* preferences_invalidation = payload.add_data_type_invalidations();
+  sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
+      preferences_invalidation = payload.add_data_type_invalidations();
   preferences_invalidation->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(ModelType::PREFERENCES));
 

@@ -393,7 +393,7 @@ bool SyncServiceImpl::IsEngineAllowedToRun() const {
   // USER_CHOICE (i.e. the Sync feature toggle) and PLATFORM_OVERRIDE (i.e.
   // Android's "MasterSync" toggle) do not prevent starting up the Sync
   // transport.
-  auto disable_reasons = GetDisableReasons();
+  DisableReasonSet disable_reasons = GetDisableReasons();
   disable_reasons.RemoveAll(SyncService::DisableReasonSet(
       DISABLE_REASON_USER_CHOICE, DISABLE_REASON_PLATFORM_OVERRIDE));
   return disable_reasons.Empty() && !auth_manager_->IsSyncPaused();
@@ -401,7 +401,7 @@ bool SyncServiceImpl::IsEngineAllowedToRun() const {
 
 void SyncServiceImpl::OnProtocolEvent(const ProtocolEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : protocol_event_observers_)
+  for (ProtocolEventObserver& observer : protocol_event_observers_)
     observer.OnProtocolEvent(event);
 }
 
@@ -687,18 +687,18 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
 }
 
 void SyncServiceImpl::NotifyObservers() {
-  for (auto& observer : *observers_) {
+  for (SyncServiceObserver& observer : *observers_) {
     observer.OnStateChanged(this);
   }
 }
 
 void SyncServiceImpl::NotifySyncCycleCompleted() {
-  for (auto& observer : *observers_)
+  for (SyncServiceObserver& observer : *observers_)
     observer.OnSyncCycleCompleted(this);
 }
 
 void SyncServiceImpl::NotifyShutdown() {
-  for (auto& observer : *observers_)
+  for (SyncServiceObserver& observer : *observers_)
     observer.OnSyncShutdown(this);
 }
 
@@ -864,7 +864,8 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       // IdentityManager after a dashboard clear.
       if (!IsLocalSyncEnabled() &&
           identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-        auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
+        signin::PrimaryAccountMutator* account_mutator =
+            identity_manager_->GetPrimaryAccountMutator();
         // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
         DCHECK(account_mutator);
 
@@ -925,7 +926,7 @@ void SyncServiceImpl::OnConfigureDone(
          user_settings_->IsEncryptedDatatypeEnabled());
 
   // Notify listeners that configuration is done.
-  for (auto& observer : *observers_)
+  for (SyncServiceObserver& observer : *observers_)
     observer.OnSyncConfigurationCompleted(this);
 
   NotifyObservers();
@@ -1501,7 +1502,7 @@ bool SyncServiceImpl::HasCookieJarMismatch(
     const std::vector<gaia::ListedAccount>& cookie_jar_accounts) {
   CoreAccountId account_id = GetAccountInfo().account_id;
   // Iterate through list of accounts, looking for current sync account.
-  for (const auto& account : cookie_jar_accounts) {
+  for (const gaia::ListedAccount& account : cookie_jar_accounts) {
     if (account.id == account_id)
       return false;
   }

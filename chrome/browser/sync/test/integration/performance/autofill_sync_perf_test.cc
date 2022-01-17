@@ -156,7 +156,7 @@ const std::string AutofillProfileSyncPerfTest::NextName() {
 IN_PROC_BROWSER_TEST_F(AutofillProfileSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter =
+  perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumProfiles) + "_profiles");
   AddProfiles(0, kNumProfiles);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
@@ -213,7 +213,8 @@ const std::string AutocompleteSyncPerfTest::NextName() {
 IN_PROC_BROWSER_TEST_F(AutocompleteSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter = SetUpReporter(base::NumberToString(kNumKeys) + "_keys");
+  perf_test::PerfResultReporter reporter =
+      SetUpReporter(base::NumberToString(kNumKeys) + "_keys");
   AddKeys(0, kNumKeys);
   // TODO(lipalani): fix this. The following line is added to force sync.
   ForceSync(0);

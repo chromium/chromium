@@ -132,7 +132,8 @@ QuiesceStatusChangeChecker::~QuiesceStatusChangeChecker() {}
 bool QuiesceStatusChangeChecker::IsExitConditionSatisfied(std::ostream* os) {
   // Check that all progress markers are up to date.
   std::vector<syncer::SyncServiceImpl*> enabled_services;
-  for (const auto& checker : checkers_) {
+  for (const std::unique_ptr<NestedUpdatedProgressMarkerChecker>& checker :
+       checkers_) {
     enabled_services.push_back(checker->service());
 
     if (!checker->IsExitConditionSatisfied(os)) {

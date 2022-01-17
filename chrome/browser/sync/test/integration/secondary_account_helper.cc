@@ -98,7 +98,8 @@ void GrantSyncConsent(Profile* profile, const std::string& email) {
   AccountInfo account =
       identity_manager->FindExtendedAccountInfoByEmailAddress(email);
   DCHECK(!account.IsEmpty());
-  auto* primary_account_mutator = identity_manager->GetPrimaryAccountMutator();
+  signin::PrimaryAccountMutator* primary_account_mutator =
+      identity_manager->GetPrimaryAccountMutator();
   primary_account_mutator->SetPrimaryAccount(account.account_id,
                                              signin::ConsentLevel::kSync);
 }

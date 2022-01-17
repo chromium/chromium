@@ -359,7 +359,7 @@ PasswordFormsChecker::PasswordFormsChecker(
       index_(index),
       in_progress_(false),
       needs_recheck_(false) {
-  for (auto& password_form : expected_forms) {
+  for (const password_manager::PasswordForm& password_form : expected_forms) {
     expected_forms_.push_back(
         std::make_unique<password_manager::PasswordForm>(password_form));
   }

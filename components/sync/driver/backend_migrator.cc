@@ -73,7 +73,7 @@ void BackendMigrator::RemoveMigrationObserver(MigrationObserver* observer) {
 
 void BackendMigrator::ChangeState(State new_state) {
   state_ = new_state;
-  for (auto& observer : migration_observers_)
+  for (MigrationObserver& observer : migration_observers_)
     observer.OnMigrationStateChange();
 }
 

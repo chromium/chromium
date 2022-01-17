@@ -190,7 +190,7 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet desired_types,
 
 void DataTypeManagerImpl::ConnectDataTypes() {
   for (ModelType type : last_enabled_types_) {
-    const auto& dtc_iter = controllers_->find(type);
+    auto dtc_iter = controllers_->find(type);
     if (dtc_iter == controllers_->end()) {
       continue;
     }
@@ -355,7 +355,7 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   ConnectDataTypes();
 
   // Propagate the state of PROXY_TABS to the sync engine.
-  const auto& dtc_iter = controllers_->find(PROXY_TABS);
+  auto dtc_iter = controllers_->find(PROXY_TABS);
   if (dtc_iter != controllers_->end()) {
     configurer_->SetProxyTabsDatatypeEnabled(dtc_iter->second->state() ==
                                              DataTypeController::RUNNING);
@@ -405,7 +405,7 @@ void DataTypeManagerImpl::UpdatePreconditionErrors(
 }
 
 bool DataTypeManagerImpl::UpdatePreconditionError(ModelType type) {
-  const auto& iter = controllers_->find(type);
+  auto iter = controllers_->find(type);
   if (iter == controllers_->end())
     return false;
 

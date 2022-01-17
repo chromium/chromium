@@ -210,7 +210,7 @@ DownloadKeysResponseHandler::ProcessResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kNoNewKeys);
   }
   std::vector<std::vector<uint8_t>> new_trusted_vault_keys;
-  for (auto& key : new_keys) {
+  for (ExtractedSharedKey& key : new_keys) {
     new_trusted_vault_keys.push_back(key.trusted_vault_key);
   }
   return ProcessedResponse(/*status=*/TrustedVaultDownloadKeysStatus::kSuccess,

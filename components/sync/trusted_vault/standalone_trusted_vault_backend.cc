@@ -79,7 +79,7 @@ bool HasNonConstantKey(
   std::string constant_key_as_proto_string;
   AssignBytesToProtoString(GetConstantTrustedVaultKey(),
                            &constant_key_as_proto_string);
-  for (const auto& key : per_user_vault.vault_key()) {
+  for (const sync_pb::LocalTrustedVaultKey& key : per_user_vault.vault_key()) {
     if (key.key_material() != constant_key_as_proto_string) {
       return true;
     }
@@ -105,7 +105,7 @@ void DownloadIsRecoverabilityDegradedCompleted(
 base::flat_set<std::string> GetGaiaIDs(
     const std::vector<gaia::ListedAccount>& listed_accounts) {
   base::flat_set<std::string> result;
-  for (const auto& listed_account : listed_accounts) {
+  for (const gaia::ListedAccount& listed_account : listed_accounts) {
     result.insert(listed_account.gaia_id);
   }
   return result;

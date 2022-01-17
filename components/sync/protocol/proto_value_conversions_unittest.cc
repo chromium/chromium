@@ -107,7 +107,8 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   specifics.mutable_cloud_token_data()->set_masked_card_id("1111");
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::UNKNOWN);
-  auto value = AutofillWalletSpecificsToValue(specifics);
+  std::unique_ptr<base::DictionaryValue> value =
+      AutofillWalletSpecificsToValue(specifics);
   EXPECT_FALSE(value->Get("masked_card", nullptr));
   EXPECT_FALSE(value->Get("address", nullptr));
   EXPECT_FALSE(value->Get("customer_data", nullptr));
@@ -193,7 +194,8 @@ TEST(ProtoValueConversionsTest, UniquePositionToValue) {
   sync_pb::SyncEntity entity;
   entity.mutable_unique_position()->set_custom_compressed_v1("test");
 
-  auto value = SyncEntityToValue(entity, false);
+  std::unique_ptr<base::DictionaryValue> value =
+      SyncEntityToValue(entity, false);
   std::string unique_position;
   EXPECT_TRUE(value->GetString("unique_position", &unique_position));
 
@@ -206,7 +208,8 @@ TEST(ProtoValueConversionsTest, SyncEntityToValueIncludeSpecifics) {
   sync_pb::SyncEntity entity;
   entity.mutable_specifics();
 
-  auto value = SyncEntityToValue(entity, true /* include_specifics */);
+  std::unique_ptr<base::DictionaryValue> value =
+      SyncEntityToValue(entity, true /* include_specifics */);
   EXPECT_TRUE(value->GetDictionary("specifics", nullptr));
 
   value = SyncEntityToValue(entity, false /* include_specifics */);

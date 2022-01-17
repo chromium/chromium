@@ -146,7 +146,8 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetNetworkConnectionTracker();
   init_params.channel = ::GetChannel();
   init_params.debug_identifier = browser_state->GetDebugName();
-  auto* policy_connector = browser_state->GetPolicyConnector();
+  BrowserStatePolicyConnector* policy_connector =
+      browser_state->GetPolicyConnector();
   init_params.policy_service =
       policy_connector ? policy_connector->GetPolicyService() : nullptr;
 

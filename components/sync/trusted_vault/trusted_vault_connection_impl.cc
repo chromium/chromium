@@ -119,7 +119,7 @@ sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
   request.mutable_security_domain()->set_name(kSyncSecurityDomainName);
   *request.mutable_security_domain_member() =
       CreateSecurityDomainMember(public_key, authentication_factor_type);
-  for (const auto& trusted_vault_key_and_version :
+  for (const TrustedVaultKeyAndVersion& trusted_vault_key_and_version :
        GetTrustedVaultKeysWithVersions(trusted_vault_keys,
                                        last_trusted_vault_key_version)) {
     *request.add_shared_member_key() =

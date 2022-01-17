@@ -74,7 +74,7 @@ void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {
 void PasswordsSyncPerfTest::UpdateLogins(int profile) {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
       passwords_helper::GetLogins(GetProfilePasswordStoreInterface(profile));
-  for (auto& login : logins) {
+  for (std::unique_ptr<password_manager::PasswordForm>& login : logins) {
     login->password_value = base::ASCIIToUTF16(NextPassword());
     GetProfilePasswordStoreInterface(profile)->UpdateLogin(*login);
   }
@@ -101,7 +101,7 @@ std::string PasswordsSyncPerfTest::NextPassword() {
 IN_PROC_BROWSER_TEST_F(PasswordsSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter =
+  perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumPasswords) + "_passwords");
   AddLogins(0, kNumPasswords);
   base::TimeDelta dt = TimeUntilQuiescence(GetSyncClients());

@@ -30,7 +30,7 @@ bool DeskUuidChecker::IsExitConditionSatisfied(std::ostream* os) {
              "' to be added/updated.";
 
   desks_storage::DeskModel* model = service_->GetDeskModel();
-  for (auto const& uuid : model->GetAllEntryUuids()) {
+  for (const base::GUID& uuid : model->GetAllEntryUuids()) {
     if (uuid == uuid_) {
       return true;
     }
@@ -70,7 +70,7 @@ bool DeskUuidDeletedChecker::IsExitConditionSatisfied(std::ostream* os) {
              "' to be deleted.";
 
   desks_storage::DeskModel* model = service_->GetDeskModel();
-  for (auto const& uuid : model->GetAllEntryUuids()) {
+  for (const base::GUID& uuid : model->GetAllEntryUuids()) {
     if (uuid == uuid_) {
       return false;
     }

@@ -39,7 +39,7 @@ void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
     return;
   }
   test_ = test;
-  for (auto* profile : test_->GetAllProfiles()) {
+  for (Profile* profile : test_->GetAllProfiles()) {
     extensions::ExtensionSystem::Get(profile)->InitForRegularProfile(
         true /* extensions_enabled */);
     if (test_->UseVerifier() && profile == test_->verifier()) {
@@ -96,8 +96,8 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
 }
 
 bool SyncAppListHelper::AllProfilesHaveSameAppList(size_t* size_out) {
-  const auto& profiles = test_->GetAllProfiles();
-  for (auto* profile : profiles) {
+  const std::vector<Profile*>& profiles = test_->GetAllProfiles();
+  for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !AppListMatch(profiles.front(), profile)) {
       DVLOG(1) << "Profile1: "
@@ -160,7 +160,8 @@ void SyncAppListHelper::PrintAppList(Profile* profile) {
     // Print children if it has any.
     if (children.count(item->id())) {
       DCHECK(item->is_folder());
-      auto& child_items = children[item->folder_id()];
+      std::vector<ChromeAppListItem*>& child_items =
+          children[item->folder_id()];
       for (size_t j = 0; j < child_items.size(); ++j) {
         ChromeAppListItem* child_item = child_items[j];
         std::string child_label =

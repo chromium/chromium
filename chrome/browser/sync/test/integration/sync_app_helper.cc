@@ -93,7 +93,7 @@ AppStateMap GetAppStates(Profile* profile) {
   std::unique_ptr<const extensions::ExtensionSet> extensions(
       extensions::ExtensionRegistry::Get(profile)
           ->GenerateInstalledExtensionsSet());
-  for (const auto& extension : *extensions) {
+  for (scoped_refptr<const extensions::Extension> extension : *extensions) {
     if (extension->is_app() &&
         extensions::util::ShouldSync(extension.get(), profile)) {
       const std::string& id = extension->id();
@@ -109,7 +109,7 @@ AppStateMap GetAppStates(Profile* profile) {
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();
 
-  for (const auto& id : pending_crx_ids) {
+  for (const std::string& id : pending_crx_ids) {
     LoadApp(profile, id, &(app_state_map[id]));
   }
 

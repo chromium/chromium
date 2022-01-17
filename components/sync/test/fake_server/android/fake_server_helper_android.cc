@@ -65,7 +65,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
     absl::optional<jstring> guid,
     jstring parent_id,
     jstring parent_guid) {
-  auto gurl = *url::GURLAndroid::ToNativeGURL(env, url);
+  GURL gurl = *url::GURLAndroid::ToNativeGURL(env, url);
   DCHECK(gurl.is_valid()) << "The given string ("
                           << gurl.possibly_invalid_spec()
                           << ") is not a valid URL.";

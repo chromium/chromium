@@ -63,7 +63,7 @@ void SyncArcPackageHelper::SetupTest(SyncTest* test) {
   }
   test_ = test;
 
-  for (auto* profile : test_->GetAllProfiles()) {
+  for (Profile* profile : test_->GetAllProfiles()) {
     EnableArcService(profile);
     SendRefreshPackageList(profile);
   }
@@ -95,14 +95,14 @@ void SyncArcPackageHelper::ClearPackages(Profile* profile) {
   const ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
   DCHECK(prefs);
   const std::vector<std::string> pref_packages = prefs->GetPackagesFromPrefs();
-  for (const auto& package : pref_packages) {
+  for (const std::string& package : pref_packages) {
     UninstallPackage(profile, package);
   }
 }
 
 bool SyncArcPackageHelper::AllProfilesHaveSamePackages() {
-  const auto& profiles = test_->GetAllProfiles();
-  for (auto* profile : profiles) {
+  const std::vector<Profile*>& profiles = test_->GetAllProfiles();
+  for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !ArcPackagesMatch(profiles.front(), profile)) {
       DVLOG(1) << "Packages match failed!";
@@ -118,8 +118,8 @@ bool SyncArcPackageHelper::AllProfilesHaveSamePackageDetails() {
     return false;
   }
 
-  const auto& profiles = test_->GetAllProfiles();
-  for (auto* profile : profiles) {
+  const std::vector<Profile*>& profiles = test_->GetAllProfiles();
+  for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !ArcPackageDetailsMatch(profiles.front(), profile)) {
       DVLOG(1) << "Profile1: " << ArcPackageSyncableService::Get(profile);
@@ -222,7 +222,7 @@ bool SyncArcPackageHelper::ArcPackagesMatch(Profile* profile1,
       prefs2->GetPackagesFromPrefs();
   if (pref1_packages.size() != pref2_packages.size())
     return false;
-  for (const auto& package : pref1_packages) {
+  for (const std::string& package : pref1_packages) {
     std::unique_ptr<ArcAppListPrefs::PackageInfo> package_info =
         prefs2->GetPackage(package);
     if (!package_info.get())
@@ -239,7 +239,7 @@ bool SyncArcPackageHelper::ArcPackageDetailsMatch(Profile* profile1,
   DCHECK(prefs2);
   const std::vector<std::string> pref1_packages =
       prefs1->GetPackagesFromPrefs();
-  for (const auto& package : pref1_packages) {
+  for (const std::string& package : pref1_packages) {
     std::unique_ptr<ArcAppListPrefs::PackageInfo> package1_info =
         prefs1->GetPackage(package);
     std::unique_ptr<ArcAppListPrefs::PackageInfo> package2_info =

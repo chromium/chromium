@@ -632,7 +632,7 @@ bool TypedURLChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   history::URLRows rows = typed_urls_helper::GetTypedUrlsFromClient(index_);
 
-  for (auto row : rows) {
+  for (const history::URLRow& row : rows) {
     if (row.url().spec() == url_)
       return true;
   }

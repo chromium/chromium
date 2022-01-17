@@ -96,7 +96,8 @@ void ModelTypeRegistry::SetProxyTabsDatatypeEnabled(bool enabled) {
 
 ModelTypeSet ModelTypeRegistry::GetConnectedTypes() const {
   ModelTypeSet types;
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     types.Put(worker->GetModelType());
   }
   return types;
@@ -134,7 +135,8 @@ KeystoreKeysHandler* ModelTypeRegistry::keystore_keys_handler() {
 
 bool ModelTypeRegistry::HasUnsyncedItems() const {
   // For model type workers, we ask them individually.
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     if (worker->HasLocalChangesForTest()) {
       return true;
     }
@@ -161,7 +163,8 @@ void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                                 bool encrypt_everything) {
   // This does NOT support disabling encryption without reconnecting the
   // type, i.e. recreating its ModelTypeWorker.
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     if (encrypted_types.Has(worker->GetModelType())) {
       // No-op if the type was already encrypted.
       worker->EnableEncryption();
@@ -172,14 +175,16 @@ void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
 void ModelTypeRegistry::OnCryptographerStateChanged(
     Cryptographer* cryptographer,
     bool has_pending_keys) {
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     worker->OnCryptographerChange();
   }
 }
 
 void ModelTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
                                                 base::Time passphrase_time) {
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     worker->UpdatePassphraseType(type);
   }
 }

@@ -172,7 +172,8 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // causes it to try starting up the engine. We're not signed in yet though, so
   // that won't work.
   sync_service()->GetUserSettings()->SetSyncRequested(true);
-  auto sync_blocker = sync_service()->GetSetupInProgressHandle();
+  std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
+      sync_service()->GetSetupInProgressHandle();
   EXPECT_FALSE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN),
@@ -598,7 +599,8 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   // Simulate a failure while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
 
-  auto sync_blocker = sync_service()->GetSetupInProgressHandle();
+  std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
+      sync_service()->GetSetupInProgressHandle();
   sync_blocker.reset();
   EXPECT_EQ(SyncService::DisableReasonSet(
                 SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR),
@@ -646,7 +648,8 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // Initiate Sync (the feature) setup before the engine initializes itself in
   // transport mode.
   sync_service()->GetUserSettings()->SetSyncRequested(true);
-  auto setup_in_progress_handle = sync_service()->GetSetupInProgressHandle();
+  std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
+      sync_service()->GetSetupInProgressHandle();
 
   // Once the engine calls back and says it's initialized, we're just waiting
   // for the user to finish the initial configuration (choosing data types etc.)

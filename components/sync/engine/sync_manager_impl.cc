@@ -334,20 +334,20 @@ void SyncManagerImpl::OnServerConnectionEvent(
     const ServerConnectionEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (event.connection_code == HttpResponse::SERVER_CONNECTION_OK) {
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnConnectionStatusChange(CONNECTION_OK);
     }
   }
 
   if (event.connection_code == HttpResponse::SYNC_AUTH_ERROR) {
     observing_network_connectivity_changes_ = false;
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnConnectionStatusChange(CONNECTION_AUTH_ERROR);
     }
   }
 
   if (event.connection_code == HttpResponse::SYNC_SERVER_ERROR) {
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnConnectionStatusChange(CONNECTION_SERVER_ERROR);
     }
   }
@@ -365,7 +365,7 @@ void SyncManagerImpl::NudgeForCommit(ModelType type) {
 }
 
 void SyncManagerImpl::NotifySyncStatusChanged(const SyncStatus& status) {
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnSyncStatusChanged(status);
   }
 }
@@ -387,14 +387,14 @@ void SyncManagerImpl::OnSyncCycleEvent(const SyncCycleEvent& event) {
     }
 
     DVLOG(1) << "Sending OnSyncCycleCompleted";
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnSyncCycleCompleted(event.snapshot);
     }
   }
 }
 
 void SyncManagerImpl::OnActionableError(const SyncProtocolError& error) {
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnActionableError(error);
   }
 }
@@ -406,14 +406,14 @@ void SyncManagerImpl::OnThrottledTypesChanged(ModelTypeSet) {}
 void SyncManagerImpl::OnBackedOffTypesChanged(ModelTypeSet) {}
 
 void SyncManagerImpl::OnMigrationRequested(ModelTypeSet types) {
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnMigrationRequested(types);
   }
 }
 
 void SyncManagerImpl::OnProtocolEvent(const ProtocolEvent& event) {
   protocol_event_buffer_.RecordProtocolEvent(event);
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnProtocolEvent(event);
   }
 }

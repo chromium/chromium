@@ -428,7 +428,7 @@ void SyncEngineBackend::SendBufferedProtocolEventsAndEnableForwarding() {
         sync_manager_->GetBufferedProtocolEvents();
 
     // Send them all over the fence to the host.
-    for (auto& event : buffered_events) {
+    for (std::unique_ptr<ProtocolEvent>& event : buffered_events) {
       host_.Call(FROM_HERE, &SyncEngineImpl::HandleProtocolEventOnFrontendLoop,
                  std::move(event));
     }

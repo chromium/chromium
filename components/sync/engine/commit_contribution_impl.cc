@@ -5,6 +5,7 @@
 #include "components/sync/engine/commit_contribution_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/guid.h"
@@ -81,7 +82,8 @@ void CommitContributionImpl::AddToCommitMessage(
   commit_message->mutable_entries()->Reserve(commit_message->entries_size() +
                                              commit_requests_.size());
 
-  for (const auto& commit_request : commit_requests_) {
+  for (const std::unique_ptr<CommitRequestData>& commit_request :
+       commit_requests_) {
     sync_pb::SyncEntity* sync_entity = commit_message->add_entries();
     if (only_commit_specifics_) {
       DCHECK(!commit_request->entity->is_deleted());

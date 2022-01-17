@@ -66,7 +66,7 @@ std::string InstallExtension(Profile* profile, int index) {
 
 std::string InstallExtensionForAllProfiles(int index) {
   std::string extension_id;
-  for (auto* profile : test()->GetAllProfiles()) {
+  for (Profile* profile : test()->GetAllProfiles()) {
     extension_id = InstallExtension(profile, index);
   }
   return extension_id;

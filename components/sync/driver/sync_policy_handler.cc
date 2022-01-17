@@ -67,7 +67,7 @@ void SyncPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
       policies.GetValue(policy::key::kSyncTypesListDisabled);
 
   if (disabled_sync_types_value && disabled_sync_types_value->is_list()) {
-    auto list = disabled_sync_types_value->GetList();
+    base::Value::ConstListView list = disabled_sync_types_value->GetList();
     for (const base::Value& type_name : list) {
       if (!type_name.is_string())
         continue;

@@ -195,7 +195,8 @@ void FakeModelTypeSyncBridge::WriteItem(
   DCHECK(EntityHasClientTag(*entity_data));
   db_->PutData(key, *entity_data);
   if (change_processor()->IsTrackingMetadata()) {
-    auto change_list = CreateMetadataChangeList();
+    std::unique_ptr<MetadataChangeList> change_list =
+        CreateMetadataChangeList();
     change_processor()->Put(key, std::move(entity_data), change_list.get());
     ApplyMetadataChangeList(std::move(change_list));
   }
@@ -204,7 +205,8 @@ void FakeModelTypeSyncBridge::WriteItem(
 void FakeModelTypeSyncBridge::DeleteItem(const std::string& key) {
   db_->RemoveData(key);
   if (change_processor()->IsTrackingMetadata()) {
-    auto change_list = CreateMetadataChangeList();
+    std::unique_ptr<MetadataChangeList> change_list =
+        CreateMetadataChangeList();
     change_processor()->Delete(key, change_list.get());
     ApplyMetadataChangeList(std::move(change_list));
   }
@@ -230,7 +232,7 @@ absl::optional<ModelError> FakeModelTypeSyncBridge::MergeSyncData(
 
   std::set<std::string> remote_storage_keys;
   // Store any new remote entities.
-  for (const auto& change : entity_data) {
+  for (const std::unique_ptr<EntityChange>& change : entity_data) {
     EXPECT_FALSE(change->data().is_deleted());
     EXPECT_EQ(EntityChange::ACTION_ADD, change->type());
     std::string storage_key = change->storage_key();

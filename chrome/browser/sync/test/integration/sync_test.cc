@@ -128,13 +128,14 @@ void SetURLLoaderFactoryForTest(
   signin_client->SetURLLoaderFactoryForTest(url_loader_factory);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* factory =
+  ash::AccountManagerFactory* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
-  auto* account_manager =
+  account_manager::AccountManager* account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* account_manager = MaybeGetAshAccountManagerForTests();
+  account_manager::AccountManager* account_manager =
+      MaybeGetAshAccountManagerForTests();
   if (account_manager)
     account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1223,7 +1224,8 @@ void SyncTest::SetOAuth2TokenResponse(const std::string& response_data,
 
   std::string response = base::StringPrintf("HTTP/1.1 %d %s\r\n", status_code,
                                             GetHttpReasonPhrase(status_code));
-  auto response_head = network::mojom::URLResponseHead::New();
+  mojo::StructPtr<network::mojom::URLResponseHead> response_head =
+      network::mojom::URLResponseHead::New();
   response_head->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>(response);
   test_url_loader_factory_.AddResponse(

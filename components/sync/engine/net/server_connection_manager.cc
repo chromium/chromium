@@ -142,7 +142,7 @@ void ServerConnectionManager::SetServerResponse(
 
 void ServerConnectionManager::NotifyStatusChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : listeners_) {
+  for (ServerConnectionEventListener& observer : listeners_) {
     observer.OnServerConnectionEvent(
         ServerConnectionEvent(server_response_.server_status));
   }

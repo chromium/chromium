@@ -142,7 +142,7 @@ class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
     *os << "Waiting for URLs to be commited to the server";
     std::vector<sync_pb::SyncEntity> sessions =
         fake_server_->GetSyncEntitiesByModelType(syncer::SESSIONS);
-    for (const auto& entity : sessions) {
+    for (const sync_pb::SyncEntity& entity : sessions) {
       const sync_pb::SessionSpecifics& session_specifics =
           entity.specifics().session();
       if (!session_specifics.has_tab()) {
@@ -249,9 +249,10 @@ class SingleClientSessionsSyncTest : public SyncTest {
 
     int index = 0;
     EXPECT_EQ(urls.size(), tab->navigations.size());
-    for (auto it = tab->navigations.begin(); it != tab->navigations.end();
-         ++it, ++index) {
-      EXPECT_EQ(urls[index], it->virtual_url());
+    for (const sessions::SerializedNavigationEntry& navigation :
+         tab->navigations) {
+      EXPECT_EQ(urls[index], navigation.virtual_url());
+      index++;
     }
   }
 
@@ -277,7 +278,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
   void UpdateCookieJarAccountsAndWait(std::vector<CoreAccountId> account_ids,
                                       bool expected_cookie_jar_mismatch) {
     std::vector<gaia::ListedAccount> accounts;
-    for (const auto& account_id : account_ids) {
+    for (const CoreAccountId& account_id : account_ids) {
       gaia::ListedAccount signed_in_account;
       signed_in_account.id = account_id;
       accounts.push_back(signed_in_account);

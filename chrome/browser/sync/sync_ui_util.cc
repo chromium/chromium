@@ -182,7 +182,8 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 }
 
 void FocusWebContents(Browser* browser) {
-  auto* const contents = browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* const contents =
+      browser->tab_strip_model()->GetActiveWebContents();
   if (contents)
     contents->Focus();
 }

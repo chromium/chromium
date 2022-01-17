@@ -141,7 +141,8 @@ class PasswordManagerSyncTest : public SyncTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Whitelist all certs for the HTTPS server.
-    auto cert = https_test_server()->GetCertificate();
+    scoped_refptr<net::X509Certificate> cert =
+        https_test_server()->GetCertificate();
     net::CertVerifyResult verify_result;
     verify_result.cert_status = 0;
     verify_result.verified_cert = cert;
@@ -805,7 +806,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   AddCredentialToFakeServer(CreateTestPasswordForm("user", "pass"));
 
   SetupSyncTransportWithPasswordAccountStorage();
-  auto* account_store = passwords_helper::GetAccountPasswordStoreInterface(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
 
   // Make sure the password show up in the account store and on the server.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
@@ -848,7 +850,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // This simulates the case (for the following test) where the user revoked
   // their opt-in, but the account store was *not* cleared correctly, e.g. due
   // to a poorly-timed crash.
-  auto* account_store = passwords_helper::GetAccountPasswordStoreInterface(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   account_store->AddLogin(CreateTestPasswordForm("accountuser", "accountpass"));
 
   // Also add a credential to the profile store.

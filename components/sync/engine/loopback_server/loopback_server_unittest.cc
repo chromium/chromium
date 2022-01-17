@@ -107,7 +107,7 @@ class LoopbackServerTest : public testing::Test {
     request.set_share("required");
     request.set_message_contents(ClientToServerMessage::COMMIT);
     request.set_invalidator_client_id("client_id");
-    auto* commit = request.mutable_commit();
+    sync_pb::CommitMessage* commit = request.mutable_commit();
     commit->set_cache_guid("cache_guid");
     for (const SyncEntity& entity : entity_vector) {
       *commit->add_entries() = entity;

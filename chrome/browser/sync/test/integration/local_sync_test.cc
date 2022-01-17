@@ -58,7 +58,7 @@ class LocalSyncTest : public InProcessBrowserTest {
     // By default on Window OS local sync backend uses roaming profile. It can
     // lead to problems if some tests run simultaneously and use the same
     // roaming profile.
-    auto file = local_sync_backend_dir_.GetPath().Append(
+    base::FilePath file = local_sync_backend_dir_.GetPath().Append(
         FILE_PATH_LITERAL("profile.pb"));
     command_line->AppendSwitchASCII(switches::kLocalSyncBackendDir,
                                     file.MaybeAsASCII());
