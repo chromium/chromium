@@ -228,9 +228,9 @@ class TabSharingUIViewsBrowserTest
   void AddTabs(Browser* browser, int tab_count) {
     for (int i = 0; i < tab_count; ++i) {
       const int next_index = browser->tab_strip_model()->count();
-      AddTabAtIndexToBrowser(browser, next_index,
-                             GURL(chrome::kChromeUINewTabURL),
-                             ui::PAGE_TRANSITION_LINK, true);
+      ASSERT_TRUE(AddTabAtIndexToBrowser(browser, next_index,
+                                         GURL(chrome::kChromeUINewTabURL),
+                                         ui::PAGE_TRANSITION_LINK, true));
       CreateUniqueFaviconFor(
           browser->tab_strip_model()->GetWebContentsAt(next_index));
     }
