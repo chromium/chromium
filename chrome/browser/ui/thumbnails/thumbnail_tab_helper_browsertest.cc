@@ -156,8 +156,14 @@ class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky on Mac: https://crbug.com/1288117
+#if defined(OS_MAC)
+#define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
+#else
+#define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
-                       TabLoadTriggersScreenshot) {
+                       MAYBE_TabLoadTriggersScreenshot) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
