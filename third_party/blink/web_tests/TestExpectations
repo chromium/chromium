@@ -7634,3 +7634,4 @@ crbug.com/1094436 http/tests/devtools/overrides/project-added-with-existing-file
 crbug.com/1256763 virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Failure Pass ]
 crbug.com/1287093 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/document-referrer.html [ Failure Pass ]
 crbug.com/1287093 [ Linux ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/document-referrer.html [ Failure Pass ]
+crbug.com/1288136 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-005.https.html [ Failure Pass ]
