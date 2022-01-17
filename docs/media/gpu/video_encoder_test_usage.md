@@ -5,7 +5,7 @@ be used to measure a video encoder's performance.
 
 These tests run directly on top of the video encoder implementation, and
 don't require the full Chrome browser stack. They are built on top of the
-[GoogleTest](https://github.com/google/googletest/blob/master/README.md)
+[GoogleTest](https://github.com/google/googletest/blob/main/README.md)
 framework.
 
 [TOC]

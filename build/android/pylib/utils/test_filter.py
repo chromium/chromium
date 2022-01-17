@@ -20,7 +20,7 @@ def ParseFilterFile(input_lines):
   syntax that |input_lines| are expected to follow.
 
   See
-  https://github.com/google/googletest/blob/master/docs/advanced.md#running-a-subset-of-the-tests
+  https://github.com/google/googletest/blob/main/docs/advanced.md#running-a-subset-of-the-tests
   for description of the syntax that --gtest_filter argument should follow.
 
   Args:

@@ -3,7 +3,7 @@ The video decoder performance tests are a set of tests used to measure the
 performance of various video decoder implementations. These tests run directly
 on top of the video decoder implementation, and don't require the full Chrome
 browser stack. They are build on top of the
-[GoogleTest](https://github.com/google/googletest/blob/master/README.md)
+[GoogleTest](https://github.com/google/googletest/blob/main/README.md)
 framework.
 
 [TOC]

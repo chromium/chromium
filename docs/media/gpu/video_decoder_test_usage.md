@@ -7,7 +7,7 @@ on top of the video decoder implementation, and don't require the full Chrome
 browser stack. They can be very useful when adding support for a new codec or
 platform, or to make sure code changes don't break existing functionality. They
 are build on top of the
-[GoogleTest](https://github.com/google/googletest/blob/master/README.md)
+[GoogleTest](https://github.com/google/googletest/blob/main/README.md)
 framework.
 
 [TOC]

@@ -179,7 +179,7 @@ development pain for other and then fix it later. "[How do I disable a flaky
 test]" has instructions on how to disable a flaky test.
 
 [gtest]: https://github.com/google/googletest
-[Simple gtests]: https://github.com/google/googletest/blob/master/docs/primer.md#simple-tests
+[Simple gtests]: https://github.com/google/googletest/blob/main/docs/primer.md#simple-tests
 [Junit]: https://developer.android.com/training/testing/junit-rules
 [Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/android/docs/instrumentation.md
 [EarlGrey]: https://github.com/google/EarlGrey

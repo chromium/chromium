@@ -2,7 +2,7 @@ $$ This is a pump file for generating file templates.  Pump is a python
 $$ script that is part of the Google Test suite of utilities.  Description
 $$ can be found here:
 $$
-$$ https://github.com/google/googletest/blob/master/googletest/docs/PumpManual.md
+$$ https://github.com/google/googletest/blob/main/googletest/docs/PumpManual.md
 $$
 $$ MAX_ARITY controls the number of arguments that MockCallback supports.
 $$ It is choosen to match the number GMock supports.
