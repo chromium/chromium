@@ -81415,6 +81415,19 @@
        {}
       ]
      ],
+     "out-of-flow-in-multicolumn-081.html": [
+      "218fa2ad3abac71ba5a9b22d58fb9d94beef17a2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-000.html": [
       "72b10f5cdd3092a042f1f90bff04e9428d61608e",
       [
@@ -131890,6 +131903,58 @@
        {}
       ]
      ],
+     "change-transform-in-nested.html": [
+      "fd5420beceb08004f9a8cd13f79e52a8e87d15c0",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "change-transform-in-second-column.html": [
+      "c627c33fbf8ac395870953dc785463d2f15d682d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "change-transform-in-spanner.html": [
+      "a70a4151c4f6c9042f5f81ce7ffdcf4933578c3a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "change-transform.html": [
+      "a70a4151c4f6c9042f5f81ce7ffdcf4933578c3a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "column-balancing-with-span-and-oof-001.html": [
       "7ecd9ee873843db33c7457c974b5fd87ac893a21",
       [
@@ -135751,6 +135816,19 @@
        {}
       ]
      ],
+     "remove-child-in-strict-containment-also-spanner.html": [
+      "8dfbe1ecc4ab4ea108c0923af751073564142e28",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "remove-inline-with-block-beside-spanners.html": [
       "c943e549860c002ab96ed8974c739b1c83aee328",
       [
@@ -135766,6 +135844,19 @@
      ],
      "replaced-content-spanner-auto-width.html": [
       "90720852ca39d314c79c79d075dc35e4984ed973",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "resize-in-strict-containment-nested.html": [
+      "73f1494a29c56a838a1438ddca37539146e3ec7a",
       [
        null,
        [
@@ -207467,6 +207558,19 @@
        {}
       ]
      ],
+     "has-visited.html": [
+      "8fe322c8b1751b2f4232e9898fa71bab5e203cde",
+      [
+       null,
+       [
+        [
+         "/css/selectors/has-visited-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "historical-xmlid.xht": [
       "7916d9c1203376188e9aa57ed7d9353906d3d9ca",
       [
@@ -276571,6 +276675,10 @@
       "6ab36318796dfebc78b62b258e261282fc6c9b98",
       []
      ],
+     "has-visited-ref.html": [
+      "3f54e2e3914f62a81c3199bbe3d8c0339b9c2ba8",
+      []
+     ],
      "i18n": {
       "META.yml": [
        "9fa8c3b6c9bdbfa2b9731c89b23ffc6f47ceba2b",
@@ -283394,7 +283502,7 @@
     ],
     "resources": {
      "test-expectations.js": [
-      "ea3803c8c2185c921b2d64f0bdd382d8e0df331c",
+      "69f4ae70a99d0fad3c1adf03e175c5561885e235",
       []
      ],
      "window-tests-blob.js": [
@@ -302506,7 +302614,7 @@
       []
      ],
      "profile-utils.js": [
-      "33338a6c486b8c8d65d6b75038a07c423c3071e4",
+      "2c32f346088bc7716fb22a9f119fbb98f7bfa816",
       []
      ],
      "profiling-script.js": [
@@ -302515,6 +302623,16 @@
      ],
      "profiling-script.js.headers": [
       "cb762eff806849df46dc758ef7b98b63f27f54c9",
+      []
+     ]
+    },
+    "tentative": {
+     "README.md": [
+      "a6b8d008f23fa15ad02fa27e31c41cc6661df4a9",
+      []
+     ],
+     "marker-vm-state.https.html.headers": [
+      "228047a15aa69da19b160ce8cce69d1c695dc704",
       []
      ]
     }
@@ -304276,6 +304394,10 @@
      "11ecc9430dc08d3eceb70b8bacc693b955564dc2",
      []
     ],
+    "MediaStreamTrackGenerator-pipes-data-in-worker.https-expected.txt": [
+     "df92162d3842b7f0e814d46fae1921a9195442c6",
+     []
+    ],
     "MediaStreamTrackProcessor-worker.js": [
      "51eaef80a90a6e24fce8cad4fee03e05548e4517",
      []
@@ -304404,6 +304526,10 @@
     ],
     "MediaStream-removetrack.https-expected.txt": [
      "59a51268f3a3ede5d0d8c903f20e0bb7b5a83a68",
+     []
+    ],
+    "MediaStreamTrack-transfer.https-expected.txt": [
+     "52a0b417d3b28b39eebf5b35f5f3902075ee757c",
      []
     ],
     "OWNERS": [
@@ -385403,7 +385529,7 @@
        ]
       ],
       "input-pseudo-classes-in-has.html": [
-       "e305f59540e8564e07706bd5711f71410e499b07",
+       "620e7801cc36b1d6086264c62e4e755b31409c43",
        [
         null,
         {
@@ -385441,6 +385567,13 @@
       ],
       "is.html": [
        "8490f096976340bc970ed2c6156fb60f433768e9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "location-pseudo-classes-in-has.html": [
+       "697fc70ae67eb3638536f6fbfc530987e2aa62a7",
        [
         null,
         {}
@@ -405838,7 +405971,7 @@
     ],
     "reporting": {
      "camera-reporting.https.html": [
-      "9ec7e0b3d7bf0129e3ff00d04aed498680817776",
+      "708d3fa52546458272fd059b30b93ebeb01e0976",
       [
        null,
        {
@@ -405847,35 +405980,35 @@
       ]
      ],
      "encrypted-media-reporting.https.html": [
-      "1f891a57801d2ebeac87b24d4ffae1a21aba6b20",
+      "32a5a2cc4876a8d95e0fdeaa06752e54f714fd64",
       [
        null,
        {}
       ]
      ],
      "fullscreen-reporting.html": [
-      "3ac1ef40ccef608af92f489b0218228933af664e",
+      "d7b905744d6ab32bb67492897e387cdf3465784d",
       [
        null,
        {}
       ]
      ],
      "generic-sensor-reporting.https.html": [
-      "9a5d404d34525fe5786d9b09d8fbc4eca287df2d",
+      "c29c069ee3c6e62b1d71cbaee650959ab1a49fe9",
       [
        null,
        {}
       ]
      ],
      "geolocation-reporting.https.html": [
-      "fe8761f803bdfd795698fd28e89ed9f442c1a7fc",
+      "e0eb275bcc2bca296f9d5e8d3df505b0e1671489",
       [
        null,
        {}
       ]
      ],
      "microphone-reporting.https.html": [
-      "465c9d7bcf88797440cd03d4e9e024a269042bcf",
+      "14ae976cdeeac88d4a8199dde1485580b0b253c5",
       [
        null,
        {
@@ -405884,21 +406017,21 @@
       ]
      ],
      "midi-reporting.https.html": [
-      "9e8a6ebf8e8f8dccdf8b809dd3e08ba1ed84f3ef",
+      "6cc07f53715f0766eddee0d954c1189c5e38e263",
       [
        null,
        {}
       ]
      ],
      "payment-reporting.https.html": [
-      "417dfed7dce289a636b6308378d1d7eac0c843e1",
+      "fcd0156a3c6b0bf3b732515d587f639e453d4d4d",
       [
        null,
        {}
       ]
      ],
      "picture-in-picture-reporting.html": [
-      "d1c641d81d7cb2df4ea8125f7e66bccfd7dca6c2",
+      "177e4d5c02adc62f6ceaa20c36659331cac2df75",
       [
        null,
        {
@@ -405907,14 +406040,14 @@
       ]
      ],
      "screen-wake-lock-reporting.https.html": [
-      "ce0cbdca77ad99041d6e51b04bb277fae9426890",
+      "4ddfc69f86506d7ad3538213ce3d770a13a4f9bc",
       [
        null,
        {}
       ]
      ],
      "serial-reporting.https.html": [
-      "827bc89367c56141938d962edcfe69452309b8f3",
+      "c96d8f878a98a0366ce34c3f4fe62b7a91708717",
       [
        null,
        {
@@ -405923,21 +406056,21 @@
       ]
      ],
      "sync-xhr-reporting.html": [
-      "dbdcc126ec44fecc712b18f874f35aef9d9d8369",
+      "416edf0cbba5e7ad1698c6f33ac0550e518dda91",
       [
        null,
        {}
       ]
      ],
      "usb-reporting.https.html": [
-      "a63f3010e4e64ca8aa94f0752c368906bf2c04ea",
+      "1ec5ba43709279a43a09f890a321b4df6659308e",
       [
        null,
        {}
       ]
      ],
      "xr-reporting.https.html": [
-      "3d629235d732124e914872555fd4be3ac9421ecd",
+      "d87d4fb028dd05c15e4f27c58baf21f23d746519",
       [
        null,
        {}
@@ -418177,7 +418310,7 @@
      ]
     ],
     "font_metadata.tentative.https.window.js": [
-     "0f6d70da9c6b77576d9ef511f0ec594c2af1c1c2",
+     "21d3ea1c1125c7e2ea2674c38a421b3130a357f6",
      [
       "font-access/font_metadata.tentative.https.window.html",
       {
@@ -467014,6 +467147,15 @@
       }
      ]
     ],
+    "tentative": {
+     "marker-vm-state.https.html": [
+      "07dbe7f0ffc77b97c09edd9164f6a77bb98356bb",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "time-domain.window.js": [
      "5791a3de75feb5754f65a75ba93b8b16b4038909",
      [
@@ -470782,6 +470924,13 @@
       {}
      ]
     ],
+    "MediaStreamTrackGenerator-pipes-data-in-worker.https.html": [
+     "61a6f038c4b6c480053f39990bdcce1543dc9c76",
+     [
+      null,
+      {}
+     ]
+    ],
     "MediaStreamTrackGenerator-video.https.html": [
      "a6f73f009c6d754d5f355e6492eb1623ab12591f",
      [
@@ -471067,7 +471216,7 @@
      ]
     ],
     "MediaDevices-enumerateDevices-per-origin-ids.sub.https.html": [
-     "f2b627a349843b68d11990820c3453e7933e87ca",
+     "714355f5c1c0b2fe37cff162c7be6240540cc0e2",
      [
       null,
       {
@@ -471085,7 +471234,7 @@
      ]
     ],
     "MediaDevices-enumerateDevices-returned-objects.https.html": [
-     "12b858ff09e40cccde4bfe5f6831c553ec5d35e8",
+     "2b5687f672b9f6ec288be7003c361f96af83a10c",
      [
       null,
       {
@@ -471299,6 +471448,15 @@
     ],
     "MediaStreamTrack-init.https.html": [
      "54ebf049e874222bb93260337b1b2468f6e59495",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "MediaStreamTrack-transfer.https.html": [
+     "f0fcdaf529cd1660d2e18f6746d16a722be05564",
      [
       null,
       {

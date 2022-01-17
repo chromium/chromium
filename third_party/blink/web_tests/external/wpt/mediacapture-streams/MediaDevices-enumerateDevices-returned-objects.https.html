@@ -36,7 +36,7 @@ function doTest(callGetUserMedia, testName)
               assert_equals(device1.deviceId, "", "deviceId is empty before capture");
               assert_equals(device1.groupId, "", "groupId is empty before capture");
               assert_equals(device1.label, "", "label is empty before capture");
-              assert_in_array(device.kind, ["audioinput", "audiooutput", "videoinput", "kind is set to a valid value before capture"]);
+              assert_in_array(device1.kind, ["audioinput", "audiooutput", "videoinput", "kind is set to a valid value before capture"]);
             }
         }
         /* Additionally, at most one device of each kind

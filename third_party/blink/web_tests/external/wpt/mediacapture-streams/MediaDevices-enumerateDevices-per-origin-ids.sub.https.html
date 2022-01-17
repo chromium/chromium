@@ -26,7 +26,10 @@
     const iframeDevices = e.data.devices;
     assert_equals(deviceList.length, iframeDevices.length, "Same number of devices detected same-origin");
     for (const device of deviceList) {
-      const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
+      // Look for the same device in the iframe based on deviceId
+      // "default" can be used across several kinds, so it needs an additional check
+      // but we limit that check to "default" to detect re-use of deviceId across kinds
+      const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId && (device.deviceId !== "default" || d.kind === device.kind));
       assert_true(!!sameDevice, "deviceIds stay the same when loaded in same origin");
       assert_equals(sameDevice.label, device.label, "labels matches when deviceId matches");
       assert_equals(sameDevice.kind, device.kind, "kind matches when deviceId matches");
