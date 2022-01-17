@@ -517,7 +517,6 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
 
 base::Version ServiceWorkerTaskQueue::RetrieveRegisteredServiceWorkerVersion(
     const ExtensionId& extension_id) {
-  std::string version_string;
   if (browser_context_->IsOffTheRecord()) {
     auto it = off_the_record_registrations_.find(extension_id);
     return it != off_the_record_registrations_.end() ? it->second
@@ -527,11 +526,15 @@ base::Version ServiceWorkerTaskQueue::RetrieveRegisteredServiceWorkerVersion(
   ExtensionPrefs::Get(browser_context_)
       ->ReadPrefAsDictionary(extension_id, kPrefServiceWorkerRegistrationInfo,
                              &info);
-  if (info != nullptr) {
-    info->GetString(kServiceWorkerVersion, &version_string);
+  if (!info) {
+    return base::Version();
   }
 
-  return base::Version(version_string);
+  if (const std::string* version_string =
+          info->FindStringKey(kServiceWorkerVersion)) {
+    return base::Version(*version_string);
+  }
+  return base::Version();
 }
 
 void ServiceWorkerTaskQueue::SetRegisteredServiceWorkerInfo(

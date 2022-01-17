@@ -168,13 +168,13 @@ bool AppViewGuest::CheckMediaAccessPermission(
 
 void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
                                      WebContentsCreatedCallback callback) {
-  std::string app_id;
-  if (!create_params.GetString(appview::kAppID, &app_id)) {
+  const std::string* app_id = create_params.FindStringKey(appview::kAppID);
+  if (!app_id) {
     std::move(callback).Run(nullptr);
     return;
   }
   // Verifying that the appId is not the same as the host application.
-  if (owner_host() == app_id) {
+  if (owner_host() == *app_id) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -187,7 +187,7 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
 
   const ExtensionSet& enabled_extensions =
       ExtensionRegistry::Get(browser_context())->enabled_extensions();
-  const Extension* guest_extension = enabled_extensions.GetByID(app_id);
+  const Extension* guest_extension = enabled_extensions.GetByID(*app_id);
   const Extension* embedder_extension =
       enabled_extensions.GetByID(GetOwnerSiteURL().host());
 

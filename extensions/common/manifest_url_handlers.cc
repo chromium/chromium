@@ -73,11 +73,11 @@ bool ManifestURL::UpdatesFromGallery(const Extension* extension) {
 }
 
 // static
-bool  ManifestURL::UpdatesFromGallery(const base::DictionaryValue* manifest) {
-  std::string url;
-  if (!manifest->GetString(keys::kUpdateURL, &url))
-    return false;
-  return extension_urls::IsWebstoreUpdateUrl(GURL(url));
+bool ManifestURL::UpdatesFromGallery(const base::DictionaryValue* manifest) {
+  if (const std::string* url = manifest->FindStringKey(keys::kUpdateURL)) {
+    return extension_urls::IsWebstoreUpdateUrl(GURL(*url));
+  }
+  return false;
 }
 
 // static

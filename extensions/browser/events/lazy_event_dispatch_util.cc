@@ -81,10 +81,11 @@ bool LazyEventDispatchUtil::ReadPendingOnInstallInfoFromPref(
     return false;
   }
 
-  std::string previous_version_string;
-  info->GetString(kPrefPreviousVersion, &previous_version_string);
+  const std::string* previous_version_string =
+      info->FindStringKey(kPrefPreviousVersion);
   // |previous_version_string| can be empty.
-  *previous_version = base::Version(previous_version_string);
+  *previous_version = base::Version(
+      previous_version_string ? *previous_version_string : std::string());
   return true;
 }
 

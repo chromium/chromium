@@ -195,9 +195,10 @@ void SetPreferredLocale(const std::string& locale) {
 
 std::string GetDefaultLocaleFromManifest(const base::DictionaryValue& manifest,
                                          std::string* error) {
-  std::string default_locale;
-  if (manifest.GetString(keys::kDefaultLocale, &default_locale))
-    return default_locale;
+  if (const std::string* default_locale =
+          manifest.FindStringKey(keys::kDefaultLocale)) {
+    return *default_locale;
+  }
 
   *error = errors::kInvalidDefaultLocale;
   return std::string();

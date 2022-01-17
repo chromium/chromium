@@ -674,11 +674,10 @@ void NetworkingPrivateLinux::SendNetworkListChangedEvent(
   GuidList guidsForEventCallback;
 
   for (const auto& network : network_list.GetList()) {
-    std::string guid;
     const base::DictionaryValue* dict = nullptr;
     if (network.GetAsDictionary(&dict)) {
-      if (dict->GetString(kAccessPointInfoGuid, &guid)) {
-        guidsForEventCallback.push_back(guid);
+      if (const std::string* guid = dict->FindStringKey(kAccessPointInfoGuid)) {
+        guidsForEventCallback.push_back(*guid);
       }
     }
   }

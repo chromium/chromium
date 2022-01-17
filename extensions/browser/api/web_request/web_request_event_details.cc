@@ -200,9 +200,9 @@ WebRequestEventDetails::CreatePublicSessionCopy() {
   }
 
   // URL is stripped down to the origin.
-  std::string url;
-  dict_.GetString(keys::kUrlKey, &url);
-  GURL gurl(url);
+  const std::string* url = dict_.FindStringKey(keys::kUrlKey);
+  DCHECK(url);
+  GURL gurl(*url);
   copy->dict_.SetString(keys::kUrlKey, gurl.DeprecatedGetOriginAsURL().spec());
 
   return copy;

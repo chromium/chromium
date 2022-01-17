@@ -245,10 +245,10 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
         if (absl::optional<int> i = stored_window->FindIntKey("state")) {
           window_data.window_state = static_cast<ui::WindowShowState>(*i);
         }
-        std::string ts_as_string;
-        if (stored_window->GetString("ts", &ts_as_string)) {
+        if (const std::string* ts_as_string =
+                stored_window->FindStringKey("ts")) {
           int64_t ts;
-          if (base::StringToInt64(ts_as_string, &ts)) {
+          if (base::StringToInt64(*ts_as_string, &ts)) {
             window_data.last_change = base::Time::FromInternalValue(ts);
           }
         }

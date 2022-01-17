@@ -62,24 +62,24 @@ void ExtensionOptionsGuest::CreateWebContents(
     const base::DictionaryValue& create_params,
     WebContentsCreatedCallback callback) {
   // Get the extension's base URL.
-  std::string extension_id;
-  create_params.GetString(extensionoptions::kExtensionId, &extension_id);
+  const std::string* extension_id =
+      create_params.FindStringKey(extensionoptions::kExtensionId);
 
-  if (!crx_file::id_util::IdIsValid(extension_id)) {
+  if (!extension_id || !crx_file::id_util::IdIsValid(*extension_id)) {
     std::move(callback).Run(nullptr);
     return;
   }
 
   std::string embedder_extension_id = GetOwnerSiteURL().host();
   if (crx_file::id_util::IdIsValid(embedder_extension_id) &&
-      extension_id != embedder_extension_id) {
+      *extension_id != embedder_extension_id) {
     // Extensions cannot embed other extensions' options pages.
     std::move(callback).Run(nullptr);
     return;
   }
 
   GURL extension_url =
-      extensions::Extension::GetBaseURLFromExtensionId(extension_id);
+      extensions::Extension::GetBaseURLFromExtensionId(*extension_id);
   if (!extension_url.is_valid()) {
     std::move(callback).Run(nullptr);
     return;
@@ -89,7 +89,7 @@ void ExtensionOptionsGuest::CreateWebContents(
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser_context());
   const extensions::Extension* extension =
-      registry->enabled_extensions().GetByID(extension_id);
+      registry->enabled_extensions().GetByID(*extension_id);
   if (!extension) {
     // The ID was valid but the extension didn't exist. Typically this will
     // happen when an extension is disabled.
