@@ -144,7 +144,7 @@ class SyncConsentTest
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
 
-    if (features::IsMinorModeRestrictionEnabled() && is_minor_user_) {
+    if (is_minor_user_) {
       expected_consent_ids_ = {
           IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
           IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
@@ -529,10 +529,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTimezoneOverride, MakesTimezoneRequest) {
 
 class SyncConsentMinorModeTest : public SyncConsentTest {
  public:
-  SyncConsentMinorModeTest() {
-    sync_feature_list_.InitAndEnableFeature(features::kMinorModeRestriction);
-    is_minor_user_ = true;
-  }
+  SyncConsentMinorModeTest() { is_minor_user_ = true; }
   ~SyncConsentMinorModeTest() override = default;
 
  private:

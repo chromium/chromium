@@ -243,7 +243,7 @@ bool AccountFetcherService::IsAccountCapabilitiesFetcherEnabled() {
     return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsMinorModeRestrictionEnabled();
+  return true;
 #else
   return false;
 #endif

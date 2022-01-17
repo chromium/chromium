@@ -707,14 +707,9 @@ TEST_F(AccountTrackerServiceTest,
   CheckAccountCapabilities(kAccountKeyAlpha, account_info);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AccountTrackerServiceTest,
        TokenAvailable_AccountCapabilitiesFetcherDisabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ash::features::kMinorModeRestriction);
-#endif
-
   account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
   SimulateTokenAvailable(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
@@ -723,6 +718,7 @@ TEST_F(AccountTrackerServiceTest,
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_FALSE(account_info.capabilities.AreAllCapabilitiesKnown());
 }
+#endif
 
 TEST_F(AccountTrackerServiceTest, TokenAvailableTwice_UserInfoOnce) {
   SimulateTokenAvailable(kAccountKeyAlpha);

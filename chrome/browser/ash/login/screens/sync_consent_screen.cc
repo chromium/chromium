@@ -68,8 +68,6 @@ void RecordUmaReviewFollowingSetup(bool value) {
 // is read from account capabilities. We assume user is in minor mode if
 // capability value is unknown.
 bool IsMinorMode(Profile* profile, const user_manager::User* user) {
-  if (!features::IsMinorModeRestrictionEnabled())
-    return false;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   std::string gaia_id = user->GetAccountId().GetGaiaId();
   const AccountInfo account_info =

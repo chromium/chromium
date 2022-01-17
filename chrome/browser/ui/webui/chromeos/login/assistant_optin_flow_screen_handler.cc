@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -412,9 +411,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   auto header = settings_ui_response.header();
 
   bool equal_weight_buttons =
-      features::IsMinorModeRestrictionEnabled() &&
       header.footer_button_layout() ==
-          assistant::SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT;
+      assistant::SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT;
 
   if (settings_ui.has_gaia_user_context_ui()) {
     auto gaia_user_context_ui = settings_ui.gaia_user_context_ui();
@@ -445,8 +443,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   pending_consent_data_.clear();
   // We read from `multi_consent_ui` field if it is populated and we assume user
   // is a minor user; otherwise, we read from `consent_ui` field.
-  if (features::IsMinorModeRestrictionEnabled() &&
-      settings_ui.consent_flow_ui().multi_consent_ui().size()) {
+  if (settings_ui.consent_flow_ui().multi_consent_ui().size()) {
     auto multi_consent_ui = settings_ui.consent_flow_ui().multi_consent_ui();
     for (auto consent_ui : multi_consent_ui) {
       auto activity_control_ui = consent_ui.activity_control_ui();

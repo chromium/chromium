@@ -895,12 +895,6 @@ const base::Feature kMicMuteNotifications{"MicMuteNotifications",
 const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables support for AADC regulation requirement and avoid nudging users in
-// minor mode(e.g. under the age of 18) to provide unnecessary consents to share
-// personal data.
-const base::Feature kMinorModeRestriction{"MinorModeRestriction",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the use of Mojo by Chrome-process code to communicate with Power
 // Manager. In order to use mojo, this feature must be turned on and a callsite
 // must use PowerManagerMojoClient::Get().
@@ -1657,10 +1651,6 @@ bool IsMicMuteNotificationsEnabled() {
 
 bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
-}
-
-bool IsMinorModeRestrictionEnabled() {
-  return base::FeatureList::IsEnabled(kMinorModeRestriction);
 }
 
 bool IsNearbyKeepAliveFixEnabled() {
