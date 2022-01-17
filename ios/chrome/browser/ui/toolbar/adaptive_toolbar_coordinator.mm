@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
@@ -65,15 +66,12 @@
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
-  self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  self.mediator.commandHandler =
-      static_cast<id<ApplicationCommands, BrowserCommands, LoadQueryCommands>>(
-          self.browser->GetCommandDispatcher());
-  self.mediator.URLLoadingBrowserAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  self.mediator.actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:MenuScenario::kToolbarMenu];
 
   self.viewController.menuProvider = self.mediator;
 }

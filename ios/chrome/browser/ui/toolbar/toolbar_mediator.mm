@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -42,9 +43,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using base::RecordAction;
-using base::UserMetricsAction;
 
 @interface ToolbarMediator () <CRWWebStateObserver,
                                OverlayPresenterObserving,
@@ -375,57 +373,11 @@ using base::UserMetricsAction;
 
 // Returns the menu for the new tab button.
 - (UIMenu*)menuForNewTabButton {
-  __weak __typeof(self) weakSelf = self;
-  UIAction* QRCodeSearch = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER)
-                image:[UIImage imageNamed:@"popup_menu_qr_scanner"]
-           identifier:nil
-              handler:^(UIAction* action) {
-                RecordAction(UserMetricsAction("MobileMenuScanQRCode"));
-                [weakSelf.commandHandler showQRScanner];
-              }];
-
-  UIAction* voiceSearch = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH)
-                image:[UIImage imageNamed:@"popup_menu_voice_search"]
-           identifier:nil
-              handler:^(UIAction* action) {
-                RecordAction(UserMetricsAction("MobileMenuVoiceSearch"));
-                [weakSelf.commandHandler startVoiceSearch];
-              }];
-
-  UIAction* newSearch = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH)
-                image:[UIImage imageNamed:@"popup_menu_search"]
-           identifier:nil
-              handler:^(UIAction* action) {
-                RecordAction(UserMetricsAction("MobileMenuSearch"));
-                OpenNewTabCommand* command =
-                    [OpenNewTabCommand commandWithIncognito:NO];
-                command.shouldFocusOmnibox = YES;
-                [weakSelf.commandHandler openURLInNewTab:command];
-              }];
-
-  if (IsIncognitoModeForced(self.prefService)) {
-    newSearch.attributes = UIMenuElementAttributesDisabled;
-  }
-
-  UIAction* newIncognitoSearch = [UIAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)
-                image:[UIImage imageNamed:@"popup_menu_new_incognito_tab"]
-           identifier:nil
-              handler:^(UIAction* action) {
-                RecordAction(UserMetricsAction("MobileMenuIncognitoSearch"));
-                OpenNewTabCommand* command =
-                    [OpenNewTabCommand commandWithIncognito:YES];
-                command.shouldFocusOmnibox = YES;
-                [weakSelf.commandHandler openURLInNewTab:command];
-              }];
-
-  if (IsIncognitoModeDisabled(self.prefService)) {
-    newIncognitoSearch.attributes = UIMenuElementAttributesDisabled;
-  }
+  UIAction* QRCodeSearch = [self.actionFactory actionToShowQRScanner];
+  UIAction* voiceSearch = [self.actionFactory actionToStartVoiceSearch];
+  UIAction* newSearch = [self.actionFactory actionToStartNewSearch];
+  UIAction* newIncognitoSearch =
+      [self.actionFactory actionToStartNewIncognitoSearch];
 
   NSArray* staticActions =
       @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
@@ -446,39 +398,10 @@ using base::UserMetricsAction;
 
 // Returns the menu for the TabGrid button.
 - (UIMenu*)menuForTabGridButton {
-  __weak __typeof(self) weakSelf = self;
-  UIAction* openNewTab = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
-                image:[UIImage imageNamed:@"popup_menu_new_tab"]
-           identifier:nil
-              handler:^(UIAction* action) {
-                RecordAction(UserMetricsAction("MobileMenuNewTab"));
-                [weakSelf.commandHandler
-                    openURLInNewTab:[OpenNewTabCommand
-                                        commandWithIncognito:NO
-                                                 originPoint:CGPointZero]];
-              }];
+  UIAction* openNewTab = [self.actionFactory actionToOpenNewTab];
 
-  if (IsIncognitoModeForced(self.prefService)) {
-    openNewTab.attributes = UIMenuElementAttributesDisabled;
-  }
-
-  UIAction* openNewIncognitoTab = [UIAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)
-                image:[UIImage imageNamed:@"popup_menu_new_incognito_tab"]
-           identifier:nil
-              handler:^(UIAction* action) {
-                RecordAction(UserMetricsAction("MobileMenuNewIncognitoTab"));
-                [weakSelf.commandHandler
-                    openURLInNewTab:[OpenNewTabCommand
-                                        commandWithIncognito:YES
-                                                 originPoint:CGPointZero]];
-              }];
-
-  if (IsIncognitoModeDisabled(self.prefService)) {
-    openNewIncognitoTab.attributes = UIMenuElementAttributesDisabled;
-  }
+  UIAction* openNewIncognitoTab =
+      [self.actionFactory actionToOpenNewIncognitoTab];
 
   UIMenu* newTabActions =
       [UIMenu menuWithTitle:@""
@@ -487,89 +410,32 @@ using base::UserMetricsAction;
                     options:UIMenuOptionsDisplayInline
                    children:@[ openNewTab, openNewIncognitoTab ]];
 
-  UIAction* closeTab = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB)
-                image:[UIImage imageNamed:@"popup_menu_close_tab"]
-           identifier:nil
-              handler:^(UIAction* action) {
-                RecordAction(UserMetricsAction("MobileMenuCloseTab"));
-                [weakSelf.commandHandler closeCurrentTab];
-              }];
-  closeTab.attributes = UIMenuElementAttributesDestructive;
+  UIAction* closeTab = [self.actionFactory actionToCloseCurrentTab];
 
   return [UIMenu menuWithTitle:@"" children:@[ newTabActions, closeTab ]];
 }
 
 // Returns the UIMenuElement for the content of the pasteboard. Can return nil.
 - (UIMenuElement*)menuElementForPasteboard {
-  __weak __typeof(self) weakSelf = self;
+  absl::optional<std::set<ClipboardContentType>> clipboardContentType =
+      ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
 
-  ClipboardRecentContent* clipboardRecentContent =
-      ClipboardRecentContent::GetInstance();
+  if (clipboardContentType.has_value()) {
+    std::set<ClipboardContentType> clipboardContentTypeValues =
+        clipboardContentType.value();
 
-  absl::optional<GURL> optionalURL =
-      clipboardRecentContent->GetRecentURLFromClipboard();
-  absl::optional<std::u16string> optionalText =
-      clipboardRecentContent->GetRecentTextFromClipboard();
-
-  if (search_engines::SupportsSearchByImage(self.templateURLService) &&
-      clipboardRecentContent->HasRecentImageFromClipboard()) {
-    return [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
-                  image:[UIImage imageNamed:@"popup_menu_paste_and_go"]
-             identifier:nil
-                handler:^(UIAction* action) {
-                  RecordAction(
-                      UserMetricsAction("MobileMenuSearchCopiedImage"));
-                  ClipboardRecentContent* clipboardRecentContent =
-                      ClipboardRecentContent::GetInstance();
-                  clipboardRecentContent->GetRecentImageFromClipboard(
-                      base::BindOnce(
-                          ^(absl::optional<gfx::Image> optionalImage) {
-                            if (!optionalImage) {
-                              return;
-                            }
-                            UIImage* image =
-                                [optionalImage.value().ToUIImage() copy];
-                            web::NavigationManager::WebLoadParams webParams =
-                                ImageSearchParamGenerator::LoadParamsForImage(
-                                    image, self.templateURLService);
-                            UrlLoadParams params =
-                                UrlLoadParams::InCurrentTab(webParams);
-
-                            self.URLLoadingBrowserAgent->Load(params);
-                          }));
-                }];
-  } else if (optionalURL) {
-    return [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
-                  image:[UIImage imageNamed:@"popup_menu_paste_and_go"]
-             identifier:nil
-                handler:^(UIAction* action) {
-                  RecordAction(UserMetricsAction("MobileMenuPasteAndGo"));
-                  [weakSelf.commandHandler
-                        loadQuery:base::SysUTF8ToNSString(
-                                      optionalURL.value().spec())
-                      immediately:YES];
-                }];
-
-  } else if (optionalText) {
-    return [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
-                  image:[UIImage imageNamed:@"popup_menu_paste_and_go"]
-             identifier:nil
-                handler:^(UIAction* action) {
-                  RecordAction(UserMetricsAction("MobileMenuPasteAndGo"));
-
-                  [weakSelf.commandHandler
-                        loadQuery:base::SysUTF16ToNSString(optionalText.value())
-                      immediately:YES];
-                }];
+    if (search_engines::SupportsSearchByImage(self.templateURLService) &&
+        clipboardContentTypeValues.find(ClipboardContentType::Image) !=
+            clipboardContentTypeValues.end()) {
+      return [self.actionFactory actionToSearchCopiedImage];
+    } else if (clipboardContentTypeValues.find(ClipboardContentType::URL) !=
+               clipboardContentTypeValues.end()) {
+      return [self.actionFactory actionToSearchCopiedURL];
+    } else if (clipboardContentTypeValues.find(ClipboardContentType::Text) !=
+               clipboardContentTypeValues.end()) {
+      return [self.actionFactory actionToSearchCopiedText];
+    }
   }
-
   return nil;
 }
 

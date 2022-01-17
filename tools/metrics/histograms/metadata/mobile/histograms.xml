@@ -132,6 +132,8 @@ chromium-metrics-reviews@google.com.
     <variant name="RecentTabsHeader" summary="Recent Tabs header/device"/>
     <variant name="TabGrid" summary="Tab Grid Entry"/>
     <variant name="TabGridAddTo" summary="Tab Grid Add To"/>
+    <variant name="TabGridEdit" summary="Tab Grid Add To"/>
+    <variant name="Toolbar" summary="Menu from a toolbar button"/>
     <variant name="WebImage" summary="Image on a Web page"/>
     <variant name="WebImageLink" summary="Image-Link on a Web page"/>
     <variant name="WebLink" summary="Link on a Web page"/>

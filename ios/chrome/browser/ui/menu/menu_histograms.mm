@@ -40,6 +40,8 @@ const char KContextMenuImageLinkActionsHistogram[] =
     "Mobile.ContextMenu.WebImageLink.Actions";
 const char KContextMenuLinkActionsHistogram[] =
     "Mobile.ContextMenu.WebLink.Actions";
+const char kToolbarMenuActionsHistogram[] =
+    "Mobile.ContextMenu.Toolbar.Actions";
 }  // namespace
 
 void RecordMenuShown(MenuScenario scenario) {
@@ -74,5 +76,7 @@ const char* GetActionsHistogramName(MenuScenario scenario) {
       return kTabGridAddToActionsHistogram;
     case MenuScenario::kTabGridEdit:
       return kTabGridEditActionsHistogram;
+    case MenuScenario::kToolbarMenu:
+      return kToolbarMenuActionsHistogram;
   }
 }

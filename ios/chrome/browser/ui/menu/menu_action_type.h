@@ -38,7 +38,17 @@ enum class MenuActionType {
   SearchImageWithLens = 26,
   ShowLinkPreview = 27,
   HideLinkPreview = 28,
-  kMaxValue = HideLinkPreview
+  OpenNewTab = 29,
+  OpenNewIncognitoTab = 30,
+  CloseCurrentTabs = 31,
+  ShowQRScanner = 32,
+  StartVoiceSearch = 33,
+  StartNewSearch = 34,
+  StartNewIcognitoSearch = 35,
+  SearchCopiedImage = 36,
+  VisitCopiedLink = 37,
+  SearchCopiedText = 38,
+  kMaxValue = SearchCopiedText
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_ACTION_TYPE_H_

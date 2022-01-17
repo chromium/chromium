@@ -6,10 +6,16 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
@@ -40,10 +46,14 @@ class BrowserActionFactoryTest : public PlatformTest {
  protected:
   BrowserActionFactoryTest()
       : test_title_(@"SomeTitle"),
-        test_browser_(std::make_unique<TestBrowser>()),
         scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
+    TestChromeBrowserState::Builder test_cbs_builder;
+    chrome_browser_state_ = test_cbs_builder.Build();
+
+    test_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+
     SceneStateBrowserAgent::CreateForBrowser(test_browser_.get(), scene_state_);
 
     mock_application_commands_handler_ =
@@ -57,20 +67,29 @@ class BrowserActionFactoryTest : public PlatformTest {
     [test_browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_settings_commands_handler_
                      forProtocol:@protocol(ApplicationSettingsCommands)];
-  }
 
-  // Creates a blue square.
-  UIImage* CreateMockImage() {
-    return ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
-        CGSizeMake(10, 10), [UIColor blueColor]);
+    mock_qr_scanner_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(QRScannerCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_qr_scanner_commands_handler_
+                     forProtocol:@protocol(QRScannerCommands)];
+
+    mock_load_query_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(LoadQueryCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_load_query_commands_handler_
+                     forProtocol:@protocol(LoadQueryCommands)];
   }
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   NSString* test_title_;
+  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> test_browser_;
   id mock_application_commands_handler_;
   id mock_application_settings_commands_handler_;
+  id mock_qr_scanner_commands_handler_;
+  id mock_load_query_commands_handler_;
   SceneState* scene_state_;
 };
 
@@ -222,6 +241,207 @@ TEST_F(BrowserActionFactoryTest, HidePreviewAction) {
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_HIDELINKPREVIEW);
 
   UIAction* action = [factory actionToHideLinkPreview];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the hide preview action has the right title and image.
+TEST_F(BrowserActionFactoryTest, OpenNewTabAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"plus.square"
+                                             systemSymbol:YES];
+  NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB);
+
+  UIAction* action = [factory actionToOpenNewTab];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(0U, action.attributes);
+
+  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+      prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+
+  UIAction* managed_action = [factory actionToOpenNewTab];
+  EXPECT_EQ(UIMenuElementAttributesDisabled, managed_action.attributes);
+}
+
+// Tests that the action has the right title and image.
+TEST_F(BrowserActionFactoryTest, OpenNewIncognitoTabAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = nil;
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+
+  UIAction* action = [factory actionToOpenNewIncognitoTab];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(0U, action.attributes);
+
+  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+      prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kDisabled)));
+
+  UIAction* managed_action = [factory actionToOpenNewIncognitoTab];
+  EXPECT_EQ(UIMenuElementAttributesDisabled, managed_action.attributes);
+}
+
+// Tests that the action has the right title and image.
+TEST_F(BrowserActionFactoryTest, CloseCurrentTabAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"xmark"
+                                             systemSymbol:YES];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB);
+
+  UIAction* action = [factory actionToCloseCurrentTab];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
+}
+
+// Tests that the action has the right title and image.
+TEST_F(BrowserActionFactoryTest, ShowQRScannerAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"qrcode.viewfinder"
+                                             systemSymbol:YES];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER);
+
+  UIAction* action = [factory actionToShowQRScanner];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the action has the right title and image.
+TEST_F(BrowserActionFactoryTest, StartVoiceSearchAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"mic"
+                                             systemSymbol:YES];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH);
+
+  UIAction* action = [factory actionToStartVoiceSearch];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the action has the right title, image and attributes.
+TEST_F(BrowserActionFactoryTest, StartNewSearchAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"magnifyingglass"
+                                             systemSymbol:YES];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH);
+
+  UIAction* action = [factory actionToStartNewSearch];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(0U, action.attributes);
+
+  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+      prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+
+  UIAction* managed_action = [factory actionToStartNewSearch];
+  EXPECT_EQ(UIMenuElementAttributesDisabled, managed_action.attributes);
+}
+
+// Tests that the action has the right title, image and attributes.
+TEST_F(BrowserActionFactoryTest, NewIncognitoSearchAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = nil;
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH);
+
+  UIAction* action = [factory actionToStartNewIncognitoSearch];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(0U, action.attributes);
+
+  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+      prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kDisabled)));
+
+  UIAction* managed_action = [factory actionToStartNewIncognitoSearch];
+  EXPECT_EQ(UIMenuElementAttributesDisabled, managed_action.attributes);
+}
+
+// Tests that the action has the right title and image.
+TEST_F(BrowserActionFactoryTest, SearchCopiedImageAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = nil;
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE);
+
+  UIAction* action = [factory actionToSearchCopiedImage];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the action has the right title and image.
+TEST_F(BrowserActionFactoryTest, SearchCopiedURLAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = nil;
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK);
+
+  UIAction* action = [factory actionToSearchCopiedURL];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the action has the right title and image.
+TEST_F(BrowserActionFactoryTest, SearchCopiedTextAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = nil;
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT);
+
+  UIAction* action = [factory actionToSearchCopiedText];
 
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
   EXPECT_EQ(expectedImage, action.image);

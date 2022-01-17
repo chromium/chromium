@@ -17685,6 +17685,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Zoom Text' in the app menu</description>
 </action>
 
+<action name="MobileMenuToolbarMenuTriggered">
+  <owner>gambard@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <description>
+    User triggered the presentation of a context menu on the toolbar
+  </description>
+</action>
+
 <action name="MobileMenuTranslate">
   <owner>frechette@chromium.org</owner>
   <description>User pressed the 'Translate' in the app menu.</description>

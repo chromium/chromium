@@ -46929,6 +46929,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="26" label="Search with Google Lens"/>
   <int value="27" label="Show Link Preview"/>
   <int value="28" label="Hide Link Preview"/>
+  <int value="29" label="Open a New Tab"/>
+  <int value="30" label="Open a New Incognito Tab"/>
+  <int value="31" label="Close Current Tab"/>
+  <int value="32" label="Show QR Scanner"/>
+  <int value="33" label="Start Voice Search"/>
+  <int value="34" label="Start New Search"/>
+  <int value="35" label="Start New Incognito Search"/>
+  <int value="36" label="Search Copied Image"/>
+  <int value="37" label="Search Copied URL"/>
+  <int value="38" label="Search Copied Text"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -46944,6 +46954,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="Link on a Web page"/>
   <int value="10" label="Tab Grid Entry"/>
   <int value="11" label="Tab Grid Add To"/>
+  <int value="12" label="Tab Grid Edit"/>
+  <int value="13" label="Toolbar Popup Menus"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">
