@@ -4501,25 +4501,6 @@ bool LocalFrameView::WillDoPaintHoldingForFCP() const {
          !have_deferred_commits_;
 }
 
-void LocalFrameView::SetInitialViewportSize(const gfx::Size& viewport_size) {
-  if (viewport_size == initial_viewport_size_)
-    return;
-
-  initial_viewport_size_ = viewport_size;
-  if (Document* document = frame_->GetDocument())
-    document->GetStyleEngine().InitialViewportChanged();
-}
-
-int LocalFrameView::InitialViewportWidth() const {
-  DCHECK(frame_->IsMainFrame());
-  return initial_viewport_size_.width();
-}
-
-int LocalFrameView::InitialViewportHeight() const {
-  DCHECK(frame_->IsMainFrame());
-  return initial_viewport_size_.height();
-}
-
 MainThreadScrollingReasons LocalFrameView::MainThreadScrollingReasonsPerFrame()
     const {
   MainThreadScrollingReasons reasons =

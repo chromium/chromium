@@ -1146,7 +1146,6 @@ void WebViewImpl::UpdateICBAndResizeViewport(
   GetPage()->GetVisualViewport().SetSize(visible_viewport_size);
 
   if (MainFrameImpl()->GetFrameView()) {
-    MainFrameImpl()->GetFrameView()->SetInitialViewportSize(icb_size);
     if (!MainFrameImpl()->GetFrameView()->NeedsLayout())
       resize_viewport_anchor_->ResizeFrameView(MainFrameSize());
   }
@@ -3420,7 +3419,6 @@ void WebViewImpl::ResizeAfterLayout() {
 
       GetPage()->GetVisualViewport().SetSize(size_);
       GetPageScaleConstraintsSet().DidChangeInitialContainingBlockSize(size_);
-      view->SetInitialViewportSize(size_);
 
       web_view_client_->DidAutoResize(size_);
       web_widget_->DidAutoResize(size_);

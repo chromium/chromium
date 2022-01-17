@@ -1584,14 +1584,9 @@ void StyleEngine::InitialStyleChanged() {
       StyleChangeReasonForTracing::Create(style_change_reason::kSettings));
 }
 
-void StyleEngine::InitialViewportChanged() {
-  if (viewport_resolver_)
-    viewport_resolver_->InitialViewportChanged();
-}
-
 void StyleEngine::ViewportRulesChanged() {
   if (viewport_resolver_)
-    viewport_resolver_->SetNeedsCollectRules();
+    viewport_resolver_->SetNeedsUpdate();
 
   // When we remove an import link and re-insert it into the document, the
   // import Document and CSSStyleSheet pointers are persisted. That means the

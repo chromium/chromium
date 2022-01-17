@@ -2252,10 +2252,6 @@ void WebLocalFrameImpl::CreateFrameView() {
     base_background_color = Color::kTransparent;
 
   GetFrame()->CreateView(initial_size, base_background_color);
-  if (is_main_frame) {
-    GetFrame()->View()->SetInitialViewportSize(
-        web_view->GetPageScaleConstraintsSet().InitialViewportSize());
-  }
   if (web_view->ShouldAutoResize() && GetFrame()->IsLocalRoot()) {
     GetFrame()->View()->EnableAutoSizeMode(web_view->MinAutoSize(),
                                            web_view->MaxAutoSize());

@@ -250,10 +250,6 @@ class CORE_EXPORT LocalFrameView final
     return layout_size_fixed_to_frame_size_;
   }
 
-  void SetInitialViewportSize(const gfx::Size&);
-  int InitialViewportWidth() const;
-  int InitialViewportHeight() const;
-
   bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
   bool HasIntrinsicSizingInfo() const override;
 
@@ -1040,7 +1036,6 @@ class CORE_EXPORT LocalFrameView final
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 
   gfx::Size layout_size_;
-  gfx::Size initial_viewport_size_;
   bool layout_size_fixed_to_frame_size_;
 
   bool needs_update_geometries_;

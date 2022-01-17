@@ -107,7 +107,6 @@ class CORE_EXPORT PageScaleConstraintsSet
   void DidChangeInitialContainingBlockSize(const gfx::Size&);
 
   gfx::Size GetLayoutSize() const;
-  gfx::Size InitialViewportSize() const { return icb_size_; }
 
  private:
   PageScaleConstraints ComputeConstraintsStack() const;
