@@ -87,6 +87,7 @@ enum FeedbackSource {
 
 void ShowBookmarkManager(Browser* browser);
 void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id);
+void ShowHistory(Browser* browser, const std::string& host_name);
 void ShowHistory(Browser* browser);
 void ShowDownloads(Browser* browser);
 void ShowExtensions(Browser* browser,

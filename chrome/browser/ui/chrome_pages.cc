@@ -43,6 +43,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -227,7 +228,7 @@ void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id) {
   OpenBookmarkManagerForNode(browser, node_id);
 }
 
-void ShowHistory(Browser* browser) {
+void ShowHistory(Browser* browser, const std::string& host_name) {
   // History UI should not be shown in Incognito mode, instead history
   // disclaimer bubble should show up. This also updates the behavior of history
   // keyboard shortcts in Incognito.
@@ -239,7 +240,17 @@ void ShowHistory(Browser* browser) {
   }
 
   base::RecordAction(UserMetricsAction("ShowHistory"));
-  ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIHistoryURL));
+  GURL url = GURL(kChromeUIHistoryURL);
+  if (!host_name.empty()) {
+    url = url.Resolve(base::StringPrintf(
+        "/?q=%s",
+        net::EscapeQueryParamValue(host_name, /*use_plus=*/false).c_str()));
+  }
+  ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
+}
+
+void ShowHistory(Browser* browser) {
+  ShowHistory(browser, std::string());
 }
 
 void ShowDownloads(Browser* browser) {

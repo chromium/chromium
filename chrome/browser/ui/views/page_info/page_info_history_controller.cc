@@ -20,7 +20,7 @@
 PageInfoHistoryController::PageInfoHistoryController(
     content::WebContents* web_contents,
     const GURL& site_url)
-    : web_contents_(web_contents) {
+    : web_contents_(web_contents), site_url_(site_url) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   history_data_source_ = std::make_unique<page_info::PageInfoHistoryDataSource>(
@@ -65,8 +65,7 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
 }
 
 void PageInfoHistoryController::OpenHistoryPage() {
-  // TODO(crbug.com/1275042): Open history page for the site.
   // TODO(crbug.com/1275042): Add test for destroring web content.
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  chrome::ShowHistory(browser);
+  chrome::ShowHistory(browser, site_url_.host());
 }
