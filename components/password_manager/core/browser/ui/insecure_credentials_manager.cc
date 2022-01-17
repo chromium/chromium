@@ -38,6 +38,7 @@ struct CredentialMetadata {
   std::vector<PasswordForm> forms;
   InsecureCredentialTypeFlags type = InsecureCredentialTypeFlags::kSecure;
   base::Time latest_time;
+  IsMuted is_muted;
 };
 
 namespace {
@@ -123,6 +124,7 @@ CredentialPasswordsMap GetInsecureCredentialsFromPasswords(
         credential_to_form.type |= ConvertInsecureType(pair.first);
         credential_to_form.latest_time =
             std::max(credential_to_form.latest_time, pair.second.create_time);
+        credential_to_form.is_muted = pair.second.is_muted;
       }
       // Populate the map. The values are vectors, because it is
       // possible that multiple saved passwords match to the same
@@ -155,6 +157,7 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
       CredentialWithPassword credential(credential_to_forms.first);
       credential.insecure_type = credential_to_forms.second.type;
       credential.create_time = credential_to_forms.second.latest_time;
+      credential.is_muted = credential_to_forms.second.is_muted;
       credentials.push_back(std::move(credential));
     }
   }
@@ -214,7 +217,8 @@ CredentialWithPassword::CredentialWithPassword(
                      /*password=*/{},
                      /*last_used_time=*/base::Time()),
       create_time(credential.create_time),
-      insecure_type(ConvertInsecureType(credential.insecure_type)) {}
+      insecure_type(ConvertInsecureType(credential.insecure_type)),
+      is_muted(credential.is_muted) {}
 
 CredentialWithPassword& CredentialWithPassword::operator=(
     const CredentialWithPassword& other) = default;
@@ -266,6 +270,37 @@ void InsecureCredentialsManager::SaveInsecureCredential(
       GetStoreFor(saved_password).UpdateLogin(form_to_update);
     }
   }
+}
+
+bool InsecureCredentialsManager::MuteCredential(
+    const CredentialView& credential) {
+  auto it = credentials_to_forms_.find(credential);
+  if (it == credentials_to_forms_.end())
+    return false;
+
+  // Mute all matching compromised credentials from the store.
+  // For a match, all insecureity types saved in the store are muted.
+  // Return whether any credentials were muted.
+  const auto& saved_passwords = it->second.forms;
+  bool muted = false;
+  for (const PasswordForm& saved_password : saved_passwords) {
+    PasswordForm form_to_update = saved_password;
+    bool form_changed = false;
+    for (const auto& password_issue : saved_password.password_issues) {
+      if (!password_issue.second.is_muted.value()) {
+        form_to_update.password_issues.insert_or_assign(
+            password_issue.first,
+            InsecurityMetadata(password_issue.second.create_time,
+                               IsMuted(true)));
+        form_changed = true;
+      }
+    }
+    if (form_changed) {
+      GetStoreFor(saved_password).UpdateLogin(form_to_update);
+      muted = true;
+    }
+  }
+  return muted;
 }
 
 bool InsecureCredentialsManager::UpdateCredential(

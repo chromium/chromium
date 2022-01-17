@@ -84,10 +84,12 @@ LeakCheckCredential MakeLeakCredential(base::StringPiece16 username,
 
 CredentialWithPassword MakeCompromisedCredential(
     const PasswordForm& form,
-    InsecureCredentialTypeFlags type =
-        InsecureCredentialTypeFlags::kCredentialLeaked) {
+    const InsecureCredentialTypeFlags type =
+        InsecureCredentialTypeFlags::kCredentialLeaked,
+    const bool is_muted = false) {
   CredentialWithPassword credential_with_password((CredentialView(form)));
   credential_with_password.insecure_type = type;
+  credential_with_password.is_muted = IsMuted(is_muted);
   return credential_with_password;
 }
 
@@ -690,6 +692,98 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPasswordForExistingLeak) {
                 .at(kExampleCom)
                 .back()
                 .password_issues.at(InsecureType::kLeaked));
+}
+
+TEST_F(InsecureCredentialsManagerTest, MuteCompromisedCredential) {
+  PasswordForm password =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  password.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+
+  store().AddLogin(password);
+  RunUntilIdle();
+
+  CredentialWithPassword expected = MakeCompromisedCredential(password);
+
+  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
+  EXPECT_FALSE(provider().GetInsecureCredentials()[0].is_muted);
+
+  EXPECT_TRUE(provider().MuteCredential(expected));
+  RunUntilIdle();
+  EXPECT_TRUE(provider().GetInsecureCredentials()[0].is_muted);
+  EXPECT_TRUE(store()
+                  .stored_passwords()
+                  .at(kExampleCom)
+                  .back()
+                  .password_issues.at(InsecureType::kLeaked)
+                  .is_muted.value());
+}
+
+TEST_F(InsecureCredentialsManagerTest, MuteCompromisedCredentialOnMutedIsNoOp) {
+  PasswordForm password =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  password.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+
+  store().AddLogin(password);
+  RunUntilIdle();
+
+  CredentialWithPassword expected = MakeCompromisedCredential(
+      password, InsecureCredentialTypeFlags::kCredentialLeaked, true);
+
+  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
+  EXPECT_TRUE(provider().GetInsecureCredentials()[0].is_muted);
+
+  EXPECT_FALSE(provider().MuteCredential(expected));
+  RunUntilIdle();
+  EXPECT_TRUE(provider().GetInsecureCredentials()[0].is_muted);
+  EXPECT_TRUE(store()
+                  .stored_passwords()
+                  .at(kExampleCom)
+                  .back()
+                  .password_issues.at(InsecureType::kLeaked)
+                  .is_muted.value());
+}
+
+TEST_F(InsecureCredentialsManagerTest,
+       MuteCompromisedCredentialLeakedMutesMultipleInsecurityTypes) {
+  PasswordForm password =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  password.password_issues.insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+  password.password_issues.insert(
+      {InsecureType::kPhished,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+
+  store().AddLogin(password);
+  RunUntilIdle();
+
+  CredentialWithPassword expected = MakeCompromisedCredential(
+      password,
+      InsecureCredentialTypeFlags::kCredentialLeaked |
+          InsecureCredentialTypeFlags::kCredentialPhished,
+      true);
+
+  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
+
+  EXPECT_FALSE(provider().GetInsecureCredentials()[0].is_muted);
+
+  EXPECT_TRUE(provider().MuteCredential(expected));
+  RunUntilIdle();
+  EXPECT_TRUE(provider().GetInsecureCredentials()[0].is_muted);
+  EXPECT_TRUE(store()
+                  .stored_passwords()
+                  .at(kExampleCom)
+                  .back()
+                  .password_issues.at(InsecureType::kLeaked)
+                  .is_muted.value());
+  EXPECT_TRUE(store()
+                  .stored_passwords()
+                  .at(kExampleCom)
+                  .back()
+                  .password_issues.at(InsecureType::kPhished)
+                  .is_muted.value());
 }
 
 // Test verifies that editing Compromised Credential via provider change the
