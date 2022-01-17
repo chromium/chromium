@@ -678,6 +678,10 @@ bool FrameTreeNode::NotifyUserActivation(
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
   for (RenderFrameHostImpl* rfh = current_frame_host(); rfh;
        rfh = rfh->GetParent()) {
+    // The use of GetParent above is acceptable with fenced frames, as
+    // the caller to this function will eventually reach
+    // RenderFrameHostManager::UpdateUserActivationState, which in turn will
+    // lead to the propagation of the user activation to all ancestors.
     rfh->DidReceiveUserActivation();
     rfh->frame_tree_node()->user_activation_state_.Activate(notification_type);
   }
@@ -687,7 +691,8 @@ bool FrameTreeNode::NotifyUserActivation(
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
   if (base::FeatureList::IsEnabled(
-          features::kUserActivationSameOriginVisibility)) {
+          features::kUserActivationSameOriginVisibility) &&
+      frame_tree()->type() != FrameTree::Type::kFencedFrame) {
     const url::Origin& current_origin =
         this->current_frame_host()->GetLastCommittedOrigin();
     for (FrameTreeNode* node : frame_tree()->Nodes()) {

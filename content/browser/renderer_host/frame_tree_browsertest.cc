@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -887,6 +888,10 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
   EXPECT_FALSE(root->HasTransientUserActivation());
 }
 
+// This test class was originally inserted for testing fenced frame
+// implementations for both implementations, namely, ShadowDOM, and kMPArch. For
+// new tests, consider adding them to MPArchFencedFramesFrameTreeBrowserTest, if
+// ShadowDOM tests are not necessary.
 class FencedFrameTreeBrowserTest
     : public FrameTreeBrowserTest,
       public ::testing::WithParamInterface<
@@ -2891,6 +2896,74 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
   EXPECT_TRUE(root->child_at(2)->anonymous());
   EXPECT_EQ(false, EvalJs(root->child_at(2)->current_frame_host(),
                           "window.anonymous"));
+}
+
+// This is fenced frames test class differs on from FencedFrameTreeBrowserTest,
+// by testing MPArcg fenced frames exclusively (no ShadowDOM types), through the
+// use of FencedFrameTestHelper.
+class MPArchFencedFramesFrameTreeBrowserTest : public FrameTreeBrowserTest {
+ public:
+  MPArchFencedFramesFrameTreeBrowserTest() = default;
+  MPArchFencedFramesFrameTreeBrowserTest(
+      const MPArchFencedFramesFrameTreeBrowserTest&) = delete;
+  MPArchFencedFramesFrameTreeBrowserTest& operator=(
+      const MPArchFencedFramesFrameTreeBrowserTest&) = delete;
+  ~MPArchFencedFramesFrameTreeBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetMainFrame());
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(MPArchFencedFramesFrameTreeBrowserTest,
+                       UserActivationToOutermostParent) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/fenced_frames/nested.html");
+
+  // 1. Load starting page.
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_FALSE(
+      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
+
+  // 2. Load fenced frame into starting page.
+  auto* fenced_frame_rfh = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(current_frame_host(),
+                                                   kFencedFrameUrl));
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+  ASSERT_TRUE(fenced_frame_rfh->frame_tree_node()->child_count());
+  auto* nested_frame_rfh =
+      fenced_frame_rfh->frame_tree_node()->child_at(0)->current_frame_host();
+
+  // 3. Clear the state for all render frame hosts
+  current_frame_host()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kClearActivation,
+      blink::mojom::UserActivationNotificationType::kNone);
+
+  EXPECT_FALSE(
+      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
+  EXPECT_FALSE(fenced_frame_rfh->frame_tree_node()->HasStickyUserActivation());
+  EXPECT_FALSE(nested_frame_rfh->frame_tree_node()->HasStickyUserActivation());
+
+  // 4. Update the state for the child fenced-frame and check that activation
+  // state has propagated to its parent.
+  fenced_frame_rfh->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  EXPECT_TRUE(
+      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
+  EXPECT_TRUE(fenced_frame_rfh->frame_tree_node()->HasStickyUserActivation());
+  // State update should not propagate to child nodes, even if they are same
+  // origin.
+  EXPECT_FALSE(nested_frame_rfh->frame_tree_node()->HasStickyUserActivation());
 }
 
 }  // namespace content
