@@ -345,7 +345,8 @@ TEST_F(X11TopmostWindowFinderTest, Basic) {
 }
 
 // Test that the minimized state is properly handled.
-TEST_F(X11TopmostWindowFinderTest, Minimized) {
+// The test is flaky (https://crbug.com/955316)
+TEST_F(X11TopmostWindowFinderTest, DISABLED_Minimized) {
   TestPlatformWindowDelegate delegate;
   auto window1 = CreateAndShowX11Window(&delegate, {100, 100, 100, 100});
   auto x11_window1 = static_cast<x11::Window>(window1->GetWidget());
