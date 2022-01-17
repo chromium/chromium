@@ -77,46 +77,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExtensionBubble.DevModeUserSelection"
-    enum="ExtensionBubbleAction" expires_after="2021-04-01">
-  <obsolete>
-    Code removed 2021/06.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The action taken by the user when seeing the bubble, logged right after the
-    action is taken.
-  </summary>
-</histogram>
-
-<histogram name="ExtensionBubble.ExtensionsInDevModeCount"
-    units="Developer Mode Extensions" expires_after="2021-04-01">
-  <obsolete>
-    Code removed 2021/06.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The total number of extensions found to be loaded under Developer Mode,
-    logged when the devmode bubble is shown (once per startup per profile, if
-    any devmode extension is found).
-  </summary>
-</histogram>
-
-<histogram name="ExtensionBubble.ExtensionWipeoutCount" units="Extensions"
-    expires_after="2021-01-31">
-  <obsolete>
-    Code removed 2021/06.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The total number of extensions found to be wiped by SideloadWipeout, logged
-    when the wipeout bubble is shown, which is once per startup per profile.
-  </summary>
-</histogram>
-
 <histogram name="ExtensionContentHashFetcher.CreateHashesTime" units="ms"
     expires_after="never">
 <!-- expires-never: Used for monitoring extension content verification latency. -->
@@ -175,61 +135,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExtensionOverrideBubble.NtpOverriddenUserSelection"
-    enum="ExtensionBubbleAction" expires_after="2021-04-01">
-  <obsolete>
-    Code removed 2021/03.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The action taken by the user when seeing the bubble, notifing them of an
-    extension overriding their new tab page. Logged right after the action is
-    taken.
-  </summary>
-</histogram>
-
-<histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionHomePage"
-    enum="ExtensionBubbleAction" expires_after="2021-06-01">
-  <obsolete>
-    Code removed 2021/06.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The action taken by the user when seeing the bubble, notifing them of an
-    extension overriding their homepage. Logged right after the action is taken.
-  </summary>
-</histogram>
-
-<histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionSearchEngine"
-    enum="ExtensionBubbleAction" expires_after="2021-04-01">
-  <obsolete>
-    Code removed 2021/06.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The action taken by the user when seeing the bubble, notifing them of an
-    extension overriding their search engine. Logged right after the action is
-    taken.
-  </summary>
-</histogram>
-
-<histogram name="ExtensionOverrideBubble.SettingsApiUserSelectionStartupPage"
-    enum="ExtensionBubbleAction" expires_after="2021-04-01">
-  <obsolete>
-    Code removed 2021/06.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The action taken by the user when seeing the bubble, notifing them of an
-    extension overriding their startup page. Logged right after the action is
-    taken.
-  </summary>
-</histogram>
-
 <histogram name="ExtensionService.AddVerified" enum="BooleanSuccess"
     expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -269,23 +174,6 @@ chromium-metrics-reviews@google.com.
     The total number of extensions that have an icon in the extension toolbar,
     including those that are unpinned and only show in the extensions menu.
     Measured once per startup per (non-incognito) profile.
-  </summary>
-</histogram>
-
-<histogram name="ExtensionToolbarModel.BrowserActionsVisible" units="units"
-    expires_after="2021-12-01">
-  <obsolete>
-    Replaced by Extensions.Toolbar.PinnedExtensionCount2 and
-    Extensions.Toolbar.PinnedExtensionPercentage3. Code removed 2021/11.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of visible icons in the Browser Actions Container (visible as in
-    number of icons not in the overflow bucket). 0 means all icons are in the
-    overflow bucket. MAX_INT means the toolbar is always showing all icons.
-    Measured once per startup per (non-incognito) profile but only for those
-    profiles that have one or more browser actions showing in the toolbar.
   </summary>
 </histogram>
 

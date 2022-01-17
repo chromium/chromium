@@ -174,18 +174,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Fingerprint.Unlock.MigrationForPositiveMatchSecretResult"
-    enum="BooleanSuccess" expires_after="M85">
-  <obsolete>
-    Removed 09/2020 as the migration is no longer supported after M85.
-  </obsolete>
-  <owner>hesling@chromium.org</owner>
-  <owner>chromeos-fingerprint@google.com</owner>
-  <summary>
-    Whether migrating a record to positive match secret succeeded.
-  </summary>
-</histogram>
-
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Capture" units="ms"
     expires_after="2022-05-01">
   <owner>rsorokin@chromium.org</owner>

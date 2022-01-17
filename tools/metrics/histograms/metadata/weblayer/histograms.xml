@@ -22,20 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="WebLayer.MainFrameNavigationStart.ConsentDetermined"
-    enum="Boolean" expires_after="M94">
-  <obsolete>
-    Obsoleted on 2021-11-23 as not needed. Also note that code used the name
-    WebLayer.NavigationStart.ConsentDetermined.
-  </obsolete>
-  <owner>sky@chromium.org</owner>
-  <owner>src/weblayer/OWNERS</owner>
-  <summary>
-    Tracks whether user consent to metrics reporting has been determined when a
-    navigation starts.
-  </summary>
-</histogram>
-
 <histogram name="WebLayer.Startup.{Component}CreationTime" units="ms"
     expires_after="2022-10-13">
   <owner>cduvall@chromium.org</owner>

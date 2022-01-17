@@ -208,19 +208,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAudio.OfflineAudioContext.ChannelCount" units="units"
-    expires_after="2022-06-30">
-  <obsolete>
-    Removed 2021-01-12. See crbug.com/1165240.
-  </obsolete>
-  <owner>hongchan@chromium.org</owner>
-  <summary>
-    The number of channels specified for the offline audio context. Recorded for
-    every offline context created. Probably only a few per page, but could be
-    potentially much more (thousands).
-  </summary>
-</histogram>
-
 <histogram name="WebAudio.OfflineAudioContext.CreateTime" units="ms"
     expires_after="2022-08-12">
   <owner>hongchan@chromium.org</owner>
@@ -228,32 +215,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time it takes to create the OfflineAudioContext object. This is
     recorded every time an OfflineAudioContext is successfully created.
-  </summary>
-</histogram>
-
-<histogram name="WebAudio.OfflineAudioContext.Length" units="frames"
-    expires_after="2021-05-23">
-  <obsolete>
-    Removed 2021-01-12. See crbug.com/1165240.
-  </obsolete>
-  <owner>hongchan@chromium.org</owner>
-  <summary>
-    The length (in frames) specified for the offline audio context. Recorded for
-    every offline context created. Probably only a few per page, but could be
-    potentially much more (thousands).
-  </summary>
-</histogram>
-
-<histogram name="WebAudio.OfflineAudioContext.SampleRate384kHz" units="Hz"
-    expires_after="2021-02-18">
-  <obsolete>
-    Removed 2021-01-12. See crbug.com/1165240.
-  </obsolete>
-  <owner>hongchan@chromium.org</owner>
-  <summary>
-    The sample rate (in Hz) specified for the offline audio context. Recorded
-    for every offline context created. Probably only a few per page, but could
-    be potentially much more (thousands).
   </summary>
 </histogram>
 

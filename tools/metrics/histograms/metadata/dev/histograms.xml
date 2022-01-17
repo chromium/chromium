@@ -94,34 +94,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DevTools.ColorPicker.FixedColor"
-    enum="DevToolsColorPickerFixedColor" expires_after="2021-10-04">
-  <obsolete>
-    Removed in M95 because it is no longer needed for analysis.
-  </obsolete>
-  <owner>yangguo@chromium.org</owner>
-  <owner>mathias@chromium.org</owner>
-  <owner>alexrudenko@chromium.org</owner>
-  <summary>
-    Records which color contrast threshold was fixed by the user in the Color
-    Picker.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.ComputedStyleGrouping"
-    enum="DevToolsComputedStyleGrouping" expires_after="M87">
-  <obsolete>
-    Removed in M88 because it is no longer needed for analysis.
-  </obsolete>
-  <owner>changhaohan@chromium.org</owner>
-  <owner>yangguo@chromium.org</owner>
-  <owner>mathias@chromium.org</owner>
-  <summary>
-    Records state changes for DevTools computed style grouping toggled from the
-    Computed pane.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.ConsoleShowsCorsErrors"
     enum="DevToolsConsoleShowsCorsErrors" expires_after="2022-12-01">
   <owner>dsv@chromium.org</owner>
@@ -129,35 +101,6 @@ chromium-metrics-reviews@google.com.
   <owner>yangguo@chromium.org</owner>
   <summary>
     Records if showing CORS erros in DevTools Console is enabled.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.CssEditorOpened" enum="DevToolsCssEditorOpened"
-    expires_after="2021-09-14">
-  <obsolete>
-    Removed in M95 because it is no longer needed for analysis. See
-    crbug.com/1235544.
-  </obsolete>
-  <owner>yangguo@chromium.org</owner>
-  <owner>michael.liao@microsoft.com</owner>
-  <owner>shanejc@microsoft.com</owner>
-  <summary>
-    Records the usage of each of the Styles Pane property editors while the font
-    editor experiment is enabled. The four editors are the color picker, the CSS
-    shadow editor, the bezier editor and the font editor.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.CSSGridSettings2" enum="DevtoolsGridSettingChanged2"
-    expires_after="M88">
-  <obsolete>
-    Removed in M89 because it is no longer needed for analysis.
-  </obsolete>
-  <owner>yangguo@chromium.org</owner>
-  <owner>brgoddar@microsoft.com</owner>
-  <owner>leo.lee@microsoft.com</owner>
-  <summary>
-    DevTools settings for CSS grid recorded on launch of the DevTools.
   </summary>
 </histogram>
 
@@ -214,22 +157,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.DualScreenDeviceEmulated"
-    enum="DevToolsDualScreenDeviceEmulated" expires_after="M87">
-  <obsolete>
-    Removed in M87 as it is no longer needed for analysis. See
-    crbug.com/1125666.
-  </obsolete>
-  <owner>yangguo@chromium.org</owner>
-  <owner>soxia@microsoft.com</owner>
-  <owner>leo.lee@microsoft.com</owner>
-  <summary>
-    Records the usage of dual screen device emulation: a dual screen or fold
-    device is selected for emulation; the span button is hit; or the platform
-    support of dual screen is utilized.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
     expires_after="2022-12-01">
   <owner>yangguo@chromium.org</owner>
@@ -254,33 +181,6 @@ chromium-metrics-reviews@google.com.
   <owner>changhao@chromium.org</owner>
   <summary>
     Fires for each experiment that is enabled at the time of Devtools Launch.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.GridOverlayOpenedFrom"
-    enum="DevToolsGridOverlayOpenedFrom" expires_after="M88">
-  <obsolete>
-    Removed in M89 because it is no longer needed for analysis.
-  </obsolete>
-  <owner>changhaohan@chromium.org</owner>
-  <owner>yangguo@chromium.org</owner>
-  <owner>mathias@chromium.org</owner>
-  <summary>
-    Records which UI element is being used to open Grid overlays.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.HighlightedPersistentCSSGridCount"
-    enum="DevToolsHighlightedPersistentCSSGridCount" expires_after="M88">
-  <obsolete>
-    Removed in M89 because it is no longer needed for analysis.
-  </obsolete>
-  <owner>yangguo@chromium.org</owner>
-  <owner>patrick.brosset@microsoft.com</owner>
-  <owner>leo.lee@microsoft.com</owner>
-  <summary>
-    Number of simultaneous persistent CSS grid overlays in DevTools, recorded
-    after each change.
   </summary>
 </histogram>
 
@@ -460,17 +360,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a recording is started or finished in the Recorder panel.
   </summary>
-</histogram>
-
-<histogram name="DevTools.SettingChanged" enum="DevToolsSetting"
-    expires_after="2021-12-05">
-  <obsolete>
-    Instrumentation was removed before M76.
-  </obsolete>
-  <owner>alph@chromium.org</owner>
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <summary>Specified DevTools setting was changed.</summary>
 </histogram>
 
 <histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"

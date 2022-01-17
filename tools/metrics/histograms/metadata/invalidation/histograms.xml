@@ -23,21 +23,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="DeprecatedInvalidatorRegistrar.CrashStatus"
-    enum="HandlerOwnerType" expires_after="M75">
-  <obsolete>
-    Expired in M75.
-  </obsolete>
-  <owner>melandory@chromium.org</owner>
-  <summary>
-    DeprecatedInvlalidatorRegistrar is crashing on the browser shut down. The
-    reason for the crash is that not all invalidation handlers de-registister
-    themselves. Histogram records the type of the handler which hasn't
-    unregistered itself. Analyzing the histogram will allow us to understand,
-    which handlers are causing the crash.
-  </summary>
-</histogram>
-
 <histogram name="FCMInvalidations.FailedSubscriptionsErrorCode"
     enum="NetErrorCodes" expires_after="never">
 <!-- expires-never: For monitoring FCM based invalidations. -->
@@ -76,19 +61,6 @@ chromium-metrics-reviews@google.com.
   <owner>treib@chromium.org</owner>
   <summary>
     Status of the initial attempt to retrieve the instance id token.
-  </summary>
-</histogram>
-
-<histogram name="FCMInvalidations.ResetClientIDStatus" enum="InstanceIDResult"
-    expires_after="2020-10-19">
-  <obsolete>
-    Removed 2020-10.
-  </obsolete>
-  <owner>tschumann@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Status of resetting the client instance ID, which includes unregistering
-    from FCM servers.
   </summary>
 </histogram>
 
@@ -148,18 +120,6 @@ chromium-metrics-reviews@google.com.
   <owner>melandory@chromium.org</owner>
   <summary>
     Status of sending outgoing invalidation message through GCM upsteam.
-  </summary>
-</histogram>
-
-<histogram name="Invalidations.StatusChanged" enum="InvalidatorState"
-    expires_after="M85">
-  <obsolete>
-    Expired in M85.
-  </obsolete>
-  <owner>melandory@chromium.org</owner>
-  <summary>
-    Status of the invalidation component. The metric is recorded on startup
-    unless invalidations are disabled, plus when the state changes.
   </summary>
 </histogram>
 

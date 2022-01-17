@@ -316,15 +316,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.RegistrationSenderIdCount" units="units"
-    expires_after="M85">
-  <obsolete>
-    Removed 10/2020 because there no longer was a need for the data.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <summary>Number of sender IDs specified in a registration request.</summary>
-</histogram>
-
 <histogram name="GCM.RemoveAccountMappingWhenLoading"
     enum="BooleanDeletedOrNot" expires_after="2020-11-30">
   <owner>msarda@chromium.org</owner>
