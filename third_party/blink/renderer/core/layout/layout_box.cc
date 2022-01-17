@@ -338,7 +338,8 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
 
 #if DCHECK_IS_ON()
 void CheckDidAddFragment(const LayoutBox& box,
-                         const NGPhysicalBoxFragment& new_fragment) {
+                         const NGPhysicalBoxFragment& new_fragment,
+                         wtf_size_t new_fragment_index = kNotFound) {
   // If |HasFragmentItems|, |ChildrenInline()| should be true.
   // |HasFragmentItems| uses this condition to optimize .
   if (new_fragment.HasItems())
@@ -349,12 +350,17 @@ void CheckDidAddFragment(const LayoutBox& box,
     DCHECK_EQ(fragment.IsFirstForNode(), index == 0);
     if (const NGFragmentItems* fragment_items = fragment.Items())
       fragment_items->CheckAllItemsAreValid();
+    // Don't check past the fragment just added. Those entries may be invalid at
+    // this point.
+    if (index == new_fragment_index)
+      break;
     ++index;
   }
 }
 #else
 inline void CheckDidAddFragment(const LayoutBox& box,
-                                const NGPhysicalBoxFragment& fragment) {}
+                                const NGPhysicalBoxFragment& fragment,
+                                wtf_size_t new_fragment_index = kNotFound) {}
 #endif
 
 // Applies the overflow clip to |result|. For any axis that is clipped, |result|
@@ -3344,13 +3350,17 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
   if (index != WTF::kNotFound && layout_results_.size() > index) {
     if (layout_results_.size() > index + 1) {
-      // Before forgetting any old fragments and their items, we need to clear
-      // associations.
-      if (To<NGPhysicalBoxFragment>(result->PhysicalFragment())
-              .IsInlineFormattingContext())
-        NGFragmentItems::ClearAssociatedFragments(this);
-
-      ShrinkLayoutResults(index + 1);
+      const auto& box_fragment =
+          To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+      // If we have reached the end, remove surplus results from previous
+      // layout.
+      if (!box_fragment.BreakToken()) {
+        // Before forgetting any old fragments and their items, we need to clear
+        // associations.
+        if (box_fragment.IsInlineFormattingContext())
+          NGFragmentItems::ClearAssociatedFragments(this);
+        ShrinkLayoutResults(index + 1);
+      }
     }
     ReplaceLayoutResult(std::move(result), index);
     return;
@@ -3371,6 +3381,9 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
   // inline formatting context, we have some finalization to do.
   if (!fragment.BreakToken() && HasFragmentItems())
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
+
+  if (layout_results_.size() > 1)
+    FragmentCountDidChange();
 }
 
 void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
@@ -3392,7 +3405,7 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_[index] = std::move(result);
-  CheckDidAddFragment(*this, fragment);
+  CheckDidAddFragment(*this, fragment, index);
 
   // If this is the last fragment for the node, and its node establishes an
   // inline formatting context, we have some finalization to do.
@@ -3447,6 +3460,8 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
     InvalidateItems(*layout_results_[i]);
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  if (layout_results_.size() > 1)
+    FragmentCountDidChange();
   layout_results_.Shrink(results_to_keep);
 }
 

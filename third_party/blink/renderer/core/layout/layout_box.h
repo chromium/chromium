@@ -1208,6 +1208,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       scoped_refptr<const NGLayoutResult> layout_result);
   void ClearLayoutResults();
 
+  // Call when NG fragment count has changed (and it was or is larger than 1).
+  void FragmentCountDidChange() {
+    NOT_DESTROYED();
+    // The fragment count may change, even if the total block-size remains the
+    // same (if the fragmentainer block-size has changed, for instance).
+    SetShouldDoFullPaintInvalidation();
+  }
+
   const NGLayoutResult* GetCachedLayoutResult() const;
   const NGLayoutResult* GetCachedMeasureResult() const;
 
