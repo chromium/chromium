@@ -51,7 +51,8 @@ ProducerHost::InitializationResult ProducerHost::Initialize(
 
   // TODO(oysteine): Figure out a uid once we need it.
   producer_endpoint_ = service->ConnectProducer(
-      this, 0 /* uid */, name, shm_size, /*in_process=*/false,
+      this, 0 /* uid */, /*pid=*/::perfetto::base::kInvalidPid, name, shm_size,
+      /*in_process=*/false,
       perfetto::TracingService::ProducerSMBScrapingMode::kDefault,
       shared_memory_buffer_page_size_bytes, std::move(shm));
 
