@@ -97,14 +97,15 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   EXPECT_EQ(9, ModelTypeToStableIdentifier(TYPED_URLS));
 }
 
-TEST_F(ModelTypeTest, ModelTypeSetFromString) {
+TEST_F(ModelTypeTest, ModelTypeSetFromDebugString) {
   ModelTypeSet empty;
   ModelTypeSet one(BOOKMARKS);
   ModelTypeSet two(BOOKMARKS, TYPED_URLS);
 
-  EXPECT_EQ(empty, ModelTypeSetFromString(ModelTypeSetToString(empty)));
-  EXPECT_EQ(one, ModelTypeSetFromString(ModelTypeSetToString(one)));
-  EXPECT_EQ(two, ModelTypeSetFromString(ModelTypeSetToString(two)));
+  EXPECT_EQ(empty,
+            ModelTypeSetFromDebugString(ModelTypeSetToDebugString(empty)));
+  EXPECT_EQ(one, ModelTypeSetFromDebugString(ModelTypeSetToDebugString(one)));
+  EXPECT_EQ(two, ModelTypeSetFromDebugString(ModelTypeSetToDebugString(two)));
 }
 
 TEST_F(ModelTypeTest, DefaultFieldValues) {

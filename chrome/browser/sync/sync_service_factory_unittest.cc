@@ -174,7 +174,7 @@ class SyncServiceFactoryTest : public testing::Test {
   void SetDisabledTypes(syncer::ModelTypeSet disabled_types) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kDisableSyncTypes,
-        syncer::ModelTypeSetToString(disabled_types));
+        syncer::ModelTypeSetToDebugString(disabled_types));
   }
 
   Profile* profile() { return profile_.get(); }

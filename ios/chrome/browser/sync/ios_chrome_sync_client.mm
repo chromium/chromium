@@ -74,7 +74,7 @@ syncer::ModelTypeSet GetDisabledTypesFromCommandLine() {
           switches::kDisableSyncTypes);
 
   syncer::ModelTypeSet disabled_types =
-      syncer::ModelTypeSetFromString(disabled_types_str);
+      syncer::ModelTypeSetFromDebugString(disabled_types_str);
   if (disabled_types.Has(syncer::DEVICE_INFO)) {
     DLOG(WARNING) << "DEVICE_INFO cannot be disabled via a command-line switch";
     disabled_types.Remove(syncer::DEVICE_INFO);

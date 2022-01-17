@@ -1563,7 +1563,7 @@ GetAllNodesRequestHelper::~GetAllNodesRequestHelper() {
   if (!awaiting_types_.Empty()) {
     DLOG(WARNING)
         << "GetAllNodesRequest deleted before request was fulfilled.  "
-        << "Missing types are: " << ModelTypeSetToString(awaiting_types_);
+        << "Missing types are: " << ModelTypeSetToDebugString(awaiting_types_);
   }
 }
 

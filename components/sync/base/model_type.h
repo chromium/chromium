@@ -386,13 +386,13 @@ std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type);
 ModelType ModelTypeFromString(const std::string& model_type_string);
 
 // Returns the comma-separated string representation of |model_types|.
-std::string ModelTypeSetToString(ModelTypeSet model_types);
+std::string ModelTypeSetToDebugString(ModelTypeSet model_types);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set);
 
 // Returns the set of comma-separated model types from |model_type_string|.
-ModelTypeSet ModelTypeSetFromString(const std::string& model_type_string);
+ModelTypeSet ModelTypeSetFromDebugString(const std::string& model_type_string);
 
 // Generates a base::ListValue from |model_types|.
 std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types);

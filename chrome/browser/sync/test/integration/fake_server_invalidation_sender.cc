@@ -43,7 +43,7 @@ void FakeServerInvalidationSender::OnCommit(
     DLOG(WARNING) << "Received invalidations for the following data types in "
                      "invalidation sender "
                   << this << " will be dropped:"
-                  << ModelTypeSetToString(committed_model_types);
+                  << ModelTypeSetToDebugString(committed_model_types);
     return;
   }
   // For each of the committed model types, pass a message to the FCM Network

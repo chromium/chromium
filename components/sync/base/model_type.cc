@@ -453,7 +453,7 @@ ModelType ModelTypeFromString(const std::string& model_type_string) {
   return iter != std::end(kModelTypeInfoMap) ? iter->model_type : UNSPECIFIED;
 }
 
-std::string ModelTypeSetToString(ModelTypeSet model_types) {
+std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
   std::string result;
   for (ModelType type : model_types) {
     if (!result.empty()) {
@@ -465,10 +465,11 @@ std::string ModelTypeSetToString(ModelTypeSet model_types) {
 }
 
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set) {
-  return out << ModelTypeSetToString(model_type_set);
+  return out << ModelTypeSetToDebugString(model_type_set);
 }
 
-ModelTypeSet ModelTypeSetFromString(const std::string& model_types_string) {
+ModelTypeSet ModelTypeSetFromDebugString(
+    const std::string& model_types_string) {
   std::string working_copy = model_types_string;
   ModelTypeSet model_types;
   while (!working_copy.empty()) {

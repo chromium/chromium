@@ -102,7 +102,7 @@ class SyncServiceFactoryTest : public PlatformTest {
   void SetDisabledTypes(syncer::ModelTypeSet disabled_types) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kDisableSyncTypes,
-        syncer::ModelTypeSetToString(disabled_types));
+        syncer::ModelTypeSetToDebugString(disabled_types));
   }
 
   ChromeBrowserState* chrome_browser_state() {

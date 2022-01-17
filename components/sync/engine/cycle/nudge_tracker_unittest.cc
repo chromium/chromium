@@ -29,8 +29,8 @@ testing::AssertionResult ModelTypeSetEquals(ModelTypeSet a, ModelTypeSet b) {
     return testing::AssertionSuccess();
   } else {
     return testing::AssertionFailure()
-           << "Left side " << ModelTypeSetToString(a)
-           << ", does not match rigth side: " << ModelTypeSetToString(b);
+           << "Left side " << ModelTypeSetToDebugString(a)
+           << ", does not match rigth side: " << ModelTypeSetToDebugString(b);
   }
 }
 

@@ -103,7 +103,7 @@ void FakeSyncManager::ConfigureSyncer(ConfigureReason reason,
   success_types.RemoveAll(configure_fail_types_);
 
   DVLOG(1) << "Faking configuration. Downloading: "
-           << ModelTypeSetToString(success_types);
+           << ModelTypeSetToDebugString(success_types);
 
   // Now simulate the actual configuration for those types that successfully
   // download + apply.

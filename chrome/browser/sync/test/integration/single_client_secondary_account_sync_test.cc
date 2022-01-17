@@ -107,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   syncer::ModelTypeSet bad_types =
       base::Difference(GetSyncService(0)->GetActiveDataTypes(),
                        AllowedTypesInStandaloneTransportMode());
-  EXPECT_TRUE(bad_types.Empty()) << syncer::ModelTypeSetToString(bad_types);
+  EXPECT_TRUE(bad_types.Empty())
+      << syncer::ModelTypeSetToDebugString(bad_types);
 }
 #else
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,

@@ -113,7 +113,7 @@ void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
 
   DVLOG(1) << "Configuring -"
            << "\n\t"
-           << "types to download: " << ModelTypeSetToString(to_download);
+           << "types to download: " << ModelTypeSetToDebugString(to_download);
 
   scheduler_->Start(SyncScheduler::CONFIGURATION_MODE, base::Time());
   scheduler_->ScheduleConfiguration(GetOriginFromReason(reason), to_download,

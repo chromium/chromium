@@ -245,7 +245,7 @@ void SyncEngineBackend::DoInitialize(
   ModelTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
 
-  SDVLOG(1) << "Control Types " << ModelTypeSetToString(new_control_types)
+  SDVLOG(1) << "Control Types " << ModelTypeSetToDebugString(new_control_types)
             << " added; calling ConfigureSyncer";
 
   sync_manager_->ConfigureSyncer(

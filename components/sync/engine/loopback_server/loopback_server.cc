@@ -368,7 +368,8 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
       }
     } else if (!throttled_datatypes_in_request.Empty()) {
       DLOG(WARNING) << "Throttled datatypes: "
-                    << ModelTypeSetToString(throttled_datatypes_in_request);
+                    << ModelTypeSetToDebugString(
+                           throttled_datatypes_in_request);
       response->set_error_code(sync_pb::SyncEnums::THROTTLED);
       response->mutable_error()->set_error_type(sync_pb::SyncEnums::THROTTLED);
       for (ModelType type : throttled_datatypes_in_request) {

@@ -321,7 +321,7 @@ void SyncSchedulerImpl::ScheduleLocalRefreshRequest(ModelTypeSet types) {
   DCHECK(!types.Empty());
 
   SDVLOG(2) << "Scheduling sync because of local refresh request for "
-            << ModelTypeSetToString(types);
+            << ModelTypeSetToDebugString(types);
   base::TimeDelta nudge_delay = nudge_tracker_.RecordLocalRefreshRequest(types);
   ScheduleNudgeImpl(nudge_delay);
 }
@@ -421,7 +421,7 @@ void SyncSchedulerImpl::DoNudgeSyncCycleJob(JobPriority priority) {
 
   ModelTypeSet types = GetEnabledAndUnblockedTypes();
   DVLOG(2) << "Will run normal mode sync cycle with types "
-           << ModelTypeSetToString(types);
+           << ModelTypeSetToDebugString(types);
   SyncCycle cycle(cycle_context_, this);
   bool success = syncer_->NormalSyncShare(types, &nudge_tracker_, &cycle);
 
@@ -459,7 +459,7 @@ void SyncSchedulerImpl::DoConfigurationSyncCycleJob(JobPriority priority) {
   }
 
   SDVLOG(2) << "Will run configure SyncShare with types "
-            << ModelTypeSetToString(
+            << ModelTypeSetToDebugString(
                    pending_configure_params_->types_to_download);
   SyncCycle cycle(cycle_context_, this);
   bool success =
@@ -511,7 +511,7 @@ void SyncSchedulerImpl::HandleFailure(
 
 void SyncSchedulerImpl::DoPollSyncCycleJob() {
   SDVLOG(2) << "Polling with types "
-            << ModelTypeSetToString(GetEnabledAndUnblockedTypes());
+            << ModelTypeSetToDebugString(GetEnabledAndUnblockedTypes());
   SyncCycle cycle(cycle_context_, this);
   bool success = syncer_->PollSyncShare(GetEnabledAndUnblockedTypes(), &cycle);
 
@@ -793,7 +793,7 @@ void SyncSchedulerImpl::OnTypesThrottled(
     ModelTypeSet types,
     const base::TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SDVLOG(1) << "Throttling " << ModelTypeSetToString(types) << " for "
+  SDVLOG(1) << "Throttling " << ModelTypeSetToDebugString(types) << " for "
             << throttle_duration.InSeconds() << " seconds.";
   nudge_tracker_.SetTypesThrottledUntil(types, throttle_duration,
                                         TimeTicks::Now());
