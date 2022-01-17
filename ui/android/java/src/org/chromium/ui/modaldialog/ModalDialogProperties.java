@@ -102,6 +102,14 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * The icon on the positive button.
+     * Note: Not intended for general usage; please seek Chrome UX approval for
+     * an exception.
+     */
+    public static final WritableObjectPropertyKey<Drawable> POSITIVE_BUTTON_ICON =
+            new WritableObjectPropertyKey();
+
     /** Content description for the positive button. */
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -166,8 +174,8 @@ public class ModalDialogProperties {
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
             TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
-            POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
-            NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
-            FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES,
-            FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG};
+            POSITIVE_BUTTON_ICON, POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED,
+            NEGATIVE_BUTTON_TEXT, NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED,
+            CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
+            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG};
 }

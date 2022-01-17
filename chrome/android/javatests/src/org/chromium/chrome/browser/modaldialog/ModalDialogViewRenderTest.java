@@ -153,6 +153,40 @@ public class ModalDialogViewRenderTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_PrimaryButtonWithIcon() throws IOException {
+        final Drawable icon = UiUtils.getTintedDrawable(getActivity(),
+                org.chromium.chrome.R.drawable.ic_add, R.color.default_icon_color_tint_list);
+
+        setUpViews(R.style.Theme_Chromium_ModalDialog_TextPrimaryButton);
+        createModel(
+                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.MESSAGE, "Message")
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_ICON, icon));
+        mRenderTestRule.render(mModalDialogView, "primary_button_with_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_FilledPrimaryButtonWithIcon() throws IOException {
+        final Drawable icon = UiUtils.getTintedDrawable(getActivity(),
+                org.chromium.chrome.R.drawable.ic_add, R.color.default_icon_color_inverse);
+
+        setUpViews(R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton);
+        createModel(
+                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.MESSAGE, "Message")
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_ICON, icon)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                                R.string.cancel));
+        mRenderTestRule.render(mModalDialogView, "filled_primary_button_with_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_ScrollableTitle() throws IOException {
         setUpViews(R.style.Theme_Chromium_ModalDialog_TextPrimaryButton);
         createModel(

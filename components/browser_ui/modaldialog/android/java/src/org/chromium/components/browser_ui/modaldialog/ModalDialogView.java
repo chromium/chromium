@@ -302,6 +302,20 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     /**
+     * @param drawable The icon drawable on the positive button.
+     */
+    void setPositiveButtonIcon(Drawable drawable) {
+        Button button = getButton(ModalDialogProperties.ButtonType.POSITIVE);
+        button.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null);
+        button.setCompoundDrawablePadding(getResources().getDimensionPixelSize(
+                R.dimen.modal_dialog_button_with_icon_text_padding));
+        button.setPaddingRelative(getResources().getDimensionPixelSize(
+                                          R.dimen.modal_dialog_button_with_icon_start_padding),
+                button.getPaddingTop(), button.getPaddingEnd(), button.getPaddingBottom());
+        updateButtonVisibility();
+    }
+
+    /**
      * Sets content description for the specified button.
      * @param buttonType The {@link ModalDialogProperties.ButtonType} of the button.
      * @param contentDescription The content description to be set for the specified button.
