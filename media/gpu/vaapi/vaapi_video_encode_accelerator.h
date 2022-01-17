@@ -82,12 +82,15 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Maximum size is four to support the worst case of a given input of a
   // different resolution than the maximum number of spatial layers (3).
   static constexpr size_t kMaxNumSpatialLayersPlusOne = 3 + 1;
-  using ScopedVASurfacesMap =
+  using InputSurfaceMap = base::small_map<
+      std::map<gfx::Size, std::unique_ptr<ScopedVASurface>, SizeComparator>,
+      kMaxNumSpatialLayersPlusOne>;
+  using EncodeSurfacesMap =
       base::small_map<std::map<gfx::Size,
                                std::vector<std::unique_ptr<ScopedVASurface>>,
                                SizeComparator>,
                       kMaxNumSpatialLayersPlusOne>;
-  using ScopedVASurfacesCountMap =
+  using EncodeSurfacesCountMap =
       base::small_map<std::map<gfx::Size, size_t, SizeComparator>,
                       kMaxNumSpatialLayersPlusOne>;
 
@@ -139,20 +142,24 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       scoped_refptr<VASurface>* input_surface,
       scoped_refptr<VASurface>* reconstructed_surface);
 
-  // Creates |num_surfaces| ScopedVASurfaces using |vaapi_wrapper| whose sizes
-  // are |encode_size| with |surface_usage_hints|. Returns false if the surfaces
-  // fail to be created successfully.
-  // The created surfaces are filled into |scoped_surfaces_map[encode_size]|.
-  bool CreateSurfacesIfNeeded(
+  // Creates |num_frames_in_flight_|+1 ScopedVASurfaces using |vaapi_wrapper_|
+  // whose sizes are |encode_size|. Returns false if the surfaces fail to be
+  // created successfully. The created surfaces are filled into
+  // |available_encode_surfaces_[encode_size]|.
+  bool CreateEncodeSurfacesIfNeeded(const gfx::Size& encode_size);
+
+  // Creates VASurface using |vaapi_wrapper| whose sizes are |encode_size|
+  // with |surface_usage_hints|. Returns nullptr if the surfaces fail to be
+  // created successfully. The created surfaces are filled into
+  // |input_surfaces_[encode_size]|.
+  scoped_refptr<VASurface> CreateInputSurface(
       VaapiWrapper& vaapi_wrapper,
-      ScopedVASurfacesMap& scoped_surfaces_map,
-      ScopedVASurfacesCountMap& scoped_surfaces_count_map,
       const gfx::Size& encode_size,
-      const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints,
-      size_t num_surfaces);
+      const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints);
 
   // Creates |vpp_vaapi_wrapper_| if it hasn't been created.
   scoped_refptr<VaapiWrapper> CreateVppVaapiWrapper();
+
   // Executes BlitSurface() using |vpp_vaapi_wrapper_| with |source_surface|,
   // |source_visible_rect|. Returns the destination VASurface in BlitSurface()
   // whose size is |encode_size| on success, otherwise nullptr.
@@ -247,19 +254,20 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Should only be used on |encoder_task_runner_|.
   std::unique_ptr<VaapiVideoEncoderDelegate> encoder_;
 
-  // Map of available input or reconstructed surfaces for encoding indexed by a
-  // layer resolution.
-  ScopedVASurfacesMap available_encode_surfaces_;
-  // Map of available destination surfaces for scaling and cropping, and input
-  // surfaces for encoding indexed by a layer resolution..
-  ScopedVASurfacesMap available_vpp_dest_surfaces_;
+  // Map of input surfaces. In non |native_input_mode_|, this is always created
+  // and memory-based encode input VideoFrame is written into this.
+  // In |native_input_mode_|, this is created only if scaling or cropping is
+  // required and used as a VPP destination.
+  InputSurfaceMap input_surfaces_;
 
-  // Map of the number of allocated input or reconstructed surfaces for encoding
+  // Map of available reconstructed surfaces for encoding index by a layer
+  // resolution. These are stored as reference frames in
+  // VaapiVideoEncoderDelegate if necessary.
+  EncodeSurfacesMap available_encode_surfaces_;
+
+  // Map of the number of allocated reconstructed surfaces for encoding
   // indexed by a layer resolution.
-  ScopedVASurfacesCountMap encode_surfaces_count_;
-  // Map of the number of allocated destination surfaces for scaling and
-  // cropping, and input surfaces for encoding indexed by a layer resolution..
-  ScopedVASurfacesCountMap vpp_dest_surfaces_count_;
+  EncodeSurfacesCountMap encode_surfaces_count_;
 
   // VA buffers for coded frames.
   std::vector<VABufferID> available_va_buffer_ids_;
