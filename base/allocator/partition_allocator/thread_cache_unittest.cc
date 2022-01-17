@@ -494,7 +494,14 @@ TEST_F(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
 
 #endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
 
-TEST_F(PartitionAllocThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
+// TODO(https://crbug.com/1287799): Flaky on IOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_PurgeAll DISABLED_PurgeAll
+#else
+#define MAYBE_PurgeAll PurgeAll
+#endif
+TEST_F(PartitionAllocThreadCacheTest, MAYBE_PurgeAll)
+NO_THREAD_SAFETY_ANALYSIS {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> purge_called{false};
 
@@ -653,7 +660,13 @@ TEST_F(PartitionAllocThreadCacheTest,
   PlatformThread::Join(thread_handle_2);
 }
 
-TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucket) {
+// TODO(https://crbug.com/1287799): Flaky on IOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_DynamicCountPerBucket DISABLED_DynamicCountPerBucket
+#else
+#define MAYBE_DynamicCountPerBucket DynamicCountPerBucket
+#endif
+TEST_F(PartitionAllocThreadCacheTest, MAYBE_DynamicCountPerBucket) {
   auto* tcache = root_->thread_cache_for_testing();
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
@@ -712,7 +725,16 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
   }
 }
 
-TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
+// TODO(https://crbug.com/1287799): Flaky on IOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_DynamicCountPerBucketMultipleThreads \
+  DISABLED_DynamicCountPerBucketMultipleThreads
+#else
+#define MAYBE_DynamicCountPerBucketMultipleThreads \
+  DynamicCountPerBucketMultipleThreads
+#endif
+TEST_F(PartitionAllocThreadCacheTest,
+       MAYBE_DynamicCountPerBucketMultipleThreads) {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> threshold_changed{false};
 
@@ -846,7 +868,13 @@ TEST_F(PartitionAllocThreadCacheTest, ClearFromTail) {
   EXPECT_EQ(nullptr, static_cast<void*>(tcache->buckets_[index].freelist_head));
 }
 
-TEST_F(PartitionAllocThreadCacheTest, Bookkeeping) {
+// TODO(https://crbug.com/1287799): Flaky on IOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Bookkeeping DISABLED_Bookkeeping
+#else
+#define MAYBE_Bookkeeping Bookkeeping
+#endif
+TEST_F(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
   void* arr[kFillCountForMediumBucket] = {};
   auto* tcache = root_->thread_cache_for_testing();
 
