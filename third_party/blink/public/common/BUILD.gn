@@ -7,11 +7,32 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+}
+
+blink_python_runner("make_generated_origin_trial_feature") {
+  script = "../../renderer/build/scripts/make_origin_trial_feature.py"
+
+  inputs =
+      scripts_for_json5_files + [
+        "../../renderer/build/scripts/make_origin_trial_feature.py",
+        "../../renderer/platform/runtime_enabled_features.json5",
+        "../../renderer/build/scripts/templates/origin_trial_feature.h.tmpl",
+      ]
+  outputs = [ "$root_gen_dir/third_party/blink/public/common/origin_trials/origin_trial_feature.h" ]
+
+  args = [
+    rebase_path("../../renderer/platform/runtime_enabled_features.json5",
+                root_build_dir),
+    "--output_dir",
+    rebase_path("$root_gen_dir/third_party/blink/public/common/origin_trials",
+                root_build_dir),
+  ]
 }
 
 # Public common API headers, mojom and libraries that can be linked and
@@ -182,6 +203,7 @@ source_set("headers") {
     "oom_intervention/oom_intervention_types.h",
     "origin_trials/origin_trial_policy.h",
     "origin_trials/origin_trial_public_key.h",
+    "origin_trials/origin_trials.h",
     "origin_trials/trial_token.h",
     "origin_trials/trial_token_result.h",
     "origin_trials/trial_token_validator.h",
@@ -233,7 +255,10 @@ source_set("headers") {
     "widget/visual_properties.h",
   ]
 
+  sources += get_target_outputs(":make_generated_origin_trial_feature")
+
   public_deps = [
+    ":make_generated_origin_trial_feature",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",

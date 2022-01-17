@@ -10,7 +10,6 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -62,7 +61,7 @@ struct OriginTrialResult {
 // Instead, the name provided by the feature implementation is validated against
 // any provided tokens.
 //
-// For more information, see https://github.com/jpchase/OriginTrials.
+// For more information, see https://github.com/GoogleChrome/OriginTrials.
 class CORE_EXPORT OriginTrialContext final
     : public GarbageCollected<OriginTrialContext> {
  public:
@@ -70,8 +69,7 @@ class CORE_EXPORT OriginTrialContext final
 
   void SetTrialTokenValidatorForTesting(std::unique_ptr<TrialTokenValidator>);
 
-  // Parses an Origin-Trial header as specified in
-  // https://jpchase.github.io/OriginTrials/#header into individual tokens.
+  // Parses an Origin-Trial header into individual tokens.
   // Returns null if the header value was malformed and could not be parsed.
   // If the header does not contain any tokens, this returns an empty vector.
   static std::unique_ptr<Vector<String>> ParseHeaderValue(
@@ -211,13 +209,10 @@ class CORE_EXPORT OriginTrialContext final
                             const String& token);
 
   // Validate the token result returned from token validator.
-  // `trial_name` is returned to avoid multiple conversions from `std::string`
-  // to `WTF::String`.
   // `token_result` is modified in place to reflect the `OriginTrialTokenStatus`
   // change.
   void ValidateTokenResult(bool is_secure,
                            bool is_secure_script_origin,
-                           String& trial_name,
                            TrialTokenResult& token_result);
 
   // Installs a series of OriginTrialFeatures listed in a HashSet. The return

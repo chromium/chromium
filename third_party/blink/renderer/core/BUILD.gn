@@ -1057,23 +1057,6 @@ blink_python_runner("make_core_generated_html_element_lookup_trie") {
   deps = make_core_generated_deps
 }
 
-blink_python_runner("make_core_generated_origin_trials") {
-  script = "../build/scripts/make_origin_trials.py"
-
-  inputs = scripts_for_json5_files + [
-             "../build/scripts/make_origin_trials.py",
-             "../platform/runtime_enabled_features.json5",
-             "../build/scripts/templates/origin_trials.cc.tmpl",
-           ]
-  outputs = [ "$blink_core_output_dir/origin_trials/origin_trials.cc" ]
-
-  args = [
-    rebase_path("../platform/runtime_enabled_features.json5", root_build_dir),
-    "--output_dir",
-    "$rel_blink_core_gen_dir/origin_trials",
-  ]
-}
-
 blink_python_runner("make_core_generated_web_origin_trials") {
   script = "../build/scripts/make_web_origin_trials.py"
 
@@ -1121,7 +1104,6 @@ targets_generating_sources = [
   ":make_core_generated_media_feature_names",
   ":make_core_generated_media_features",
   ":make_core_generated_media_type_names",
-  ":make_core_generated_origin_trials",
   ":make_core_generated_performance_entry_names",
   ":make_core_generated_permissions_policy_helper",
   ":make_core_generated_pointer_type_names",
@@ -1401,7 +1383,6 @@ source_set("unit_tests") {
     "messaging/message_port_descriptor_mojom_traits_test.cc",
     "mobile_metrics/mobile_friendliness_checker_test.cc",
     "origin_trials/origin_trial_context_test.cc",
-    "origin_trials/origin_trials_test.cc",
     "page/autoscroll_controller_test.cc",
     "page/chrome_client_impl_test.cc",
     "page/chrome_client_test.cc",

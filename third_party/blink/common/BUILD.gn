@@ -49,6 +49,27 @@ blink_python_runner("make_generated_document_policy_features") {
   ]
 }
 
+blink_python_runner("make_generated_origin_trials") {
+  script = "../renderer/build/scripts/make_origin_trials.py"
+
+  inputs = scripts_for_json5_files + [
+             "../renderer/build/scripts/make_origin_trials.py",
+             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/templates/origin_trials.cc.tmpl",
+           ]
+  outputs = [
+    "$root_gen_dir/third_party/blink/common/origin_trials/origin_trials.cc",
+  ]
+
+  args = [
+    rebase_path("../renderer/platform/runtime_enabled_features.json5",
+                root_build_dir),
+    "--output_dir",
+    rebase_path("$root_gen_dir/third_party/blink/common/origin_trials",
+                root_build_dir),
+  ]
+}
+
 config("blink_common_implementation") {
   defines = [ "BLINK_COMMON_IMPLEMENTATION=1" ]
 }
@@ -160,6 +181,7 @@ source_set("common") {
     "notifications/notification_mojom_traits.cc",
     "notifications/notification_resources.cc",
     "notifications/platform_notification_data.cc",
+    "origin_trials/navigation_origin_trial_features.cc",
     "origin_trials/trial_token.cc",
     "origin_trials/trial_token_result.cc",
     "origin_trials/trial_token_validator.cc",
@@ -202,10 +224,12 @@ source_set("common") {
   ]
 
   sources += get_target_outputs(":make_generated_document_policy_features")
+  sources += get_target_outputs(":make_generated_origin_trials")
   sources += get_target_outputs(":make_generated_permissions_policy_features")
 
   public_deps = [
     ":make_generated_document_policy_features",
+    ":make_generated_origin_trials",
     ":make_generated_permissions_policy_features",
     "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:common_export",
@@ -307,6 +331,7 @@ source_set("common_unittests_sources") {
     "messaging/message_port_descriptor_unittest.cc",
     "mime_util/mime_util_unittest.cc",
     "notifications/notification_mojom_traits_unittest.cc",
+    "origin_trials/origin_trials_test.cc",
     "origin_trials/trial_token_unittest.cc",
     "origin_trials/trial_token_validator_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",

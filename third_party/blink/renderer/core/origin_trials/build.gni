@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 blink_core_sources_origin_trials = [
-  "navigation_origin_trial_features.cc",
   "origin_trial_context.cc",
   "origin_trial_context.h",
-  "origin_trials.h",
 ]

@@ -7,3 +7,6 @@
 chasej@chromium.org
 iclelland@chromium.org
 mek@chromium.org
+
+per-file navigation_origin_trial_features.cc=set noparent
+per-file navigation_origin_trial_features.cc=file://third_party/blink/SECURITY_OWNERS
