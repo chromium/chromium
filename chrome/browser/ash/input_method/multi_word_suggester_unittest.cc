@@ -36,16 +36,16 @@ void SendKeyEvent(MultiWordSuggester* suggester, const ui::DomCode& code) {
 }
 
 void SetFirstAcceptTimeTo(Profile* profile, int days_ago) {
-  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
-                                        prefs::kAssistiveInputFeatureSettings);
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kAssistiveInputFeatureSettings);
   base::TimeDelta since_epoch = base::Time::Now() - base::Time::UnixEpoch();
   update->SetIntKey("multi_word_first_accept",
                     since_epoch.InDaysFloored() - days_ago);
 }
 
 std::optional<int> GetFirstAcceptTime(Profile* profile) {
-  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
-                                        prefs::kAssistiveInputFeatureSettings);
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kAssistiveInputFeatureSettings);
   auto value = update->FindIntKey("multi_word_first_accept");
   if (value.has_value())
     return value.value();
