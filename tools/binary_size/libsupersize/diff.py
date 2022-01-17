@@ -1,7 +1,7 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Logic for diffing two SizeInfo objects."""
+"""Logic for diffing two SizeInfo objects. See: ./docs/diffs.md"""
 
 import collections
 import itertools
@@ -149,7 +149,10 @@ def _DiffContainerLists(before_containers, after_containers):
 
 
 def Diff(before, after, sort=False):
-  """Diffs two SizeInfo objects. Returns a DeltaSizeInfo."""
+  """Diffs two SizeInfo objects. Returns a DeltaSizeInfo.
+
+  See docs/diffs.md for diffing algorithm.
+  """
   assert isinstance(before, models.SizeInfo)
   assert isinstance(after, models.SizeInfo)
   containers_diff = _DiffContainerLists(before.containers, after.containers)

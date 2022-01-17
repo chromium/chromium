@@ -199,6 +199,7 @@ class DiffHelper {
 
 namespace caspian {
 
+// See docs/diffs.md for diffing algorithm.
 DeltaSizeInfo Diff(const SizeInfo* before, const SizeInfo* after) {
   DeltaSizeInfo ret(before, after);
 

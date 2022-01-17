@@ -57,6 +57,7 @@ Each symbol contains the following fields:
 Diffs are represented in Python using `DeltaSizeInfo`, which contains a list of
 `DeltaSymbol` instances. `DeltaSymbols` maintain the full fidelity of symbols in
 the diff by storing a pointer to the before / after symbol that they represent.
+See [diffs.md](diffs.md) for more details.
 
 ## Concepts
 
