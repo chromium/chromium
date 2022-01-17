@@ -6,8 +6,10 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace apps {
+
 namespace {
-const apps::AppType app_type = apps::AppType::kArc;
+const AppType app_type = AppType::kArc;
 const char app_id[] = "abcdefgh";
 const char test_name_0[] = "Inigo Montoya";
 const char test_name_1[] = "Dread Pirate Roberts";
@@ -15,8 +17,8 @@ const char test_name_1[] = "Dread Pirate Roberts";
 
 class AppUpdateTest : public testing::Test {
  protected:
-  apps::Readiness expect_readiness_;
-  apps::Readiness expect_prior_readiness_;
+  Readiness expect_readiness_;
+  Readiness expect_prior_readiness_;
 
   std::string expect_name_;
   bool expect_name_changed_;
@@ -29,11 +31,15 @@ class AppUpdateTest : public testing::Test {
 
   std::string expect_version_;
 
-  absl::optional<apps::IconKey> expect_icon_key_;
+  absl::optional<IconKey> expect_icon_key_;
+
+  InstallReason expect_install_reason_;
+
+  InstallSource expect_install_source_;
 
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
-  void CheckExpects(const apps::AppUpdate& u) {
+  void CheckExpects(const AppUpdate& u) {
     EXPECT_EQ(expect_readiness_, u.GetReadiness());
     EXPECT_EQ(expect_prior_readiness_, u.GetPriorReadiness());
 
@@ -54,23 +60,29 @@ class AppUpdateTest : public testing::Test {
       ASSERT_FALSE(u.GetIconKey().has_value());
     }
 
+    EXPECT_EQ(expect_install_reason_, u.GetInstallReason());
+
+    EXPECT_EQ(expect_install_source_, u.GetInstallSource());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
-  void TestAppUpdate(apps::App* state, apps::App* delta) {
-    apps::AppUpdate u(state, delta, account_id_);
+  void TestAppUpdate(App* state, App* delta) {
+    AppUpdate u(state, delta, account_id_);
 
     EXPECT_EQ(app_type, u.GetAppType());
     EXPECT_EQ(app_id, u.GetAppId());
 
-    expect_readiness_ = apps::Readiness::kUnknown;
-    expect_prior_readiness_ = apps::Readiness::kUnknown;
+    expect_readiness_ = Readiness::kUnknown;
+    expect_prior_readiness_ = Readiness::kUnknown;
     expect_name_ = "";
     expect_short_name_ = "";
     expect_publisher_id_ = "";
     expect_description_ = "";
     expect_version_ = "";
     expect_icon_key_ = absl::nullopt;
+    expect_install_reason_ = InstallReason::kUnknown;
+    expect_install_source_ = InstallSource::kUnknown;
     CheckExpects(u);
 
     if (delta) {
@@ -88,8 +100,8 @@ class AppUpdateTest : public testing::Test {
     }
 
     if (delta) {
-      delta->readiness = apps::Readiness::kReady;
-      expect_readiness_ = apps::Readiness::kReady;
+      delta->readiness = Readiness::kReady;
+      expect_readiness_ = Readiness::kReady;
       CheckExpects(u);
 
       delta->name = absl::nullopt;
@@ -99,14 +111,16 @@ class AppUpdateTest : public testing::Test {
     }
 
     if (state) {
-      apps::AppUpdate::Merge(state, delta);
+      AppUpdate::Merge(state, delta);
       expect_prior_readiness_ = state->readiness;
+      EXPECT_EQ(expect_name_, state->name);
+      EXPECT_EQ(expect_readiness_, state->readiness);
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->readiness = apps::Readiness::kDisabledByPolicy;
-      expect_readiness_ = apps::Readiness::kDisabledByPolicy;
+      delta->readiness = Readiness::kDisabledByPolicy;
+      expect_readiness_ = Readiness::kDisabledByPolicy;
       delta->name = test_name_1;
       expect_name_ = test_name_1;
       expect_name_changed_ = true;
@@ -128,8 +142,9 @@ class AppUpdateTest : public testing::Test {
     }
 
     if (state) {
-      apps::AppUpdate::Merge(state, delta);
+      AppUpdate::Merge(state, delta);
       expect_prior_readiness_ = state->readiness;
+      EXPECT_EQ(expect_short_name_, state->short_name);
       CheckExpects(u);
     }
 
@@ -148,7 +163,8 @@ class AppUpdateTest : public testing::Test {
     }
 
     if (state) {
-      apps::AppUpdate::Merge(state, delta);
+      AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_publisher_id_, state->publisher_id);
       CheckExpects(u);
     }
 
@@ -167,7 +183,8 @@ class AppUpdateTest : public testing::Test {
     }
 
     if (state) {
-      apps::AppUpdate::Merge(state, delta);
+      AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_description_, state->description);
       CheckExpects(u);
     }
 
@@ -186,43 +203,85 @@ class AppUpdateTest : public testing::Test {
     }
 
     if (state) {
-      apps::AppUpdate::Merge(state, delta);
+      AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_version_, state->version);
       CheckExpects(u);
     }
 
     // IconKey tests.
 
     if (state) {
-      state->icon_key = apps::IconKey(100, 0, 0);
-      expect_icon_key_ = apps::IconKey(100, 0, 0);
+      state->icon_key = IconKey(100, 0, 0);
+      expect_icon_key_ = IconKey(100, 0, 0);
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->icon_key = apps::IconKey(200, 0, 0);
-      expect_icon_key_ = apps::IconKey(200, 0, 0);
+      delta->icon_key = IconKey(200, 0, 0);
+      expect_icon_key_ = IconKey(200, 0, 0);
       CheckExpects(u);
     }
 
     if (state) {
-      apps::AppUpdate::Merge(state, delta);
+      AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_icon_key_.value(), state->icon_key.value());
+      CheckExpects(u);
+    }
+
+    // InstallReason tests.
+    if (state) {
+      state->install_reason = InstallReason::kUser;
+      expect_install_reason_ = InstallReason::kUser;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->install_reason = InstallReason::kPolicy;
+      expect_install_reason_ = InstallReason::kPolicy;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_install_reason_, state->install_reason);
+      CheckExpects(u);
+    }
+
+    // InstallSource tests.
+    if (state) {
+      state->install_source = InstallSource::kPlayStore;
+      expect_install_source_ = InstallSource::kPlayStore;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->install_source = InstallSource::kSync;
+      expect_install_source_ = InstallSource::kSync;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_install_source_, state->install_source);
       CheckExpects(u);
     }
   }
 };
 
 TEST_F(AppUpdateTest, StateIsNonNull) {
-  apps::App state(app_type, app_id);
+  App state(app_type, app_id);
   TestAppUpdate(&state, nullptr);
 }
 
 TEST_F(AppUpdateTest, DeltaIsNonNull) {
-  apps::App delta(app_type, app_id);
+  App delta(app_type, app_id);
   TestAppUpdate(nullptr, &delta);
 }
 
 TEST_F(AppUpdateTest, BothAreNonNull) {
-  apps::App state(app_type, app_id);
-  apps::App delta(app_type, app_id);
+  App state(app_type, app_id);
+  App delta(app_type, app_id);
   TestAppUpdate(&state, &delta);
 }
+
+}  // namespace apps

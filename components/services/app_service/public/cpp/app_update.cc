@@ -197,7 +197,12 @@ void AppUpdate::Merge(App* state, const App* delta) {
   if (delta->icon_key.has_value()) {
     state->icon_key = CloneIconKey(delta->icon_key.value());
   }
-
+  if (delta->install_reason != InstallReason::kUnknown) {
+    state->install_reason = delta->install_reason;
+  }
+  if (delta->install_source != InstallSource::kUnknown) {
+    state->install_source = delta->install_source;
+  }
   // When adding new fields to the App type, this function should also be
   // updated.
 }
