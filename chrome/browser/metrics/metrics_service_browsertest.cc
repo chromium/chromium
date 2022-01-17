@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
   histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
   LOG(INFO) << histogram_tester.GetAllHistogramsRecorded();
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   base::HistogramTester histogram_tester;
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
 
   histogram_tester.ExpectUniqueSample("Tabs.SadTab.OomCreated", 1, 1);
 }
-#endif  // OS_WIN && !ADDRESS_SANITIZER
+#endif  // BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)
 
 // Base class for testing if browser-metrics files get removed or not.
 // The code under tests is run before any actual test methods so the test
