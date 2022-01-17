@@ -70,7 +70,7 @@ std::string ProtocolUtils::CreateGetScriptsRequest(
   script_proto.set_url(url.spec());
   *script_proto.mutable_client_context() = client_context;
   *script_proto.mutable_script_parameters() =
-      script_parameters.ToProto(/* only_trigger_script_allowlisted = */ false);
+      script_parameters.ToProto(/* only_non_sensitive_allowlisted = */ false);
   std::string serialized_script_proto;
   bool success = script_proto.SerializeToString(&serialized_script_proto);
   DCHECK(success);
@@ -126,7 +126,7 @@ std::string ProtocolUtils::CreateInitialScriptActionsRequest(
   query->set_policy(PolicyType::SCRIPT);
   *request_proto.mutable_client_context() = client_context;
   *initial_request_proto->mutable_script_parameters() =
-      script_parameters.ToProto(/* only_trigger_script_allowlisted = */ false);
+      script_parameters.ToProto(/* only_non_sensitive_allowlisted = */ false);
   if (!global_payload.empty()) {
     request_proto.set_global_payload(global_payload);
   }
@@ -455,7 +455,7 @@ std::string ProtocolUtils::CreateGetTriggerScriptsRequest(
   request_proto.set_url(url.spec());
   *request_proto.mutable_client_context() = client_context;
   *request_proto.mutable_script_parameters() =
-      script_parameters.ToProto(/* only_trigger_script_allowlisted = */ true);
+      script_parameters.ToProto(/* only_non_sensitive_allowlisted = */ true);
 
   std::string serialized_request_proto;
   bool success = request_proto.SerializeToString(&serialized_request_proto);

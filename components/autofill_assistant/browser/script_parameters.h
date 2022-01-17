@@ -32,10 +32,11 @@ class ScriptParameters {
   bool Matches(const ScriptParameterMatchProto& proto) const;
 
   // Returns a proto representation of this class. If
-  // |only_trigger_script_allowlisted| is set to true, this will only return the
-  // list of trigger-script-approved script parameters.
+  // |only_non_sensitive_allowlisted| is set to true, this will only return the
+  // list of non sensitive script parameters that client requests are allowed
+  // to send to the backend.
   google::protobuf::RepeatedPtrField<ScriptParameterProto> ToProto(
-      bool only_trigger_script_allowlisted = false) const;
+      bool only_non_sensitive_allowlisted = false) const;
 
   // Update the device only parameters. New parameters always take precedence.
   void UpdateDeviceOnlyParameters(

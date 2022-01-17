@@ -357,7 +357,7 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   ASSERT_THAT(script_parameters, Ne(absl::nullopt));
   EXPECT_THAT((*script_parameters)
                   ->ToProto(
-                      /* only_trigger_script_allowlisted = */ false),
+                      /* only_non_sensitive_allowlisted = */ false),
               ElementsAre(std::make_pair("param_1", "value_1"),
                           std::make_pair("param_2", "value_2")));
 }

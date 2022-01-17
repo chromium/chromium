@@ -103,9 +103,11 @@ const char kSourceParameterName[] = "SOURCE";
 // Parameter to specify experiments.
 const char kExperimentsParameterName[] = "EXPERIMENT_IDS";
 
-// The list of script parameters that trigger scripts are allowed to send to
-// the backend.
-constexpr std::array<const char*, 6> kAllowlistedTriggerScriptParameters = {
+// The list of non sensitive script parameters that client requests are allowed
+// to send to the backend i.e., they do not require explicit approval in the
+// autofill-assistant onboarding. Even so, please always reach out to Chrome
+// privacy when you plan to make use of this list, and/or adjust it.
+constexpr std::array<const char*, 6> kNonSensitiveScriptParameters = {
     "DEBUG_BUNDLE_ID",    "DEBUG_BUNDLE_VERSION",    "DEBUG_SOCKET_ID",
     "FALLBACK_BUNDLE_ID", "FALLBACK_BUNDLE_VERSION", kIntent};
 
@@ -156,10 +158,10 @@ bool ScriptParameters::Matches(const ScriptParameterMatchProto& proto) const {
 }
 
 google::protobuf::RepeatedPtrField<ScriptParameterProto>
-ScriptParameters::ToProto(bool only_trigger_script_allowlisted) const {
+ScriptParameters::ToProto(bool only_non_sensitive_allowlisted) const {
   google::protobuf::RepeatedPtrField<ScriptParameterProto> out;
-  if (only_trigger_script_allowlisted) {
-    for (const char* key : kAllowlistedTriggerScriptParameters) {
+  if (only_non_sensitive_allowlisted) {
+    for (const char* key : kNonSensitiveScriptParameters) {
       auto iter = parameters_.find(key);
       if (iter == parameters_.end()) {
         continue;
