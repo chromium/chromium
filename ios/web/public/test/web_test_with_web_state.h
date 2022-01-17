@@ -40,12 +40,22 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // Adds a pending item to the NavigationManager associated with the WebState.
   void AddPendingItem(const GURL& url, ui::PageTransition transition);
 
-  // Loads the specified HTML content with URL into the WebState.
+  // Loads the specified HTML content with URL into the WebState. Equivalent
+  // to calling `LoadHtmlInWebState(html, url, web_state())`.
   void LoadHtml(NSString* html, const GURL& url);
   // Loads the specified HTML content into the WebState, using test url name.
+  // Equivalent to calling `LoadHtmlInWebState(html, web_state())`.
   void LoadHtml(NSString* html);
   // Loads the specified HTML content into the WebState, using test url name.
+  // Equivalent to calling `LoadHtmlInWebState(html, web_state())`.
   [[nodiscard]] bool LoadHtml(const std::string& html);
+  // Loads the specified HTML content with URL into |web_state|.
+  void LoadHtmlInWebState(NSString* html, const GURL& url, WebState* web_state);
+  // Loads the specified HTML content into |web_state|, using test url name.
+  void LoadHtmlInWebState(NSString* html, WebState* web_state);
+  // Loads the specified HTML content into |web_state|, using test url name.
+  [[nodiscard]] bool LoadHtmlInWebState(const std::string& html,
+                                        WebState* web_state);
   // Loads the specified HTML content with URL into the WebState. None of the
   // subresources will be fetched.
   // This function is only supported on iOS11+. On iOS10, this function simply

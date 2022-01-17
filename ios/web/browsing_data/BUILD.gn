@@ -36,6 +36,7 @@ source_set("browsing_data_unittests") {
     "//ios/web/common:uikit",
     "//ios/web/net/cookies",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]

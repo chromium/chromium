@@ -235,7 +235,10 @@ source_set("unit_tests") {
       "//content/test:test_support",
     ]
   } else {
-    deps += [ "//ios/web/public/test" ]
+    deps += [
+      "//ios/web/public/test",
+      "//ios/web/public/test:test_fixture",
+    ]
   }
 }
 

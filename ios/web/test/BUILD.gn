@@ -61,6 +61,7 @@ source_set("test_support") {
     "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/navigation:core",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//ios/web/public/test/http_server",

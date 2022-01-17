@@ -82,6 +82,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/web",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//net:test_support",
     "//testing/gmock",

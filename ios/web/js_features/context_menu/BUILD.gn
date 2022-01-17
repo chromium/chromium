@@ -56,6 +56,7 @@ source_set("unittests") {
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/test/fakes",
     "//testing/gtest",
   ]

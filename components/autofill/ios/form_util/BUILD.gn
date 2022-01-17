@@ -93,6 +93,7 @@ source_set("test_support") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//testing/gtest",
   ]
 }
@@ -116,6 +117,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:form_handler_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//ios/web/web_state/js",
     "//testing/gtest",

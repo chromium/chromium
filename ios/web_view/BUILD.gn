@@ -479,6 +479,7 @@ test("ios_web_view_unittests") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

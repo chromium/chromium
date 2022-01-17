@@ -65,6 +65,8 @@ source_set("download_unittests") {
     "//ios/web/net/cookies",
     "//ios/web/public/download",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//ios/web/test/fakes",
     "//net",
@@ -89,6 +91,7 @@ source_set("download_inttests") {
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//net:test_support",
   ]

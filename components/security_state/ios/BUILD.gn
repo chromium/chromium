@@ -29,5 +29,6 @@ source_set("unit_tests") {
     "//components/security_state/core",
     "//ios/web/public/security",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
   ]
 }

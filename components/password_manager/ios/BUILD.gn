@@ -122,6 +122,7 @@ source_set("unit_tests") {
     "//components/password_manager/ios:password_manager_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",

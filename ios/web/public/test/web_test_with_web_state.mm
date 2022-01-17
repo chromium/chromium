@@ -118,16 +118,32 @@ bool WebTestWithWebState::LoadHtmlWithoutSubresources(const std::string& html) {
 }
 
 void WebTestWithWebState::LoadHtml(NSString* html, const GURL& url) {
-  web::test::LoadHtml(html, url, web_state());
+  LoadHtmlInWebState(html, url, web_state());
 }
 
 void WebTestWithWebState::LoadHtml(NSString* html) {
-  web::test::LoadHtml(html, web_state());
+  LoadHtmlInWebState(html, web_state());
 }
 
 bool WebTestWithWebState::LoadHtml(const std::string& html) {
-  LoadHtml(base::SysUTF8ToNSString(html));
-  // TODO(crbug.com/780062): LoadHtml(NSString*) should return bool.
+  return LoadHtmlInWebState(html, web_state());
+}
+
+void WebTestWithWebState::LoadHtmlInWebState(NSString* html,
+                                             const GURL& url,
+                                             WebState* web_state) {
+  web::test::LoadHtml(html, url, web_state);
+}
+
+void WebTestWithWebState::LoadHtmlInWebState(NSString* html,
+                                             WebState* web_state) {
+  web::test::LoadHtml(html, web_state);
+}
+
+bool WebTestWithWebState::LoadHtmlInWebState(const std::string& html,
+                                             WebState* web_state) {
+  LoadHtmlInWebState(base::SysUTF8ToNSString(html), web_state);
+  // TODO(crbug.com/780062): LoadHtmlInWebState(NSString*) should return bool.
   return true;
 }
 

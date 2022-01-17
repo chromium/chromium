@@ -37,6 +37,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//testing/gtest",
   ]
 

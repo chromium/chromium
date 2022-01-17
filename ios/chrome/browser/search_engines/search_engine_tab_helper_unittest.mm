@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/web/chrome_web_test.h"
-#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -232,7 +231,7 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.
-  web::test::LoadHtml(@"<html></html>", page_url, incognito_web_state());
+  LoadHtmlInWebState(@"<html></html>", page_url, incognito_web_state());
   SearchEngineTabHelper::FromWebState(incognito_web_state())
       ->AddTemplateURLByOSDD(page_url, osdd_url);
 
@@ -264,7 +263,7 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.
-  web::test::LoadHtml(html, page_url, incognito_web_state());
+  LoadHtmlInWebState(html, page_url, incognito_web_state());
   SearchEngineTabHelper::FromWebState(incognito_web_state())
       ->SetSearchableUrl(searchable_url);
   SubmitWebViewFormWithId(incognito_web_state(), "f");

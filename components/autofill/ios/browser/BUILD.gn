@@ -129,6 +129,7 @@ source_set("unit_tests") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",

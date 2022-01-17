@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//components/language/ios/browser",
     "//components/resources",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//testing/gtest",
     "//ui/base",
     "//url",

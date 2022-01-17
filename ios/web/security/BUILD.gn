@@ -51,6 +51,7 @@ source_set("unittests") {
     "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//ios/web/test/fakes",
     "//ios/web/web_state:web_state_impl_header",
