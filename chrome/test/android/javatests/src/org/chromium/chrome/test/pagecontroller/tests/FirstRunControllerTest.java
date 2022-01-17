@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.pagecontroller.controllers.first_run.TOSController;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
@@ -44,6 +45,7 @@ public class FirstRunControllerTest {
         mChromeUiRule.launchApplication();
     }
 
+    @DisabledTest(message = "https://crbug.com/1286635")
     @Test
     public void testFirstRunIsShown() {
         Assert.assertTrue("TOS page should be shown.",
