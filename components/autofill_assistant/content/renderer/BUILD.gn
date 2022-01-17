@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [ "model_metadata.proto" ]
+}
+
 static_library("renderer") {
   sources = [
     "autofill_assistant_agent.cc",
@@ -9,6 +15,7 @@ static_library("renderer") {
   ]
 
   deps = [
+    ":proto",
     "//components/autofill_assistant/content/common:common",
     "//components/autofill_assistant/content/common:mojo_interfaces",
     "//content/public/common:common",
