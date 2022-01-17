@@ -24,6 +24,15 @@ class SystemExtensionsProvider : public KeyedService {
   static SystemExtensionsProvider* Get(Profile* profile);
   static bool IsEnabled();
 
+  // TODO(crbug.com/1272371): Remove when APIs can be accessed in a less hacky
+  // way.
+  // If true, System Extension APIs will be bound on all service workers. This
+  // is being added temporarily for development. Use in conjunction with e.g
+  // --enable-blink-features=BlinkExtensionChromeOS,
+  //                         BlinkExtensionChromeOSWindowManagement
+  // to use regular service workers to test your System Extension APIs.
+  static bool IsDebugMode();
+
   explicit SystemExtensionsProvider(Profile* profile);
   SystemExtensionsProvider(const SystemExtensionsProvider&) = delete;
   SystemExtensionsProvider& operator=(const SystemExtensionsProvider&) = delete;

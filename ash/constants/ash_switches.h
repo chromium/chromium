@@ -249,6 +249,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSupportsClamshellAutoRotation[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuppressMessageCenterPopups[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSystemExtensionsDebug[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTelemetryExtensionDirectory[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTestEncryptionMigrationUI[];

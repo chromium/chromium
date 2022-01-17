@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
@@ -25,6 +27,12 @@ SystemExtensionsProvider* SystemExtensionsProvider::Get(Profile* profile) {
 // static
 bool SystemExtensionsProvider::IsEnabled() {
   return base::FeatureList::IsEnabled(ash::features::kSystemExtensions);
+}
+
+// static
+bool SystemExtensionsProvider::IsDebugMode() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kSystemExtensionsDebug);
 }
 
 SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {

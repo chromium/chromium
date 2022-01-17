@@ -369,9 +369,11 @@ void ChromeContentBrowserClient::
            mojo::PendingReceiver<blink::mojom::CrosWindowManagement> receiver) {
           DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-          if (!SystemExtension::IsSystemExtensionOrigin(
-                  info.storage_key.origin()))
+          if (!SystemExtensionsProvider::IsDebugMode() &&
+              !SystemExtension::IsSystemExtensionOrigin(
+                  info.storage_key.origin())) {
             return;
+          }
 
           content::RenderProcessHost* render_process_host =
               content::RenderProcessHost::FromID(info.process_id);

@@ -774,6 +774,10 @@ const char kSupportsClamshellAutoRotation[] =
 // Hides all Message Center notification popups (toasts). Used for testing.
 const char kSuppressMessageCenterPopups[] = "suppress-message-center-popups";
 
+// Enables System Extensions Debug mode e.g Force enable System Extensions APIs
+// on all Service Workers.
+const char kSystemExtensionsDebug[] = "system-extensions-debug";
+
 // Specifies directory for the Telemetry System Web Extension.
 const char kTelemetryExtensionDirectory[] = "telemetry-extension-dir";
 
