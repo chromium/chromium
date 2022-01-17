@@ -427,10 +427,6 @@ def main():
 
   args, _extras = parser.parse_known_args()
 
-  # Use CWD as out_dir when build.ninja exists.
-  if not args.out_dir and os.path.exists('build.ninja'):
-    args.out_dir = '.'
-
   if args.out_dir:
     constants.SetOutputDirectory(args.out_dir)
   constants.CheckOutputDirectory()
