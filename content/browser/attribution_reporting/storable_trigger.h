@@ -34,23 +34,23 @@ class CONTENT_EXPORT StorableTrigger {
   StorableTrigger& operator=(StorableTrigger&& other);
   ~StorableTrigger();
 
-  [[nodiscard]] uint64_t trigger_data() const { return trigger_data_; }
+  uint64_t trigger_data() const { return trigger_data_; }
 
-  [[nodiscard]] const net::SchemefulSite& conversion_destination() const {
+  const net::SchemefulSite& conversion_destination() const {
     return conversion_destination_;
   }
 
-  [[nodiscard]] const url::Origin& reporting_origin() const {
+  const url::Origin& reporting_origin() const {
     return reporting_origin_;
   }
 
-  [[nodiscard]] uint64_t event_source_trigger_data() const {
+  uint64_t event_source_trigger_data() const {
     return event_source_trigger_data_;
   }
 
-  [[nodiscard]] int64_t priority() const { return priority_; }
+  int64_t priority() const { return priority_; }
 
-  [[nodiscard]] const absl::optional<int64_t>& dedup_key() const {
+  const absl::optional<int64_t>& dedup_key() const {
     return dedup_key_;
   }
 
