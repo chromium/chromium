@@ -2444,8 +2444,16 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
           SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND));
 }
 
+// Test failure on macOS: crbug.com/1287901
+#if defined(OS_MAC)
+#define MAYBE_AppendRecentNavigationsToEmptyReferrerChain \
+  DISABLED_AppendRecentNavigationsToEmptyReferrerChain
+#else
+#define MAYBE_AppendRecentNavigationsToEmptyReferrerChain \
+  AppendRecentNavigationsToEmptyReferrerChain
+#endif
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
-                       AppendRecentNavigationsToEmptyReferrerChain) {
+                       MAYBE_AppendRecentNavigationsToEmptyReferrerChain) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kSingleFrameTestURL)));
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
