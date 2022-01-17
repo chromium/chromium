@@ -338,19 +338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.ClearBrowsingData.TimeSpentInDialog" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>dullweber@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Time spent in Clear Browsing Data dialog. From opening the dialog until data
-    is cleared. This does not record users who exit the dialog without clearing.
-  </summary>
-</histogram>
-
 <histogram name="History.ClearBrowsingData.UserDeletedCookieOrCache"
     enum="CookieOrCacheDeletion" expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->
@@ -775,48 +762,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DomainCount1Day" units="domains"
-    expires_after="2022-06-19">
-  <obsolete>
-    Replaced in M99 by History.DomainCount1Day_V2, which limits the metric
-    recording to regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    Number of unique domains visited by the user within a calendar day in user's
-    local timezone. For each profile, reported at profile open (which usually
-    happens at startup) for each unreported day (up to 7 days) prior to the
-    current date, and also reported once every 24 hours thereafter for the
-    latest unreported day, while the profile remains open. If no domains are
-    visited in a given day, a count of 0 will be reported for that day.
-
-    Warning: this histogram is logged incorrectly on ChromeOS. See
-    http://crbug.com/1237591
-
-    Warning about delayed data: Chrome may upload logs on a given day without
-    uploading this histogram. This can happen because Chrome uploads logs
-    initially upon startup. This histogram is emitted shortly _after_ startup.
-    In the case of short sessions, it's possible the log with this histogram did
-    not have time to be uploaded. Generally the log will be cached and uploaded
-    the next time the user starts Chrome. We should still get one count per
-    calendar day; it simply may not be on the day the metric was computed.
-    (Exception: on Android before M-91, sometimes these emitted histograms were
-    lost due to lack of robust &quot;background logging&quot;.)
-
-    Note: for users syncing between multiple devices, this count may include
-    some URLs/domains that weren't visited on this device. In other words, some
-    domains may be counted for multiple client_ids even though they were only
-    visited once, on one device. However, at this time (Feb 2020), only URLs
-    navigated to via the omnibox (&quot;typed URLs&quot;) are synced, not all
-    visited URLs. There are no plans to change this behavior. As such, because
-    the mis-counting only occurs for users who are syncing across multiple
-    devices and only for a subset of visited URLs, the effect of double-counting
-    is likely to be small.
-  </summary>
-</histogram>
-
 <histogram name="History.DomainCount1Day_V2" units="domains"
     expires_after="2022-06-19">
   <owner>mpearson@chromium.org</owner>
@@ -830,49 +775,6 @@ chromium-metrics-reviews@google.com.
     once every 24 hours thereafter for the latest unreported day, while the
     profile remains open. If no domains are visited in a given day, a count of 0
     will be reported for that day.
-
-    Warning about delayed data: Chrome may upload logs on a given day without
-    uploading this histogram. This can happen because Chrome uploads logs
-    initially upon startup. This histogram is emitted shortly _after_ startup.
-    In the case of short sessions, it's possible the log with this histogram did
-    not have time to be uploaded. Generally the log will be cached and uploaded
-    the next time the user starts Chrome. We should still get one count per
-    calendar day; it simply may not be on the day the metric was computed.
-    (Exception: on Android before M-91, sometimes these emitted histograms were
-    lost due to lack of robust &quot;background logging&quot;.)
-
-    Note: for users syncing between multiple devices, this count may include
-    some URLs/domains that weren't visited on this device. In other words, some
-    domains may be counted for multiple client_ids even though they were only
-    visited once, on one device. However, at this time (Feb 2020), only URLs
-    navigated to via the omnibox (&quot;typed URLs&quot;) are synced, not all
-    visited URLs. There are no plans to change this behavior. As such, because
-    the mis-counting only occurs for users who are syncing across multiple
-    devices and only for a subset of visited URLs, the effect of double-counting
-    is likely to be small.
-  </summary>
-</histogram>
-
-<histogram name="History.DomainCount28Day" units="domains"
-    expires_after="2022-06-19">
-  <obsolete>
-    Replaced in M99 by History.DomainCount28Day_V2, which limits the metric
-    recording to regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    Number of unique domains visited by the user within a 28 calendar day period
-    in user's local timezone. For each profile, reported at profile open (which
-    usually happens at startup) for each unreported 28-day period (up to 7
-    periods) ending on the current day, current day - 1, current day - 2, etc.
-    Also reported once every 24 hours thereafter for the latest unreported
-    period, while the profile remains open. If no domains are visited during a
-    28-day period, a count of 0 will be reported for that period.
-
-    Warning: this histogram is logged incorrectly on ChromeOS. See
-    http://crbug.com/1237591
 
     Warning about delayed data: Chrome may upload logs on a given day without
     uploading this histogram. This can happen because Chrome uploads logs
@@ -933,49 +835,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DomainCount7Day" units="domains"
-    expires_after="2022-06-19">
-  <obsolete>
-    Replaced in M99 by History.DomainCount7Day_V2, which limits the metric
-    recording to regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    Number of unique domains visited by the user within a 7 calendar day period
-    in user's local timezone. For each profile, reported at profile open (which
-    usually happens at startup) for each unreported 7-day period (up to 7
-    periods) ending on the current day, current day - 1, current day - 2, etc.
-    Also reported once every 24 hours thereafter for the latest unreported
-    period, while the profile remains open. If no domains are visited during a
-    7-day period, a count 0 will be reported for that period.
-
-    Warning: this histogram is logged incorrectly on ChromeOS. See
-    http://crbug.com/1237591
-
-    Warning about delayed data: Chrome may upload logs on a given day without
-    uploading this histogram. This can happen because Chrome uploads logs
-    initially upon startup. This histogram is emitted shortly _after_ startup.
-    In the case of short sessions, it's possible the log with this histogram did
-    not have time to be uploaded. Generally the log will be cached and uploaded
-    the next time the user starts Chrome. We should still get one count per
-    calendar day; it simply may not be on the day the metric was computed.
-    (Exception: on Android before M-91, sometimes these emitted histograms were
-    lost due to lack of robust &quot;background logging&quot;.)
-
-    Note: for users syncing between multiple devices, this count may include
-    some URLs/domains that weren't visited on this device. In other words, some
-    domains may be counted for multiple client_ids even though they were only
-    visited once, on one device. However, at this time (Feb 2020), only URLs
-    navigated to via the omnibox (&quot;typed URLs&quot;) are synced, not all
-    visited URLs. There are no plans to change this behavior. As such, because
-    the mis-counting only occurs for users who are syncing across multiple
-    devices and only for a subset of visited URLs, the effect of double-counting
-    is likely to be small.
-  </summary>
-</histogram>
-
 <histogram name="History.DomainCount7Day_V2" units="domains"
     expires_after="2022-06-19">
   <owner>mpearson@chromium.org</owner>
@@ -1010,26 +869,6 @@ chromium-metrics-reviews@google.com.
     the mis-counting only occurs for users who are syncing across multiple
     devices and only for a subset of visited URLs, the effect of double-counting
     is likely to be small.
-  </summary>
-</histogram>
-
-<histogram name="History.DomainCountQueryTime" units="ms"
-    expires_after="2022-02-20">
-  <obsolete>
-    Replaced in M99 by History.DomainCountQueryTime_V2, which limits the metric
-    recording to regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    Time spent on a scheduled computation task of domain visit counts. Each such
-    task computes a number of (at least 1 and up to 7) sets of domain counts,
-    where each set includes 3 results, for a 1-day, 7-day and 28-day period
-    respectively. Note that for each computation task, only one query time is
-    reported which covers the entire duration of the task. A task is scheduled
-    once per profile at startup and every 24 hours per profile thereafter while
-    the profile remains open.
   </summary>
 </histogram>
 
@@ -1174,24 +1013,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.InMemoryDBPopulate" units="ms"
-    expires_after="2022-07-30">
-  <obsolete>
-    Removed August 2021 because it was not meaningful. It did not seem to
-    reflect anything about the user experience or about contention in the
-    system; it moved in unexpected ways.
-  </obsolete>
-  <owner>sky@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <summary>
-    The time it takes to read the typed URLs from the main history database into
-    the &quot;in memory&quot; history database. This in memory copy of the typed
-    URLs is used for synchronous inline autocomplete on the UI thread, while the
-    larger slower service is run off of disk on a background thread. Recorded on
-    profile open.
-  </summary>
-</histogram>
-
 <histogram name="History.InMemoryURLHistoryItems" units="items"
     expires_after="2022-06-12">
   <owner>mpearson@chromium.org</owner>
@@ -1282,19 +1103,6 @@ chromium-metrics-reviews@google.com.
     Unique URLs in History database urls table with last-visit times in the last
     30 days. Metrics are logged on initialization of the History DB on 0.3% of
     starts.
-  </summary>
-</histogram>
-
-<histogram name="History.MonthlyVisitCount" units="visits"
-    expires_after="2021-10-04">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>
-    Number of rows in History visits table with visit times in the last 30 days.
-    Metrics are logged on initialization of the History DB on 1% of starts.
   </summary>
 </histogram>
 
@@ -1449,19 +1257,6 @@ chromium-metrics-reviews@google.com.
     Unique URLs in History database urls table with last-visit times in the last
     7 days. Metrics are logged on initialization of the History DB on 0.3% of
     starts.
-  </summary>
-</histogram>
-
-<histogram name="History.WeeklyVisitCount" units="visits"
-    expires_after="2021-10-04">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>
-    Number of rows in History visits table with visit times in the last 7 days.
-    Metrics are logged on initialization of the History DB on 1% of starts.
   </summary>
 </histogram>
 
