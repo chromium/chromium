@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from './assert.js';
+import {assertExists, assertInstanceof} from './assert.js';
 import {AsyncJobQueue} from './async_job_queue.js';
 
 const jobQueueMap = new Map<HTMLElement, AsyncJobQueue>();
@@ -14,7 +14,8 @@ function getQueueFor(el: HTMLElement): AsyncJobQueue {
   if (!jobQueueMap.has(el)) {
     jobQueueMap.set(el, new AsyncJobQueue());
   }
-  return jobQueueMap.get(el);
+  // We just set the map value if it's not in the jobQueueMap already.
+  return assertExists(jobQueueMap.get(el));
 }
 
 /**
@@ -64,7 +65,7 @@ export async function cancelOnChild(el: HTMLElement): Promise<void> {
  *     specifies whether the animation is applied to all subtree children.
  * @return Promise resolved when the animation is settled.
  */
-function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
+async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
     Promise<void> {
   doCancel({el, onChild});
   const queue = getQueueFor(el);
@@ -78,7 +79,7 @@ function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
         getAnimations({el, onChild}).map((a) => a.finished));
     el.classList.remove('animate');
   };
-  return queue.push(job);
+  await queue.push(job);
 }
 
 /**
