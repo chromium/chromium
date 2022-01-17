@@ -793,7 +793,8 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {
   EXPECT_EQ(3u, alloc_miss_too_large_counter.Delta());
 }
 
-TEST_F(PartitionAllocThreadCacheTest, DynamicSizeThresholdPurge) {
+// Disabled due to flakiness: crbug.com/1287811
+TEST_F(PartitionAllocThreadCacheTest, DISABLED_DynamicSizeThresholdPurge) {
   auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
