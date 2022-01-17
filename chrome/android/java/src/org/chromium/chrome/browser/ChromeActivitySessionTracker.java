@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.metrics.VariationsSession;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.password_manager.PasswordManagerLifecycleHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -162,6 +163,7 @@ public class ChromeActivitySessionTracker {
         mPowerBroadcastReceiver.onForegroundSessionStart();
         AppHooks.get().getChimeDelegate().startSession();
         ReadingListBridge.onStartChromeForeground();
+        PasswordManagerLifecycleHelper.getInstance().onStartForegroundSession();
 
         // Track the ratio of Chrome startups that are caused by notification clicks.
         // TODO(johnme): Add other reasons (and switch to recordEnumeratedHistogram).
