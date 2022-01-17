@@ -325,10 +325,8 @@ void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
   screen_name[0] = std::toupper(screen_name[0]);
   std::string histogram_name_with_reason =
       "OOBE.StepCompletionTimeByExitReason." + screen_name + "." + exit_reason;
-  base::HistogramBase* histogram_with_reason = base::Histogram::FactoryTimeGet(
-      histogram_name_with_reason, base::Milliseconds(10), base::Minutes(10),
-      100, base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram_with_reason->AddTime(step_time);
+  base::UmaHistogramCustomTimes(histogram_name_with_reason, step_time,
+                                base::Milliseconds(10), base::Minutes(10), 100);
 }
 
 LoginDisplayHost* GetLoginDisplayHost() {
