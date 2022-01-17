@@ -2654,7 +2654,8 @@ TEST_F(CaptureModeRecordingSizeTest, CaptureAtPixelsFullscreen) {
                    ->GetNumberOfVideoEncoderReconfigures());
 }
 
-TEST_F(CaptureModeRecordingSizeTest, CaptureAtPixelsRegion) {
+// The test is flaky. https://crbug.com/1287724.
+TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   auto* controller = StartVideoRecording(CaptureModeSource::kRegion);
@@ -2699,7 +2700,8 @@ TEST_F(CaptureModeRecordingSizeTest, CaptureAtPixelsRegion) {
                    ->GetNumberOfVideoEncoderReconfigures());
 }
 
-TEST_F(CaptureModeRecordingSizeTest, CaptureAtPixelsWindow) {
+// The test is flaky. https://crbug.com/1287724.
+TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   auto* controller = StartVideoRecording(CaptureModeSource::kWindow);
