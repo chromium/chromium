@@ -62,20 +62,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.DaysBetweenRepeatedOriginEvictions" units="units"
-    expires_after="2021-11-29">
-  <obsolete>
-    Removed as of 2021/05.
-  </obsolete>
-  <owner>jarrydg@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The number of days since an origin was last chosen to be evicted from the
-    storage, recorded each time the origin is evicted (except for the first
-    eviction).
-  </summary>
-</histogram>
-
 <histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2022-06-19">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -127,50 +113,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.EvictedOriginAccessCount" units="units"
-    expires_after="2021-09-19">
-  <obsolete>
-    Removed as of 2021/07. Replaced by Quota.EvictedBucketAccessCount.
-  </obsolete>
-  <owner>jarrydg@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The number of times the evicted storage key was accessed. Logged when the
-    storage key is evicted. Prior to M93, evictions were based on the Origin,
-    not StorageKey, but we chose not to rename the metric in order to maintain
-    historical data.
-  </summary>
-</histogram>
-
-<histogram name="Quota.EvictedOriginDaysSinceAccess" units="units"
-    expires_after="2021-09-19">
-  <obsolete>
-    Removed as of 2021/07. Replaced by Quota.EvictedBucketDaysSinceAccess.
-  </obsolete>
-  <owner>jarrydg@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The number of days since the evicted storage key was last accessed. Logged
-    when the storage key is evicted. Prior to M93, evictions were based on the
-    Origin, not StorageKey, but we chose not to rename the metric in order to
-    maintain historical data.
-  </summary>
-</histogram>
-
-<histogram name="Quota.EvictedOriginsPerHour" units="units"
-    expires_after="2021-09-05">
-  <obsolete>
-    Removed as of 2021/07. Replaced by Quota.EvictedBucketPerHour.
-  </obsolete>
-  <owner>jarrydg@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Number of evicted storage keys in an hour. Prior to M93, evictions were
-    based on the Origin, not StorageKey, but we chose not to rename the metric
-    in order to maintain historical data.
-  </summary>
-</histogram>
-
 <histogram name="Quota.EvictionRoundsPerHour" units="units"
     expires_after="2020-10-18">
   <owner>jarrydg@chromium.org</owner>
@@ -204,33 +146,6 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Number of evicted buckets per round.</summary>
-</histogram>
-
-<histogram name="Quota.NumberOfEvictedOriginsPerRound" units="units"
-    expires_after="2022-05-18">
-  <obsolete>
-    Removed as of 2021/07. Replaced by Quota.NumberOfEvictedBucketsPerRound.
-  </obsolete>
-  <owner>jarrydg@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Number of evicted storage keys per round. Prior to M93, evictions were based
-    on the Origin, not StorageKey, but we chose not to rename the metric in
-    order to maintain historical data.
-  </summary>
-</histogram>
-
-<histogram name="Quota.OSAccomodationDelta" units="MB" expires_after="M85">
-  <obsolete>
-    Expired in M85.
-  </obsolete>
-  <owner>jarrydg@chromium.org</owner>
-  <summary>
-    If our hardcoded OS accomodation is too large for the volume size, we define
-    the value as a fraction of the total volume size instead. The
-    OSAccomodationDelta is the difference between the hardcoded and computed
-    values.
-  </summary>
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"
