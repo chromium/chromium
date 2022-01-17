@@ -239,6 +239,7 @@
 <translation id="1235458158152011030">เครือข่ายที่รู้จัก</translation>
 <translation id="123578888592755962">ดิสก์เต็ม</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ข้อความ}other{# ข้อความ}}</translation>
+<translation id="1236009322878349843">แก้ไขโทรศัพท์</translation>
 <translation id="1239594683407221485">สำรวจเนื้อหาของอุปกรณ์ในแอป Files</translation>
 <translation id="1241066500170667906">เลือกสถานะการทดสอบสำหรับ<ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">ภาษาเพิ่มเติม</translation>
@@ -1940,6 +1941,7 @@
 <translation id="2939908794993783865">เว็บไซต์อื่นที่ไม่ได้ใช้งาน</translation>
 <translation id="2939938020978911855">แสดงอุปกรณ์บลูทูธที่ใช้ได้</translation>
 <translation id="2941112035454246133">ต่ำ</translation>
+<translation id="2941696810925320401">เว็บไซต์มักจะเปิดและวางหน้าต่างเพื่อแสดงเอกสารเพิ่มเติมหรือเนื้อหาแบบเต็มหน้าจอบนหน้าจอของคุณ</translation>
 <translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">กำลังรอ...</translation>
 <translation id="2942581856830209953">ปรับแต่งหน้านี้</translation>
@@ -2092,6 +2094,7 @@
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{ระบบปิดส่วนขยายที่อาจเป็นอันตรายไป 1 รายการ คุณจะนำส่วนขยายนี้ออกก็ได้}other{ระบบปิดส่วนขยายที่อาจเป็นอันตรายไป {NUM_EXTENSIONS} รายการ คุณจะนำส่วนขยายเหล่านี้ออกก็ได้}}</translation>
 <translation id="3101126716313987672">แสงสลัว</translation>
 <translation id="3101709781009526431">วันที่และเวลา</translation>
+<translation id="3103451787721578293">โปรดป้อนเหตุผลของการอัปโหลดข้อมูลนี้</translation>
 <translation id="3103941660000130485">เกิดข้อผิดพลาดในการอัปเกรด Linux</translation>
 <translation id="3105796011181310544">ต้องการเปลี่ยนกลับไปใช้ Google ไหม</translation>
 <translation id="310671807099593501">เว็บไซต์กำลังใช้บลูทูธ</translation>
@@ -2617,6 +2620,7 @@
 <translation id="3670113805793654926">อุปกรณ์จากผู้ให้บริการรายใดก็ได้</translation>
 <translation id="3670229581627177274">เปิดบลูทูธ</translation>
 <translation id="3672681487849735243">ตรวจพบข้อผิดพลาดจากโรงงาน</translation>
+<translation id="3673097791729989571">การลงชื่อเข้าใช้ที่โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
 <translation id="367645871420407123">เว้นว่างไว้หากคุณต้องการตั้งรหัสผ่านระดับรูทเป็นภาพทดสอบเริ่มต้น</translation>
 <translation id="3677106374019847299">ป้อนชื่อผู้ให้บริการที่กำหนดเอง</translation>
 <translation id="3677911431265050325">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
@@ -3399,6 +3403,7 @@
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4481530544597605423">อุปกรณ์ที่ไม่ได้จับคู่</translation>
 <translation id="4482990632723642375">แท็บที่เพิ่งปิด</translation>
+<translation id="4484922932728109422">ไม่อนุญาตให้เว็บไซต์ใช้ข้อมูลเกี่ยวกับหน้าจอเพื่อเปิดและวางหน้าต่าง</translation>
 <translation id="4487489714832036847">Chromebook จะใช้งานแอปแทนซอฟต์แวร์ดั้งเดิม รับแอปเพื่อประสิทธิภาพการทำงาน ความบันเทิง และอื่นๆ</translation>
 <translation id="4488257340342212116">ได้รับอนุญาตให้ใช้กล้อง</translation>
 <translation id="4488502501195719518">ล้างข้อมูลทั้งหมดไหม</translation>
@@ -3481,6 +3486,7 @@
 <translation id="4565917129334815774">จัดเก็บบันทึกระบบ</translation>
 <translation id="4566417217121906555">ปิดเสียงไมโครโฟน</translation>
 <translation id="456717285308019641">ภาษาปลายทางของหน้า</translation>
+<translation id="4567512141633030272">หากตัวเลือกการลงชื่อเข้าใช้ไม่ถูกต้อง</translation>
 <translation id="4567533462991917415">คุณเพิ่มคนได้อีกเสมอหลังจากตั้งค่าแล้ว โดยแต่ละคนจะปรับเปลี่ยนการตั้งค่าบัญชีในแบบของตนและเก็บเป็นข้อมูลส่วนตัวได้</translation>
 <translation id="4567772783389002344">เพิ่มคำ</translation>
 <translation id="4568025708905928793">กำลังขอคีย์ความปลอดภัย</translation>
@@ -3726,6 +3732,7 @@
 <translation id="4841741146571978176">ไม่มีเครื่องเสมือนที่จำเป็น โปรดลองตั้งค่า <ph name="VM_TYPE" /> เพื่อดำเนินการต่อ</translation>
 <translation id="4842976633412754305">หน้านี้พยายามโหลดสคริปต์จากแหล่งที่มาที่ไม่มีการรับรอง</translation>
 <translation id="4844333629810439236">แป้นพิมพ์อื่นๆ</translation>
+<translation id="4844633725025837809">เข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="4846680374085650406">คุณทำตามคำแนะนำของผู้ดูแลระบบสำหรับการตั้งค่านี้</translation>
 <translation id="4847902821209177679">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> อยู่ กด Enter เพื่อเลือกอัลบั้ม <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">"Ok Google" ใน Google Assistant</translation>
@@ -3866,6 +3873,7 @@
 <translation id="499165176004408815">ใช้โหมดคอนทราสต์สูง</translation>
 <translation id="4992458225095111526">ยืนยัน Powerwash</translation>
 <translation id="4992473555164495036">ผู้ดูแลระบบจำกัดวิธีการป้อนข้อมูลที่ใช้ได้เอาไว้</translation>
+<translation id="4992984395680162305">อุปกรณ์เหล่านี้ลิงก์ด้วยการสแกนคิวอาร์โค้ด</translation>
 <translation id="4994474651455208930">อนุญาตให้ไซต์แจ้งขอเป็นตัวจัดการเริ่มต้นสำหรับโปรโตคอล</translation>
 <translation id="4994754230098574403">กำลังตั้งค่า</translation>
 <translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />ก่อนลงทะเบียน คุณต้องล้างข้อมูลใน TPM เพื่อให้ <ph name="DEVICE_OS" /> เข้าเป็นเจ้าของอุปกรณ์ได้<ph name="END_PARAGRAPH1" />
@@ -3984,6 +3992,7 @@
 <translation id="5123433949759960244">บาสเกตบอล</translation>
 <translation id="5125751979347152379">URL ไม่ถูกต้อง</translation>
 <translation id="5126611267288187364">ดูการเปลี่ยนแปลง</translation>
+<translation id="5127242257756472928">ไม่ได้รับอนุญาตให้ใช้ข้อมูลเกี่ยวกับหน้าจอเพื่อเปิดและวางหน้าต่าง</translation>
 <translation id="5127620150973591153">รหัสการเชื่อมต่อที่ปลอดภัย: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">การซิงค์ปิดอยู่</translation>
 <translation id="5127881134400491887">จัดการการเชื่อมต่อเครือข่าย</translation>
@@ -4096,6 +4105,7 @@
 <translation id="5243522832766285132">โปรดลองอีกครั้งในอีกสักครู่</translation>
 <translation id="5244474230056479698">กำลังซิงค์กับ <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">เริ่มต้นใช้งานบัญชีโรงเรียน</translation>
+<translation id="5246036036039717045">อุปกรณ์เหล่านี้ใช้เป็นคีย์ความปลอดภัยได้เนื่องจากคุณลงชื่อเข้าใช้ Chrome ในอุปกรณ์ดังกล่าว</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ขัดข้อง คลิกที่บอลลูนนี้เพื่อรีสตาร์ตแอปพลิเคชันนี้</translation>
 <translation id="5247051749037287028">ชื่อที่แสดง (ไม่บังคับ)</translation>
 <translation id="5249624017678798539">เบราว์เซอร์ขัดข้องก่อนที่จะดาวน์โหลดเสร็จ</translation>
@@ -4584,6 +4594,7 @@
 <translation id="5757375109985023827">เลือกแท็บเพื่อแสดงตัวอย่าง</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> สามารถอ่านเอกสารที่คุณส่งไปพิมพ์ผ่าน <ph name="APP_NAME" /> ได้</translation>
+<translation id="5762787084360227629">ป้อนข้อมูลบัญชี Google</translation>
 <translation id="5763751966069581670">ไม่พบอุปกรณ์ USB</translation>
 <translation id="5764483294734785780">บั&amp;นทึกวิดีโอเป็น...</translation>
 <translation id="57646104491463491">วันที่แก้ไข</translation>
@@ -5729,6 +5740,7 @@
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6965648386495488594">พอร์ต</translation>
 <translation id="6965978654500191972">อุปกรณ์</translation>
+<translation id="6966370001499648704">ควบคุมโทรศัพท์ที่คุณจะใช้เป็นคีย์ความปลอดภัย</translation>
 <translation id="6967430741871315905">ไม่สามารถตรวจสอบว่าอุปกรณ์ได้รับอนุญาตหรือไม่</translation>
 <translation id="696780070563539690">เว็บไซต์ใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ เช่น เพื่อปรับโฆษณาตามโปรไฟล์ของคุณไม่ได้</translation>
 <translation id="6968288415730398122">ป้อนรหัสผ่านเพื่อกำหนดค่าการล็อกหน้าจอ</translation>
@@ -5903,6 +5915,7 @@
 <translation id="7135729336746831607">เปิดบลูทูธไหม</translation>
 <translation id="7136694880210472378">ทำให้เป็นค่าเริ่มต้น</translation>
 <translation id="7136993520339022828">เกิดข้อผิดพลาด โปรดลองอีกครั้งโดยเลือกภาพอื่น</translation>
+<translation id="7137472406312798422">เว็บไซต์สามารถขอใช้ข้อมูลเกี่ยวกับหน้าจอเพื่อเปิดและวางหน้าต่าง</translation>
 <translation id="7138515695467025690">ปิดอยู่ / จะเปิดโดยอัตโนมัติเมื่อพระอาทิตย์ตก</translation>
 <translation id="7138678301420049075">อื่นๆ</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> กำลังใช้ไมโครโฟน</translation>
@@ -6788,6 +6801,7 @@
 <translation id="8028803902702117856">กำลังดาวน์โหลด <ph name="SIZE" /> <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ขนาด</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ขอสิทธิ์ กด ⌘ + Option + ลูกศรขึ้นเพื่อตอบกลับ</translation>
+<translation id="8029539783236818164">ได้รับอนุญาตให้ใช้ข้อมูลเกี่ยวกับหน้าจอเพื่อเปิดและวางหน้าต่าง</translation>
 <translation id="8030169304546394654">ยกเลิกการเชื่อมต่อแล้ว</translation>
 <translation id="8030852056903932865">อนุญาต</translation>
 <translation id="8032244173881942855">ไม่สามารถแคสต์แท็บ</translation>
@@ -6800,6 +6814,7 @@
 <translation id="8038399858950372766">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, แป้นพิมพ์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8042142357103597104">ความทึบแสงของข้อความ</translation>
+<translation id="8042331986490021244">ระบบจะเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ไม่ตอบสนอง</translation>
 <translation id="8044899503464538266">ช้า</translation>
 <translation id="8045253504249021590">หยุดการซิงค์ผ่าน Google แดชบอร์ดแล้ว</translation>
@@ -7557,6 +7572,7 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">ทึบ</translation>
 <translation id="8838770651474809439">แฮมเบอร์เกอร์</translation>
+<translation id="8838778928843281408">จัดการโทรศัพท์</translation>
 <translation id="883911313571074303">ใส่หมายเหตุในรูปภาพ</translation>
 <translation id="8841843049738266382">อ่านและเปลี่ยนผู้ใช้ในรายการที่อนุญาต</translation>
 <translation id="8842594465773264717">ลบลายนิ้วมือนี้</translation>

@@ -241,6 +241,7 @@
 <translation id="1235458158152011030">알려진 네트워크</translation>
 <translation id="123578888592755962">디스크가 가득 참</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{텍스트}other{텍스트 #개}}</translation>
+<translation id="1236009322878349843">휴대전화 수정</translation>
 <translation id="1239594683407221485">파일 앱에서 기기의 콘텐츠를 탐색하세요.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />의 실험 상태 선택</translation>
 <translation id="124116460088058876">다른 언어</translation>
@@ -1956,6 +1957,7 @@
 <translation id="2939908794993783865">추가 비활성 사이트</translation>
 <translation id="2939938020978911855">사용 가능한 블루투스 기기 표시</translation>
 <translation id="2941112035454246133">낮음</translation>
+<translation id="2941696810925320401">사이트에서는 일반적으로 창을 열고 배치하여 화면에 추가 문서 또는 전체 화면 콘텐츠를 표시합니다.</translation>
 <translation id="2942279350258725020">Android 메시지</translation>
 <translation id="2942560570858569904">대기 중...</translation>
 <translation id="2942581856830209953">페이지 맞춤설정</translation>
@@ -2108,6 +2110,7 @@
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}other{{NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}}</translation>
 <translation id="3101126716313987672">조명 밝기 줄이기</translation>
 <translation id="3101709781009526431">날짜 및 시간</translation>
+<translation id="3103451787721578293">이 데이터를 업로드하는 이유를 입력하세요</translation>
 <translation id="3103941660000130485">Linux 업그레이드 중 오류 발생</translation>
 <translation id="3105796011181310544">Google로 되돌리시겠습니까?</translation>
 <translation id="310671807099593501">사이트에서 블루투스를 사용하고 있습니다.</translation>
@@ -2633,6 +2636,7 @@
 <translation id="3670113805793654926">모든 공급업체의 기기</translation>
 <translation id="3670229581627177274">블루투스 켜기</translation>
 <translation id="3672681487849735243">하드웨어에서 문제가 발견되었습니다.</translation>
+<translation id="3673097791729989571">로그인 호스팅 제공: <ph name="SAML_DOMAIN" /></translation>
 <translation id="367645871420407123">루트 비밀번호를 기본 테스트 이미지 값으로 설정하려면 비워두세요.</translation>
 <translation id="3677106374019847299">사용자설정 제공업체 입력</translation>
 <translation id="3677911431265050325">모바일 버전으로 보기</translation>
@@ -3413,6 +3417,7 @@
 <translation id="4481467543947557978">서비스 워커</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
 <translation id="4482990632723642375">최근에 닫은 탭</translation>
+<translation id="4484922932728109422">사이트에서 화면 정보를 사용하여 창을 열고 배치하는 것을 허용하지 않음</translation>
 <translation id="4487489714832036847">Chromebook에서는 기존 소프트웨어 대신 앱을 사용합니다. 생산성, 엔터테인먼트 등을 위한 앱을 활용해 보세요.</translation>
 <translation id="4488257340342212116">카메라 사용이 허용됨</translation>
 <translation id="4488502501195719518">모든 데이터를 삭제하시겠습니까?</translation>
@@ -3495,6 +3500,7 @@
 <translation id="4565917129334815774">시스템 로그 저장</translation>
 <translation id="4566417217121906555">마이크 음소거</translation>
 <translation id="456717285308019641">번역할 페이지 언어</translation>
+<translation id="4567512141633030272">잘못된 로그인 옵션인가요?</translation>
 <translation id="4567533462991917415">설정이 완료된 후에도 언제든지 사용자를 추가할 수 있습니다. 모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="4567772783389002344">단어 추가</translation>
 <translation id="4568025708905928793">보안 키 요청됨</translation>
@@ -3740,6 +3746,7 @@
 <translation id="4841741146571978176">필수 가상 머신이 존재하지 않습니다. 계속하려면 <ph name="VM_TYPE" /> VM을 설정해 보세요.</translation>
 <translation id="4842976633412754305">이 페이지가 인증되지 않은 소스에서 스크립트를 로드하려고 시도하고 있습니다.</translation>
 <translation id="4844333629810439236">기타 키보드</translation>
+<translation id="4844633725025837809">보안 강화를 위해 비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
 <translation id="4846680374085650406">이 설정에 대한 관리자 권장사항을 따릅니다.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택됨, <ph name="TOPIC_SOURCE" /> 앨범을 선택하려면 Enter를 누르세요</translation>
 <translation id="4848191975108266266">Google 어시스턴트 'Ok Google'</translation>
@@ -3880,6 +3887,7 @@
 <translation id="499165176004408815">고대비 모드 사용</translation>
 <translation id="4992458225095111526">Powerwash 확인</translation>
 <translation id="4992473555164495036">관리자가 사용 가능한 입력 방법을 제한했습니다.</translation>
+<translation id="4992984395680162305">기기가 QR 코드 스캔을 통해 연결되었습니다.</translation>
 <translation id="4994474651455208930">사이트에서 프로토콜 기본 핸들러로 사용할지 여부를 묻도록 허용</translation>
 <translation id="4994754230098574403">설정 중입니다.</translation>
 <translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
@@ -3998,6 +4006,7 @@
 <translation id="5123433949759960244">농구공</translation>
 <translation id="5125751979347152379">잘못된 URL입니다.</translation>
 <translation id="5126611267288187364">변경사항 보기</translation>
+<translation id="5127242257756472928">화면에 관한 정보를 사용하여 창을 열고 배치하는 것 허용되지 않음</translation>
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>
 <translation id="5127881134400491887">네트워크 연결 관리</translation>
@@ -4110,6 +4119,7 @@
 <translation id="5243522832766285132">잠시 후 다시 시도해 주세요.</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />에 동기화</translation>
 <translation id="5245610266855777041">학교 계정으로 시작하세요</translation>
+<translation id="5246036036039717045">기기가 Chrome에 로그인되어 있으므로 기기를 보안 키로 사용할 수 있습니다.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" />이(가) 다운되었습니다. 앱을 다시 시작하려면 이 풍선을 클릭하세요.</translation>
 <translation id="5247051749037287028">표시 이름(선택사항)</translation>
 <translation id="5249624017678798539">다운로드가 완료되기 전에 브라우저가 종료되었습니다.</translation>
@@ -4598,6 +4608,7 @@
 <translation id="5757375109985023827">미리 볼 탭 선택</translation>
 <translation id="5758631781033351321">여기에서 읽기 목록을 확인할 수 있습니다</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" />을(를) 통해 인쇄하려고 전송한 문서를 <ph name="APP_NAME" />에서 읽을 수 있습니다.</translation>
+<translation id="5762787084360227629">Google 계정 정보 입력</translation>
 <translation id="5763751966069581670">USB 기기를 찾을 수 없습니다.</translation>
 <translation id="5764483294734785780">오디오를 다른 이름으로 저장...(&amp;V)</translation>
 <translation id="57646104491463491">수정된 날짜</translation>
@@ -5743,6 +5754,7 @@
 <translation id="6965382102122355670">확인</translation>
 <translation id="6965648386495488594">포트</translation>
 <translation id="6965978654500191972">기기</translation>
+<translation id="6966370001499648704">보안 키로 사용하는 전화를 제어합니다.</translation>
 <translation id="6967430741871315905">기기 허용 여부를 확인할 수 없습니다.</translation>
 <translation id="696780070563539690">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 없습니다.</translation>
 <translation id="6968288415730398122">비밀번호를 입력하여 화면 잠금을 설정하세요.</translation>
@@ -5917,6 +5929,7 @@
 <translation id="7135729336746831607">블루투스를 사용 설정하시겠습니까?</translation>
 <translation id="7136694880210472378">기본으로 설정</translation>
 <translation id="7136993520339022828">오류가 발생했습니다. 다른 이미지를 선택하고 다시 시도해 보세요.</translation>
+<translation id="7137472406312798422">사이트에서 화면 정보를 사용하여 창을 열고 배치하도록 요청할 수 있음</translation>
 <translation id="7138515695467025690">사용 안함 / 일몰 시 자동으로 켜짐</translation>
 <translation id="7138678301420049075">기타</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
@@ -6804,6 +6817,7 @@
 <translation id="8028803902702117856"><ph name="SIZE" /> 다운로드 중, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">크기</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 권한 요청됨, ⌘ 키와 Option 키와 위쪽 화살표 키를 눌러 응답</translation>
+<translation id="8029539783236818164">화면에 관한 정보를 사용하여 창을 열고 배치하는 것 허용됨</translation>
 <translation id="8030169304546394654">연결 끊김</translation>
 <translation id="8030852056903932865">승인</translation>
 <translation id="8032244173881942855">탭을 전송할 수 없습니다.</translation>
@@ -6816,6 +6830,7 @@
 <translation id="8038399858950372766">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 키보드</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8042142357103597104">텍스트 불투명도</translation>
+<translation id="8042331986490021244">비밀번호가 Google 비밀번호 관리자에 저장되기 전에 기기에서 암호화됩니다</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" />이(가) 응답하지 않음</translation>
 <translation id="8044899503464538266">느리게</translation>
 <translation id="8045253504249021590">Google 대시보드를 통해 동기화가 중지되었습니다.</translation>
@@ -7573,6 +7588,7 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" />(<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
+<translation id="8838778928843281408">휴대전화 관리</translation>
 <translation id="883911313571074303">이미지에 주석 달기</translation>
 <translation id="8841843049738266382">허용 목록에 있는 사용자를 읽고 변경하기</translation>
 <translation id="8842594465773264717">이 지문 삭제</translation>

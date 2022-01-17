@@ -1956,7 +1956,7 @@
 <translation id="2939908794993783865">其他無效網站</translation>
 <translation id="2939938020978911855">顯示可用的藍牙裝置</translation>
 <translation id="2941112035454246133">低</translation>
-<translation id="2941696810925320401">網站通常會開啟及放置視窗，以便在畫面上顯示其他文件或全螢幕內容</translation>
+<translation id="2941696810925320401">網站通常會開啟及放置視窗，以便在螢幕上顯示其他文件或全螢幕內容</translation>
 <translation id="2942279350258725020">Android 訊息</translation>
 <translation id="2942560570858569904">正在等待…</translation>
 <translation id="2942581856830209953">自訂呢個頁面</translation>
@@ -2109,7 +2109,7 @@
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{已停用 1 個可能有害的擴充程式，但您可將之移除。}other{已停用 {NUM_EXTENSIONS} 個可能有害的擴充程式，但您可將之移除。}}</translation>
 <translation id="3101126716313987672">光線昏暗</translation>
 <translation id="3101709781009526431">日期和時間</translation>
-<translation id="3103451787721578293">請提供上傳這項資料的原因：</translation>
+<translation id="3103451787721578293">請提供上載這些資料的原因：</translation>
 <translation id="3103941660000130485">升級 Linux 時發生錯誤</translation>
 <translation id="3105796011181310544">要改回使用 Google 嗎？</translation>
 <translation id="310671807099593501">網站正在使用藍牙</translation>
@@ -2635,7 +2635,7 @@
 <translation id="3670113805793654926">來自任何供應商的裝置</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>
 <translation id="3672681487849735243">系統偵測到原廠錯誤</translation>
-<translation id="3673097791729989571">登入作業由 <ph name="SAML_DOMAIN" /> 代管</translation>
+<translation id="3673097791729989571">登入由 <ph name="SAML_DOMAIN" /> 代管</translation>
 <translation id="367645871420407123">如果您想為預設測試影像值設定 Root 密碼，請留空</translation>
 <translation id="3677106374019847299">輸入自訂的供應商</translation>
 <translation id="3677911431265050325">切換至流動網站</translation>
@@ -3418,7 +3418,7 @@
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4481530544597605423">未配對的裝置</translation>
 <translation id="4482990632723642375">最近閂咗嘅分頁</translation>
-<translation id="4484922932728109422">不允許網站使用畫面中的資訊開啟及放置視窗</translation>
+<translation id="4484922932728109422">不允許網站使用螢幕中的資料開啟及放置視窗</translation>
 <translation id="4487489714832036847">Chromebook 使用應用程式代替傳統軟件。下載各種應用程式，以提升生產力、享受娛樂體驗等等。</translation>
 <translation id="4488257340342212116">已允許使用您的攝錄機</translation>
 <translation id="4488502501195719518">要清除所有資料嗎？</translation>
@@ -3502,7 +3502,7 @@
 <translation id="4565917129334815774">儲存系統記錄</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="456717285308019641">要翻譯的網頁語言</translation>
-<translation id="4567512141633030272">登入選項有誤？</translation>
+<translation id="4567512141633030272">登入選項有錯嗎？</translation>
 <translation id="4567533462991917415">您可在設定後隨時新增更多使用者。每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
 <translation id="4567772783389002344">新增字詞</translation>
 <translation id="4568025708905928793">請提供安全密鑰</translation>
@@ -3748,7 +3748,7 @@
 <translation id="4841741146571978176">必要的虛擬機器不存在。如要繼續，請嘗試設定 <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">這個網頁正嘗試從未授權的來源載入指令碼。</translation>
 <translation id="4844333629810439236">其他鍵盤</translation>
-<translation id="4844633725025837809">為進一步加強安全性，系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
+<translation id="4844633725025837809">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具</translation>
 <translation id="4846680374085650406">您目前所採用的是管理員的建議設定。</translation>
 <translation id="4847902821209177679">揀咗「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」，㩒一下 [Enter] 鍵就可以揀「<ph name="TOPIC_SOURCE" />」相簿</translation>
 <translation id="4848191975108266266">Google 助理及「Ok Google」</translation>
@@ -3889,7 +3889,7 @@
 <translation id="499165176004408815">使用高對比度模式</translation>
 <translation id="4992458225095111526">確認執行 Powerwash</translation>
 <translation id="4992473555164495036">您的管理員已限制可用的輸入方法。</translation>
-<translation id="4992984395680162305">這些是透過掃描 QR 圖碼所連結的裝置</translation>
+<translation id="4992984395680162305">這些是透過掃瞄 QR 碼所連結的裝置</translation>
 <translation id="4994474651455208930">允許網站要求成為通訊協定的預設處理常式</translation>
 <translation id="4994754230098574403">正在設定</translation>
 <translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />在註冊裝置前，您需要清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
@@ -4009,7 +4009,7 @@
 <translation id="5123433949759960244">籃球</translation>
 <translation id="5125751979347152379">網址無效。</translation>
 <translation id="5126611267288187364">查看變更</translation>
-<translation id="5127242257756472928">不允許使用畫面中的資訊開啟及放置視窗</translation>
+<translation id="5127242257756472928">不允許使用螢幕中的資料開啟及放置視窗</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">同步處理已停用</translation>
 <translation id="5127881134400491887">管理網絡連線</translation>
@@ -4122,7 +4122,7 @@
 <translation id="5243522832766285132">請稍後再試</translation>
 <translation id="5244474230056479698">正在同步至 <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">登入學校帳戶即可開始使用</translation>
-<translation id="5246036036039717045">你已透過這些裝置登入 Chrome，因此這些裝置可以做為安全金鑰使用。</translation>
+<translation id="5246036036039717045">由於您已在這些裝置上登入 Chrome，因此這些裝置可以用作安全密鑰。</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> 當機了，請按一下這個汽球來重新啟動應用程式。</translation>
 <translation id="5247051749037287028">顯示名稱 (選填)</translation>
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
@@ -4611,7 +4611,7 @@
 <translation id="5757375109985023827">選取要預覽的分頁</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
 <translation id="5759728514498647443">您透過「<ph name="APP_NAME" />」傳送列印的文件可使用「<ph name="APP_NAME" />」讀取。</translation>
-<translation id="5762787084360227629">輸入 Google 帳戶資訊</translation>
+<translation id="5762787084360227629">輸入 Google 帳戶資料</translation>
 <translation id="5763751966069581670">找不到 USB 裝置</translation>
 <translation id="5764483294734785780">另存音效檔案為(&amp;V)…</translation>
 <translation id="57646104491463491">已修改日期</translation>
@@ -5757,7 +5757,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6965648386495488594">連接埠</translation>
 <translation id="6965978654500191972">裝置</translation>
-<translation id="6966370001499648704">控管要使用哪些手機做為安全金鑰</translation>
+<translation id="6966370001499648704">控制要使用哪些手機作為安全密鑰</translation>
 <translation id="6967430741871315905">無法檢查裝置是否已獲准</translation>
 <translation id="696780070563539690">網站不可使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告</translation>
 <translation id="6968288415730398122">如要設定螢幕鎖定功能，請輸入您的密碼</translation>
@@ -5932,7 +5932,7 @@
 <translation id="7135729336746831607">要開啟藍牙嗎？</translation>
 <translation id="7136694880210472378">設定為預設</translation>
 <translation id="7136993520339022828">發生錯誤。請選擇其他圖片並再試一次。</translation>
-<translation id="7137472406312798422">網站可以要求使用畫面中的資訊開啟及放置視窗</translation>
+<translation id="7137472406312798422">網站可要求使用螢幕中的資料開啟及放置視窗</translation>
 <translation id="7138515695467025690">關閉/將於日落時自動開啟</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麥克風</translation>
@@ -6820,7 +6820,7 @@
 <translation id="8028803902702117856">下載緊 <ph name="FILE_NAME" />，檔案大小係 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 ⌘ + Option + 向上箭咀就可以回覆</translation>
-<translation id="8029539783236818164">允許使用畫面中的資訊開啟及放置視窗</translation>
+<translation id="8029539783236818164">允許使用螢幕中的資料開啟及放置視窗</translation>
 <translation id="8030169304546394654">已中斷連線</translation>
 <translation id="8030852056903932865">核准</translation>
 <translation id="8032244173881942855">無法投放分頁。</translation>
@@ -6833,7 +6833,7 @@
 <translation id="8038399858950372766">裝置 <ph name="DEVICE_INDEX" />，總共 <ph name="DEVICE_COUNT" /> 個，叫做 <ph name="DEVICE_NAME" /> 嘅鍵盤</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8042142357103597104">文字透明度</translation>
-<translation id="8042331986490021244">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
+<translation id="8042331986490021244">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> 沒有回應。</translation>
 <translation id="8044899503464538266">慢</translation>
 <translation id="8045253504249021590">已透過「Google 資訊主頁」停用同步功能。</translation>
