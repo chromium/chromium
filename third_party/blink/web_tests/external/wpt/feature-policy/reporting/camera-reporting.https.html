@@ -13,7 +13,7 @@ var t = async_test("Camera Report Format");
 
 var check_report_format = (reports, observer) => {
   let report = reports[0];
-  assert_equals(report.type, "feature-policy-violation");
+  assert_equals(report.type, "permissions-policy-violation");
   assert_equals(report.url, document.location.href);
   assert_equals(report.body.featureId, "camera");
   assert_equals(report.body.sourceFile, document.location.href);
@@ -23,7 +23,7 @@ var check_report_format = (reports, observer) => {
 };
 
 new ReportingObserver(t.step_func_done(check_report_format),
-                      {types: ['feature-policy-violation']}).observe();
+                      {types: ['permissions-policy-violation']}).observe();
 
   setMediaPermission("granted", ["camera"]).then(() => navigator.mediaDevices.getUserMedia({video: true}))
   .then(
