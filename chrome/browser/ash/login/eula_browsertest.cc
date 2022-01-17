@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -15,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/test/dialog_window_waiter.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
@@ -62,7 +64,11 @@ const char kRemoraRequisition[] = "remora";
 
 class EulaTest : public OobeBaseTest {
  public:
-  EulaTest() = default;
+  EulaTest() {
+    // EULA screen is not shown when OobeConsolidatedConsent is enabled, and
+    // its content is moved to the consolidated consent screen.
+    feature_list_.InitAndDisableFeature(features::kOobeConsolidatedConsent);
+  }
 
   EulaTest(const EulaTest&) = delete;
   EulaTest& operator=(const EulaTest&) = delete;
@@ -124,6 +130,7 @@ class EulaTest : public OobeBaseTest {
     return consented;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
 };
 

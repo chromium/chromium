@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/callback_helpers.h"
@@ -14,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -142,7 +144,11 @@ ArcGoogleLocationServiceConsent BuildArcGoogleLocationServiceConsent(
 
 class ArcTermsOfServiceScreenTest : public OobeBaseTest {
  public:
-  ArcTermsOfServiceScreenTest() = default;
+  ArcTermsOfServiceScreenTest() {
+    // ARC ToS screen is not shown when OobeConsolidatedConsent is enabled, and
+    // its content is moved to the consolidated consent screen.
+    feature_list_.InitAndDisableFeature(features::kOobeConsolidatedConsent);
+  }
 
   ArcTermsOfServiceScreenTest(const ArcTermsOfServiceScreenTest&) = delete;
   ArcTermsOfServiceScreenTest& operator=(const ArcTermsOfServiceScreenTest&) =
@@ -293,6 +299,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
 
   bool serve_tos_with_privacy_policy_footer_ = false;
 
+  base::test::ScopedFeatureList feature_list_;
   absl::optional<ArcTermsOfServiceScreen::Result> screen_exit_result_;
   ArcTermsOfServiceScreen::ScreenExitCallback original_callback_;
   base::OnceClosure on_screen_exit_called_ = base::DoNothing();
