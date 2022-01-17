@@ -402,6 +402,14 @@ body.tab-navigation #view-crop-document .review-image .dot:focus::after {
   width: 32px;
 }
 
+#view-crop-document .review-crop-rotation-button-group {
+  bottom: 0;
+  left: 50%;
+  position: absolute;
+  top: calc(100% - calc(var(--bottom-line) * 2));
+  transform: translateX(-50%);
+}
+
 #view-crop-document button[i18n-aria=rotate_clockwise_button] {
   background-image: url(/images/crop_document_clockwise_rotate.svg);
 }

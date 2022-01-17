@@ -271,8 +271,6 @@
         <img class="review-image">
         <video class="review-video" controls autoplay></video>
       </div>
-      <div class="button-groups">
-      </div>
     </div>
     <div id="view-crop-document" class="review-views">
       <div id="document-corner-move-desc" i18n-text="document_corner_move_desc">
@@ -285,13 +283,11 @@
         </div>
         <video class="review-video"></video>
       </div>
-      <div class="button-groups">
-        <div class="button-group">
-          <button class="icon-button dark inkdrop"
-            i18n-aria="rotate_clockwise_button" tabindex="0"></button>
-          <button class="icon-button dark inkdrop"
-            i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
-        </div>
+      <div class="review-crop-rotation-button-group button-group">
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_clockwise_button" tabindex="0"></button>
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
       </div>
     </div>
     <div id="view-ptz-panel">
@@ -677,7 +673,7 @@
       <div class="negative button-group"></div>
     </template>
     <template id="review-intent-button-group-template">
-      <div class="review-intent-button-groups buttons right-stripe circle">
+      <div class="review-intent-button-group buttons right-stripe circle">
       </div>
     </template>
     <template id="review-intent-button-template">
