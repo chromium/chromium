@@ -22,26 +22,31 @@ std::unique_ptr<base::Value> Mapper::MapValue(
     const OncValueSignature& signature,
     const base::Value& onc_value,
     bool* error) {
-  std::unique_ptr<base::Value> result_value;
   switch (onc_value.type()) {
     case base::Value::Type::DICTIONARY: {
-      const base::DictionaryValue* dict = NULL;
-      onc_value.GetAsDictionary(&dict);
-      result_value = MapObject(signature, *dict, error);
-      break;
+      if (signature.onc_type != base::Value::Type::DICTIONARY) {
+        *error = true;
+        return nullptr;
+      }
+      return MapObject(signature, base::Value::AsDictionaryValue(onc_value),
+                       error);
     }
     case base::Value::Type::LIST: {
-      result_value =
-          MapArray(signature, base::Value::AsListValue(onc_value), error);
-      break;
+      if (signature.onc_type != base::Value::Type::LIST) {
+        *error = true;
+        return nullptr;
+      }
+      return MapArray(signature, base::Value::AsListValue(onc_value), error);
     }
     default: {
-      result_value = MapPrimitive(signature, onc_value, error);
-      break;
+      if ((signature.onc_type == base::Value::Type::DICTIONARY) ||
+          (signature.onc_type == base::Value::Type::LIST)) {
+        *error = true;
+        return nullptr;
+      }
+      return MapPrimitive(signature, onc_value, error);
     }
   }
-
-  return result_value;
 }
 
 std::unique_ptr<base::DictionaryValue> Mapper::MapObject(
