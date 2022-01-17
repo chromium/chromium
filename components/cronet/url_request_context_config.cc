@@ -254,7 +254,7 @@ URLRequestContextConfig::URLRequestContextConfig(
     const std::string& storage_path,
     const std::string& accept_language,
     const std::string& user_agent,
-    const std::string& experimental_options,
+    std::unique_ptr<base::DictionaryValue> experimental_options,
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
@@ -273,40 +273,87 @@ URLRequestContextConfig::URLRequestContextConfig(
       enable_network_quality_estimator(enable_network_quality_estimator),
       bypass_public_key_pinning_for_local_trust_anchors(
           bypass_public_key_pinning_for_local_trust_anchors),
-      network_thread_priority(network_thread_priority),
-      experimental_options(experimental_options) {}
+      effective_experimental_options(experimental_options->CreateDeepCopy()),
+      experimental_options(std::move(experimental_options)),
+      network_thread_priority(network_thread_priority) {}
 
 URLRequestContextConfig::~URLRequestContextConfig() {}
 
-bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
-    net::URLRequestContextBuilder* context_builder,
-    net::HttpNetworkSessionParams* session_params,
-    net::QuicParams* quic_params) {
-  if (experimental_options.empty())
-    return true;
+// static
+std::unique_ptr<URLRequestContextConfig>
+URLRequestContextConfig::CreateURLRequestContextConfig(
+    bool enable_quic,
+    const std::string& quic_user_agent_id,
+    bool enable_spdy,
+    bool enable_brotli,
+    HttpCacheType http_cache,
+    int http_cache_max_size,
+    bool load_disable_cache,
+    const std::string& storage_path,
+    const std::string& accept_language,
+    const std::string& user_agent,
+    const std::string& unparsed_experimental_options,
+    std::unique_ptr<net::CertVerifier> mock_cert_verifier,
+    bool enable_network_quality_estimator,
+    bool bypass_public_key_pinning_for_local_trust_anchors,
+    absl::optional<double> network_thread_priority) {
+  std::unique_ptr<base::DictionaryValue> experimental_options =
+      ParseExperimentalOptions(unparsed_experimental_options);
+  if (!experimental_options) {
+    // For the time being maintain backward compatibility by only failing to
+    // parse when DCHECKs are enabled.
+    if (ExperimentalOptionsParsingIsAllowedToFail())
+      return nullptr;
+    else
+      experimental_options = std::make_unique<base::DictionaryValue>();
+  }
+  return base::WrapUnique(new URLRequestContextConfig(
+      enable_quic, quic_user_agent_id, enable_spdy, enable_brotli, http_cache,
+      http_cache_max_size, load_disable_cache, storage_path, accept_language,
+      user_agent, std::move(experimental_options),
+      std::move(mock_cert_verifier), enable_network_quality_estimator,
+      bypass_public_key_pinning_for_local_trust_anchors,
+      network_thread_priority));
+}
 
-  DVLOG(1) << "Experimental Options:" << experimental_options;
+// static
+std::unique_ptr<base::DictionaryValue>
+URLRequestContextConfig::ParseExperimentalOptions(
+    std::string unparsed_experimental_options) {
+  // From a user perspective no experimental options means an empty string. The
+  // underlying code instead expects and empty dictionary. Normalize this.
+  if (unparsed_experimental_options.empty())
+    unparsed_experimental_options = "{}";
+  DVLOG(1) << "Experimental Options:" << unparsed_experimental_options;
   base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(experimental_options);
-
+      base::JSONReader::ReadAndReturnValueWithError(
+          unparsed_experimental_options);
   if (!parsed_json.value) {
     LOG(ERROR) << "Parsing experimental options failed: '"
-               << experimental_options << "', error "
+               << unparsed_experimental_options << "', error "
                << parsed_json.error_message;
-    return false;
+    return nullptr;
   }
 
   std::unique_ptr<base::Value> root =
       base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
-
-  std::unique_ptr<base::DictionaryValue> dict =
+  std::unique_ptr<base::DictionaryValue> experimental_options =
       base::DictionaryValue::From(std::move(root));
-
-  if (!dict) {
+  if (!experimental_options) {
     LOG(ERROR) << "Experimental options string is not a dictionary: "
                << experimental_options;
-    return false;
+    return nullptr;
   }
+
+  return experimental_options;
+}
+
+void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
+    net::URLRequestContextBuilder* context_builder,
+    net::HttpNetworkSessionParams* session_params,
+    net::QuicParams* quic_params) {
+  if (experimental_options->DictEmpty())
+    return;
 
   bool async_dns_enable = false;
   bool stale_dns_enable = false;
@@ -314,11 +361,11 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
   bool disable_ipv6_on_wifi = false;
   bool nel_enable = false;
 
-  effective_experimental_options = dict->CreateDeepCopy();
   StaleHostResolver::StaleOptions stale_dns_options;
   std::string host_resolver_rules_string;
 
-  for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd(); it.Advance()) {
+  for (base::DictionaryValue::Iterator it(*experimental_options); !it.IsAtEnd();
+       it.Advance()) {
     if (it.key() == kQuicFieldTrialName) {
       const base::DictionaryValue* quic_args = nullptr;
       if (!it.value().GetAsDictionary(&quic_args)) {
@@ -740,7 +787,6 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
     context_builder->set_network_error_logging_enabled(true);
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-  return true;
 }
 
 void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
@@ -775,12 +821,8 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
         kDefaultQuicGoAwaySessionsOnIpChange;
   }
 
-  // Somewhat hacky DCHECK use here. We don't want to crash third party
-  // applications on invalid experimental options in prod, yet, detecting
-  // an issue early is useful during development.
-  bool experimental_options_success = ParseAndSetExperimentalOptions(
-      context_builder, &session_params, quic_context->params());
-  DCHECK(experimental_options_success);
+  SetContextBuilderExperimentalOptions(context_builder, &session_params,
+                                       quic_context->params());
 
   context_builder->set_http_network_session_params(session_params);
   context_builder->set_quic_context(std::move(quic_context));
@@ -799,7 +841,7 @@ URLRequestContextConfigBuilder::~URLRequestContextConfigBuilder() {}
 
 std::unique_ptr<URLRequestContextConfig>
 URLRequestContextConfigBuilder::Build() {
-  return std::make_unique<URLRequestContextConfig>(
+  return URLRequestContextConfig::CreateURLRequestContextConfig(
       enable_quic, quic_user_agent_id, enable_spdy, enable_brotli, http_cache,
       http_cache_max_size, load_disable_cache, storage_path, accept_language,
       user_agent, experimental_options, std::move(mock_cert_verifier),

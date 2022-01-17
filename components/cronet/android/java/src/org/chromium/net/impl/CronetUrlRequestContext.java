@@ -209,6 +209,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                         builder.mockCertVerifier(), builder.networkQualityEstimatorEnabled(),
                         builder.publicKeyPinningBypassForLocalTrustAnchorsEnabled(),
                         builder.threadPriority(Process.THREAD_PRIORITY_BACKGROUND));
+        if (urlRequestContextConfig == 0) {
+            throw new IllegalArgumentException("Experimental options parsing failed.");
+        }
         for (CronetEngineBuilderImpl.QuicHint quicHint : builder.quicHints()) {
             CronetUrlRequestContextJni.get().addQuicHint(urlRequestContextConfig, quicHint.mHost,
                     quicHint.mPort, quicHint.mAlternatePort);

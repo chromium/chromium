@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
@@ -48,6 +49,8 @@ import java.net.URL;
 public class ExperimentalOptionsTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private static final String TAG = ExperimentalOptionsTest.class.getSimpleName();
     private ExperimentalCronetEngine.Builder mBuilder;
@@ -224,7 +227,24 @@ public class ExperimentalOptionsTest {
         context.shutdown();
     }
 
+    @Test
+    @MediumTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    // Experimental options should be specified through a JSON compliant string. When that is not
+    // the case building a Cronet engine should fail when it is allowed to do so.
+    public void testWrongJsonExperimentalOptions() throws Exception {
+        if (nativeExperimentalOptionsParsingIsAllowedToFail()) {
+            expectedException.expect(IllegalArgumentException.class);
+            expectedException.expectMessage("Experimental options parsing failed");
+        }
+        mBuilder.setExperimentalOptions("Not a serialized JSON object");
+        CronetEngine cronetEngine = mBuilder.build();
+    }
+
     // Sets a host cache entry with hostname "host-cache-test-host" and an AddressList containing
     // the provided address.
     private static native void nativeWriteToHostCache(long adapter, String address);
+    // Whether Cronet engine creation can fail due to failure during experimental options parsing.
+    private static native boolean nativeExperimentalOptionsParsingIsAllowedToFail();
 }

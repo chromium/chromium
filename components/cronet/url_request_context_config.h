@@ -96,42 +96,6 @@ struct URLRequestContextConfig {
     const std::string value;
   };
 
-  URLRequestContextConfig(
-      // Enable QUIC.
-      bool enable_quic,
-      // QUIC User Agent ID.
-      const std::string& quic_user_agent_id,
-      // Enable SPDY.
-      bool enable_spdy,
-      // Enable Brotli.
-      bool enable_brotli,
-      // Type of http cache.
-      HttpCacheType http_cache,
-      // Max size of http cache in bytes.
-      int http_cache_max_size,
-      // Disable caching for HTTP responses. Other information may be stored in
-      // the cache.
-      bool load_disable_cache,
-      // Storage path for http cache and cookie storage.
-      const std::string& storage_path,
-      // Accept-Language request header field.
-      const std::string& accept_language,
-      // User-Agent request header field.
-      const std::string& user_agent,
-      // JSON encoded experimental options.
-      const std::string& experimental_options,
-      // MockCertVerifier to use for testing purposes.
-      std::unique_ptr<net::CertVerifier> mock_cert_verifier,
-      // Enable network quality estimator.
-      bool enable_network_quality_estimator,
-      // Enable bypassing of public key pinning for local trust anchors
-      bool bypass_public_key_pinning_for_local_trust_anchors,
-      // Optional network thread priority.
-      // On Android, corresponds to android.os.Process.setThreadPriority()
-      // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
-      // not specify for other targets.
-      absl::optional<double> network_thread_priority);
-
   URLRequestContextConfig(const URLRequestContextConfig&) = delete;
   URLRequestContextConfig& operator=(const URLRequestContextConfig&) = delete;
 
@@ -187,6 +151,7 @@ struct URLRequestContextConfig {
 
   // Experimental options that are recognized by the config parser.
   std::unique_ptr<base::DictionaryValue> effective_experimental_options;
+  std::unique_ptr<base::DictionaryValue> experimental_options;
 
   // If set, forces NQE to return the set value as the effective connection
   // type.
@@ -204,23 +169,94 @@ struct URLRequestContextConfig {
   // On iOS, corresponds to NSThread::setThreadPriority values.
   const absl::optional<double> network_thread_priority;
 
+  static bool ExperimentalOptionsParsingIsAllowedToFail() {
+    return DCHECK_IS_ON();
+  }
+
+  static std::unique_ptr<URLRequestContextConfig> CreateURLRequestContextConfig(
+      // Enable QUIC.
+      bool enable_quic,
+      // QUIC User Agent ID.
+      const std::string& quic_user_agent_id,
+      // Enable SPDY.
+      bool enable_spdy,
+      // Enable Brotli.
+      bool enable_brotli,
+      // Type of http cache.
+      HttpCacheType http_cache,
+      // Max size of http cache in bytes.
+      int http_cache_max_size,
+      // Disable caching for HTTP responses. Other information may be stored in
+      // the cache.
+      bool load_disable_cache,
+      // Storage path for http cache and cookie storage.
+      const std::string& storage_path,
+      // Accept-Language request header field.
+      const std::string& accept_language,
+      // User-Agent request header field.
+      const std::string& user_agent,
+      // JSON encoded experimental options.
+      const std::string& unparsed_experimental_options,
+      // MockCertVerifier to use for testing purposes.
+      std::unique_ptr<net::CertVerifier> mock_cert_verifier,
+      // Enable network quality estimator.
+      bool enable_network_quality_estimator,
+      // Enable bypassing of public key pinning for local trust anchors
+      bool bypass_public_key_pinning_for_local_trust_anchors,
+      // Optional network thread priority.
+      // On Android, corresponds to android.os.Process.setThreadPriority()
+      // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
+      // not specify for other targets.
+      absl::optional<double> network_thread_priority);
+
  private:
-  // Parses experimental options and makes appropriate changes to settings in
-  // the URLRequestContextConfig and URLRequestContextBuilder.
-  // Returns whether the operation was successful.
-  bool ParseAndSetExperimentalOptions(
+  URLRequestContextConfig(
+      // Enable QUIC.
+      bool enable_quic,
+      // QUIC User Agent ID.
+      const std::string& quic_user_agent_id,
+      // Enable SPDY.
+      bool enable_spdy,
+      // Enable Brotli.
+      bool enable_brotli,
+      // Type of http cache.
+      HttpCacheType http_cache,
+      // Max size of http cache in bytes.
+      int http_cache_max_size,
+      // Disable caching for HTTP responses. Other information may be stored in
+      // the cache.
+      bool load_disable_cache,
+      // Storage path for http cache and cookie storage.
+      const std::string& storage_path,
+      // Accept-Language request header field.
+      const std::string& accept_language,
+      // User-Agent request header field.
+      const std::string& user_agent,
+      // JSON encoded experimental options.
+      std::unique_ptr<base::DictionaryValue> experimental_options,
+      // MockCertVerifier to use for testing purposes.
+      std::unique_ptr<net::CertVerifier> mock_cert_verifier,
+      // Enable network quality estimator.
+      bool enable_network_quality_estimator,
+      // Enable bypassing of public key pinning for local trust anchors
+      bool bypass_public_key_pinning_for_local_trust_anchors,
+      // Optional network thread priority.
+      // On Android, corresponds to android.os.Process.setThreadPriority()
+      // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
+      // not specify for other targets.
+      absl::optional<double> network_thread_priority);
+
+  // Parses experimental options from their JSON format to the format used
+  // internally.
+  // Returns null if the operation was unsuccessful.
+  static std::unique_ptr<base::DictionaryValue> ParseExperimentalOptions(
+      std::string unparsed_experimental_options);
+
+  // Makes appropriate changes to settings in the URLRequestContextBuilder.
+  void SetContextBuilderExperimentalOptions(
       net::URLRequestContextBuilder* context_builder,
       net::HttpNetworkSessionParams* session_params,
       net::QuicParams* quic_params);
-
-  // Experimental options encoded as a string in a JSON format containing
-  // experiments and their corresponding configuration options. The format
-  // is a JSON object with the name of the experiment as the key, and the
-  // configuration options as the value. An example:
-  //   {"experiment1": {"option1": "option_value1", "option2":
-  //   "option_value2",
-  //    ...}, "experiment2: {"option3", "option_value3", ...}, ...}
-  const std::string experimental_options;
 };
 
 // Stores intermediate state for URLRequestContextConfig.  Initializes with

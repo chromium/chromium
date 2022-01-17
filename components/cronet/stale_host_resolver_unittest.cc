@@ -661,45 +661,46 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
 }
 
 TEST_F(StaleHostResolverTest, CreatedByContext) {
-  URLRequestContextConfig config(
-      // Enable QUIC.
-      true,
-      // QUIC User Agent ID.
-      "Default QUIC User Agent ID",
-      // Enable SPDY.
-      true,
-      // Enable Brotli.
-      false,
-      // Type of http cache.
-      URLRequestContextConfig::HttpCacheType::DISK,
-      // Max size of http cache in bytes.
-      1024000,
-      // Disable caching for HTTP responses. Other information may be stored in
-      // the cache.
-      false,
-      // Storage path for http cache and cookie storage.
-      "/data/data/org.chromium.net/app_cronet_test/test_storage",
-      // Accept-Language request header field.
-      "foreign-language",
-      // User-Agent request header field.
-      "fake agent",
-      // JSON encoded experimental options.
-      "{\"AsyncDNS\":{\"enable\":false},"
-      "\"StaleDNS\":{\"enable\":true,"
-      "\"delay_ms\":0,"
-      "\"max_expired_time_ms\":0,"
-      "\"max_stale_uses\":0}}",
-      // MockCertVerifier to use for testing purposes.
-      std::unique_ptr<net::CertVerifier>(),
-      // Enable network quality estimator.
-      false,
-      // Enable Public Key Pinning bypass for local trust anchors.
-      true,
-      // Optional network thread priority.
-      absl::optional<double>());
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          // Enable QUIC.
+          true,
+          // QUIC User Agent ID.
+          "Default QUIC User Agent ID",
+          // Enable SPDY.
+          true,
+          // Enable Brotli.
+          false,
+          // Type of http cache.
+          URLRequestContextConfig::HttpCacheType::DISK,
+          // Max size of http cache in bytes.
+          1024000,
+          // Disable caching for HTTP responses. Other information may be stored
+          // in the cache.
+          false,
+          // Storage path for http cache and cookie storage.
+          "/data/data/org.chromium.net/app_cronet_test/test_storage",
+          // Accept-Language request header field.
+          "foreign-language",
+          // User-Agent request header field.
+          "fake agent",
+          // JSON encoded experimental options.
+          "{\"AsyncDNS\":{\"enable\":false},"
+          "\"StaleDNS\":{\"enable\":true,"
+          "\"delay_ms\":0,"
+          "\"max_expired_time_ms\":0,"
+          "\"max_stale_uses\":0}}",
+          // MockCertVerifier to use for testing purposes.
+          std::unique_ptr<net::CertVerifier>(),
+          // Enable network quality estimator.
+          false,
+          // Enable Public Key Pinning bypass for local trust anchors.
+          true,
+          // Optional network thread priority.
+          absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
-  config.ConfigureURLRequestContextBuilder(&builder);
+  config->ConfigureURLRequestContextBuilder(&builder);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
