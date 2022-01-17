@@ -192,6 +192,8 @@ void AppUpdate::Merge(App* state, const App* delta) {
     state->icon_key = CloneIconKey(delta->icon_key.value());
   }
 
+  SET_OPTIONAL_VALUE(last_launch_time);
+  SET_OPTIONAL_VALUE(install_time);
   SET_ENUM_VALUE(install_reason, InstallReason::kUnknown);
   SET_ENUM_VALUE(install_source, InstallSource::kUnknown);
 
@@ -430,6 +432,10 @@ base::Time AppUpdate::LastLaunchTime() const {
   return base::Time();
 }
 
+base::Time AppUpdate::GetLastLaunchTime() const {
+  GET_VALUE_WITH_FALLBACK(last_launch_time, base::Time())
+}
+
 bool AppUpdate::LastLaunchTimeChanged() const {
   return mojom_delta_ && mojom_delta_->last_launch_time.has_value() &&
          (!mojom_state_ ||
@@ -444,6 +450,10 @@ base::Time AppUpdate::InstallTime() const {
     return mojom_state_->install_time.value();
   }
   return base::Time();
+}
+
+base::Time AppUpdate::GetInstallTime() const {
+  GET_VALUE_WITH_FALLBACK(install_time, base::Time())
 }
 
 bool AppUpdate::InstallTimeChanged() const {

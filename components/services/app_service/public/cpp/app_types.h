@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -120,6 +121,9 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   std::vector<std::string> additional_search_terms;
 
   absl::optional<IconKey> icon_key;
+
+  absl::optional<base::Time> last_launch_time;
+  absl::optional<base::Time> install_time;
 
   // Whether the app was installed by sync, policy or as a default app.
   InstallReason install_reason = InstallReason::kUnknown;

@@ -1190,11 +1190,15 @@ void ArcApps::OnAppLastLaunchTimeUpdated(const std::string& app_id) {
   if (!app_info) {
     return;
   }
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kArc;
-  app->app_id = app_id;
+  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+  mojom_app->app_type = apps::mojom::AppType::kArc;
+  mojom_app->app_id = app_id;
+  mojom_app->last_launch_time = app_info->last_launch_time;
+  PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+  std::unique_ptr<App> app = std::make_unique<App>(AppType::kArc, app_id);
   app->last_launch_time = app_info->last_launch_time;
-  PublisherBase::Publish(std::move(app), subscribers_);
+  AppPublisher::Publish(std::move(app));
 }
 
 void ArcApps::OnPackageInstalled(
@@ -1495,6 +1499,9 @@ std::unique_ptr<App> ArcApps::CreateApp(
     app->icon_key = std::move(
         *icon_key_factory_.CreateIconKey(GetIconEffects(app_id, app_info)));
   }
+
+  app->last_launch_time = app_info.last_launch_time;
+  app->install_time = app_info.install_time;
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

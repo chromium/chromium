@@ -371,6 +371,9 @@ std::unique_ptr<App> PluginVmApps::CreateApp(
         *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
   }
 
+  app->last_launch_time = registration.LastLaunchTime();
+  app->install_time = registration.InstallTime();
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }

@@ -220,6 +220,14 @@ std::unique_ptr<App> ExtensionAppsBase::CreateAppImpl(
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
 
+  if (profile_) {
+    auto* prefs = extensions::ExtensionPrefs::Get(profile_);
+    if (prefs && prefs->GetInstalledExtensionInfo(extension->id())) {
+      app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
+      app->install_time = prefs->GetInstallTime(extension->id());
+    }
+  }
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
@@ -634,12 +642,16 @@ void ExtensionAppsBase::OnExtensionLastLaunchTimeChanged(
     return;
   }
 
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = mojom_app_type();
-  app->app_id = extension->id();
-  app->last_launch_time = last_launch_time;
+  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+  mojom_app->app_type = mojom_app_type();
+  mojom_app->app_id = extension->id();
+  mojom_app->last_launch_time = last_launch_time;
 
-  PublisherBase::Publish(std::move(app), subscribers_);
+  PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+  auto app = std::make_unique<App>(app_type(), extension->id());
+  app->last_launch_time = last_launch_time;
+  AppPublisher::Publish(std::move(app));
 }
 
 void ExtensionAppsBase::OnExtensionPrefsWillBeDestroyed(

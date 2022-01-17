@@ -116,9 +116,11 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool IconKeyChanged() const;
 
   base::Time LastLaunchTime() const;
+  base::Time GetLastLaunchTime() const;
   bool LastLaunchTimeChanged() const;
 
   base::Time InstallTime() const;
+  base::Time GetInstallTime() const;
   bool InstallTimeChanged() const;
 
   std::vector<apps::mojom::PermissionPtr> Permissions() const;

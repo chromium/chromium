@@ -27,6 +27,9 @@ std::unique_ptr<App> App::Clone() const {
                                   icon_key->icon_effects);
   }
 
+  app->last_launch_time = last_launch_time;
+  app->install_time = install_time;
+
   app->install_reason = install_reason;
   app->install_source = install_source;
 
@@ -182,6 +185,9 @@ std::unique_ptr<App> ConvertMojomAppToApp(
                                   mojom_app->icon_key->resource_id,
                                   mojom_app->icon_key->icon_effects);
   }
+
+  app->last_launch_time = mojom_app->last_launch_time;
+  app->install_time = mojom_app->install_time;
 
   app->install_reason =
       ConvertMojomInstallReasonToInstallReason(mojom_app->install_reason);

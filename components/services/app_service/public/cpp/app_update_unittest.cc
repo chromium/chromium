@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/services/app_service/public/cpp/app_update.h"
+
+#include "base/time/time.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +37,10 @@ class AppUpdateTest : public testing::Test {
 
   absl::optional<IconKey> expect_icon_key_;
 
+  base::Time expect_last_launch_time_;
+
+  base::Time expect_install_time_;
+
   InstallReason expect_install_reason_;
 
   InstallSource expect_install_source_;
@@ -64,6 +70,10 @@ class AppUpdateTest : public testing::Test {
       ASSERT_FALSE(u.GetIconKey().has_value());
     }
 
+    EXPECT_EQ(expect_last_launch_time_, u.GetLastLaunchTime());
+
+    EXPECT_EQ(expect_install_time_, u.GetInstallTime());
+
     EXPECT_EQ(expect_install_reason_, u.GetInstallReason());
 
     EXPECT_EQ(expect_install_source_, u.GetInstallSource());
@@ -86,6 +96,8 @@ class AppUpdateTest : public testing::Test {
     expect_version_ = "";
     expect_additional_search_terms_.clear();
     expect_icon_key_ = absl::nullopt;
+    expect_last_launch_time_ = base::Time();
+    expect_install_time_ = base::Time();
     expect_install_reason_ = InstallReason::kUnknown;
     expect_install_source_ = InstallSource::kUnknown;
     CheckExpects(u);
@@ -256,6 +268,46 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_icon_key_.value(), state->icon_key.value());
+      CheckExpects(u);
+    }
+
+    // LastLaunchTime tests.
+
+    if (state) {
+      state->last_launch_time = base::Time::FromDoubleT(1000.0);
+      expect_last_launch_time_ = base::Time::FromDoubleT(1000.0);
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->last_launch_time = base::Time::FromDoubleT(1001.0);
+      expect_last_launch_time_ = base::Time::FromDoubleT(1001.0);
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_last_launch_time_, state->last_launch_time);
+      CheckExpects(u);
+    }
+
+    // InstallTime tests.
+
+    if (state) {
+      state->install_time = base::Time::FromDoubleT(2000.0);
+      expect_install_time_ = base::Time::FromDoubleT(2000.0);
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->install_time = base::Time::FromDoubleT(2001.0);
+      expect_install_time_ = base::Time::FromDoubleT(2001.0);
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_install_time_, state->install_time);
       CheckExpects(u);
     }
 
