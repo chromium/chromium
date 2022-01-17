@@ -44,7 +44,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(new_browser));
 
   GURL url("about:blank");
-  AddTabAtIndexToBrowser(new_browser, 0, url, ui::PAGE_TRANSITION_LINK, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(new_browser, 0, url,
+                                     ui::PAGE_TRANSITION_LINK, true));
 
   int focused_window_id =
       extensions::ExtensionTabUtil::GetWindowId(new_browser);
@@ -91,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
 
   GURL url("about:blank");
-  AddTabAtIndexToBrowser(focused_window, 0, url, ui::PAGE_TRANSITION_LINK,
-                         true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(focused_window, 0, url,
+                                     ui::PAGE_TRANSITION_LINK, true));
   int focused_window_id =
       extensions::ExtensionTabUtil::GetWindowId(focused_window);
 

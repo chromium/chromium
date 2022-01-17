@@ -970,7 +970,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   content::WebContents* const tab1 =
       browser()->tab_strip_model()->GetWebContentsAt(0);
 
-  AddTabAtIndex(1, GURL("http://test2/"), ui::PAGE_TRANSITION_LINK);
+  ASSERT_FALSE(
+      AddTabAtIndex(1, GURL("http://test2/"), ui::PAGE_TRANSITION_LINK));
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetWebContentsAt(1);
 

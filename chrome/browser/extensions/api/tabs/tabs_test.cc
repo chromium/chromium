@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
     CreateBrowser(browser()->profile());
 
   GURL url(url::kAboutBlankURL);
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
   int window_id = ExtensionTabUtil::GetWindowId(browser());
 
   // Get tabs in the 'current' window called from non-focused browser.
@@ -663,9 +663,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryAllTabsWithDevTools) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryTabGroups) {
   GURL url(url::kAboutBlankURL);
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 

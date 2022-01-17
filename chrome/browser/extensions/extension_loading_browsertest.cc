@@ -100,9 +100,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // The extension takes a couple round-trips to the renderer in order
   // to crash, so open a new tab to wait long enough.
-  AddTabAtIndex(browser()->tab_strip_model()->count(),
-                GURL("http://www.google.com/"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_FALSE(AddTabAtIndex(browser()->tab_strip_model()->count(),
+                             GURL("http://www.google.com/"),
+                             ui::PAGE_TRANSITION_TYPED));
 
   // Check that the extension hasn't crashed.
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
