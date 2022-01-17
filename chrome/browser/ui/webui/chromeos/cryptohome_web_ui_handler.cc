@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/cryptohome_web_ui_handler.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -19,9 +20,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "url/gurl.h"
-
 #include "third_party/re2/src/re2/re2.h"
+#include "url/gurl.h"
 
 namespace browser_switcher {
 

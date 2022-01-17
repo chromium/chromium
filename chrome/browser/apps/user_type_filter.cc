@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/user_type_filter.h"
 
+#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
