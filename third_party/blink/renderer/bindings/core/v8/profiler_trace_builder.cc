@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/bindings/core/v8/profiler_trace_builder.h"
-
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_frame.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_profiler_marker.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_sample.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_stack.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_trace.h"
@@ -30,7 +30,8 @@ ProfilerTrace* ProfilerTraceBuilder::FromProfile(
       const auto* node = profile->GetSample(i);
       auto timestamp = base::TimeTicks() +
                        base::Microseconds(profile->GetSampleTimestamp(i));
-      builder->AddSample(node, timestamp);
+      const auto state = profile->GetSampleState(i);
+      builder->AddSample(node, timestamp, state);
     }
   }
   return builder->GetTrace();
@@ -51,7 +52,8 @@ void ProfilerTraceBuilder::Trace(Visitor* visitor) const {
 }
 
 void ProfilerTraceBuilder::AddSample(const v8::CpuProfileNode* node,
-                                     base::TimeTicks timestamp) {
+                                     base::TimeTicks timestamp,
+                                     const v8::StateTag state) {
   auto* sample = ProfilerSample::Create();
   // TODO(yoav): This should not use MonotonicTimeToDOMHighResTimeStamp, as
   // these timestamps are clamped, which makes no sense for traces. Since this
@@ -64,6 +66,9 @@ void ProfilerTraceBuilder::AddSample(const v8::CpuProfileNode* node,
   sample->setTimestamp(relative_timestamp);
   if (absl::optional<wtf_size_t> stack_id = GetOrInsertStackId(node))
     sample->setStackId(*stack_id);
+
+  if (absl::optional<blink::V8ProfilerMarker> marker = VMStateToMarker(state))
+    sample->setMarker(*marker);
 
   samples_.push_back(sample);
 }

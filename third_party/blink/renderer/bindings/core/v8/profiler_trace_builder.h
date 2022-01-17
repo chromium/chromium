@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PROFILER_TRACE_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PROFILER_TRACE_BUILDER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_profiler_marker.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -67,7 +70,7 @@ struct ProfilerNodeFrameHash {
 //
 // The trace format is described at:
 // https://wicg.github.io/js-self-profiling/#the-profilertrace-dictionary
-class ProfilerTraceBuilder final
+class CORE_EXPORT ProfilerTraceBuilder final
     : public GarbageCollected<ProfilerTraceBuilder> {
  public:
   static ProfilerTrace* FromProfile(ScriptState*,
@@ -87,7 +90,9 @@ class ProfilerTraceBuilder final
  private:
   // Adds a stack sample from V8 to the trace, performing necessary filtering
   // and coalescing.
-  void AddSample(const v8::CpuProfileNode* node, base::TimeTicks timestamp);
+  void AddSample(const v8::CpuProfileNode* node,
+                 base::TimeTicks timestamp,
+                 const v8::StateTag);
   // Obtains the stack ID of the substack with the given node as its leaf,
   // performing origin-based filtering.
   absl::optional<wtf_size_t> GetOrInsertStackId(const v8::CpuProfileNode* node);
@@ -97,6 +102,18 @@ class ProfilerTraceBuilder final
   wtf_size_t GetOrInsertResourceId(const char* resource_name);
 
   ProfilerTrace* GetTrace() const;
+
+  inline absl::optional<V8ProfilerMarker> VMStateToMarker(v8::StateTag state) {
+    switch (state) {
+      case v8::GC:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kGc);
+      case v8::JS:
+      case v8::ATOMICS_WAIT:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kScript);
+      default:
+        return absl::optional<V8ProfilerMarker>();
+    }
+  }
 
   // Discards metadata frames and performs an origin check on the given stack
   // frame, returning true if it either has the same origin as the profiler, or
@@ -123,6 +140,8 @@ class ProfilerTraceBuilder final
   // A mapping from a V8 internal script ID to whether or not it passes the
   // same-origin policy for the ScriptState that the trace belongs to.
   HashMap<int, bool> script_same_origin_cache_;
+
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, AddVMStateMarker);
 };
 
 }  // namespace blink

@@ -995,6 +995,10 @@
       status: "stable"
     },
     {
+      name: "ExperimentalJSProfilerMarkers",
+      status: "experimental"
+    },
+    {
       name: "ExperimentalPolicies",
       depends_on: ["DocumentPolicy"],
       status: "experimental"

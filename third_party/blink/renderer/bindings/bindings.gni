@@ -213,6 +213,7 @@ bindings_unittest_files = get_path_info(
           "core/v8/native_value_traits_impl_test.cc",
           "core/v8/native_value_traits_test.cc",
           "core/v8/no_alloc_direct_call_host_test.cc",
+          "core/v8/profiler_trace_builder_test.cc",
           "core/v8/referrer_script_info_test.cc",
           "core/v8/script_promise_property_test.cc",
           "core/v8/script_promise_resolver_test.cc",
