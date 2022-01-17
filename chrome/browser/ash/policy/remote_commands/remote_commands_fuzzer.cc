@@ -131,8 +131,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   remote_command.set_age_of_command(1);
   remote_command.set_payload(
       fuzzed_data_provider.ConsumeRemainingBytesAsString());
-  job->Init(/*now=*/base::TimeTicks::Now(), remote_command,
-            /*signed_command=*/nullptr);
+  job->Init(/*now=*/base::TimeTicks::Now(), remote_command, em::SignedData());
 
   return 0;
 }
