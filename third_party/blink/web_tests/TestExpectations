@@ -1501,7 +1501,7 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-sho
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-composited.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-absolute-covering-some-pages.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-clipped.html [ Crash ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-inside-transform.html [ Crash ]
+crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-inside-transform.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-larger-than-page.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-transformed.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers.html [ Crash ]
