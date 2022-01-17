@@ -35,6 +35,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/net_buildflags.h"
+#include "net/network_error_logging/network_error_logging_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/ssl/ssl_config_service.h"
@@ -230,8 +231,11 @@ class NET_EXPORT URLRequestContextBuilder {
   // Uses NetworkDelegateImpl by default. Note that calling Build will unset
   // any custom delegate in builder, so this must be called each time before
   // Build is called.
-  void set_network_delegate(std::unique_ptr<NetworkDelegate> delegate) {
+  // Returns a raw pointer to the set delegate.
+  template <typename T>
+  T* set_network_delegate(std::unique_ptr<T> delegate) {
     network_delegate_ = std::move(delegate);
+    return static_cast<T*>(network_delegate_.get());
   }
 
   // Sets the ProxyDelegate.
@@ -287,6 +291,12 @@ class NET_EXPORT URLRequestContextBuilder {
 
   void set_network_error_logging_enabled(bool network_error_logging_enabled) {
     network_error_logging_enabled_ = network_error_logging_enabled;
+  }
+
+  template <typename T>
+  T* SetNetworkErrorLoggingServiceForTesting(std::unique_ptr<T> service) {
+    network_error_logging_service_ = std::move(service);
+    return static_cast<T*>(network_error_logging_service_.get());
   }
 
   void set_persistent_reporting_and_nel_store(
@@ -379,6 +389,7 @@ class NET_EXPORT URLRequestContextBuilder {
 #if BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<ReportingPolicy> reporting_policy_;
   bool network_error_logging_enabled_ = false;
+  std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
   std::unique_ptr<PersistentReportingAndNelStore>
       persistent_reporting_and_nel_store_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)

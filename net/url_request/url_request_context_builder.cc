@@ -458,9 +458,12 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   if (network_error_logging_enabled_) {
+    if (!network_error_logging_service_) {
+      network_error_logging_service_ = NetworkErrorLoggingService::Create(
+          persistent_reporting_and_nel_store_.get());
+    }
     storage->set_network_error_logging_service(
-        NetworkErrorLoggingService::Create(
-            persistent_reporting_and_nel_store_.get()));
+        std::move(network_error_logging_service_));
   }
 
   if (persistent_reporting_and_nel_store_) {
