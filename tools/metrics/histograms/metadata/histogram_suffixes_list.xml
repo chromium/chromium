@@ -5593,9 +5593,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Mus" label="for Mus clients."/>
   <suffix name="OOPIF" label="for out-of-process-iframe clients."/>
   <suffix name="Renderer" label="for renderer process in general."/>
-  <affected-histogram name="GraphicsPipeline.ReceivedBeginFrame"/>
-  <affected-histogram
-      name="GraphicsPipeline.SubmitCompositorFrameAfterBeginFrame"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="GridTabSwitcherAnimationType" separator=".">
@@ -13417,19 +13414,10 @@ chromium-metrics-reviews@google.com.
   <suffix name="Background" label=""/>
   <suffix name="Foreground" label=""/>
   <affected-histogram name="RendererScheduler.TaskCPUDurationPerThreadType"/>
-  <affected-histogram name="RendererScheduler.TaskCPUDurationPerThreadType2"/>
   <affected-histogram name="RendererScheduler.TaskDurationPerTaskType"/>
   <affected-histogram name="RendererScheduler.TaskDurationPerTaskType2"/>
   <affected-histogram name="RendererScheduler.TaskDurationPerThreadType"/>
   <affected-histogram name="RendererScheduler.TaskDurationPerThreadType2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererScheduler_QueueType" separator=".">
-  <suffix name="Compositor" label=""/>
-  <suffix name="Input" label=""/>
-  <suffix name="Loading" label=""/>
-  <suffix name="Other" label=""/>
-  <affected-histogram name="RendererScheduler.QueueingDurationPerQueueType"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RendererScheduler_TaskCountPerTaskLength"
@@ -13439,10 +13427,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="LongerThan50ms" label=""/>
   <suffix name="LongerThan100ms" label=""/>
   <suffix name="LongerThan150ms" label=""/>
-  <affected-histogram name="RendererScheduler.TaskCountPerFrameType"/>
-  <affected-histogram
-      name="RendererScheduler.TaskCountPerFrameType.HasSafePoint"/>
-  <affected-histogram name="RendererScheduler.TaskCountPerQueueType"/>
 </histogram_suffixes>
 
 <histogram_suffixes
@@ -13515,7 +13499,6 @@ chromium-metrics-reviews@google.com.
       label="Time spent in tasks of a particular queue type when the renderer
              is visible."/>
   <affected-histogram name="RendererScheduler.TaskDurationPerQueueType2"/>
-  <affected-histogram name="RendererScheduler.TaskDurationPerQueueType3"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RendererScheduler_TaskDurationPerTaskTypeSplit"
@@ -15546,7 +15529,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame"/>
   <affected-histogram name="CompositorLatency.Type"/>
   <affected-histogram name="Graphics.Smoothness.Checkerboarding"/>
-  <affected-histogram name="Graphics.Smoothness.FrameSequenceLength"/>
   <affected-histogram name="Graphics.Smoothness.Jank.Compositor"/>
   <affected-histogram name="Graphics.Smoothness.Jank.Main"/>
   <affected-histogram name="Graphics.Smoothness.MaxStale"/>
@@ -15573,7 +15555,6 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <suffix name="Universal" label="All frame production"/>
   <affected-histogram name="Graphics.Smoothness.Checkerboarding"/>
-  <affected-histogram name="Graphics.Smoothness.FrameSequenceLength"/>
   <affected-histogram
       name="Graphics.Smoothness.PercentDroppedFrames.CompositorThread"/>
   <affected-histogram

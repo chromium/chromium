@@ -39,25 +39,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Browser.HitTestTimeToFindClosestLayer"
-    units="microseconds" expires_after="2020-12-01">
-  <obsolete>
-    Expired Dec 2020.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Time spent finding the closest matching layer to a given point whenever we
-    do hit testing on LayerTreeImpl (in a browser process).
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2022-07-11">
   <owner>schenney@chromium.org</owner>
@@ -129,20 +110,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Every time a frame is presented, record the generalized color gamut of that
     frame.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.CompositorFrameSinkSupport.ShouldSendBeginFrame"
-    enum="SendBeginFrameResult" expires_after="2020-10-04">
-  <obsolete>
-    Expired Oct 2020
-  </obsolete>
-  <owner>kylechar@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <summary>
-    Recorded for each OnBeginFrame() message that could potentially be sent to a
-    CompositorFrameSinkClient. The value indicates if the message was sent to
-    the client and why it was/wasn't sent.
   </summary>
 </histogram>
 
@@ -507,25 +474,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Renderer.HitTestTimeToFindClosestLayer"
-    units="microseconds" expires_after="2020-12-01">
-  <obsolete>
-    Expired Dec 2020.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Time spent finding the closest matching layer to a given point whenever we
-    do hit testing on LayerTreeImpl (in a renderer process).
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram
     name="Compositing.Renderer.LayerSkippedForDrawPropertiesDueToBackface"
     units="boolean" expires_after="2022-02-01">
@@ -802,32 +750,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SurfaceDependencyDeadline.Duration" units="ms"
-    expires_after="2020-12-01">
-  <obsolete>
-    Expired October 2020.
-  </obsolete>
-  <owner>jonross@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    The amount of time it took for a Surface with unresolved dependencies to
-    activate. Note that some activations may be triggered due to a deadline
-    hitting. That is tracked in the DeadlineHit histogram.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.SurfaceManager.AliveSurfaces" units="surfaces"
-    expires_after="2020-12-01">
-  <obsolete>
-    Expired October 2020.
-  </obsolete>
-  <owner>jonross@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Tracks the number of alive surfaces after each garbage collection operation.
-  </summary>
-</histogram>
-
 <histogram base="true" name="CompositorLatency" units="microseconds"
     expires_after="2022-05-22">
   <owner>sadrul@chromium.org</owner>
@@ -860,20 +782,6 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
-  </summary>
-</histogram>
-
-<histogram
-    name="CompositorLatency.Diagnostic.PresentationTimeDeltaFromDeadline"
-    units="ms" expires_after="M87">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
-  <owner>behdadb@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <summary>
-    For the compositor pipeline, measures how far the presentation time of a
-    compositor frame is from the frame deadline (i.e. vsync time).
   </summary>
 </histogram>
 
@@ -1018,28 +926,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Frames"
-    units="vsyncs" expires_after="2021-09-01">
-  <obsolete>
-    Removed 2021-11-29.
-  </obsolete>
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
-  <summary>Metric is replaced by DroppedFrameAfterScrollStart2.Time.</summary>
-</histogram>
-
-<histogram
-    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Time"
-    units="ms" expires_after="2021-09-01">
-  <obsolete>
-    Removed 2021-11-29.
-  </obsolete>
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
-  <summary>Metric is replaced by DroppedFrameAfterScrollStart2.Time.</summary>
-</histogram>
-
-<histogram
     name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Frames"
     units="vsyncs" expires_after="2022-11-29">
   <owner>sadrul@chromium.org</owner>
@@ -1086,19 +972,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Diagnostic metric to track how often reading the smoothness data for UKM
     from the shared memory (using atomic memcpy) fails (or succeeds).
-  </summary>
-</histogram>
-
-<histogram name="Graphics.Smoothness.FrameSequenceLength" units="count"
-    expires_after="2021-08-15">
-  <obsolete>
-    Removed 2021-07-09.
-  </obsolete>
-  <owner>sadrul@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Counts the number of frames expected during a particular sequence of frames
-    (e.g. during scroll, animation, etc.).
   </summary>
 </histogram>
 
@@ -1505,38 +1378,6 @@ chromium-metrics-reviews@google.com.
 
     Note that the reporting of this metric occurs as soon as a frame is
     presented, and is not affected by the length of the frame sequence.
-  </summary>
-</histogram>
-
-<histogram name="GraphicsPipeline.ReceivedBeginFrame" units="microseconds"
-    expires_after="M85">
-  <obsolete>
-    Expired in M85.
-  </obsolete>
-  <owner>yiyix@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    The amount of time it takes for the BeginFrame to travel to the Client from
-    the DisplayCompositor.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available
-  </summary>
-</histogram>
-
-<histogram name="GraphicsPipeline.SubmitCompositorFrameAfterBeginFrame"
-    units="microseconds" expires_after="M85">
-  <obsolete>
-    Expired in M85.
-  </obsolete>
-  <owner>yiyix@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    How long the client takes to prepare a compositor frame after receiving a
-    BeginFrameArgs.
-
-    Note that this is only recorded on clients on which a high-resolution clock
-    is available.
   </summary>
 </histogram>
 
