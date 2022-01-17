@@ -203,7 +203,7 @@ def SetOutputDirectory(output_directory):
   CheckOutputDirectory(). Typically by providing an --output-dir or
   --chromium-output-dir option.
   """
-  os.environ['CHROMIUM_OUTPUT_DIR'] = output_directory
+  os.environ['CHROMIUM_OUTPUT_DIR'] = os.path.abspath(output_directory)
 
 
 # The message that is printed when the Chromium output directory cannot
