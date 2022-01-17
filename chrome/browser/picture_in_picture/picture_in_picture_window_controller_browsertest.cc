@@ -921,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   // Open a new tab in the browser.
-  AddTabAtIndex(1, test_page_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, test_page_url, ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   // Open a new tab in the browser and starts Picture-in-Picture.
-  AddTabAtIndex(1, test_page_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, test_page_url, ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
@@ -1338,7 +1338,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(active_web_contents).size());
 
   // Open a new tab in the browser.
-  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
