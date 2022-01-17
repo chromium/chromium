@@ -133,7 +133,9 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
   // thread sets |calculator_io_|. On destruction, this class first tears down
   // all consumers of |calculator_io_|, and then clears the member and destroys
   // Calculator.
-  raw_ptr<Calculator> calculator_io_ = nullptr;
+  // `calculator_io_` is not a raw_ptr<...> because Calculator isn't supported
+  // in raw_ptr for performance reasons. See crbug.com/1287151.
+  Calculator* calculator_io_ = nullptr;
 };
 
 }  // namespace responsiveness
