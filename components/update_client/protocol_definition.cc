@@ -12,6 +12,7 @@ namespace protocol_request {
 
 OS::OS() = default;
 OS::OS(OS&&) = default;
+OS& OS::operator=(OS&&) = default;
 OS::~OS() = default;
 
 Updater::Updater() = default;
@@ -27,10 +28,12 @@ Ping::~Ping() = default;
 
 App::App() = default;
 App::App(App&&) = default;
+App& App::operator=(App&&) = default;
 App::~App() = default;
 
 Request::Request() = default;
 Request::Request(Request&&) = default;
+Request& Request::operator=(Request&&) = default;
 Request::~Request() = default;
 
 }  // namespace protocol_request

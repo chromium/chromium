@@ -16,12 +16,6 @@
 
 namespace update_client {
 
-// The value of this constant does not reflect its name (i.e. "domainjoined"
-// vs something like "isenterprisemanaged") because it is used with omaha.
-// After discussion with omaha team it was decided to leave the value as is to
-// keep continuity with previous chrome versions.
-const char UpdaterState::kIsEnterpriseManaged[] = "domainjoined";
-
 UpdaterState::UpdaterState(bool is_machine) : is_machine_(is_machine) {}
 
 UpdaterState::~UpdaterState() = default;
@@ -39,8 +33,6 @@ std::unique_ptr<UpdaterState::Attributes> UpdaterState::GetState(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void UpdaterState::ReadState() {
-  is_enterprise_managed_ = base::IsMachineExternallyManaged();
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   updater_name_ = GetUpdaterName();
   updater_version_ = GetUpdaterVersion(is_machine_);
@@ -59,7 +51,6 @@ UpdaterState::Attributes UpdaterState::BuildAttributes() const {
   // Only Windows implements this attribute in a meaningful way.
   attributes["ismachine"] = is_machine_ ? "1" : "0";
 #endif  // BUILDFLAG(IS_WIN)
-  attributes[kIsEnterpriseManaged] = is_enterprise_managed_ ? "1" : "0";
 
   attributes["name"] = updater_name_;
 

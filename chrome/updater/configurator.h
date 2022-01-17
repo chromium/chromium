@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/update_client/configurator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -45,7 +46,7 @@ class Configurator : public update_client::Configurator {
   Configurator(const Configurator&) = delete;
   Configurator& operator=(const Configurator&) = delete;
 
-  // Configurator for update_client::Configurator.
+  // Overrides for update_client::Configurator.
   double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
@@ -73,9 +74,10 @@ class Configurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  absl::optional<bool> IsMachineExternallyManaged() const override;
+
   int ServerKeepAliveSeconds() const;
   scoped_refptr<PolicyService> GetPolicyService() const;
-
   crx_file::VerifierFormat GetCrxVerifierFormat() const;
 
  private:

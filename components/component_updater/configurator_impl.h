@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/update_client/configurator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -93,6 +94,8 @@ class ConfiguratorImpl {
   // serializer object instances.
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const;
+
+  absl::optional<bool> IsMachineExternallyManaged() const;
 
  private:
   base::flat_map<std::string, std::string> extra_info_;

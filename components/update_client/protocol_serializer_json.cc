@@ -51,8 +51,7 @@ std::string ProtocolSerializerJSON::Serialize(
   if (!request.dlpref.empty())
     request_node->SetKey("dlpref", Value(request.dlpref));
   if (request.domain_joined) {
-    request_node->SetKey(UpdaterState::kIsEnterpriseManaged,
-                         Value(*request.domain_joined));
+    request_node->SetKey("domainjoined", Value(*request.domain_joined));
   }
 
   // HW platform information.

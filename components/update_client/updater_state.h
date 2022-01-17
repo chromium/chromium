@@ -19,8 +19,6 @@ class UpdaterState {
  public:
   using Attributes = std::map<std::string, std::string>;
 
-  static const char kIsEnterpriseManaged[];
-
   // Returns a map of items representing the state of an updater.
   // If |is_machine| is true, this indicates that the updater state corresponds
   // to the machine instance of the updater. Returns nullptr on
@@ -54,12 +52,11 @@ class UpdaterState {
   // True if the Omaha updater is installed per-machine.
   // The MacOS implementation ignores the value of this member but this may
   // change in the future.
-  bool is_machine_;
+  bool is_machine_ = false;
   std::string updater_name_;
   base::Version updater_version_;
   base::Time last_autoupdate_started_;
   base::Time last_checked_;
-  bool is_enterprise_managed_ = false;
   bool is_autoupdate_check_enabled_ = false;
   int update_policy_ = 0;
 };

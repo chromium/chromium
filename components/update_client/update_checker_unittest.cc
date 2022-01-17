@@ -210,6 +210,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
       std::make_unique<PartialMatch>("updatecheck"),
       test_file("updatecheck_reply_1.json")));
 
+  config_->SetIsMachineExternallyManaged(true);
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
@@ -255,6 +256,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ("fake_channel_string",
             request->FindKey("updaterchannel")->GetString());
   EXPECT_EQ("30.0", request->FindKey("updaterversion")->GetString());
+  EXPECT_TRUE(request->FindKey("domainjoined")->GetBool());
 
   // No "dlpref" is sent by default.
   EXPECT_FALSE(request->FindKey("dlpref"));
@@ -279,9 +281,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
                        ->GetList()[0]
                        .FindKey("fp")
                        ->GetString());
-
 #if BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(request->FindKey("domainjoined"));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const auto* updater = request->FindKey("updater");
   EXPECT_TRUE(updater);
@@ -290,7 +290,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_TRUE(updater->FindKey("ismachine")->is_bool());
   EXPECT_TRUE(updater->FindKey("updatepolicy")->is_int());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // IS_WIN
 
   // Sanity check the arguments of the callback after parsing.
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
@@ -1013,6 +1013,7 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     EXPECT_EQ(app.FindBoolPath("updatecheck.sameversionupdate").value(), true);
   }
 }
+
 TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
@@ -1169,6 +1170,35 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
   EXPECT_EQ(1u, results_->list.size());
   const auto& result = results_->list.front();
   EXPECT_STREQ("error-unknownApplication", result.status.c_str());
+}
+
+TEST_P(UpdateCheckerTest, DomainJoined) {
+  for (const auto is_managed : std::initializer_list<absl::optional<bool>>{
+           absl::nullopt, false, true}) {
+    EXPECT_TRUE(post_interceptor_->ExpectRequest(
+        std::make_unique<PartialMatch>("updatecheck"),
+        test_file("updatecheck_reply_noupdate.json")));
+    update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+
+    IdToComponentPtrMap components;
+    components[kUpdateItemId] = MakeComponent();
+
+    config_->SetIsMachineExternallyManaged(is_managed);
+    update_checker_->CheckForUpdates(
+        update_context_->session_id, {kUpdateItemId}, components, {},
+        base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
+                       base::Unretained(this)));
+    RunThreads();
+
+    ASSERT_GE(post_interceptor_->GetCount(), 1);
+    const auto root = base::JSONReader::Read(
+        post_interceptor_->GetRequestBody(post_interceptor_->GetCount() - 1));
+    ASSERT_TRUE(root);
+
+    // What is injected in the update checker by the configurator must
+    // match what is sent in the update check.
+    EXPECT_EQ(is_managed, root->FindBoolPath("request.domainjoined"));
+  }
 }
 
 }  // namespace update_client

@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -133,6 +134,11 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // serializer object instances.
   virtual std::unique_ptr<ProtocolHandlerFactory> GetProtocolHandlerFactory()
       const = 0;
+
+  // Returns true if Chrome is installed on a system managed by cloud or
+  // group policies, false if the system is not managed, or nullopt if the
+  // platform does not support client management at all.
+  virtual absl::optional<bool> IsMachineExternallyManaged() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<Configurator>;

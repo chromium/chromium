@@ -27,6 +27,7 @@
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -178,6 +179,11 @@ bool AwComponentUpdaterConfigurator::IsPerUserInstall() const {
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 AwComponentUpdaterConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
+}
+
+absl::optional<bool>
+AwComponentUpdaterConfigurator::IsMachineExternallyManaged() const {
+  return absl::nullopt;
 }
 
 scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(

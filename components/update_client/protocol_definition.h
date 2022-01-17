@@ -41,12 +41,10 @@ struct HW {
 
 struct OS {
   OS();
-
   OS(const OS&) = delete;
   OS& operator=(const OS&) = delete;
-
   OS(OS&&);
-
+  OS& operator=(OS&&);
   ~OS();
 
   std::string platform;
@@ -98,12 +96,10 @@ struct Ping {
 
 struct App {
   App();
-
   App(const App&) = delete;
   App& operator=(const App&) = delete;
-
   App(App&&);
-
+  App& operator=(App&&);
   ~App();
 
   std::string app_id;
@@ -137,12 +133,10 @@ struct App {
 
 struct Request {
   Request();
-
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
-
   Request(Request&&);
-
+  Request& operator=(Request&&);
   ~Request();
 
   std::string protocol_version;

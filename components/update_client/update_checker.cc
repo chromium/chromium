@@ -207,8 +207,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
       !config_->IsPerUserInstall(), session_id, config_->GetProdId(),
       config_->GetBrowserVersion().GetString(), config_->GetLang(),
       config_->GetChannel(), config_->GetOSLongName(),
-      config_->GetDownloadPreference(), additional_attributes,
-      updater_state_attributes.get(), std::move(apps));
+      config_->GetDownloadPreference(), config_->IsMachineExternallyManaged(),
+      additional_attributes, updater_state_attributes.get(), std::move(apps));
 
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(

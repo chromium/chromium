@@ -4,11 +4,12 @@
 
 #include "components/component_updater/configurator_impl.h"
 
-#include <stddef.h>
-
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/enterprise_util.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -20,6 +21,8 @@
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/utils.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
@@ -130,6 +133,14 @@ std::string ConfiguratorImpl::GetAppGuid() const {
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 ConfiguratorImpl::GetProtocolHandlerFactory() const {
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
+}
+
+absl::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  return base::IsMachineExternallyManaged();
+#else
+  return absl::nullopt;
+#endif
 }
 
 }  // namespace component_updater

@@ -28,6 +28,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/common/channel_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -65,6 +66,7 @@ class IOSConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  absl::optional<bool> IsMachineExternallyManaged() const override;
 
  private:
   friend class base::RefCountedThreadSafe<IOSConfigurator>;
@@ -206,6 +208,10 @@ bool IOSConfigurator::IsPerUserInstall() const {
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 IOSConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
+}
+
+absl::optional<bool> IOSConfigurator::IsMachineExternallyManaged() const {
+  return configurator_impl_.IsMachineExternallyManaged();
 }
 
 }  // namespace

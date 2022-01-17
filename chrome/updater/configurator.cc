@@ -4,7 +4,12 @@
 
 #include "chrome/updater/configurator.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/cxx17_backports.h"
+#include "base/enterprise_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/version.h"
@@ -25,6 +30,7 @@
 #include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -181,6 +187,14 @@ bool Configurator::IsPerUserInstall() const {
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 Configurator::GetProtocolHandlerFactory() const {
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
+}
+
+absl::optional<bool> Configurator::IsMachineExternallyManaged() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  return base::IsMachineExternallyManaged();
+#else
+  return absl::nullopt;
+#endif
 }
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {

@@ -17,6 +17,7 @@
 #include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/unzipper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -59,6 +60,7 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  absl::optional<bool> IsMachineExternallyManaged() const override;
 
  protected:
   friend class base::RefCountedThreadSafe<AwComponentUpdaterConfigurator>;

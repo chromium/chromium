@@ -145,6 +145,8 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
   DCHECK(pref_service_);
 }
 
+ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
+
 double ChromeUpdateClientConfig::InitialDelay() const {
   return impl_.InitialDelay();
 }
@@ -281,7 +283,10 @@ ChromeUpdateClientConfig::GetProtocolHandlerFactory() const {
   return impl_.GetProtocolHandlerFactory();
 }
 
-ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
+absl::optional<bool> ChromeUpdateClientConfig::IsMachineExternallyManaged()
+    const {
+  return impl_.IsMachineExternallyManaged();
+}
 
 // static
 scoped_refptr<ChromeUpdateClientConfig> ChromeUpdateClientConfig::Create(

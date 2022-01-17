@@ -20,6 +20,7 @@
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -142,6 +143,23 @@ bool TestConfigurator::EnabledCupSigning() const {
   return enabled_cup_signing_;
 }
 
+ActivityDataService* TestConfigurator::GetActivityDataService() const {
+  return nullptr;
+}
+
+bool TestConfigurator::IsPerUserInstall() const {
+  return true;
+}
+
+std::unique_ptr<ProtocolHandlerFactory>
+TestConfigurator::GetProtocolHandlerFactory() const {
+  return std::make_unique<ProtocolHandlerFactoryJSON>();
+}
+
+absl::optional<bool> TestConfigurator::IsMachineExternallyManaged() const {
+  return is_machine_externally_managed_;
+}
+
 void TestConfigurator::SetOnDemandTime(int seconds) {
   ondemand_time_ = seconds;
 }
@@ -176,17 +194,9 @@ PrefService* TestConfigurator::GetPrefService() const {
   return pref_service_;
 }
 
-ActivityDataService* TestConfigurator::GetActivityDataService() const {
-  return nullptr;
-}
-
-bool TestConfigurator::IsPerUserInstall() const {
-  return true;
-}
-
-std::unique_ptr<ProtocolHandlerFactory>
-TestConfigurator::GetProtocolHandlerFactory() const {
-  return std::make_unique<ProtocolHandlerFactoryJSON>();
+void TestConfigurator::SetIsMachineExternallyManaged(
+    absl::optional<bool> is_machine_externally_managed) {
+  is_machine_externally_managed_ = is_machine_externally_managed;
 }
 
 }  // namespace update_client

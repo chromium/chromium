@@ -29,7 +29,6 @@ TEST_F(UpdaterStateTest, Serialize) {
   updater_state.updater_version_ = base::Version("1.0");
   updater_state.last_autoupdate_started_ = base::Time::NowFromSystemTime();
   updater_state.last_checked_ = base::Time::NowFromSystemTime();
-  updater_state.is_enterprise_managed_ = false;
   updater_state.is_autoupdate_check_enabled_ = true;
   updater_state.update_policy_ = 1;
 
@@ -40,7 +39,6 @@ TEST_F(UpdaterStateTest, Serialize) {
   EXPECT_STREQ("1.0", attributes.at("version").c_str());
   EXPECT_STREQ("0", attributes.at("laststarted").c_str());
   EXPECT_STREQ("0", attributes.at("lastchecked").c_str());
-  EXPECT_STREQ("0", attributes.at("domainjoined").c_str());
   EXPECT_STREQ("1", attributes.at("autoupdatecheckenabled").c_str());
   EXPECT_STREQ("1", attributes.at("updatepolicy").c_str());
 
@@ -106,10 +104,6 @@ TEST_F(UpdaterStateTest, Serialize) {
   updater_state.last_checked_ = base::Time();
   attributes = updater_state.BuildAttributes();
   EXPECT_EQ(0u, attributes.count("lastchecked"));
-
-  updater_state.is_enterprise_managed_ = true;
-  attributes = updater_state.BuildAttributes();
-  EXPECT_STREQ("1", attributes.at("domainjoined").c_str());
 
   updater_state.is_autoupdate_check_enabled_ = false;
   attributes = updater_state.BuildAttributes();

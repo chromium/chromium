@@ -42,6 +42,7 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& channel,
     const std::string& os_long_name,
     const std::string& download_preference,
+    absl::optional<bool> domain_joined,
     const base::flat_map<std::string, std::string>& additional_attributes,
     const std::map<std::string, std::string>* updater_state_attributes,
     std::vector<protocol_request::App> apps);

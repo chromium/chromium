@@ -23,6 +23,7 @@
 #include "components/update_client/protocol_serializer.h"
 #include "components/update_client/request_sender.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -117,7 +118,8 @@ void PingSender::SendPing(const Component& component,
               config_->GetProdId(), config_->GetBrowserVersion().GetString(),
               config_->GetLang(), config_->GetChannel(),
               config_->GetOSLongName(), config_->GetDownloadPreference(),
-              config_->ExtraRequestParams(), nullptr, std::move(apps))),
+              absl::nullopt, config_->ExtraRequestParams(), nullptr,
+              std::move(apps))),
       false, base::BindOnce(&PingSender::SendPingComplete, this));
 }
 
