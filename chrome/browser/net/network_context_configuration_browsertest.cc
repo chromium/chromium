@@ -1923,8 +1923,14 @@ class NetworkContextConfigurationProxySettingsBrowserTest
   std::unordered_set<std::string> observed_request_urls_;
 };
 
+// Test failure on macOS: crbug.com/1287934
+#if defined(OS_MAC)
+#define MAYBE_MaxConnectionsPerProxy DISABLED_MaxConnectionsPerProxy
+#else
+#define MAYBE_MaxConnectionsPerProxy MaxConnectionsPerProxy
+#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
-                       MaxConnectionsPerProxy) {
+                       MAYBE_MaxConnectionsPerProxy) {
   RunMaxConnectionsPerProxyTest();
 }
 
