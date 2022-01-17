@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
 
   // Add a second tab that will become the visible one.
   tick_clock_.Advance(kInterval);
-  AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
-                ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
+                            ui::PAGE_TRANSITION_LINK));
   auto* contents1 = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(
       content::Visibility::VISIBLE,
@@ -231,8 +231,8 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
-  AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
-                ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
+                            ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(content::Visibility::VISIBLE,
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
   tick_clock_.Advance(kInterval);
@@ -274,8 +274,8 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
-  AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
-                ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
+                            ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(content::Visibility::VISIBLE,
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
   tick_clock_.Advance(kInterval);
@@ -422,8 +422,9 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
       content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(0),
                              embedded_test_server()->GetURL("/title2.html")));
   tick_clock_.Advance(kInterval);
-  AddTabAtIndex(1, embedded_test_server()->GetURL("/media/fullscreen.html"),
-                ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, embedded_test_server()->GetURL("/media/fullscreen.html"),
+                    ui::PAGE_TRANSITION_LINK));
   auto* contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   FullscreenEventsWaiter waiter(contents);
   EXPECT_TRUE(content::ExecJs(contents, "makeFullscreen('small_video')"));
