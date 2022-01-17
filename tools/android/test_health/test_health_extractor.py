@@ -135,8 +135,5 @@ def _get_test_health_info(repo_root: pathlib.Path, test_path: pathlib.Path,
 
 
 def _get_git_repo_info(git_repo: pathlib.Path) -> GitRepoInfo:
-    return GitRepoInfo(
-        # TODO(crbug/3372331): Update git_metadata_utils API to accept both
-        #     str and pathlib.Path.
-        git_metadata_utils.get_head_commit_hash(str(git_repo)),
-        git_metadata_utils.get_head_commit_datetime(str(git_repo)))
+    return GitRepoInfo(git_metadata_utils.get_head_commit_hash(git_repo),
+                       git_metadata_utils.get_head_commit_datetime(git_repo))
