@@ -275,7 +275,7 @@ class UserPolicyCertsHelper {
   void SetONCUserPolicy(Profile* profile,
                         MockConfigurationPolicyProvider* mock_policy_provider,
                         const std::string& onc_policy_data) {
-    UserNetworkConfigurationUpdater* user_network_configuration_updater =
+    NetworkConfigurationUpdater* user_network_configuration_updater =
         UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
 
     WebTrustedCertsChangedObserver trust_roots_changed_observer;

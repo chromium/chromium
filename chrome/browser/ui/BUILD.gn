@@ -3179,6 +3179,7 @@ static_library("ui") {
       "window_sizer/window_sizer_chromeos.h",
     ]
     deps += [
+      "//chrome/browser/policy:onc",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/ui/base",

@@ -76,7 +76,7 @@ class ProfileNetworkContextService
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateAdditionalCertificates();
 #endif
 
@@ -157,6 +157,12 @@ class ProfileNetworkContextService
   // Returns the path for a given storage partition.
   base::FilePath GetPartitionPath(
       const base::FilePath& relative_partition_path);
+
+  // Populates |network_context_params| with initial additional server and
+  // authority certificates for |relative_partition_path|.
+  void PopulateInitialAdditionalCerts(
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params);
 
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,

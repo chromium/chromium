@@ -5,17 +5,21 @@
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service_factory.h"
-#include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
+#include "chrome/browser/policy/networking/user_network_configuration_updater.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/network/network_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
 
@@ -58,6 +62,7 @@ bool UserNetworkConfigurationUpdaterFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 KeyedService* UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // On the login/lock screen only device network policies apply.
@@ -80,12 +85,38 @@ KeyedService* UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceFor(
   // set for all user sessions.
   // TODO(https://crbug.com/1001490): Evaluate if this is can be solved in a
   // more elegant way.
-  return UserNetworkConfigurationUpdater::CreateForUserPolicy(
+  return UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
              profile, *user,
              profile->GetProfilePolicyConnector()->policy_service(),
              chromeos::NetworkHandler::Get()
                  ->managed_network_configuration_handler())
       .release();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+KeyedService* UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  // Lacros only handles CA certificates from the ONC policy and it is only
+  // supported for the main profile.
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile->IsMainProfile()) {
+    return nullptr;
+  }
+
+  // Lacros only handles CA certificates from the ONC policy, so the simple
+  // UserNetworkConfigurationUpdater is sufficient for it. Client certs and
+  // network configs will be processed by Ash.
+  // Note that sessions which don't have policy (e.g. guest sessions) still
+  // expect to have UserNetworkConfigurationUpdater, because
+  // ManagedNetworkConfigurationHandler requires a (possibly empty) policy to be
+  // set for all user sessions.
+  // TODO(https://crbug.com/1001490): Evaluate if this is can be solved in a
+  // more elegant way.
+  return UserNetworkConfigurationUpdater::CreateForUserPolicy(
+             profile->GetProfilePolicyConnector()->policy_service())
+      .release();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace policy

@@ -362,6 +362,7 @@ extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];
 extern const char kExternalStorageDisabled[];
 extern const char kExternalStorageReadOnly[];
 extern const char kSettingsShowOSBanner[];
+extern const char kUsedPolicyCertificates[];
 #endif  // defined(OS_CHROMEOS)
 extern const char kShowHomeButton[];
 extern const char kSpeechRecognitionFilterProfanities[];
@@ -776,7 +777,6 @@ extern const char kEnrollmentRecoveryRequired[];
 extern const char kHelpAppShouldShowGetStarted[];
 extern const char kHelpAppShouldShowParentalControl[];
 extern const char kHelpAppTabletModeDuringOobe[];
-extern const char kUsedPolicyCertificates[];
 extern const char kServerBackedDeviceState[];
 extern const char kCustomizationDefaultWallpaperURL[];
 extern const char kLogoutStartedLast[];

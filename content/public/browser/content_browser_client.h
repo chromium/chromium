@@ -827,7 +827,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* conversion_origin,
       const url::Origin* reporting_origin);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.
   virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}
 #endif

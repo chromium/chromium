@@ -275,7 +275,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       const std::string& spn,
       OnGenerateHttpNegotiateAuthTokenCallback callback) override;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
   void OnTrustTokenIssuanceDivertedToSystem(

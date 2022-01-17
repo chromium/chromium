@@ -39,48 +39,62 @@ source_set("path_parser") {
 
 source_set("onc") {
   sources = []
-  if (is_chromeos_ash) {
+
+  if (is_chromeos) {
     sources += [
-      "networking/device_network_configuration_updater_ash.cc",
-      "networking/device_network_configuration_updater_ash.h",
       "networking/network_configuration_updater.cc",
       "networking/network_configuration_updater.h",
       "networking/policy_cert_service.cc",
       "networking/policy_cert_service.h",
       "networking/policy_cert_service_factory.cc",
       "networking/policy_cert_service_factory.h",
-      "networking/user_network_configuration_updater_ash.cc",
-      "networking/user_network_configuration_updater_ash.h",
+      "networking/user_network_configuration_updater.cc",
+      "networking/user_network_configuration_updater.h",
       "networking/user_network_configuration_updater_factory.cc",
       "networking/user_network_configuration_updater_factory.h",
     ]
   }
 
-  deps = []
   if (is_chromeos_ash) {
+    sources += [
+      "networking/device_network_configuration_updater_ash.cc",
+      "networking/device_network_configuration_updater_ash.h",
+      "networking/user_network_configuration_updater_ash.cc",
+      "networking/user_network_configuration_updater_ash.h",
+    ]
+  }
+
+  deps = []
+
+  if (is_chromeos) {
     deps += [
-      "//ash/components/settings:settings",
-      "//ash/constants:constants",
-      "//base",
-      "//base",
       "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
       "//chrome/browser/extensions:extensions",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profiles",
       "//chrome/common:constants",
-      "//chromeos/components/onc:onc",
-      "//chromeos/network:network",
-      "//chromeos/system:system",
-      "//chromeos/tpm:tpm",
+      "//chromeos/components/onc",
       "//components/keyed_service/content:content",
       "//components/onc:onc",
       "//components/policy/core/common",
-      "//components/policy/core/common:common_constants",
       "//components/prefs:prefs",
+      "//extensions/browser:browser",
+      "//net",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/components/settings:settings",
+      "//ash/constants:constants",
+      "//base",
+      "//chromeos/network:network",
+      "//chromeos/system:system",
+      "//chromeos/tpm:tpm",
+      "//components/policy/core/common:common_constants",
       "//components/user_manager:user_manager",
       "//dbus",
-      "//extensions/browser:browser",
     ]
   }
 }
@@ -368,21 +382,34 @@ source_set("unit_tests") {
   testonly = true
 
   sources = []
-  deps = []
+
+  if (is_chromeos) {
+    sources += [ "networking/network_configuration_updater_unittest.cc" ]
+  }
 
   if (is_chromeos_ash) {
     sources += [
       "networking/network_configuration_updater_ash_unittest.cc",
       "networking/policy_cert_service_factory_ash_unittest.cc",
     ]
+  }
 
+  deps = []
+
+  if (is_chromeos) {
     deps += [
       ":onc",
-      "//chrome/browser/chromeos:test_support",
       "//chrome/test:test_support",
+      "//chromeos/components/onc:onc",
       "//chromeos/components/onc:test_support",
-      "//chromeos/system:system",
       "//components/onc:onc",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/chromeos:test_support",
+      "//chromeos/system:system",
     ]
   }
 }

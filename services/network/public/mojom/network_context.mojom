@@ -137,7 +137,7 @@ interface CustomProxyConfigClient {
   ClearBadProxiesCache();
 };
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 struct AdditionalCertificates {
   // List of all additional certificates.
   array<X509Certificate> all_certificates;
@@ -437,7 +437,7 @@ struct NetworkContextParams {
 
   // Initial additional certificates that will be used for certificate
   // validation.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   AdditionalCertificates? initial_additional_certificates;
 
   // Parameters for constructing the cookie manager.
@@ -769,7 +769,7 @@ interface NetworkContextClient {
                                    (int32 result, string auth_token);
 
   // Notification that a trust anchor was used for the given user.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   OnTrustAnchorUsed();
 
   // If it's supported by the implementation, attempts to provide a response to
@@ -1042,7 +1042,7 @@ interface NetworkContext {
   SetEnableReferrers(bool enable_referrers);
 
   // Updates the additional trust anchors for certificate verification.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   UpdateAdditionalCertificates(AdditionalCertificates? additional_certificates);
 
   // Updates the CT policy to be used for requests. Only applies if the

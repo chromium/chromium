@@ -1,0 +1,93 @@
+{ "Type": "UnencryptedConfiguration",
+  "NetworkConfigurations":
+  [ { "GUID": "123",
+      "Type": "VPN",
+      "Name": "testopenvpn",
+      "StaticIPConfig": {
+          "Type": "IPv4",
+          "IPAddress": "127.0.0.1",
+          "RoutingPrefix": 32
+      },
+      "VPN": {
+          "Host": "policys host",
+          "Recommended": ["Host"],
+          "Type": "OpenVPN",
+          "OpenVPN": {
+              "Port": 1194,
+              "Username": "abc ${LOGIN_ID} def",
+              "Recommended": [ "Username", "Password", "UNKNOWN_FIELD" ],
+              "ClientCertType": "Pattern",
+              "ClientCertPattern": {
+                  "IssuerCARef": [ "test-ca" ],
+                  "Recommended": [ "EnrollmentURI", "IssuerCARef" ]
+              }
+          },
+          "UNKNOWN_FIELD" : "abcdef",
+          "IPsec": {
+              "AuthenticationType": "PSK",
+              "PSK": "sharedkey",
+              "IKEVersion": 1
+          }
+      }
+    },
+    {
+      "GUID": "456",
+      "Type": "WiFi",
+      "Name": "My WiFi Network",
+      "WiFi": {
+        "Security": "None",
+        "SSID": "OpenWrt"
+      }
+    },
+    { "GUID": "guid",
+      "Name": "name",
+      "Ethernet": {
+          "Authentication": "None"
+      }
+    }
+  ],
+  "Certificates": [
+      {
+        "GUID": "test-ca",
+        "TrustBits": [ "Web" ],
+        "X509": "MIIG",
+        "Type": "Authority"
+      },
+      {
+        "GUID": "{d443ad0d-ea16-4301-9089-588115e2f5c4}",
+        "Type": "Authority",
+         "X509": "-----BEGIN CERTIFICATE-----\n
+    MIIC8zCCAdugAwIBAgIJALF9qhLor0+aMA0GCSqGSIb3DQEBBQUAMBcxFTATBgNV\n
+    BAMMDFRlc3QgUm9vdCBDQTAeFw0xNDA4MTQwMzA1MjlaFw0yNDA4MTEwMzA1Mjla\n
+    MBcxFTATBgNVBAMMDFRlc3QgUm9vdCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEP\n
+    ADCCAQoCggEBALZJQeNCAVGofzx6cdP7zZE1F4QajvY2x9FwHfqG8267dm/oMi43\n
+    /TiSPWjkin1CMxRGG9wE9pFuVEDECgn97C1i4l7huiycwbFgTNrH+CJcgiBlQh5W\n
+    d3VP65AsSupXDiKNbJWsEerM1+72cA0J3aY1YV3Jdm2w8h6/MIbYd1I2lZcO0UbF\n
+    7YE9G7DyYZU8wUA4719dumGf7yucn4WJdHBj1XboNX7OAeHzERGQHA31/Y3OEGyt\n
+    fFUaIW/XLfR4FeovOL2RnjwdB0b1Q8GCi68SU2UZimlpZgay2gv6KgChKhWESfEB\n
+    v5swBtAVoB+dUZFH4VNf717swmF5whSfxOMCAwEAAaNCMEAwDwYDVR0TAQH/BAUw\n
+    AwEB/zAdBgNVHQ4EFgQUvPcw0TzA8nn675/JbFyT84poq4MwDgYDVR0PAQH/BAQD\n
+    AgEGMA0GCSqGSIb3DQEBBQUAA4IBAQBXByn7f+j/sObYWGrDkKE4HLTzaLHs6Ikj\n
+    JNeo8iHDYOSkSVwAv9/HgniAKxj3rd3QYl6nsMzwqrTOcBJZZWd2BQAYmv/EKhfj\n
+    8VXYvlxe68rLU4cQ1QkyNqdeQfRT2n5WYNJ+TpqlCF9ddennMMsi6e8ZSYOlI6H4\n
+    YEzlNtU5eBjxXr/OqgtTgSx4qQpr2xMQIRR/G3A9iRpAigYsXVAZYvnHRYnyPWYF\n
+    PX11W1UegEJyoZp8bQp09u6mIWw6mPt3gl/ya1bm3ZuOUPDGrv3qpgUHqSYGVrOy\n
+    2bI3oCE+eQYfuVG+9LFJTZC1M+UOx15bQMVqBNFDepRqpE9h/ILg\n
+    -----END CERTIFICATE-----"
+      },
+      {
+          "GUID": "{f998f760-272b-6939-4c2beffe428697ac}",
+          "PKCS12": "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",
+          "Type": "Client"
+      },
+      {
+          "GUID": "{456}",
+          "PKCS12": "ERROR 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",
+          "Type": "Client"
+      }
+  ],
+  "GlobalNetworkConfiguration": {
+    "AllowOnlyPolicyNetworksToAutoconnect": true,
+    "Unknown option": "abc"
+  }
+}

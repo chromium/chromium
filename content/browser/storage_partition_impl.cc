@@ -2068,7 +2068,7 @@ void StoragePartitionImpl::OnGenerateHttpNegotiateAuthToken(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void StoragePartitionImpl::OnTrustAnchorUsed() {
   GetContentClient()->browser()->OnTrustAnchorUsed(browser_context_);
 }

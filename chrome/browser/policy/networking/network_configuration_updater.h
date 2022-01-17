@@ -24,20 +24,15 @@ class ListValue;
 class Value;
 }  // namespace base
 
-namespace chromeos {
-class ManagedNetworkConfigurationHandler;
-}  // namespace chromeos
-
 namespace policy {
 
 class PolicyMap;
 
-// Implements the common part of tracking a OpenNetworkConfiguration device or
-// user policy. Pushes the network configs to the
-// ManagedNetworkConfigurationHandler, which in turn writes configurations to
-// Shill. User client certificates are imported with the
-// chromeos::onc::CertificateImporter. For user policies the subclass
-// UserNetworkConfigurationUpdater must be used. Does not handle proxy settings.
+// Implements the common part of tracking the OpenNetworkConfiguration device
+// and user policy. Implements the handling of server and authority certificates
+// (that will be propagated to the network service). Provides entry points for
+// handling client certificates and network configurations in subclasses.
+// Does not handle proxy settings.
 class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
                                     public PolicyService::Observer {
  public:
@@ -73,11 +68,9 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
       const override;
 
  protected:
-  NetworkConfigurationUpdater(
-      onc::ONCSource onc_source,
-      std::string policy_key,
-      PolicyService* policy_service,
-      chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
+  NetworkConfigurationUpdater(onc::ONCSource onc_source,
+                              std::string policy_key,
+                              PolicyService* policy_service);
 
   virtual void Init();
 
@@ -86,9 +79,9 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
   // |GetClientcertificates()|.
   virtual void ImportClientCertificates() = 0;
 
-  // Pushes the network part of the policy to the
-  // ManagedNetworkConfigurationHandler. This can be overridden by subclasses to
-  // modify |network_configs_onc| before the actual application.
+  // Parses the incoming policy, applies server and authority certificates.
+  // Calls the specialized methods from subclasses to handle client certificates
+  // and network configs.
   virtual void ApplyNetworkPolicy(
       base::ListValue* network_configs_onc,
       base::DictionaryValue* global_network_config) = 0;
@@ -103,21 +96,10 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
                           base::DictionaryValue* global_network_config,
                           base::ListValue* certificates);
 
-  // Determines if |policy_map| contains an ONC policy under |policy_key| that
-  // mandates that at least one additional certificate should be used and
-  // assignd 'Web' trust.
-  static bool PolicyHasWebTrustedAuthorityCertificate(
-      const PolicyMap& policy_map,
-      onc::ONCSource onc_source,
-      const std::string& policy_key);
-
   const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
   GetClientCertificates() const;
 
   onc::ONCSource onc_source_;
-
-  // Pointer to the global singleton or a test instance.
-  chromeos::ManagedNetworkConfigurationHandler* network_config_handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -51,10 +51,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -168,7 +168,7 @@ void SecurityStateTabHelper::DidFinishNavigation(
 }
 
 bool SecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::PolicyCertService* service =
       policy::PolicyCertServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()));

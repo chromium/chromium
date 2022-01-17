@@ -2524,6 +2524,10 @@ static_library("browser") {
       "policy/system_features_disable_list_policy_handler.cc",
       "policy/system_features_disable_list_policy_handler.h",
     ]
+    deps += [
+      "//chrome/browser/policy:onc",
+      "//chromeos/components/onc:onc",
+    ]
   }
   if (is_linux || is_chromeos) {
     deps += [ "//chrome/browser/error_reporting" ]
@@ -4995,7 +4999,6 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
-      "//chrome/browser/policy:onc",
     ]
 
     if (target_cpu == "x64") {
@@ -5309,6 +5312,7 @@ static_library("browser") {
       "//chromeos/dbus/constants",
       "//chromeos/ui/wm",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/policy:onc" ]
   }
 
   if (is_win) {

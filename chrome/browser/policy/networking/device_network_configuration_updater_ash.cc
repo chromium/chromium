@@ -41,37 +41,37 @@ std::string GetDeviceAssetID() {
 
 }  // namespace
 
-DeviceNetworkConfigurationUpdater::~DeviceNetworkConfigurationUpdater() =
+DeviceNetworkConfigurationUpdaterAsh::~DeviceNetworkConfigurationUpdaterAsh() =
     default;
 
 // static
-std::unique_ptr<DeviceNetworkConfigurationUpdater>
-DeviceNetworkConfigurationUpdater::CreateForDevicePolicy(
+std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
+DeviceNetworkConfigurationUpdaterAsh::CreateForDevicePolicy(
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
     chromeos::NetworkDeviceHandler* network_device_handler,
     ash::CrosSettings* cros_settings,
-    const DeviceNetworkConfigurationUpdater::DeviceAssetIDFetcher&
+    const DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher&
         device_asset_id_fetcher) {
-  std::unique_ptr<DeviceNetworkConfigurationUpdater> updater(
-      new DeviceNetworkConfigurationUpdater(
+  std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh> updater(
+      new DeviceNetworkConfigurationUpdaterAsh(
           policy_service, network_config_handler, network_device_handler,
           cros_settings, device_asset_id_fetcher));
   updater->Init();
   return updater;
 }
 
-DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
+DeviceNetworkConfigurationUpdaterAsh::DeviceNetworkConfigurationUpdaterAsh(
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
     chromeos::NetworkDeviceHandler* network_device_handler,
     ash::CrosSettings* cros_settings,
-    const DeviceNetworkConfigurationUpdater::DeviceAssetIDFetcher&
+    const DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher&
         device_asset_id_fetcher)
     : NetworkConfigurationUpdater(onc::ONC_SOURCE_DEVICE_POLICY,
                                   key::kDeviceOpenNetworkConfiguration,
-                                  policy_service,
-                                  network_config_handler),
+                                  policy_service),
+      network_config_handler_(network_config_handler),
       network_device_handler_(network_device_handler),
       cros_settings_(cros_settings),
       device_asset_id_fetcher_(device_asset_id_fetcher) {
@@ -79,13 +79,13 @@ DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
   data_roaming_setting_subscription_ = cros_settings->AddSettingsObserver(
       ash::kSignedDataRoamingEnabled,
       base::BindRepeating(
-          &DeviceNetworkConfigurationUpdater::OnDataRoamingSettingChanged,
+          &DeviceNetworkConfigurationUpdaterAsh::OnDataRoamingSettingChanged,
           base::Unretained(this)));
   if (device_asset_id_fetcher_.is_null())
     device_asset_id_fetcher_ = base::BindRepeating(&GetDeviceAssetID);
 }
 
-void DeviceNetworkConfigurationUpdater::Init() {
+void DeviceNetworkConfigurationUpdaterAsh::Init() {
   NetworkConfigurationUpdater::Init();
 
   // The highest authority regarding whether cellular data roaming should be
@@ -106,12 +106,12 @@ void DeviceNetworkConfigurationUpdater::Init() {
       !chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
-void DeviceNetworkConfigurationUpdater::ImportClientCertificates() {
+void DeviceNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
   LOG(WARNING)
       << "Importing client certificates from device policy is not implemented.";
 }
 
-void DeviceNetworkConfigurationUpdater::ApplyNetworkPolicy(
+void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
     base::ListValue* network_configs_onc,
     base::DictionaryValue* global_network_config) {
   // Ensure this is runnng on the UI thead because we're accessing global data
@@ -138,10 +138,10 @@ void DeviceNetworkConfigurationUpdater::ApplyNetworkPolicy(
       *global_network_config);
 }
 
-void DeviceNetworkConfigurationUpdater::OnDataRoamingSettingChanged() {
+void DeviceNetworkConfigurationUpdaterAsh::OnDataRoamingSettingChanged() {
   ash::CrosSettingsProvider::TrustedStatus trusted_status =
       cros_settings_->PrepareTrustedValues(base::BindOnce(
-          &DeviceNetworkConfigurationUpdater::OnDataRoamingSettingChanged,
+          &DeviceNetworkConfigurationUpdaterAsh::OnDataRoamingSettingChanged,
           weak_factory_.GetWeakPtr()));
 
   if (trusted_status == ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED) {

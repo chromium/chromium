@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -43,6 +44,7 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
   PolicyCertServiceFactory(const PolicyCertServiceFactory&) = delete;
   PolicyCertServiceFactory& operator=(const PolicyCertServiceFactory&) = delete;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Migrates the `prefs::kUsedPolicyCertificates` preference from local state
   // into per-profile pref storage. Returns true if the local pref was present
   // and was successfully migrated.
@@ -58,6 +60,7 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
   // TODO(b/202492163) This can be deleted after the local state -> profile pref
   // migration is finished.
   static bool ClearUsedPolicyCertificates(const std::string& user_email);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend struct base::DefaultSingletonTraits<PolicyCertServiceFactory>;

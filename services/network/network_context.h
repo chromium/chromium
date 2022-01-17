@@ -274,7 +274,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                             mojom::NetworkConditionsPtr conditions) override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override;
 #endif
@@ -621,7 +621,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   void OnVerifyCertForSignedExchangeComplete(int cert_verify_id, int result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void TrustAnchorUsed();
 #endif
 
@@ -753,7 +753,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::unique_ptr<SCTAuditingHandler> sct_auditing_handler_;
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CertVerifierWithTrustAnchors* cert_verifier_with_trust_anchors_ = nullptr;
 #endif
 

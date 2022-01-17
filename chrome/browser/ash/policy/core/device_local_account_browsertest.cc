@@ -2317,7 +2317,7 @@ class ManagedSessionsTest : public DeviceLocalAccountTest {
   }
 
   void WaitForCertificateUpdate() {
-    policy::DeviceNetworkConfigurationUpdater* updater =
+    policy::DeviceNetworkConfigurationUpdaterAsh* updater =
         g_browser_process->platform_part()
             ->browser_policy_connector_ash()
             ->GetDeviceNetworkConfigurationUpdater();

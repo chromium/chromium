@@ -365,8 +365,6 @@
 #include "chrome/browser/chromeos/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/fileapi/mtp_file_system_backend_delegate.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -420,6 +418,11 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/accessibility/accessibility_features.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#endif
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -2810,7 +2813,7 @@ bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(
     content::BrowserContext* browser_context) {
   policy::PolicyCertService* service =

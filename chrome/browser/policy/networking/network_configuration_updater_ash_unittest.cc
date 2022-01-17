@@ -257,41 +257,6 @@ const char kFakeONC[] = R"(
       "Type": "UnencryptedConfiguration"
     })";
 
-const char kFakeONCWithExtensionScopedCert[] = R"(
-    { "Certificates": [
-        { "GUID": "{extension-scoped-certificate}",
-          "TrustBits": [
-             "Web"
-          ],
-          "Scope": {
-            "Type": "Extension",
-            "Id": "ngjobkbdodapjbbncmagbccommkggmnj"
-          },
-          "Type": "Authority",
-          "X509": "-----BEGIN CERTIFICATE-----\n
-    MIIC8zCCAdugAwIBAgIJALF9qhLor0+aMA0GCSqGSIb3DQEBBQUAMBcxFTATBgNV\n
-    BAMMDFRlc3QgUm9vdCBDQTAeFw0xNDA4MTQwMzA1MjlaFw0yNDA4MTEwMzA1Mjla\n
-    MBcxFTATBgNVBAMMDFRlc3QgUm9vdCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEP\n
-    ADCCAQoCggEBALZJQeNCAVGofzx6cdP7zZE1F4QajvY2x9FwHfqG8267dm/oMi43\n
-    /TiSPWjkin1CMxRGG9wE9pFuVEDECgn97C1i4l7huiycwbFgTNrH+CJcgiBlQh5W\n
-    d3VP65AsSupXDiKNbJWsEerM1+72cA0J3aY1YV3Jdm2w8h6/MIbYd1I2lZcO0UbF\n
-    7YE9G7DyYZU8wUA4719dumGf7yucn4WJdHBj1XboNX7OAeHzERGQHA31/Y3OEGyt\n
-    fFUaIW/XLfR4FeovOL2RnjwdB0b1Q8GCi68SU2UZimlpZgay2gv6KgChKhWESfEB\n
-    v5swBtAVoB+dUZFH4VNf717swmF5whSfxOMCAwEAAaNCMEAwDwYDVR0TAQH/BAUw\n
-    AwEB/zAdBgNVHQ4EFgQUvPcw0TzA8nn675/JbFyT84poq4MwDgYDVR0PAQH/BAQD\n
-    AgEGMA0GCSqGSIb3DQEBBQUAA4IBAQBXByn7f+j/sObYWGrDkKE4HLTzaLHs6Ikj\n
-    JNeo8iHDYOSkSVwAv9/HgniAKxj3rd3QYl6nsMzwqrTOcBJZZWd2BQAYmv/EKhfj\n
-    8VXYvlxe68rLU4cQ1QkyNqdeQfRT2n5WYNJ+TpqlCF9ddennMMsi6e8ZSYOlI6H4\n
-    YEzlNtU5eBjxXr/OqgtTgSx4qQpr2xMQIRR/G3A9iRpAigYsXVAZYvnHRYnyPWYF\n
-    PX11W1UegEJyoZp8bQp09u6mIWw6mPt3gl/ya1bm3ZuOUPDGrv3qpgUHqSYGVrOy\n
-    2bI3oCE+eQYfuVG+9LFJTZC1M+UOx15bQMVqBNFDepRqpE9h/ILg\n
-    -----END CERTIFICATE-----" },
-      ],
-      "Type": "UnencryptedConfiguration"
-    })";
-
-const char kExtensionIdWithScopedCert[] = "ngjobkbdodapjbbncmagbccommkggmnj";
-
 std::string ValueToString(const base::Value& value) {
   std::stringstream str;
   str << value;
@@ -346,9 +311,9 @@ ACTION_P(SetCertificateList, list) {
 
 }  // namespace
 
-class NetworkConfigurationUpdaterTest : public testing::Test {
+class NetworkConfigurationUpdaterAshTest : public testing::Test {
  protected:
-  NetworkConfigurationUpdaterTest() : certificate_importer_(NULL) {}
+  NetworkConfigurationUpdaterAshTest() : certificate_importer_(NULL) {}
 
   void SetUp() override {
     ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
@@ -428,11 +393,11 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  UserNetworkConfigurationUpdater*
+  UserNetworkConfigurationUpdaterAsh*
   CreateNetworkConfigurationUpdaterForUserPolicy(
       bool set_client_cert_importer) {
-    UserNetworkConfigurationUpdater* updater =
-        UserNetworkConfigurationUpdater::CreateForUserPolicy(
+    UserNetworkConfigurationUpdaterAsh* updater =
+        UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
             &profile_, fake_user_, policy_service_.get(),
             &network_config_handler_)
             .release();
@@ -450,7 +415,7 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
     auto testing_device_asset_id_getter =
         base::BindRepeating([] { return std::string(kFakeAssetId); });
     network_configuration_updater_ =
-        DeviceNetworkConfigurationUpdater::CreateForDevicePolicy(
+        DeviceNetworkConfigurationUpdaterAsh::CreateForDevicePolicy(
             policy_service_.get(), &network_config_handler_,
             &network_device_handler_, ash::CrosSettings::Get(),
             testing_device_asset_id_getter);
@@ -505,7 +470,7 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
   chromeos::ScopedFakeSessionManagerClient scoped_session_manager_client_;
 };
 
-TEST_F(NetworkConfigurationUpdaterTest, CellularRoamingDefaults) {
+TEST_F(NetworkConfigurationUpdaterAshTest, CellularRoamingDefaults) {
   // Ignore network config updates.
   EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
 
@@ -514,7 +479,7 @@ TEST_F(NetworkConfigurationUpdaterTest, CellularRoamingDefaults) {
   EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
 }
 
-TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingManaged) {
+TEST_F(NetworkConfigurationUpdaterAshTest, CellularPolicyAllowRoamingManaged) {
   // Ignore network config updates.
   EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
 
@@ -534,7 +499,8 @@ TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingManaged) {
   EXPECT_FALSE(network_device_handler_.policy_allow_roaming_);
 }
 
-TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingUnmanaged) {
+TEST_F(NetworkConfigurationUpdaterAshTest,
+       CellularPolicyAllowRoamingUnmanaged) {
   // Ignore network config updates.
   EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
 
@@ -553,7 +519,7 @@ TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingUnmanaged) {
   EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
 }
 
-TEST_F(NetworkConfigurationUpdaterTest, PolicyIsValidatedAndRepaired) {
+TEST_F(NetworkConfigurationUpdaterAshTest, PolicyIsValidatedAndRepaired) {
   std::unique_ptr<base::DictionaryValue> onc_repaired =
       chromeos::onc::test_utils::ReadTestDictionary(
           "repaired_toplevel_partially_invalid.onc");
@@ -596,135 +562,7 @@ TEST_F(NetworkConfigurationUpdaterTest, PolicyIsValidatedAndRepaired) {
   EXPECT_EQ(1u, certificate_importer_->GetAndResetImportCount());
 }
 
-TEST_F(NetworkConfigurationUpdaterTest,
-       WebTrustedCertificatesFromPolicyInitially) {
-  // Ignore network configuration changes.
-  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _))
-      .Times(AnyNumber());
-
-  UserNetworkConfigurationUpdater* updater =
-      CreateNetworkConfigurationUpdaterForUserPolicy(
-          false /* set certificate importer */);
-
-  MockPolicyProvidedCertsObserver observer;
-  EXPECT_CALL(observer, OnPolicyProvidedCertsChanged());
-  updater->AddPolicyProvidedCertsObserver(&observer);
-
-  PolicyMap policy;
-  policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kFakeONC),
-             nullptr);
-  UpdateProviderPolicy(policy);
-  MarkPolicyProviderInitialized();
-  base::RunLoop().RunUntilIdle();
-
-  // Certificates with the "Web" trust flag set will be returned.
-  const auto kDefaultScope = chromeos::onc::CertificateScope::Default();
-  EXPECT_EQ(1u, updater->GetWebTrustedCertificates(kDefaultScope).size());
-  EXPECT_EQ(1u, updater->GetCertificatesWithoutWebTrust(kDefaultScope).size());
-  EXPECT_EQ(
-      2u, updater->GetAllServerAndAuthorityCertificates(kDefaultScope).size());
-  EXPECT_EQ(0u, updater
-                    ->GetAllServerAndAuthorityCertificates(
-                        chromeos::onc::CertificateScope::ForExtension(
-                            kExtensionIdWithScopedCert))
-                    .size());
-
-  updater->RemovePolicyProvidedCertsObserver(&observer);
-}
-
-TEST_F(NetworkConfigurationUpdaterTest,
-       WebTrustedCertificatesFromPolicyOnUpdate) {
-  // Ignore network configuration changes.
-  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _))
-      .Times(AnyNumber());
-
-  // Start with an empty certificate list.
-  UserNetworkConfigurationUpdater* updater =
-      CreateNetworkConfigurationUpdaterForUserPolicy(
-          false /* set certificate importer */);
-  MockPolicyProvidedCertsObserver observer;
-  EXPECT_CALL(observer, OnPolicyProvidedCertsChanged()).Times(0);
-  updater->AddPolicyProvidedCertsObserver(&observer);
-
-  MarkPolicyProviderInitialized();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that the returned certificate list is empty.
-  const auto kDefaultScope = chromeos::onc::CertificateScope::Default();
-  EXPECT_TRUE(updater->GetWebTrustedCertificates(kDefaultScope).empty());
-  EXPECT_TRUE(updater->GetCertificatesWithoutWebTrust(kDefaultScope).empty());
-  EXPECT_TRUE(
-      updater->GetAllServerAndAuthorityCertificates(kDefaultScope).empty());
-
-  // No call has been made to the policy-provided certificates observer.
-  Mock::VerifyAndClearExpectations(&observer);
-  EXPECT_CALL(observer, OnPolicyProvidedCertsChanged());
-
-  // Change to ONC policy with web trust certs.
-  PolicyMap policy;
-  policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kFakeONC),
-             nullptr);
-  UpdateProviderPolicy(policy);
-  base::RunLoop().RunUntilIdle();
-
-  // Certificates with the "Web" trust flag set will be returned and forwarded
-  // to observers.
-  EXPECT_EQ(1u, updater->GetWebTrustedCertificates(kDefaultScope).size());
-  EXPECT_EQ(1u, updater->GetCertificatesWithoutWebTrust(kDefaultScope).size());
-  EXPECT_EQ(
-      2u, updater->GetAllServerAndAuthorityCertificates(kDefaultScope).size());
-  EXPECT_EQ(0u, updater
-                    ->GetAllServerAndAuthorityCertificates(
-                        chromeos::onc::CertificateScope::ForExtension(
-                            kExtensionIdWithScopedCert))
-                    .size());
-
-  updater->RemovePolicyProvidedCertsObserver(&observer);
-}
-
-TEST_F(NetworkConfigurationUpdaterTest, ExtensionScopedWebTrustedCertificate) {
-  // Ignore network configuration changes.
-  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _))
-      .Times(AnyNumber());
-
-  NetworkConfigurationUpdater* updater =
-      CreateNetworkConfigurationUpdaterForDevicePolicy();
-
-  MockPolicyProvidedCertsObserver observer;
-  EXPECT_CALL(observer, OnPolicyProvidedCertsChanged());
-  updater->AddPolicyProvidedCertsObserver(&observer);
-
-  PolicyMap policy;
-  policy.Set(key::kDeviceOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-             base::Value(kFakeONCWithExtensionScopedCert), nullptr);
-  UpdateProviderPolicy(policy);
-  MarkPolicyProviderInitialized();
-  base::RunLoop().RunUntilIdle();
-
-  // Certificates with the "Web" trust flag set will be returned.
-  const auto kDefaultScope = chromeos::onc::CertificateScope::Default();
-  EXPECT_EQ(0u, updater->GetWebTrustedCertificates(kDefaultScope).size());
-  EXPECT_EQ(0u, updater->GetCertificatesWithoutWebTrust(kDefaultScope).size());
-  EXPECT_EQ(
-      0u, updater->GetAllServerAndAuthorityCertificates(kDefaultScope).size());
-  EXPECT_EQ(1u, updater
-                    ->GetAllServerAndAuthorityCertificates(
-                        chromeos::onc::CertificateScope::ForExtension(
-                            kExtensionIdWithScopedCert))
-                    .size());
-  EXPECT_EQ(1u, updater
-                    ->GetWebTrustedCertificates(
-                        chromeos::onc::CertificateScope::ForExtension(
-                            kExtensionIdWithScopedCert))
-                    .size());
-
-  updater->RemovePolicyProvidedCertsObserver(&observer);
-}
-
-TEST_F(NetworkConfigurationUpdaterTest,
+TEST_F(NetworkConfigurationUpdaterAshTest,
        DontImportCertificateBeforeCertificateImporterSet) {
   PolicyMap policy;
   policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
@@ -738,7 +576,7 @@ TEST_F(NetworkConfigurationUpdaterTest,
                         IsEqualTo(GetExpectedFakeNetworkConfigs(source)),
                         IsEqualTo(GetExpectedFakeGlobalNetworkConfig())));
 
-  UserNetworkConfigurationUpdater* updater =
+  UserNetworkConfigurationUpdaterAsh* updater =
       CreateNetworkConfigurationUpdaterForUserPolicy(
           false /* do not set certificate importer */);
   MarkPolicyProviderInitialized();
@@ -755,7 +593,7 @@ TEST_F(NetworkConfigurationUpdaterTest,
   EXPECT_EQ(1u, certificate_importer_->GetAndResetImportCount());
 }
 
-TEST_F(NetworkConfigurationUpdaterTest, ReplaceDeviceOncPlaceholders) {
+TEST_F(NetworkConfigurationUpdaterAshTest, ReplaceDeviceOncPlaceholders) {
   PolicyMap policy;
   policy.Set(key::kDeviceOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(kFakeONC),
@@ -802,9 +640,8 @@ TEST(UserNetworkConfigurationStaticsTest, TestHasWebTrustedCertsNo) {
   policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
              base::Value(kONCWithoutWebTrustedCert), nullptr);
-  EXPECT_FALSE(
-      UserNetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
-          policy));
+  EXPECT_FALSE(UserNetworkConfigurationUpdaterAsh::
+                   PolicyHasWebTrustedAuthorityCertificate(policy));
 }
 
 TEST(UserNetworkConfigurationStaticsTest, TestHasWebTrustedCertsYes) {
@@ -840,16 +677,14 @@ TEST(UserNetworkConfigurationStaticsTest, TestHasWebTrustedCertsYes) {
   policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
              base::Value(kONCWithWebTrustedCert), nullptr);
-  EXPECT_TRUE(
-      UserNetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
-          policy));
+  EXPECT_TRUE(UserNetworkConfigurationUpdaterAsh::
+                  PolicyHasWebTrustedAuthorityCertificate(policy));
 }
 
 TEST(UserNetworkConfigurationStaticsTest, TestHasWebTrustedCertsNoPolicy) {
   PolicyMap policy;
-  EXPECT_FALSE(
-      UserNetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
-          policy));
+  EXPECT_FALSE(UserNetworkConfigurationUpdaterAsh::
+                   PolicyHasWebTrustedAuthorityCertificate(policy));
 }
 
 TEST(UserNetworkConfigurationStaticsTest, TestHasWebTrustedCertsInvalidPolicy) {
@@ -858,13 +693,12 @@ TEST(UserNetworkConfigurationStaticsTest, TestHasWebTrustedCertsInvalidPolicy) {
   policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kInvalidONC),
              nullptr);
-  EXPECT_FALSE(
-      UserNetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
-          policy));
+  EXPECT_FALSE(UserNetworkConfigurationUpdaterAsh::
+                   PolicyHasWebTrustedAuthorityCertificate(policy));
 }
 
-class NetworkConfigurationUpdaterTestWithParam
-    : public NetworkConfigurationUpdaterTest,
+class NetworkConfigurationUpdaterAshTestWithParam
+    : public NetworkConfigurationUpdaterAshTest,
       public testing::WithParamInterface<const char*> {
  protected:
   // Returns the currently tested ONC source.
@@ -899,7 +733,7 @@ class NetworkConfigurationUpdaterTestWithParam
   }
 };
 
-TEST_P(NetworkConfigurationUpdaterTestWithParam, InitialUpdates) {
+TEST_P(NetworkConfigurationUpdaterAshTestWithParam, InitialUpdates) {
   PolicyMap policy;
   policy.Set(GetParam(), POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD, base::Value(kFakeONC), nullptr);
@@ -919,7 +753,7 @@ TEST_P(NetworkConfigurationUpdaterTestWithParam, InitialUpdates) {
             certificate_importer_->GetAndResetImportCount());
 }
 
-TEST_P(NetworkConfigurationUpdaterTestWithParam,
+TEST_P(NetworkConfigurationUpdaterAshTestWithParam,
        PolicyNotSetBeforePolicyProviderInitialized) {
   PolicyMap policy;
   policy.Set(GetParam(), POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -944,7 +778,7 @@ TEST_P(NetworkConfigurationUpdaterTestWithParam,
             certificate_importer_->GetAndResetImportCount());
 }
 
-TEST_P(NetworkConfigurationUpdaterTestWithParam,
+TEST_P(NetworkConfigurationUpdaterAshTestWithParam,
        PolicyAppliedImmediatelyIfProvidersInitialized) {
   MarkPolicyProviderInitialized();
 
@@ -967,7 +801,7 @@ TEST_P(NetworkConfigurationUpdaterTestWithParam,
             certificate_importer_->GetAndResetImportCount());
 }
 
-TEST_P(NetworkConfigurationUpdaterTestWithParam, PolicyChange) {
+TEST_P(NetworkConfigurationUpdaterAshTestWithParam, PolicyChange) {
   // Ignore the initial updates.
   EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
 
@@ -1007,8 +841,8 @@ TEST_P(NetworkConfigurationUpdaterTestWithParam, PolicyChange) {
             certificate_importer_->GetAndResetImportCount());
 }
 
-INSTANTIATE_TEST_SUITE_P(NetworkConfigurationUpdaterTestWithParamInstance,
-                         NetworkConfigurationUpdaterTestWithParam,
+INSTANTIATE_TEST_SUITE_P(NetworkConfigurationUpdaterAshTestWithParamInstance,
+                         NetworkConfigurationUpdaterAshTestWithParam,
                          testing::Values(key::kDeviceOpenNetworkConfiguration,
                                          key::kOpenNetworkConfiguration));
 

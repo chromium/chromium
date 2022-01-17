@@ -146,10 +146,8 @@ NetworkConfigurationUpdater::GetExtensionIdsWithPolicyCertificates() const {
 NetworkConfigurationUpdater::NetworkConfigurationUpdater(
     onc::ONCSource onc_source,
     std::string policy_key,
-    PolicyService* policy_service,
-    chromeos::ManagedNetworkConfigurationHandler* network_config_handler)
+    PolicyService* policy_service)
     : onc_source_(onc_source),
-      network_config_handler_(network_config_handler),
       policy_key_(policy_key),
       policy_change_registrar_(
           policy_service,
@@ -190,35 +188,6 @@ void NetworkConfigurationUpdater::ParseCurrentPolicy(
   chromeos::onc::ParseAndValidateOncForImport(
       onc_blob, onc_source_, std::string() /* no passphrase */, network_configs,
       global_network_config, certificates);
-}
-
-// static
-bool NetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
-    const PolicyMap& policy_map,
-    onc::ONCSource onc_source,
-    const std::string& policy_key) {
-  const base::Value* policy_value = policy_map.GetValue(policy_key);
-
-  if (!policy_value || policy_value->type() != base::Value::Type::STRING)
-    return false;
-
-  base::ListValue certificates_value;
-  chromeos::onc::ParseAndValidateOncForImport(
-      policy_value->GetString(), onc_source, /*passphrase=*/std::string(),
-      /*network_configs=*/nullptr, /*global_network_config=*/nullptr,
-      &certificates_value);
-  chromeos::onc::OncParsedCertificates onc_parsed_certificates(
-      certificates_value);
-  for (const auto& server_or_authority_cert :
-       onc_parsed_certificates.server_or_authority_certificates()) {
-    if (server_or_authority_cert.type() ==
-            OncParsedCertificates::ServerOrAuthorityCertificate::Type::
-                kAuthority &&
-        server_or_authority_cert.web_trust_requested()) {
-      return true;
-    }
-  }
-  return false;
 }
 
 const std::vector<OncParsedCertificates::ClientCertificate>&

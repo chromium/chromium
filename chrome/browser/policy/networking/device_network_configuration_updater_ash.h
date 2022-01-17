@@ -34,14 +34,15 @@ class PolicyService;
 
 // Implements addtional special handling of ONC device policies, which requires
 // listening for notifications from CrosSettings.
-class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
+class DeviceNetworkConfigurationUpdaterAsh
+    : public NetworkConfigurationUpdater {
  public:
-  DeviceNetworkConfigurationUpdater(const DeviceNetworkConfigurationUpdater&) =
-      delete;
-  DeviceNetworkConfigurationUpdater& operator=(
-      const DeviceNetworkConfigurationUpdater&) = delete;
+  DeviceNetworkConfigurationUpdaterAsh(
+      const DeviceNetworkConfigurationUpdaterAsh&) = delete;
+  DeviceNetworkConfigurationUpdaterAsh& operator=(
+      const DeviceNetworkConfigurationUpdaterAsh&) = delete;
 
-  ~DeviceNetworkConfigurationUpdater() override;
+  ~DeviceNetworkConfigurationUpdaterAsh() override;
 
   // Fetches the device's administrator-annotated asset ID.
   using DeviceAssetIDFetcher = base::RepeatingCallback<std::string()>;
@@ -53,7 +54,7 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
   // administrator-annotated asset ID of the device and is used for variable
   // replacement. If a null callback is passed, the asset ID from device policy
   // will be used.
-  static std::unique_ptr<DeviceNetworkConfigurationUpdater>
+  static std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
   CreateForDevicePolicy(
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
@@ -62,7 +63,7 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
       const DeviceAssetIDFetcher& device_asset_id_fetcher);
 
  private:
-  DeviceNetworkConfigurationUpdater(
+  DeviceNetworkConfigurationUpdaterAsh(
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
       chromeos::NetworkDeviceHandler* network_device_handler,
@@ -77,14 +78,18 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
       base::DictionaryValue* global_network_config) override;
   void OnDataRoamingSettingChanged();
 
-  chromeos::NetworkDeviceHandler* network_device_handler_;
-  ash::CrosSettings* cros_settings_;
+  // Pointer to the global singleton or a test instance.
+  chromeos::ManagedNetworkConfigurationHandler* const network_config_handler_;
+
+  chromeos::NetworkDeviceHandler* const network_device_handler_;
+  ash::CrosSettings* const cros_settings_;
   base::CallbackListSubscription data_roaming_setting_subscription_;
 
   // Returns the device's administrator-set asset id.
   DeviceAssetIDFetcher device_asset_id_fetcher_;
 
-  base::WeakPtrFactory<DeviceNetworkConfigurationUpdater> weak_factory_{this};
+  base::WeakPtrFactory<DeviceNetworkConfigurationUpdaterAsh> weak_factory_{
+      this};
 };
 
 }  // namespace policy

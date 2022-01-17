@@ -48,7 +48,7 @@ class ActiveDirectoryDeviceStateUploader;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
-class DeviceNetworkConfigurationUpdater;
+class DeviceNetworkConfigurationUpdaterAsh;
 class DeviceWiFiAllowedHandler;
 struct EnrollmentConfig;
 class MinimumVersionPolicyHandler;
@@ -174,7 +174,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
     return minimum_version_policy_handler_.get();
   }
 
-  DeviceNetworkConfigurationUpdater* GetDeviceNetworkConfigurationUpdater()
+  DeviceNetworkConfigurationUpdaterAsh* GetDeviceNetworkConfigurationUpdater()
       const {
     return device_network_configuration_updater_.get();
   }
@@ -316,7 +316,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
   ProxyPolicyProvider* global_user_cloud_policy_provider_ = nullptr;
 
-  std::unique_ptr<DeviceNetworkConfigurationUpdater>
+  std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
       device_network_configuration_updater_;
 
   // The ConfigurationPolicyProviders created in the constructor are initially

@@ -18,6 +18,7 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/onc/network_onc_utils.h"
@@ -46,7 +47,7 @@ void GetNssCertDatabaseOnIOThread(
 
 }  // namespace
 
-UserNetworkConfigurationUpdater::~UserNetworkConfigurationUpdater() {
+UserNetworkConfigurationUpdaterAsh::~UserNetworkConfigurationUpdaterAsh() {
   // NetworkCertLoader may be not initialized in tests.
   if (chromeos::NetworkCertLoader::IsInitialized()) {
     chromeos::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(
@@ -55,42 +56,62 @@ UserNetworkConfigurationUpdater::~UserNetworkConfigurationUpdater() {
 }
 
 // static
-std::unique_ptr<UserNetworkConfigurationUpdater>
-UserNetworkConfigurationUpdater::CreateForUserPolicy(
+std::unique_ptr<UserNetworkConfigurationUpdaterAsh>
+UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
     Profile* profile,
     const user_manager::User& user,
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler) {
-  std::unique_ptr<UserNetworkConfigurationUpdater> updater(
-      new UserNetworkConfigurationUpdater(profile, user, policy_service,
-                                          network_config_handler));
+  std::unique_ptr<UserNetworkConfigurationUpdaterAsh> updater(
+      new UserNetworkConfigurationUpdaterAsh(profile, user, policy_service,
+                                             network_config_handler));
   updater->Init();
   return updater;
 }
 
-void UserNetworkConfigurationUpdater::SetClientCertificateImporterForTest(
+void UserNetworkConfigurationUpdaterAsh::SetClientCertificateImporterForTest(
     std::unique_ptr<chromeos::onc::CertificateImporter>
         client_certificate_importer) {
   SetClientCertificateImporter(std::move(client_certificate_importer));
 }
 
 // static
-bool UserNetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
-    const PolicyMap& policy_map) {
-  return NetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
-      policy_map, onc::ONC_SOURCE_USER_POLICY, key::kOpenNetworkConfiguration);
+bool UserNetworkConfigurationUpdaterAsh::
+    PolicyHasWebTrustedAuthorityCertificate(const PolicyMap& policy_map) {
+  const base::Value* policy_value =
+      policy_map.GetValue(key::kOpenNetworkConfiguration);
+
+  if (!policy_value || policy_value->type() != base::Value::Type::STRING)
+    return false;
+
+  base::ListValue certificates_value;
+  chromeos::onc::ParseAndValidateOncForImport(
+      policy_value->GetString(), onc::ONC_SOURCE_USER_POLICY,
+      /*passphrase=*/std::string(),
+      /*network_configs=*/nullptr, /*global_network_config=*/nullptr,
+      &certificates_value);
+  chromeos::onc::OncParsedCertificates onc_parsed_certificates(
+      certificates_value);
+  for (const auto& server_or_authority_cert :
+       onc_parsed_certificates.server_or_authority_certificates()) {
+    if (server_or_authority_cert.type() ==
+            chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate::
+                Type::kAuthority &&
+        server_or_authority_cert.web_trust_requested()) {
+      return true;
+    }
+  }
+  return false;
 }
 
-UserNetworkConfigurationUpdater::UserNetworkConfigurationUpdater(
+UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
     Profile* profile,
     const user_manager::User& user,
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler)
-    : NetworkConfigurationUpdater(onc::ONC_SOURCE_USER_POLICY,
-                                  key::kOpenNetworkConfiguration,
-                                  policy_service,
-                                  network_config_handler),
-      user_(&user) {
+    : UserNetworkConfigurationUpdater(policy_service),
+      user_(&user),
+      network_config_handler_(network_config_handler) {
   // The updater is created with |client_certificate_importer_| unset and is
   // responsible for creating it. This requires |GetNSSCertDatabaseForProfile|
   // call, which is not safe before the profile initialization is finalized.
@@ -101,14 +122,14 @@ UserNetworkConfigurationUpdater::UserNetworkConfigurationUpdater(
 
   // Make sure that the |NetworkCertLoader| which makes certificates available
   // to the chromeos network code gets policy-pushed certificates from the
-  // primary profile. This assumes that a |UserNetworkConfigurationUpdater| is
-  // only created for the primary profile. NetworkCertLoader may be not
+  // primary profile. This assumes that a |UserNetworkConfigurationUpdaterAsh|
+  // is only created for the primary profile. NetworkCertLoader may be not
   // initialized in tests.
   if (chromeos::NetworkCertLoader::IsInitialized())
     chromeos::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(this);
 }
 
-void UserNetworkConfigurationUpdater::ImportClientCertificates() {
+void UserNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If certificate importer is not yet set, the import of client certificates
@@ -119,7 +140,7 @@ void UserNetworkConfigurationUpdater::ImportClientCertificates() {
   }
 }
 
-void UserNetworkConfigurationUpdater::ApplyNetworkPolicy(
+void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
     base::ListValue* network_configs_onc,
     base::DictionaryValue* global_network_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -140,7 +161,7 @@ void UserNetworkConfigurationUpdater::ApplyNetworkPolicy(
                                      *global_network_config);
 }
 
-void UserNetworkConfigurationUpdater::Observe(
+void UserNetworkConfigurationUpdaterAsh::Observe(
     int type,
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
@@ -159,12 +180,12 @@ void UserNetworkConfigurationUpdater::Observe(
               ->CreateNSSCertDatabaseGetterForIOThread(),
           base::BindPostTask(
               base::SequencedTaskRunnerHandle::Get(),
-              base::BindOnce(&UserNetworkConfigurationUpdater::
+              base::BindOnce(&UserNetworkConfigurationUpdaterAsh::
                                  CreateAndSetClientCertificateImporter,
                              weak_factory_.GetWeakPtr()))));
 }
 
-void UserNetworkConfigurationUpdater::CreateAndSetClientCertificateImporter(
+void UserNetworkConfigurationUpdaterAsh::CreateAndSetClientCertificateImporter(
     net::NSSCertDatabase* database) {
   DCHECK(database);
   SetClientCertificateImporter(
@@ -172,7 +193,7 @@ void UserNetworkConfigurationUpdater::CreateAndSetClientCertificateImporter(
           content::GetIOThreadTaskRunner({}), database));
 }
 
-void UserNetworkConfigurationUpdater::SetClientCertificateImporter(
+void UserNetworkConfigurationUpdaterAsh::SetClientCertificateImporter(
     std::unique_ptr<chromeos::onc::CertificateImporter>
         client_certificate_importer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

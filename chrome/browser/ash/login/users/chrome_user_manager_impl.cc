@@ -253,7 +253,7 @@ bool IsProxyUsed(const PrefService* local_state_prefs) {
 
 bool PolicyHasWebTrustedAuthorityCertificate(
     policy::DeviceLocalAccountPolicyBroker* broker) {
-  return policy::UserNetworkConfigurationUpdater::
+  return policy::UserNetworkConfigurationUpdaterAsh::
       PolicyHasWebTrustedAuthorityCertificate(
           broker->core()->store()->policy_map());
 }

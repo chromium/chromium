@@ -6512,6 +6512,9 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser:dlp_policy_event_proto",
+      "//chrome/browser/policy:onc",
+      "//chrome/browser/policy:unit_tests",
+      "//chromeos/components/onc:onc",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros:test_support",

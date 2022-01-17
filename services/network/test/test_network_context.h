@@ -136,7 +136,7 @@ class TestNetworkContext : public mojom::NetworkContext {
                             mojom::NetworkConditionsPtr conditions) override {}
   void SetAcceptLanguage(const std::string& new_accept_language) override {}
   void SetEnableReferrers(bool enable_referrers) override {}
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override {}
 #endif

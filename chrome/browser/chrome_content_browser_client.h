@@ -299,7 +299,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin* impression_origin,
       const url::Origin* conversion_origin,
       const url::Origin* reporting_origin) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif
   scoped_refptr<network::SharedURLLoaderFactory>

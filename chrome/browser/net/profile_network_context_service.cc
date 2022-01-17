@@ -63,6 +63,11 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -71,8 +76,6 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -129,7 +132,7 @@ std::string ComputeAcceptLanguageFromPref(const std::string& language_pref) {
   return net::HttpUtil::GenerateAcceptLanguageHeader(accept_languages_str);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
     const policy::PolicyCertService* policy_cert_service,
     const base::FilePath& storage_partition_path) {
@@ -145,8 +148,8 @@ network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
 // profile type.
 bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   // Ambient authentication is always enabled for regular and system profiles.
-  // System profiles (used in profile picker) may require authentication to let
-  // user login.
+  // System profiles (used in profile picker) may require authentication to
+  // let user login.
   if (profile->IsRegularProfile() || profile->IsSystemProfile())
     return true;
 
@@ -308,7 +311,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParams(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ProfileNetworkContextService::UpdateAdditionalCertificates() {
   const policy::PolicyCertService* policy_cert_service =
       policy::PolicyCertServiceFactory::GetForProfile(profile_);
@@ -655,6 +658,21 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
          current_field_trial_status != previous_field_trial_status;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void ProfileNetworkContextService::PopulateInitialAdditionalCerts(
+    const base::FilePath& relative_partition_path,
+    network::mojom::NetworkContextParams* network_context_params) {
+  if (policy::PolicyCertServiceFactory::CreateAndStartObservingForProfile(
+          profile_)) {
+    const policy::PolicyCertService* policy_cert_service =
+        policy::PolicyCertServiceFactory::GetForProfile(profile_);
+    network_context_params->initial_additional_certificates =
+        GetAdditionalCertificates(policy_cert_service,
+                                  GetPartitionPath(relative_partition_path));
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     bool in_memory,
     const base::FilePath& relative_partition_path,
@@ -866,6 +884,11 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
                   metrics::prefs::kMetricsReportingEnabled);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  PopulateInitialAdditionalCerts(relative_partition_path,
+                                 network_context_params);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool profile_supports_policy_certs = false;
   if (ash::ProfileHelper::IsSigninProfile(profile_))
@@ -884,14 +907,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       profile_supports_policy_certs = true;
     }
   }
-  if (profile_supports_policy_certs &&
-      policy::PolicyCertServiceFactory::CreateAndStartObservingForProfile(
-          profile_)) {
-    const policy::PolicyCertService* policy_cert_service =
-        policy::PolicyCertServiceFactory::GetForProfile(profile_);
-    network_context_params->initial_additional_certificates =
-        GetAdditionalCertificates(policy_cert_service,
-                                  GetPartitionPath(relative_partition_path));
+  if (profile_supports_policy_certs) {
+    PopulateInitialAdditionalCerts(relative_partition_path,
+                                   network_context_params);
   }
   // Disable idle sockets close on memory pressure if configured by finch or
   // about://flags.

@@ -244,13 +244,13 @@ void BrowserPolicyConnectorAsh::Init(
   SetTimezoneIfPolicyAvailable();
 
   device_network_configuration_updater_ =
-      DeviceNetworkConfigurationUpdater::CreateForDevicePolicy(
+      DeviceNetworkConfigurationUpdaterAsh::CreateForDevicePolicy(
           GetPolicyService(),
           chromeos::NetworkHandler::Get()
               ->managed_network_configuration_handler(),
           chromeos::NetworkHandler::Get()->network_device_handler(),
           ash::CrosSettings::Get(),
-          DeviceNetworkConfigurationUpdater::DeviceAssetIDFetcher());
+          DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher());
   // NetworkCertLoader may be not initialized in tests.
   if (chromeos::NetworkCertLoader::IsInitialized()) {
     chromeos::NetworkCertLoader::Get()->SetDevicePolicyCertificateProvider(

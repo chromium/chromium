@@ -265,6 +265,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
+#include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #if defined(USE_CUPS)
@@ -365,7 +366,6 @@
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
@@ -1365,6 +1365,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::platform_keys::RegisterProfilePrefs(registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
+  policy::PolicyCertService::RegisterProfilePrefs(registry);
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // defined(USE_CUPS)
@@ -1438,7 +1439,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::cert_provisioning::RegisterProfilePrefs(registry);
   borealis::prefs::RegisterProfilePrefs(registry);
   ash::ChromeScanningAppDelegate::RegisterProfilePrefs(registry);
-  policy::PolicyCertService::RegisterProfilePrefs(registry);
   ProjectorAppClientImpl::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

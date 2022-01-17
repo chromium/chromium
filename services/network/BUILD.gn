@@ -213,14 +213,19 @@ component("network_service") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cert_verifier_with_trust_anchors.cc",
       "cert_verifier_with_trust_anchors.h",
-      "dhcp_pac_file_fetcher_mojo.cc",
-      "dhcp_pac_file_fetcher_mojo.h",
       "nss_temp_certs_cache_chromeos.cc",
       "nss_temp_certs_cache_chromeos.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "dhcp_pac_file_fetcher_mojo.cc",
+      "dhcp_pac_file_fetcher_mojo.h",
     ]
   }
 

@@ -10,8 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/policy/networking/network_configuration_updater.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "chrome/browser/policy/networking/user_network_configuration_updater.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "net/cert/scoped_nss_types.h"
@@ -33,6 +32,7 @@ typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 }  // namespace net
 
 namespace chromeos {
+class ManagedNetworkConfigurationHandler;
 
 namespace onc {
 class CertificateImporter;
@@ -47,22 +47,23 @@ class PolicyService;
 // Implements additional special handling of ONC user policies. Namely string
 // expansion with the user's name (or email address, etc.) and handling of "Web"
 // trust of certificates.
-class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
-                                        public KeyedService,
-                                        public content::NotificationObserver {
+class UserNetworkConfigurationUpdaterAsh
+    : public UserNetworkConfigurationUpdater,
+      public content::NotificationObserver {
  public:
-  UserNetworkConfigurationUpdater(const UserNetworkConfigurationUpdater&) =
-      delete;
-  UserNetworkConfigurationUpdater& operator=(
-      const UserNetworkConfigurationUpdater&) = delete;
+  UserNetworkConfigurationUpdaterAsh(
+      const UserNetworkConfigurationUpdaterAsh&) = delete;
+  UserNetworkConfigurationUpdaterAsh& operator=(
+      const UserNetworkConfigurationUpdaterAsh&) = delete;
 
-  ~UserNetworkConfigurationUpdater() override;
+  ~UserNetworkConfigurationUpdaterAsh() override;
 
   // Creates an updater that applies the ONC user policy from |policy_service|
   // for user |user| once the policy service is completely initialized and on
   // each policy change.  A reference to |user| is stored. It must outlive the
   // returned updater.
-  static std::unique_ptr<UserNetworkConfigurationUpdater> CreateForUserPolicy(
+  static std::unique_ptr<UserNetworkConfigurationUpdaterAsh>
+  CreateForUserPolicy(
       Profile* profile,
       const user_manager::User& user,
       PolicyService* policy_service,
@@ -76,14 +77,14 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
 
   // Determines if |policy_map| contains a OpenNetworkConfiguration policy that
   // mandates that at least one additional certificate should be used and
-  // assignd 'Web' trust.
+  // assigned 'Web' trust.
   static bool PolicyHasWebTrustedAuthorityCertificate(
       const PolicyMap& policy_map);
 
  private:
   class CrosTrustAnchorProvider;
 
-  UserNetworkConfigurationUpdater(
+  UserNetworkConfigurationUpdaterAsh(
       Profile* profile,
       const user_manager::User& user,
       PolicyService* policy_service,
@@ -112,7 +113,10 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
       std::unique_ptr<chromeos::onc::CertificateImporter> certificate_importer);
 
   // The user for whom the user policy will be applied.
-  const user_manager::User* user_;
+  const user_manager::User* const user_;
+
+  // Pointer to the global singleton or a test instance.
+  chromeos::ManagedNetworkConfigurationHandler* const network_config_handler_;
 
   // Certificate importer to be used for importing policy defined client
   // certificates. Set by |SetClientCertificateImporter|.
@@ -121,7 +125,7 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
 
   content::NotificationRegistrar registrar_;
 
-  base::WeakPtrFactory<UserNetworkConfigurationUpdater> weak_factory_{this};
+  base::WeakPtrFactory<UserNetworkConfigurationUpdaterAsh> weak_factory_{this};
 };
 
 }  // namespace policy
