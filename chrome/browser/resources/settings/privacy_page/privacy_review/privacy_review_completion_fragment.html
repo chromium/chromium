@@ -2,6 +2,7 @@
   :host {
     display: flex;
     flex-flow: column;
+    min-height: calc(432px - var(--privacy-guide-footer-total-height));
   }
 
   .header {
@@ -17,9 +18,12 @@
 
   .footer {
     align-items: center;
+    bottom: calc(-1 * var(--privacy-guide-footer-total-height));
     display: flex;
     justify-content: space-between;
-    padding: 16px 0;
+    padding: var(--privacy-guide-footer-vertical-padding) 0;
+    position: absolute;
+    width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
   }
 </style>
 <div class="header">

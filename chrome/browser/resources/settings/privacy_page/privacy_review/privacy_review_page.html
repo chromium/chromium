@@ -1,9 +1,19 @@
 <style include="cr-shared-style settings-shared">
+  :host {
+    --privacy-guide-footer-vertical-padding: 16px;
+    --privacy-guide-footer-total-height: calc(var(--cr-button-height) +
+        2 * var(--privacy-guide-footer-vertical-padding));
+  }
+
   .footer {
     align-items: center;
+    bottom: 0;
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
-    padding: 16px 24px;
+    padding: var(--privacy-guide-footer-vertical-padding) 24px;
+    position: absolute;
+    width: 100%;
   }
 
   .managed-fragment {
@@ -37,9 +47,12 @@
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
+    box-sizing: border-box;
     display: flex;
     flex-flow: column;
     min-height: 432px;
+    padding-bottom: var(--privacy-guide-footer-total-height);
+    position: relative;
   }
 </style>
 <div class="privacy-review-card">
