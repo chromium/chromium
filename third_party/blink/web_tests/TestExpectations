@@ -7645,3 +7645,6 @@ crbug.com/1286944 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-a
 
 # Sheriff 2022-01-17
 crbug.com/1287928 [ Mac ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation-stress-glare.https.html [ Failure Pass ]
+
+# Temporarily disable test to allow fixing of devtools path escaping
+crbug.com/1094436 http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Skip Timeout Failure ]
