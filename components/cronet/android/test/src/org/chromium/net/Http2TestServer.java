@@ -11,6 +11,7 @@ import org.chromium.base.Log;
 import org.chromium.net.test.util.CertTestUtil;
 
 import java.io.File;
+import java.util.concurrent.CountDownLatch;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -86,6 +87,16 @@ public final class Http2TestServer {
     }
 
     /**
+     * When using this you must provide a CountDownLatch in the call to startHttp2TestServer.
+     * The request handler will continue to hang until the provided CountDownLatch reaches 0.
+     *
+     * @return url of the server resource which will hang indefinitely.
+     */
+    public static String getHangingRequestUrl() {
+        return getServerUrl() + Http2TestHandler.HANGING_REQUEST_PATH;
+    }
+
+    /**
      * @return url of the server resource which will echo every received stream data frame.
      */
     public static String getEchoStreamUrl() {
@@ -129,10 +140,15 @@ public final class Http2TestServer {
 
     public static boolean startHttp2TestServer(
             Context context, String certFileName, String keyFileName) throws Exception {
+        return startHttp2TestServer(context, certFileName, keyFileName, null);
+    }
+
+    public static boolean startHttp2TestServer(Context context, String certFileName,
+            String keyFileName, CountDownLatch hangingUrlLatch) throws Exception {
         sReportingCollector = new ReportingCollector();
         Http2TestServerRunnable http2TestServerRunnable =
                 new Http2TestServerRunnable(new File(CertTestUtil.CERTS_DIRECTORY + certFileName),
-                        new File(CertTestUtil.CERTS_DIRECTORY + keyFileName));
+                        new File(CertTestUtil.CERTS_DIRECTORY + keyFileName), hangingUrlLatch);
         new Thread(http2TestServerRunnable).start();
         http2TestServerRunnable.blockUntilStarted();
         return true;
@@ -143,8 +159,10 @@ public final class Http2TestServer {
     private static class Http2TestServerRunnable implements Runnable {
         private final ConditionVariable mBlock = new ConditionVariable();
         private final SslContext mSslCtx;
+        private final CountDownLatch mHangingUrlLatch;
 
-        Http2TestServerRunnable(File certFile, File keyFile) throws Exception {
+        Http2TestServerRunnable(File certFile, File keyFile, CountDownLatch hangingUrlLatch)
+                throws Exception {
             ApplicationProtocolConfig applicationProtocolConfig = new ApplicationProtocolConfig(
                     Protocol.ALPN, SelectorFailureBehavior.NO_ADVERTISE,
                     SelectedListenerFailureBehavior.ACCEPT, ApplicationProtocolNames.HTTP_2);
@@ -156,6 +174,8 @@ public final class Http2TestServer {
             mSslCtx = new OpenSslServerContext(certFile, keyFile, null, null,
                     Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE,
                     applicationProtocolConfig, 0, 0);
+
+            mHangingUrlLatch = hangingUrlLatch;
         }
 
         public void blockUntilStarted() {
@@ -175,7 +195,8 @@ public final class Http2TestServer {
                         b.group(group)
                                 .channel(NioServerSocketChannel.class)
                                 .handler(new LoggingHandler(LogLevel.INFO))
-                                .childHandler(new Http2ServerInitializer(mSslCtx));
+                                .childHandler(
+                                        new Http2ServerInitializer(mSslCtx, mHangingUrlLatch));
 
                         sServerChannel = b.bind(PORT).sync().channel();
                         Log.i(TAG, "Netty HTTP/2 server started on " + getServerUrl());
@@ -202,20 +223,26 @@ public final class Http2TestServer {
      */
     private static class Http2ServerInitializer extends ChannelInitializer<SocketChannel> {
         private final SslContext mSslCtx;
+        private final CountDownLatch mHangingUrlLatch;
 
-        public Http2ServerInitializer(SslContext sslCtx) {
-            this.mSslCtx = sslCtx;
+        public Http2ServerInitializer(SslContext sslCtx, CountDownLatch hangingUrlLatch) {
+            mSslCtx = sslCtx;
+            mHangingUrlLatch = hangingUrlLatch;
         }
 
         @Override
         public void initChannel(SocketChannel ch) {
-            ch.pipeline().addLast(mSslCtx.newHandler(ch.alloc()), new Http2NegotiationHandler());
+            ch.pipeline().addLast(
+                    mSslCtx.newHandler(ch.alloc()), new Http2NegotiationHandler(mHangingUrlLatch));
         }
     }
 
     private static class Http2NegotiationHandler extends ApplicationProtocolNegotiationHandler {
-        protected Http2NegotiationHandler() {
+        private final CountDownLatch mHangingUrlLatch;
+
+        protected Http2NegotiationHandler(CountDownLatch hangingUrlLatch) {
             super(ApplicationProtocolNames.HTTP_1_1);
+            mHangingUrlLatch = hangingUrlLatch;
         }
 
         @Override
@@ -225,6 +252,7 @@ public final class Http2TestServer {
                 ctx.pipeline().addLast(new Http2TestHandler.Builder()
                                                .setReportingCollector(sReportingCollector)
                                                .setServerUrl(getServerUrl())
+                                               .setHangingUrlLatch(mHangingUrlLatch)
                                                .build());
                 return;
             }
