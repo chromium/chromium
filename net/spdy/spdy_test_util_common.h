@@ -125,7 +125,9 @@ base::WeakPtr<SpdyStream> CreateStreamSynchronously(
     const base::WeakPtr<SpdySession>& session,
     const GURL& url,
     RequestPriority priority,
-    const NetLogWithSource& net_log);
+    const NetLogWithSource& net_log,
+    bool detect_broken_connection = false,
+    base::TimeDelta heartbeat_interval = base::Seconds(0));
 
 // Helper class used by some tests to release a stream as soon as it's
 // created.

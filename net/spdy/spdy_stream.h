@@ -137,7 +137,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
              int32_t initial_send_window_size,
              int32_t max_recv_window_size,
              const NetLogWithSource& net_log,
-             const NetworkTrafficAnnotationTag& traffic_annotation);
+             const NetworkTrafficAnnotationTag& traffic_annotation,
+             bool detect_broken_connection);
 
   SpdyStream(const SpdyStream&) = delete;
   SpdyStream& operator=(const SpdyStream&) = delete;
@@ -407,6 +408,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
     return traffic_annotation_;
   }
 
+  bool detect_broken_connection() const { return detect_broken_connection_; }
+
  private:
   friend class test::SpdyStreamTest;
 
@@ -564,6 +567,10 @@ class NET_EXPORT_PRIVATE SpdyStream {
   bool write_handler_guard_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
+
+  // Used by SpdySession to remember if this stream requested broken connection
+  // detection.
+  bool detect_broken_connection_;
 
   base::WeakPtrFactory<SpdyStream> weak_ptr_factory_{this};
 };

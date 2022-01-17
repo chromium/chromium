@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
@@ -29,6 +30,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/client_socket_pool.h"
@@ -264,7 +266,9 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
                    const SocketTag& socket_tag,
                    const NetLogWithSource& net_log,
                    CompletionOnceCallback callback,
-                   const NetworkTrafficAnnotationTag& traffic_annotation);
+                   const NetworkTrafficAnnotationTag& traffic_annotation,
+                   bool detect_broken_connection = false,
+                   base::TimeDelta heartbeat_interval = base::Seconds(0));
 
   // Cancels any pending stream creation request. May be called
   // repeatedly.
@@ -316,15 +320,19 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
   CompletionOnceCallback callback_;
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
   base::TimeTicks confirm_handshake_end_;
+  bool detect_broken_connection_;
+  base::TimeDelta heartbeat_interval_;
 
   base::WeakPtrFactory<SpdyStreamRequest> weak_ptr_factory_{this};
 };
 
-class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
-                               public spdy::SpdyFramerDebugVisitorInterface,
-                               public MultiplexedSession,
-                               public HigherLayeredPool,
-                               public Http2PushPromiseIndex::Delegate {
+class NET_EXPORT SpdySession
+    : public BufferedSpdyFramerVisitorInterface,
+      public spdy::SpdyFramerDebugVisitorInterface,
+      public MultiplexedSession,
+      public HigherLayeredPool,
+      public NetworkChangeNotifier::DefaultNetworkActiveObserver,
+      public Http2PushPromiseIndex::Delegate {
  public:
   // TODO(akalin): Use base::TickClock when it becomes available.
   typedef base::TimeTicks (*TimeFunc)(void);
@@ -655,6 +663,9 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // Change this session's socket tag to |new_tag|. Returns true on success.
   bool ChangeSocketTag(const SocketTag& new_tag);
 
+  // Whether connection status monitoring is active or not.
+  bool IsBrokenConnectionDetectionEnabled() const;
+
   static void RecordSpdyPushedStreamFateHistogram(SpdyPushedStreamFate value);
 
  private:
@@ -821,6 +832,16 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // Adjust the send window size of all ActiveStreams and PendingStreamRequests.
   void UpdateStreamsSendWindowSize(int32_t delta_window_size);
 
+  // Checks the connection status in an energy efficient manner:
+  // * If the radio is in full power mode, send the PING immediately
+  // * If the radio is in standby, record the event and send the PING once the
+  //   radio wakes up
+  // The radio status check is currently only implemented for Android devices,
+  // on all other platforms the radio is assumed to be always active (i.e., no
+  // batching happens).
+  void MaybeCheckConnectionStatus();
+  // Always checks the connection status and schedules the next check.
+  void CheckConnectionStatus();
   // Send PING frame if all previous PING frames have been ACKed,
   // all posted CheckPingStatus() tasks have been executed,
   // and too long time has passed since last read from server.
@@ -975,6 +996,10 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
                              size_t consume_size,
                              SpdyBuffer::ConsumeSource consume_source);
 
+  // Called when the radio goes into full power mode. Currently implemented only
+  // for Android devices.
+  void OnDefaultNetworkActive() override;
+
   // Called by OnWindowUpdate() (which is in turn called by the
   // framer) to increase this session's send window size by
   // |delta_window_size| from a WINDOW_UPDATE frome, which must be at
@@ -1029,6 +1054,25 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // Returns the next stream to possibly resume, or 0 if the queue is
   // empty.
   spdy::SpdyStreamId PopStreamToPossiblyResume();
+
+  // Enables connection status monitoring, causing the session to periodically
+  // send a PING frame.
+  // This must be called at most once for each stream requiring it. If called,
+  // MaybeDisableBrokenConnectionDetection() will need to be called before
+  // closing the requesting stream.
+  // Note: `heartbeat_interval` should be considered a suggestion. The
+  // implementation, for example, could either:
+  // * Avoid sending a PING, if one has recently been transmitted or is
+  //   already in flight
+  // * Delay sending a PING, to avoid waking up the radio on mobile platforms
+  // Only the first value of `heartbeat_interval` is taken into account.
+  void EnableBrokenConnectionDetection(base::TimeDelta heartbeat_interval);
+
+  // Requests to disable connection status monitoring. The service is disabled
+  // only if no other active stream also requires it (an internal counter keeps
+  // track of that).
+  // This must be called once for each stream that requested it previously.
+  void MaybeDisableBrokenConnectionDetection();
 
   // Whether Do{Read,Write}Loop() is in the call stack. Useful for
   // making sure we don't destroy ourselves prematurely in that case.
@@ -1205,6 +1249,15 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // response yet.  There is always at most one ping in flight.
   bool ping_in_flight_;
 
+  // Triggers periodic connection status checks.
+  base::OneShotTimer heartbeat_timer_;
+
+  // Period used by the connection status monitoring mechanism.
+  base::TimeDelta heartbeat_interval_;
+
+  // True if the connection status should be checked once the radio wakes up.
+  bool check_connection_on_radio_wakeup_;
+
   // This is the next ping_id (unique_id) to be sent in PING frame.
   spdy::SpdyPingId next_ping_id_;
 
@@ -1232,6 +1285,9 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // Every time we try to enqueue a capped frame, we check that there aren't
   // more than this amount already queued, and close the connection if so.
   int session_max_queued_capped_frames_;
+
+  // Number of active requests which asked for connection status monitoring.
+  int broken_connection_detection_requests_;
 
   // Sum of |session_unacked_recv_window_bytes_| and current receive window
   // size.  Zero unless session flow control is turned on.

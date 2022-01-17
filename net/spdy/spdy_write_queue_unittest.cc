@@ -100,7 +100,8 @@ int ProducerToInt(std::unique_ptr<SpdyBufferProducer> producer) {
 std::unique_ptr<SpdyStream> MakeTestStream(RequestPriority priority) {
   return std::make_unique<SpdyStream>(
       SPDY_BIDIRECTIONAL_STREAM, base::WeakPtr<SpdySession>(), GURL(), priority,
-      0, 0, NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
+      0, 0, NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS,
+      false /* detect_broken_connection */);
 }
 
 // Add some frame producers of different priority. The producers

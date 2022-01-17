@@ -229,6 +229,56 @@ TEST_F(SpdyStreamTest, SendDataAfterOpen) {
   EXPECT_TRUE(data.AllWriteDataConsumed());
 }
 
+TEST_F(SpdyStreamTest, BrokenConnectionDetectionSuccessfulRequest) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
+      kDefaultUrl, 1, kPostBodyLength, LOWEST, nullptr, 0));
+  AddWrite(req);
+
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyPostReply(nullptr, 0));
+  AddRead(resp);
+
+  spdy::SpdySerializedFrame msg(
+      spdy_util_.ConstructSpdyDataFrame(1, kPostBodyStringPiece, false));
+  AddWrite(msg);
+
+  spdy::SpdySerializedFrame echo(
+      spdy_util_.ConstructSpdyDataFrame(1, kPostBodyStringPiece, false));
+  AddRead(echo);
+
+  AddReadPause();
+  AddReadEOF();
+
+  SequencedSocketData data(GetReads(), GetWrites());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
+
+  ASSERT_FALSE(session->IsBrokenConnectionDetectionEnabled());
+  base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
+      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST, NetLogWithSource(),
+      true, base::Seconds(10));
+  ASSERT_TRUE(stream);
+  ASSERT_TRUE(session->IsBrokenConnectionDetectionEnabled());
+  StreamDelegateSendImmediate delegate(stream, kPostBodyStringPiece);
+  stream->SetDelegate(&delegate);
+
+  spdy::Http2HeaderBlock headers(
+      spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, kPostBodyLength));
+  EXPECT_THAT(stream->SendRequestHeaders(std::move(headers), MORE_DATA_TO_SEND),
+              IsError(ERR_IO_PENDING));
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(session->IsBrokenConnectionDetectionEnabled());
+
+  data.Resume();
+  EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_CONNECTION_CLOSED));
+  ASSERT_FALSE(session->IsBrokenConnectionDetectionEnabled());
+}
+
 // Delegate that receives trailers.
 class StreamDelegateWithTrailers : public test::StreamDelegateWithBody {
  public:

@@ -97,7 +97,8 @@ SpdyStream::SpdyStream(SpdyStreamType type,
                        int32_t initial_send_window_size,
                        int32_t max_recv_window_size,
                        const NetLogWithSource& net_log,
-                       const NetworkTrafficAnnotationTag& traffic_annotation)
+                       const NetworkTrafficAnnotationTag& traffic_annotation,
+                       bool detect_broken_connection)
     : type_(type),
       stream_id_(0),
       url_(url),
@@ -120,7 +121,8 @@ SpdyStream::SpdyStream(SpdyStreamType type,
       raw_sent_bytes_(0),
       recv_bytes_(0),
       write_handler_guard_(false),
-      traffic_annotation_(traffic_annotation) {
+      traffic_annotation_(traffic_annotation),
+      detect_broken_connection_(detect_broken_connection) {
   CHECK(type_ == SPDY_BIDIRECTIONAL_STREAM ||
         type_ == SPDY_REQUEST_RESPONSE_STREAM ||
         type_ == SPDY_PUSH_STREAM);

@@ -726,7 +726,9 @@ int SpdyStreamRequest::StartRequest(
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
     CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
+    const NetworkTrafficAnnotationTag& traffic_annotation,
+    bool detect_broken_connection,
+    base::TimeDelta heartbeat_interval) {
   DCHECK(session);
   DCHECK(!session_);
   DCHECK(!stream_);
@@ -741,6 +743,8 @@ int SpdyStreamRequest::StartRequest(
   net_log_ = net_log;
   callback_ = std::move(callback);
   traffic_annotation_ = MutableNetworkTrafficAnnotationTag(traffic_annotation);
+  detect_broken_connection_ = detect_broken_connection;
+  heartbeat_interval_ = heartbeat_interval;
 
   // If early data is not allowed, confirm the handshake first.
   int rv = OK;
@@ -974,6 +978,7 @@ SpdySession::SpdySession(
       streams_pushed_and_claimed_count_(0),
       streams_abandoned_count_(0),
       ping_in_flight_(false),
+      check_connection_on_radio_wakeup_(false),
       next_ping_id_(1),
       last_read_time_(time_func()),
       last_compressed_frame_len_(0),
@@ -981,6 +986,7 @@ SpdySession::SpdySession(
       session_send_window_size_(0),
       session_max_recv_window_size_(session_max_recv_window_size),
       session_max_queued_capped_frames_(session_max_queued_capped_frames),
+      broken_connection_detection_requests_(0),
       session_recv_window_size_(0),
       session_unacked_recv_window_bytes_(0),
       last_recv_window_update_(base::TimeTicks::Now()),
@@ -1029,6 +1035,8 @@ SpdySession::~SpdySession() {
   DcheckDraining();
 
   DCHECK(waiting_for_confirmation_callbacks_.empty());
+
+  DCHECK_EQ(broken_connection_detection_requests_, 0);
 
   // TODO(akalin): Check connection->is_initialized().
   DCHECK(socket_);
@@ -1805,6 +1813,25 @@ bool SpdySession::ChangeSocketTag(const SocketTag& new_tag) {
   return true;
 }
 
+void SpdySession::EnableBrokenConnectionDetection(
+    base::TimeDelta heartbeat_interval) {
+  DCHECK_GE(broken_connection_detection_requests_, 0);
+  if (broken_connection_detection_requests_++ > 0)
+    return;
+
+  DCHECK(!IsBrokenConnectionDetectionEnabled());
+  NetworkChangeNotifier::AddDefaultNetworkActiveObserver(this);
+  heartbeat_interval_ = heartbeat_interval;
+  heartbeat_timer_.Start(
+      FROM_HERE, heartbeat_interval_,
+      base::BindOnce(&SpdySession::MaybeCheckConnectionStatus,
+                     weak_factory_.GetWeakPtr()));
+}
+
+bool SpdySession::IsBrokenConnectionDetectionEnabled() const {
+  return heartbeat_timer_.IsRunning();
+}
+
 // static
 void SpdySession::RecordSpdyPushedStreamFateHistogram(
     SpdyPushedStreamFate value) {
@@ -1903,9 +1930,12 @@ int SpdySession::CreateStream(const SpdyStreamRequest& request,
   auto new_stream = std::make_unique<SpdyStream>(
       request.type(), GetWeakPtr(), request.url(), request.priority(),
       stream_initial_send_window_size_, stream_max_recv_window_size_,
-      request.net_log(), request.traffic_annotation());
+      request.net_log(), request.traffic_annotation(),
+      request.detect_broken_connection_);
   *stream = new_stream->GetWeakPtr();
   InsertCreatedStream(std::move(new_stream));
+  if (request.detect_broken_connection_)
+    EnableBrokenConnectionDetection(request.heartbeat_interval_);
 
   return OK;
 }
@@ -2162,7 +2192,7 @@ void SpdySession::TryCreatePushStream(spdy::SpdyStreamId stream_id,
   auto stream = std::make_unique<SpdyStream>(
       SPDY_PUSH_STREAM, GetWeakPtr(), gurl, request_priority,
       stream_initial_send_window_size_, stream_max_recv_window_size_, net_log_,
-      traffic_annotation);
+      traffic_annotation, false /* detect_broken_connection */);
   stream->set_stream_id(stream_id);
 
   // Convert RequestPriority to a spdy::SpdyPriority to send in a PRIORITY
@@ -2801,6 +2831,13 @@ void SpdySession::UpdateStreamsSendWindowSize(int32_t delta_window_size) {
   }
 }
 
+void SpdySession::MaybeCheckConnectionStatus() {
+  if (NetworkChangeNotifier::IsDefaultNetworkActive())
+    CheckConnectionStatus();
+  else
+    check_connection_on_radio_wakeup_ = true;
+}
+
 void SpdySession::MaybeSendPrefacePing() {
   if (ping_in_flight_ || check_ping_status_pending_ ||
       !enable_ping_based_connection_checking_) {
@@ -2994,6 +3031,8 @@ void SpdySession::DeleteStream(std::unique_ptr<SpdyStream> stream, int status) {
   }
 
   write_queue_.RemovePendingWritesForStream(stream.get());
+  if (stream->detect_broken_connection())
+    MaybeDisableBrokenConnectionDetection();
   stream->OnClose(status);
 
   if (availability_state_ == STATE_AVAILABLE) {
@@ -3802,6 +3841,34 @@ spdy::SpdyStreamId SpdySession::PopStreamToPossiblyResume() {
     }
   }
   return 0;
+}
+
+void SpdySession::CheckConnectionStatus() {
+  MaybeSendPrefacePing();
+  // Also schedule the next check.
+  heartbeat_timer_.Start(
+      FROM_HERE, heartbeat_interval_,
+      base::BindOnce(&SpdySession::MaybeCheckConnectionStatus,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SpdySession::OnDefaultNetworkActive() {
+  if (!check_connection_on_radio_wakeup_)
+    return;
+
+  check_connection_on_radio_wakeup_ = false;
+  CheckConnectionStatus();
+}
+
+void SpdySession::MaybeDisableBrokenConnectionDetection() {
+  DCHECK_GT(broken_connection_detection_requests_, 0);
+  DCHECK(IsBrokenConnectionDetectionEnabled());
+  if (--broken_connection_detection_requests_ > 0)
+    return;
+
+  heartbeat_timer_.Stop();
+  NetworkChangeNotifier::RemoveDefaultNetworkActiveObserver(this);
+  check_connection_on_radio_wakeup_ = false;
 }
 
 }  // namespace net

@@ -257,11 +257,14 @@ base::WeakPtr<SpdyStream> CreateStreamSynchronously(
     const base::WeakPtr<SpdySession>& session,
     const GURL& url,
     RequestPriority priority,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    bool detect_broken_connection,
+    base::TimeDelta heartbeat_interval) {
   SpdyStreamRequest stream_request;
   int rv = stream_request.StartRequest(
       type, session, url, false /* no early data */, priority, SocketTag(),
-      net_log, CompletionOnceCallback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+      net_log, CompletionOnceCallback(), TRAFFIC_ANNOTATION_FOR_TESTS,
+      detect_broken_connection, heartbeat_interval);
 
   return
       (rv == OK) ? stream_request.ReleaseStream() : base::WeakPtr<SpdyStream>();
