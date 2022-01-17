@@ -7180,7 +7180,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/page/set-font-families.js [ Failure Pass ]
 crbug.com/1249176 [ Mac ] http/tests/text-autosizing/wide-iframe.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/layout-instability/recent-input.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/performance/perf-metrics.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/event-timing/event-retarget.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/mimesniff/media/media-sniff.window.html [ Failure Pass ]
@@ -7344,7 +7343,6 @@ crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableVal
 crbug.com/1257570 [ Win7 ] fast/dom/vertical-scrollbar-in-rtl.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-animate-rotate.html [ Failure Pass ]
-crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-background-image-space.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-clip.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-image-shape.html [ Failure Pass ]
@@ -7648,3 +7646,4 @@ crbug.com/1287928 [ Mac ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiat
 crbug.com/1233938 http/tests/notifications/click-shared-worker.html [ Pass Timeout ]
 # Temporarily disable test to allow fixing of devtools path escaping
 crbug.com/1094436 http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Skip Timeout Failure ]
+crbug.com/1256763 virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Pass Failure ]
