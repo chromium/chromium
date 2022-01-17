@@ -28,9 +28,7 @@ FakeScheduledTaskExecutor::FakeScheduledTaskExecutor(const base::Clock* clock)
       icu::UnicodeString::fromUTF8(kESTTimeZoneID)));
 }
 
-FakeScheduledTaskExecutor::~FakeScheduledTaskExecutor() {
-  delayed_task_handle_.CancelTask();
-}
+FakeScheduledTaskExecutor::~FakeScheduledTaskExecutor() = default;
 
 void FakeScheduledTaskExecutor::Start(
     ScheduledTaskData* scheduled_task_data,
@@ -54,16 +52,11 @@ void FakeScheduledTaskExecutor::Start(
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_cb), true));
-  delayed_task_handle_ =
-      base::SequencedTaskRunnerHandle::Get()->PostCancelableDelayedTask(
-          base::subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-          base::BindOnce(std::move(timer_expired_cb)), delay.value());
+  timer_.Start(FROM_HERE, delay.value(), std::move(timer_expired_cb));
 }
 
 void FakeScheduledTaskExecutor::Reset() {
-  if (delayed_task_handle_.IsValid()) {
-    delayed_task_handle_.CancelTask();
-  }
+  timer_.Stop();
 }
 
 void FakeScheduledTaskExecutor::SetTimeZone(

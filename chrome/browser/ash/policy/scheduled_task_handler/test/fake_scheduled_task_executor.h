@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_TEST_FAKE_SCHEDULED_TASK_EXECUTOR_H_
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_TEST_FAKE_SCHEDULED_TASK_EXECUTOR_H_
 
-#include "base/task/delayed_task_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -48,7 +48,7 @@ class FakeScheduledTaskExecutor : public ScheduledTaskExecutor {
   bool simulate_calculate_next_update_check_failure_ = false;
 
   // Timer that is scheduled to execute the task.
-  base::DelayedTaskHandle delayed_task_handle_;
+  base::OneShotTimer timer_;
 };
 }  // namespace policy
 
