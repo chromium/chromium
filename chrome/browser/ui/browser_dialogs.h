@@ -412,8 +412,9 @@ enum class DialogIdentifier {
   SIGNIN_ENTERPRISE_INTERCEPTION = 110,
   APP_IDENTITY_UPDATE_CONFIRMATION = 111,
   BLUETOOTH_DEVICE_CREDENTIALS = 112,
-  // Add values above this line with a corresponding label in
-  // tools/metrics/histograms/enums.xml
+  SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE = 113,
+  // Add values above this line with a corresponding label to the "DialogName"
+  // enum in tools/metrics/histograms/enums.xml
   MAX_VALUE
 };
 

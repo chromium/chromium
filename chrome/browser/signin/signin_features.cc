@@ -14,3 +14,7 @@ const base::Feature kProcessGaiaRemoveLocalAccountHeader{
 // the profile picker.
 const base::Feature kAccountPoliciesLoadedWithoutSync{
     "AccountPoliciesLoadedWithoutSync", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables the sync promo after the sign-in intercept.
+const base::Feature kSyncPromoAfterSigninIntercept{
+    "SyncPromoAfterSigninIntercept", base::FEATURE_DISABLED_BY_DEFAULT};

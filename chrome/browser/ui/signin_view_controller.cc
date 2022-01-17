@@ -15,8 +15,10 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/signin_intercept_first_run_experience_dialog.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_modal_dialog_impl.h"
+#include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -224,6 +226,15 @@ SigninViewController::ShowReauthPrompt(
       std::move(wrapped_reauth_callback));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::SIGNIN_REAUTH);
   return abort_handle;
+}
+
+void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
+    const CoreAccountId& account_id) {
+  CloseModalSignin();
+  dialog_ = std::make_unique<SigninInterceptFirstRunExperienceDialog>(
+      browser_, account_id, GetOnModalDialogClosedCallback());
+  chrome::RecordDialogCreation(
+      chrome::DialogIdentifier::SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

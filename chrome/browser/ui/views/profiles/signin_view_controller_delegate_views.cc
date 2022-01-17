@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/profiles/signin_view_controller_delegate_views.h"
 
 #include "base/bind.h"
-#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -18,10 +18,12 @@
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -41,8 +43,11 @@ const int kModalDialogWidth = 448;
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
 const int kSigninErrorDialogHeight = 164;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const int kReauthDialogWidth = 540;
 const int kReauthDialogHeight = 520;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
   // If sync is disabled, then the sync confirmation dialog looks like an error
@@ -51,6 +56,13 @@ int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
              ? kSyncConfirmationDialogHeight
              : kSigninErrorDialogHeight;
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void CloseModalSigninInBrowser(base::WeakPtr<Browser> browser) {
+  if (browser)
+    browser->signin_view_controller()->CloseModalSignin();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -72,6 +84,7 @@ SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
                              InitializeSigninWebDialogUI(true));
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
@@ -82,6 +95,26 @@ SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
                              kReauthDialogHeight, kReauthDialogWidth,
                              InitializeSigninWebDialogUI(false));
 }
+
+// static
+std::unique_ptr<views::WebView>
+SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
+    Browser* browser) {
+  std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
+      browser, GURL(chrome::kChromeUIProfileCustomizationURL),
+      kSyncConfirmationDialogHeight, kSyncConfirmationDialogWidth,
+      InitializeSigninWebDialogUI(false));
+
+  ProfileCustomizationUI* web_ui = web_view->GetWebContents()
+                                       ->GetWebUI()
+                                       ->GetController()
+                                       ->GetAs<ProfileCustomizationUI>();
+  DCHECK(web_ui);
+  web_ui->Initialize(
+      base::BindOnce(&CloseModalSigninInBrowser, browser->AsWeakPtr()));
+  return web_view;
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -334,6 +367,7 @@ SigninViewControllerDelegate::CreateSigninErrorDelegate(Browser* browser) {
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
@@ -345,6 +379,17 @@ SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
           browser, access_point),
       browser, ui::MODAL_TYPE_CHILD, false, true);
 }
+
+// static
+SigninViewControllerDelegate*
+SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
+    Browser* browser) {
+  return new SigninViewControllerDelegateViews(
+      SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
+          browser),
+      browser, ui::MODAL_TYPE_WINDOW, false, false);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

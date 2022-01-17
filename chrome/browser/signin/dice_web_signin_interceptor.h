@@ -188,8 +188,11 @@ class DiceWebSigninInterceptor : public KeyedService,
         const BubbleParameters& bubble_parameters,
         base::OnceCallback<void(SigninInterceptionResult)> callback) = 0;
 
-    // Shows the profile customization bubble.
-    virtual void ShowProfileCustomizationBubble(Browser* browser) = 0;
+    // Shows the first run experience for `account_id` in `browser` opened for
+    // a newly created profile.
+    virtual void ShowFirstRunExperienceInNewProfile(
+        Browser* browser,
+        const CoreAccountId& account_id) = 0;
   };
 
   DiceWebSigninInterceptor(Profile* profile,

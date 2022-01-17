@@ -11,11 +11,18 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
@@ -131,7 +138,21 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
       std::move(callback));
 }
 
-void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubble(
-    Browser* browser) {
-  ShowProfileCustomizationBubbleInternal(browser);
+void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
+    Browser* browser,
+    const CoreAccountId& account_id) {
+  if (base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) {
+    browser->signin_view_controller()
+        ->ShowModalInterceptFirstRunExperienceDialog(account_id);
+  } else {
+    // Don't show the customization bubble if a valid policy theme is set.
+    if (ThemeServiceFactory::GetForProfile(browser->profile())
+            ->UsingPolicyTheme()) {
+      // Show the profile switch IPH that is normally shown after the
+      // customization bubble.
+      browser->window()->MaybeShowProfileSwitchIPH();
+      return;
+    }
+    ShowProfileCustomizationBubbleInternal(browser);
+  }
 }

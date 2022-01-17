@@ -14,6 +14,7 @@ class WebContents;
 }
 
 class Browser;
+struct CoreAccountId;
 
 class DiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
@@ -27,7 +28,9 @@ class DiceWebSigninInterceptorDelegate
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback) override;
-  void ShowProfileCustomizationBubble(Browser* browser) override;
+  void ShowFirstRunExperienceInNewProfile(
+      Browser* browser,
+      const CoreAccountId& account_id) override;
 
  private:
   // Implemented in dice_web_signin_interception_bubble_view.cc

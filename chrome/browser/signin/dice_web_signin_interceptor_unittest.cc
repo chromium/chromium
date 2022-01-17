@@ -49,7 +49,9 @@ class MockDiceWebSigninInterceptorDelegate
                const BubbleParameters& bubble_parameters,
                base::OnceCallback<void(SigninInterceptionResult)> callback),
               (override));
-  void ShowProfileCustomizationBubble(Browser* browser) override {}
+  void ShowFirstRunExperienceInNewProfile(
+      Browser* browser,
+      const CoreAccountId& account_id) override {}
 };
 
 // Matches BubbleParameters fields excepting the color. This is useful in the

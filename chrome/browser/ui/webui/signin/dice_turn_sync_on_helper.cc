@@ -584,6 +584,12 @@ void DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(
   g_show_sync_enabled_ui_for_testing_ = show_sync_enabled_ui_for_testing;
 }
 
+// static
+bool DiceTurnSyncOnHelper::HasCurrentDiceTurnSyncOnHelperForTesting(
+    Profile* profile) {
+  return !!GetCurrentDiceTurnSyncOnHelper(profile);
+}
+
 void DiceTurnSyncOnHelper::ShowSyncConfirmationUI() {
   if (g_show_sync_enabled_ui_for_testing_ || GetSyncService()) {
     delegate_->ShowSyncConfirmation(

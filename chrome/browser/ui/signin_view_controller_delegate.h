@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
@@ -56,6 +57,7 @@ class SigninViewControllerDelegate {
   static SigninViewControllerDelegate* CreateSigninErrorDelegate(
       Browser* browser);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Returns a platform-specific SigninViewContolllerDelegate instance that
   // displays the reauth confirmation modal dialog. The returned object should
   // delete itself when the window it's managing is closed.
@@ -63,6 +65,13 @@ class SigninViewControllerDelegate {
       Browser* browser,
       const CoreAccountId& account_id,
       signin_metrics::ReauthAccessPoint access_point);
+
+  // Returns a platform-specific SigninViewControllerDelegate instance that
+  // displays the profile customization modal dialog. The returned object should
+  // delete itself when the window it's managing is closed.
+  static SigninViewControllerDelegate* CreateProfileCustomizationDelegate(
+      Browser* browser);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

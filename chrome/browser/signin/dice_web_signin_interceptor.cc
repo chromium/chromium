@@ -38,7 +38,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
@@ -357,6 +356,7 @@ void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
   DCHECK(!session_startup_helper_);
   DCHECK(bubble_handle);
   interception_bubble_handle_ = std::move(bubble_handle);
+  account_id_ = account_id;
   session_startup_helper_ =
       std::make_unique<DiceInterceptedSessionStartupHelper>(
           profile_, is_new_profile, account_id, intercepted_contents);
@@ -759,17 +759,9 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
   if (!is_new_profile || profile_->IsGuestSession())
     return;
 
-  // Don't show the customization bubble if a valid policy theme is set.
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  if (ThemeServiceFactory::GetForProfile(profile_)->UsingPolicyTheme()) {
-    // Show the profile switch IPH that is normally shown after the
-    // customization bubble.
-    browser->window()->MaybeShowProfileSwitchIPH();
-    return;
-  }
-
   DCHECK(browser);
-  delegate_->ShowProfileCustomizationBubble(browser);
+  delegate_->ShowFirstRunExperienceInNewProfile(browser, account_id_);
 }
 
 // static

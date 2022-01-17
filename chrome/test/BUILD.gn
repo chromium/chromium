@@ -2469,6 +2469,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/signin/dice_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
+        "../browser/ui/signin_intercept_first_run_experience_dialog_browsertest.cc",
         "../browser/ui/signin_reauth_view_controller_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",

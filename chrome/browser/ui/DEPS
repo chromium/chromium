@@ -43,4 +43,8 @@ specific_include_rules = {
   "hid_chooser_controller_unittest\.cc": [
     "+services/device/hid",
   ],
+  "signin_intercept_first_run_experience_dialog_browsertest.cc": [
+    "+chrome/browser/ui/views/profiles/avatar_toolbar_button.h",
+    "+chrome/browser/ui/views/user_education/feature_promo_controller_views.h",
+  ],
 }

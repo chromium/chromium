@@ -180,6 +180,9 @@ class DiceTurnSyncOnHelper
   static void SetShowSyncEnabledUiForTesting(
       bool show_sync_enabled_ui_for_testing);
 
+  // Returns true if a `DiceTurnSyncOnHelper` is currently active for `profile`.
+  static bool HasCurrentDiceTurnSyncOnHelperForTesting(Profile* profile);
+
  private:
   friend class base::DeleteHelper<DiceTurnSyncOnHelper>;
 

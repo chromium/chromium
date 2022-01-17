@@ -124,6 +124,12 @@ class SigninViewController {
       const CoreAccountId& account_id,
       signin_metrics::ReauthAccessPoint access_point,
       base::OnceCallback<void(signin::ReauthResult)> reauth_callback);
+
+  // Shows the modal signin intercept first run experience dialog as a
+  // browser-modal dialog on top of the `browser_`'s window. `account_id`
+  // corresponds to the intercepted account.
+  void ShowModalInterceptFirstRunExperienceDialog(
+      const CoreAccountId& account_id);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top
@@ -165,6 +171,7 @@ class SigninViewController {
                            CloseImmediately);
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninReauthViewControllerBrowserTest;
+  friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the DICE-specific sign-in flow: opens a Gaia sign-in webpage in a new
