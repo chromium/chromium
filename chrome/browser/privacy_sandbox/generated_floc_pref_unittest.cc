@@ -75,25 +75,27 @@ TEST_F(GeneratedFlocPrefTest, GetPreference) {
 
   // When the Privacy Sandbox APIs pref is enabled, the generated pref should
   // follow the state of the real FLoC pref, and user control should be enabled.
+  // TODO(crbug.com/1287951): User control disabled while OT is not active.
   prefs()->SetUserPref(prefs::kPrivacySandboxApisEnabled,
                        std::make_unique<base::Value>(true));
   prefs()->SetUserPref(prefs::kPrivacySandboxFlocEnabled,
                        std::make_unique<base::Value>(true));
-  EXPECT_TRUE(pref->GetPrefObject()->value->GetBool());
-  EXPECT_FALSE(*pref->GetPrefObject()->user_control_disabled);
+  EXPECT_FALSE(pref->GetPrefObject()->value->GetBool());
+  EXPECT_TRUE(*pref->GetPrefObject()->user_control_disabled);
 
   prefs()->SetUserPref(prefs::kPrivacySandboxFlocEnabled,
                        std::make_unique<base::Value>(false));
   EXPECT_FALSE(pref->GetPrefObject()->value->GetBool());
-  EXPECT_FALSE(*pref->GetPrefObject()->user_control_disabled);
+  EXPECT_TRUE(*pref->GetPrefObject()->user_control_disabled);
 
   // The generated pref should inherit the management state of the Privacy
   // Sandbox APIs pref.
+  // TODO(crbug.com/1287951): No managenent state while OT not active.
   prefs()->SetManagedPref(prefs::kPrivacySandboxApisEnabled,
                           std::make_unique<base::Value>(false));
-  EXPECT_EQ(settings_api::Enforcement::ENFORCEMENT_ENFORCED,
+  EXPECT_EQ(settings_api::Enforcement::ENFORCEMENT_NONE,
             pref->GetPrefObject()->enforcement);
-  EXPECT_EQ(settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY,
+  EXPECT_EQ(settings_api::ControlledBy::CONTROLLED_BY_NONE,
             pref->GetPrefObject()->controlled_by);
 }
 
