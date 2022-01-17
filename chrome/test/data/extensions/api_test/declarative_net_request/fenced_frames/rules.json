@@ -31,4 +31,23 @@
   "priority": 1,
   "action": { "type" : "allow" },
   "condition" : { "urlFilter" : "allowed", "resourceTypes" : [ "sub_frame" ] }
-}]
+},
+{
+  "_comment": [
+    "Allow a subresource inside the fenced frame."
+  ],
+  "id": 5,
+  "priority": 1,
+  "action": { "type": "allow" },
+  "condition": { "urlFilter": "icon1", "resourceTypes": [ "image" ] }
+},
+{
+  "_comment": [
+    "Block a subresource inside the fenced frame."
+  ],
+  "id": 6,
+  "priority": 1,
+  "action": { "type": "block" },
+  "condition": { "urlFilter": "icon2", "resourceTypes": [ "image" ] }
+}
+]
