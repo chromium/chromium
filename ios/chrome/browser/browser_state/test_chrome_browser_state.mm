@@ -19,8 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_constants.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
@@ -31,14 +29,11 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/undo/bookmark_undo_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 #include "ios/chrome/browser/history/history_client_impl.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
@@ -46,7 +41,6 @@
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -64,20 +58,6 @@ std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
       base::WrapUnique(new HistoryClientImpl(
           ios::BookmarkModelFactory::GetForBrowserState(browser_state))),
       nullptr);
-}
-
-std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
-          browser_state, nullptr,
-          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state))));
-  bookmark_model->Load(browser_state->GetPrefs(),
-                       browser_state->GetStatePath());
-  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
-      ->Start(bookmark_model.get());
-  return bookmark_model;
 }
 
 std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
@@ -279,16 +259,6 @@ void TestChromeBrowserState::CreateWebDataService() {
   // initialisation of the database is complete which leads to SQL init errors).
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
-}
-
-void TestChromeBrowserState::CreateBookmarkModel(bool delete_file) {
-  if (delete_file) {
-    base::DeleteFile(GetOriginalChromeBrowserState()->GetStatePath().Append(
-        bookmarks::kBookmarksFileName));
-  }
-  std::ignore =
-      ios::BookmarkModelFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildBookmarkModel));
 }
 
 bool TestChromeBrowserState::CreateHistoryService() {

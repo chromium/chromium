@@ -125,6 +125,11 @@ class PopupMenuMediatorTest : public ChromeWebTest {
   }
 
  protected:
+  TestChromeBrowserState::TestingFactories GetTestingFactories() override {
+    return {{ios::BookmarkModelFactory::GetInstance(),
+             ios::BookmarkModelFactory::GetDefaultFactory()}};
+  }
+
   PopupMenuMediator* CreateMediator(PopupMenuType type,
                                     BOOL is_incognito,
                                     BOOL trigger_incognito_hint) {
@@ -159,9 +164,9 @@ class PopupMenuMediatorTest : public ChromeWebTest {
   }
 
   void SetUpBookmarks() {
-    GetBrowserState()->CreateBookmarkModel(false);
     bookmark_model_ =
         ios::BookmarkModelFactory::GetForBrowserState(GetBrowserState());
+    DCHECK(bookmark_model_);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     mediator_.bookmarkModel = bookmark_model_;
   }

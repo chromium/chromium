@@ -5,7 +5,6 @@
 #include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
 #include <memory>
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -32,9 +31,11 @@ void BookmarkIOSUnitTest::SetUp() {
       AuthenticationServiceFactory::GetInstance(),
       base::BindRepeating(
           &AuthenticationServiceFake::CreateAuthenticationService));
+  test_cbs_builder.AddTestingFactory(
+      ios::BookmarkModelFactory::GetInstance(),
+      ios::BookmarkModelFactory::GetDefaultFactory());
 
   chrome_browser_state_ = test_cbs_builder.Build();
-  chrome_browser_state_->CreateBookmarkModel(true);
 
   bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
       chrome_browser_state_.get());

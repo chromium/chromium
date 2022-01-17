@@ -30,6 +30,9 @@ class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
   BookmarkModelFactory(const BookmarkModelFactory&) = delete;
   BookmarkModelFactory& operator=(const BookmarkModelFactory&) = delete;
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<BookmarkModelFactory>;
 

@@ -68,15 +68,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // Creates a WebDataService. If not invoked, the web data service is null.
   void CreateWebDataService();
 
-  // Creates the BookmkarBarModel. If not invoked the bookmark bar model is
-  // NULL. If |delete_file| is true, the bookmarks file is deleted first, then
-  // the model is created. As TestChromeBrowserState deletes the directory
-  // containing the files used by HistoryService, the boolean only matters if
-  // you're recreating the BookmarkModel.
-  //
-  // NOTE: this does not block until the bookmarks are loaded.
-  void CreateBookmarkModel(bool delete_file);
-
   // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
   // Creates the history service.
   // TODO(crbug.com/1106699): Remove when all callers are migrated.

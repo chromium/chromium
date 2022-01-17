@@ -41,9 +41,11 @@ class BrowserViewControllerHelperTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::BookmarkModelFactory::GetInstance(),
+        ios::BookmarkModelFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
-    chrome_browser_state_->CreateBookmarkModel(true);
     bookmarks::test::WaitForBookmarkModelToLoad(
         ios::BookmarkModelFactory::GetForBrowserState(
             chrome_browser_state_.get()));
