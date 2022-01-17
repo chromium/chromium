@@ -9,7 +9,7 @@
 
 namespace autofill {
 
-#if defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/676221): Change this to pixels
 const int kPopupBorderThickness = 1;
 #else

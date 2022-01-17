@@ -34,7 +34,7 @@ const struct {
     {kUnionPay, IDR_AUTOFILL_CC_UNIONPAY},
     {kVisaCard, IDR_AUTOFILL_CC_VISA},
     {kGoogleIssuedCard, IDR_AUTOFILL_GOOGLE_ISSUED_CARD},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {"httpWarning", IDR_ANDROID_AUTOFILL_HTTP_WARNING},
     {"httpsInvalid", IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},
     {"scanCreditCardIcon", IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
@@ -44,7 +44,7 @@ const struct {
 #endif  // OS_ANDROID
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"googlePay", IDR_AUTOFILL_GOOGLE_PAY},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {"googlePayDark", IDR_AUTOFILL_GOOGLE_PAY_DARK},
 #endif  // NOT OS_ANDROID
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

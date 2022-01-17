@@ -9,7 +9,7 @@
 namespace autofill {
 
 // Not implemented on other platforms yet.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // static
 bool CreditCardScannerView::CanShow() {
   return false;
@@ -21,6 +21,6 @@ std::unique_ptr<CreditCardScannerView> CreditCardScannerView::Create(
     content::WebContents* web_contents) {
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

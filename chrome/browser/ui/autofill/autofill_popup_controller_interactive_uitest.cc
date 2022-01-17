@@ -77,7 +77,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Fails on Mac OS. http://crbug.com/453256
 #define MAYBE_HidePopupOnWindowMove DISABLED_HidePopupOnWindowMove
 #else
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 // This test checks that the browser doesn't crash if the delegate is deleted
 // before the popup is hidden.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky on Mac 10.9 in debug mode. http://crbug.com/710439
 #define MAYBE_DeleteDelegateBeforePopupHidden \
   DISABLED_DeleteDelegateBeforePopupHidden

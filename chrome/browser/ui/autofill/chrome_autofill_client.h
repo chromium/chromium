@@ -26,7 +26,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/android/save_update_address_profile_flow_manager.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_controller_android.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
@@ -46,10 +46,10 @@ class ChromeAutofillClient
     : public AutofillClient,
       public content::WebContentsUserData<ChromeAutofillClient>,
       public content::WebContentsObserver
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ,
       public zoom::ZoomObserver
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 {
  public:
   ChromeAutofillClient(const ChromeAutofillClient&) = delete;
@@ -96,7 +96,7 @@ class ChromeAutofillClient
           confirm_unmask_challenge_option_callback,
       base::OnceClosure cancel_unmasking_closure) override;
   void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::vector<std::string> GetAllowedMerchantsForVirtualCards() override;
   std::vector<std::string> GetAllowedBinRangesForVirtualCards() override;
   void ShowLocalCardMigrationDialog(
@@ -123,7 +123,7 @@ class ChromeAutofillClient
   void OfferVirtualCardOptions(
       const std::vector<CreditCard*>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override;
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(
@@ -203,11 +203,11 @@ class ChromeAutofillClient
   }
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // ZoomObserver implementation.
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class content::WebContentsUserData<ChromeAutofillClient>;
@@ -225,7 +225,7 @@ class ChromeAutofillClient
   // If set to true, the popup will stay open regardless of external changes on
   // the test machine, that may normally cause the popup to be hidden
   bool keep_popup_open_for_testing_ = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;

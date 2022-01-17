@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
@@ -134,11 +135,11 @@ CardUnmaskOtpInputDialogControllerImpl::GetTextfieldPlaceholderText() const {
       base::NumberToString16(otp_length_));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int CardUnmaskOtpInputDialogControllerImpl::GetExpectedOtpLength() const {
   return otp_length_;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool CardUnmaskOtpInputDialogControllerImpl::IsValidOtp(
     const std::u16string& otp) const {

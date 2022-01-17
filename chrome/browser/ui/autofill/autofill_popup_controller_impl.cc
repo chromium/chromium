@@ -40,7 +40,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 
 using FillingSource = ManualFillingController::FillingSource;
@@ -50,7 +50,7 @@ using base::WeakPtr;
 
 namespace autofill {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // static
 WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     WeakPtr<AutofillPopupControllerImpl> previous,
@@ -126,7 +126,7 @@ void AutofillPopupControllerImpl::Show(
   }
 
   if (just_created) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ManualFillingController::GetOrCreate(web_contents_)
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions.empty());
@@ -304,7 +304,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
 }
 
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Assume that suggestions are (still) available. If this is wrong, the method
   // |HideViewAndDie| will be called soon after and will hide all suggestions.
   ManualFillingController::GetOrCreate(web_contents_)
@@ -327,7 +327,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   }
 
   const Suggestion& suggestion = suggestions_[index];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto mf_controller = ManualFillingController::GetOrCreate(web_contents_);
   // Accepting a suggestion should hide all suggestions. To prevent them from
   // coming up in Multi-Window mode, mark the source as unavailable.
@@ -574,7 +574,7 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   // prevents recursive calls triggered by `view_->Hide()` (crbug.com/1267047).
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Mark the popup-like filling sources as unavailable.
   // Note: We don't invoke ManualFillingController::Hide() here, as we might
   // switch between text input fields.
