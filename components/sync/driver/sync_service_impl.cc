@@ -1417,6 +1417,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
     // Sync is no longer disabled by policy. Try starting it up if appropriate.
     DCHECK(!engine_);
     startup_controller_->TryStart(/*force_immediate=*/true);
+    NotifyObservers();
   }
 }
 
