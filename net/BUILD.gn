@@ -2500,6 +2500,7 @@ if (is_android) {
       "android/java/src/org/chromium/net/HttpUtil.java",
       "android/java/src/org/chromium/net/NetStringUtil.java",
       "android/java/src/org/chromium/net/NetworkActivationRequest.java",
+      "android/java/src/org/chromium/net/NetworkActiveNotifier.java",
       "android/java/src/org/chromium/net/NetworkChangeNotifier.java",
       "android/java/src/org/chromium/net/ProxyChangeListener.java",
       "android/java/src/org/chromium/net/X509Util.java",

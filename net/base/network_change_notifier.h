@@ -276,7 +276,7 @@ class NET_EXPORT NetworkChangeNotifier {
   // A list of networks.
   typedef std::vector<NetworkHandle> NetworkList;
 
-  // An interface that when implemented and added via AddNeworkObserver(),
+  // An interface that when implemented and added via AddNetworkObserver(),
   // provides notifications when networks come and go.
   // Only implemented for Android (Lollipop and newer), no callbacks issued when
   // unimplemented.
@@ -307,6 +307,30 @@ class NET_EXPORT NetworkChangeNotifier {
    private:
     friend NetworkChangeNotifier;
     scoped_refptr<base::ObserverListThreadSafe<NetworkObserver>> observer_list_;
+  };
+
+  // An interface that when implemented and added via
+  // AddDefaultNetworkActiveObserver(), provides notifications when the system
+  // default network has gone in to a high power state.
+  // Only implemented for Android (Lollipop and newer), no callbacks issued when
+  // unimplemented.
+  class NET_EXPORT DefaultNetworkActiveObserver {
+   public:
+    DefaultNetworkActiveObserver(const DefaultNetworkActiveObserver&) = delete;
+    DefaultNetworkActiveObserver& operator=(
+        const DefaultNetworkActiveObserver&) = delete;
+
+    // Called when device default network goes in to a high power state.
+    virtual void OnDefaultNetworkActive() = 0;
+
+   protected:
+    DefaultNetworkActiveObserver();
+    virtual ~DefaultNetworkActiveObserver();
+
+   private:
+    friend NetworkChangeNotifier;
+    scoped_refptr<base::ObserverListThreadSafe<DefaultNetworkActiveObserver>>
+        observer_list_;
   };
 
   // An invalid NetworkHandle.
@@ -417,6 +441,14 @@ class NET_EXPORT NetworkChangeNotifier {
   // Chrome net code.
   static SystemDnsConfigChangeNotifier* GetSystemDnsConfigNotifier();
 
+  // Returns true if the device default network is currently in a high power
+  // state.
+  // Only implemented for Android (Lollipop and newer). Always returns true
+  // when unimplemented, required in order to avoid indefinitely batching
+  // packets sent lazily (currently only used by bidi streams connection status
+  // check).
+  static bool IsDefaultNetworkActive();
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Returns the AddressTrackerLinux if present.
   static const internal::AddressTrackerLinux* GetAddressTracker();
@@ -468,6 +500,8 @@ class NET_EXPORT NetworkChangeNotifier {
   static void AddMaxBandwidthObserver(MaxBandwidthObserver* observer);
   static void AddNetworkObserver(NetworkObserver* observer);
   static void AddConnectionCostObserver(ConnectionCostObserver* observer);
+  static void AddDefaultNetworkActiveObserver(
+      DefaultNetworkActiveObserver* observer);
 
   // Unregisters |observer| from receiving notifications.  This must be called
   // on the same thread on which AddObserver() was called.  Like AddObserver(),
@@ -488,6 +522,8 @@ class NET_EXPORT NetworkChangeNotifier {
   static void RemoveMaxBandwidthObserver(MaxBandwidthObserver* observer);
   static void RemoveNetworkObserver(NetworkObserver* observer);
   static void RemoveConnectionCostObserver(ConnectionCostObserver* observer);
+  static void RemoveDefaultNetworkActiveObserver(
+      DefaultNetworkActiveObserver* observer);
 
   // Called to signify a non-system DNS config change.
   static void TriggerNonSystemDnsChange();
@@ -503,6 +539,7 @@ class NET_EXPORT NetworkChangeNotifier {
       ConnectionType type);
   static void NotifyObserversOfConnectionCostChangeForTests(
       ConnectionCost cost);
+  static void NotifyObserversOfDefaultNetworkActiveForTests();
 
   // Enable or disable notifications from the host. After setting to true, be
   // sure to pump the RunLoop until idle to finish any preexisting
@@ -598,6 +635,8 @@ class NET_EXPORT NetworkChangeNotifier {
   virtual NetworkHandle GetCurrentDefaultNetwork() const;
   virtual SystemDnsConfigChangeNotifier* GetCurrentSystemDnsConfigNotifier();
 
+  virtual bool IsDefaultNetworkActiveInternal();
+
   // Broadcasts a notification to all registered observers.  Note that this
   // happens asynchronously, even for observers on the current thread, even in
   // tests.
@@ -610,6 +649,7 @@ class NET_EXPORT NetworkChangeNotifier {
   static void NotifyObserversOfSpecificNetworkChange(NetworkChangeType type,
                                                      NetworkHandle network);
   static void NotifyObserversOfConnectionCostChange();
+  static void NotifyObserversOfDefaultNetworkActive();
 
   // Infer connection type from |GetNetworkList|. If all network interfaces
   // have the same type, return it, otherwise return CONNECTION_UNKNOWN.
@@ -629,6 +669,13 @@ class NET_EXPORT NetworkChangeNotifier {
   // adding an observer and the observer list itself are both static, the
   // implementation class has no direct capability to watch for changes.
   virtual void ConnectionCostObserverAdded() {}
+
+  // Listening for notifications of this type is expensive as they happen
+  // frequently. For this reason, we report {de}registration to the
+  // implementation class, so that it can decide to only listen to this type of
+  // Android system notifications when there are observers interested.
+  virtual void DefaultNetworkActiveObserverAdded() {}
+  virtual void DefaultNetworkActiveObserverRemoved() {}
 
  private:
   friend class HostResolverManagerDnsTest;
@@ -651,6 +698,7 @@ class NET_EXPORT NetworkChangeNotifier {
   void NotifyObserversOfSpecificNetworkChangeImpl(NetworkChangeType type,
                                                   NetworkHandle network);
   void NotifyObserversOfConnectionCostChangeImpl(ConnectionCost cost);
+  void NotifyObserversOfDefaultNetworkActiveImpl();
 
   raw_ptr<SystemDnsConfigChangeNotifier> system_dns_config_notifier_;
   std::unique_ptr<SystemDnsConfigObserver> system_dns_config_observer_;

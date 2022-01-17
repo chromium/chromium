@@ -50,6 +50,7 @@ class AwNetworkChangeNotifier
   void OnNetworkSoonToDisconnect(NetworkHandle network) override;
   void OnNetworkDisconnected(NetworkHandle network) override;
   void OnNetworkMadeDefault(NetworkHandle network) override;
+  void OnDefaultNetworkActive() override;
 
  private:
   friend class AwNetworkChangeNotifierFactory;

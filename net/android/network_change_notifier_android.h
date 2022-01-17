@@ -46,6 +46,12 @@ class NetworkChangeNotifierFactoryAndroid;
 //   and be called by any thread.
 //
 // For more details, see the implementation file.
+//
+// Note: Alongside of NetworkChangeNotifier.java there is
+// NetworkActiveNotifier.java, which handles notifications for when the system
+// default network goes in to a high power state. These are handled separately
+// since listening to them is expensive (they are fired often) and currently
+// only bidi streams connection status check uses them.
 class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
     : public NetworkChangeNotifier,
       public NetworkChangeNotifierDelegateAndroid::Observer {
@@ -69,6 +75,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
   NetworkChangeNotifier::ConnectionSubtype GetCurrentConnectionSubtype()
       const override;
   NetworkHandle GetCurrentDefaultNetwork() const override;
+  bool IsDefaultNetworkActiveInternal() override;
 
   // NetworkChangeNotifierDelegateAndroid::Observer:
   void OnConnectionTypeChanged() override;
@@ -78,12 +85,16 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
   void OnNetworkSoonToDisconnect(NetworkHandle network) override;
   void OnNetworkDisconnected(NetworkHandle network) override;
   void OnNetworkMadeDefault(NetworkHandle network) override;
+  void OnDefaultNetworkActive() override;
 
   // Promote GetMaxBandwidthMbpsForConnectionSubtype to public for the Android
   // delegate class.
   using NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype;
 
   static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsAndroid();
+
+  void DefaultNetworkActiveObserverAdded() override;
+  void DefaultNetworkActiveObserverRemoved() override;
 
  private:
   friend class NetworkChangeNotifierAndroidTest;

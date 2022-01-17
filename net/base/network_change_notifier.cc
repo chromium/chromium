@@ -209,6 +209,9 @@ class NetworkChangeNotifier::ObserverList {
             new base::ObserverListThreadSafe<
                 NetworkChangeNotifier::ConnectionCostObserver>(
                 base::ObserverListPolicy::EXISTING_ONLY)),
+        default_network_active_observer_list_(
+            new base::ObserverListThreadSafe<DefaultNetworkActiveObserver>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
         connection_cost_observers_added_(false) {}
 
   ObserverList(const ObserverList&) = delete;
@@ -236,6 +239,9 @@ class NetworkChangeNotifier::ObserverList {
   const scoped_refptr<base::ObserverListThreadSafe<
       NetworkChangeNotifier::ConnectionCostObserver>>
       connection_cost_observer_list_;
+  const scoped_refptr<
+      base::ObserverListThreadSafe<DefaultNetworkActiveObserver>>
+      default_network_active_observer_list_;
 
   // Indicates if connection cost observer was added before
   // network_change_notifier was initialized, if so ConnectionCostObserverAdded
@@ -480,6 +486,14 @@ NetworkChangeNotifier::GetSystemDnsConfigNotifier() {
 }
 
 // static
+bool NetworkChangeNotifier::IsDefaultNetworkActive() {
+  if (g_network_change_notifier)
+    return g_network_change_notifier->IsDefaultNetworkActiveInternal();
+  // Assume true as a "default" to avoid batching indefinitely.
+  return true;
+}
+
+// static
 const char* NetworkChangeNotifier::ConnectionTypeToString(
     ConnectionType type) {
   static const char* const kConnectionTypeNames[] = {
@@ -617,6 +631,11 @@ NetworkChangeNotifier::ConnectionCostObserver::ConnectionCostObserver() =
 NetworkChangeNotifier::ConnectionCostObserver::~ConnectionCostObserver() =
     default;
 
+NetworkChangeNotifier::DefaultNetworkActiveObserver::
+    DefaultNetworkActiveObserver() = default;
+NetworkChangeNotifier::DefaultNetworkActiveObserver::
+    ~DefaultNetworkActiveObserver() = default;
+
 void NetworkChangeNotifier::AddIPAddressObserver(IPAddressObserver* observer) {
   DCHECK(!observer->observer_list_);
   observer->observer_list_ = GetObserverList().ip_address_observer_list_;
@@ -667,6 +686,22 @@ void NetworkChangeNotifier::AddConnectionCostObserver(
   base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
   if (g_network_change_notifier) {
     g_network_change_notifier->ConnectionCostObserverAdded();
+  }
+}
+
+void NetworkChangeNotifier::AddDefaultNetworkActiveObserver(
+    DefaultNetworkActiveObserver* observer) {
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ =
+      GetObserverList().default_network_active_observer_list_;
+  observer->observer_list_->AddObserver(observer);
+  base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
+  // Currently we lose DefaultNetworkActiveObserverAdded notifications for
+  // observers added prior to NCN creation. This should be a non-issue as
+  // currently only Cronet listens to this and its observers are always added
+  // after NCN creation.
+  if (g_network_change_notifier) {
+    g_network_change_notifier->DefaultNetworkActiveObserverAdded();
   }
 }
 
@@ -724,6 +759,15 @@ void NetworkChangeNotifier::RemoveConnectionCostObserver(
   }
 }
 
+void NetworkChangeNotifier::RemoveDefaultNetworkActiveObserver(
+    DefaultNetworkActiveObserver* observer) {
+  if (observer->observer_list_) {
+    observer->observer_list_->RemoveObserver(observer);
+    observer->observer_list_.reset();
+    g_network_change_notifier->DefaultNetworkActiveObserverRemoved();
+  }
+}
+
 void NetworkChangeNotifier::TriggerNonSystemDnsChange() {
   NetworkChangeNotifier::NotifyObserversOfDNSChange();
 }
@@ -769,6 +813,12 @@ void NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeForTests(
     ConnectionCost cost) {
   if (g_network_change_notifier)
     g_network_change_notifier->NotifyObserversOfConnectionCostChangeImpl(cost);
+}
+
+// static
+void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActiveForTests() {
+  if (g_network_change_notifier)
+    g_network_change_notifier->NotifyObserversOfDefaultNetworkActiveImpl();
 }
 
 // static
@@ -866,6 +916,10 @@ NetworkChangeNotifier::GetCurrentSystemDnsConfigNotifier() {
   return system_dns_config_notifier_;
 }
 
+bool NetworkChangeNotifier::IsDefaultNetworkActiveInternal() {
+  return true;
+}
+
 // static
 void NetworkChangeNotifier::NotifyObserversOfIPAddressChange() {
   if (g_network_change_notifier &&
@@ -928,6 +982,14 @@ void NetworkChangeNotifier::NotifyObserversOfConnectionCostChange() {
       !NetworkChangeNotifier::test_notifications_only_) {
     g_network_change_notifier->NotifyObserversOfConnectionCostChangeImpl(
         GetConnectionCost());
+  }
+}
+
+// static
+void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActive() {
+  if (g_network_change_notifier &&
+      !NetworkChangeNotifier::test_notifications_only_) {
+    g_network_change_notifier->NotifyObserversOfDefaultNetworkActiveImpl();
   }
 }
 
@@ -998,6 +1060,11 @@ void NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeImpl(
     ConnectionCost cost) {
   GetObserverList().connection_cost_observer_list_->Notify(
       FROM_HERE, &ConnectionCostObserver::OnConnectionCostChanged, cost);
+}
+
+void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActiveImpl() {
+  GetObserverList().default_network_active_observer_list_->Notify(
+      FROM_HERE, &DefaultNetworkActiveObserver::OnDefaultNetworkActive);
 }
 
 NetworkChangeNotifier::DisableForTest::DisableForTest()

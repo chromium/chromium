@@ -5,6 +5,7 @@
 #ifndef NET_ANDROID_NETWORK_CHANGE_NOTIFIER_DELEGATE_ANDROID_H_
 #define NET_ANDROID_NETWORK_CHANGE_NOTIFIER_DELEGATE_ANDROID_H_
 
+#include <atomic>
 #include <map>
 
 #include "base/android/jni_android.h"
@@ -22,7 +23,7 @@ namespace net {
 // network connection change notification is signaled by the Java side (on the
 // JNI thread).
 // All the methods exposed below must be called exclusively on the JNI thread
-// unless otherwise stated (e.g. AddObserver()/RemoveObserver()).
+// unless otherwise stated (e.g. RegisterObserver()/UnregisterObserver()).
 class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
  public:
   typedef NetworkChangeNotifier::ConnectionType ConnectionType;
@@ -43,6 +44,9 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
     // Updates the current max bandwidth.
     virtual void OnMaxBandwidthChanged(double max_bandwidth_mbps,
                                        ConnectionType connection_type) = 0;
+
+    // Notifies that the default network has gone into a high power mode.
+    virtual void OnDefaultNetworkActive() = 0;
   };
 
   // Initializes native (C++) side of NetworkChangeNotifierAndroid that
@@ -63,7 +67,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
   // the connection type changes. This updates the current connection type seen
   // by this class and forwards the notification to the observers that
-  // subscribed through AddObserver().
+  // subscribed through RegisterObserver().
   void NotifyConnectionTypeChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -74,7 +78,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
   // the maximum bandwidth of the connection changes. This updates the current
   // max bandwidth seen by this class and forwards the notification to the
-  // observers that subscribed through AddObserver().
+  // observers that subscribed through RegisterObserver().
   void NotifyMaxBandwidthChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -106,6 +110,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jlongArray>& active_networks);
 
+  // Called from NetworkActiveNotifier.java on the JNI thread to push down
+  // notifications of default network going in to high power mode.
+  void NotifyOfDefaultNetworkActive(JNIEnv* env);
+
   // Registers/unregisters the observer which receives notifications from this
   // delegate. Notifications may be dispatched to the observer from any thread.
   // |observer| must not invoke (Register|Unregister)Observer() when receiving a
@@ -114,6 +122,13 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // ~NetworkChangeNotifierDelegateAndroid().
   void RegisterObserver(Observer* observer);
   void UnregisterObserver(Observer* observer);
+
+  // Called by NetworkChangeNotifierAndroid to report when a
+  // DefaultNetworkActiveObserver has been added (or removed) so that the
+  // delegate can act on that (possibly enabling or disabling default network
+  // active notifications).
+  void DefaultNetworkActiveObserverRemoved();
+  void DefaultNetworkActiveObserverAdded();
 
   // These methods are simply implementations of NetworkChangeNotifier APIs of
   // the same name. They can be called from any thread.
@@ -124,6 +139,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   ConnectionType GetNetworkConnectionType(NetworkHandle network) const;
   NetworkHandle GetCurrentDefaultNetwork() const;
   void GetCurrentlyConnectedNetworks(NetworkList* network_list) const;
+  bool IsDefaultNetworkActive();
 
   // Can only be called from the main (Java) thread.
   NetworkChangeNotifier::ConnectionSubtype GetCurrentConnectionSubtype() const;
@@ -147,6 +163,11 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
       const base::android::JavaRef<jlongArray>& long_array,
       NetworkMap* network_map);
 
+  // These can be selectively enabled/disabled as they might be expensive to
+  // listen to since they could be fired often.
+  void EnableDefaultNetworkActiveNotifications();
+  void DisableDefaultNetworkActiveNotifications();
+
   // Setters that grab appropriate lock.
   void SetCurrentConnectionType(ConnectionType connection_type);
   void SetCurrentMaxBandwidth(double max_bandwidth);
@@ -162,6 +183,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void FakePurgeActiveNetworkList(NetworkList networks);
   void FakeDefaultNetwork(NetworkHandle network, ConnectionType type);
   void FakeConnectionSubtypeChanged(ConnectionSubtype subtype);
+  void FakeDefaultNetworkActive();
 
   THREAD_CHECKER(thread_checker_);
 
@@ -173,12 +195,20 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // True if NetworkCallback failed to register, indicating that
   // network-specific callbacks will not be issued.
   const bool register_network_callback_failed_;
+  base::android::ScopedJavaGlobalRef<jobject> java_network_active_notifier_;
+  // True if DefaultNetworkActive type of info are not supported, indicating
+  // that we shouldn't try to enable its callback or query its status.
+  const bool is_default_network_active_api_supported_;
 
   mutable base::Lock connection_lock_;  // Protects the state below.
   ConnectionType connection_type_;
   double connection_max_bandwidth_;
   NetworkHandle default_network_;
   NetworkMap network_map_;
+
+  // Used to enable/disable default network active notifications on the Java
+  // side.
+  std::atomic_int default_network_active_observers_;
 };
 
 }  // namespace net
