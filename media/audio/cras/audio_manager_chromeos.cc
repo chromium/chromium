@@ -58,16 +58,6 @@ enum CrosBeamformingDeviceState {
   BEAMFORMING_STATE_MAX = BEAMFORMING_USER_DISABLED
 };
 
-bool HasKeyboardMic(const AudioDeviceList& devices) {
-  for (const auto& device : devices) {
-    if (device.is_input &&
-        device.type == chromeos::AudioDeviceType::kKeyboardMic) {
-      return true;
-    }
-  }
-  return false;
-}
-
 const AudioDevice* GetDeviceFromId(const AudioDeviceList& devices,
                                    uint64_t id) {
   for (const auto& device : devices) {
@@ -211,11 +201,6 @@ AudioParameters AudioManagerChromeOS::GetInputStreamParameters(
     const std::string& device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  // Check if the device has keyboard.
-  AudioDeviceList devices;
-  GetAudioDevices(&devices);
-  const bool has_keyboard = HasKeyboardMic(devices);
-
   // Retrieve buffer size.
   int user_buffer_size = GetUserBufferSize();
   user_buffer_size =
@@ -227,8 +212,7 @@ AudioParameters AudioManagerChromeOS::GetInputStreamParameters(
 
   // TODO(hshi): Fine-tune audio parameters based on |device_id|. The optimal
   // parameters for the loopback stream may differ from the default.
-  return GetStreamParametersForSystem(user_buffer_size, has_keyboard,
-                                      system_apm_info);
+  return GetStreamParametersForSystem(user_buffer_size, system_apm_info);
 }
 
 std::string AudioManagerChromeOS::GetAssociatedOutputDeviceID(
@@ -542,15 +526,12 @@ enum CRAS_CLIENT_TYPE AudioManagerChromeOS::GetClientType() {
 
 AudioParameters AudioManagerChromeOS::GetStreamParametersForSystem(
     int user_buffer_size,
-    bool has_keyboard,
     const AudioManagerChromeOS::SystemAudioProcessingInfo& system_apm_info) {
   AudioParameters params(
       AudioParameters::AUDIO_PCM_LOW_LATENCY, CHANNEL_LAYOUT_STEREO,
       kDefaultSampleRate, user_buffer_size,
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));
-  if (has_keyboard)
-    params.set_effects(AudioParameters::KEYBOARD_MIC);
 
   bool enforce_system_aec;
   bool enforce_system_ns;

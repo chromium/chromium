@@ -145,21 +145,8 @@ int GetCaptureBufferSize(bool need_webrtc_processing,
 absl::optional<media::AudioParameters> ComputeAudioCaptureParams(
     const media::AudioParameters& input_device_params,
     const media::AudioProcessingSettings& audio_processing_settings) {
-  // If KEYBOARD_MIC effect is set, change the layout to the corresponding
-  // layout that includes the keyboard mic.
-  media::ChannelLayout channel_layout = input_device_params.channel_layout();
-  if ((input_device_params.effects() & media::AudioParameters::KEYBOARD_MIC) &&
-      audio_processing_settings.transient_noise_suppression) {
-    if (channel_layout == media::CHANNEL_LAYOUT_STEREO) {
-      channel_layout = media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
-      DVLOG(1) << "Changed stereo layout to stereo + keyboard mic layout due "
-               << "to KEYBOARD_MIC effect.";
-    } else {
-      DVLOG(1) << "KEYBOARD_MIC effect ignored, not compatible with layout "
-               << channel_layout;
-    }
-  }
-
+  const media::ChannelLayout channel_layout =
+      input_device_params.channel_layout();
   DVLOG(1) << "Audio input hardware channel layout: " << channel_layout;
   UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout", channel_layout,
                             media::CHANNEL_LAYOUT_MAX + 1);
@@ -167,7 +154,6 @@ absl::optional<media::AudioParameters> ComputeAudioCaptureParams(
   // Verify that the reported input channel configuration is supported.
   if (channel_layout != media::CHANNEL_LAYOUT_MONO &&
       channel_layout != media::CHANNEL_LAYOUT_STEREO &&
-      channel_layout != media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC &&
       channel_layout != media::CHANNEL_LAYOUT_DISCRETE) {
     SendLogMessage(
         base::StringPrintf("EnsureSourceIsStarted() => (ERROR: "

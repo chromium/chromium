@@ -226,22 +226,11 @@ AudioProcessor::AudioProcessor(
 #endif  // BUILDFLAG(IS_CHROMECAST)
                                : input_format_.sample_rate();
 
-  // The output channels from the fifo is normally the same as input.
-  int fifo_output_channels = input_format_.channels();
+  const int fifo_output_channels = input_format_.channels();
 
   media::ChannelLayout output_channel_layout;
   if (!webrtc_audio_processing_) {
-    if (input_format_.channel_layout() ==
-        media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
-      // Special case for if we have a keyboard mic channel on the input and no
-      // audio processing is used. We will then have the fifo strip away that
-      // channel. So we use stereo as output layout, and also change the output
-      // channels for the fifo.
-      output_channel_layout = media::CHANNEL_LAYOUT_STEREO;
-      fifo_output_channels = ChannelLayoutToChannelCount(output_channel_layout);
-    } else {
-      output_channel_layout = input_format.channel_layout();
-    }
+    output_channel_layout = input_format.channel_layout();
   } else if (settings_.multi_channel_capture_processing) {
     // The number of output channels is equal to the number of input channels.
     // If the media stream audio processor receives stereo input it will output
@@ -254,13 +243,7 @@ AudioProcessor::AudioProcessor(
     // If a sink later requests stereo, APM will start performing true stereo
     // processing. There will be no need to change the output format.
 
-    // The keyboard mic channel shall not be part of the output.
-    if (input_format_.channel_layout() ==
-        media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
-      output_channel_layout = media::CHANNEL_LAYOUT_STEREO;
-    } else {
-      output_channel_layout = input_format.channel_layout();
-    }
+    output_channel_layout = input_format.channel_layout();
   } else {
     output_channel_layout = media::CHANNEL_LAYOUT_MONO;
   }

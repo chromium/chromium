@@ -25,7 +25,6 @@ class MockCrasUtil : public CrasUtil {
               CrasGetAudioDevices,
               (DeviceType type),
               (override));
-  MOCK_METHOD(bool, CrasHasKeyboardMic, (), (override));
   MOCK_METHOD(int, CrasGetAecSupported, (), (override));
   MOCK_METHOD(int, CrasGetAecGroupId, (), (override));
   MOCK_METHOD(int, CrasGetDefaultOutputBufferSize, (), (override));

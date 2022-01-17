@@ -41,9 +41,6 @@ class MEDIA_EXPORT CrasUtil {
   // Enumerates all devices of |type|.
   virtual std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
 
-  // Returns if there is a keyboard mic in CRAS.
-  virtual bool CrasHasKeyboardMic();
-
   // Returns if system AEC is supported in CRAS.
   virtual int CrasGetAecSupported();
 

@@ -154,7 +154,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     NO_EFFECTS = 0x0,
     ECHO_CANCELLER = 1 << 0,
     DUCKING = 1 << 1,  // Enables ducking if the OS supports it.
-    KEYBOARD_MIC = 1 << 2,
+    // KEYBOARD_MIC used to hold 1 << 2, but has been deprecated.
     HOTWORD = 1 << 3,
     NOISE_SUPPRESSION = 1 << 4,
     AUTOMATIC_GAIN_CONTROL = 1 << 5,

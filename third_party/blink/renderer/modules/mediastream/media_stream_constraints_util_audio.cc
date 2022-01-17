@@ -687,12 +687,7 @@ Vector<int> GetApmSupportedChannels(
   result.push_back(1);
   if (base::FeatureList::IsEnabled(
           features::kWebRtcEnableCaptureMultiChannelApm)) {
-    // The APM outputs two channels when the layout is
-    // CHANNEL_LAYOUT_STEREO_KEYBOARD_MIC.
-    int channels = (device_params.channel_layout() ==
-                    media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC)
-                       ? 2
-                       : device_params.channels();
+    const int channels = device_params.channels();
     if (channels > 1)
       result.push_back(channels);
   }

@@ -38,28 +38,25 @@ bool AgcActive(const AudioParameters& params) {
 class GetStreamParametersForSystem
     : public ::testing::Test,
       public ::testing::WithParamInterface<
-          std::tuple<bool, int, bool, int32_t, bool, bool>> {
+          std::tuple<int, bool, int32_t, bool, bool>> {
  protected:
   // Retrieve test parameter values.
   void GetTestParameters() {
-    has_keyboard_ = std::get<0>(GetParam());
-    user_buffer_size_ = std::get<1>(GetParam());
-    system_apm_info_.aec_supported = std::get<2>(GetParam());
-    system_apm_info_.aec_group_id = std::get<3>(GetParam());
-    system_apm_info_.ns_supported = std::get<4>(GetParam());
-    system_apm_info_.agc_supported = std::get<5>(GetParam());
+    user_buffer_size_ = std::get<0>(GetParam());
+    system_apm_info_.aec_supported = std::get<1>(GetParam());
+    system_apm_info_.aec_group_id = std::get<2>(GetParam());
+    system_apm_info_.ns_supported = std::get<3>(GetParam());
+    system_apm_info_.agc_supported = std::get<4>(GetParam());
   }
 
   AudioManagerChromeOS::SystemAudioProcessingInfo system_apm_info_;
-  size_t has_keyboard_;
   size_t user_buffer_size_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     AllInputParameters,
     GetStreamParametersForSystem,
-    ::testing::Combine(::testing::Values(false, true),
-                       ::testing::Values(512, kDefaultInputBufferSize),
+    ::testing::Combine(::testing::Values(512, kDefaultInputBufferSize),
                        ::testing::Values(false, true),
                        ::testing::Values(kNoAecFlaggedGroupId, kAecTestGroupId),
                        ::testing::Values(false, true),
@@ -68,7 +65,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(GetStreamParametersForSystem, DefaultBehavior) {
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_EQ(AecActive(params), system_apm_info_.aec_supported);
@@ -88,7 +85,7 @@ TEST_P(GetStreamParametersForSystem,
 
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_FALSE(AecActive(params));
@@ -102,7 +99,7 @@ TEST_P(GetStreamParametersForSystem, BehaviorWithCrOSEnforceSystemAecNsAgc) {
 
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_TRUE(AecActive(params));
@@ -128,7 +125,7 @@ TEST_P(GetStreamParametersForSystem,
 
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_TRUE(AecActive(params));
@@ -155,7 +152,7 @@ TEST_P(GetStreamParametersForSystem,
 
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_TRUE(AecActive(params));
@@ -175,7 +172,7 @@ TEST_P(GetStreamParametersForSystem, BehaviorWithCrOSEnforceSystemAecNs) {
 
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_TRUE(AecActive(params));
@@ -194,7 +191,7 @@ TEST_P(GetStreamParametersForSystem, BehaviorWithCrOSEnforceSystemAecAgc) {
 
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_TRUE(AecActive(params));
@@ -213,7 +210,7 @@ TEST_P(GetStreamParametersForSystem, BehaviorWithCrOSEnforceSystemAec) {
 
   GetTestParameters();
   AudioParameters params = AudioManagerChromeOS::GetStreamParametersForSystem(
-      user_buffer_size_, has_keyboard_, system_apm_info_);
+      user_buffer_size_, system_apm_info_);
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_TRUE(AecActive(params));

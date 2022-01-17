@@ -22,7 +22,7 @@ TEST(ChannelMixingMatrixTest, ConstructAllPossibleLayouts) {
          output_layout <= CHANNEL_LAYOUT_MAX;
          output_layout = static_cast<ChannelLayout>(output_layout + 1)) {
       // DISCRETE, BITSTREAM can't be tested here based on the current approach.
-      // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is not mixable.
+      // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is deprecated.
       // Stereo down mix should never be the output layout.
       if (input_layout == CHANNEL_LAYOUT_BITSTREAM ||
           input_layout == CHANNEL_LAYOUT_DISCRETE ||

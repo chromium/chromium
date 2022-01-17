@@ -28,7 +28,6 @@ constexpr char kMic[] = "MIC";
 constexpr char kInternalMic[] = "INTERNAL_MIC";
 constexpr char kFrontMic[] = "FRONT_MIC";
 constexpr char kRearMic[] = "REAR_MIC";
-constexpr char kKeyBoardMic[] = "KEYBOARD_MIC";
 constexpr char kBluetoothNBMic[] = "BLUETOOTH_NB_MIC";
 constexpr char kUSB[] = "USB";
 constexpr char kBluetooth[] = "BLUETOOTH";
@@ -211,35 +210,6 @@ std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
 
   CrasDisconnect(&client);
   return devices;
-}
-
-bool CrasUtil::CrasHasKeyboardMic() {
-  libcras_client* client = CrasConnect();
-  if (!client)
-    return false;
-
-  struct libcras_node_info** nodes;
-  size_t num_nodes;
-  int rc =
-      libcras_client_get_nodes(client, CRAS_STREAM_INPUT, &nodes, &num_nodes);
-  int ret = false;
-
-  if (rc < 0) {
-    LOG(ERROR) << "Failed to get devices: " << std::strerror(rc);
-    CrasDisconnect(&client);
-    return false;
-  }
-
-  for (size_t i = 0; i < num_nodes; i++) {
-    auto device = CrasDevice(nodes[i], DeviceType::kInput);
-    if (device.node_type == kKeyBoardMic)
-      ret = true;
-  }
-
-  libcras_node_info_array_destroy(nodes, num_nodes);
-
-  CrasDisconnect(&client);
-  return ret;
 }
 
 int CrasUtil::CrasGetAecSupported() {

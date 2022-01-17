@@ -203,14 +203,8 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters) {
     channels = std::min(parameters.channels(), 2);
   }
   const int rate = parameters.sample_rate();
-  const bool has_keyboard =
-      parameters.channel_layout() == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
 
-  // webrtc::StreamConfig requires that the keyboard mic channel is not included
-  // in the channel count. It may still be used.
-  if (has_keyboard)
-    channels -= 1;
-  return webrtc::StreamConfig(rate, channels, has_keyboard);
+  return webrtc::StreamConfig(rate, channels);
 }
 
 bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio) {

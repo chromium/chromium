@@ -97,19 +97,6 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     std::unique_ptr<media::AudioBus> data_bus =
         media::AudioBus::Create(params.channels(), params.frames_per_buffer());
 
-    // |data_bus_playout| is used if the capture channels include a keyboard
-    // channel. |data_bus_playout_to_use| points to the AudioBus to use, either
-    // |data_bus| or |data_bus_playout|.
-    std::unique_ptr<media::AudioBus> data_bus_playout;
-    media::AudioBus* data_bus_playout_to_use = data_bus.get();
-    const bool has_keyboard_mic = params.channel_layout() ==
-                                  media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
-    if (has_keyboard_mic) {
-      data_bus_playout = media::AudioBus::CreateWrapper(2);
-      data_bus_playout->set_frames(params.frames_per_buffer());
-      data_bus_playout_to_use = data_bus_playout.get();
-    }
-
     const base::TimeTicks input_capture_time = base::TimeTicks::Now();
     int num_preferred_channels = -1;
     for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
@@ -122,15 +109,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
           (*audio_processor.GetAudioProcessingModuleConfigForTesting())
               .echo_canceller.enabled;
       if (is_aec_enabled) {
-        if (has_keyboard_mic) {
-          for (int channel = 0; channel < data_bus_playout->channels();
-               ++channel) {
-            data_bus_playout->SetChannelData(
-                channel, const_cast<float*>(data_bus->channel(channel)));
-          }
-        }
-        audio_processor.OnPlayoutData(data_bus_playout_to_use,
-                                      params.sample_rate(),
+        audio_processor.OnPlayoutData(data_bus.get(), params.sample_rate(),
                                       base::Milliseconds(10));
       }
 
@@ -437,41 +416,6 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
     // |webrtc_audio_device| and clears its pointer to it.
     audio_processor->Stop();
   }
-}
-
-// Disabled on android clang builds due to crbug.com/470499
-#if defined(__clang__) && defined(OS_ANDROID)
-#define MAYBE_TestWithKeyboardMicChannel DISABLED_TestWithKeyboardMicChannel
-#else
-#define MAYBE_TestWithKeyboardMicChannel TestWithKeyboardMicChannel
-#endif
-TEST_P(MediaStreamAudioProcessorTestMultichannel,
-       MAYBE_TestWithKeyboardMicChannel) {
-  const bool use_multichannel_processing = GetParam();
-  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
-      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  blink::AudioProcessingProperties properties;
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC,
-                                48000, 480);
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          mock_capture_callback_.Get(),
-          properties.ToAudioProcessingSettings(use_multichannel_processing),
-          params, webrtc_audio_device));
-  EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
-
-  const int expected_output_channels =
-      use_multichannel_processing ? params_.channels() : 1;
-
-  ProcessDataAndVerifyFormat(*audio_processor, mock_capture_callback_,
-                             media::kAudioProcessingSampleRateHz,
-                             expected_output_channels,
-                             media::kAudioProcessingSampleRateHz / 100);
-
-  // Stop |audio_processor| so that it removes itself from
-  // |webrtc_audio_device| and clears its pointer to it.
-  audio_processor->Stop();
 }
 
 // Ensure that discrete channel layouts do not crash with audio processing
