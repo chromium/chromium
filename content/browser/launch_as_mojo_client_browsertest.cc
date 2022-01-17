@@ -77,7 +77,9 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line.AppendSwitchASCII(switches::kUseGL,
-                                   gl::kGLImplementationSwiftShaderName);
+                                   gl::kGLImplementationANGLEName);
+    command_line.AppendSwitchASCII(switches::kUseANGLE,
+                                   gl::kANGLEImplementationSwiftShaderName);
 #endif
     return command_line;
   }
