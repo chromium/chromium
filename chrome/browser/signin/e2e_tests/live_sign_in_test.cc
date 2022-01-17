@@ -242,15 +242,16 @@ class LiveSignInTest : public signin::test::LiveTest {
 
   void SignInFromWeb(const TestAccount& test_account,
                      int previously_signed_in_accounts) {
-    AddTabAtIndex(0, GaiaUrls::GetInstance()->add_account_url(),
-                  ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, GaiaUrls::GetInstance()->add_account_url(),
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     SignInFromCurrentPage(test_account, previously_signed_in_accounts);
   }
 
   void SignInFromSettings(const TestAccount& test_account,
                           int previously_signed_in_accounts) {
     GURL settings_url("chrome://settings");
-    AddTabAtIndex(0, settings_url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     auto* settings_tab = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::ExecuteScript(
         settings_tab,
@@ -282,14 +283,15 @@ class LiveSignInTest : public signin::test::LiveTest {
 
   void SignOutFromWeb() {
     SignInTestObserver observer(identity_manager(), account_reconcilor());
-    AddTabAtIndex(0, GaiaUrls::GetInstance()->service_logout_url(),
-                  ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, GaiaUrls::GetInstance()->service_logout_url(),
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     observer.WaitForAccountChanges(0, PrimarySyncAccountWait::kNotWait);
   }
 
   void TurnOffSync() {
     GURL settings_url("chrome://settings");
-    AddTabAtIndex(0, settings_url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     SignInTestObserver observer(identity_manager(), account_reconcilor());
     auto* settings_tab = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::ExecuteScript(
@@ -499,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
 
   SignInTestObserver observer(identity_manager(), account_reconcilor());
   GURL settings_url("chrome://settings");
-  AddTabAtIndex(0, settings_url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
   auto* settings_tab = browser()->tab_strip_model()->GetActiveWebContents();
   std::string start_syncing_script = base::StringPrintf(
       "settings.SyncBrowserProxyImpl.getInstance()."
