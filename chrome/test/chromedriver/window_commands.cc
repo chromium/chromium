@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1914,29 +1915,29 @@ Status ExecuteReleaseActions(Session* session,
                              const base::DictionaryValue& params,
                              std::unique_ptr<base::Value>* value,
                              Timeout* timeout) {
-  for (auto it = session->input_cancel_list.rbegin();
-       it != session->input_cancel_list.rend(); ++it) {
-    if (it->key_event) {
+  for (const InputCancelListEntry& entry :
+       base::Reversed(session->input_cancel_list)) {
+    if (entry.key_event) {
       base::DictionaryValue* pressed;
-      it->input_state->GetDictionary("pressed", &pressed);
-      if (!pressed->FindKey(it->key_event->key))
+      entry.input_state->GetDictionary("pressed", &pressed);
+      if (!pressed->FindKey(entry.key_event->key))
         continue;
-      web_view->DispatchKeyEvents({*it->key_event}, false);
-      pressed->RemoveKey(it->key_event->key);
-    } else if (it->mouse_event) {
-      int pressed = it->input_state->FindKey("pressed")->GetInt();
-      int button_mask = 1 << it->mouse_event->button;
+      web_view->DispatchKeyEvents({*entry.key_event}, false);
+      pressed->RemoveKey(entry.key_event->key);
+    } else if (entry.mouse_event) {
+      int pressed = entry.input_state->FindKey("pressed")->GetInt();
+      int button_mask = 1 << entry.mouse_event->button;
       if ((pressed & button_mask) == 0)
         continue;
-      web_view->DispatchMouseEvents({*it->mouse_event},
+      web_view->DispatchMouseEvents({*entry.mouse_event},
                                     session->GetCurrentFrameId(), false);
-      it->input_state->SetInteger("pressed", pressed & ~button_mask);
-    } else if (it->touch_event) {
-      int pressed = it->input_state->FindKey("pressed")->GetInt();
+      entry.input_state->SetInteger("pressed", pressed & ~button_mask);
+    } else if (entry.touch_event) {
+      int pressed = entry.input_state->FindKey("pressed")->GetInt();
       if (pressed == 0)
         continue;
-      web_view->DispatchTouchEvents({*it->touch_event}, false);
-      it->input_state->SetInteger("pressed", 0);
+      web_view->DispatchTouchEvents({*entry.touch_event}, false);
+      entry.input_state->SetInteger("pressed", 0);
     }
   }
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "apps/launcher.h"
+#include "base/containers/adapters.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -106,9 +107,9 @@ bool ExtensionAppShimManagerDelegate::ShowAppWindows(
     const web_app::AppId& app_id) {
   AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(app_id);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it) {
-    if (*it)
-      (*it)->GetBaseWindow()->Show();
+  for (extensions::AppWindow* window : base::Reversed(windows)) {
+    if (window)
+      window->GetBaseWindow()->Show();
   }
   return !windows.empty();
 }

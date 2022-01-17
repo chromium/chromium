@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
@@ -655,10 +656,8 @@ void LocationBarView::Layout() {
   };
 
   add_trailing_decoration(page_action_icon_container_);
-  for (ContentSettingViews::const_reverse_iterator i(
-           content_setting_views_.rbegin());
-       i != content_setting_views_.rend(); ++i) {
-    add_trailing_decoration(*i);
+  for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
+    add_trailing_decoration(view);
   }
   add_trailing_decoration(clear_all_button_);
 

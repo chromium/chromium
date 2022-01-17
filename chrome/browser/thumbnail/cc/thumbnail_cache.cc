@@ -11,6 +11,7 @@
 #include "base/android/application_status_listener.h"
 #include "base/android/path_utils.h"
 #include "base/big_endian.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
@@ -513,10 +514,9 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
 
   if (!found_key_to_remove) {
     // 2. Find the least important id we can remove.
-    for (TabIdList::reverse_iterator riter = visible_ids_.rbegin();
-         riter != visible_ids_.rend(); riter++) {
-      if (cache_.Get(*riter)) {
-        key_to_remove = *riter;
+    for (const TabId& id : base::Reversed(visible_ids_)) {
+      if (cache_.Get(id)) {
+        key_to_remove = id;
         found_key_to_remove = true;
         break;
       }

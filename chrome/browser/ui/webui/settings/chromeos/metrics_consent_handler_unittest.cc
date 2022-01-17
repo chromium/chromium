@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "base/containers/adapters.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -143,9 +144,8 @@ class MetricsConsentHandlerTest : public testing::Test {
 
   bool GetMetricsConsentStateMessage(std::string* pref_name,
                                      bool* is_configurable) {
-    for (auto it = web_ui_->call_data().rbegin();
-         it != web_ui_->call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_->call_data())) {
       const std::string* name = data->arg1()->GetIfString();
 
       if (data->function_name() != "cr.webUIResponse" || !name ||
@@ -169,9 +169,8 @@ class MetricsConsentHandlerTest : public testing::Test {
   }
 
   bool UpdateMetricsConsentMessage(bool* current_consent) {
-    for (auto it = web_ui_->call_data().rbegin();
-         it != web_ui_->call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_->call_data())) {
       const std::string* name = data->arg1()->GetIfString();
 
       if (data->function_name() != "cr.webUIResponse" || !name ||

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -583,10 +584,7 @@ PrefetchProxyTabHelper::ComputeAfterSRPMetricsBeforeCommit(
   DCHECK(!handle->GetRedirectChain().empty());
   absl::optional<PrefetchProxyPrefetchStatus> status;
   absl::optional<size_t> prediction_position;
-  for (auto back_iter = handle->GetRedirectChain().rbegin();
-       back_iter != handle->GetRedirectChain().rend(); ++back_iter) {
-    GURL chain_url = *back_iter;
-
+  for (const GURL& chain_url : base::Reversed(handle->GetRedirectChain())) {
     auto container_iter = page_->prefetch_containers_.find(chain_url);
     if (!status && container_iter != page_->prefetch_containers_.end() &&
         container_iter->second->HasPrefetchStatus()) {

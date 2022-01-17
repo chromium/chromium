@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/adapters.h"
 #include "chrome/browser/ash/input_method/mock_input_method_engine.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -80,9 +81,8 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   bool WasWebUIListenerCalledWithStringArgument(
       const std::string& expected_listener,
       const std::string& expected_argument) {
-    for (auto it = web_ui_.call_data().rbegin();
-         it != web_ui_.call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
       std::string listener = data->arg1()->GetString();
       if (!data->arg2()->is_string()) {
         // Only look for listeners with a single string argument. Continue
@@ -103,9 +103,8 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
 
   bool GetWebUIListenerArgumentListValue(const std::string& expected_listener,
                                          base::Value::ConstListView* argument) {
-    for (auto it = web_ui_.call_data().rbegin();
-         it != web_ui_.call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
       std::string listener;
       data->arg1()->GetAsString(&listener);
       if (data->function_name() == "cr.webUIListenerCallback" &&

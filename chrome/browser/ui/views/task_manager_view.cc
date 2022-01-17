@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -199,9 +200,8 @@ std::string TaskManagerView::GetWindowName() const {
 bool TaskManagerView::Accept() {
   using SelectedIndices = ui::ListSelectionModel::SelectedIndices;
   SelectedIndices selection(tab_table_->selection_model().selected_indices());
-  for (SelectedIndices::const_reverse_iterator i = selection.rbegin();
-       i != selection.rend(); ++i) {
-    table_model_->KillTask(*i);
+  for (int index : base::Reversed(selection)) {
+    table_model_->KillTask(index);
   }
 
   // Just kill the process, don't close the task manager dialog.

@@ -4,6 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 
+#include "base/containers/adapters.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -534,20 +535,20 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
 
 - (void)quitCurrentPlatformApp {
   auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
-    (*it)->GetBaseWindow()->Close();
+  for (extensions::AppWindow* window : base::Reversed(windows))
+    window->GetBaseWindow()->Close();
 }
 
 - (void)hideCurrentPlatformApp {
   auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
-    (*it)->GetBaseWindow()->Hide();
+  for (extensions::AppWindow* window : base::Reversed(windows))
+    window->GetBaseWindow()->Hide();
 }
 
 - (void)focusCurrentPlatformApp {
   auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
-    (*it)->GetBaseWindow()->Show();
+  for (extensions::AppWindow* window : base::Reversed(windows))
+    window->GetBaseWindow()->Show();
 }
 
 @end

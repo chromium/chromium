@@ -13,6 +13,7 @@
 #include "ash/components/drivefs/drivefs_bootstrap.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
@@ -192,9 +193,8 @@ base::FilePath GetFullPath(internal::ResourceMetadataStorage* metadata_storage,
     return {};
   }
   base::FilePath path("/");
-  for (auto it = path_components.crbegin(); it != path_components.crend();
-       ++it) {
-    path = path.Append(*it);
+  for (const std::string& component : base::Reversed(path_components)) {
+    path = path.Append(component);
   }
   return path;
 }

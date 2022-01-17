@@ -19,6 +19,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram.h"
@@ -1252,9 +1253,9 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     event_status.item_count = status.sources.size();
 
     // Get the last error occurrence in the `sources`.
-    for (auto it = status.sources.rbegin(); it != status.sources.rend(); it++) {
-      if (it->error && it->error.value() != base::File::FILE_OK) {
-        event_status.error_name = FileErrorToErrorName(it->error.value());
+    for (const io_task::EntryStatus& source : base::Reversed(status.sources)) {
+      if (source.error && source.error.value() != base::File::FILE_OK) {
+        event_status.error_name = FileErrorToErrorName(source.error.value());
       }
     }
 

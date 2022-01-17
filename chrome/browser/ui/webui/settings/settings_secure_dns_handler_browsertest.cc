@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 
+#include "base/containers/adapters.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -136,9 +137,8 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
       std::string* secure_dns_mode,
       std::vector<std::string>* secure_dns_templates,
       int* management_mode) {
-    for (auto it = web_ui_.call_data().rbegin();
-         it != web_ui_.call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
       if (data->function_name() != "cr.webUIListenerCallback" ||
           !data->arg1()->is_string() ||
           data->arg1()->GetString() != "secure-dns-setting-changed") {

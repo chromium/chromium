@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -188,10 +189,9 @@ void TestingOmniboxView::CheckUpdatePopupNotCalled() {
 absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     const gfx::Range& range) {
   // Iterate backwards to get the most recently applied color for |range|.
-  for (auto range_color = range_colors_.rbegin();
-       range_color != range_colors_.rend(); range_color++) {
-    if (range == range_color->second)
-      return range_color->first;
+  for (const auto& [color, other_range] : base::Reversed(range_colors_)) {
+    if (range == other_range)
+      return color;
   }
   return absl::nullopt;
 }
@@ -199,11 +199,10 @@ absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
 absl::optional<std::pair<gfx::TextStyle, bool>>
 TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
   // Iterate backwards to get the most recently applied style for |range|.
-  for (auto range_style = range_styles_.rbegin();
-       range_style != range_styles_.rend(); range_style++) {
-    if (range == std::get<gfx::Range>(*range_style))
-      return std::make_pair(std::get<gfx::TextStyle>(*range_style),
-                            std::get<bool>(*range_style));
+  for (const auto& [style, value, other_range] :
+       base::Reversed(range_styles_)) {
+    if (range == other_range)
+      return std::make_pair(style, value);
   }
   return absl::nullopt;
 }

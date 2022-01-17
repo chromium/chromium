@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -143,11 +144,12 @@ void ChromeExtensionMessageFilter::OnGetExtMessageBundle(
   // Iterate through the imports in reverse.  This will allow later imported
   // modules to override earlier imported modules, as the list order is
   // maintained from the definition in manifest.json of the imports.
-  for (auto it = imports.rbegin(); it != imports.rend(); ++it) {
+  for (const extensions::SharedModuleInfo::ImportInfo& import :
+       base::Reversed(imports)) {
     const extensions::Extension* imported_extension =
-        extension_set.GetByID(it->extension_id);
+        extension_set.GetByID(import.extension_id);
     if (!imported_extension) {
-      NOTREACHED() << "Missing shared module " << it->extension_id;
+      NOTREACHED() << "Missing shared module " << import.extension_id;
       continue;
     }
     paths_to_load.push_back(imported_extension->path());

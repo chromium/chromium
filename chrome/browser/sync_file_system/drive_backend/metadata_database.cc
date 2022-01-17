@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -74,9 +75,9 @@ base::FilePath ReverseConcatPathComponents(
 
   base::FilePath::StringType result;
   result.reserve(total_size);
-  for (auto itr = components.rbegin(); itr != components.rend(); ++itr) {
+  for (const base::FilePath& component : base::Reversed(components)) {
     result.append(1, base::FilePath::kSeparators[0]);
-    result.append(itr->value());
+    result.append(component.value());
   }
 
   return base::FilePath(result).NormalizePathSeparators();
@@ -337,11 +338,11 @@ void RemoveAllDescendantTrackers(int64_t root_tracker_id,
 
   // Remove trackers in the reversed order.
   std::unordered_set<std::string> affected_file_ids;
-  for (auto itr = to_be_removed.rbegin(); itr != to_be_removed.rend(); ++itr) {
+  for (int64_t tracker_id : base::Reversed(to_be_removed)) {
     FileTracker tracker;
-    index->GetFileTracker(*itr, &tracker);
+    index->GetFileTracker(tracker_id, &tracker);
     affected_file_ids.insert(tracker.file_id());
-    index->RemoveFileTracker(*itr);
+    index->RemoveFileTracker(tracker_id);
   }
 
   for (auto itr = affected_file_ids.begin(); itr != affected_file_ids.end();

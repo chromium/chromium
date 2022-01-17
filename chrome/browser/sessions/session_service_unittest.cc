@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -87,9 +88,9 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   absl::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) {
     auto events = GetSessionServiceEvents(browser()->profile());
-    for (auto i = events.rbegin(); i != events.rend(); ++i) {
-      if (i->type == type)
-        return *i;
+    for (const SessionServiceEvent& event : base::Reversed(events)) {
+      if (event.type == type)
+        return event;
     }
     return absl::nullopt;
   }

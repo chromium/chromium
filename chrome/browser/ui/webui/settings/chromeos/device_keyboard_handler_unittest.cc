@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/observer_list.h"
 #include "content/public/test/test_web_ui.h"
 #include "device/udev_linux/fake_udev_loader.h"
@@ -55,9 +56,8 @@ class KeyboardHandlerTest : public testing::Test {
       bool* has_apple_command_key_out,
       bool* has_internal_search_out,
       bool* has_assistant_key_out) {
-    for (auto it = web_ui_.call_data().rbegin();
-         it != web_ui_.call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
       const std::string* name = data->arg1()->GetIfString();
       if (data->function_name() != "cr.webUIListenerCallback" || !name ||
           *name != KeyboardHandler::kShowKeysChangedName) {

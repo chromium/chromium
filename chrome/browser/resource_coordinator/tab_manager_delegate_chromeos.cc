@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -548,8 +549,8 @@ void TabManagerDelegate::LowMemoryKillImpl(
 
   MEMORY_LOG(ERROR) << "List of low memory kill candidates "
                        "(sorted from low priority to high priority):";
-  for (auto it = candidates.rbegin(); it != candidates.rend(); ++it) {
-    MEMORY_LOG(ERROR) << *it;
+  for (const Candidate& candidate : base::Reversed(candidates)) {
+    MEMORY_LOG(ERROR) << candidate;
   }
 
   // Kill processes until the estimated amount of freed memory is sufficient to
@@ -558,48 +559,47 @@ void TabManagerDelegate::LowMemoryKillImpl(
   // backwards.
   const TimeTicks now = TimeTicks::Now();
   base::TimeTicks first_kill_time;
-  for (auto it = candidates.rbegin(); it != candidates.rend(); ++it) {
+  for (Candidate& candidate : base::Reversed(candidates)) {
     MEMORY_LOG(ERROR) << "Target memory to free: " << target_memory_to_free_kb
                       << " KB";
     if (target_memory_to_free_kb <= 0)
       break;
 
-    const ProcessType process_type = it->process_type();
-
     // Never kill selected tab and foreground app regardless of whether they're
     // in the active window. Since the user experience would be bad.
-    if (it->app()) {
-      if (process_type == ProcessType::FOCUSED_APP) {
+    if (candidate.app()) {
+      if (candidate.process_type() == ProcessType::FOCUSED_APP) {
         MEMORY_LOG(ERROR) << "Skipped killing focused app "
-                          << it->app()->process_name();
+                          << candidate.app()->process_name();
         continue;
       }
-      if (IsRecentlyKilledArcProcess(it->app()->process_name(), now)) {
-        MEMORY_LOG(ERROR) << "Avoided killing " << it->app()->process_name()
-                          << " too often";
+      if (IsRecentlyKilledArcProcess(candidate.app()->process_name(), now)) {
+        MEMORY_LOG(ERROR) << "Avoided killing "
+                          << candidate.app()->process_name() << " too often";
         continue;
       }
       int estimated_memory_freed_kb =
-          mem_stat_->EstimatedMemoryFreedKB(it->app()->pid());
-      if (KillArcProcess(it->app()->nspid())) {
+          mem_stat_->EstimatedMemoryFreedKB(candidate.app()->pid());
+      if (KillArcProcess(candidate.app()->nspid())) {
         if (first_kill_time.is_null()) {
           first_kill_time = base::TimeTicks::Now();
         }
-        recently_killed_arc_processes_[it->app()->process_name()] = now;
+        recently_killed_arc_processes_[candidate.app()->process_name()] = now;
         target_memory_to_free_kb -= estimated_memory_freed_kb;
         memory::MemoryKillsMonitor::LogLowMemoryKill("APP",
                                                      estimated_memory_freed_kb);
-        MEMORY_LOG(ERROR) << "Killed app " << it->app()->process_name() << " ("
-                          << it->app()->pid() << ")"
+        MEMORY_LOG(ERROR) << "Killed app " << candidate.app()->process_name()
+                          << " (" << candidate.app()->pid() << ")"
                           << ", estimated " << estimated_memory_freed_kb
                           << " KB freed";
       } else {
-        MEMORY_LOG(ERROR) << "Failed to kill " << it->app()->process_name();
+        MEMORY_LOG(ERROR) << "Failed to kill "
+                          << candidate.app()->process_name();
       }
-    } else if (it->lifecycle_unit()) {
-      if (process_type == ProcessType::FOCUSED_TAB) {
+    } else if (candidate.lifecycle_unit()) {
+      if (candidate.process_type() == ProcessType::FOCUSED_TAB) {
         MEMORY_LOG(ERROR) << "Skipped killing focused tab (id: "
-                          << it->lifecycle_unit()->GetID() << ")";
+                          << candidate.lifecycle_unit()->GetID() << ")";
         continue;
       }
 
@@ -607,15 +607,16 @@ void TabManagerDelegate::LowMemoryKillImpl(
       // process, while the calculation counts memory used by the whole process.
       // So |estimated_memory_freed_kb| is an over-estimation.
       int estimated_memory_freed_kb =
-          it->lifecycle_unit()->GetEstimatedMemoryFreedOnDiscardKB();
-      if (KillTab(it->lifecycle_unit(), reason)) {
+          candidate.lifecycle_unit()->GetEstimatedMemoryFreedOnDiscardKB();
+      if (KillTab(candidate.lifecycle_unit(), reason)) {
         if (first_kill_time.is_null()) {
           first_kill_time = base::TimeTicks::Now();
         }
         target_memory_to_free_kb -= estimated_memory_freed_kb;
         memory::MemoryKillsMonitor::LogLowMemoryKill("TAB",
                                                      estimated_memory_freed_kb);
-        MEMORY_LOG(ERROR) << "Killed tab (id: " << it->lifecycle_unit()->GetID()
+        MEMORY_LOG(ERROR) << "Killed tab (id: "
+                          << candidate.lifecycle_unit()->GetID()
                           << "), estimated " << estimated_memory_freed_kb
                           << " KB freed";
       }

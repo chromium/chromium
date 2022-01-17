@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/adapters.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -108,9 +109,8 @@ class PowerHandlerTest : public InProcessBrowserTest {
   // Returns a JSON representation of the contents of the last message sent to
   // WebUI about settings being changed.
   [[nodiscard]] std::string GetLastSettingsChangedMessage() {
-    for (auto it = web_ui_.call_data().rbegin();
-         it != web_ui_.call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
       const std::string* name = data->arg1()->GetIfString();
       const base::DictionaryValue* dict = nullptr;
       if (data->function_name() != "cr.webUIListenerCallback" || !name ||

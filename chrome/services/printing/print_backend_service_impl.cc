@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -636,10 +637,10 @@ PrintBackendServiceImpl::GetDocumentHelper(int document_cookie) {
   // Most new calls are expected to be relevant to the most recently added
   // document, which would be at the end of the list.  So search the list
   // backwards to hopefully reduce the time to find the document.
-  for (auto it = documents_.rbegin(); it != documents_.rend(); ++it) {
-    DocumentHelper* helper = it->get();
+  for (const std::unique_ptr<DocumentHelper>& helper :
+       base::Reversed(documents_)) {
     if (helper->document_cookie() == document_cookie) {
-      return helper;
+      return helper.get();
     }
   }
   return nullptr;

@@ -2584,16 +2584,15 @@ void TabStrip::SetTabSlotVisibility() {
   bool last_tab_visible = false;
   absl::optional<tab_groups::TabGroupId> last_tab_group = absl::nullopt;
   std::vector<Tab*> tabs = layout_helper_->GetTabs();
-  for (std::vector<Tab*>::reverse_iterator tab = tabs.rbegin();
-       tab != tabs.rend(); ++tab) {
-    absl::optional<tab_groups::TabGroupId> current_group = (*tab)->group();
+  for (Tab* tab : base::Reversed(tabs)) {
+    absl::optional<tab_groups::TabGroupId> current_group = tab->group();
     if (current_group != last_tab_group && last_tab_group.has_value()) {
       TabGroupViews* group_view = group_views_.at(last_tab_group.value()).get();
       group_view->header()->SetVisible(last_tab_visible);
       group_view->underline()->SetVisible(last_tab_visible);
     }
-    last_tab_visible = ShouldTabBeVisible(*tab);
-    last_tab_group = (*tab)->closing() ? absl::nullopt : current_group;
+    last_tab_visible = ShouldTabBeVisible(tab);
+    last_tab_group = tab->closing() ? absl::nullopt : current_group;
 
     // Collapsed tabs disappear once they've reached their minimum size. This
     // is different than very small non-collapsed tabs, because in that case
@@ -2601,8 +2600,8 @@ void TabStrip::SetTabSlotVisibility() {
     bool is_collapsed =
         (current_group.has_value() &&
          controller()->IsGroupCollapsed(current_group.value()) &&
-         (*tab)->bounds().width() <= TabStyle::GetTabOverlap());
-    (*tab)->SetVisible(is_collapsed ? false : last_tab_visible);
+         tab->bounds().width() <= TabStyle::GetTabOverlap());
+    tab->SetVisible(is_collapsed ? false : last_tab_visible);
   }
 }
 

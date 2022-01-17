@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "chrome/grit/generated_resources.h"
 #include "media/base/video_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,20 +62,18 @@ void DesktopMediaListAsh::EnumerateWindowsForRoot(
   // The |container| has all the top-level windows in reverse order, e.g. the
   // most top-level window is at the end. So iterate children reversely to make
   // sure |sources| is in the expected order.
-  for (aura::Window::Windows::const_reverse_iterator it =
-           container->children().rbegin();
-       it != container->children().rend(); ++it) {
-    if (!(*it)->IsVisible() || !(*it)->CanFocus())
+  for (aura::Window* window : base::Reversed(container->children())) {
+    if (!window->IsVisible() || !window->CanFocus())
       continue;
     content::DesktopMediaID id = content::DesktopMediaID::RegisterNativeWindow(
-        content::DesktopMediaID::TYPE_WINDOW, *it);
+        content::DesktopMediaID::TYPE_WINDOW, window);
     if (id.window_id == view_dialog_id_.window_id)
       continue;
-    SourceDescription window_source(id, (*it)->GetTitle());
+    SourceDescription window_source(id, window->GetTitle());
     sources->push_back(window_source);
 
     if (update_thumnails)
-      CaptureThumbnail(window_source.id, *it);
+      CaptureThumbnail(window_source.id, window);
   }
 }
 

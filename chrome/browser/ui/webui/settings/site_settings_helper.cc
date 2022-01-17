@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -672,10 +673,9 @@ void GetExceptionsForContentType(
   // the highest (see operator< in ContentSettingsPattern), so traverse it in
   // reverse to show the patterns with the highest precedence (the more specific
   // ones) on the top.
-  for (auto i = all_patterns_settings.rbegin();
-       i != all_patterns_settings.rend(); ++i) {
-    const ContentSettingsPattern& primary_pattern = i->first.first;
-    const OnePatternSettings& one_settings = i->second;
+  for (const auto& [primary_pattern_and_source, one_settings] :
+       base::Reversed(all_patterns_settings)) {
+    const auto& [primary_pattern, source] = primary_pattern_and_source;
     const std::string display_name =
         GetDisplayNameForPattern(primary_pattern, extension_registry);
 
@@ -686,7 +686,6 @@ void GetExceptionsForContentType(
     if (parent == one_settings.end())
       parent = one_settings.find(ContentSettingsPattern::Wildcard());
 
-    const std::string& source = i->first.second;
     auto& this_provider_exceptions = all_provider_exceptions
         [HostContentSettingsMap::GetProviderTypeFromSource(source)];
 

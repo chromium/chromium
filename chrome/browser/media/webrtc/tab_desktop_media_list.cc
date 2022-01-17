@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/hash/hash.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
@@ -229,8 +230,8 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
   favicon_hashes_ = new_favicon_hashes;
 
   // Sort tab sources by time. Most recent one first. Then update sources list.
-  for (auto it = tab_map.rbegin(); it != tab_map.rend(); ++it)
-    sources.push_back(it->second);
+  for (const auto& [time, tab_source] : base::Reversed(tab_map))
+    sources.push_back(tab_source);
 
   UpdateSourcesList(sources);
 

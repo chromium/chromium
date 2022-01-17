@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
@@ -1638,10 +1639,9 @@ void TabDragController::RestoreInitialSelection() {
   // the tabs from initial_selection_model_ as it was created with the tabs
   // still there.
   ui::ListSelectionModel selection_model = initial_selection_model_;
-  for (DragData::const_reverse_iterator i(drag_data_.rbegin());
-       i != drag_data_.rend(); ++i) {
-    if (i->source_model_index != TabStripModel::kNoTab)
-      selection_model.DecrementFrom(i->source_model_index);
+  for (const TabDragData& data : base::Reversed(drag_data_)) {
+    if (data.source_model_index != TabStripModel::kNoTab)
+      selection_model.DecrementFrom(data.source_model_index);
   }
   // We may have cleared out the selection model. Only reset it if it
   // contains something.
@@ -1846,15 +1846,14 @@ void TabDragController::BringWindowUnderPointToFront(
     // Find a topmost non-popup window and stack the recipient browser above
     // it in order to avoid stacking the browser window on top of the phantom
     // drag widget created by DragWindowController in a second display.
-    for (aura::Window::Windows::const_reverse_iterator it =
-             browser_window->parent()->children().rbegin();
-         it != browser_window->parent()->children().rend(); ++it) {
+    for (aura::Window* window :
+         base::Reversed(browser_window->parent()->children())) {
       // If the iteration reached the recipient browser window then it is
       // already topmost and it is safe to return with no stacking change.
-      if (*it == browser_window)
+      if (window == browser_window)
         return;
-      if ((*it)->GetType() != aura::client::WINDOW_TYPE_POPUP) {
-        widget_window->StackAbove(*it);
+      if (window->GetType() != aura::client::WINDOW_TYPE_POPUP) {
+        widget_window->StackAbove(window);
         break;
       }
     }

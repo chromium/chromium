@@ -22,6 +22,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -1073,20 +1074,21 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   user_manager::User* const active_user = GetActiveUser();
   const bool is_device_local_account_session =
       active_user && active_user->IsDeviceLocalAccount();
-  for (auto it = device_local_accounts.rbegin();
-       it != device_local_accounts.rend(); ++it) {
+  for (const policy::DeviceLocalAccount& account :
+       base::Reversed(device_local_accounts)) {
     if (is_device_local_account_session &&
-        AccountId::FromUserEmail(it->user_id) == active_user->GetAccountId()) {
+        AccountId::FromUserEmail(account.user_id) ==
+            active_user->GetAccountId()) {
       users_.insert(users_.begin(), active_user);
     } else {
       users_.insert(users_.begin(),
                     CreateUserFromDeviceLocalAccount(
-                        AccountId::FromUserEmail(it->user_id), it->type)
+                        AccountId::FromUserEmail(account.user_id), account.type)
                         .release());
     }
-    if (it->type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
-        it->type == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
-      UpdatePublicAccountDisplayName(it->user_id);
+    if (account.type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
+        account.type == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
+      UpdatePublicAccountDisplayName(account.user_id);
     }
   }
 

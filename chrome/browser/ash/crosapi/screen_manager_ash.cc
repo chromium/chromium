@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window_observer.h"
@@ -174,10 +175,7 @@ class ScreenManagerAsh::WindowCapturerImpl : public SnapshotCapturerBase {
     // The |container| has all the top-level windows in reverse order, e.g.
     // the most top-level window is at the end. So iterate children reversely
     // to make sure |windows| is in the expected order.
-    for (auto it = container->children().rbegin();
-         it != container->children().rend(); ++it) {
-      aura::Window* window = *it;
-
+    for (aura::Window* window : base::Reversed(container->children())) {
       // TODO(https://crbug.com/1094460): The window is currently not visible
       // or focusable. If the window later becomes invisible or unfocusable,
       // we don't bother removing the window from the list. We should handle
