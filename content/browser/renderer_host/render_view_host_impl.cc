@@ -345,6 +345,19 @@ RenderViewHostImpl::RenderViewHostImpl(
 RenderViewHostImpl::~RenderViewHostImpl() {
   TRACE_EVENT_INSTANT("navigation", "~RenderViewHostImpl()",
                       ChromeTrackEvent::kRenderViewHost, *this);
+  // TODO(https://crbug.com/1234634): Remove this.
+  // If the view is destroyed while we were are still waiting for an ack,
+  // then log how long we have been waiting.
+  if (page_lifecycle_state_manager_->persisted_pageshow_timestamp_bug_1234634()
+          .has_value()) {
+    base::TimeDelta delta =
+        base::Time::Now() - page_lifecycle_state_manager_
+                                ->persisted_pageshow_timestamp_bug_1234634()
+                                .value();
+    base::UmaHistogramMediumTimes("Event.PageShow.Persisted.ViewDestroyed.Time",
+                                  delta);
+  }
+
   PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())->Erase(this);
 
   // Destroy the RenderWidgetHost.

@@ -1623,18 +1623,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.PageShow.Persisted.Termination.Normal.Time" units="ms"
-    expires_after="2022-10-01">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>fergal@chromium.org</owner>
-  <summary>
-    When we send a PageLifecycleState update that should trigger a pageshow
-    event with its persisted flag set and then the renderer exits normally, this
-    records the time interval between sending the update and exiting. This is
-    temporary debugging for https://crbug.com/1234634.
-  </summary>
-</histogram>
-
 <histogram name="Event.PageShow.Persisted.Termination.Status" units="status"
     expires_after="2022-10-01">
   <owner>hajimehoshi@chromium.org</owner>
@@ -1649,16 +1637,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.PageShow.Persisted.Termination.Unexpected.Time"
-    units="ms" expires_after="2022-10-01">
+<histogram name="Event.PageShow.Persisted.{Event}.Time" units="ms"
+    expires_after="2022-10-01">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
     When we send a PageLifecycleState update that should trigger a pageshow
-    event with its persisted flag set and then the renderer exits unexpectedly,
-    this records the time interval between sending the update and exiting. This
-    is temporary debugging for https://crbug.com/1234634.
+    event with its persisted flag set and have not yet received an ack, we log
+    how long it takes for certain events to occur. This is temporary debugging
+    for https://crbug.com/1234634.
   </summary>
+  <token key="Event">
+    <variant name="Termination.Normal" summary="renderer exited normally"/>
+    <variant name="Termination.Unexpected"
+        summary="renderer exited unexpectedly"/>
+    <variant name="ViewDestroyed" summary="renderer view host was destroyed"/>
+  </token>
 </histogram>
 
 <histogram name="Event.PassiveListeners" enum="EventResultType"
