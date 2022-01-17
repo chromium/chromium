@@ -47,7 +47,7 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
       size_t num_buffers,
       const PortConfig& input_config,
       const PortConfig& output_config,
-      OutputMode output_mode,
+      const std::vector<OutputMode>& preferred_output_modes,
       VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);

@@ -65,7 +65,7 @@ std::unique_ptr<ImageProcessor> ImageProcessor::Create(
     CreateBackendCB create_backend_cb,
     const PortConfig& input_config,
     const PortConfig& output_config,
-    OutputMode output_mode,
+    const std::vector<OutputMode>& preferred_output_modes,
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
@@ -75,7 +75,7 @@ std::unique_ptr<ImageProcessor> ImageProcessor::Create(
       base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
       client_task_runner, FROM_HERE, std::move(error_cb));
   std::unique_ptr<ImageProcessorBackend> backend = create_backend_cb.Run(
-      input_config, output_config, output_mode, relative_rotation,
+      input_config, output_config, preferred_output_modes, relative_rotation,
       std::move(wrapped_error_cb), backend_task_runner);
   if (!backend)
     return nullptr;

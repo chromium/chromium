@@ -164,13 +164,11 @@ SupportResult IsConversionSupported(Fourcc input_fourcc,
 std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
-    OutputMode output_mode,
+    const std::vector<OutputMode>& preferred_output_modes,
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
   VLOGF(2);
-  DCHECK_EQ(output_mode, OutputMode::IMPORT)
-      << "Only OutputMode::IMPORT supported";
 
   std::unique_ptr<VideoFrameMapper> input_frame_mapper;
   // LibYUVImageProcessorBackend supports only memory-based video frame for
@@ -217,6 +215,11 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
   }
   if (output_storage_type == VideoFrame::STORAGE_UNKNOWN) {
     VLOGF(2) << "Unsupported output storage type";
+    return nullptr;
+  }
+
+  if (!base::Contains(preferred_output_modes, OutputMode::IMPORT)) {
+    VLOGF(2) << "Only support OutputMode::IMPORT";
     return nullptr;
   }
 

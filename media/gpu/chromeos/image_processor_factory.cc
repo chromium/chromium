@@ -76,7 +76,7 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
       {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
   return ImageProcessor::Create(
       base::BindRepeating(&VaapiImageProcessorBackend::Create), input_config,
-      output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
+      output_config, {ImageProcessor::OutputMode::IMPORT}, VIDEO_ROTATION_0,
       std::move(error_cb), std::move(client_task_runner));
 }
 #endif  // BUILDFLAG(USE_VAAPI)
@@ -149,7 +149,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
-    ImageProcessor::OutputMode output_mode,
+    const std::vector<ImageProcessor::OutputMode>& preferred_output_modes,
     size_t num_buffers,
     VideoRotation relative_rotation,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
@@ -167,9 +167,10 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
 
   std::unique_ptr<ImageProcessor> image_processor;
   for (auto& create_func : create_funcs) {
-    image_processor = ImageProcessor::Create(
-        std::move(create_func), input_config, output_config, output_mode,
-        relative_rotation, error_cb, client_task_runner);
+    image_processor =
+        ImageProcessor::Create(std::move(create_func), input_config,
+                               output_config, preferred_output_modes,
+                               relative_rotation, error_cb, client_task_runner);
     if (image_processor)
       return image_processor;
   }

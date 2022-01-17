@@ -240,15 +240,19 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
     size_t num_buffers,
     const PortConfig& input_config,
     const PortConfig& output_config,
-    OutputMode output_mode,
+    const std::vector<OutputMode>& preferred_output_modes,
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
-  DCHECK_EQ(output_mode, OutputMode::IMPORT)
-      << "Only OutputMode::IMPORT supported";
-  return V4L2ImageProcessorBackend::CreateWithOutputMode(
-      device, num_buffers, input_config, output_config, output_mode,
-      relative_rotation, error_cb, backend_task_runner);
+  for (const auto& output_mode : preferred_output_modes) {
+    auto image_processor = V4L2ImageProcessorBackend::CreateWithOutputMode(
+        device, num_buffers, input_config, output_config, output_mode,
+        relative_rotation, error_cb, backend_task_runner);
+    if (image_processor)
+      return image_processor;
+  }
+
+  return nullptr;
 }
 
 // static
@@ -308,6 +312,11 @@ V4L2ImageProcessorBackend::CreateWithOutputMode(
     VLOGF(1) << "Unsupported input storage type: " << input_storage_type;
     return nullptr;
   }
+
+  const v4l2_memory output_memory_type =
+      output_mode == OutputMode::ALLOCATE
+          ? V4L2_MEMORY_MMAP
+          : InputStorageTypeToV4L2Memory(output_storage_type);
 
   if (!device->IsImageProcessingSupported()) {
     VLOGF(1) << "V4L2ImageProcessorBackend not supported in this platform";
@@ -393,8 +402,6 @@ V4L2ImageProcessorBackend::CreateWithOutputMode(
     output_planes[i].size = pix_mp.plane_fmt[i].sizeimage;
   }
 
-  const v4l2_memory output_memory_type =
-      InputStorageTypeToV4L2Memory(output_storage_type);
   std::unique_ptr<V4L2ImageProcessorBackend> image_processor(
       new V4L2ImageProcessorBackend(
           backend_task_runner, std::move(device),
