@@ -24,6 +24,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
 using ::testing::_;
@@ -860,6 +861,47 @@ TEST_F(LoadingPredictorTabHelperTestCollectorTest, ResourceLoadComplete) {
   tab_helper_->ResourceLoadComplete(main_rfh(), content::GlobalRequestID(),
                                     *resource_load_info);
   EXPECT_EQ(2u, test_collector_->count_resource_loads_completed());
+}
+
+class LoadingPredictorTabHelperTestCollectorFencedFramesTest
+    : public LoadingPredictorTabHelperTestCollectorTest {
+ public:
+  LoadingPredictorTabHelperTestCollectorFencedFramesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~LoadingPredictorTabHelperTestCollectorFencedFramesTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(LoadingPredictorTabHelperTestCollectorFencedFramesTest,
+       DoNotRecordResourceLoadComplete) {
+  NavigateAndCommitInFrame("http://test.org", main_rfh());
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+
+  // Navigate a fenced frame.
+  GURL fenced_frame_url = GURL("https://fencedframe.com");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
+                                                         fenced_frame_root);
+  navigation_simulator->Commit();
+
+  EXPECT_EQ(0u, test_collector_->count_resource_loads_completed());
+
+  // Load a sub resource on the main frame and record it.
+  auto resource_load_info = CreateResourceLoadInfo(
+      "http://test.org/script.js", network::mojom::RequestDestination::kScript);
+  tab_helper_->ResourceLoadComplete(main_rfh(), content::GlobalRequestID(),
+                                    *resource_load_info);
+  EXPECT_EQ(1u, test_collector_->count_resource_loads_completed());
+
+  // Load a sub resource on the fenced frame and do not record it.
+  tab_helper_->ResourceLoadComplete(
+      fenced_frame_root, content::GlobalRequestID(), *resource_load_info);
+  EXPECT_EQ(1u, test_collector_->count_resource_loads_completed());
 }
 
 }  // namespace predictors
