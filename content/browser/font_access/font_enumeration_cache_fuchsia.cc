@@ -63,9 +63,6 @@ FontEnumerationCacheFuchsia::ComputeFontEnumerationData(
   material_metadata->set_full_name("Material Icons");
   material_metadata->set_family("Material Icons");
   material_metadata->set_style("Normal");
-  material_metadata->set_italic(false);
-  material_metadata->set_weight(400);
-  material_metadata->set_stretch(1.0);
 
   // Add Roboto
   for (const auto& roboto_info : kRobotoFontsInfo) {
@@ -75,9 +72,6 @@ FontEnumerationCacheFuchsia::ComputeFontEnumerationData(
     roboto_metadata->set_full_name(roboto_info.name);
     roboto_metadata->set_family("sans-serif");
     roboto_metadata->set_style("Normal");
-    roboto_metadata->set_italic(false);
-    roboto_metadata->set_weight(roboto_info.weight);
-    roboto_metadata->set_stretch(1.0);
   }
 
   return font_enumeration_table;

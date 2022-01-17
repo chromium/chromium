@@ -250,8 +250,7 @@ void FontAccessManagerImpl::DidFindAllFonts(FindAllFontsCallback callback,
   std::vector<blink::mojom::FontMetadata> font_data;
   for (const auto& element : table.fonts()) {
     font_data.emplace_back(element.postscript_name(), element.full_name(),
-                           element.family(), element.style(), element.italic(),
-                           element.stretch(), element.weight());
+                           element.family(), element.style());
   }
 
   std::move(callback).Run(data.status, std::move(font_data));

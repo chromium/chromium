@@ -76,10 +76,7 @@ void FontManager::DidShowFontChooser(
     auto entry = FontEnumerationEntry{.postscript_name = font->postscript_name,
                                       .full_name = font->full_name,
                                       .family = font->family,
-                                      .style = font->style,
-                                      .italic = font->italic,
-                                      .stretch = font->stretch,
-                                      .weight = font->weight};
+                                      .style = font->style};
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }
   resolver->Resolve(std::move(entries));
@@ -125,9 +122,6 @@ void FontManager::DidGetEnumerationResponse(
         .full_name = String::FromUTF8(element.full_name().c_str()),
         .family = String::FromUTF8(element.family().c_str()),
         .style = String::FromUTF8(element.style().c_str()),
-        .italic = element.italic(),
-        .stretch = element.stretch(),
-        .weight = element.weight(),
     };
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }

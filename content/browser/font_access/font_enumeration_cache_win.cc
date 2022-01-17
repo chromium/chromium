@@ -172,49 +172,6 @@ absl::optional<std::string> GetFontStyleName(IDWriteFont* font) {
   return style_name;
 }
 
-// Map DWRITE_FONT_STYLE to a boolean for italic/oblique.
-bool DWriteStyleToWebItalic(DWRITE_FONT_STYLE style) {
-  return (style & (DWRITE_FONT_STYLE_ITALIC | DWRITE_FONT_STYLE_OBLIQUE)) != 0;
-}
-
-// Map DWRITE_FONT_WEIGHT to a font-weight (number in [1,1000]).
-// https://drafts.csswg.org/css-fonts-4/#font-weight-prop
-float DWriteWeightToWebWeight(DWRITE_FONT_WEIGHT weight) {
-  // DirectWrite values already correspond to the web definition of
-  // numbers in the range [1,1000] with 400 as normal.
-  return weight;
-}
-
-// Map DWRITE_FONT_STRETCH to a font-stretch value (percentage).
-// https://drafts.csswg.org/css-fonts-4/#propdef-font-stretch
-float DWriteStretchToWebStretch(DWRITE_FONT_STRETCH stretch) {
-  // DWRITE_FONT_STRETCH is an enumeration, so a more complex mapping or
-  // interpolation is not necessary.
-  switch (stretch) {
-    case DWRITE_FONT_STRETCH_ULTRA_CONDENSED:
-      return 0.5;
-    case DWRITE_FONT_STRETCH_EXTRA_CONDENSED:
-      return 0.625;
-    case DWRITE_FONT_STRETCH_CONDENSED:
-      return 0.75;
-    case DWRITE_FONT_STRETCH_SEMI_CONDENSED:
-      return 0.875;
-    case DWRITE_FONT_STRETCH_UNDEFINED:
-    case DWRITE_FONT_STRETCH_NORMAL:
-      return 1.0f;
-    case DWRITE_FONT_STRETCH_SEMI_EXPANDED:
-      return 1.125f;
-    case DWRITE_FONT_STRETCH_EXPANDED:
-      return 1.25f;
-    case DWRITE_FONT_STRETCH_EXTRA_EXPANDED:
-      return 1.5f;
-    case DWRITE_FONT_STRETCH_ULTRA_EXPANDED:
-      return 2.0f;
-  }
-  NOTREACHED();
-  return 1.0f;
-}
-
 }  // namespace
 
 // static
@@ -306,9 +263,6 @@ blink::FontEnumerationTable FontEnumerationCacheWin::ComputeFontEnumerationData(
       metadata->set_family(family_name.value());
       metadata->set_style(style_name ? std::move(style_name.value())
                                      : std::string());
-      metadata->set_italic(DWriteStyleToWebItalic(font->GetStyle()));
-      metadata->set_weight(DWriteWeightToWebWeight(font->GetWeight()));
-      metadata->set_stretch(DWriteStretchToWebStretch(font->GetStretch()));
     }
   }
 
