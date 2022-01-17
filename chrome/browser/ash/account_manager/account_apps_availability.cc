@@ -149,8 +149,8 @@ absl::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
 void RemoveAccountFromPrefs(PrefService* prefs, const std::string& gaia_id) {
   DCHECK(!IsPrimaryGaiaAccount(gaia_id));
 
-  DictionaryPrefUpdateDeprecated update(
-      prefs, account_manager::prefs::kAccountAppsAvailability);
+  DictionaryPrefUpdate update(prefs,
+                              account_manager::prefs::kAccountAppsAvailability);
   const bool success = update->RemoveKey(gaia_id);
   DCHECK(success);
 }
@@ -165,16 +165,16 @@ void AddAccountToPrefs(PrefService* prefs,
   account_entry.SetKey(account_manager::prefs::kIsAvailableInArcKey,
                        base::Value(is_available_in_arc));
 
-  DictionaryPrefUpdateDeprecated update(
-      prefs, account_manager::prefs::kAccountAppsAvailability);
+  DictionaryPrefUpdate update(prefs,
+                              account_manager::prefs::kAccountAppsAvailability);
   update->SetKey(gaia_id, std::move(account_entry));
 }
 
 void UpdateAccountInPrefs(PrefService* prefs,
                           const std::string& gaia_id,
                           bool is_available_in_arc) {
-  DictionaryPrefUpdateDeprecated update(
-      prefs, account_manager::prefs::kAccountAppsAvailability);
+  DictionaryPrefUpdate update(prefs,
+                              account_manager::prefs::kAccountAppsAvailability);
   base::Value* account_entry = update->FindDictKey(gaia_id);
   DCHECK(account_entry);
 
@@ -376,8 +376,8 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
   prefs_->Set(account_manager::prefs::kAccountAppsAvailability,
               base::Value(base::Value::Type::DICTIONARY));
 
-  DictionaryPrefUpdateDeprecated update(
-      prefs_, account_manager::prefs::kAccountAppsAvailability);
+  DictionaryPrefUpdate update(prefs_,
+                              account_manager::prefs::kAccountAppsAvailability);
   DCHECK(update->DictEmpty());
 
   // See structure of `update` dictionary at the top of the file.
