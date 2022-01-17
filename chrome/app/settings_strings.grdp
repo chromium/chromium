@@ -1460,7 +1460,7 @@
     Features on some sites may not work
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking section of the cookies card in the privacy review.">
-    Sites can only use your cookies to see your browsing activity on their own site
+    Sites can only use cookies to see your browsing activity on their own site
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_HEADER" desc="Header of the safe browsing card in the privacy review.">
     Choose your Safe Browsing protection
