@@ -159,12 +159,8 @@ UserContext::GetSyncTrustedVaultKeys() const {
   return sync_trusted_vault_keys_;
 }
 
-bool UserContext::IsLockableManagedGuestSession() const {
-  return !managed_guest_session_launch_extension_id_.empty();
-}
-
-std::string UserContext::GetManagedGuestSessionLaunchExtensionId() const {
-  return managed_guest_session_launch_extension_id_;
+bool UserContext::CanLockManagedGuestSession() const {
+  return can_lock_managed_guest_session_;
 }
 
 bool UserContext::HasCredentials() const {
@@ -265,10 +261,9 @@ void UserContext::SetIsUnderAdvancedProtection(
   is_under_advanced_protection_ = is_under_advanced_protection;
 }
 
-void UserContext::SetManagedGuestSessionLaunchExtensionId(
-    const std::string& managed_guest_session_launch_extension_id) {
-  managed_guest_session_launch_extension_id_ =
-      managed_guest_session_launch_extension_id;
+void UserContext::SetCanLockManagedGuestSession(
+    bool can_lock_managed_guest_session) {
+  can_lock_managed_guest_session_ = can_lock_managed_guest_session;
 }
 
 void UserContext::SetLoginInputMethodIdUsed(

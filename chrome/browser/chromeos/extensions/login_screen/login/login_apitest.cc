@@ -57,7 +57,6 @@ constexpr char kData[] = "some data";
 constexpr char kInSessionExtensionId[] = "ofcpkomnogjenhfajfjadjmjppbegnad";
 const char kInSessionExtensionUpdateManifestPath[] =
     "/extensions/api_test/login_screen_apis/update_manifest.xml";
-constexpr char kWrongExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 
 // launchManagedGuestSession tests.
 constexpr char kLaunchManagedGuestSession[] = "LoginLaunchManagedGuestSession";
@@ -81,17 +80,9 @@ constexpr char kUnlockManagedGuestSessionWrongPassword[] =
     "LoginUnlockManagedGuestSessionWrongPassword";
 constexpr char kUnlockManagedGuestSessionNotLocked[] =
     "LoginUnlockManagedGuestSessionNotLocked";
-constexpr char kUnlockManagedGuestSessionNotManagedGuestSession[] =
-    "LoginUnlockManagedGuestSessionNotManagedGuestSession";
-constexpr char kUnlockManagedGuestSessionWrongExtensionId[] =
-    "LoginUnlockManagedGuestSessionWrongExtensionId";
 // In-session extension tests.
 constexpr char kInSessionLoginLockManagedGuestSession[] =
     "InSessionLoginLockManagedGuestSession";
-constexpr char kInSessionLoginLockManagedGuestSessionNoPermission[] =
-    "InSessionLoginLockManagedGuestSessionNoPermission";
-constexpr char kInSessionUnlockManagedGuestSessionNoPermission[] =
-    "InSessionLoginUnlockManagedGuestSessionNoPermission";
 
 }  // namespace
 
@@ -282,17 +273,6 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LockManagedGuestSessionNotActive) {
   RunTest(kLockManagedGuestSessionNotActive);
 }
 
-IN_PROC_BROWSER_TEST_F(LoginApitest, LockManagedGuestSessionNoPermission) {
-  SetUpDeviceLocalAccountPolicy();
-  SessionStateWaiter waiter(session_manager::SessionState::ACTIVE);
-  SetUpLoginScreenExtensionAndRunTest(kLaunchManagedGuestSession);
-  waiter.Wait();
-
-  SetUpTestListeners();
-  SetUpInSessionExtension();
-  RunTest(kInSessionLoginLockManagedGuestSessionNoPermission);
-}
-
 IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSession) {
   SetUpDeviceLocalAccountPolicy();
   LogInWithPassword();
@@ -347,18 +327,9 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionWrongPassword) {
   RunTest(kUnlockManagedGuestSessionWrongPassword);
 }
 
-IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionNoPermission) {
-  SetUpDeviceLocalAccountPolicy();
-  LogInWithPassword();
-
-  SetUpTestListeners();
-  SetUpInSessionExtension();
-  RunTest(kInSessionUnlockManagedGuestSessionNoPermission);
-}
-
 // This test checks that the case where the profile has been created (which
-// sets the |kLoginExtensionApiLaunchExtensionId| pref, but the session is not
-// yet active.
+// sets the |kLoginExtensionApiCanLockManagedGuestSession| pref), but the
+// session is not yet active.
 IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionNotLocked) {
   SetUpDeviceLocalAccountPolicy();
   LogInWithPassword();
@@ -368,23 +339,6 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionNotLocked) {
   // remain in this state during the login process.
   SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   RunTest(kUnlockManagedGuestSessionNotLocked);
-}
-
-IN_PROC_BROWSER_TEST_F(LoginApitest,
-                       UnlockManagedGuestSessionWrongExtensionId) {
-  SetUpDeviceLocalAccountPolicy();
-  LogInWithPassword();
-
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
-  PrefService* prefs = profile->GetPrefs();
-  prefs->SetString(prefs::kLoginExtensionApiLaunchExtensionId,
-                   kWrongExtensionId);
-
-  SetUpTestListeners();
-  LockScreen();
-  RunTest(kUnlockManagedGuestSessionWrongExtensionId);
 }
 
 class LoginApitestWithEnterpriseUser : public LoginApitest {
@@ -447,21 +401,8 @@ IN_PROC_BROWSER_TEST_F(LoginApitestWithEnterpriseUser,
       kLaunchManagedGuestSessionAlreadyExistsActiveSession);
 }
 
-IN_PROC_BROWSER_TEST_F(LoginApitestWithEnterpriseUser,
-                       UnlockManagedGuestSessionNotManagedGuestSession) {
-  LoginUser();
-  LockScreen();
-  SetUpLoginScreenExtensionAndRunTest(
-      kUnlockManagedGuestSessionNotManagedGuestSession);
-}
-
-// TODO(https://crbug.com/1075511) Flaky test.
-IN_PROC_BROWSER_TEST_F(LoginApitestWithEnterpriseUser,
-                       DISABLED_LockManagedGuestSessionNotManagedGuestSession) {
-  LoginUser();
-  SetUpTestListeners();
-  SetUpInSessionExtension();
-  RunTest(kInSessionLoginLockManagedGuestSessionNoPermission);
-}
+// TODO(b/214555030): Re-add
+// LoginUnlockManagedGuestSessionNotManagedGuestSession API test with the
+// correct error message when crrev.com/c/3284871 is landed.
 
 }  // namespace chromeos

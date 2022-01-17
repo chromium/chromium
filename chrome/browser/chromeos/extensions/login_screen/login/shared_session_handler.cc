@@ -100,7 +100,7 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
   ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
                            user->GetAccountId());
   context.SetKey(ash::Key(session_secret_));
-  context.SetManagedGuestSessionLaunchExtensionId(extension_id);
+  context.SetCanLockManagedGuestSession(true);
   existing_user_controller->Login(context, chromeos::SigninSpecifics());
 
   return absl::nullopt;

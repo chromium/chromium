@@ -1183,12 +1183,11 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
     if (user->HasGaiaAccount())
       GetUserImageManager(user->GetAccountId())->UserProfileCreated();
 
-    // Allow managed guest session user to lock if
-    // `kLoginExtensionApiLaunchExtensionId` is set.
+    // Managed Guest Sessions can be lockable if launched via the chrome.login
+    // extension API.
     if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT &&
-        !profile->GetPrefs()
-             ->GetString(::prefs::kLoginExtensionApiLaunchExtensionId)
-             .empty()) {
+        profile->GetPrefs()->GetBoolean(
+            ::prefs::kLoginExtensionApiCanLockManagedGuestSession)) {
       user->set_can_lock(true);
     }
   }

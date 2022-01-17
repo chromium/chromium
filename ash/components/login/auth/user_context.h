@@ -91,9 +91,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   const absl::optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
       const;
   const absl::optional<SyncTrustedVaultKeys>& GetSyncTrustedVaultKeys() const;
-  // True if |managed_guest_session_launch_extension_id_| is non-empty.
-  bool IsLockableManagedGuestSession() const;
-  std::string GetManagedGuestSessionLaunchExtensionId() const;
+  bool CanLockManagedGuestSession() const;
 
   bool HasCredentials() const;
 
@@ -138,11 +136,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   void SetSyncTrustedVaultKeys(
       const SyncTrustedVaultKeys& sync_trusted_vault_keys);
   void SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
-  // Sets |managed_guest_session_launch_extension_id_| which is used to set the
-  // |kLoginExtensionApiLaunchExtensionId| pref when the user's profile is
-  // created. Setting this pref indicates that this Managed Guest Session is
-  // lockable.
-  void SetManagedGuestSessionLaunchExtensionId(const std::string& extension_id);
+  void SetCanLockManagedGuestSession(bool can_lock_managed_guest_session);
   // We need to pull input method used to log in into the user session to make
   // it consistent. This method will remember given input method to be used
   // when session starts.
@@ -174,7 +168,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) UserContext {
   std::string gaps_cookie_;
   std::string reauth_proof_token_;
   bool is_under_advanced_protection_ = false;
-  std::string managed_guest_session_launch_extension_id_;
+  bool can_lock_managed_guest_session_ = false;
   // |login_input_method_id_used_| is non-empty if login password/code was used,
   // i.e. user used some input method to log in.
   std::string login_input_method_id_used_;

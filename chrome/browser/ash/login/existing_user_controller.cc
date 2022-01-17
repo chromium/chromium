@@ -255,15 +255,17 @@ LoginDisplay* GetLoginDisplay() {
   return GetLoginDisplayHost()->GetLoginDisplay();
 }
 
-void SetLoginExtensionApiLaunchExtensionIdPref(const AccountId& account_id,
-                                               const std::string extension_id) {
+void SetLoginExtensionApiCanLockManagedGuestSessionPref(
+    const AccountId& account_id,
+    bool can_lock_managed_guest_session) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   DCHECK(user);
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetString(::prefs::kLoginExtensionApiLaunchExtensionId, extension_id);
+  prefs->SetBoolean(::prefs::kLoginExtensionApiCanLockManagedGuestSession,
+                    can_lock_managed_guest_session);
   prefs->CommitPendingWrite();
 }
 
@@ -929,15 +931,15 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
     DeviceSettingsService::Get()->MarkWillEstablishConsumerOwnership();
   }
 
-  if (user_context.IsLockableManagedGuestSession()) {
+  if (user_context.CanLockManagedGuestSession()) {
     CHECK(user_context.GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
     user_manager::User* user =
         user_manager::UserManager::Get()->FindUserAndModify(
             user_context.GetAccountId());
     DCHECK(user);
-    user->AddProfileCreatedObserver(base::BindOnce(
-        &SetLoginExtensionApiLaunchExtensionIdPref, user_context.GetAccountId(),
-        user_context.GetManagedGuestSessionLaunchExtensionId()));
+    user->AddProfileCreatedObserver(
+        base::BindOnce(&SetLoginExtensionApiCanLockManagedGuestSessionPref,
+                       user_context.GetAccountId(), true));
   }
 
   UserSessionManager::StartSessionType start_session_type =

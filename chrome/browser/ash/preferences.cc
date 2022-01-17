@@ -463,9 +463,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kSettingsShowOSBanner, true);
 
   // This pref is a per-session pref and must not be synced.
-  registry->RegisterStringPref(::prefs::kLoginExtensionApiLaunchExtensionId,
-                               std::string(),
-                               PrefRegistry::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(
+      ::prefs::kLoginExtensionApiCanLockManagedGuestSession, false,
+      PrefRegistry::NO_REGISTRATION_FLAGS);
 
   registry->RegisterBooleanPref(prefs::kLoginDisplayPasswordButtonEnabled,
                                 true);

@@ -30,17 +30,6 @@
 
 namespace extensions {
 
-namespace {
-
-std::string GetLaunchExtensionIdPrefValue(const user_manager::User* user) {
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  DCHECK(profile);
-  PrefService* prefs = profile->GetPrefs();
-  return prefs->GetString(prefs::kLoginExtensionApiLaunchExtensionId);
-}
-
-}  // namespace
-
 namespace login_api {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -58,11 +47,11 @@ const char kAnotherLoginAttemptInProgress[] =
     "Another login attempt is in progress";
 const char kNoManagedGuestSessionAccounts[] =
     "No managed guest session accounts";
-const char kNoPermissionToLock[] =
-    "The extension does not have permission to lock this session";
+const char kNoLockableManagedGuestSession[] =
+    "There is no lockable Managed Guest Session";
 const char kSessionIsNotActive[] = "Session is not active";
-const char kNoPermissionToUnlock[] =
-    "The extension does not have permission to unlock this session";
+const char kNoUnlockableManagedGuestSession[] =
+    "There is no unlockable Managed Guest Session";
 const char kSessionIsNotLocked[] = "Session is not locked";
 const char kAnotherUnlockAttemptInProgress[] =
     "Another unlock attempt is in progress";
@@ -114,7 +103,7 @@ LoginLaunchManagedGuestSessionFunction::Run() {
                              user->GetAccountId());
     if (parameters->password) {
       context.SetKey(ash::Key(*parameters->password));
-      context.SetManagedGuestSessionLaunchExtensionId(extension_id());
+      context.SetCanLockManagedGuestSession(true);
     }
 
     existing_user_controller->Login(context, ash::SigninSpecifics());
@@ -174,7 +163,7 @@ ExtensionFunction::ResponseAction LoginLockManagedGuestSessionFunction::Run() {
   if (!active_user ||
       active_user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
       !user_manager->CanCurrentUserLock()) {
-    return RespondNow(Error(login_api_errors::kNoPermissionToLock));
+    return RespondNow(Error(login_api_errors::kNoLockableManagedGuestSession));
   }
 
   if (session_manager::SessionManager::Get()->session_state() !=
@@ -199,12 +188,14 @@ LoginUnlockManagedGuestSessionFunction::Run() {
       api::login::UnlockManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
+  const user_manager::UserManager* user_manager =
+      user_manager::UserManager::Get();
+  const user_manager::User* active_user = user_manager->GetActiveUser();
   if (!active_user ||
       active_user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      extension_id() != GetLaunchExtensionIdPrefValue(active_user)) {
-    return RespondNow(Error(login_api_errors::kNoPermissionToUnlock));
+      !user_manager->CanCurrentUserLock()) {
+    return RespondNow(
+        Error(login_api_errors::kNoUnlockableManagedGuestSession));
   }
 
   if (session_manager::SessionManager::Get()->session_state() !=
@@ -298,11 +289,12 @@ ExtensionFunction::ResponseAction LoginUnlockSharedSessionFunction::Run() {
   auto parameters = api::login::UnlockSharedSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  if (!active_user ||
-      extension_id() != GetLaunchExtensionIdPrefValue(active_user)) {
-    return RespondNow(Error(login_api_errors::kNoPermissionToUnlock));
+  const user_manager::UserManager* user_manager =
+      user_manager::UserManager::Get();
+  const user_manager::User* active_user = user_manager->GetActiveUser();
+  if (!active_user || !user_manager->CanCurrentUserLock()) {
+    return RespondNow(
+        Error(login_api_errors::kNoUnlockableManagedGuestSession));
   }
 
   chromeos::SharedSessionHandler::Get()->UnlockSharedSession(
